@@ -133,6 +133,11 @@ public class Controller {
 	
 	public void setFightMode(int mode) {
 		mud.setCombatStyle(mode);
+		
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(29);
+		mud.packetHandler.getClientStream().bufferBits.putByte(mode);
+		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
 	public int getFightMode() {

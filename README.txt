@@ -13,7 +13,7 @@ It has it's own custom scripting API. It also has backwards compatibility with S
 Starting IdleRSC:
 	1. Modify run.bat
 	2. Modify Cache/ip.txt and Cache/port.txt if needed.
-	2. Run it
+	3. Run it
 
 Sleeping:
 	IdleRSC does not have a built in sleeper. Anyone with experience dealing with making OCR programs, please see issue #25.

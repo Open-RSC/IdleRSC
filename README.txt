@@ -17,6 +17,10 @@ Starting IdleRSC:
 
 Sleeping:
 	IdleRSC does not have a built in sleeper. Anyone with experience dealing with making OCR programs, please see issue #25.
+
+Account Security:
+	Please be aware that run.bat is not encrypted. If someone has your run.bat, they have your username and password. 
+	Please be aware that you should not run any .class files from sources you do not trust. Running a rogue .class file is akin to running a .exe file on your computer. IF YOU DON'T TRUST IT, READ THE SOURCE CODE AND COMPILE IT!!!
 	
 Compiling Scripts:
 	Native Scripts:

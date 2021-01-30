@@ -63,6 +63,8 @@ public class Controller {
 	private OpenRSC client;
 	private mudclient mud;
 	
+	int[] foodIds = {350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 333, 334, 335, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179};
+	
 	final private int GAME_TICK_COUNT = 640; 
 
 	public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) { 
@@ -1588,5 +1590,9 @@ public class Controller {
     	reflector.mudInvoker(mud, "walkToActionSource", startX, startZ, destX, destZ, walkToEntity);
     }
 
+    public int[] getFoodIds() {
+    	return foodIds;
+    }
+    
 }
  

@@ -388,7 +388,7 @@ public class Controller {
 		return mud.getNpcCount();
 	}
 	
-	public ORSCharacter getNearestNpcByIds(int[] npcIds) {
+	public ORSCharacter getNearestNpcByIds(int[] npcIds, boolean inCombatAllowed) {
 		ORSCharacter npc = null;
 		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
 		int npcCount = (int) reflector.getObjectMember(mud, "npcCount");
@@ -403,6 +403,13 @@ public class Controller {
 			ORSCharacter curNpc = npcs[i];
 			for(int j = 0; j < npcIds.length; j++) {
 				if(curNpc.npcId == npcIds[j]) {
+					
+					if(inCombatAllowed == false) {
+						if(this.isNpcInCombat(curNpc.serverIndex) == true) {
+							continue;
+						}
+					}
+					
 					int result = distance(curNpc.currentX, curNpc.currentZ, botX, botZ);
 					if(result < closestDistance) {
 						closestDistance = result;
@@ -416,11 +423,11 @@ public class Controller {
 		return npc;
 	}
 	
-	public ORSCharacter getNearestNpcById(int npcId) {
+	public ORSCharacter getNearestNpcById(int npcId, boolean inCombatAllowed) {
 		int[] tmp = new int[1];
 		tmp[0] = npcId;
 		
-		return getNearestNpcByIds(tmp);
+		return getNearestNpcByIds(tmp, inCombatAllowed);
 	}
 	
 	public int[] getNpcCoordsByServerIndex(int serverIndex) {
@@ -547,7 +554,7 @@ public class Controller {
 
 		for(int i = 0; i < npcCount; i++) {
 			if(npcs[i].serverIndex == id)
-				if(npcs[i].combatTimeout > 400)
+				if(npcs[i].combatTimeout > 0)
 					return true;
 		}
 		
@@ -881,7 +888,7 @@ public class Controller {
 		
 		if(this.isInOptionMenu() == false) {
 			for(int npcId : bankerIds) {
-				ORSCharacter npc = getNearestNpcById(npcId);
+				ORSCharacter npc = getNearestNpcById(npcId, false);
 				if(npc != null) {
 					thieveNpc(npc.serverIndex);
 					break;

@@ -491,7 +491,7 @@ public abstract class Script
 	public void TalkToNPC(int id)
 	{
 		Main.logMethod("TalkToNPC", id);
-		ORSCharacter c = controller.getNearestNpcById(id);
+		ORSCharacter c = controller.getNearestNpcById(id, false);
 		if(c != null) {
 			controller.talkToNpc(c.serverIndex);
 		}
@@ -661,7 +661,7 @@ public abstract class Script
 	public int GetNearestNPC(int type)
 	{
 		Main.logMethod("GetNearestNpc", type);
-		ORSCharacter npc = controller.getNearestNpcById(type);
+		ORSCharacter npc = controller.getNearestNpcById(type, false);
 		
 		if(npc == null)
 			return -1;
@@ -671,7 +671,7 @@ public abstract class Script
 	public int GetNearestNPC(int type[])
 	{
 		Main.logMethod("GetNearestNPC", type);
-		ORSCharacter npc = controller.getNearestNpcByIds(type);
+		ORSCharacter npc = controller.getNearestNpcByIds(type, false);
 		
 		if(npc == null)
 			return -1;
@@ -1123,7 +1123,7 @@ public abstract class Script
 	public int GetNPCLevel(int type)
 	{
 		Main.logMethod("GetNPCLevel", type);
-		ORSCharacter npc = controller.getNearestNpcById(type);
+		ORSCharacter npc = controller.getNearestNpcById(type, true);
 		
 		if(npc != null)
 			return npc.level;
@@ -1139,7 +1139,7 @@ public abstract class Script
 	public int GetNPCMaxHP(int type)
 	{
 		Main.logMethod("GetNPCMaxHP", type);
-		ORSCharacter npc = controller.getNearestNpcById(type);
+		ORSCharacter npc = controller.getNearestNpcById(type, true);
 		
 		if(npc != null)
 			return npc.healthMax;

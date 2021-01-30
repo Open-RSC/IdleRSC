@@ -160,7 +160,7 @@ public class AIOFighter extends IdleScript {
     		}
     		
     		if(!controller.isInCombat() ) {
-	    		ORSCharacter npc = controller.getNearestNpcByIds(npcIds);
+	    		ORSCharacter npc = controller.getNearestNpcByIds(npcIds, false);
 	    		
 	    		if(ranging) {
 	    			
@@ -204,7 +204,7 @@ public class AIOFighter extends IdleScript {
     			}
     			if(maging == true) {
     				controller.displayMessage("@red@AIOFighter: Maging...");
-    				ORSCharacter victimNpc = controller.getNearestNpcByIds(npcIds);
+    				ORSCharacter victimNpc = controller.getNearestNpcByIds(npcIds, false);
     				controller.castSpellOnNpc(victimNpc.serverIndex, spellId);
     			}
     			

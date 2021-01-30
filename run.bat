@@ -1,2 +1,2 @@
 @echo off
-java -jar IdleRSC.jar
+java -jar IdleRSC.jar username password

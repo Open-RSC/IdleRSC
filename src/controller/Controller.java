@@ -222,6 +222,10 @@ public class Controller {
 		return mud.getLocalPlayerZ() + mud.getMidRegionBaseZ();
 	}
 	
+	public void walkTo(int x, int y) {
+		walkTo(x, y, 0, true);
+	}
+	
 	public void walkTo(int x, int z, int radius, boolean force) { //offset applied
 		if(x < 0 || z < 0)
 			return; 

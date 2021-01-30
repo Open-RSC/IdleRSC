@@ -14,6 +14,9 @@ Starting IdleRSC:
 	1. Modify run.bat
 	2. Modify Cache/ip.txt and Cache/port.txt if needed.
 	2. Run it
+
+Sleeping:
+	IdleRSC does not have a built in sleeper. Anyone with experience dealing with making OCR programs, please see #25.
 	
 Compiling Scripts:
 	Native Scripts:

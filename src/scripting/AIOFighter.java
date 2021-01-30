@@ -57,7 +57,6 @@ public class AIOFighter extends IdleScript {
 	
 	
 	int[] npcIds = {};
-	int[] foodIds = {350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 333, 334, 335, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179};
 	int[] loot = {}; //feathers
 	int[] bones = {20, 413, 604, 814};
 	int[] bowIds = {188, 189, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 59, 60};
@@ -133,7 +132,7 @@ public class AIOFighter extends IdleScript {
     			
     			boolean ate = false;
     			
-    			for(int id : foodIds) {
+    			for(int id : controller.getFoodIds()) {
     				if(controller.getInventoryItemCount(id) > 0) {
     					controller.itemCommand(id);
     					ate = true;

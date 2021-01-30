@@ -1,0 +1,70 @@
+!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
+!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
+!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
+       This is an alpha version. I am not responsible for any lost items or ruined accounts.
+!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
+!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
+!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
+
+IdleRSC is a reflection and packet injection bot for OpenRSC.
+It has it's own custom scripting API. It also has backwards compatibility with SBot. STS and APOS support are planned.
+
+
+Starting IdleRSC:
+	1. Modify run.bat
+	2. Modify Cache/ip.txt and Cache/port.txt if needed.
+	2. Run it
+	
+Compiling Scripts:
+	Native Scripts:
+		Open up the Eclipse project
+		Add a new script to the `scripting` package.
+		Your class file will be spit out into bin/scripting/ if successfully compiled.
+		
+	SBot:
+		Navigate to scripts/
+		Modify compile.bat to point to your javac installation
+		Run compile.bat
+		Ensure no issues compiling.
+		
+		Read "converting SBot scripts" section for compilitation issues.
+		
+Converting SBot Scripts:
+	1. Open SBot script in a text editor.
+	2. Place this line at the top of the file: import compatibility.sbot.Script;
+	3. Remove the mudclient constructor. For example, for alch.java, you would want to remove the following lines:
+		public alch(mudclient rs)
+		{
+			super(rs);
+		}
+	4. Place the .java source file inside of the scripts/ directory.
+	5. Run compile.bat. 
+	
+	
+Compiling IdleRSC:
+	1. Clone the repository
+	2. Open the project in Eclipse
+	3. Right click the IdleRSC project in Package Explorer, click Properties.
+	4. Click Java Build Path
+	5. Click the Libraries tab
+	6. Update "Open_RSC_Client.jar" to point to the latest jar file.
+	7. Apply and close
+	8. Code away!
+	
+Contributing:
+	Please submit issues, questions, bugs on Gitlab. Provide stack traces for crashes, etc. 
+	Please submit pull requests to Gitlab. 
+	Please do not use this on servers which do not allow botting. There are servers which allow botting.
+	
+About:
+	This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure.
+	
+	This is the next step after APOS.
+	APOS was the next step after STS.
+	STS was the next step after SBot.
+	SBot was the next step after many more... 
+	
+	Jagex can't kill the RSC botting scene, even by killing RSC. Cheers to the OGs who made this scene what it was, and here's to hoping it will come back. 
+	
+	After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released.
+	

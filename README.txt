@@ -16,7 +16,7 @@ Starting IdleRSC:
 	2. Run it
 
 Sleeping:
-	IdleRSC does not have a built in sleeper. Anyone with experience dealing with making OCR programs, please see #25.
+	IdleRSC does not have a built in sleeper. Anyone with experience dealing with making OCR programs, please see issue #25.
 	
 Compiling Scripts:
 	Native Scripts:

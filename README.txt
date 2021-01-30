@@ -12,8 +12,11 @@ It has it's own custom scripting API. It also has backwards compatibility with S
 
 Starting IdleRSC:
 	1. Modify run.bat
-	2. Modify Cache/ip.txt and Cache/port.txt if needed.
-	3. Run it
+	2. Select the proper cache file:
+		* If you are running OpenRSC "preservation" (i.e. original RSC menus, items, etc.) then rename the "PreservationCache" folder to "Cache".
+		* If you are running OpenRSC with modifications (such as Coleslaw), then rename "ColeslawCache" to "Cache".
+	3. Modify Cache/ip.txt and Cache/port.txt if needed.
+	4. Run .bat/.sh file!
 
 Sleeping:
 	IdleRSC does not have a built in sleeper. Anyone with experience dealing with making OCR programs, please see issue #25.

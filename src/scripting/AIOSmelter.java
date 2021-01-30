@@ -101,11 +101,11 @@ public class AIOSmelter extends IdleScript {
 			controller.walkTo(329, 553, 0, true);
 			
 			while(!controller.isInBank()) {
-				int bankerIndex = controller.getNearestNpcById(95).serverIndex;
+				int bankerIndex = controller.getNearestNpcById(95, false).serverIndex;
 				int coords[] = controller.getNpcCoordsByServerIndex(bankerIndex);
 				
 				controller.walkToAsync(coords[0], coords[1], 1);
-				controller.npcCommand1(controller.getNearestNpcById(95).serverIndex);
+				controller.npcCommand1(controller.getNearestNpcById(95, false).serverIndex);
 				controller.sleep(618);
 			}
 			

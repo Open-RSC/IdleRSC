@@ -90,8 +90,10 @@ public class AIOThiever extends IdleScript {
 			
 			
 			if(!controller.isInCombat()) { 
-				ORSCharacter npc = controller.getNearestNpcById(target.id);
-				controller.npcCommand1(npc.serverIndex);
+				ORSCharacter npc = controller.getNearestNpcById(target.id, false);
+				if(npc != null && npc.serverIndex > 0)
+					controller.npcCommand1(npc.serverIndex);
+				
 			} else {
 				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
 				

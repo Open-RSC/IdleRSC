@@ -11,9 +11,9 @@ It has it's own custom scripting API. It also has backwards compatibility with S
 
 
 Starting IdleRSC:
-	1. Modify run.bat
+	1. Modify run.bat/sh
 	2. Select the proper cache file:
-		* If you are running OpenRSC "preservation" (i.e. original RSC menus, items, etc.) then rename the "PreservationCache" folder to "Cache".
+		* If you are running OpenRSC "preservation" (i.e. original RSC menus, items, etc.) then rename the "UraniumCache" folder to "Cache".
 		* If you are running OpenRSC with modifications (such as Coleslaw), then rename "ColeslawCache" to "Cache".
 	3. Modify Cache/ip.txt and Cache/port.txt if needed.
 	4. Run .bat/.sh file!

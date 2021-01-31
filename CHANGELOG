@@ -1,0 +1,16 @@
+JAN 30 2021
+	Fixed client crashes caused by improper cache files.
+	AIOThiever script added.
+	Fixed bug where bot was attempting to thieve / fight NPCs which were already in combat.
+	PowerFletcha script was added.
+	AKMiner script was added.
+	Tyler fixed Controller.dropItems(int)
+	Tyler added Controller.isBatching
+	PowerFletcha script was fixed to work properly on Coleslaw.
+	isBatching support added to Dvorak's scripts
+	New SBot function added for batching support: WaitForBatchFinish()
+	Sbot's TalkToNPC bug fixed.
+
+JAN 29 2021
+	Initial alpha release.
+	setFightMode bug fixed.

@@ -1,12 +1,9 @@
 package bot;
 
-<<<<<<< HEAD
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
-=======
->>>>>>> 26a0ad8e06bce1cc424278e7dce52395d0504149
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -423,7 +420,6 @@ public class Main {
 			e.printStackTrace();
 			return false;
 		}
-<<<<<<< HEAD
     }
 
     /**
@@ -439,28 +435,12 @@ public class Main {
 		File[] sbotScripts = new File(sbotScriptPath).listFiles();
 
         // Create Comparator object to use in sorting the list
-=======
-	}
-	
-	/**
-	 * Initializes the script menu selector.
-	 * @param scriptFrame -- the script menu selector frame.
-	 */
-	private static void initializeScriptFrame(JFrame scriptFrame) { 
-		DefaultListModel listModel = new DefaultListModel();
-
-		File[] nativeScripts = new File("bin/scripting/").listFiles();
-		File[] sbotScripts = new File("scripts/").listFiles();
-
-		// Create Comparator object to use in sorting the list
->>>>>>> 26a0ad8e06bce1cc424278e7dce52395d0504149
 		Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
 
 		// Sort each list of scripts
 		Arrays.sort(nativeScripts, fileComparator);
 		Arrays.sort(sbotScripts, fileComparator);
 
-<<<<<<< HEAD
         for (final File file : nativeScripts) {
             if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
                 String scriptName = file.getName().replace(".class", "");
@@ -543,34 +523,6 @@ public class Main {
         // Setup script button
         final JButton scriptButton = new JButton("Run");
         scriptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-=======
-		// Add native scripts
-		for(final File file : nativeScripts) {
-			if(file.getName().endsWith(".class") && !file.getName().contains("$")) {
-				listModel.addElement(file.getName().replace(".class", "") + " [Native]");
-			}
-		}
-
-		// Add SBot scripts
-		for(final File file : sbotScripts) {
-			if(file.getName().endsWith(".class") && !file.getName().contains("$")) {
-				listModel.addElement(file.getName().replace(".class", "") + " [SBot]");
-			}
-		}
-
-		final JList scriptList = new JList(listModel);
-		final JScrollPane scriptScroller = new JScrollPane(scriptList);
-		final JTextField scriptArgs = new JTextField();
-		final JButton scriptButton = new JButton("Run");
-		scriptFrame.setLayout(new BoxLayout(scriptFrame.getContentPane(), BoxLayout.Y_AXIS));
-		scriptFrame.add(scriptScroller);
-		scriptFrame.add(scriptArgs);
-		scriptFrame.add(scriptButton);
-		scriptFrame.setSize(225, 200);
-		
-		scriptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
->>>>>>> 26a0ad8e06bce1cc424278e7dce52395d0504149
         scriptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

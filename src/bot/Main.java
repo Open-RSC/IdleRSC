@@ -1,15 +1,7 @@
 package bot;
 
 import java.applet.Applet;
-import java.awt.Button;
-import java.awt.Checkbox;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -25,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -420,19 +413,31 @@ public class Main {
 	 */
 	private static void initializeScriptFrame(JFrame scriptFrame) { 
 		DefaultListModel listModel = new DefaultListModel();
-		
-		for(final File file : new File("bin/scripting/").listFiles()) {
+
+		File[] nativeScripts = new File("bin/scripting/").listFiles();
+		File[] sbotScripts = new File("scripts/").listFiles();
+
+		// Create Comparator object to use in sorting the list
+		Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
+
+		// Sort each list of scripts
+		Arrays.sort(nativeScripts, fileComparator);
+		Arrays.sort(sbotScripts, fileComparator);
+
+		// Add native scripts
+		for(final File file : nativeScripts) {
 			if(file.getName().endsWith(".class") && !file.getName().contains("$")) {
 				listModel.addElement(file.getName().replace(".class", "") + " [Native]");
 			}
 		}
-		
-		for(final File file : new File("scripts/").listFiles()) {
+
+		// Add SBot scripts
+		for(final File file : sbotScripts) {
 			if(file.getName().endsWith(".class") && !file.getName().contains("$")) {
 				listModel.addElement(file.getName().replace(".class", "") + " [SBot]");
 			}
 		}
-		
+
 		final JList scriptList = new JList(listModel);
 		final JScrollPane scriptScroller = new JScrollPane(scriptList);
 		final JTextField scriptArgs = new JTextField();

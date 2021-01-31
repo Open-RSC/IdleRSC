@@ -82,6 +82,8 @@ public class AIOSmelter extends IdleScript {
 			
 			while(controller.getInventoryItemCount(oreId) > 0) {
 				
+				while(controller.isBatching()) controller.sleep(10);
+				
 				if(controller.getInventoryItemCount(699) > 0) { //wield gauntlets
 					controller.equipItem(controller.getInventoryItemIdSlot(699));
 					controller.sleep(618);

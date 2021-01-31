@@ -100,6 +100,7 @@ public class AIOThiever extends IdleScript {
 			if(controller.getFightMode() != this.fightMode)
 				controller.setFightMode(this.fightMode);
 			
+			while(controller.isBatching()) controller.sleep(10);
 			
 			
 			if(!controller.isInCombat()) { 

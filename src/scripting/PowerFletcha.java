@@ -86,6 +86,8 @@ public class PowerFletcha extends IdleScript {
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			
+			while(controller.isBatching()) controller.sleep(10);
+			
 			for(int id : bowIds) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.dropItem(controller.getInventoryItemIdSlot(id));
@@ -96,7 +98,12 @@ public class PowerFletcha extends IdleScript {
 			if(controller.getInventoryItemCount(target.logId) > 0) {
 				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(13), controller.getInventoryItemIdSlot(target.logId));
 				controller.sleep(700);
-				controller.optionAnswer(target.optionId);
+				
+				if(controller.optionMenuCount() > 2 && target.logId != 14)
+					controller.optionAnswer(target.optionId + 1); //fix for RSC Coleslaw
+				else
+					controller.optionAnswer(target.optionId);
+				
 				controller.sleep(100);
 			}
 			
@@ -139,7 +146,6 @@ public class PowerFletcha extends IdleScript {
 	            	controller.displayMessage("@red@PowerFletcha by Dvorak. Let's party like it's 2004!");
             	}
         });
-        
         
         
     	scriptFrame = new JFrame("Script Options");

@@ -81,6 +81,9 @@ public class AKMiner extends IdleScript {
 				bank();
 				walkToMine();
 			} else {
+				
+				while(controller.isBatching()) controller.sleep(10);
+				
 				int[] objCoord = controller.getNearestObjectById(target.rockId);
 				if(objCoord != null) {
 					controller.objectAt(objCoord[0], objCoord[1], 0, target.rockId);

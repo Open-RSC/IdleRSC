@@ -147,18 +147,23 @@ public class AIOFighter extends IdleScript {
     			continue;
     		}
     		
-    		if(buryBones())
-    			continue;
+
     		
-    		int[] lootCoord = controller.getNearestItemByIds(lootTable);
-    		if(lootCoord != null) {
-    			controller.displayMessage("@red@AIOFighter: Picking up loot");
-    			controller.pickupItem(lootCoord[0], lootCoord[1], lootCoord[2], true, false);
-    			continue;
+    		for(int lootId : lootTable) {
+        		int[] lootCoord = controller.getNearestItemById(lootId);
+        		if(lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
+        			controller.displayMessage("@red@AIOFighter: Picking up loot");
+        			controller.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
+        			break;
+        		}
     		}
+   
     		
     		if(!controller.isInCombat() ) {
 	    		ORSCharacter npc = controller.getNearestNpcByIds(npcIds, false);
+	    		
+        		if(buryBones())
+        			continue;
 	    		
 	    		if(ranging) {
 	    			
@@ -194,6 +199,7 @@ public class AIOFighter extends IdleScript {
 	    			continue;
 	    		}
     		} else {
+        		
     			if(ranging == true) {
     				if(!controller.isEquipped(controller.getInventoryItemIdSlot(switchId))) {
     					controller.displayMessage("@red@AIOFighter: Switching to melee weapon");

@@ -80,8 +80,6 @@ public class PowerFletcha extends IdleScript {
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			
-			while(controller.isBatching()) controller.sleep(10);
-			
 			for(int id : bowIds) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.dropItem(controller.getInventoryItemIdSlot(id));
@@ -98,16 +96,17 @@ public class PowerFletcha extends IdleScript {
 				else
 					controller.optionAnswer(target.optionId);
 				
-				controller.sleep(100);
+				controller.sleep(618);
+				
+				while(controller.isBatching()) controller.sleep(10);
 			}
 			
 			int[] objCoords = controller.getNearestObjectById(target.treeId);
 			if(objCoords != null) {
 				controller.objectAt(objCoords[0], objCoords[1], 0, target.treeId);
+				controller.sleep(618);
+				while(controller.isBatching()) controller.sleep(10);
 			}
-			
-			
-			controller.sleep(618);
 			
 		}
 	}

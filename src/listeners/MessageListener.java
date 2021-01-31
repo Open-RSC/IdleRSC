@@ -1,13 +1,11 @@
 package listeners;
 
-import java.util.ArrayList;
-
 import bot.Main;
 import compatibility.sbot.Script;
 import controller.Controller;
 import controller.ORSCMessage;
 import orsc.enumerations.MessageType;
-import scripting.IdleScript;
+import scripting.idlescript.IdleScript;
 
 /**
  * MessageListener listens for messages coming in to the client and then sends it to the respective function interrupt inside the current running script.

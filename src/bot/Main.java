@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.applet.Applet;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import compatibility.sbot.Script;
@@ -28,6 +30,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Comparator;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
+import compatibility.sbot.Script;
+import controller.Controller;
 import listeners.CommandListener;
 import listeners.LoginListener;
 import listeners.MessageListener;

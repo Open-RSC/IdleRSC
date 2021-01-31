@@ -1,5 +1,4 @@
 package bot;
-
 import compatibility.sbot.Script;
 import controller.Controller;
 import listeners.*;
@@ -13,10 +12,27 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import compatibility.sbot.Script;
+import controller.Controller;
+import orsc.OpenRSC;
+import orsc.mudclient;
+import reflector.Reflector;
+import scripting.idlescript.IdleScript;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
@@ -36,11 +52,6 @@ import listeners.LoginListener;
 import listeners.MessageListener;
 import listeners.PositionListener;
 import listeners.WindowListener;
-import orsc.OpenRSC;
-import orsc.mudclient;
-import orsc.graphics.two.MudClientGraphics;
-import reflector.Reflector;
-import scripting.IdleScript;
 
 
 
@@ -75,6 +86,9 @@ public class Main {
     private static Object currentRunningScript = null; //the object instance of the current running script.
 
     private static boolean shouldFilter = true;
+    
+    private final static String nativeScriptPath = "bin/scripting/idlescript";
+	private final static String sbotScriptPath = "bin/scripting/sbot";
 
     /**
      * Used by the WindowListener for tracking the log window.
@@ -391,32 +405,32 @@ public class Main {
      */
     private static boolean loadAndRunScript(String scriptName) {
         try {
-            String scriptFileName = "bin/scripting/";
-            File scriptFile = new File(scriptFileName);
+			File scriptFile = new File(nativeScriptPath);
 
-            URL url = scriptFile.toURI().toURL();
-            URL[] urls = new URL[]{url};
+			URL url = scriptFile.toURI().toURL();
+			URL[] urls = new URL[] {url};
 
-            try {
-                ClassLoader cl = new URLClassLoader(urls);
-                Class clazz = cl.loadClass("scripting." + scriptName);
-                currentRunningScript = (IdleScript) clazz.newInstance();
-            } catch (Exception e) {
-                scriptFileName = "scripts/";
-                scriptFile = new File(scriptFileName);
-                url = scriptFile.toURI().toURL();
-                urls = new URL[]{url};
-                ClassLoader cl = new URLClassLoader(urls);
-                Class clazz = cl.loadClass(scriptName);
-                currentRunningScript = (Script) clazz.newInstance();
-            }
+			try {
+				ClassLoader cl = new URLClassLoader(urls);
+				Class clazz = cl.loadClass("scripting.idlescript." + scriptName);
+				currentRunningScript = (IdleScript) clazz.newInstance();
+			}
+			catch(Exception e) {
+				scriptFile = new File(sbotScriptPath);
+				url = scriptFile.toURI().toURL();
+				urls = new URL[] {url};
+				ClassLoader cl = new URLClassLoader(urls);
+				Class clazz = cl.loadClass("scripting.sbot." + scriptName);
+				currentRunningScript = (Script) clazz.newInstance();
+			}
 
 
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
     }
 
     /**
@@ -428,8 +442,8 @@ public class Main {
         String[] columnNames = {"Name", "Type"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        File[] nativeScripts = new File("bin/scripting/").listFiles();
-		File[] sbotScripts = new File("scripts/").listFiles();
+        File[] nativeScripts = new File(nativeScriptPath).listFiles();
+		File[] sbotScripts = new File(sbotScriptPath).listFiles();
 
         // Create Comparator object to use in sorting the list
 		Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());

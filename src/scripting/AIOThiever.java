@@ -29,14 +29,12 @@ public class AIOThiever extends IdleScript {
 		int id;
 		boolean isNpc;
 		boolean isObject;
-		boolean isImplemented;
 		
-		public ThievingObject(String _name, int _id, boolean _isNpc, boolean _isObject, boolean _isImplemented) {
+		public ThievingObject(String _name, int _id, boolean _isNpc, boolean _isObject) {
 			name = _name;
 			id = _id;
 			isNpc = _isNpc;
 			isObject = _isObject;
-			isImplemented = _isImplemented;
 		}
 		
 		@Override
@@ -56,17 +54,32 @@ public class AIOThiever extends IdleScript {
     int eatingHealth = 0;
     
 	ArrayList<ThievingObject> objects = new ArrayList<ThievingObject>() {{
-		add(new ThievingObject("Man", 11, true, false, true));
-		add(new ThievingObject("Farmer", 63, true, false, true));
-		add(new ThievingObject("Warrior", 86, true, false, true));
-		add(new ThievingObject("Workman", 722, true, false, true));
-		add(new ThievingObject("Rogue", 342, true, false, true));
-		add(new ThievingObject("Guard", 321, true, false, true));
-		add(new ThievingObject("Knight", 322, true, false, true));
-		add(new ThievingObject("Watchman", 574, true, false, true));
-		add(new ThievingObject("Paladin", 323, true, false, true));
-		add(new ThievingObject("Gnome", 592, true, false, true));
-		add(new ThievingObject("Hero", 324, true, false, true));
+		add(new ThievingObject("Man", 11, true, false));
+		add(new ThievingObject("Farmer", 63, true, false));
+		add(new ThievingObject("Warrior", 86, true, false));
+		add(new ThievingObject("Workman", 722, true, false));
+		add(new ThievingObject("Rogue", 342, true, false));
+		add(new ThievingObject("Guard", 321, true, false));
+		add(new ThievingObject("Knight", 322, true, false));
+		add(new ThievingObject("Watchman", 574, true, false));
+		add(new ThievingObject("Paladin", 323, true, false));
+		add(new ThievingObject("Gnome", 592, true, false));
+		add(new ThievingObject("Hero", 324, true, false));
+		
+		add(new ThievingObject("Tea Stall", 1183, false, true));
+		add(new ThievingObject("Bakers Stall", 322, false, true));
+		//add(new ThievingObject("Rock Cake Stall", , false, true)); //be my guest
+		add(new ThievingObject("Silk Stall", 323, false, true));
+		add(new ThievingObject("Fur Stall", 324, false, true));
+		add(new ThievingObject("Silver Stall", 325, false, true));
+		add(new ThievingObject("Spice Stall", 326, false, true));
+		add(new ThievingObject("Gem Stall", 327, false, true));
+		
+		//add(new ThievingObject("10 Coin Chest", 327, false, true)); //who's gonna bother?
+		add(new ThievingObject("Nature Rune Chest", 335, false, true));
+		add(new ThievingObject("50 Coin Chest", 336, false, true));
+		add(new ThievingObject("Hemenster Chest", 379, false, true));
+
 	}};
 	
 	
@@ -90,9 +103,23 @@ public class AIOThiever extends IdleScript {
 			
 			
 			if(!controller.isInCombat()) { 
-				ORSCharacter npc = controller.getNearestNpcById(target.id, false);
-				if(npc != null && npc.serverIndex > 0)
-					controller.npcCommand1(npc.serverIndex);
+				if(target.isNpc == true) {
+					ORSCharacter npc = controller.getNearestNpcById(target.id, false);
+					if(npc != null && npc.serverIndex > 0)
+						controller.npcCommand1(npc.serverIndex);
+				}
+				
+				if(target.isObject == true) {
+					int[] coords = controller.getNearestObjectById(target.id);
+					if(coords != null) {
+						if(target.name.contains("Chest")) {
+							controller.objectAt2(coords[0], coords[1], 0, target.id);
+						} else {
+							controller.objectAt(coords[0], coords[1], 0, target.id);
+						}
+					}
+				}
+				
 				
 			} else {
 				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);

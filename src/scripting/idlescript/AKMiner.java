@@ -1,4 +1,4 @@
-package scripting;
+package scripting.idlescript;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -7,17 +7,13 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
-import scripting.AIOThiever.ThievingObject;
 
 public class AKMiner extends IdleScript {
 	JFrame scriptFrame = null;

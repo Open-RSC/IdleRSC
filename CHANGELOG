@@ -1,3 +1,9 @@
+JAN 31 2021
+	Tyler added alphabetical sorting to the script launcher
+	Updated AIOFighter to no longer attempt to pickup loot outside of range. It will still attempt to attack NPCs out of range, if that is the case, you need to increase your wander distance.
+	Updated AIOFighter to no longer get stuck burying bones in combat
+	Updated PowerFletcha to work better with batching
+
 JAN 30 2021
 	Fixed client crashes caused by improper cache files.
 	AIOThiever script added.

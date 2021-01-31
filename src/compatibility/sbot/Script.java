@@ -491,10 +491,7 @@ public abstract class Script
 	public void TalkToNPC(int id)
 	{
 		Main.logMethod("TalkToNPC", id);
-		ORSCharacter c = controller.getNearestNpcById(id, false);
-		if(c != null) {
-			controller.talkToNpc(c.serverIndex);
-		}
+		controller.talkToNpc(id);
 	}
 	public void AttackNPC(int id)
 	{
@@ -1383,5 +1380,9 @@ public abstract class Script
 	public int PID() {
 		Main.logMethod("PID");
 		return 0; //PID isn't a "real thing" anymore :( 
+	}
+	
+	public void WaitForBatchFinish() {
+		while(controller.isBatching()) controller.sleep(10);
 	}
 }

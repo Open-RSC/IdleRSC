@@ -1,0 +1,18 @@
+# junk
+.DS_Store
+
+# config
+.idea
+IdleRSC.iml
+
+# generated classes
+bin/
+*.class
+
+# ignore all cache folders
+Cache/
+ColeslawCache/
+PreservationCache/
+
+# ignore all cache folders
+*.jar

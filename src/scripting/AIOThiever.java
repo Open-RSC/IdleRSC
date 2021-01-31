@@ -60,6 +60,7 @@ public class AIOThiever extends IdleScript {
 		add(new ThievingObject("Workman", 722, true, false));
 		add(new ThievingObject("Rogue", 342, true, false));
 		add(new ThievingObject("Guard", 321, true, false));
+		add(new ThievingObject("Guard (Varrock)", 65, true, false));
 		add(new ThievingObject("Knight", 322, true, false));
 		add(new ThievingObject("Watchman", 574, true, false));
 		add(new ThievingObject("Paladin", 323, true, false));

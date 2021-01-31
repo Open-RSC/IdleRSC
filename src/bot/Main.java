@@ -13,6 +13,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Comparator;
 
 
 /**
@@ -410,7 +412,17 @@ public class Main {
         String[] columnNames = {"Name", "Type"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        for (final File file : new File("bin/scripting/").listFiles()) {
+        File[] nativeScripts = new File("bin/scripting/").listFiles();
+		File[] sbotScripts = new File("scripts/").listFiles();
+
+        // Create Comparator object to use in sorting the list
+		Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
+
+		// Sort each list of scripts
+		Arrays.sort(nativeScripts, fileComparator);
+		Arrays.sort(sbotScripts, fileComparator);
+
+        for (final File file : nativeScripts) {
             if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
                 String scriptName = file.getName().replace(".class", "");
 
@@ -422,7 +434,7 @@ public class Main {
             }
         }
 
-        for (final File file : new File("scripts/").listFiles()) {
+        for (final File file : sbotScripts) {
             if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
                 String scriptName = file.getName().replace(".class", "");
 

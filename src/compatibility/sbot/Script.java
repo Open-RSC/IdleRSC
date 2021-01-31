@@ -488,18 +488,15 @@ public abstract class Script
 		Main.logMethod("UseOnNPC", id, item);
 		controller.useItemOnNpc(id, item);
 	}
-	public void TalkToNPC(int id)
+	public void TalkToNPC(int serverIndex)
 	{
-		Main.logMethod("TalkToNPC", id);
-		ORSCharacter c = controller.getNearestNpcById(id, false);
-		if(c != null) {
-			controller.talkToNpc(c.serverIndex);
-		}
+		Main.logMethod("TalkToNPC", serverIndex);
+		controller.talkToNpc(serverIndex);
 	}
-	public void AttackNPC(int id)
+	public void AttackNPC(int serverIndex)
 	{
-		Main.logMethod("AttackNPC", id);
-		controller.attackNpc(id);
+		Main.logMethod("AttackNPC", serverIndex);
+		controller.attackNpc(serverIndex);
 	}
 	public void ThieveNPC(int serverIndex)
 	{

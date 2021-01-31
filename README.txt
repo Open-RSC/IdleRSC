@@ -26,16 +26,18 @@ Account Security:
 	Please be aware that you should not run any .class files from sources you do not trust. Running a rogue .class file is akin to running a .exe file on your computer. IF YOU DON'T TRUST IT, READ THE SOURCE CODE AND COMPILE IT!!!
 	
 Compiling Scripts:
-	Native Scripts:
+	Native Scripts and SBot:
 		Open up the Eclipse project
 		Add a new script to the `scripting` package.
 		Your class file will be spit out into bin/scripting/ if successfully compiled.
 		
 	SBot:
-		Navigate to scripts/
-		Modify compile.bat to point to your javac installation
-		Run compile.bat
-		Ensure no issues compiling.
+		Easy Method: (((NOT PREFERRED IF YOU ARE WANTING TO DEVELOP SCRIPTS)))
+			Navigate to src/scripting/sbot/
+			Modify compile.bat to point to your javac installation
+			Run compile.bat
+			Ensure no issues compiling.
+			Your class files will automatically be put into bin/scripting/sbot/.
 		
 		Read "converting SBot scripts" section for compilitation issues.
 		
@@ -47,9 +49,7 @@ Converting SBot Scripts:
 		{
 			super(rs);
 		}
-	4. Place the .java source file inside of the scripts/ directory.
-	5. Run compile.bat. 
-	
+	4. Compile using Eclipse (preferred) or compile.bat.	
 	
 Compiling IdleRSC:
 	1. Clone the repository

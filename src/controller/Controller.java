@@ -1612,6 +1612,9 @@ public class Controller {
     public boolean isBatching() {
 		ProgressBarInterface progressBarInterface = (ProgressBarInterface) reflector.getObjectMember(mud, "batchProgressBar");
 
+		if(progressBarInterface == null)
+			return false;
+		
 		return progressBarInterface.progressBarComponent.isVisible();
 	}
     

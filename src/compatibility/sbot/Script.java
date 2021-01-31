@@ -1381,4 +1381,8 @@ public abstract class Script
 		Main.logMethod("PID");
 		return 0; //PID isn't a "real thing" anymore :( 
 	}
+	
+	public void WaitForBatchFinish() {
+		while(controller.isBatching()) controller.sleep(10);
+	}
 }

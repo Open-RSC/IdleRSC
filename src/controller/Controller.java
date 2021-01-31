@@ -761,10 +761,13 @@ public class Controller {
 	}
 	
 	public void dropItem(int slot) {
+		int inventoryItemID = mud.getInventoryItemID(slot);
+		int inventoryItemCount = this.getInventoryItemCount(inventoryItemID);
+
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(246);
 		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
-		mud.packetHandler.getClientStream().bufferBits.putInt(1);
+		mud.packetHandler.getClientStream().bufferBits.putInt(inventoryItemCount);
 		mud.packetHandler.getClientStream().finishPacket();	
 	}
 	

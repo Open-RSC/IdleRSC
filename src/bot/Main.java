@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -52,6 +53,7 @@ public class Main {
 	public static String password = "testaccount";
 	
 	private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
+	private static String[] scriptArguments = {};
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
 	private static JButton startStopButton, loadScriptButton, settingsButton, hideButton; //all the buttons on the sidepanel.
 	private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox; //all the checkboxes on the sidepanel.
@@ -219,7 +221,7 @@ public class Main {
         			//handle native scripts
         			if(currentRunningScript instanceof IdleScript) {
         				((IdleScript)currentRunningScript).setController(controller);
-        				((IdleScript)currentRunningScript).start(null); //todo: update to args
+        				((IdleScript)currentRunningScript).start(scriptArguments); //todo: update to args
         			}
         			
         			//handle sbot scripts
@@ -227,7 +229,7 @@ public class Main {
         				controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
         				controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
         				((Script)currentRunningScript).setController(controller);
-        				((Script)currentRunningScript).start(null, null); //todo: update to args
+        				((Script)currentRunningScript).start(scriptArguments[0], Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length)); //todo: update to args
         			}
         		}
 
@@ -448,6 +450,7 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
             	if(scriptList.getSelectedValue() != null) { 
             		if(loadAndRunScript(((String)scriptList.getSelectedValue()).replace(" [Native]", "").replace(" [SBot]", ""))) {
+            			scriptArguments = scriptArgs.getText().split(" ");
             			isRunning = true;
             			startStopButton.setText("Stop");
             			scriptFrame.setVisible(false);

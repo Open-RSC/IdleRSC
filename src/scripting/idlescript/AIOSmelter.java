@@ -92,6 +92,8 @@ public class AIOSmelter extends IdleScript {
 					controller.sleep(3000); //cannonballs take way longer and can be interrupted by starting another one.
 				else
 					controller.sleep(618);
+				
+				while(controller.isBatching()) controller.sleep(10);
 			}
 			
 		} else {
@@ -103,7 +105,21 @@ public class AIOSmelter extends IdleScript {
 				int coords[] = controller.getNpcCoordsByServerIndex(bankerIndex);
 				
 				controller.walkToAsync(coords[0], coords[1], 1);
-				controller.npcCommand1(controller.getNearestNpcById(95, false).serverIndex);
+				
+				if(controller.getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
+					controller.npcCommand1(bankerIndex);
+				} else {
+					
+					
+					while(controller.isInOptionMenu() == false) {
+						controller.talkToNpc(bankerIndex);
+						controller.sleep(3000);
+					}
+					
+					controller.optionAnswer(0);
+					
+					controller.sleep(5000);
+				}
 				controller.sleep(618);
 			}
 			
@@ -111,9 +127,10 @@ public class AIOSmelter extends IdleScript {
 				for(int itemId : controller.getInventoryItemIds()) {
 					if(itemId != 0) {
 						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-						controller.sleep(618);
 					}
 				}
+				
+				controller.sleep(618);
 			}
 			
 			for(Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {

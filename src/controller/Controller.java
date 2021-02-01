@@ -1223,8 +1223,12 @@ public class Controller {
 		return direction.rsDir;
 	}
 
-	public String getNpcCommand(int npcId) {
+	public String getNpcCommand1(int npcId) {
 		return EntityHandler.getNpcDef(npcId).getCommand1();
+	}
+	
+	public String getNpcCommand2(int npcId) {
+		return EntityHandler.getNpcDef(npcId).getCommand2();
 	}
 
 	public String getNpcExamineText(int npcId) {

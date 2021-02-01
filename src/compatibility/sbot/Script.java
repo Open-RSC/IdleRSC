@@ -1110,7 +1110,7 @@ public abstract class Script
 	public String GetNPCCommand(int type)
 	{
 		WaitForLoad();
-		return controller.getNpcCommand(type);
+		return controller.getNpcCommand1(type);
 	}
 	public String GetNPCDesc(int type)
 	{

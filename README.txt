@@ -34,6 +34,8 @@ Compiling Scripts:
 	SBot:
 		Easy Method: (((NOT PREFERRED IF YOU ARE WANTING TO DEVELOP SCRIPTS)))
 			WARNING: This will delete your JAR file!!!
+
+			Place your script in src/scripting/sbot/
 			Run compile_windows.bat (or compile_linux.sh)
 			Ensure no issues compiling (they will be towards the top.)
 			Re-run the bat file.

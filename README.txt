@@ -33,23 +33,23 @@ Compiling Scripts:
 		
 	SBot:
 		Easy Method: (((NOT PREFERRED IF YOU ARE WANTING TO DEVELOP SCRIPTS)))
-			Navigate to src/scripting/sbot/
-			Modify compile.bat to point to your javac installation
-			Run compile.bat
-			Ensure no issues compiling.
-			Your class files will automatically be put into bin/scripting/sbot/.
-		
+			WARNING: This will delete your JAR file!!!
+			Run compile_windows.bat (or compile_linux.sh)
+			Ensure no issues compiling (they will be towards the top.)
+			Re-run the bat file.
 		Read "converting SBot scripts" section for compilitation issues.
 		
 Converting SBot Scripts:
 	1. Open SBot script in a text editor.
-	2. Place this line at the top of the file: import compatibility.sbot.Script;
+	2. Place these lines at the top of the file: 
+		package scripting.sbot;
+		import compatibility.sbot.Script;
 	3. Remove the mudclient constructor. For example, for alch.java, you would want to remove the following lines:
 		public alch(mudclient rs)
 		{
 			super(rs);
 		}
-	4. Compile using Eclipse (preferred) or compile.bat.	
+	4. Compile using Eclipse (preferred) or the included compilation script.
 	
 Compiling IdleRSC:
 	1. Clone the repository

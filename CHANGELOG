@@ -3,6 +3,10 @@ JAN 31 2021
 	Updated AIOFighter to no longer attempt to pickup loot outside of range. It will still attempt to attack NPCs out of range, if that is the case, you need to increase your wander distance.
 	Updated AIOFighter to no longer get stuck burying bones in combat
 	Updated PowerFletcha to work better with batching
+	Dan renamed PreservationCache to UraniumCache to be much more user friendly and updated documentation.
+	Tyler made the script selector look amazing!
+	Tyler moved the SBot script folder to a much more friendly location for SBot script development.
+	Updated README to reflect new changes regarding the src script folder change.
 
 JAN 30 2021
 	Fixed client crashes caused by improper cache files.

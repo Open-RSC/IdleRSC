@@ -214,12 +214,14 @@ public class GuildFisher2 extends Script implements ActionListener
             cMode = " fishing lobsters";
             showReport();
             Wait(1000);   
+            WaitForBatchFinish();
          }
          if (fishtype.equalsIgnoreCase("Shark"))
          {
             int spot[] = GetNearestObject(261);
             AtObject2(spot[0],spot[1]);
             Wait(1000);
+            WaitForBatchFinish();
             cMode = " fishing sharks";
             showReport();
          }

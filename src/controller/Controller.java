@@ -1622,5 +1622,8 @@ public class Controller {
 		return progressBarInterface.progressBarComponent.isVisible();
 	}
     
+    public mudclient getMud() {
+    	return this.mud;
+    }
 }
  

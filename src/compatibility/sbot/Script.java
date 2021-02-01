@@ -530,11 +530,11 @@ public abstract class Script
 		WaitForLoad();
 		controller.castSpellOnObject(spell, x, y);
 	}
-	public void UseOnObject(int x, int y, int item)
+	public void UseOnObject(int x, int y, int slotId)
 	{
-		Main.logMethod("UseOnObject", x, y, item);
+		Main.logMethod("UseOnObject", x, y, slotId);
 		WaitForLoad();
-		controller.useItemOnObject(x, y, item);
+		controller.useItemSlotOnObject(x, y, slotId);
 	}
 	public void Magic(int spell)
 	{

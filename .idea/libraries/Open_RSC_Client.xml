@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Open_RSC_Client">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Open_RSC_Client.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

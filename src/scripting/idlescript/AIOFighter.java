@@ -149,21 +149,27 @@ public class AIOFighter extends IdleScript {
     		
 
     		
+    		boolean lootPickedUp = false;
     		for(int lootId : lootTable) {
         		int[] lootCoord = controller.getNearestItemById(lootId);
         		if(lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
         			controller.displayMessage("@red@AIOFighter: Picking up loot");
         			controller.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
+        			controller.sleep(250);
+        			
+        			buryBones();
+        			
+        			lootPickedUp = true;
         			break;
         		}
     		}
+    		if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
+    			continue;
    
     		
     		if(!controller.isInCombat() ) {
 	    		ORSCharacter npc = controller.getNearestNpcByIds(npcIds, false);
 	    		
-        		if(buryBones())
-        			continue;
 	    		
 	    		if(ranging) {
 	    			

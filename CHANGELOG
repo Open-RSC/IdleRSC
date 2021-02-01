@@ -7,6 +7,8 @@ JAN 31 2021
 	Tyler made the script selector look amazing!
 	Tyler moved the SBot script folder to a much more friendly location for SBot script development.
 	Updated README to reflect new changes regarding the src script folder change.
+	Instead of compiling classes, users will now compile the entire JAR. This fixes a large issue we had with users not being able to run their own SBot scripts after the last Script Loader change.
+	AIOCooker script added!
 
 JAN 30 2021
 	Fixed client crashes caused by improper cache files.

@@ -15,6 +15,7 @@ public class PowerTuna extends Script
     public void start(String command, String parameter[])
 
     {
+    	DisplayMessage("@red@IdleRSC NOTE: This script is made to be used in Karamja.", 3);
          DisplayMessage("@org2@SBoT: @ran@Power@bla@T@gre@u@blu@n@red@a - @gre@By Th0ng @red@Girls", 3);
    for(; Running();
    )

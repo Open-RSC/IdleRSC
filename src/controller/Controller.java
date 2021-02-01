@@ -508,14 +508,18 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
-	public void useItemOnObject(int x, int y, int itemId) {
+	public void useItemSlotOnObject(int x, int y, int itemSlot) {
 		reflector.mudInvoker(mud, "walkToObject", x - mud.getMidRegionBaseX(), y - mud.getMidRegionBaseZ(), 4, 5126, this.getObjectAtCoord(x, y));
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(115);
 		mud.packetHandler.getClientStream().bufferBits.putShort(x);
 		mud.packetHandler.getClientStream().bufferBits.putShort(y);
-		mud.packetHandler.getClientStream().bufferBits.putShort(this.getInventoryItemIdSlot(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemSlot);
 		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void useItemIdOnObject(int x, int y, int itemId) {
+		useItemSlotOnObject(x, y, this.getInventoryItemIdSlot(itemId));
 	}
 
 	public void useItemOnWall(int x, int y, int slotId) {

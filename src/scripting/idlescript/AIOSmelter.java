@@ -87,7 +87,7 @@ public class AIOSmelter extends IdleScript {
 				
 
 				
-				controller.useItemOnObject(310, 546, oreId);
+				controller.useItemIdOnObject(310, 546, oreId);
 				if(oreId == 171)
 					controller.sleep(3000); //cannonballs take way longer and can be interrupted by starting another one.
 				else

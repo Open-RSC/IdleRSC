@@ -163,7 +163,7 @@ public class AIOCooker extends IdleScript {
 		while(controller.getInventoryItemCount(target.rawId) > 0) {
 			
 			if(controller.isBatching() == false)
-				controller.useItemOnObject(432, 480, target.rawId);
+				controller.useItemIdOnObject(432, 480, target.rawId);
 			
 			
 			

@@ -58,6 +58,7 @@ public class AIOFighter extends IdleScript {
 	int[] loot = {}; //feathers
 	int[] bones = {20, 413, 604, 814};
 	int[] bowIds = {188, 189, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 59, 60};
+	int[] arrowIds = {638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 11, 574, 190, 592, 786};
 	
 	
 	//do not modify these
@@ -149,22 +150,22 @@ public class AIOFighter extends IdleScript {
     		
 
     		
-    		boolean lootPickedUp = false;
+//    		boolean lootPickedUp = false;
     		for(int lootId : lootTable) {
         		int[] lootCoord = controller.getNearestItemById(lootId);
         		if(lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
         			controller.displayMessage("@red@AIOFighter: Picking up loot");
         			controller.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
-        			controller.sleep(250);
+        			controller.sleep(618);
         			
         			buryBones();
         			
-        			lootPickedUp = true;
-        			break;
+//        			lootPickedUp = true;
+//        			break;
         		}
     		}
-    		if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
-    			continue;
+//    		if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
+//    			continue;
    
     		
     		if(!controller.isInCombat() ) {
@@ -179,6 +180,23 @@ public class AIOFighter extends IdleScript {
 	    				controller.pickupItem(arrowCoord[0], arrowCoord[1], arrowId, false, true);
 	    				continue;
 	    			}
+	    			
+	    			boolean hasArrows = false;
+	    			for(int id : arrowIds) {
+		    			if(controller.getInventoryItemCount(id) > 0) {
+		    				hasArrows = true;
+		    				break;
+		    			}
+	    			}
+	    			
+	    			if(hasArrows == false) {
+	    				controller.displayMessage("@red@AIOFighter: Out of arrows!");
+	    				controller.setAutoLogin(false);
+	    				controller.logout();
+	    				controller.stop();
+	    			}
+	    		
+	    			
 		    		for(int id : bowIds) {
 		    			if(controller.getInventoryItemCount(id) > 0) {
 			    			if(!controller.isEquipped(controller.getInventoryItemIdSlot(id))) {
@@ -214,8 +232,9 @@ public class AIOFighter extends IdleScript {
     			}
     			if(maging == true) {
     				controller.displayMessage("@red@AIOFighter: Maging...");
-    				ORSCharacter victimNpc = controller.getNearestNpcByIds(npcIds, false);
-    				controller.castSpellOnNpc(victimNpc.serverIndex, spellId);
+    				ORSCharacter victimNpc = controller.getNearestNpcByIds(npcIds, true);
+    				if(victimNpc != null)
+    					controller.castSpellOnNpc(victimNpc.serverIndex, spellId);
     			}
     			
     		}
@@ -224,16 +243,18 @@ public class AIOFighter extends IdleScript {
     	}
     }
     
-    public boolean buryBones() {
-		for(int id : bones) {
-			if(controller.getInventoryItemCount(id) > 0) {
-				controller.displayMessage("@red@AIOFighter: Burying bones");
-				controller.itemCommand(id);
-				return true;
+    public void buryBones() {
+    	if(!controller.isInCombat()) {
+			for(int id : bones) {
+				if(controller.getInventoryItemCount(id) > 0) {
+					controller.displayMessage("@red@AIOFighter: Burying bones");
+					controller.itemCommand(id);
+					
+					controller.sleep(618);
+					buryBones();
+				}
 			}
-		}
-		
-		return false;
+    	}
     }
     
     public boolean isWithinWander(int x, int y) { 

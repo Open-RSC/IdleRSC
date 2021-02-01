@@ -8,6 +8,10 @@ FEB 1 2021
 	AIOSmelter now supports batching.
 	Added note about PowerTuna being used in Karamja, not Catherby.
 	AKMiner, AIOCooker and AIOSmelter will now keep trying to talk to a banker.
+	AIOFighter acts a little less dumb. It's still dumb though.
+	AIOFighter will no longer crash if no monsters are around while you are maging.
+	AIOFighter will mage monsters like it is supposed to now. 
+	AIOFighter will now logout when out of arrows.
 	
 JAN 31 2021
 	Tyler added alphabetical sorting to the script launcher

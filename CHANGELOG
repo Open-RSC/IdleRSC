@@ -1,3 +1,14 @@
+FEB 1 2021
+	Fixed GuildFish2 not handling sharks correctly.
+	Removed GuildFish to reduce confusion with GuildFish2. It also is a bad script compared to GuildFish2.
+	Batching support added to GuildFish2. 
+	AIOCooker properly exported, users should see it now in their listing.
+	AIOSmelter will now properly work on worlds where there is no right click bank option.
+	AIOSmelter will now not take forever to deposit items.
+	AIOSmelter now supports batching.
+	Added note about PowerTuna being used in Karamja, not Catherby.
+	AKMiner, AIOCooker and AIOSmelter will now keep trying to talk to a banker.
+	
 JAN 31 2021
 	Tyler added alphabetical sorting to the script launcher
 	Updated AIOFighter to no longer attempt to pickup loot outside of range. It will still attempt to attack NPCs out of range, if that is the case, you need to increase your wander distance.

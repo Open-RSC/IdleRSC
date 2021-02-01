@@ -129,9 +129,10 @@ public class AKMiner extends IdleScript {
 		while(controller.isInBank() == false) {
 			ORSCharacter npc = controller.getNearestNpcById(268, false);
 			
-			controller.talkToNpc(npc.serverIndex);
-			
-			while(controller.isInOptionMenu() == false) controller.sleep(100);
+			while(controller.isInOptionMenu() == false) {
+				controller.talkToNpc(npc.serverIndex);
+				controller.sleep(3000);
+			}
 			
 			controller.optionAnswer(0);
 			

@@ -450,16 +450,18 @@ public class Controller {
 		return new int[] {-1, -1};
 	}
 
-	public void walktoNPCAsync(int npcServerIndex, int radius) {
+	public void walktoNPCAsync(int npcServerIndex) {
 		if(npcServerIndex < 0)
 			return;
 
 		ORSCharacter npc = (ORSCharacter) reflector.mudInvoker(mud, "getServerNPC", npcServerIndex);
 		if(npc != null) {
-			int npcX = (npc.currentX - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
-			int npcZ = (npc.currentZ - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
+			int npcX = (npc.currentX - 64) / mud.getTileSize();// + mud.getMidRegionBaseX();
+			int npcZ = (npc.currentZ - 64) / mud.getTileSize();// + mud.getMidRegionBaseZ();
 
-			walkToAsync(npcX, npcZ, radius);
+			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), npcX, npcZ, true);
+			
+//			walkToAsync(npcX, npcZ, radius);
 		} else {
 			return;
 		}
@@ -486,7 +488,7 @@ public class Controller {
 		if(npcServerIndex < 0)
 				return;
 
-		walktoNPCAsync(npcServerIndex, 1);
+		walktoNPCAsync(npcServerIndex);
 
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -542,7 +544,7 @@ public class Controller {
 
 	public void npcCommand1(int serverIndex) {
 		Main.logMethod("npcCommand1", serverIndex);
-		walktoNPCAsync(serverIndex, 1);
+		walktoNPCAsync(serverIndex);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(202);
@@ -552,7 +554,7 @@ public class Controller {
 
 	public void npcCommand2(int serverIndex) {
 		Main.logMethod("npcCommand2", serverIndex);
-		walktoNPCAsync(serverIndex, 1);
+		walktoNPCAsync(serverIndex);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(203);
@@ -881,7 +883,7 @@ public class Controller {
 		if(serverIndex < 0)
 			return false;
 
-		walktoNPCAsync(serverIndex, 0);
+		walktoNPCAsync(serverIndex);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(153);

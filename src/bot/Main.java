@@ -52,9 +52,11 @@ import listeners.WindowListener;
 public class Main {
     public static String username = "testaccount"; //this will be replaced by CLI arguments. modify for debugging with eclipse.
     public static String password = "testaccount";
+    
+    public static String scriptName = "";
+    private static String[] scriptArguments = {};
 
     private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
-    private static String[] scriptArguments = {};
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
     private static JButton startStopButton, loadScriptButton, settingsButton, hideButton; //all the buttons on the sidepanel.
     private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox; //all the checkboxes on the sidepanel.
@@ -183,6 +185,22 @@ public class Main {
             username = args[0];
             password = args[1];
         }
+        
+        if(args.length >= 3 || !scriptName.equals("")) {
+        	scriptName = args[2];
+        	
+        	if(args.length - 3 > 0) {
+        		scriptArguments = Arrays.copyOfRange(args, 3, args.length);
+        	} 
+        	
+        	if(loadAndRunScript(scriptName) == false) {
+        		System.out.println("Could not find script: " + scriptName);
+        		System.exit(1);
+        	}
+        	isRunning = true;
+        	startStopButton.setText("Stop");
+        }
+        
 
         //start up our listener threads
         log("Initializing LoginListener...");
@@ -226,7 +244,7 @@ public class Main {
                     //handle native scripts
                     if (currentRunningScript instanceof IdleScript) {
                         ((IdleScript) currentRunningScript).setController(controller);
-                        ((IdleScript) currentRunningScript).start(scriptArguments); //todo: update to args
+                        ((IdleScript) currentRunningScript).start(scriptArguments); 
                     }
 
                     //handle sbot scripts
@@ -234,7 +252,7 @@ public class Main {
                         controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
                         controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
                         ((Script) currentRunningScript).setController(controller);
-                        ((Script) currentRunningScript).start(scriptArguments[0], Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length)); //todo: update to args
+                        ((Script) currentRunningScript).start(scriptArguments[0], Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length)); 
                     }
                 }
 

@@ -155,16 +155,15 @@ public class AIOCooker extends IdleScript {
 			if(controller.isBatching() == false)
 				controller.useItemIdOnObject(432, 480, target.rawId);
 			
-			
-			
-			if(this.dropBurnt) { 
-				if(controller.getInventoryItemCount(target.burntId) > 0)
-					controller.dropItem(controller.getInventoryItemIdSlot(target.burntId));
-			}
-			
 			controller.sleep(250);
 		}
 		
+		if(this.dropBurnt) { 
+			while(controller.getInventoryItemCount(target.burntId) > 0) {
+				controller.dropItem(controller.getInventoryItemIdSlot(target.burntId));
+				controller.sleep(250);
+			}
+		}
 		
 		controller.walkTo(435, 485);
 		openCookDoor();

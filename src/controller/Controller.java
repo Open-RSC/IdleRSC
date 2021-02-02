@@ -1649,6 +1649,15 @@ public class Controller {
 			
 		}
     }
+    
+	public void walkPath(int[] path) {
+		for(int i = 0; i < path.length; i += 2) {
+			while(currentX() != path[i] && currentZ() != path[i+1]) {
+				walkTo(path[i], path[i+1]);
+				sleep(100);
+			}
+		}
+	}
 
 }
  

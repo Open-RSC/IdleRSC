@@ -19,6 +19,7 @@ FEB 1 2021
 	AIOFighter will now handle gates. Doors are TBD.
 	AIOCooker will no longer accidentally drop cooked food.
 	HarvesterTrainer script added!
+	HerbHarvester script added!
 	
 JAN 31 2021
 	Tyler added alphabetical sorting to the script launcher

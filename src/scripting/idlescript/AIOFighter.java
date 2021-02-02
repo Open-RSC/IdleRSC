@@ -43,6 +43,7 @@ public class AIOFighter extends IdleScript {
 	int fightMode = 2;
 	int maxWander = 3;
 	int eatingHealth = 5;
+	boolean openDoors = false;
 	boolean buryBones = true;
 	
 	boolean maging = true;
@@ -59,6 +60,7 @@ public class AIOFighter extends IdleScript {
 	int[] bones = {20, 413, 604, 814};
 	int[] bowIds = {188, 189, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 59, 60};
 	int[] arrowIds = {638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 11, 574, 190, 592, 786};
+	int[] doorObjectIds = {60, 64};
 	
 	
 	//do not modify these
@@ -120,6 +122,19 @@ public class AIOFighter extends IdleScript {
     			controller.walkTo(startTile[0], startTile[1], 0, true);
     		}
     		
+    		if(openDoors) {
+    			for(int doorId : doorObjectIds) {
+    				int[] doorCoords = controller.getNearestObjectById(doorId);
+    				
+    				if(doorCoords != null && this.isWithinWander(doorCoords[0], doorCoords[1])){
+    					controller.displayMessage("@red@AIOFighter: Opening door...");
+    					controller.atObject(doorCoords[0], doorCoords[1]);
+    					controller.sleep(5000);
+    				}
+    				
+    			}
+    		}
+    		
     		if(controller.getFightMode() != fightMode) {
     			controller.displayMessage("@red@AIOFighter: Changing fightmode");
     			controller.setFightMode(fightMode);
@@ -150,7 +165,7 @@ public class AIOFighter extends IdleScript {
     		
 
     		
-//    		boolean lootPickedUp = false;
+    		boolean lootPickedUp = false;
     		for(int lootId : lootTable) {
         		int[] lootCoord = controller.getNearestItemById(lootId);
         		if(lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
@@ -164,8 +179,8 @@ public class AIOFighter extends IdleScript {
 //        			break;
         		}
     		}
-//    		if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
-//    			continue;
+    		if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
+    			continue;
    
     		
     		if(!controller.isInCombat() ) {
@@ -362,7 +377,7 @@ public class AIOFighter extends IdleScript {
     	return true;
     }
     
-    public void setValuesFromGUI(JComboBox<String> fightModeField, JTextField npcIdsField, JTextField maxWanderField, JTextField eatAtHpField, JTextField lootTableField, JCheckBox buryBonesCheckbox, JCheckBox magingCheckbox, JTextField spellNameField, JCheckBox rangingCheckbox, JTextField arrowIdField, JTextField switchIdField) {
+    public void setValuesFromGUI(JComboBox<String> fightModeField, JTextField npcIdsField, JTextField maxWanderField, JTextField eatAtHpField, JTextField lootTableField, JCheckBox openDoorsCheckbox, JCheckBox buryBonesCheckbox, JCheckBox magingCheckbox, JTextField spellNameField, JCheckBox rangingCheckbox, JTextField arrowIdField, JTextField switchIdField) {
     	this.fightMode = fightModeField.getSelectedIndex();
     	
     	if(npcIdsField.getText().contains(",")) {
@@ -386,6 +401,7 @@ public class AIOFighter extends IdleScript {
     		this.loot = new int[] { Integer.parseInt(lootTableField.getText()) };
     	}
     	
+    	this.openDoors = openDoorsCheckbox.isSelected();
     	this.buryBones = buryBonesCheckbox.isSelected();
     	this.maging = magingCheckbox.isSelected();
     	this.spellId = controller.getSpellIdFromName(spellNameField.getText());
@@ -406,6 +422,7 @@ public class AIOFighter extends IdleScript {
     	JTextField eatAtHpField = new JTextField(String.valueOf(controller.getCurrentStat(controller.getStatId("Hits")) / 2));
     	JLabel lootTableLabel = new JLabel("Loot Table: (comma separated)");
     	JTextField lootTableField = new JTextField("381");
+    	JCheckBox openDoorsCheckbox = new JCheckBox("Open doors/gates?");
     	JCheckBox buryBonesCheckbox = new JCheckBox("Bury Bones?");
     	JCheckBox magingCheckbox = new JCheckBox("Magic?");
     	JLabel spellNameLabel = new JLabel("Spell Name: (exactly as it appears in spellbook)");
@@ -421,7 +438,7 @@ public class AIOFighter extends IdleScript {
             @Override
             public void actionPerformed(ActionEvent e) {
             	if(validateFields(npcIdsField, maxWanderField, eatAtHpField, lootTableField, spellNameField, arrowIdField, switchIdField)) {
-            		setValuesFromGUI(fightModeField, npcIdsField, maxWanderField, eatAtHpField, lootTableField, buryBonesCheckbox, magingCheckbox, spellNameField, rangingCheckbox, arrowIdField, switchIdField);
+            		setValuesFromGUI(fightModeField, npcIdsField, maxWanderField, eatAtHpField, lootTableField, openDoorsCheckbox, buryBonesCheckbox, magingCheckbox, spellNameField, rangingCheckbox, arrowIdField, switchIdField);
             		
             		controller.displayMessage("@red@AIOFighter by Dvorak. Let's party like it's 2004!");
             		
@@ -464,6 +481,8 @@ public class AIOFighter extends IdleScript {
     	scriptFrame.add(eatAtHpField);
     	scriptFrame.add(lootTableLabel);
     	scriptFrame.add(lootTableField);
+    	scriptFrame.add(openDoorsCheckbox);
+    	scriptFrame.add(new JLabel());
     	scriptFrame.add(buryBonesCheckbox);
     	scriptFrame.add(new JLabel());
     	scriptFrame.add(magingCheckbox);

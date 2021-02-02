@@ -100,28 +100,7 @@ public class AIOSmelter extends IdleScript {
 			controller.walkTo(318, 551, 0, true);
 			controller.walkTo(329, 553, 0, true);
 			
-			while(!controller.isInBank()) {
-				int bankerIndex = controller.getNearestNpcById(95, false).serverIndex;
-				int coords[] = controller.getNpcCoordsByServerIndex(bankerIndex);
-				
-				controller.walkToAsync(coords[0], coords[1], 1);
-				
-				if(controller.getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
-					controller.npcCommand1(bankerIndex);
-				} else {
-					
-					
-					while(controller.isInOptionMenu() == false) {
-						controller.talkToNpc(bankerIndex);
-						controller.sleep(3000);
-					}
-					
-					controller.optionAnswer(0);
-					
-					controller.sleep(5000);
-				}
-				controller.sleep(618);
-			}
+			controller.openBank();
 			
 			while(controller.getInventoryItemCount() > 0) {
 				for(int itemId : controller.getInventoryItemIds()) {

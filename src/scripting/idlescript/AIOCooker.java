@@ -101,21 +101,8 @@ public class AIOCooker extends IdleScript {
 		
 		controller.walkTo(439, 497);
 		openDoor();
-		
-		while(controller.isInBank() == false) {
-			ORSCharacter npc = controller.getNearestNpcById(95, false);
-			
-			
-			
-			while(controller.isInOptionMenu() == false) {
-				controller.talkToNpc(npc.serverIndex);
-				controller.sleep(3000);
-			}
-			
-			controller.optionAnswer(0);
-			
-			controller.sleep(5000);
-		}
+
+		controller.openBank();
 		
 		
 		if(controller.getInventoryItemCount(target.cookedId) > 0) {

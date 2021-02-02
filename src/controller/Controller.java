@@ -34,6 +34,8 @@ import com.openrsc.interfaces.misc.BankInterface;
 
 import bot.Main;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
+
+import orsc.Config;
 import orsc.ORSCApplet;
 import orsc.ORSCharacter;
 import orsc.OpenRSC;
@@ -65,6 +67,7 @@ public class Controller {
 	private mudclient mud;
 
 	int[] foodIds = {350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 333, 334, 335, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179};
+	int[] bankerIds = {95, 224, 268, 540, 617};
 
 	final private int GAME_TICK_COUNT = 640;
 
@@ -892,30 +895,6 @@ public class Controller {
 		return (boolean) reflector.getObjectMember(mud, "showDialogBank");
 	}
 
-	public boolean openBank() {
-		final int[] bankerIds = { 95, 224, 268, 485, 540, 617 };
-
-		if(isInBank() == true)
-			return true;
-
-		if(this.isInOptionMenu() == false) {
-			for(int npcId : bankerIds) {
-				ORSCharacter npc = getNearestNpcById(npcId, false);
-				if(npc != null) {
-					thieveNpc(npc.serverIndex);
-					break;
-				} else {
-					return false;
-				}
-			}
-
-
-			sleep(3000);
-		}
-
-		return false;
-	}
-
 	public void closeBank() {
 		reflector.setObjectMember(mud, "showDialogBank", false);
 	}
@@ -962,7 +941,7 @@ public class Controller {
 	public boolean withdrawItem(int itemId) {
 		return withdrawItem(itemId, 1);
 	}
-
+	
 	public boolean withdrawItem(int itemId, int amount) {
 		if(isInBank() == false)
 			return false;
@@ -974,11 +953,15 @@ public class Controller {
 		mud.packetHandler.getClientStream().newPacket(22);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
 		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
+		
+		if(Config.S_WANT_BANK_NOTES)
+			mud.packetHandler.getClientStream().bufferBits.putByte(0);
+		
 		mud.packetHandler.getClientStream().finishPacket();
 
 		return false;
 	}
-
+	
 	public void displayMessage(String msg, int type) {
 		reflector.mudInvoker(mud, "showMessage", false, "", msg, MessageType.lookup(type), 0, "");
 	}
@@ -1629,5 +1612,41 @@ public class Controller {
     public mudclient getMud() {
     	return this.mud;
     }
+    
+    
+    /**
+     * Will open bank near any bank NPC. Uses right click option if possible.
+     * 
+     * TODO: Implement bank chest support
+     */
+    public void openBank() {
+		while(!isInBank()) {
+			
+			for(int bankerId : bankerIds) {
+				ORSCharacter bankerNpc = getNearestNpcById(bankerId, false);
+				
+				if(bankerNpc != null) {
+					int bankerIndex = bankerNpc.serverIndex;
+					int coords[] = getNpcCoordsByServerIndex(bankerIndex);
+					
+					walkToAsync(coords[0], coords[1], 1);
+					
+					while(isInBank() == false) {
+						if(getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
+							 npcCommand1(bankerIndex);
+							 sleep(2000);
+						} else {
+							 talkToNpc(bankerIndex);
+							 sleep(3000);
+							 optionAnswer(0);
+							 sleep(2000);
+						}
+					}
+				}
+			}
+			
+		}
+    }
+
 }
  

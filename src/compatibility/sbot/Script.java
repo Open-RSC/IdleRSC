@@ -1385,4 +1385,8 @@ public abstract class Script
 	public void WaitForBatchFinish() {
 		while(controller.isBatching()) controller.sleep(10);
 	}
+	
+	public boolean IsBatching() {
+		return controller.isBatching();
+	}
 }

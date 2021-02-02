@@ -12,6 +12,8 @@ FEB 1 2021
 	AIOFighter will no longer crash if no monsters are around while you are maging.
 	AIOFighter will mage monsters like it is supposed to now. 
 	AIOFighter will now logout when out of arrows.
+	Removed batching from GuildFisher2 because it was causing issues. Needs better fix + actual testing.
+	Fixed banking and batching on AIOCooker, AIOSmelter, AKMiner, GuildFisher2
 	
 JAN 31 2021
 	Tyler added alphabetical sorting to the script launcher

@@ -78,7 +78,7 @@ public class AKMiner extends IdleScript {
 				walkToMine();
 			} else {
 				
-				while(controller.isBatching()) controller.sleep(10);
+				while(controller.isBatching() && controller.getInventoryItemCount() < 30) controller.sleep(10);
 				
 				int[] objCoord = controller.getNearestObjectById(target.rockId);
 				if(objCoord != null) {
@@ -126,18 +126,20 @@ public class AKMiner extends IdleScript {
 	}
 	
 	public void bank() {
-		while(controller.isInBank() == false) {
-			ORSCharacter npc = controller.getNearestNpcById(268, false);
-			
-			while(controller.isInOptionMenu() == false) {
-				controller.talkToNpc(npc.serverIndex);
-				controller.sleep(3000);
-			}
-			
-			controller.optionAnswer(0);
-			
-			controller.sleep(5000);
-		}
+//		while(controller.isInBank() == false) {
+//			ORSCharacter npc = controller.getNearestNpcById(268, false);
+//			
+//			while(controller.isInOptionMenu() == false) {
+//				controller.talkToNpc(npc.serverIndex);
+//				controller.sleep(3000);
+//			}
+//			
+//			controller.optionAnswer(0);
+//			
+//			controller.sleep(5000);
+//		}
+		
+		controller.openBank();
 		
 		for(int ore : this.oreIds) {
 			if(controller.getInventoryItemCount(ore) > 0) {

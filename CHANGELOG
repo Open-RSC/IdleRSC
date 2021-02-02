@@ -14,6 +14,10 @@ FEB 1 2021
 	AIOFighter will now logout when out of arrows.
 	Removed batching from GuildFisher2 because it was causing issues. Needs better fix + actual testing.
 	Fixed banking and batching on AIOCooker, AIOSmelter, AKMiner, GuildFisher2
+	Implemented gate/door object opening on AIOFighter. Still needs wall object opening.
+	Cleaned showed me what was wrong with walkToNpcAsync(...)! WOOHOO!
+	AIOFighter will now handle gates. Doors are TBD.
+	AIOCooker will no longer accidentally drop cooked food.
 	
 JAN 31 2021
 	Tyler added alphabetical sorting to the script launcher

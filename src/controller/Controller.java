@@ -784,6 +784,17 @@ public class Controller {
 		mud.packetHandler.getClientStream().bufferBits.putInt(inventoryItemCount);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
+	
+	public void dropItem(int slot, int amount) {
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(246);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
+		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	
 
 	public boolean isEquipped(int slot) {
 		return mud.getInventory()[slot].getEquipped();

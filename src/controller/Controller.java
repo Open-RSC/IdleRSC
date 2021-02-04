@@ -66,7 +66,7 @@ public class Controller {
 	private OpenRSC client;
 	private mudclient mud;
 
-	int[] foodIds = {350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 333, 334, 335, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179};
+	int[] foodIds = {335, 333, 350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 334, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179};
 	int[] bankerIds = {95, 224, 268, 540, 617};
 
 	final private int GAME_TICK_COUNT = 640;
@@ -916,8 +916,11 @@ public class Controller {
 		ArrayList<Object> bankItems = (ArrayList<Object>) reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
 
 		for(Object item : bankItems) {
-			int itemId = (int) reflector.getObjectMember(item, "itemID");
-			int amount = (int) reflector.getObjectMember(item, "amount");
+			Object bankItem = (Object) reflector.getObjectMember(item, "item");
+			ItemDef itemDef = (ItemDef) reflector.getObjectMember(bankItem, "itemDef");
+			
+			int itemId = itemDef.id; //(int) reflector.getObjectMember(itemDef, "id");
+			int amount = (int) reflector.getObjectMember(bankItem, "amount");
 
 			if(itemId == id)
 				return amount;
@@ -1669,6 +1672,8 @@ public class Controller {
 			}
 		}
 	}
-
+	
+	
+	
 }
  

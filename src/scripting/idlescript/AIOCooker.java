@@ -55,7 +55,7 @@ public class AIOCooker extends IdleScript {
 	ArrayList<FoodObject> objects = new ArrayList<FoodObject>() {{
 		add(new FoodObject("Chicken", 133, 132, 134)); //raw, cooked, burnt
 		add(new FoodObject("Shrimp", 349, 350, 353));
-		add(new FoodObject("Anchovies", 351, 351, 353));
+		add(new FoodObject("Anchovies", 351, 352, 353));
 		add(new FoodObject("Sardine", 351, 355, 360));
 		add(new FoodObject("Salmon", 356, 357, 360));
 		add(new FoodObject("Trout", 358, 359, 360));

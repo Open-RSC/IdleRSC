@@ -1,6 +1,8 @@
 FEB 4 2021
 	Rearranged foodIds so that cake slices get aten before whole cakes.
 	getBankItemCount() works again.
+	AIOThiever now supports banking in Ardougne Square.
+	AIOThiever now supports command line arguments.
 	
 FEB 2 2021
 	You can now run scripts from the command line! If it cannot find the script, it will immediately terminate and return 1.

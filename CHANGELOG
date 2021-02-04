@@ -3,6 +3,13 @@ FEB 4 2021
 	getBankItemCount() works again.
 	AIOThiever now supports banking in Ardougne Square.
 	AIOThiever now supports command line arguments.
+	AIOThiever will now properly keep trying to logout.
+	AKMiner will now properly bank silver.
+	Added Searos' new script: FletchnBankBows
+	Added Searos' updated PowercraftTalisman
+	Added ceikry's ceikplates (SBot)
+	Added Gah's GuildMine_v7 (SBot) 
+	
 	
 FEB 2 2021
 	You can now run scripts from the command line! If it cannot find the script, it will immediately terminate and return 1.

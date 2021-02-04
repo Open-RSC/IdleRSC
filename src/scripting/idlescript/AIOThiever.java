@@ -245,10 +245,12 @@ public class AIOThiever extends IdleScript {
 	    				}
 	    			}
 	    			
-	    			if(!doBank && !ate) {
+	    			while(!doBank && !ate) {
 	    				controller.displayMessage("@red@AIOThiever: We ran out of food! Logging out.");
 	    				controller.setAutoLogin(false);
 	    				controller.logout();
+	    				
+	    				controller.sleep(1000);
 	    			}
 	    			
 	    			continue;

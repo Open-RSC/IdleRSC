@@ -24,7 +24,7 @@ public class AKMiner extends IdleScript {
     int fightMode = 0;
     int eatingHealth = 0;
     
-	int[] oreIds = {150, 202, 151, 152, 153, 154, 155, 149, 157, 158, 159, 160};
+	int[] oreIds = {150, 202, 151, 152, 153, 154, 155, 149, 157, 158, 159, 160, 383};
     
     class MiningObject {
 		String name;

@@ -939,13 +939,15 @@ public class Controller {
 	}
 
 	public boolean depositItem(int itemId, int amount) {
-		if(isInBank() == false)
+		if(!isInBank()) {
 			return false;
+		}
 
-		if(isItemInInventory(itemId) == false)
+		if(!isItemInInventory(itemId)) {
 			return false;
+		}
 
-		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(23);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
 		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
@@ -1661,19 +1663,19 @@ public class Controller {
 						}
 					}
 				}
+			}
 
-				if (!usedBankerNpc) {
-					// Use a bank chest
-					int[] bankChestId = getNearestObjectById(942);
-					walkToAsync(bankChestId[0], bankChestId[1], 1);
+			if (!usedBankerNpc) {
+				// Use a bank chest
+				int[] bankChestId = getNearestObjectById(942);
+				walkToAsync(bankChestId[0], bankChestId[1], 1);
 
-					while (!isInBank()) {
-						atObject(bankChestId[0], bankChestId[1]);
-						sleep(1000);
-					}
+				while (!isInBank()) {
+					atObject(bankChestId[0], bankChestId[1]);
+					sleep(2000);
 				}
 			}
-			
+
 		}
     }
     

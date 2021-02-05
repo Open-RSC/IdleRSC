@@ -41,6 +41,10 @@ Compiling Scripts:
 			Re-run the bat file.
 		Read "converting SBot scripts" section for compilitation issues.
 		
+Running Script on Startup:
+	1. Modify run.bat/sh
+	2. Change "java -cp "IdleRSC.jar:Open_RSC_Client.jar" bot.Main "username" "password"" to "java -cp "IdleRSC.jar:Open_RSC_Client.jar" bot.Main "username" "password" "scriptname" "scriptparam (optional)""
+
 Converting SBot Scripts:
 	1. Open SBot script in a text editor.
 	2. Place these lines at the top of the file: 

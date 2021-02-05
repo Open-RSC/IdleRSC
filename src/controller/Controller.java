@@ -1632,22 +1632,24 @@ public class Controller {
     
     /**
      * Will open bank near any bank NPC. Uses right click option if possible.
-     * 
-     * TODO: Implement bank chest support
      */
     public void openBank() {
+
 		while(!isInBank()) {
-			
-			for(int bankerId : bankerIds) {
+
+			boolean usedBankerNpc = false;
+
+			for (int bankerId : bankerIds) {
 				ORSCharacter bankerNpc = getNearestNpcById(bankerId, false);
 				
 				if(bankerNpc != null) {
+					usedBankerNpc = true;
 					int bankerIndex = bankerNpc.serverIndex;
-					int coords[] = getNpcCoordsByServerIndex(bankerIndex);
+					int[] coords = getNpcCoordsByServerIndex(bankerIndex);
 					
 					walkToAsync(coords[0], coords[1], 1);
 					
-					while(isInBank() == false) {
+					while (!isInBank()) {
 						if(getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
 							 npcCommand1(bankerIndex);
 							 sleep(2000);
@@ -1657,6 +1659,17 @@ public class Controller {
 							 optionAnswer(0);
 							 sleep(2000);
 						}
+					}
+				}
+
+				if (!usedBankerNpc) {
+					// Use a bank chest
+					int[] bankChestId = getNearestObjectById(942);
+					walkToAsync(bankChestId[0], bankChestId[1], 1);
+
+					while (!isInBank()) {
+						atObject(bankChestId[0], bankChestId[1]);
+						sleep(1000);
 					}
 				}
 			}

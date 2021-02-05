@@ -58,10 +58,14 @@ public class ColeslawGuildFisher extends IdleScript {
 		if (!controller.isBatching()) {
 			int[] fishingSpot = controller.getNearestObjectById(spotId);
 
-			if (spotId == LOBSTER_FISH_SPOT) {
-				controller.atObject(fishingSpot[0], fishingSpot[1]);
-			} else {
-				controller.atObject2(fishingSpot[0], fishingSpot[1]);
+			try {
+				if (spotId == LOBSTER_FISH_SPOT) {
+					controller.atObject(fishingSpot[0], fishingSpot[1]);
+				} else {
+					controller.atObject2(fishingSpot[0], fishingSpot[1]);
+				}
+			} catch (NullPointerException ignored) {
+				// Spot disappeared!
 			}
 		}
 	}

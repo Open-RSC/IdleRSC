@@ -1310,7 +1310,7 @@ public class Controller {
 
 	public int shopItemCount(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
-		int[] ids = (int[]) reflector.getObjectMember(mud, "shopItemID");
+		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
 		int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
 
 		for(int i = 0; i < ids.length; i++) {

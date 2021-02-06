@@ -3,6 +3,12 @@ FEB 6 2021
 	Merged Red's scrollbar fixes on logger -- thanks! Now maybe I'll use logger in my scripts...
 	Merged Red's createAccount call -- will be interesting to see what people will do with this.
 	Merged Red's guild fisher for coleslaw. 
+	Merged Searos' EssenceMiner
+	Merged Searos' AIOSmelter new support for Al-Kharid
+	Merged Searos' VarrockSmither
+	Merged Searos' FletchnBankBows update
+	Fixed shopItemID bug in Controller shop methods 
+	
 	
 FEB 4 2021
 	Rearranged foodIds so that cake slices get aten before whole cakes.

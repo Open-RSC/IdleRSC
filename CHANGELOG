@@ -1,3 +1,9 @@
+FEB 6 2021
+	Merged Red's login fixes -- huge thanks to him for this! Now bots will attempt to re-login when DCed.
+	Merged Red's scrollbar fixes on logger -- thanks! Now maybe I'll use logger in my scripts...
+	Merged Red's createAccount call -- will be interesting to see what people will do with this.
+	Merged Red's guild fisher for coleslaw. 
+	
 FEB 4 2021
 	Rearranged foodIds so that cake slices get aten before whole cakes.
 	getBankItemCount() works again.

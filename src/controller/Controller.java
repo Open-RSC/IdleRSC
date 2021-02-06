@@ -826,10 +826,14 @@ public class Controller {
 
 
 	public void createAccount() {
-		createAccount("createdbyidlersc@gmail.com");
+		createAccount("example@example.com");
 	}
 
 	public void createAccount(String email) {
+		createAccount(email, Main.username, Main.password);
+	}
+	
+	public void createAccount(String email, String username, String password) {
 		boolean autoLogin = Main.isAutoLogin();
 		Main.setAutoLogin(false);
 

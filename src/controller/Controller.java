@@ -167,11 +167,15 @@ public class Controller {
 	 * @return itemId
 	 */
 	public int getInventorySlotItemId(int slotIndex) {
-		if(mud.getInventoryItemCount() - 1 > slotIndex)
+		Item slot = mud.getInventory()[slotIndex];
+		
+		if(slot == null)
+			return -1;
+		
+		if(slot.getItemDef() == null)
 			return -1;
 
-		return mud.getInventory()[slotIndex].getItemDef().id;
-		//return mud.getInventoryItems()[slotIndex];
+		return slot.getItemDef().id;
 	}
 
 	public int getInventoryItemCount() {
@@ -1355,7 +1359,7 @@ public class Controller {
 
 	public int shopItemPrice(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
-		int[] ids = (int[]) reflector.getObjectMember(mud, "shopItemID");
+		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
 		int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
 
 		for(int i = 0; i < ids.length; i++) {

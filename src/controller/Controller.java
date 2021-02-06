@@ -825,6 +825,10 @@ public class Controller {
 
 
 	public void createAccount() {
+		createAccount("createdbyidlersc@gmail.com");
+	}
+
+	public void createAccount(String email) {
 		boolean autoLogin = Main.isAutoLogin();
 		Main.setAutoLogin(false);
 
@@ -840,7 +844,7 @@ public class Controller {
 
 		panelLogin.setText(menuNewUserUsername, Main.username);
 		panelLogin.setText(menuNewUserPassword, Main.password);
-		panelLogin.setText(menuNewUserEmail, "createdbyidlersc@gmail.com");
+		panelLogin.setText(menuNewUserEmail, email);
 
 		reflector.setObjectMember(mud, "enterPressed", true);
 

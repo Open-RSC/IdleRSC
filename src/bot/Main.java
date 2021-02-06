@@ -4,10 +4,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.applet.Applet;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+
 import compatibility.sbot.Script;
 import controller.Controller;
 import orsc.OpenRSC;
@@ -20,9 +19,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -31,11 +27,6 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
-import compatibility.sbot.Script;
-import controller.Controller;
 import listeners.CommandListener;
 import listeners.LoginListener;
 import listeners.MessageListener;
@@ -57,9 +48,9 @@ public class Main {
     private static String[] scriptArguments = {};
 
     private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
-    private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
+    private static JFrame botFrame, logFrame, rscFrame, scriptFrame; //all the windows.
     private static JButton startStopButton, loadScriptButton, settingsButton, hideButton; //all the buttons on the sidepanel.
-    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox; //all the checkboxes on the sidepanel.
+    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanels
     private static JLabel globalStatus, mouseStatus, posnStatus; //all the labels on the sidepanel.
 
 
@@ -121,7 +112,7 @@ public class Main {
     /**
      * A function for controlling whether or not scripts are running.
      *
-     * @param boolean
+     * @param b
      * @return void
      */
     public static void setRunning(boolean b) {
@@ -137,7 +128,7 @@ public class Main {
     /**
      * A function for controlling the autologin functionality.
      *
-     * @param boolean
+     * @param b
      * @return void
      */
     public static void setAutoLogin(boolean b) {
@@ -164,12 +155,12 @@ public class Main {
 
         //just building out the windows
         botFrame = new JFrame("Bot Pane");
-        consoleFrame = new JFrame("Bot Console");
+        logFrame = new JFrame("Bot Console");
         rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
         scriptFrame = new JFrame("Script Selector");
 
         initializeBotFrame(botFrame);
-        initializeConsoleFrame(consoleFrame);
+        initializeConsoleFrame(logFrame);
         initializeScriptFrame(scriptFrame);
 
 
@@ -214,7 +205,7 @@ public class Main {
         log("PositionListener initialized.");
 
         log("Initializing WindowListener...");
-        windowListener = new Thread(new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
+        windowListener = new Thread(new WindowListener(botFrame, logFrame, rscFrame, scroller, logArea, controller));
         windowListener.start();
         log("WindowListener started.");
 
@@ -273,13 +264,11 @@ public class Main {
      * @param text
      */
     public static void log(String text) {
-        String current = logArea.getText();
-        current += "\n";
-        current += text;
-        logArea.setText(current);
+        logArea.append (text + "\n");
 
-        JScrollBar bar = scroller.getVerticalScrollBar();
-        bar.setValue(bar.getMaximum());
+        if (autoscrollLogsCheckbox.isSelected()) {
+            logArea.setCaretPosition(logArea.getDocument().getLength());
+        }
     }
 
     /**
@@ -331,7 +320,7 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 isRunning = !isRunning;
 
-                if (isRunning == true) {
+                if (isRunning) {
                     startStopButton.setText("Stop");
                 } else {
                     startStopButton.setText("Start");
@@ -397,10 +386,43 @@ public class Main {
      * @param consoleFrame -- the log window frame
      */
     private static void initializeConsoleFrame(JFrame consoleFrame) {
+        JButton buttonClear = new JButton("Clear");
+        autoscrollLogsCheckbox = new JCheckBox("Lock scroll to bottom");
+
         logArea = new JTextArea(9, 44);
+        logArea.setEditable(false);
         scroller = new JScrollPane(logArea);
-        logArea.setLocation(500, 500);
-        consoleFrame.add(scroller);
+
+        consoleFrame.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.gridy = 1;
+        constraints.insets = new Insets(5, 5, 5, 5);
+        constraints.anchor = GridBagConstraints.SOUTHEAST;
+        constraints.gridx = 2;
+        constraints.weightx = 0.5;
+        consoleFrame.add(autoscrollLogsCheckbox, constraints);
+
+        constraints.gridy = 1;
+        constraints.insets = new Insets(0, 5, 5, 5);
+        constraints.anchor = GridBagConstraints.SOUTHWEST;
+        constraints.gridx = 1;
+        constraints.weightx = 0.5;
+        consoleFrame.add(buttonClear, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 4;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        consoleFrame.add(new JScrollPane(logArea), constraints);
+
+        buttonClear.addActionListener(evt -> clearLog());
+
+        consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        consoleFrame.setSize(480, 320);
     }
 
     /**
@@ -430,8 +452,6 @@ public class Main {
 				Class clazz = cl.loadClass("scripting.sbot." + scriptName);
 				currentRunningScript = (Script) clazz.newInstance();
 			}
-
-
 
 			return true;
 		} catch(Exception e) {

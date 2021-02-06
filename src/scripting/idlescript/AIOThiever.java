@@ -302,7 +302,10 @@ public class AIOThiever extends IdleScript {
             		eatingHealth = Integer.parseInt(eatAtHpField.getText());
             		target = objects.get(targetField.getSelectedIndex());
             		doBank = doBankCheckbox.isSelected();
-            		foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+            		
+            		if(!foodWithdrawAmountField.getText().equals(""))
+            			foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+            		
 	            	scriptFrame.setVisible(false);
 	            	scriptFrame.dispose();
 	            	scriptStarted = true;

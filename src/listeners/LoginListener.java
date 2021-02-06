@@ -22,16 +22,16 @@ public class LoginListener implements Runnable {
 	@Override
 	public void run() {
 		while(true) {
-	    	if(controller.isLoggedIn() == false)
+	    	if(!controller.isLoggedIn())
 	    		Main.updateStatus("Logged out.");
 	    	else
-	    		if(Main.isRunning() == true)
+	    		if(Main.isRunning())
 	    			Main.updateStatus("Running.");
 	    		else
 	    			Main.updateStatus("Logged in, idle.");
 	    	
-	    	if(Main.isAutoLogin() == true) { 
-	    		if(controller.isLoggedIn() == false) {
+	    	if(Main.isAutoLogin()) {
+	    		if(!controller.isLoggedIn()) {
 	    			controller.login();
 	    			controller.sleep(1000);
 	    		}

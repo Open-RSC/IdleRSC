@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.CRC32;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.ItemDef;
@@ -97,7 +98,7 @@ public class Controller {
 	}
 
 	public boolean isLoggedIn() {
-		if(mud.getUsername().equals("")) {
+		if ( !((JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe")).getTitle().contains(" -- ")) {
 			return false;
 		}
 		return true;

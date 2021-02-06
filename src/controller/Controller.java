@@ -824,9 +824,31 @@ public class Controller {
 	}
 
 
+	public void createAccount() {
+		boolean autoLogin = Main.isAutoLogin();
+		Main.setAutoLogin(false);
+
+		Main.logMethod("createAccount", "nothing");
+
+		reflector.setObjectMember(mud, "loginScreenNumber", 1);
+
+		Panel panelLogin = (Panel) reflector.getObjectMember(mud, "menuNewUser");
+
+		int menuNewUserUsername = (int) reflector.getObjectMember(mud, "menuNewUserUsername");
+		int menuNewUserPassword = (int) reflector.getObjectMember(mud, "menuNewUserPassword");
+		int menuNewUserEmail = (int) reflector.getObjectMember(mud, "menuNewUserEmail");
+
+		panelLogin.setText(menuNewUserUsername, Main.username);
+		panelLogin.setText(menuNewUserPassword, Main.password);
+		panelLogin.setText(menuNewUserEmail, "createdbyidlersc@gmail.com");
+
+		reflector.setObjectMember(mud, "enterPressed", true);
+
+		Main.setAutoLogin(autoLogin);
+	}
+
 	public void login() {
 		Main.logMethod("login", "nothing");
-
 
 		reflector.setObjectMember(mud, "loginScreenNumber", 2);
 
@@ -839,8 +861,6 @@ public class Controller {
 		panelLogin.setText(controlLoginPass, Main.password);
 
 		reflector.setObjectMember(mud, "enterPressed", true);
-
-
 	}
 
 	public int getFatigue() {

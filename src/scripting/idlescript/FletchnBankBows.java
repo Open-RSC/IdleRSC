@@ -57,13 +57,7 @@ public class FletchnBankBows extends IdleScript {
 				if (controller.getInventoryItemCount(13) < 1) {
 					controller.withdrawItem(13, 1);
 				}
-				if (!stringTime) {
-					controller.withdrawItem(logId, 29);
-					controller.sleep(100);
-				}
-				controller.closeBank();
-				controller.sleep(1000);
-				if (controller.getInventoryItemCount(logId) < 1)
+				if (controller.getBankItemCount(logId) < 1) {
 					if (string.isSelected()) {
 						stringTime = true;
 						return;
@@ -73,32 +67,44 @@ public class FletchnBankBows extends IdleScript {
 						guiSetup = false;
 						return;
 					}
+				}
+				if (!stringTime) {
+					controller.withdrawItem(logId, 29);
+					controller.sleep(100);
+				}
+				controller.closeBank();
+				controller.sleep(1000);
 			}
-			if (controller.getInventoryItemCount(bowId) < 1 && stringTime && !controller.isInBank()) {
+			if (controller.getInventoryItemCount(bowId) < 1 && stringTime && !controller.isInBank()
+					|| controller.getInventoryItemCount(676) < 1 && stringTime && !controller.isInBank()) {
 				controller.openBank();
 				controller.sleep(431);
 				{
-					if (controller.getInventoryItemCount(bowComplete) > 0) {
-						controller.depositItem(bowComplete, controller.getInventoryItemCount(bowComplete));
+					if (controller.getInventoryItemCount() > 1) {
+						for (int itemId : controller.getInventoryItemIds()) {
+							if (itemId != 0) {
+								controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+							}
+						}
 						controller.sleep(429);
 					}
 					if (controller.getInventoryItemCount(13) > 0) {
 						controller.depositItem(13, 1);
 					}
-					controller.withdrawItem(bowId, 15);
-					controller.withdrawItem(676, 15);
-					controller.closeBank();
-					controller.sleep(1500);
-					if (controller.getInventoryItemCount(bowId) < 1 || controller.getInventoryItemCount(676) < 1) {
+					if (controller.getBankItemCount(bowId) < 1 || controller.getBankItemCount(676) < 1 ) {
 						stringTime = false;
 						scriptStarted = false;
 						guiSetup = false;
 						return;
 					}
+					controller.withdrawItem(bowId, 15);
+					controller.withdrawItem(676, 15);
+					controller.sleep(1500);
+					controller.closeBank();
 				}
 
 			}
-			if (controller.getInventoryItemCount(logId) > 0 && !stringTime) {
+			while (controller.getInventoryItemCount(logId) > 0 && !stringTime) {
 				controller.useItemOnItemBySlot(0, 1);
 				controller.sleep(500);
 				if (controller.isInOptionMenu()) {
@@ -109,12 +115,11 @@ public class FletchnBankBows extends IdleScript {
 					controller.sleep(100);
 				}
 			}
-			if (controller.getInventoryItemCount(bowId) > 0 && stringTime) {
+			while (controller.getInventoryItemCount(bowId) > 0 && stringTime
+					&& controller.getInventoryItemCount(676) > 0) {
 				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(bowId),
 						controller.getInventoryItemIdSlot(676));
-				while (controller.isBatching()) {
-					controller.sleep(100);
-				}
+				controller.sleep(15);
 			}
 		}
 		stringTime = false;
@@ -130,7 +135,7 @@ public class FletchnBankBows extends IdleScript {
 	}
 
 	public void setupGUI() {
-		JLabel header = new JLabel("Fletching");
+		JLabel header = new JLabel("Woodcutting");
 		JLabel logLabel = new JLabel("Log Type:");
 		JComboBox<String> logField = new JComboBox<String>(
 				new String[] { "Normal", "Oak", "Willow", "Maple", "Yew", "Magic" });
@@ -173,7 +178,6 @@ public class FletchnBankBows extends IdleScript {
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
-		
 	}
 
 }

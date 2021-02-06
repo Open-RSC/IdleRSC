@@ -9,6 +9,8 @@ FEB 6 2021
 	Merged Searos' FletchnBankBows update
 	Fixed shopItemID bug in Controller shop methods 
 	Merged Red's IntelliJ/gradle support
+	Merged Searos' Woodcutter update -- improved pathfinding, ability to stop added. 
+	Merged Searos' SpinStrings
 	
 	
 FEB 4 2021

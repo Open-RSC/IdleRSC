@@ -9,4 +9,9 @@ public enum DebuggerSectionType {
     GroundItems,
     Skills,
     Bank,
+    Shop,
+    Friends,
+    Ignore,
+    Local,
+    Recipient,
 }

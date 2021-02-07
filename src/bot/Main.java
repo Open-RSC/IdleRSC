@@ -324,6 +324,8 @@ public class Main {
             }
         });
 
+
+        debugger.open();
         openDebuggerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -474,6 +476,7 @@ public class Main {
         scriptTable.getTableHeader().setReorderingAllowed(false); // Disable reordering columns
         scriptTable.getTableHeader().setResizingAllowed(false); // Disable resizing columns
         scriptTable.getTableHeader().setFont(scriptTable.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
+        scriptTable.setBorder(BorderFactory.createEmptyBorder());
 
         final JScrollPane scriptScroller = new JScrollPane(scriptTable);
 

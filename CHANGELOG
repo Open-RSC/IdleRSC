@@ -12,6 +12,7 @@ FEB 6 2021
 	Merged Searos' Woodcutter update -- improved pathfinding, ability to stop added. 
 	Merged Searos' SpinStrings
 	HerbHarvester crashing fixed.
+	SleepListener added. When sleep is detected, image will be saved as hc.bmp.
 	
 	
 FEB 4 2021

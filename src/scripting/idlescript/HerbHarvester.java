@@ -38,7 +38,8 @@ public class HerbHarvester extends IdleScript {
 							324, 501,
 							329, 498,
 							335, 493,
-							338, 488};
+							338, 488,
+							341, 488};
 			
 	
 	int[] unids = {165, 435, 436, 437, 438, 439, 440, 441, 442, 443};
@@ -58,7 +59,8 @@ public class HerbHarvester extends IdleScript {
 					while(controller.getInventoryItemCount() < 30 && controller.isBatching() == true) controller.sleep(10);
 				} else {
 					//move so we can see all herbs
-					controller.walkTo(363, 503);
+					if(controller.currentX() != 363 || controller.currentZ() != 503)
+						controller.walkTo(363, 503);
 				}
 				
 			} else {
@@ -130,8 +132,12 @@ public class HerbHarvester extends IdleScript {
 		controller.sleep(1000);
 		
 		//open door
-		controller.atObject(341, 487);
-		controller.sleep(1000);
+		while(controller.currentX() != 342 || controller.currentZ() != 487) {
+			controller.displayMessage("@red@Opening door...");
+			if(controller.getObjectAtCoord(341, 487) == 137)
+				controller.atObject(341, 487);
+			controller.sleep(5000);
+		}
 		
 		controller.walkPath(doorToHerbPath);
 		

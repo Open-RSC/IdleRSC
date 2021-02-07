@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.CRC32;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.ItemDef;
@@ -34,6 +35,8 @@ import com.openrsc.interfaces.misc.BankInterface;
 
 import bot.Main;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
+
+import orsc.Config;
 import orsc.ORSCApplet;
 import orsc.ORSCharacter;
 import orsc.OpenRSC;
@@ -64,7 +67,8 @@ public class Controller {
 	private OpenRSC client;
 	private mudclient mud;
 
-	int[] foodIds = {350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 333, 334, 335, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179};
+	int[] foodIds = {335, 333, 350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 334, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179};
+	int[] bankerIds = {95, 224, 268, 540, 617};
 
 	final private int GAME_TICK_COUNT = 640;
 
@@ -94,7 +98,7 @@ public class Controller {
 	}
 
 	public boolean isLoggedIn() {
-		if(mud.getUsername().equals("")) {
+		if ( !((JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe")).getTitle().contains(" -- ")) {
 			return false;
 		}
 		return true;
@@ -163,11 +167,15 @@ public class Controller {
 	 * @return itemId
 	 */
 	public int getInventorySlotItemId(int slotIndex) {
-		if(mud.getInventoryItemCount() - 1 > slotIndex)
+		Item slot = mud.getInventory()[slotIndex];
+		
+		if(slot == null)
+			return -1;
+		
+		if(slot.getItemDef() == null)
 			return -1;
 
-		return mud.getInventory()[slotIndex].getItemDef().id;
-		//return mud.getInventoryItems()[slotIndex];
+		return slot.getItemDef().id;
 	}
 
 	public int getInventoryItemCount() {
@@ -447,16 +455,18 @@ public class Controller {
 		return new int[] {-1, -1};
 	}
 
-	public void walktoNPCAsync(int npcServerIndex, int radius) {
+	public void walktoNPCAsync(int npcServerIndex) {
 		if(npcServerIndex < 0)
 			return;
 
 		ORSCharacter npc = (ORSCharacter) reflector.mudInvoker(mud, "getServerNPC", npcServerIndex);
 		if(npc != null) {
-			int npcX = (npc.currentX - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
-			int npcZ = (npc.currentZ - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
+			int npcX = (npc.currentX - 64) / mud.getTileSize();// + mud.getMidRegionBaseX();
+			int npcZ = (npc.currentZ - 64) / mud.getTileSize();// + mud.getMidRegionBaseZ();
 
-			walkToAsync(npcX, npcZ, radius);
+			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), npcX, npcZ, true);
+			
+//			walkToAsync(npcX, npcZ, radius);
 		} else {
 			return;
 		}
@@ -483,7 +493,7 @@ public class Controller {
 		if(npcServerIndex < 0)
 				return;
 
-		walktoNPCAsync(npcServerIndex, 1);
+		walktoNPCAsync(npcServerIndex);
 
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -539,7 +549,7 @@ public class Controller {
 
 	public void npcCommand1(int serverIndex) {
 		Main.logMethod("npcCommand1", serverIndex);
-		walktoNPCAsync(serverIndex, 1);
+		walktoNPCAsync(serverIndex);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(202);
@@ -549,7 +559,7 @@ public class Controller {
 
 	public void npcCommand2(int serverIndex) {
 		Main.logMethod("npcCommand2", serverIndex);
-		walktoNPCAsync(serverIndex, 1);
+		walktoNPCAsync(serverIndex);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(203);
@@ -779,6 +789,17 @@ public class Controller {
 		mud.packetHandler.getClientStream().bufferBits.putInt(inventoryItemCount);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
+	
+	public void dropItem(int slot, int amount) {
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(246);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
+		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	
 
 	public boolean isEquipped(int slot) {
 		return mud.getInventory()[slot].getEquipped();
@@ -808,9 +829,39 @@ public class Controller {
 	}
 
 
+	public void createAccount() {
+		createAccount("example@example.com");
+	}
+
+	public void createAccount(String email) {
+		createAccount(email, Main.username, Main.password);
+	}
+	
+	public void createAccount(String email, String username, String password) {
+		boolean autoLogin = Main.isAutoLogin();
+		Main.setAutoLogin(false);
+
+		Main.logMethod("createAccount", "nothing");
+
+		reflector.setObjectMember(mud, "loginScreenNumber", 1);
+
+		Panel panelLogin = (Panel) reflector.getObjectMember(mud, "menuNewUser");
+
+		int menuNewUserUsername = (int) reflector.getObjectMember(mud, "menuNewUserUsername");
+		int menuNewUserPassword = (int) reflector.getObjectMember(mud, "menuNewUserPassword");
+		int menuNewUserEmail = (int) reflector.getObjectMember(mud, "menuNewUserEmail");
+
+		panelLogin.setText(menuNewUserUsername, Main.username);
+		panelLogin.setText(menuNewUserPassword, Main.password);
+		panelLogin.setText(menuNewUserEmail, email);
+
+		reflector.setObjectMember(mud, "enterPressed", true);
+
+		Main.setAutoLogin(autoLogin);
+	}
+
 	public void login() {
 		Main.logMethod("login", "nothing");
-
 
 		reflector.setObjectMember(mud, "loginScreenNumber", 2);
 
@@ -823,8 +874,6 @@ public class Controller {
 		panelLogin.setText(controlLoginPass, Main.password);
 
 		reflector.setObjectMember(mud, "enterPressed", true);
-
-
 	}
 
 	public int getFatigue() {
@@ -878,7 +927,7 @@ public class Controller {
 		if(serverIndex < 0)
 			return false;
 
-		walktoNPCAsync(serverIndex, 0);
+		walktoNPCAsync(serverIndex);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(153);
@@ -892,30 +941,6 @@ public class Controller {
 		return (boolean) reflector.getObjectMember(mud, "showDialogBank");
 	}
 
-	public boolean openBank() {
-		final int[] bankerIds = { 95, 224, 268, 485, 540, 617 };
-
-		if(isInBank() == true)
-			return true;
-
-		if(this.isInOptionMenu() == false) {
-			for(int npcId : bankerIds) {
-				ORSCharacter npc = getNearestNpcById(npcId, false);
-				if(npc != null) {
-					thieveNpc(npc.serverIndex);
-					break;
-				} else {
-					return false;
-				}
-			}
-
-
-			sleep(3000);
-		}
-
-		return false;
-	}
-
 	public void closeBank() {
 		reflector.setObjectMember(mud, "showDialogBank", false);
 	}
@@ -924,8 +949,11 @@ public class Controller {
 		ArrayList<Object> bankItems = (ArrayList<Object>) reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
 
 		for(Object item : bankItems) {
-			int itemId = (int) reflector.getObjectMember(item, "itemID");
-			int amount = (int) reflector.getObjectMember(item, "amount");
+			Object bankItem = (Object) reflector.getObjectMember(item, "item");
+			ItemDef itemDef = (ItemDef) reflector.getObjectMember(bankItem, "itemDef");
+			
+			int itemId = itemDef.id; //(int) reflector.getObjectMember(itemDef, "id");
+			int amount = (int) reflector.getObjectMember(bankItem, "amount");
 
 			if(itemId == id)
 				return amount;
@@ -944,13 +972,15 @@ public class Controller {
 	}
 
 	public boolean depositItem(int itemId, int amount) {
-		if(isInBank() == false)
+		if(!isInBank()) {
 			return false;
+		}
 
-		if(isItemInInventory(itemId) == false)
+		if(!isItemInInventory(itemId)) {
 			return false;
+		}
 
-		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(23);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
 		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
@@ -962,7 +992,7 @@ public class Controller {
 	public boolean withdrawItem(int itemId) {
 		return withdrawItem(itemId, 1);
 	}
-
+	
 	public boolean withdrawItem(int itemId, int amount) {
 		if(isInBank() == false)
 			return false;
@@ -974,11 +1004,15 @@ public class Controller {
 		mud.packetHandler.getClientStream().newPacket(22);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
 		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
+		
+		if(Config.S_WANT_BANK_NOTES)
+			mud.packetHandler.getClientStream().bufferBits.putByte(0);
+		
 		mud.packetHandler.getClientStream().finishPacket();
 
 		return false;
 	}
-
+	
 	public void displayMessage(String msg, int type) {
 		reflector.mudInvoker(mud, "showMessage", false, "", msg, MessageType.lookup(type), 0, "");
 	}
@@ -1223,8 +1257,12 @@ public class Controller {
 		return direction.rsDir;
 	}
 
-	public String getNpcCommand(int npcId) {
+	public String getNpcCommand1(int npcId) {
 		return EntityHandler.getNpcDef(npcId).getCommand1();
+	}
+	
+	public String getNpcCommand2(int npcId) {
+		return EntityHandler.getNpcDef(npcId).getCommand2();
 	}
 
 	public String getNpcExamineText(int npcId) {
@@ -1307,7 +1345,7 @@ public class Controller {
 
 	public int shopItemCount(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
-		int[] ids = (int[]) reflector.getObjectMember(mud, "shopItemID");
+		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
 		int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
 
 		for(int i = 0; i < ids.length; i++) {
@@ -1321,7 +1359,7 @@ public class Controller {
 
 	public int shopItemPrice(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
-		int[] ids = (int[]) reflector.getObjectMember(mud, "shopItemID");
+		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
 		int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
 
 		for(int i = 0; i < ids.length; i++) {
@@ -1622,5 +1660,68 @@ public class Controller {
 		return progressBarInterface.progressBarComponent.isVisible();
 	}
     
+    public mudclient getMud() {
+    	return this.mud;
+    }
+    
+    
+    /**
+     * Will open bank near any bank NPC. Uses right click option if possible.
+     */
+    public void openBank() {
+
+		while(!isInBank()) {
+
+			boolean usedBankerNpc = false;
+
+			for (int bankerId : bankerIds) {
+				ORSCharacter bankerNpc = getNearestNpcById(bankerId, false);
+				
+				if(bankerNpc != null) {
+					usedBankerNpc = true;
+					int bankerIndex = bankerNpc.serverIndex;
+					int[] coords = getNpcCoordsByServerIndex(bankerIndex);
+					
+					walkToAsync(coords[0], coords[1], 1);
+					
+					while (!isInBank()) {
+						if(getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
+							 npcCommand1(bankerIndex);
+							 sleep(2000);
+						} else {
+							 talkToNpc(bankerIndex);
+							 sleep(3000);
+							 optionAnswer(0);
+							 sleep(2000);
+						}
+					}
+				}
+			}
+
+			if (!usedBankerNpc) {
+				// Use a bank chest
+				int[] bankChestId = getNearestObjectById(942);
+				walkToAsync(bankChestId[0], bankChestId[1], 1);
+
+				while (!isInBank()) {
+					atObject(bankChestId[0], bankChestId[1]);
+					sleep(2000);
+				}
+			}
+
+		}
+    }
+    
+	public void walkPath(int[] path) {
+		for(int i = 0; i < path.length; i += 2) {
+			while(currentX() != path[i] && currentZ() != path[i+1]) {
+				walkTo(path[i], path[i+1]);
+				sleep(100);
+			}
+		}
+	}
+	
+	
+	
 }
  

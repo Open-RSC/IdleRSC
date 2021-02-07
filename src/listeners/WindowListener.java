@@ -1,5 +1,6 @@
 package listeners;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -40,10 +41,7 @@ public class WindowListener implements Runnable {
 	public void run() {
 		boolean consolePrevious = Main.isLogWindowOpen();
 
-		while(true) { 
-			
-			
-			
+		while(true) {
 			if(consolePrevious != Main.isLogWindowOpen()) {
 				consoleFrame.setVisible(Main.isLogWindowOpen());
 				consolePrevious = Main.isLogWindowOpen();
@@ -51,13 +49,20 @@ public class WindowListener implements Runnable {
 	
 			if(Main.isSticky()) {
 				if(consoleFrame.isVisible()) {
-			        consoleFrame.setSize(rscFrame.getWidth(), 225);
-			        consoleFrame.setLocation(rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight());
-			        logArea.setSize(consoleFrame.getSize());
+					if (!consoleFrame.getSize().equals(new Dimension(rscFrame.getWidth(), 225))) {
+						consoleFrame.setSize(rscFrame.getWidth(), 225);
+					}
+					if (!consoleFrame.getLocation().equals(new Point(rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight()))) {
+						consoleFrame.setLocation(rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight());
+					}
 				}
 				if(botFrame.isVisible()) {
-			        botFrame.setSize(botFrame.getWidth(), rscFrame.getHeight());
-			        botFrame.setLocation(rscFrame.getLocation().x + rscFrame.getWidth(), rscFrame.getLocation().y);
+					if (!botFrame.getSize().equals(new Dimension(botFrame.getWidth(), rscFrame.getHeight()))) {
+						botFrame.setSize(botFrame.getWidth(), rscFrame.getHeight());
+					}
+					if (!botFrame.getLocation().equals(new Point(rscFrame.getLocation().x + rscFrame.getWidth(), rscFrame.getLocation().y))) {
+						botFrame.setLocation(rscFrame.getLocation().x + rscFrame.getWidth(), rscFrame.getLocation().y);
+					}
 				}
 			}
 	        

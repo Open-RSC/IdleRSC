@@ -31,6 +31,7 @@ import listeners.CommandListener;
 import listeners.LoginListener;
 import listeners.MessageListener;
 import listeners.PositionListener;
+import listeners.SleepListener;
 import listeners.WindowListener;
 
 
@@ -62,6 +63,7 @@ public class Main {
     private static Thread windowListener = null; //see WindowListener.java
     private static Thread commandListener = null; //see CommandListener.java
     private static Thread messageListener = null; //see MessageListener.java
+    private static Thread sleepListener = null; //see SleepListener.java
 
     private static Controller controller = null; //this is the queen bee that controls the actual bot and is the native scripting language.
     private static MessageListener messageListenerInstance = null; //see MessageListener.java
@@ -219,6 +221,11 @@ public class Main {
         messageListener = new Thread(messageListenerInstance);
         messageListener.start();
         log("MessageListener started.");
+        
+        log("Initializing SleepLisetner...");
+        sleepListener = new Thread(new SleepListener(mud, controller));
+        sleepListener.start();
+        log("SleepListener started.");
 
 
         //give everything a nice synchronization break juuuuuuuuuuuuuust in case...

@@ -1,6 +1,13 @@
 package bot;
 
 import bot.debugger.Debugger;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.*;
+import java.awt.event.*;
+
 import compatibility.sbot.Script;
 import controller.Controller;
 import listeners.*;
@@ -27,6 +34,14 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import listeners.CommandListener;
+import listeners.LoginListener;
+import listeners.MessageListener;
+import listeners.PositionListener;
+import listeners.SleepListener;
+import listeners.WindowListener;
+
+
 
 /**
  * This is the starting class of the entire IdleRSC project.
@@ -36,12 +51,14 @@ import java.util.Comparator;
 public class Main {
     public static String username = "testaccount"; //this will be replaced by CLI arguments. modify for debugging with eclipse.
     public static String password = "testaccount";
+    
+    public static String scriptName = "";
+    private static String[] scriptArguments = {};
 
     private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
-    private static String[] scriptArguments = {};
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
     private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton; //all the buttons on the sidepanel.
-    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox; //all the checkboxes on the sidepanel.
+    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
     private static JLabel globalStatus, mouseStatus, posnStatus; //all the labels on the sidepanel.
 
 
@@ -56,6 +73,7 @@ public class Main {
     private static Thread commandListener = null; //see CommandListener.java
     private static Thread messageListener = null; //see MessageListener.java
     private static Thread debuggerThread = null;
+    private static Thread sleepListener = null; //see SleepListener.java
 
     private static Controller controller = null; //this is the queen bee that controls the actual bot and is the native scripting language.
     private static MessageListener messageListenerInstance = null; //see MessageListener.java
@@ -106,7 +124,7 @@ public class Main {
     /**
      * A function for controlling whether or not scripts are running.
      *
-     * @param boolean
+     * @param b
      * @return void
      */
     public static void setRunning(boolean b) {
@@ -122,7 +140,7 @@ public class Main {
     /**
      * A function for controlling the autologin functionality.
      *
-     * @param boolean
+     * @param b
      * @return void
      */
     public static void setAutoLogin(boolean b) {
@@ -152,12 +170,12 @@ public class Main {
 
         //just building out the windows
         botFrame = new JFrame("Bot Pane");
-        consoleFrame = new JFrame("Bot Console");
+        logFrame = new JFrame("Bot Console");
         rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
         scriptFrame = new JFrame("Script Selector");
 
         initializeBotFrame(botFrame);
-        initializeConsoleFrame(consoleFrame);
+        initializeConsoleFrame(logFrame);
         initializeScriptFrame(scriptFrame);
 
 
@@ -173,6 +191,22 @@ public class Main {
             username = args[0];
             password = args[1];
         }
+        
+        if(args.length >= 3 || !scriptName.equals("")) {
+        	scriptName = args[2];
+        	
+        	if(args.length - 3 > 0) {
+        		scriptArguments = Arrays.copyOfRange(args, 3, args.length);
+        	} 
+        	
+        	if(loadAndRunScript(scriptName) == false) {
+        		System.out.println("Could not find script: " + scriptName);
+        		System.exit(1);
+        	}
+        	isRunning = true;
+        	startStopButton.setText("Stop");
+        }
+        
 
         //start up our listener threads
         log("Initializing LoginListener...");
@@ -186,7 +220,7 @@ public class Main {
         log("PositionListener initialized.");
 
         log("Initializing WindowListener...");
-        windowListener = new Thread(new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
+        windowListener = new Thread(new WindowListener(botFrame, logFrame, rscFrame, scroller, logArea, controller));
         windowListener.start();
         log("WindowListener started.");
 
@@ -200,6 +234,11 @@ public class Main {
         messageListener = new Thread(messageListenerInstance);
         messageListener.start();
         log("MessageListener started.");
+        
+        log("Initializing SleepLisetner...");
+        sleepListener = new Thread(new SleepListener(mud, controller));
+        sleepListener.start();
+        log("SleepListener started.");
 
 
         //give everything a nice synchronization break juuuuuuuuuuuuuust in case...
@@ -216,7 +255,7 @@ public class Main {
                     //handle native scripts
                     if (currentRunningScript instanceof IdleScript) {
                         ((IdleScript) currentRunningScript).setController(controller);
-                        ((IdleScript) currentRunningScript).start(scriptArguments); //todo: update to args
+                        ((IdleScript) currentRunningScript).start(scriptArguments); 
                     }
 
                     //handle sbot scripts
@@ -224,7 +263,7 @@ public class Main {
                         controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
                         controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
                         ((Script) currentRunningScript).setController(controller);
-                        ((Script) currentRunningScript).start(scriptArguments[0], Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length)); //todo: update to args
+                        ((Script) currentRunningScript).start(scriptArguments[0], Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length)); 
                     }
                 }
 
@@ -245,13 +284,11 @@ public class Main {
      * @param text
      */
     public static void log(String text) {
-        String current = logArea.getText();
-        current += "\n";
-        current += text;
-        logArea.setText(current);
+        logArea.append (text + "\n");
 
-        JScrollBar bar = scroller.getVerticalScrollBar();
-        bar.setValue(bar.getMaximum());
+        if (autoscrollLogsCheckbox.isSelected()) {
+            logArea.setCaretPosition(logArea.getDocument().getLength());
+        }
     }
 
     /**
@@ -304,7 +341,7 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 isRunning = !isRunning;
 
-                if (isRunning == true) {
+                if (isRunning) {
                     startStopButton.setText("Stop");
                 } else {
                     startStopButton.setText("Start");
@@ -380,10 +417,43 @@ public class Main {
      * @param consoleFrame -- the log window frame
      */
     private static void initializeConsoleFrame(JFrame consoleFrame) {
+        JButton buttonClear = new JButton("Clear");
+        autoscrollLogsCheckbox = new JCheckBox("Lock scroll to bottom");
+
         logArea = new JTextArea(9, 44);
+        logArea.setEditable(false);
         scroller = new JScrollPane(logArea);
-        logArea.setLocation(500, 500);
-        consoleFrame.add(scroller);
+
+        consoleFrame.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.gridy = 1;
+        constraints.insets = new Insets(5, 5, 5, 5);
+        constraints.anchor = GridBagConstraints.SOUTHEAST;
+        constraints.gridx = 2;
+        constraints.weightx = 0.5;
+        consoleFrame.add(autoscrollLogsCheckbox, constraints);
+
+        constraints.gridy = 1;
+        constraints.insets = new Insets(0, 5, 5, 5);
+        constraints.anchor = GridBagConstraints.SOUTHWEST;
+        constraints.gridx = 1;
+        constraints.weightx = 0.5;
+        consoleFrame.add(buttonClear, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 4;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTH;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        consoleFrame.add(new JScrollPane(logArea), constraints);
+
+        buttonClear.addActionListener(evt -> clearLog());
+
+        consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        consoleFrame.setSize(480, 320);
     }
 
     /**
@@ -395,30 +465,30 @@ public class Main {
      */
     private static boolean loadAndRunScript(String scriptName) {
         try {
-            File scriptFile = new File(nativeScriptPath);
+			File scriptFile = new File(nativeScriptPath);
 
-            URL url = scriptFile.toURI().toURL();
-            URL[] urls = new URL[]{url};
+			URL url = scriptFile.toURI().toURL();
+			URL[] urls = new URL[] {url};
 
-            try {
-                ClassLoader cl = new URLClassLoader(urls);
-                Class clazz = cl.loadClass("scripting.idlescript." + scriptName);
-                currentRunningScript = (IdleScript) clazz.newInstance();
-            } catch (Exception e) {
-                scriptFile = new File(sbotScriptPath);
-                url = scriptFile.toURI().toURL();
-                urls = new URL[]{url};
-                ClassLoader cl = new URLClassLoader(urls);
-                Class clazz = cl.loadClass("scripting.sbot." + scriptName);
-                currentRunningScript = (Script) clazz.newInstance();
-            }
+			try {
+				ClassLoader cl = new URLClassLoader(urls);
+				Class clazz = cl.loadClass("scripting.idlescript." + scriptName);
+				currentRunningScript = (IdleScript) clazz.newInstance();
+			}
+			catch(Exception e) {
+				scriptFile = new File(sbotScriptPath);
+				url = scriptFile.toURI().toURL();
+				urls = new URL[] {url};
+				ClassLoader cl = new URLClassLoader(urls);
+				Class clazz = cl.loadClass("scripting.sbot." + scriptName);
+				currentRunningScript = (Script) clazz.newInstance();
+			}
 
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
     }
 
     /**

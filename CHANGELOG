@@ -1,3 +1,63 @@
+FEB 6 2021
+	Merged Red's login fixes -- huge thanks to him for this! Now bots will attempt to re-login when DCed.
+	Merged Red's scrollbar fixes on logger -- thanks! Now maybe I'll use logger in my scripts...
+	Merged Red's createAccount call -- will be interesting to see what people will do with this.
+	Merged Red's guild fisher for coleslaw. 
+	Merged Searos' EssenceMiner
+	Merged Searos' AIOSmelter new support for Al-Kharid
+	Merged Searos' VarrockSmither
+	Merged Searos' FletchnBankBows update
+	Fixed shopItemID bug in Controller shop methods 
+	Merged Red's IntelliJ/gradle support
+	Merged Searos' Woodcutter update -- improved pathfinding, ability to stop added. 
+	Merged Searos' SpinStrings
+	HerbHarvester crashing fixed.
+	SleepListener added. When sleep is detected, image will be saved as hc.bmp.
+	
+	
+FEB 4 2021
+	Rearranged foodIds so that cake slices get aten before whole cakes.
+	getBankItemCount() works again.
+	AIOThiever now supports banking in Ardougne Square.
+	AIOThiever now supports command line arguments.
+	AIOThiever will now properly keep trying to logout.
+	AKMiner will now properly bank silver.
+	Added Searos' new script: FletchnBankBows
+	Added Searos' updated PowercraftTalisman
+	Added ceikry's ceikplates (SBot)
+	Added Gah's GuildMine_v7 (SBot) 
+	AIOCooker will now properly bank anchovies.
+	
+	
+FEB 2 2021
+	You can now run scripts from the command line! If it cannot find the script, it will immediately terminate and return 1.
+	Added dropItem(id, amt) to Controller
+	Added Searos' Woodcutting and PowercraftTalisman scripts. Very cool stuff!!!
+	Added Gah's fixed SBot scripts: YanilleIron and drayfish
+
+FEB 1 2021
+	Fixed GuildFish2 not handling sharks correctly.
+	Removed GuildFish to reduce confusion with GuildFish2. It also is a bad script compared to GuildFish2.
+	Batching support added to GuildFish2. 
+	AIOCooker properly exported, users should see it now in their listing.
+	AIOSmelter will now properly work on worlds where there is no right click bank option.
+	AIOSmelter will now not take forever to deposit items.
+	AIOSmelter now supports batching.
+	Added note about PowerTuna being used in Karamja, not Catherby.
+	AKMiner, AIOCooker and AIOSmelter will now keep trying to talk to a banker.
+	AIOFighter acts a little less dumb. It's still dumb though.
+	AIOFighter will no longer crash if no monsters are around while you are maging.
+	AIOFighter will mage monsters like it is supposed to now. 
+	AIOFighter will now logout when out of arrows.
+	Removed batching from GuildFisher2 because it was causing issues. Needs better fix + actual testing.
+	Fixed banking and batching on AIOCooker, AIOSmelter, AKMiner, GuildFisher2
+	Implemented gate/door object opening on AIOFighter. Still needs wall object opening.
+	Cleaned showed me what was wrong with walkToNpcAsync(...)! WOOHOO!
+	AIOFighter will now handle gates. Doors are TBD.
+	AIOCooker will no longer accidentally drop cooked food.
+	HarvesterTrainer script added!
+	HerbHarvester script added!
+	
 JAN 31 2021
 	Tyler added alphabetical sorting to the script launcher
 	Updated AIOFighter to no longer attempt to pickup loot outside of range. It will still attempt to attack NPCs out of range, if that is the case, you need to increase your wander distance.

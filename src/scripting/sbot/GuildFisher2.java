@@ -213,13 +213,21 @@ public class GuildFisher2 extends Script implements ActionListener
             AtObject(spot[0],spot[1]);
             cMode = " fishing lobsters";
             showReport();
-            Wait(1000);   
+            Wait(1000);  
+            
+            while(IsBatching() && InvCount() < 30) {
+            	Wait(10);
+            }
          }
          if (fishtype.equalsIgnoreCase("Shark"))
          {
             int spot[] = GetNearestObject(261);
             AtObject2(spot[0],spot[1]);
             Wait(1000);
+            
+            while(IsBatching() && InvCount() < 30) {
+            	Wait(10);
+            }
             cMode = " fishing sharks";
             showReport();
          }
@@ -311,7 +319,7 @@ public class GuildFisher2 extends Script implements ActionListener
                   Answer(1);
                   while (!QuestMenu())Wait(500);
                   Wait(1000);
-                  Answer(3);
+                  Answer(1);
                   while (!QuestMenu())Wait(500);
                   Wait(1000);
                   Answer(4);
@@ -355,6 +363,7 @@ public class GuildFisher2 extends Script implements ActionListener
                showReport();
                UseOnObject(583, 520, FindInv(rawid));
                Wait(2500);
+               WaitForBatchFinish();
                if (Fatigue() >= 80 && Running())
                   {
                      while (!Sleeping() && Running())
@@ -437,7 +446,7 @@ public class GuildFisher2 extends Script implements ActionListener
                }
                if (fishtype.equalsIgnoreCase("Shark") && Running())
                {
-                  cMode = " certing lobsters";
+                  cMode = " certing shark";
                   if (InvCount(545) < 25 && InvCount(545) >= 20) certs = 3;
                   if (InvCount(545) < 20 && InvCount(545) >= 15) certs = 2;
                   if (InvCount(545) < 15 && InvCount(545) >= 10) certs = 2;
@@ -450,7 +459,7 @@ public class GuildFisher2 extends Script implements ActionListener
                   Answer(1);
                   while (!QuestMenu())Wait(500);
                   Wait(1000);
-                  Answer(2);
+                  Answer(0);
                   while (!QuestMenu())Wait(500);
                   Wait(1000);
                   Answer(certs);

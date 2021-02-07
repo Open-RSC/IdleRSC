@@ -1,0 +1,57 @@
+// Used for building a runnable jar
+plugins {
+    id 'java'
+}
+
+// Where the code is
+sourceSets {
+    main {
+        java {
+            srcDir 'src/'
+        }
+    }
+}
+
+// Where to find Open_RSC_Client
+repositories {
+    flatDir {
+        dirs './'
+    }
+}
+
+// The Open_RSC_Client dependency
+dependencies {
+    implementation name: 'Open_RSC_Client'
+}
+
+jar {
+    // Starting class
+    manifest {
+        attributes 'Main-Class': 'bot.Main'
+    }
+    // Name of the .jar
+    baseName = "IdleRSC"
+
+    // Include all the source files
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+// Moves the compiled jar at build/libs/IdleRSC.jar to the root folder
+task copyJar(type: Copy) {
+    from "./build/libs"
+    into "./"
+}
+
+// Deletes the build directory
+task cleanBuildDir(type: Delete) {
+    delete 'build'
+}
+
+// cleanBuildJar depends on copyJar running first
+cleanBuildDir.dependsOn(copyJar)
+
+// "gradle build" depends on cleanBuildJar running first
+build.dependsOn(cleanBuildDir)

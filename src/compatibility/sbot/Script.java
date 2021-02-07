@@ -1110,7 +1110,7 @@ public abstract class Script
 	public String GetNPCCommand(int type)
 	{
 		WaitForLoad();
-		return controller.getNpcCommand(type);
+		return controller.getNpcCommand1(type);
 	}
 	public String GetNPCDesc(int type)
 	{
@@ -1384,5 +1384,9 @@ public abstract class Script
 	
 	public void WaitForBatchFinish() {
 		while(controller.isBatching()) controller.sleep(10);
+	}
+	
+	public boolean IsBatching() {
+		return controller.isBatching();
 	}
 }

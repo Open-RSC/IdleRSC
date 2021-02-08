@@ -514,7 +514,7 @@ public class Controller {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(135);
 		mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
-		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(this.getInventoryItemIdSlot(itemId));
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 

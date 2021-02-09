@@ -20,8 +20,8 @@ public class EssenceMiner extends IdleScript {
 	int[] pickaxes = { 12, 87, 88, 203, 204, 405, 1263 };
 
 	public void start(String parameters[]) {
-		scriptStarted = true;
-		while (scriptStarted) {
+			controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+		while (controller.isRunning()) {
 			scriptStart();
 		}
 	}
@@ -50,9 +50,11 @@ public class EssenceMiner extends IdleScript {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
-				controller.walkTo(newX, newY, 2, false);
+				controller.walkToAsync(newX, newY, 2);
+				controller.sleep(640);
 			} else {
-				controller.walkTo(newX, newY, 0, false);
+				controller.walkToAsync(newX, newY, 0);
+				controller.sleep(640);
 			}
 		}
 	}
@@ -67,7 +69,6 @@ public class EssenceMiner extends IdleScript {
 	}
 
 	public void scriptStart() {
-		while (controller.isRunning()) {
 			if (controller.currentZ() <= 95) {
 				inEssenceMine = true;
 			} else {
@@ -135,7 +136,5 @@ public class EssenceMiner extends IdleScript {
 				controller.displayMessage("@red@Finished Banking");
 				controller.displayMessage("@yel@ Banked " + totalStones + " Rune Stones");
 			}
-		}
-		scriptStarted = false;
 	}
 }

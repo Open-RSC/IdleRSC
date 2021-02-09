@@ -155,6 +155,8 @@ public class AIOCooker extends IdleScript {
 			if(controller.isBatching() == false)
 				controller.useItemIdOnObject(432, 480, target.rawId);
 			
+			controller.sleepHandler(98, true);
+			
 			controller.sleep(250);
 		}
 		

@@ -105,6 +105,7 @@ public class FletchnBankBows extends IdleScript {
 
 			}
 			while (controller.getInventoryItemCount(logId) > 0 && !stringTime) {
+				controller.sleepHandler(98, true);
 				controller.useItemOnItemBySlot(0, 1);
 				controller.sleep(500);
 				if (controller.isInOptionMenu()) {

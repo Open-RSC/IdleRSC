@@ -71,9 +71,11 @@ public class Woodcutting extends IdleScript {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
-				controller.walkTo(newX, newY, 2, false);
+				controller.walkToAsync(newX, newY, 2);
+				controller.sleep(640);
 			} else {
-				controller.walkTo(newX, newY, 0, false);
+				controller.walkToAsync(newX, newY, 0);
+				controller.sleep(640);
 			}
 		}
 	}
@@ -97,6 +99,7 @@ public class Woodcutting extends IdleScript {
 				bankTime = false;
 			}
 			if (controller.getNearestObjectById(treeId) != null && chopTime && !controller.isBatching()) {
+				controller.sleepHandler(98, true);
 				int[] treeCoords = controller.getNearestObjectById(treeId);
 				controller.atObject(treeCoords[0], treeCoords[1]);
 				controller.sleep(640);

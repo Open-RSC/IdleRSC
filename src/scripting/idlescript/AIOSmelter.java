@@ -136,6 +136,7 @@ public class AIOSmelter extends IdleScript {
 					controller.sleep(618);
 				}
 
+				controller.sleepHandler(98, true);
 				controller.useItemIdOnObject(controller.getNearestObjectById(118)[0],
 						controller.getNearestObjectById(118)[1], oreId);
 				if (oreId == 171)

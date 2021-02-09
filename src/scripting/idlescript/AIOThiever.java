@@ -151,6 +151,7 @@ public class AIOThiever extends IdleScript {
 			
 			if(!controller.isInCombat()) { 
 				if(target.isNpc == true) {
+					controller.sleepHandler(98, true);
 					ORSCharacter npc = controller.getNearestNpcById(target.id, false);
 					if(npc != null && npc.serverIndex > 0)
 						controller.npcCommand1(npc.serverIndex);
@@ -186,18 +187,6 @@ public class AIOThiever extends IdleScript {
 							}
 						}
 						
-//						int withdrawn = 0;
-//						while(countFood() < foodWithdrawAmount) {
-//							for(int id : controller.getFoodIds()) {
-//								if(controller.getBankItemCount(id) > 0) {
-//									controller.withdrawItem(id, ++withdrawn);
-//									controller.sleep(500);
-//									break;
-//								}
-//							}
-//						}
-//						int withdrawn = 0;
-//						while(countFood() < foodWithdrawAmount) {
 						for(int id : controller.getFoodIds()) {
 							if(controller.getBankItemCount(id) > 0) {
 								controller.withdrawItem(id, foodWithdrawAmount);

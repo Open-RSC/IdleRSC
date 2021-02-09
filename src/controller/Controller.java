@@ -139,9 +139,6 @@ public class Controller {
 	}
 
 	public boolean isItemInInventory(int id) {
-		if(id == 1263) //sleeping bag hook
-			return true;
-
 		return mud.getInventoryCount(id) > 0;
 	}
 
@@ -170,9 +167,6 @@ public class Controller {
 	}
 
 	public int getInventoryItemCount(int id) {
-		if(id == 1263) //sleeping bag hook
-			return 1;
-
 		return mud.getInventoryCount(id);
 	}
 
@@ -678,7 +672,7 @@ public class Controller {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(135);
 		mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
-		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(this.getInventoryItemIdSlot(itemId));
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
@@ -927,10 +921,6 @@ public class Controller {
 	}
 
 	public int getInventoryItemIdSlot(int itemId) {
-
-		if(itemId == 1263) //sleeping bag hook
-			return 0;
-
 		int inventoryItemCount = (int) reflector.getObjectMember(mud, "inventoryItemCount");
 		int[] inventoryItemID = this.getInventoryItemIds(); //(int[]) reflector.getObjectMember(mud, "inventoryItemID");
 		int inventoryIndex = -1;
@@ -2063,5 +2053,93 @@ public class Controller {
 			}
 		}
 	}
+	
+	public void log(String text) {
+		log(text, "red");
+	}
+	
+	public void log(String text, String rsTextColor) {
+		System.out.println(text);
+		Main.log(text);
+		displayMessage("@" + rsTextColor + "@" + text);
+	}
+	
+	public boolean isSleeping() {
+		return mud.getIsSleeping();
+	}
+	
+	public void sleepHandler(int fatigueToSleepAt, boolean quitOnNoSleepingBag) {
+		if(!isLoggedIn())
+			return;
+		
+		if(this.getInventoryItemCount(1263) < 1) {
+			while(isLoggedIn()) {
+				Main.log("No sleeping bag!");
+				if(quitOnNoSleepingBag) {
+					this.logout();
+					this.stop();
+				}
+			}
+			
+			return;
+		}
+		
+		if(this.getFatigue() >= fatigueToSleepAt)
+			this.itemCommand(1263);
+		
+		
+		this.sleep(1000);
+		while(this.isSleeping()) sleep(10);
+	}
+	
+	public int[] getNearestBank() {
+		int[] bankX = { 220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440 };
+		int[] bankY = { 635, 504, 511, 365, 450, 569, 452, 576, 600, 754, 3543, 495 };
+		int prevX = 10000;
+		int prevY = 10000;
+		int index = 0;
+		for (int i = 0; i < bankX.length; i++) {
+			if (Math.abs((bankX[i] - currentX())) < prevX && Math.abs((bankY[i] - currentZ())) < prevY) {
+				prevX = Math.abs(bankX[i] - currentX());
+				prevY = Math.abs(bankY[i] - currentZ());
+				index = i;
+			}
+		}
+		int[] bankCoords = {bankX[index],bankY[index]};
+		return bankCoords;
+	}
+	
+	public boolean shopBuy(int itemId,int amount) {
+		//TODO: check if enough coins in inventory, return false if not enough.
+		if(!isInShop() || shopItemCount(itemId) < 1)
+			return false;
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(236);
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(amount);
+		mud.packetHandler.getClientStream().finishPacket();
+
+		return true;
+	}
+
+	public boolean shopSell(int itemId,int amount) {
+		//TODO: check if item in inventory
+		if(!isInShop() || shopItemCount(itemId) == -1)
+			return false;
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(221);
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(amount);
+		mud.packetHandler.getClientStream().finishPacket();
+
+		return true;
+	}
+
+
+	
 }
  

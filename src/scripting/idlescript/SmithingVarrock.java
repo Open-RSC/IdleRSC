@@ -35,7 +35,6 @@ public class SmithingVarrock extends IdleScript {
 		}
 	}
 
-
 	public void scriptStart() {
 		while (controller.isRunning()) {
 			if (controller.getInventoryItemCount(barId) < 5 && !controller.isInBank()) {
@@ -60,30 +59,32 @@ public class SmithingVarrock extends IdleScript {
 				controller.closeBank();
 				controller.sleep(1280);
 				if (barsLeft < 1) {
-						controller.useItemIdOnObject(controller.getNearestObjectById(50)[0],
-								controller.getNearestObjectById(50)[1], barId);
-						controller.sleep(8000);
-						if (controller.isInOptionMenu()) {
-							controller.optionAnswer(ans1);
-							controller.sleep(640);
-							controller.optionAnswer(ans2);
-							controller.sleep(640);
-							controller.optionAnswer(ans3);
-							if (controller.isInOptionMenu()) {
-								controller.sleep(640);
-								controller.optionAnswer(ans4);
-							}
-						}
+					controller.sleepHandler(98, true);
+					controller.useItemIdOnObject(controller.getNearestObjectById(50)[0],
+							controller.getNearestObjectById(50)[1], barId);
+					controller.sleep(8000);
+					if (controller.isInOptionMenu()) {
+						controller.optionAnswer(ans1);
 						controller.sleep(640);
-						while (controller.isBatching()) {
-							controller.sleep(100);
+						controller.optionAnswer(ans2);
+						controller.sleep(640);
+						controller.optionAnswer(ans3);
+						if (controller.isInOptionMenu()) {
+							controller.sleep(640);
+							controller.optionAnswer(ans4);
 						}
+					}
+					controller.sleep(640);
+					while (controller.isBatching()) {
+						controller.sleep(100);
+					}
 					scriptStarted = false;
 					guiSetup = false;
 					return;
 				}
 			}
 			while (controller.getInventoryItemCount(barId) > 5 && !controller.isInBank()) {
+				controller.sleepHandler(98, true);
 				controller.useItemIdOnObject(controller.getNearestObjectById(50)[0],
 						controller.getNearestObjectById(50)[1], barId);
 				controller.sleep(640);
@@ -121,9 +122,10 @@ public class SmithingVarrock extends IdleScript {
 		JComboBox<String> barField = new JComboBox<String>(
 				new String[] { "Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite" });
 		JLabel ans1Label = new JLabel("Item Type:");
-		JComboBox<String> ans1Field = new JComboBox<String>(new String[] { "Weapon", "Armour" });
+		JComboBox<String> ans1Field = new JComboBox<String>(new String[] { "Weapon", "Armour", "Missile Heads" });
 		JLabel ans2Label = new JLabel("Weapon Type");
-		 JComboBox<String> ans2Field = new JComboBox<String>(new String[] { "Dagger", "Throwing Knife", "Sword", "Axe", "Mace" });
+		JComboBox<String> ans2Field = new JComboBox<String>(
+				new String[] { "Dagger", "Throwing Knife", "Sword", "Axe", "Mace" });
 		JLabel ans3Label = new JLabel("How many");
 		JComboBox<String> ans3Field = new JComboBox<String>(new String[] { "1", "5", "10", "all" });
 		JLabel ans4Label = new JLabel("Null");
@@ -151,13 +153,21 @@ public class SmithingVarrock extends IdleScript {
 			public void actionPerformed(ActionEvent e) {
 				if (ans1Field.getSelectedIndex() == 0) {
 					ans2Label.setText("Weapon Type");
-					ans2Field.setModel(new JComboBox<>(new String[] {"Dagger", "Throwing Knife", "Sword", "Axe", "Mace"}).getModel());
+					ans2Field.setModel(
+							new JComboBox<>(new String[] { "Dagger", "Throwing Knife", "Sword", "Axe", "Mace" })
+									.getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans1Field.getSelectedIndex() == 1) {
 					ans2Label.setText("Armour Type");
-					ans2Field.setModel(new JComboBox<>(new String[] {"Helmet", "Shield", "Armour"}).getModel());
+					ans2Field.setModel(new JComboBox<>(new String[] { "Helmet", "Shield", "Armour" }).getModel());
+					scriptFrame.setVisible(false);
+					scriptFrame.setVisible(true);
+				}
+				if (ans1Field.getSelectedIndex() == 2) {
+					ans2Label.setText("Missile Type");
+					ans2Field.setModel(new JComboBox<>(new String[] { "Arrowheads" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
@@ -170,65 +180,75 @@ public class SmithingVarrock extends IdleScript {
 
 				if (ans2Field.getSelectedIndex() == 0 && ans1Field.getSelectedIndex() == 0) {
 					ans3Label.setText("How many");
-					ans3Field.setModel(new JComboBox<>(new String[] {"1", "5", "10", "all"}).getModel());
+					ans3Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					ans4Label.setText("Null");
-					ans4Field.setModel(new JComboBox<>(new String[] {"Null"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "Null" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans2Field.getSelectedIndex() == 1 && ans1Field.getSelectedIndex() == 0) {
 					ans3Label.setText("How many");
-					ans3Field.setModel(new JComboBox<>(new String[] {"1", "5", "10", "all"}).getModel());
+					ans3Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					ans4Label.setText("Null");
-					ans4Field.setModel(new JComboBox<>(new String[] {"Null"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "Null" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans2Field.getSelectedIndex() == 2 && ans1Field.getSelectedIndex() == 0) {
 					ans3Label.setText("Sword Type");
-					ans3Field.setModel(new JComboBox<>(new String[] { "Short", "Long", "Scimitar", "2h"}).getModel());
+					ans3Field.setModel(new JComboBox<>(new String[] { "Short", "Long", "Scimitar", "2h" }).getModel());
 					ans4Label.setText("How many");
-					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans2Field.getSelectedIndex() == 3 && ans1Field.getSelectedIndex() == 0) {
 					ans3Label.setText("Axe Type");
-					ans3Field.setModel(new JComboBox<>(new String[] { "Hatchet", "Battle"}).getModel());
+					ans3Field.setModel(new JComboBox<>(new String[] { "Hatchet", "Battle" }).getModel());
 					ans4Label.setText("How many");
-					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans2Field.getSelectedIndex() == 4 && ans1Field.getSelectedIndex() == 0) {
 					ans3Label.setText("How many");
-					ans3Field.setModel(new JComboBox<>(new String[] {"1", "5", "10", "all"}).getModel());
+					ans3Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					ans4Label.setText("Null");
-					ans4Field.setModel(new JComboBox<>(new String[] {"Null"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "Null" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans2Field.getSelectedIndex() == 0 && ans1Field.getSelectedIndex() == 1) {
 					ans3Label.setText("Helmet Type");
-					ans3Field.setModel(new JComboBox<>(new String[] { "Medium", "Large"}).getModel());
+					ans3Field.setModel(new JComboBox<>(new String[] { "Medium", "Large" }).getModel());
 					ans4Label.setText("How many");
-					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans2Field.getSelectedIndex() == 1 && ans1Field.getSelectedIndex() == 1) {
 					ans3Label.setText("Shield Type");
-					ans3Field.setModel(new JComboBox<>(new String[] { "Square", "Kite"}).getModel());
+					ans3Field.setModel(new JComboBox<>(new String[] { "Square", "Kite" }).getModel());
 					ans4Label.setText("How many");
-					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}
 				if (ans2Field.getSelectedIndex() == 2 && ans1Field.getSelectedIndex() == 1) {
 					ans3Label.setText("Armour Type");
-					ans3Field.setModel(new JComboBox<>(new String[] { "Chain Legs", "Chain Body", "Plate Body", "Plate Legs", "Plate Skirt"}).getModel());
+					ans3Field.setModel(new JComboBox<>(
+							new String[] { "Chain Legs", "Chain Body", "Plate Body", "Plate Legs", "Plate Skirt" })
+									.getModel());
 					ans4Label.setText("How many");
-					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all"}).getModel());
+					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
+					scriptFrame.setVisible(false);
+					scriptFrame.setVisible(true);
+				}
+				if (ans2Field.getSelectedIndex() == 0 && ans1Field.getSelectedIndex() == 2) {
+					ans3Label.setText("How many");
+					ans3Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
+					ans4Label.setText("Null");
+					ans4Field.setModel(new JComboBox<>(new String[] { "Null" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
 				}

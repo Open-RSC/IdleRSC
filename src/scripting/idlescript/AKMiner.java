@@ -80,6 +80,7 @@ public class AKMiner extends IdleScript {
 				
 				while(controller.isBatching() && controller.getInventoryItemCount() < 30) controller.sleep(10);
 				
+				controller.sleepHandler(98, true);
 				int[] objCoord = controller.getNearestObjectById(target.rockId);
 				if(objCoord != null) {
 					controller.objectAt(objCoord[0], objCoord[1], 0, target.rockId);

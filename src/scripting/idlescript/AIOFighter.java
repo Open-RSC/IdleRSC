@@ -184,6 +184,7 @@ public class AIOFighter extends IdleScript {
    
     		
     		if(!controller.isInCombat() ) {
+    			controller.sleepHandler(98, true);
 	    		ORSCharacter npc = controller.getNearestNpcByIds(npcIds, false);
 	    		
 	    		

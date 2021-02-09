@@ -622,7 +622,6 @@ public class Debugger implements Runnable {
 
     private void listen() {
         this.listening = true;
-        this.setShowDevMenus(true);
     }
 
     private List<Integer> getIntegerListFromIntArray(int[] arr) {
@@ -635,13 +634,7 @@ public class Debugger implements Runnable {
         return _list;
     }
     
-    private void setShowDevMenus(boolean show) {
-        this.reflector.setObjectMember(mud, "modMenu", show);
-        this.reflector.setObjectMember(mud, "developerMenu", show);
-    }
-
     private void onWindowClosed() {
         this.listening = false;
-        this.setShowDevMenus(false);
     }
 }

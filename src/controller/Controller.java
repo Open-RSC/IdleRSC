@@ -1731,12 +1731,10 @@ public class Controller {
 
         if(this.getFatigue() >= fatigueToSleepAt) {
                 if(this.getInventoryItemCount(1263) < 1) {
-                        while(isLoggedIn()) {
+                        while(isLoggedIn() && quitOnNoSleepingBag) {
                                 log("No sleeping bag! Logging out...");
-                                if(quitOnNoSleepingBag) {
-                                        this.logout();
-                                        this.stop();
-                                }
+                                this.logout();
+                                this.stop();
                         }
 
                         return;

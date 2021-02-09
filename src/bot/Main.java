@@ -170,12 +170,12 @@ public class Main {
 
         //just building out the windows
         botFrame = new JFrame("Bot Pane");
-        logFrame = new JFrame("Bot Console");
+        consoleFrame = new JFrame("Bot Console");
         rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
         scriptFrame = new JFrame("Script Selector");
 
         initializeBotFrame(botFrame);
-        initializeConsoleFrame(logFrame);
+        initializeConsoleFrame(consoleFrame);
         initializeScriptFrame(scriptFrame);
 
 
@@ -220,7 +220,7 @@ public class Main {
         log("PositionListener initialized.");
 
         log("Initializing WindowListener...");
-        windowListener = new Thread(new WindowListener(botFrame, logFrame, rscFrame, scroller, logArea, controller));
+        windowListener = new Thread(new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
         windowListener.start();
         log("WindowListener started.");
 

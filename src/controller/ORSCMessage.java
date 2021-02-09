@@ -1,7 +1,6 @@
 package controller;
 
 import orsc.enumerations.MessageType;
-import orsc.graphics.gui.MessageHistory;
 
 /**
  * This is a helper class for comparing messages from RSC. The equals operator has been overloaded.

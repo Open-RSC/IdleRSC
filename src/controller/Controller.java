@@ -1,30 +1,15 @@
 package controller;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.zip.CRC32;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -35,7 +20,6 @@ import com.openrsc.client.entityhandling.defs.GameObjectDef;
 import com.openrsc.client.entityhandling.defs.ItemDef;
 import com.openrsc.client.entityhandling.defs.SpellDef;
 import com.openrsc.client.entityhandling.instances.Item;
-import com.openrsc.interfaces.misc.BankInterface;
 
 import bot.Main;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
@@ -43,7 +27,6 @@ import models.entities.GroundItemDef;
 import models.entities.SkillDef;
 
 import orsc.Config;
-import orsc.ORSCApplet;
 import orsc.ORSCharacter;
 import orsc.OpenRSC;
 import orsc.graphics.gui.SocialLists;
@@ -52,11 +35,8 @@ import orsc.enumerations.MessageType;
 import orsc.enumerations.ORSCharacterDirection;
 import orsc.graphics.gui.MessageHistory;
 import orsc.graphics.gui.Panel;
-import orsc.graphics.three.RSModel;
 import orsc.graphics.two.MudClientGraphics;
-import orsc.net.Network_Socket;
 import reflector.Reflector;
-
 /**
  *
  * This is the native scripting library abstraction layer for IdleRSC.

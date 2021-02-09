@@ -362,7 +362,6 @@ public class Main {
         });
 
 
-        debugger.open();
         openDebuggerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

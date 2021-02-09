@@ -1,1 +1,8 @@
 .gradle/
+.idea
+
+# we should eventually start to ignore bin/ for easier git handling
+bin/
+
+# ignore chosen cache
+Cache/

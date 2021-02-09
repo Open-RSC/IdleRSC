@@ -152,9 +152,6 @@ public class Controller {
 	}
 
 	public boolean isItemInInventory(int id) {
-		if(id == 1263) //sleeping bag hook
-			return true;
-
 		return mud.getInventoryCount(id) > 0;
 	}
 
@@ -183,9 +180,6 @@ public class Controller {
 	}
 
 	public int getInventoryItemCount(int id) {
-		if(id == 1263) //sleeping bag hook
-			return 1;
-
 		return mud.getInventoryCount(id);
 	}
 
@@ -763,10 +757,6 @@ public class Controller {
 	}
 
 	public int getInventoryItemIdSlot(int itemId) {
-
-		if(itemId == 1263) //sleeping bag hook
-			return 0;
-
 		int inventoryItemCount = (int) reflector.getObjectMember(mud, "inventoryItemCount");
 		int[] inventoryItemID = this.getInventoryItemIds(); //(int[]) reflector.getObjectMember(mud, "inventoryItemID");
 		int inventoryIndex = -1;
@@ -1721,7 +1711,43 @@ public class Controller {
 		}
 	}
 	
+	public void log(String text) {
+		log(text, "red");
+	}
 	
+	public void log(String text, String rsTextColor) {
+		System.out.println(text);
+		Main.log(text);
+		displayMessage("@" + rsTextColor + "@" + text);
+	}
+	
+	public boolean isSleeping() {
+		return mud.getIsSleeping();
+	}
+	
+	public void sleepHandler(int fatigueToSleepAt, boolean quitOnNoSleepingBag) {
+		if(!isLoggedIn())
+			return;
+		
+		if(this.getInventoryItemCount(1263) < 1) {
+			while(isLoggedIn()) {
+				Main.log("No sleeping bag!");
+				if(quitOnNoSleepingBag) {
+					this.logout();
+					this.stop();
+				}
+			}
+			
+			return;
+		}
+		
+		if(this.getFatigue() >= fatigueToSleepAt)
+			this.itemCommand(1263);
+		
+		
+		this.sleep(1000);
+		while(this.isSleeping()) sleep(10);
+	}
 	
 }
  

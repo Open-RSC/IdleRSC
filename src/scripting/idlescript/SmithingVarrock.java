@@ -60,6 +60,7 @@ public class SmithingVarrock extends IdleScript {
 				controller.closeBank();
 				controller.sleep(1280);
 				if (barsLeft < 1) {
+						controller.sleepHandler(98, true);
 						controller.useItemIdOnObject(controller.getNearestObjectById(50)[0],
 								controller.getNearestObjectById(50)[1], barId);
 						controller.sleep(8000);
@@ -84,6 +85,7 @@ public class SmithingVarrock extends IdleScript {
 				}
 			}
 			while (controller.getInventoryItemCount(barId) > 5 && !controller.isInBank()) {
+				controller.sleepHandler(98, true);
 				controller.useItemIdOnObject(controller.getNearestObjectById(50)[0],
 						controller.getNearestObjectById(50)[1], barId);
 				controller.sleep(640);

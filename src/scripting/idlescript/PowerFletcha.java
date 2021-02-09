@@ -80,6 +80,8 @@ public class PowerFletcha extends IdleScript {
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			
+			controller.sleepHandler(98, true);
+			
 			for(int id : bowIds) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.dropItem(controller.getInventoryItemIdSlot(id));

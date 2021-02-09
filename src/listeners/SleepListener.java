@@ -21,6 +21,7 @@ public class SleepListener implements Runnable {
 	int count = 43;
 	private mudclient mud;
 	private Controller controller;
+	private String previousSleepWord = "";
 
 	public SleepListener(mudclient _mud, Controller _controller) {
 		mud = _mud;
@@ -54,23 +55,28 @@ public class SleepListener implements Runnable {
 	public void run() {
 		while(true) {
 			byte[] packet = mud.packetHandler.getPacketsIncoming().dataBuffer; 
-			int sleepDataLength = packet.length - 1;
 
 			if(packet[0] == 117) {
-				byte[] sleepData = Arrays.copyOfRange(packet, 1, sleepDataLength);
 				Main.log("got sleep packet!");
 				saveSleepImage(packet, packet.length);
 				System.out.println("image saved");
 
 				Main.log("Waiting for fatigue to reach 0...");
-				controller.sleep(1000);
 				while(controller.getFatigueDuringSleep() != 0) controller.sleep(10);
 				
 
 				try {
 					String guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
+					
+					while(guess.equals(previousSleepWord)) {
+						Main.log("Sleep word has not updated... is OCR running?");
+						guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
+						controller.sleep(1000);
+					}
+					
 					Main.log("guess: " + guess);
 					controller.chatMessage(guess);
+					previousSleepWord = guess;
 				} catch (IOException e) {
 					Main.log("error reading slword.txt! Ensure sleeper has access to write slword.txt and correct directory is set.");
 					e.printStackTrace();
@@ -78,6 +84,7 @@ public class SleepListener implements Runnable {
 			}
 
 			controller.sleep(10);
+			//TODO: convert from polling to callback based sleeping
 		}	
 	}
 

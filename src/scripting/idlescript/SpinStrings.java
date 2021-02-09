@@ -87,6 +87,7 @@ public class SpinStrings extends IdleScript {
 			if (controller.getInventoryItemCount(input) > 0) {
 				bankTime = false;
 				// if player is upstairs, not batching, and not banking, spin flax.
+				controller.sleepHandler(98, true);
 				if (upstairs && !bankTime && destination.getSelectedIndex() == 0
 						&& controller.getNearestObjectById(121) != null) {
 					controller.displayMessage("@red@Spinning Flax");

@@ -97,6 +97,7 @@ public class Woodcutting extends IdleScript {
 				bankTime = false;
 			}
 			if (controller.getNearestObjectById(treeId) != null && chopTime && !controller.isBatching()) {
+				controller.sleepHandler(98, true);
 				int[] treeCoords = controller.getNearestObjectById(treeId);
 				controller.atObject(treeCoords[0], treeCoords[1]);
 				controller.sleep(640);

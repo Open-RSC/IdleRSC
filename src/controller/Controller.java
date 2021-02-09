@@ -1725,29 +1725,30 @@ public class Controller {
 		return mud.getIsSleeping();
 	}
 	
-	public void sleepHandler(int fatigueToSleepAt, boolean quitOnNoSleepingBag) {
-		if(!isLoggedIn())
-			return;
-		
-		if(this.getInventoryItemCount(1263) < 1) {
-			while(isLoggedIn()) {
-				Main.log("No sleeping bag!");
-				if(quitOnNoSleepingBag) {
-					this.logout();
-					this.stop();
-				}
-			}
-			
-			return;
-		}
-		
-		if(this.getFatigue() >= fatigueToSleepAt)
-			this.itemCommand(1263);
-		
-		
-		this.sleep(1000);
-		while(this.isSleeping()) sleep(10);
-	}
+    public void sleepHandler(int fatigueToSleepAt, boolean quitOnNoSleepingBag) {
+        if(!isLoggedIn())
+                return;
+
+        if(this.getFatigue() >= fatigueToSleepAt) {
+                if(this.getInventoryItemCount(1263) < 1) {
+                        while(isLoggedIn()) {
+                                log("No sleeping bag! Logging out...");
+                                if(quitOnNoSleepingBag) {
+                                        this.logout();
+                                        this.stop();
+                                }
+                        }
+
+                        return;
+                } else {
+                        this.itemCommand(1263);
+
+                        this.sleep(1000);
+                        while(this.isSleeping()) sleep(10);
+                }
+        }
+    }
+
 	
 	public int[] getNearestBank() {
 		int[] bankX = { 220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440 };

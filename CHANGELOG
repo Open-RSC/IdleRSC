@@ -1,3 +1,20 @@
+FEB 9 2021
+	Fixed bug where accounts were getting logged out on Coleslaw for not having a sleeping bag.
+
+FEB 8 2021
+    useItemOnNpc now correctly uses itemId instead of slotId -- if you had a script break this release, it may have been this!
+    SleepListener is now fully implemented. When slword.txt is updated by an OCR (likely FOCR), it will now input it into the sleep input box.
+    Searos' SmithingVarrock now supports arrowheads.
+    Searos' SpinStrings now uses walkToAsync and less likely to break from relogging
+    Searos' EssenceMiner now uses walkToAsync so it is less likely to get stuck
+    Searos' Woodcutting now uses walkToAsync so it is less likely to get stuck
+    Added Searos' ShearSheep, which banks wool from sheep in multiple areas. 
+    Added Searos' SelltoShop, which allows you to sell items to shops at a rate beneficial for income.
+    Searos' getNearestBank() added to Controller. This function returns the coords of the closest bank.
+    Searos' updated shopBuy/shopSell functions to handle multiple item amounts.
+
+	IdleRSC will now sleep on Uranium provided you are running FOCR: https://gitlab.com/idlersc/focr-resurrection
+
 FEB 6 2021
 	Merged Red's login fixes -- huge thanks to him for this! Now bots will attempt to re-login when DCed.
 	Merged Red's scrollbar fixes on logger -- thanks! Now maybe I'll use logger in my scripts...

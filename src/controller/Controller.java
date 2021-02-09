@@ -1430,6 +1430,8 @@ public class Controller {
 //	}
 
 	public void logout() {
+		this.setAutoLogin(false);
+		
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(102);
 		mud.packetHandler.getClientStream().finishPacket();

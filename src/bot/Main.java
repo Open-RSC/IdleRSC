@@ -396,6 +396,8 @@ public class Main {
         botFrame.add(mouseStatus);
         botFrame.add(posnStatus);
         botFrame.add(openDebuggerButton);
+        openDebuggerButton.setMaximumSize(buttonSize);
+        hideButton.setPreferredSize(buttonSize);
         botFrame.add(hideButton);
         hideButton.setMaximumSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);

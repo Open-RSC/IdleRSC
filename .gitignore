@@ -1,8 +1,19 @@
+# grade
 .gradle/
-.idea
+gradle/
+gradlew
+gradlew.bat
 
-# we should eventually start to ignore bin/ for easier git handling
+# IDE
+.idea/
+
+# output
+classes/
+build/
+# we should eventually start to ignore bin/ for easier git management
 bin/
 
-# ignore chosen cache
+# caches
 Cache/
+UraniumCache/
+ColeslawCache/

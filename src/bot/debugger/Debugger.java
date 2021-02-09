@@ -1,5 +1,6 @@
 package bot.debugger;
 
+import bot.ui.table.Table;
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
 import com.openrsc.client.entityhandling.defs.GameObjectDef;
@@ -158,9 +159,6 @@ public class Debugger implements Runnable {
         this.frame.setSize(525, 500);
         this.frame.setMinimumSize(new Dimension(525, 500));
 
-        // Setup table
-
-
         // Build the GUI
         this.frame.add(scrollPane, BorderLayout.CENTER);
         this.frame.add(actionsPanel, BorderLayout.SOUTH);
@@ -295,7 +293,7 @@ public class Debugger implements Runnable {
         }
 
         DebuggerSectionType sectionType = this.activeSection.sectionType;
-        DebuggerSectionJTable sectionTable = this.activeSection.table;
+        Table sectionTable = this.activeSection.table;
 
         JScrollBar scrollBar =  this.scrollPane.getVerticalScrollBar();
 
@@ -372,7 +370,7 @@ public class Debugger implements Runnable {
         this.recipientTradeItems = controller.getRecipientTradeItems();
     }
 
-    private void updateRecipientTradeItems(DebuggerSectionJTable sectionTable) {
+    private void updateRecipientTradeItems(Table sectionTable) {
         for(int i = 0; i < this.recipientTradeItems.size(); i++) {
             Item recipientTradeItem = this.recipientTradeItems.get(i);
 
@@ -387,7 +385,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateLocalTradeSection(DebuggerSectionJTable sectionTable) {
+    private void updateLocalTradeSection(Table sectionTable) {
         for(int i = 0; i < this.localTradeItems.size(); i++) {
             Item localTradeItem = this.localTradeItems.get(i);
 
@@ -402,7 +400,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateIgnoreSection(DebuggerSectionJTable sectionTable) {
+    private void updateIgnoreSection(Table sectionTable) {
         for(int i = 0; i < this.ignoreList.size(); i++) {
             String ignoreName = this.ignoreList.get(i);
 
@@ -414,7 +412,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateFriendSection(DebuggerSectionJTable sectionTable) {
+    private void updateFriendSection(Table sectionTable) {
         for(int i = 0; i < this.friendList.size(); i++) {
             String friendName = this.friendList.get(i);
 
@@ -426,7 +424,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateShopSection(DebuggerSectionJTable sectionTable) {
+    private void updateShopSection(Table sectionTable) {
         for(int i = 0; i < this.shopItems.size(); i++) {
             Item shopItem = this.shopItems.get(i);
 
@@ -442,7 +440,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateBankSection(DebuggerSectionJTable sectionTable) {
+    private void updateBankSection(Table sectionTable) {
         for(int i = 0; i < this.bankItems.size(); i++) {
             Item bankItem = this.bankItems.get(i);
 
@@ -457,7 +455,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateSkillsSection(DebuggerSectionJTable table) {
+    private void updateSkillsSection(Table table) {
         for(int i = 0; i < this.skills.size(); i++) {
             SkillDef skillDef = this.skills.get(i);
 
@@ -474,7 +472,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateGroundItemsSection(DebuggerSectionJTable table) {
+    private void updateGroundItemsSection(Table table) {
         for(int i = 0; i < this.groundItemDefs.size(); i++) {
             GroundItemDef groundItemDef = this.groundItemDefs.get(i);
 
@@ -491,7 +489,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateInventoryItemsSection(DebuggerSectionJTable table) {
+    private void updateInventoryItemsSection(Table table) {
         for(int i = 0; i < this.inventoryItems.size(); i++) {
             Item inventoryItem = this.inventoryItems.get(i);
 
@@ -507,14 +505,9 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateWallObjectsSection(DebuggerSectionJTable table) {
+    private void updateWallObjectsSection(Table table) {
         List<Integer> wallObjectInstanceX = this.getIntegerListFromIntArray(controller.getWallObjectsX());
         List<Integer> wallObjectInstanceZ = this.getIntegerListFromIntArray(controller.getWallObjectsZ());
-
-        int wallObjectInstanceCount = controller.getWallObjectsCount();
-
-        controller.resizeList(wallObjectInstanceX, wallObjectInstanceCount);
-        controller.resizeList(wallObjectInstanceZ, wallObjectInstanceCount);
 
         for(int i = 0; i < this.wallObjects.size(); i++) {
             DoorDef wallObjDef = this.wallObjects.get(i);
@@ -537,14 +530,9 @@ public class Debugger implements Runnable {
 
     }
 
-    private void updateObjectsSection(DebuggerSectionJTable table) {
+    private void updateObjectsSection(Table table) {
         List<Integer> gameObjectInstanceX = this.getIntegerListFromIntArray(controller.getObjectsX());
         List<Integer> gameObjectInstanceZ = this.getIntegerListFromIntArray(controller.getObjectsZ());
-
-        int gameObjectInstanceCount = controller.getObjectsCount();
-
-        controller.resizeList(gameObjectInstanceX, gameObjectInstanceCount);
-        controller.resizeList(gameObjectInstanceZ, gameObjectInstanceCount);
 
         for(int i = 0; i < this.gameObjects.size(); i++) {
             GameObjectDef gameObjectDef = this.gameObjects.get(i);
@@ -566,7 +554,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updateNPCsSection(DebuggerSectionJTable table) {
+    private void updateNPCsSection(Table table) {
         for(int i = 0; i < this.npcs.size(); i++) {
             ORSCharacter npc = this.npcs.get(i);
 
@@ -591,7 +579,7 @@ public class Debugger implements Runnable {
         }
     }
 
-    private void updatePlayersSection(DebuggerSectionJTable table) {
+    private void updatePlayersSection(Table table) {
         for(int i = 0; i < this.players.size(); i++) {
             ORSCharacter player = this.players.get(i);
 

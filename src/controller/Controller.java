@@ -2004,21 +2004,10 @@ public class Controller {
 		return this.reflector.getObjectMember(mud, propertyName);
 	}
 
-	public void resizeList(List list, int newSize) {
-		if(newSize <= 0 || newSize >= list.size()) {
-			return;
-		}
-
-		while(list.size() > newSize) {
-			list.remove(list.size() - 1);
-		}
-	}
-    
     public mudclient getMud() {
     	return this.mud;
     }
-    
-    
+
     /**
      * Will open bank near any bank NPC. Uses right click option if possible.
      */

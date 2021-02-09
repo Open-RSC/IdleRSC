@@ -1,4 +1,4 @@
-package bot.debugger;
+package bot.ui.table;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

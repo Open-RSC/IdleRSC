@@ -1,4 +1,4 @@
-package bot.debugger;
+package bot.ui.table;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -6,7 +6,7 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
-public class DebuggerSectionJTable extends JTable {
+public class Table extends JTable {
     private String[] columnNames = null;
     private Class[] columnTypes = null;
 
@@ -14,7 +14,7 @@ public class DebuggerSectionJTable extends JTable {
 
     private int previousSelectedIndex = -1;
 
-    public DebuggerSectionJTable(String[] columnNames) {
+    public Table(String[] columnNames) {
         this.columnNames = columnNames;
         this.model = new DefaultTableModel(this.columnNames, 0) {
             @Override

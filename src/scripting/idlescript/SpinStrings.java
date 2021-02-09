@@ -27,7 +27,6 @@ public class SpinStrings extends IdleScript {
 	int input = -1;
 	int output = -1;
 	int totalString = 0;
-	boolean bankTime = false;
 	boolean upstairs = false;
 	boolean started = false;
 	int bankSelX = -1;
@@ -67,104 +66,91 @@ public class SpinStrings extends IdleScript {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
-				controller.walkTo(newX, newY, 2, false);
+				controller.walkToAsync(newX, newY, 2);
+				controller.sleep(640);
 			} else {
-				controller.walkTo(newX, newY, 0, false);
+				controller.walkToAsync(newX, newY, 0);
+				controller.sleep(640);
 			}
 		}
 	}
 
 	public void scriptStart() {
 		while (controller.isRunning()) {
-			// check if upstairs
-			if (controller.currentX() <= 525 && controller.currentX() >= 522 && controller.currentZ() >= 1406
-					&& controller.currentZ() <= 1411 && destination.getSelectedIndex() == 0) {
-				upstairs = true;
-			} else {
-				upstairs = false;
-			}
-			// check if player has flax
-			if (controller.getInventoryItemCount(input) > 0) {
-				bankTime = false;
-				// if player is upstairs, not batching, and not banking, spin flax.
-				controller.sleepHandler(98, true);
-				if (upstairs && !bankTime && destination.getSelectedIndex() == 0
-						&& controller.getNearestObjectById(121) != null) {
-					controller.displayMessage("@red@Spinning Flax");
-					while (!controller.isBatching()) {
-						controller.useItemIdOnObject(controller.getNearestObjectById(121)[0],
-								controller.getNearestObjectById(121)[1], input);
-						controller.sleep(640);
-					}
-					while (controller.isBatching()) {
-						controller.sleep(100);
-					}
-				} else if (!bankTime && destination.getSelectedIndex() == 1
-						&& controller.getNearestObjectById(121) != null) {
-					controller.displayMessage("@red@Spinning Flax");
-					while (!controller.isBatching()) {
-						controller.useItemIdOnObject(controller.getNearestObjectById(121)[0],
-								controller.getNearestObjectById(121)[1], input);
-						controller.sleep(640);
-					}
-					while (controller.isBatching()) {
-						controller.sleep(100);
-					}
+			// if player is upstairs, not batching, and not banking, spin flax.
+			while (controller.getNearestObjectById(121) != null && controller.getInventoryItemCount(input) > 0
+					&& destination.getSelectedIndex() == 0 && controller.getNearestObjectById(121) != null) {
+				controller.displayMessage("@red@Spinning Flax");
+				while (!controller.isBatching()) {
+					controller.sleepHandler(98, true);
+					controller.useItemIdOnObject(controller.getNearestObjectById(121)[0],
+							controller.getNearestObjectById(121)[1], input);
+					controller.sleep(640);
 				}
-				if (!upstairs && !bankTime && destination.getSelectedIndex() == 0) {
-					controller.displayMessage("@red@Going upstairs");
-					while (controller.isTileEmpty(525, 462)) {
-						startWalking(524, 463);
-					}
-					while (!controller.isTileEmpty(525, 462)) {
-						controller.atObject(525, 462);
-						controller.sleep(640);
-					}
-					return;
-				} else if (!bankTime && destination.getSelectedIndex() == 1) {
-					while (controller.getNearestObjectById(121) == null) {
-						startWalking(577, 295);
-					}
+				while (controller.isBatching()) {
+					controller.sleep(100);
 				}
 			}
-			// if player has no flax, bank
-			if (controller.getInventoryItemCount(input) == 0) {
-				bankTime = true;
-				// if player is upstairs, go downstairs
-				if (upstairs) {
-					controller.displayMessage("@red@Going downstairs");
-					controller.atObject(525, 1406);
-					while (controller.getNearestObjectById(121) != null) {
-						controller.sleep(100);
-					}
-					upstairs = false;
-					return;
+			while (destination.getSelectedIndex() == 1 && controller.getNearestObjectById(121) != null
+					&& controller.getInventoryItemCount(input) > 0) {
+				controller.displayMessage("@red@Spinning Flax");
+				while (!controller.isBatching()) {
+					controller.sleepHandler(98, true);
+					controller.useItemIdOnObject(controller.getNearestObjectById(121)[0],
+							controller.getNearestObjectById(121)[1], input);
+					controller.sleep(640);
 				}
-				if (!upstairs && bankTime) {
-					controller.displayMessage("@red@Walking to bank");
-					while (controller.getNearestNpcByIds(bankerIds, false) == null) {
-						startWalking(bankSelX, bankSelY);
-					}
-					controller.displayMessage("@red@Banking");
-					if (!controller.isInBank() && controller.getNearestNpcByIds(bankerIds, false) != null) {
-						controller.openBank();
-					}
-					totalString = totalString + controller.getInventoryItemCount(output);
-					while (controller.getInventoryItemCount() > 0 && controller.isInBank()) {
-						for (int itemId : controller.getInventoryItemIds()) {
-							if (itemId != 0) {
-								controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-								controller.sleep(10);
-							}
-						}
-					}
-					controller.withdrawItem(input, 30);
-					controller.sleep(618);
-					controller.closeBank();
-					controller.displayMessage("@red@Finished Banking");
-					controller.displayMessage("@yel@ Banked " + totalString + " bowstrings");
+				while (controller.isBatching()) {
+					controller.sleep(100);
 				}
 			}
+			while (controller.getNearestObjectById(121) == null && controller.getInventoryItemCount(input) > 0
+					&& destination.getSelectedIndex() == 0) {
+				controller.displayMessage("@red@Going upstairs");
+				while (controller.isTileEmpty(525, 462)) {
+					startWalking(524, 463);
+				}
+				while (!controller.isTileEmpty(525, 462)) {
+					controller.atObject(525, 462);
+					controller.sleep(640);
+				}
+				return;
+			}
+			while (controller.getInventoryItemCount(input) > 0 && destination.getSelectedIndex() == 1
+					&& controller.getNearestObjectById(121) == null) {
+				startWalking(577, 295);
+			}
+			while (controller.getNearestObjectById(121) != null && controller.getInventoryItemCount(input) == 0
+					&& destination.getSelectedIndex() == 0) {
+				controller.displayMessage("@red@Going downstairs");
+				controller.atObject(525, 1406);
+				controller.sleep(100);
+			}
+			while (controller.getNearestNpcByIds(bankerIds, false) == null
+					&& controller.getInventoryItemCount(input) == 0) {
+				controller.displayMessage("@red@Walking to bank");
+				startWalking(bankSelX, bankSelY);
+			}
+			controller.displayMessage("@red@Banking");
+			while (!controller.isInBank() && controller.getNearestNpcByIds(bankerIds, false) != null
+					&& controller.getInventoryItemCount(input) == 0) {
+				controller.openBank();
+			}
+			totalString = totalString + controller.getInventoryItemCount(output);
+			while (controller.getInventoryItemCount(input) == 0 && controller.getInventoryItemCount() > 0
+					&& controller.isInBank()) {
+				for (int itemId : controller.getInventoryItemIds()) {
+					if (itemId != 0) {
+						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+						controller.sleep(10);
+					}
+				}
+			}
+			controller.withdrawItem(input, 30);
+			controller.sleep(618);
+			controller.closeBank();
+			controller.displayMessage("@red@Finished Banking");
+			controller.displayMessage("@yel@ Banked " + totalString + " bowstrings");
 		}
 	}
 

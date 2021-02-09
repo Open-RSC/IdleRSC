@@ -1749,5 +1749,54 @@ public class Controller {
 		while(this.isSleeping()) sleep(10);
 	}
 	
+	public int[] getNearestBank() {
+		int[] bankX = { 220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440 };
+		int[] bankY = { 635, 504, 511, 365, 450, 569, 452, 576, 600, 754, 3543, 495 };
+		int prevX = 10000;
+		int prevY = 10000;
+		int index = 0;
+		for (int i = 0; i < bankX.length; i++) {
+			if (Math.abs((bankX[i] - currentX())) < prevX && Math.abs((bankY[i] - currentZ())) < prevY) {
+				prevX = Math.abs(bankX[i] - currentX());
+				prevY = Math.abs(bankY[i] - currentZ());
+				index = i;
+			}
+		}
+		int[] bankCoords = {bankX[index],bankY[index]};
+		return bankCoords;
+	}
+	
+	public boolean shopBuy(int itemId,int amount) {
+		//TODO: check if enough coins in inventory, return false if not enough.
+		if(!isInShop() || shopItemCount(itemId) < 1)
+			return false;
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(236);
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(amount);
+		mud.packetHandler.getClientStream().finishPacket();
+
+		return true;
+	}
+
+	public boolean shopSell(int itemId,int amount) {
+		//TODO: check if item in inventory
+		if(!isInShop() || shopItemCount(itemId) == -1)
+			return false;
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(221);
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(amount);
+		mud.packetHandler.getClientStream().finishPacket();
+
+		return true;
+	}
+
+
+	
 }
  

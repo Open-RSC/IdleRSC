@@ -2,6 +2,7 @@ FEB 9 2021
 	Fixed bug where accounts were getting logged out on Coleslaw for not having a sleeping bag.
 	Scripts on uranium will no longer get caught in an infinite loop if you do not have a sleeping bag and do not want to logout.
 	logout() will now turn off auto login.
+	Implemented Tyler's debugger. You can now see the ids of all objects in the game! Awesome change!
 
 FEB 8 2021
     useItemOnNpc now correctly uses itemId instead of slotId -- if you had a script break this release, it may have been this!

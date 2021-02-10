@@ -31,6 +31,7 @@ import orsc.ORSCharacter;
 import orsc.OpenRSC;
 import orsc.graphics.gui.SocialLists;
 import orsc.mudclient;
+import orsc.enumerations.GameMode;
 import orsc.enumerations.MessageType;
 import orsc.enumerations.ORSCharacterDirection;
 import orsc.graphics.gui.MessageHistory;
@@ -84,11 +85,9 @@ public class Controller {
 		return (int)reflector.getObjectMember(mud, "controlLoginStatus2") == 1;
 	}
 
-	public boolean isLoggedIn() {
-		if ( !((JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe")).getTitle().contains(" -- ")) {
-			return false;
-		}
-		return true;
+	public boolean isLoggedIn() {		
+		GameMode currentViewMode = (GameMode) reflector.getObjectMember(mud, "currentViewMode");
+		return currentViewMode == GameMode.GAME;
 	}
 
 	public void typeKey(char key) {

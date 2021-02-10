@@ -1,5 +1,6 @@
 package bot;
 
+import bot.debugger.Debugger;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -9,6 +10,7 @@ import java.awt.event.*;
 
 import compatibility.sbot.Script;
 import controller.Controller;
+import listeners.*;
 import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
@@ -19,6 +21,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -49,20 +56,23 @@ public class Main {
     private static String[] scriptArguments = {};
 
     private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
-    private static JFrame botFrame, logFrame, rscFrame, scriptFrame; //all the windows.
-    private static JButton startStopButton, loadScriptButton, settingsButton, hideButton; //all the buttons on the sidepanel.
-    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanels
+    private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
+    private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton; //all the buttons on the sidepanel.
+    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
     private static JLabel globalStatus, mouseStatus, posnStatus; //all the labels on the sidepanel.
 
 
     private static JTextArea logArea; //self explanatory
     private static JScrollPane scroller; //this is the main window for the log.
 
+    private static Debugger debugger = null;
+
     private static Thread loginListener = null; //see LoginListener.java
     private static Thread positionListener = null; //see PositionListener.java
     private static Thread windowListener = null; //see WindowListener.java
     private static Thread commandListener = null; //see CommandListener.java
     private static Thread messageListener = null; //see MessageListener.java
+    private static Thread debuggerThread = null;
     private static Thread sleepListener = null; //see SleepListener.java
 
     private static Controller controller = null; //this is the queen bee that controls the actual bot and is the native scripting language.
@@ -70,9 +80,9 @@ public class Main {
     private static Object currentRunningScript = null; //the object instance of the current running script.
 
     private static boolean shouldFilter = true;
-    
+
     private final static String nativeScriptPath = "bin/scripting/idlescript";
-	private final static String sbotScriptPath = "bin/scripting/sbot";
+    private final static String sbotScriptPath = "bin/scripting/sbot";
 
     /**
      * Used by the WindowListener for tracking the log window.
@@ -154,15 +164,18 @@ public class Main {
         OpenRSC client = reflector.createClient(); //start up our client jar
         mudclient mud = reflector.getMud(client); //grab the mud from the client 
         controller = new Controller(reflector, client, mud); //start up our controller
+        debugger = new Debugger(reflector, client, mud, controller);
+        debuggerThread = new Thread(debugger);
+        debuggerThread.start();
 
         //just building out the windows
         botFrame = new JFrame("Bot Pane");
-        logFrame = new JFrame("Bot Console");
+        consoleFrame = new JFrame("Bot Console");
         rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
         scriptFrame = new JFrame("Script Selector");
 
         initializeBotFrame(botFrame);
-        initializeConsoleFrame(logFrame);
+        initializeConsoleFrame(consoleFrame);
         initializeScriptFrame(scriptFrame);
 
 
@@ -207,7 +220,7 @@ public class Main {
         log("PositionListener initialized.");
 
         log("Initializing WindowListener...");
-        windowListener = new Thread(new WindowListener(botFrame, logFrame, rscFrame, scroller, logArea, controller));
+        windowListener = new Thread(new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
         windowListener.start();
         log("WindowListener started.");
 
@@ -320,6 +333,7 @@ public class Main {
         globalStatus = new JLabel("Status: Idle.");
         mouseStatus = new JLabel("Mouse: 0, 0");
         posnStatus = new JLabel("Posn: 0, 0");
+        openDebuggerButton = new JButton("Open Debugger");
         hideButton = new JButton("Hide Sidepane");
 
         startStopButton.addActionListener(new ActionListener() {
@@ -344,6 +358,14 @@ public class Main {
                 } else {
                     JOptionPane.showMessageDialog(null, "Stop the current script first.");
                 }
+            }
+        });
+
+
+        openDebuggerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                debugger.open();
             }
         });
 
@@ -373,6 +395,9 @@ public class Main {
         botFrame.add(globalStatus);
         botFrame.add(mouseStatus);
         botFrame.add(posnStatus);
+        botFrame.add(openDebuggerButton);
+        openDebuggerButton.setMaximumSize(buttonSize);
+        hideButton.setPreferredSize(buttonSize);
         botFrame.add(hideButton);
         hideButton.setMaximumSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);
@@ -477,14 +502,14 @@ public class Main {
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
         File[] nativeScripts = new File(nativeScriptPath).listFiles();
-		File[] sbotScripts = new File(sbotScriptPath).listFiles();
+        File[] sbotScripts = new File(sbotScriptPath).listFiles();
 
         // Create Comparator object to use in sorting the list
-		Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
+        Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
 
-		// Sort each list of scripts
-		Arrays.sort(nativeScripts, fileComparator);
-		Arrays.sort(sbotScripts, fileComparator);
+        // Sort each list of scripts
+        Arrays.sort(nativeScripts, fileComparator);
+        Arrays.sort(sbotScripts, fileComparator);
 
         for (final File file : nativeScripts) {
             if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
@@ -522,6 +547,7 @@ public class Main {
         scriptTable.getTableHeader().setReorderingAllowed(false); // Disable reordering columns
         scriptTable.getTableHeader().setResizingAllowed(false); // Disable resizing columns
         scriptTable.getTableHeader().setFont(scriptTable.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
+        scriptTable.setBorder(BorderFactory.createEmptyBorder());
 
         final JScrollPane scriptScroller = new JScrollPane(scriptTable);
 

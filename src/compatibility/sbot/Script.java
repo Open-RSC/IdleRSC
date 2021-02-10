@@ -1171,7 +1171,7 @@ public abstract class Script
 	{
 		Main.logMethod("GetObjectCount");
 		WaitForLoad();
-		return controller.getObjectCount();
+		return controller.getObjectsCount();
 	}
 	public String GetObjectCommand1(int type)
 	{

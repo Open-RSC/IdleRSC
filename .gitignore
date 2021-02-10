@@ -1,1 +1,20 @@
+# gradle
 .gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# IDE
+.idea/
+IdleRSC.iml
+
+# output
+classes/
+build/
+# we should eventually start to ignore bin/ for easier git management
+bin/
+
+# caches
+Cache/
+UraniumCache/
+ColeslawCache/

@@ -1,55 +1,42 @@
 package controller;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.zip.CRC32;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import com.openrsc.client.entityhandling.EntityHandler;
+import com.openrsc.client.entityhandling.defs.DoorDef;
+import com.openrsc.client.entityhandling.defs.GameObjectDef;
 import com.openrsc.client.entityhandling.defs.ItemDef;
 import com.openrsc.client.entityhandling.defs.SpellDef;
 import com.openrsc.client.entityhandling.instances.Item;
-import com.openrsc.interfaces.misc.BankInterface;
 
 import bot.Main;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
+import models.entities.GroundItemDef;
+import models.entities.SkillDef;
 
 import orsc.Config;
-import orsc.ORSCApplet;
 import orsc.ORSCharacter;
 import orsc.OpenRSC;
+import orsc.graphics.gui.SocialLists;
 import orsc.mudclient;
 import orsc.enumerations.MessageType;
 import orsc.enumerations.ORSCharacterDirection;
 import orsc.graphics.gui.MessageHistory;
 import orsc.graphics.gui.Panel;
-import orsc.graphics.three.RSModel;
 import orsc.graphics.two.MudClientGraphics;
-import orsc.net.Network_Socket;
 import reflector.Reflector;
-
 /**
  *
  * This is the native scripting library abstraction layer for IdleRSC.
@@ -183,6 +170,99 @@ public class Controller {
 		return mud.getInventoryCount(id);
 	}
 
+	public int[] getGroundItems() {
+		return (int[]) reflector.getObjectMember(mud, "groundItemID");
+	}
+
+	/**
+	 * Retrieve a list of items on the ground near the player.
+	 * Duplicate items on the same tile will be added to the list once, with the
+	 * sactual amount available from the getAmount() method.
+	 *
+	 * @return a list of ground objects around the player
+	 */
+	public List<GroundItemDef> getGroundItemsStacked() {
+		int[] groundItemIDs = this.getGroundItems();
+		int[] groundItemsX = this.getGroundItemsX();
+		int[] groundItemsZ = this.getGroundItemsZ();
+		boolean[] groundItemsNoted = this.getGroundItemsNoted();
+
+		int groundItemsCount = this.getGroundItemsCount();
+
+		List<GroundItemDef> _list = new ArrayList();
+
+		for(int i = 0; i < groundItemsCount; i++) {
+			int groundItemID = groundItemIDs[i];
+			int groundItemXI = groundItemsX[i];
+			int groundItemZI = groundItemsZ[i];
+			boolean groundItemNoted = groundItemsNoted[i];
+
+			ItemDef itemDef = EntityHandler.getItemDef(groundItemID, groundItemNoted);
+			GroundItemDef groundItemDef = new GroundItemDef(itemDef);
+			groundItemDef.setX(this.offsetX(groundItemXI));
+			groundItemDef.setZ(this.offsetZ(groundItemZI));
+			groundItemDef.setAmount(this.getGroundItemAmount(groundItemDef.getID(), groundItemDef.getX(), groundItemDef.getZ()));
+			groundItemDef.setDistance(this.getDistanceFromLocalPlayer(groundItemDef.getX(), groundItemDef.getZ()));
+
+			boolean found = false;
+
+			for(int j = 0; j < _list.size(); j++) {
+				GroundItemDef _groundItemDef = _list.get(j);
+
+				if(_groundItemDef.getID() == groundItemDef.getID() &&
+						_groundItemDef.getX() == groundItemDef.getX() &&
+						_groundItemDef.getZ() == groundItemDef.getZ()) {
+					found = true;
+					break;
+				}
+			}
+
+			if(!found) {
+				_list.add(groundItemDef);
+			}
+		}
+
+
+		return _list;
+	}
+
+	public int getGroundItemsCount() {
+		return (int) reflector.getObjectMember(mud, "groundItemCount");
+	}
+
+	public int[] getGroundItemsX() {
+		return (int[]) reflector.getObjectMember(mud, "groundItemX");
+	}
+
+	public int[] getGroundItemsZ() {
+		return (int[]) reflector.getObjectMember(mud, "groundItemZ");
+	}
+
+	public boolean[] getGroundItemsNoted() {
+		return (boolean[]) reflector.getObjectMember(mud, "groundItemNoted");
+	}
+
+	public int getGroundItemAmount(int id, int x, int z) {
+		int groundItemCount = this.getGroundItemsCount();
+		int[] groundItemIds = this.getGroundItems();
+		int[] groundItemsX = this.getGroundItemsX();
+		int[] groundItemsZ = this.getGroundItemsZ();
+
+		int groundItemAmount = 0;
+
+		for(int i = 0; i < groundItemCount; i++) {
+			int groundItemId = groundItemIds[i];
+			int groundItemX = this.offsetX(groundItemsX[i]);
+			int groundItemZ = this.offsetZ(groundItemsZ[i]);
+
+			if(groundItemId == id && groundItemX == x && groundItemZ == z) {
+				groundItemAmount++;
+			}
+		}
+
+		return groundItemAmount;
+	}
+
 	public void panCamera() {
 		mud.cameraRotation++;
 		if(mud.cameraRotation >= 360)
@@ -197,8 +277,19 @@ public class Controller {
 		return mud.getPlayer(id);
 	}
 
-	public ORSCharacter[] getPlayers() {
-		return (ORSCharacter[]) reflector.getObjectMember(mud, "players");
+	public List<ORSCharacter> getPlayers() {
+
+		List<ORSCharacter> _list = new ArrayList();
+
+		ORSCharacter[] players = (ORSCharacter[]) this.getMudClientValue("players");
+		int playerCount = this.getPlayerCount();
+
+		for(int i = 0; i < playerCount; i++) {
+			ORSCharacter player = players[i];
+			_list.add(player);
+		}
+
+		return _list;
 	}
 
 	public int getPlayerCount() {
@@ -215,6 +306,13 @@ public class Controller {
 		z -= mud.getLocalPlayerZ();
 
 		return x != 0 || z != 0;
+	}
+
+	public int getDistanceFromLocalPlayer(int coordX, int coordZ) {
+		int localCoordX = this.currentX();
+		int localCoordZ = this.currentZ();
+
+		return this.distance(localCoordX, localCoordZ, coordX, coordZ);
 	}
 
 	public int currentX() {
@@ -386,13 +484,79 @@ public class Controller {
 		mud.packetHandler.getClientStream().bufferBits.putShort(z);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
+	public List<GameObjectDef> getObjects() {
+		int[] gameObjectInstanceIDs = (int[]) this.getMudClientValue("gameObjectInstanceID");
 
-	public int getObjectCount() {
+		List<Integer> _list = new ArrayList();
+		int gameObjectInstanceCount = this.getObjectsCount();
+
+		for(int i = 0; i < gameObjectInstanceCount; i++) {
+			int gameObjectInstanceID = gameObjectInstanceIDs[i];
+			_list.add(gameObjectInstanceID);
+		}
+
+
+		return _list.stream()
+				.map(EntityHandler::getObjectDef)
+				.collect(Collectors.toList());
+	}
+
+	public int getObjectsCount() {
 		return (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
+	}
+
+	public int[] getObjectsX() {
+		return (int[]) reflector.getObjectMember(mud, "gameObjectInstanceX");
+	}
+
+	public int[] getObjectsZ() {
+		return (int[]) reflector.getObjectMember(mud, "gameObjectInstanceZ");
+	}
+
+	public List<ORSCharacter> getNpcs() {
+		List<ORSCharacter> _list = new ArrayList();
+
+		ORSCharacter[] npcs = (ORSCharacter[]) this.getMudClientValue( "npcs");
+		int npcCount = this.getNpcCount();
+
+		for(int i = 0; i < npcCount; i++) {
+			ORSCharacter npc = npcs[i];
+			_list.add(npc);
+		}
+
+		return _list;
 	}
 
 	public int getNpcCount() {
 		return mud.getNpcCount();
+	}
+
+	public List<DoorDef> getWallObjects() {
+		List<Integer> _list = new ArrayList();
+
+		int[] wallObjectInstanceIDs = (int[]) this.getMudClientValue("wallObjectInstanceID");
+		int wallObjectInstanceCount = this.getWallObjectsCount();
+
+		for(int i = 0; i < wallObjectInstanceCount; i++) {
+			int wallObjectInstanceID = wallObjectInstanceIDs[i];
+			_list.add(wallObjectInstanceID);
+		}
+
+		return _list.stream()
+				.map(EntityHandler::getDoorDef)
+				.collect(Collectors.toList());
+	}
+
+	public int getWallObjectsCount() {
+		return (int) reflector.getObjectMember(mud, "wallObjectInstanceCount");
+	}
+
+	public int[] getWallObjectsX() {
+		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceX");
+	}
+
+	public int[] getWallObjectsZ() {
+		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceZ");
 	}
 
 	public ORSCharacter getNearestNpcByIds(int[] npcIds, boolean inCombatAllowed) {
@@ -935,19 +1099,41 @@ public class Controller {
 		reflector.setObjectMember(mud, "showDialogBank", false);
 	}
 
+	public List<Item> getBankItems() {
+		List<Item> bankItems = new ArrayList();
+
+		if(!isInBank()) {
+			return bankItems;
+		}
+
+		ArrayList<Object> _bankItems = (ArrayList<Object>) reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
+
+		if(_bankItems != null) {
+			for(Object _bankItem : _bankItems) {
+				Item bankItem = (Item) reflector.getObjectMember(_bankItem, "item");
+
+				if(bankItem != null) {
+					bankItems.add(bankItem);
+				}
+			}
+		}
+
+		return bankItems;
+	}
+
+	public int getBankItemsCount() {
+		return (int) this.getMudClientValue("newBankItemCount");
+	}
+
 	public int getBankItemCount(int id) {
-		ArrayList<Object> bankItems = (ArrayList<Object>) reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
+		List<Item> bankItems = this.getBankItems();
 
-		for(Object item : bankItems) {
-			Object bankItem = (Object) reflector.getObjectMember(item, "item");
-			ItemDef itemDef = (ItemDef) reflector.getObjectMember(bankItem, "itemDef");
-			
-			int itemId = itemDef.id; //(int) reflector.getObjectMember(itemDef, "id");
-			int amount = (int) reflector.getObjectMember(bankItem, "amount");
+		for(Item bankItem : bankItems) {
+			int bankItemId = bankItem.getItemDef().id;
 
-			if(itemId == id)
-				return amount;
-
+			if(bankItemId == id) {
+				return bankItem.getAmount();
+			}
 		}
 
 		return -1;
@@ -1333,6 +1519,52 @@ public class Controller {
 		reflector.setObjectMember(mud, "showDialogShop", false);
 	}
 
+	public int getShopItemsCount() {
+		if(!this.isInShop()) {
+			return -1;
+		}
+
+		int[] shopItemIds = (int[]) this.getMudClientValue("shopCategoryID");
+
+		int count = 0;
+		for(int shopItemId : shopItemIds) {
+			if(shopItemId > -1) {
+				count++;
+			} else {
+				return count;
+			}
+		}
+
+		return count;
+	}
+
+	public List<Item> getShopItems() {
+		List<Item> shopItems = new ArrayList();
+
+		if(!this.isInShop()) {
+			return shopItems;
+		}
+
+		int[] shopItemIds = (int[]) this.getMudClientValue("shopCategoryID");
+		int shopItemsCount = this.getShopItemsCount();
+
+		for(int i = 0; i < shopItemsCount; i++) {
+			int shopItemId = shopItemIds[i];
+
+			if(shopItemId > -1) {
+				int shopItemAmount = this.shopItemCount(shopItemId);
+				ItemDef shopItemDef = EntityHandler.getItemDef(shopItemId);
+
+				Item shopItem = new Item(shopItemDef);
+				shopItem.setAmount(shopItemAmount);
+
+				shopItems.add(shopItem);
+			}
+		}
+
+		return shopItems;
+	}
+
 	public int shopItemCount(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
 		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
@@ -1391,6 +1623,36 @@ public class Controller {
 		return true;
 	}
 
+	public List<SkillDef> getSkills() {
+		String[] skillNames = this.getSkillNamesLong();
+
+		List<SkillDef> _list = new ArrayList();
+
+		if(skillNames != null) {
+			for(int i = 0; i < skillNames.length; i++) {
+				SkillDef skillDef = new SkillDef();
+
+				String name = skillNames[i];
+				int id = this.getStatId(name);
+				int base = this.getBaseStat(id);
+				int current = this.getCurrentStat(id);
+				int xp = this.getPlayerExperience(id);
+				int gainedXp = this.getStatXp(id);
+
+				skillDef.setName(name);
+				skillDef.setId(id);
+				skillDef.setBase(base);
+				skillDef.setCurrent(current);
+				skillDef.setXp(xp);
+				skillDef.setGainedXp(gainedXp);
+
+				_list.add(skillDef);
+			}
+		}
+
+		return _list;
+	}
+
 	public int getStatId(String statName) {
 		String[] skillNames = mud.getSkillNamesLong();
 
@@ -1412,6 +1674,14 @@ public class Controller {
 
 	public int getStatXp(int id) {
 		return (int) ((long[]) reflector.getObjectMember(mud, "playerStatXpGained"))[id];
+	}
+
+	public int getPlayerExperience(int id) {
+		return mud.getPlayerExperience(id);
+	}
+
+	public String[] getSkillNamesLong() {
+		return (String[]) this.getMudClientValue("skillNameLong");
 	}
 
 
@@ -1563,8 +1833,22 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
-	public int[] getTradeItems() {
-		return (int[]) reflector.getObjectMember(mud, "tradeItemID");
+	public List<Item> getLocalTradeItems() {
+		List<Item> localTradeItems = new ArrayList();
+
+		Item[] _localTradeItems = (Item[]) this.getMudClientValue("trade");
+		int localTradeItemsCount = this.getLocalTradeItemsCount();
+
+		for(int i = 0; i < localTradeItemsCount; i++) {
+			Item localTradeItem = _localTradeItems[i];
+			localTradeItems.add(localTradeItem);
+		}
+
+		return localTradeItems;
+	}
+
+	public int getLocalTradeItemsCount() {
+		return (int) this.getMudClientValue("tradeItemCount");
 	}
 
 	public int[] getTradeItemsCounts() {
@@ -1572,12 +1856,22 @@ public class Controller {
 
 	}
 
-	public int[] getRecipientTradeItems() {
-		return (int[]) reflector.getObjectMember(mud, "tradeRecipientItem");
+	public List<Item> getRecipientTradeItems() {
+		List<Item> recipientTradeItems = new ArrayList();
+
+		Item[] _recipientTradeItems = (Item[]) this.getMudClientValue("tradeRecipient");
+		int recipientItemsCount = this.getRecipientTradeItemsCount();
+
+		for(int i = 0; i < recipientItemsCount; i++) {
+			Item recipientTradeItem = _recipientTradeItems[i];
+			recipientTradeItems.add(recipientTradeItem);
+		}
+
+		return recipientTradeItems;
 	}
 
-	public int[] getRecipientTradeItemsCounts() {
-		return (int[]) reflector.getObjectMember(mud, "tradeRecipientItemCount");
+	public int getRecipientTradeItemsCount() {
+		return (int) reflector.getObjectMember(mud, "tradeRecipientItemsCount");
 	}
 
 //	example; controller.setTradeItems(new int[] {33, 36}, new int[] {1, 1});
@@ -1620,6 +1914,20 @@ public class Controller {
 		mud.interlace = value;
 	}
 
+	public List<Item> getInventoryItems() {
+		List<Item> _list = new ArrayList();
+
+		Item[] inventoryItems = mud.getInventory();
+		int inventoryItemCount = this.getInventoryItemCount();
+
+		for(int i = 0; i < inventoryItemCount; i++) {
+			Item inventoryItem = inventoryItems[i];
+			_list.add(inventoryItem);
+		}
+
+		return _list;
+	}
+
 	public int[] getInventoryItemIds() {
 		int[] results = new int[] {};
 
@@ -1643,6 +1951,34 @@ public class Controller {
     	return foodIds;
     }
 
+	public List<String> getFriendList() {
+		List<String> friendList = new ArrayList();
+
+		int friendListCount = SocialLists.friendListCount;
+		String[] _friendList = SocialLists.friendList;
+
+		for(int i = 0; i < friendListCount; i++) {
+			String friendName = _friendList[i];
+			friendList.add(friendName);
+		}
+
+		return friendList;
+	}
+
+	public List<String> getIgnoreList() {
+		List<String> ignoreList = new ArrayList();
+
+		int ignoreListCount = SocialLists.ignoreListCount;
+		String[] _ignoreList = SocialLists.ignoreList;
+
+		for(int i = 0; i < ignoreListCount; i++) {
+			String ignoreName = _ignoreList[i];
+			ignoreList.add(ignoreName);
+		}
+
+		return ignoreList;
+	}
+
     public boolean isBatching() {
 		ProgressBarInterface progressBarInterface = (ProgressBarInterface) reflector.getObjectMember(mud, "batchProgressBar");
 
@@ -1651,12 +1987,19 @@ public class Controller {
 		
 		return progressBarInterface.progressBarComponent.isVisible();
 	}
-    
+
+	public boolean isAuthentic() {
+		return mud.authenticSettings;
+	}
+
+	public Object getMudClientValue(String propertyName) {
+		return this.reflector.getObjectMember(mud, propertyName);
+	}
+
     public mudclient getMud() {
     	return this.mud;
     }
-    
-    
+
     /**
      * Will open bank near any bank NPC. Uses right click option if possible.
      */

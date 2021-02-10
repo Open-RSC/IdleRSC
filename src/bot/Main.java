@@ -243,13 +243,13 @@ public class Main {
 
         //give everything a nice synchronization break juuuuuuuuuuuuuust in case...
         Thread.sleep(3000);
-
+        
 
         while (true) {
             Thread.sleep(618); //wait 1 tick before performing next action
-
+            
             if (isRunning()) {
-
+            	
                 if (currentRunningScript != null) {
 
                     //handle native scripts
@@ -263,7 +263,7 @@ public class Main {
                         controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
                         controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
                         ((Script) currentRunningScript).setController(controller);
-                        ((Script) currentRunningScript).start(scriptArguments[0], Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length)); 
+                        ((Script) currentRunningScript).start(scriptName, scriptArguments); 
                     }
                 }
 

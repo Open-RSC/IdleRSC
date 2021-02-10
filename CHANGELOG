@@ -1,5 +1,7 @@
 FEB 10 2021
 	AutoLogin now works as expected, regardless of the cause of logout.
+	SBot scripts parameters now function as expected. (pending binary release)
+	Controller's foodIds now includes new harvesting items. (pending binary release)
 
 FEB 9 2021
 	Fixed bug where accounts were getting logged out on Coleslaw for not having a sleeping bag.

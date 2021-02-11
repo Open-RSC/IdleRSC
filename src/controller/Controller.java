@@ -955,6 +955,9 @@ public class Controller {
 	
 
 	public boolean isEquipped(int slot) {
+		if(slot < 0)
+			return false;
+		
 		return mud.getInventory()[slot].getEquipped();
 //
 //		int[] inventoryItemEquipped = (int[]) reflector.getObjectMember(mud, "inventoryItemEquipped");

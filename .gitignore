@@ -11,10 +11,5 @@ IdleRSC.iml
 # output
 classes/
 build/
-# we should eventually start to ignore bin/ for easier git management
-bin/
 
-# caches
-Cache/
-UraniumCache/
-ColeslawCache/
+#please do not add bin/ to the gitignore for the time being since we are currently combining source and binary releases

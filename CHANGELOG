@@ -2,6 +2,7 @@ FEB 10 2021
 	AutoLogin now works as expected, regardless of the cause of logout.
 	SBot scripts parameters now function as expected. (pending binary release)
 	Controller's foodIds now includes new harvesting items. (pending binary release)
+	HerbIdentifier script added. This script will identify all herbs in your bank, starting with the highest level you can identify. (pending binary release)
 
 FEB 9 2021
 	Fixed bug where accounts were getting logged out on Coleslaw for not having a sleeping bag.

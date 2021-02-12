@@ -12,7 +12,8 @@ FEB 12 2021
 	HerberTaverly SBot script added
 	AIOFighter will now walk back to the starting tile if no NPCs are found
 	AIOThiever will now act less dumb when it comes to eating and logging out
-	GetMeToArdougne script released. Start in Lumbridge with no GP. Warning, the script is not death safe.
+	GetMeToArdougne script released. Start in Lumbridge with no GP. Warning, the script is not death, skiller, or pure safe.
+
 
 FEB 11 2021
 	SBot scripts parameters now function as expected. (If your script no longer functions, please let me know which script.)

@@ -437,7 +437,7 @@ public class Controller {
 
 		for(int i = 0; i < count; i++) {
 			if(offsetX(xs[i]) == x && offsetZ(zs[i]) == z) {
-				objectAt2(offsetX(xs[i]), offsetZ(zs[i]), 4, ids[i]);
+				objectAt2(offsetX(xs[i]), offsetZ(zs[i]), this.getDirection(offsetX(xs[i]), offsetZ(zs[i])), ids[i]);
 				return true;
 			}
 		}
@@ -744,6 +744,9 @@ public class Controller {
 		int count = (int) reflector.getObjectMember(mud, "wallObjectInstanceCount");
 
 		int _x = removeOffsetX(x), _z = removeOffsetZ(z);
+		
+		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164)
+			return false;
 
 		for(int i = 0; i < count; i++) {
 			if(xs[i] == _x && zs[i] == _z)
@@ -753,21 +756,46 @@ public class Controller {
 
 		return true;
 	}
+	
+	public int getWallObjectIdAtCoord(int x, int y) {
+		int _x = removeOffsetX(x);
+		int _y = removeOffsetZ(y);
+		
+		int[] xs = this.getWallObjectsX();
+		int[] ys = this.getWallObjectsZ();
+		List<DoorDef> objs = this.getWallObjects();
+		
+		for(int i = 0; i < objs.size(); i++) {
+			if(xs[i] == _x && ys[i] == _y)
+				return objs.get(i).id;
+		}
+		
+		return -1;
+		
+	}
 
 	public void openDoor(int x, int z) {
-
+		
 		if(isDoorOpen(x, z) == true) {
 			System.out.println("door already open");
 			return;
 		}
 
+		int opcode = 127;
+		int height = 0;
+		
+		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164) {
+			opcode = 14; //we want WALL_COMMAND1 for these IDs
+			height = 1;
+		}
+		
 		while(isDoorOpen(x, z) == false) {
-			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(z), 0);
+			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(z), height);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
-			mud.packetHandler.getClientStream().newPacket(127);
-			mud.packetHandler.getClientStream().bufferBits.putShort(x);
-			mud.packetHandler.getClientStream().bufferBits.putShort(z);
-			mud.packetHandler.getClientStream().bufferBits.putByte(0); //direction
+			mud.packetHandler.getClientStream().newPacket(opcode);
+			mud.packetHandler.getClientStream().bufferBits.putShort(x); 
+			mud.packetHandler.getClientStream().bufferBits.putShort(z); 
+			mud.packetHandler.getClientStream().bufferBits.putByte(height);
 			mud.packetHandler.getClientStream().finishPacket();
 
 			sleep(GAME_TICK_COUNT);
@@ -1402,8 +1430,9 @@ public class Controller {
 	}
 
 	public int getDirection(int x, int y) {
-		ORSCharacterDirection direction = null;
+		ORSCharacterDirection direction = ORSCharacterDirection.NORTH;
 
+		
 		if(x > currentX()) {
 			direction = ORSCharacterDirection.WEST;
 		} else if (x < currentX()) {

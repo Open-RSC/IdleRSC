@@ -13,6 +13,7 @@ FEB 12 2021
 	AIOFighter will now walk back to the starting tile if no NPCs are found
 	AIOThiever will now act less dumb when it comes to eating and logging out
 	GetMeToArdougne script released. Start in Lumbridge with no GP. Warning, the script is not death, skiller, or pure safe.
+	Increased sleep times on GetMeToArdougne
 
 
 FEB 11 2021

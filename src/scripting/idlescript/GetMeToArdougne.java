@@ -82,7 +82,7 @@ public class GetMeToArdougne extends IdleScript {
 						else
 							controller.optionAnswer(1); //user has not completed dragon slayer
 						
-						controller.sleep(6000);
+						controller.sleep(9000);
 					
 						if(controller.currentX() == 324 && controller.currentZ() == 713) {
 							inKaramja = true;
@@ -123,9 +123,9 @@ public class GetMeToArdougne extends IdleScript {
 					
 					if(controller.isInOptionMenu()) {
 						controller.optionAnswer(0);
-						controller.sleep(5000);
+						controller.sleep(7000);
 						controller.optionAnswer(1);
-						controller.sleep(5000);
+						controller.sleep(7000);
 						controller.optionAnswer(0);
 						controller.sleep(5000);
 						break;

@@ -3,7 +3,7 @@ FEB 11 2021
 	Controller's foodIds now includes new harvesting items. 
 	HerbIdentifier script added. This script will identify all herbs in your bank, starting with the highest level you can identify. 
 	LimpySnapez script added. This script will harvest snape grass and limpwurt roots in Taverly. Start in Taverly with herb clippers. 
-	Updated to latest client JAR
+	Updated to latest client JAR (twice)
 
 FEB 10 2021
 	AutoLogin now works as expected, regardless of the cause of logout.

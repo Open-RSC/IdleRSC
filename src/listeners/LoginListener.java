@@ -40,12 +40,13 @@ public class LoginListener implements Runnable {
 	    	if(Main.isAutoLogin()) {
 	    		if(!controller.isLoggedIn()) {
 	    			controller.log("Logged out! Logging back in...");
-	    			controller.sleep(1000);
 	    			controller.login();
 	    			controller.sleep(5000);
+	    			
 	    			if(controller.isLoggedIn() == false) {
-	    				controller.log("Looks like we could not login... trying again in 30 seconds...");
-	    				controller.sleep(30000);
+	    				int sleepTime = (int) (Math.random() * (30000)) + 30000;
+	    				controller.log("Looks like we could not login... trying again in " + String.valueOf(sleepTime) + " ms...");
+	    				controller.sleep(sleepTime);
 	    			}
 					
 	    		}

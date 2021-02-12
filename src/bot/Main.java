@@ -263,7 +263,10 @@ public class Main {
                         controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
                         controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
                         ((Script) currentRunningScript).setController(controller);
-                        ((Script) currentRunningScript).start(scriptName, scriptArguments); 
+                        
+                        String sbotScriptName = scriptArguments[0];
+                        String[] params = scriptArguments.length > 1 ? Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length) : new String[] {};
+                        ((Script) currentRunningScript).start(sbotScriptName, params); 
                     }
                 }
 
@@ -485,6 +488,8 @@ public class Main {
 				currentRunningScript = (Script) clazz.newInstance();
 			}
 
+			Main.scriptName = scriptName;
+			
 			return true;
 		} catch(Exception e) {
 			e.printStackTrace();

@@ -127,6 +127,8 @@ public class AIOThiever extends IdleScript {
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			
+			eat();
+			
 			if(controller.getFightMode() != this.fightMode)
 				controller.setFightMode(this.fightMode);
 			
@@ -157,7 +159,7 @@ public class AIOThiever extends IdleScript {
 						controller.npcCommand1(npc.serverIndex);
 				}
 				
-				if(doBank) {
+				if(doBank) { 
 					if(target.name.contains("Bakers")) {
 						if(controller.getInventoryItemCount() < 30) {
 							if(controller.currentX() != 543 && controller.currentZ() != 600)
@@ -193,14 +195,10 @@ public class AIOThiever extends IdleScript {
 								controller.sleep(500);
 								break;
 							}
-						}
-//						}					
-						
-						
+						}						
 					}
 					
-				} else {
-				
+				} else { //we are not banking
 					if(target.isObject == true) {
 						int[] coords = controller.getNearestObjectById(target.id);
 						if(coords != null) {
@@ -212,39 +210,11 @@ public class AIOThiever extends IdleScript {
 							}
 						}
 					}
-
 				}
-				
 			} else {
 				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
 				
-				controller.sleep(400);
-				
-	    		if(controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
-	    			controller.displayMessage("@red@AIOThiever: Eating food");
-	    			controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
-	    			
-	    			boolean ate = false;
-	    			
-	    			for(int id : controller.getFoodIds()) {
-	    				if(controller.getInventoryItemCount(id) > 0) {
-	    					controller.itemCommand(id);
-	    					ate = true;
-	    					break;
-	    				}
-	    			}
-	    			
-	    			while(!doBank && !ate) {
-	    				controller.displayMessage("@red@AIOThiever: We ran out of food! Logging out.");
-	    				controller.setAutoLogin(false);
-	    				controller.logout();
-	    				
-	    				controller.sleep(1000);
-	    			}
-	    			
-	    			continue;
-	    		}
-				
+				controller.sleep(400);				
 			}
 			
 			controller.sleep(250);
@@ -252,6 +222,45 @@ public class AIOThiever extends IdleScript {
 		}
 	}
 
+	public void eat() {
+		if(controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
+			controller.displayMessage("@red@AIOThiever: Eating food");
+			
+			while(controller.isInCombat()) {
+				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
+				controller.sleep(250);
+			}
+			
+			boolean ate = false;
+			
+			for(int id : controller.getFoodIds()) {
+				if(controller.getInventoryItemCount(id) > 0) {
+					controller.itemCommand(id);
+					controller.sleep(700);
+					ate = true;
+					break;
+				}
+			}
+			
+			while(!doBank && !ate) {
+				while(controller.isInCombat()) {
+					controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
+					controller.sleep(250);
+				}
+				controller.displayMessage("@red@AIOThiever: We ran out of food! Logging out.");
+				controller.setAutoLogin(false);
+				controller.logout();
+				controller.sleep(1000);
+				
+				if(!controller.isLoggedIn()) {
+					controller.stop();
+					return;
+				}
+				
+			}
+		}
+	}
+	
 	public int countFood() {
 		int result = 0;
 		for(int id : controller.getFoodIds()) {

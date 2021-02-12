@@ -42,7 +42,7 @@ public class SmithingVarrock extends IdleScript {
 				controller.sleep(1000);
 				if (controller.getInventoryItemCount() > 1 && controller.isInBank()) {
 					for (int itemId : controller.getInventoryItemIds()) {
-						if (itemId != 168) {
+						if (itemId != 168 && itemId != 1263) {
 							controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 						}
 					}

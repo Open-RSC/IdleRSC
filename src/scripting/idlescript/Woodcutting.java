@@ -119,7 +119,7 @@ public class Woodcutting extends IdleScript {
 			}
 			while (controller.isInBank() && controller.getInventoryItemCount() > 0) {
 				for (int itemId : controller.getInventoryItemIds()) {
-					if (itemId != 0 && !isAxe(itemId)) {
+					if (itemId != 0 && !isAxe(itemId) && itemId != 1263) {
 						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 					}
 					controller.sleep(10);

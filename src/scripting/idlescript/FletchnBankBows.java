@@ -48,7 +48,7 @@ public class FletchnBankBows extends IdleScript {
 				controller.sleep(431);
 				if (controller.getInventoryItemCount() > 1) {
 					for (int itemId : controller.getInventoryItemIds()) {
-						if (itemId != 13) {
+						if (itemId != 13 && itemId != 1263) {
 							controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 						}
 					}
@@ -82,7 +82,7 @@ public class FletchnBankBows extends IdleScript {
 				{
 					if (controller.getInventoryItemCount() > 1) {
 						for (int itemId : controller.getInventoryItemIds()) {
-							if (itemId != 0) {
+							if (itemId != 0 && itemId != 1263) {
 								controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 							}
 						}

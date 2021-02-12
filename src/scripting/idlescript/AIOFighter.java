@@ -237,6 +237,13 @@ public class AIOFighter extends IdleScript {
 	    			}
 	    			
 	    			continue;
+	    		} else {
+	    			//no npc found! walk back to starting tile..
+	    			if(controller.currentX() != startTile[0] && controller.currentZ() != startTile[1]) {
+		    			controller.displayMessage("@red@AIOFighter: No NPCs found, walking back to start...");
+		    			controller.walkToAsync(startTile[0], startTile[1], 0);
+		    			controller.sleep(1000);
+	    			}
 	    		}
     		} else {
         		

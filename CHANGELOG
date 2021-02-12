@@ -1,3 +1,19 @@
+FEB 12 2021
+	getDirection(x, y) will no longer return null if standing on x,y
+	atObject2 now uses getDirection(x,y)
+	isDoorOpen(x,y) will now say that barbarian walls are closed
+	openDoor(x,y) will now properly handle barbarian walls
+	getWallObjectIdAtCoord(x,y) added to controller
+	Added random offset to autologin to avoid flooding login
+	Updated Searos' scripts -- no longer deposit sleeping bags and other updates
+	New Searos script added: MineGoldCraftingGuild (Coleslaw only)
+	New Searos script added: SmithGearSet
+	SBot script arguments fixed again
+	HerberTaverly SBot script added
+	AIOFighter will now walk back to the starting tile if no NPCs are found
+	AIOThiever will now act less dumb when it comes to eating and logging out
+	GetMeToArdougne script released. Start in Lumbridge with no GP. Warning, the script is not death safe.
+
 FEB 11 2021
 	SBot scripts parameters now function as expected. (If your script no longer functions, please let me know which script.)
 	Controller's foodIds now includes new harvesting items. 

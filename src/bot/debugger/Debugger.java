@@ -79,7 +79,11 @@ public class Debugger implements Runnable {
                 }
             }
 
-            controller.sleep(618);
+            try {
+                Thread.sleep(618);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

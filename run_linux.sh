@@ -1,2 +1,2 @@
 #!/bin/sh
-java -cp "IdleRSC.jar:Open_RSC_Client.jar" bot.Main "username" "password"
+java -cp "IdleRSC.jar:patched_client.jar" bot.Main "username" "password"

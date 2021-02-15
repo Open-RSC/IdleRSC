@@ -23,36 +23,28 @@ public class LoginListener implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
-			
-	    	if(!controller.isLoggedIn()) {
-				Main.updateStatus("Logged out.");
-			}
-	    	else {
-				if(Main.isRunning()) {
-					Main.updateStatus("Running.");
-				}
-				else {
-					Main.updateStatus("Logged in, idle.");
-				}
-			}
+		try {
+			while (true) {
 
-	    	if(Main.isAutoLogin()) {
-	    		if(!controller.isLoggedIn()) {
-	    			controller.log("Logged out! Logging back in...");
-	    			controller.login();
-	    			controller.sleep(5000);
-	    			
-	    			if(controller.isLoggedIn() == false) {
-	    				int sleepTime = (int) (Math.random() * (30000)) + 30000;
-	    				controller.log("Looks like we could not login... trying again in " + String.valueOf(sleepTime) + " ms...");
-	    				controller.sleep(sleepTime);
-	    			}
-					
-	    		}
-	    	}
-	    	
-	    	controller.sleep(1000);
+				if (Main.isAutoLogin()) {
+					if (!controller.isLoggedIn()) {
+						controller.log("Logged out! Logging back in...");
+						controller.login();
+						Thread.sleep(5000);
+
+						if (controller.isLoggedIn() == false) {
+							int sleepTime = (int) (Math.random() * (30000)) + 30000;
+							controller.log("Looks like we could not login... trying again in " + String.valueOf(sleepTime) + " ms...");
+							Thread.sleep(sleepTime);
+						}
+
+					}
+				}
+
+				Thread.sleep(1000);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}	
 }

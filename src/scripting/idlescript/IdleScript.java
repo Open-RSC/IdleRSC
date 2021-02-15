@@ -39,4 +39,10 @@ public abstract class IdleScript {
     	System.out.println("If you see this, your script did not come with the start function.");
     }
 
+	/**
+	 * This will be called by DrawCallback every game frame. Override this in your script to paint on the screen.
+	 */
+	public void paintInterrupt() {
+
+	}
 }

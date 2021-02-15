@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import callbacks.DrawCallback;
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
 import com.openrsc.client.entityhandling.defs.GameObjectDef;
@@ -1707,6 +1708,8 @@ public class Controller {
 		return (int) ((long[]) reflector.getObjectMember(mud, "playerStatXpGained"))[id];
 	}
 
+	public int getStatCount() { return ((long[]) reflector.getObjectMember(mud, "playerStatXpGained")).length; }
+
 	public int getPlayerExperience(int id) {
 		return mud.getPlayerExperience(id);
 	}
@@ -2169,6 +2172,39 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 
 		return true;
+	}
+
+
+	public void drawVerticalGradient(int x, int y, int width, int height, int topColor, int bottomColor) {
+    	mud.getSurface().drawVerticalGradient(x, y, width, height, topColor, bottomColor);
+	}
+
+	public void drawBoxAlpha(int x, int y, int width, int height, int color, int alpha) {
+    	mud.getSurface().drawBoxAlpha(x, y, width, height, color, alpha);
+	}
+
+	public void drawBoxBorder(int x, int y, int width, int height, int color) {
+    	mud.getSurface().drawBoxBorder(x, width, y, height, color); //rearranged per source
+	}
+
+	public void drawCircle(int x, int y, int radius, int color, int alpha, int dummy) {
+    	mud.getSurface().drawCircle(x, y, radius, color, alpha, dummy);
+	}
+
+	public void drawLineHoriz(int x, int y, int width, int color) {
+    	mud.getSurface().drawLineHoriz(x, y, width, color);
+	}
+
+	public void drawLineVert(int x, int y, int height, int color) {
+    	mud.getSurface().drawLineVert(x, y, color, height); //rearrenged per source
+	}
+
+	public void drawString(String str, int x, int y, int color, int font) {
+    	mud.getSurface().drawString(str, x, y, color, font);
+	}
+
+	public void drawShadowText(String text, int x, int y, int textColor, int fontSize, boolean center) {
+    	mud.getSurface().drawShadowText(text, x, y, textColor, fontSize, center);
 	}
 }
  

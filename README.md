@@ -60,23 +60,15 @@ public alch(mudclient rs)
 4. Compile using Eclipse (preferred) or the included compilation script.
 	
 ## Compiling IdleRSC:
-### Linux:
 1. Clone the repository
-2. Run `gradle build`
-### Windows:
-1. Clone the repository
-2. Open the project in Eclipse
-3. Right click the IdleRSC project in Package Explorer, click Properties.
-4. Click Java Build Path
-5. Click the Libraries tab
-6. Update "Open_RSC_Client.jar" to point to the latest jar file.
-7. Apply and close
-8. Code away!
+2. Open the project in Eclipse or IntelliJ
+3. If client JAR is out of date, run patcher utility from https://gitlab.com/idlersc/idlersc_patcher (follow README in that project).
+4. Test a compilation, then code away! If you have problems, you can create a new issue or ask for help in the OpenRSC Discord.
 	
 ## Contributing:
 * Please submit issues, questions, bugs on Gitlab. Provide stack traces for crashes, etc. 
 * Please submit pull requests to Gitlab. 
-* Please do not use this on servers which do not allow botting. There are servers which allow botting.
+* Please do not use this on servers which do not allow botting. There are servers which allow botting, such as those already included UraniumCache/ or ColeslawCache/.
 	
 ## About:
 This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure.

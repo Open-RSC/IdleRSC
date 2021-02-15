@@ -53,39 +53,43 @@ public class SleepListener implements Runnable {
 
 	@Override
 	public void run() {
-		while(true) {
-			byte[] packet = mud.packetHandler.getPacketsIncoming().dataBuffer; 
+		try {
+			while (true) {
+				byte[] packet = mud.packetHandler.getPacketsIncoming().dataBuffer;
 
-			if(packet[0] == 117) {
-				Main.log("got sleep packet!");
-				saveSleepImage(packet, packet.length);
-				System.out.println("image saved");
+				if (packet[0] == 117) {
+					Main.log("got sleep packet!");
+					saveSleepImage(packet, packet.length);
+					System.out.println("image saved");
 
-				Main.log("Waiting for fatigue to reach 0...");
-				while(controller.getFatigueDuringSleep() != 0) controller.sleep(10);
-				
+					Main.log("Waiting for fatigue to reach 0...");
+					while (controller.getFatigueDuringSleep() != 0) controller.sleep(10);
 
-				try {
-					String guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
-					
-					while(guess.equals(previousSleepWord)) {
-						Main.log("Sleep word has not updated... is OCR running?");
-						guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
-						controller.sleep(1000);
+
+					try {
+						String guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
+
+						while (guess.equals(previousSleepWord)) {
+							Main.log("Sleep word has not updated... is OCR running?");
+							guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
+							Thread.sleep(1000);
+						}
+
+						Main.log("guess: " + guess);
+						controller.chatMessage(guess);
+						previousSleepWord = guess;
+					} catch (IOException e) {
+						Main.log("error reading slword.txt! Ensure sleeper has access to write slword.txt and correct directory is set.");
+						e.printStackTrace();
 					}
-					
-					Main.log("guess: " + guess);
-					controller.chatMessage(guess);
-					previousSleepWord = guess;
-				} catch (IOException e) {
-					Main.log("error reading slword.txt! Ensure sleeper has access to write slword.txt and correct directory is set.");
-					e.printStackTrace();
-				} 
-			}
+				}
 
-			controller.sleep(10);
-			//TODO: convert from polling to callback based sleeping
-		}	
+				Thread.sleep(10);
+				//TODO: convert from polling to callback based sleeping
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

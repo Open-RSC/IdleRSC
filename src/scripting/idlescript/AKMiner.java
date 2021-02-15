@@ -25,6 +25,10 @@ public class AKMiner extends IdleScript {
     int eatingHealth = 0;
     
 	int[] oreIds = {150, 202, 151, 152, 153, 154, 155, 149, 157, 158, 159, 160, 383};
+
+	int startingOres = Integer.MAX_VALUE;
+	int oresBanked = 0;
+	int oresInBank = 0;
     
     class MiningObject {
 		String name;
@@ -127,25 +131,20 @@ public class AKMiner extends IdleScript {
 	}
 	
 	public void bank() {
-//		while(controller.isInBank() == false) {
-//			ORSCharacter npc = controller.getNearestNpcById(268, false);
-//			
-//			while(controller.isInOptionMenu() == false) {
-//				controller.talkToNpc(npc.serverIndex);
-//				controller.sleep(3000);
-//			}
-//			
-//			controller.optionAnswer(0);
-//			
-//			controller.sleep(5000);
-//		}
 		
 		controller.openBank();
-		
+
+
+
 		for(int ore : this.oreIds) {
 			if(controller.getInventoryItemCount(ore) > 0) {
 				controller.depositItem(ore, controller.getInventoryItemCount(ore));
-				controller.sleep(250);
+
+				this.oresInBank = controller.getBankItemCount(ore);
+				this.startingOres = this.oresInBank < this.startingOres ? oresInBank : startingOres;
+				this.oresBanked = oresInBank - startingOres;
+
+				controller.sleep(1000);
 			}
 		}
 		
@@ -194,5 +193,14 @@ public class AKMiner extends IdleScript {
     	scriptFrame.setVisible(true);
     	scriptFrame.pack();
     }
-    	
+
+	@Override
+	public void paintInterrupt() {
+		if(controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21+14+14, 0xFF0000, 64);
+			controller.drawString("@red@AKMiner @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Ores Mined: @whi@" + String.valueOf(this.oresBanked), 10, 21+14, 0xFFFFFF, 1);
+			controller.drawString("@red@Ores in bank: @whi@" + String.valueOf(this.oresInBank), 10, 21+14+14, 0xFFFFFF, 1);
+		}
+	}
 }

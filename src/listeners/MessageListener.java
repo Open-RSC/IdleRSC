@@ -65,8 +65,12 @@ public class MessageListener implements Runnable {
 					}
 				}		
 			}
-	    	
-	    	controller.sleep(1);
+
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}	
 }

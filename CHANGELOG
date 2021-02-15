@@ -1,3 +1,9 @@
+FEB 15 2021
+    The client now has a patcher for patching the JAR for callbacks, see updated readme and https://gitlab.com/idlersc/idlersc_patcher
+    The client now shows status, coordinates, and XP gained on the main client window via the DrawCallback class.
+    paintInterrupt() is now available to scripts. This is how you paint on the screen -- see AKMiner for an example.
+    AKMiner now has a basic paint progress report.
+
 FEB 12 2021
 	getDirection(x, y) will no longer return null if standing on x,y
 	atObject2 now uses getDirection(x,y)

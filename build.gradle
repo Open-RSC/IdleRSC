@@ -12,16 +12,16 @@ sourceSets {
     }
 }
 
-// Where to find Open_RSC_Client
+// Where to find patched_client.jar
 repositories {
     flatDir {
         dirs './'
     }
 }
 
-// The Open_RSC_Client dependency
+// The patched_client dependency
 dependencies {
-    implementation name: 'Open_RSC_Client'
+    implementation name: 'patched_client'
 }
 
 jar {

@@ -6,11 +6,9 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.*;
-import java.awt.event.*;
 
 import compatibility.sbot.Script;
 import controller.Controller;
-import listeners.*;
 import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
@@ -21,7 +19,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -37,7 +34,6 @@ import java.util.Comparator;
 import listeners.CommandListener;
 import listeners.LoginListener;
 import listeners.MessageListener;
-import listeners.PositionListener;
 import listeners.SleepListener;
 import listeners.WindowListener;
 
@@ -51,7 +47,7 @@ import listeners.WindowListener;
 public class Main {
     public static String username = "testaccount"; //this will be replaced by CLI arguments. modify for debugging with eclipse.
     public static String password = "testaccount";
-    
+
     public static String scriptName = "";
     private static String[] scriptArguments = {};
 
@@ -59,7 +55,6 @@ public class Main {
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
     private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton; //all the buttons on the sidepanel.
     private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
-    private static JLabel globalStatus, mouseStatus, posnStatus; //all the labels on the sidepanel.
 
 
     private static JTextArea logArea; //self explanatory
@@ -180,7 +175,6 @@ public class Main {
 
 
         log("IdleRSC initialized.");
-        updateStatus("Idle.");
 
         //dont' do anything until RSC is loaded.
         while (controller.isLoaded() == false) controller.sleep(1);
@@ -213,11 +207,6 @@ public class Main {
         loginListener = new Thread(new LoginListener(controller));
         loginListener.start();
         log("LoginListener initialized.");
-
-        log("Initializing PositionListener...");
-        positionListener = new Thread(new PositionListener(controller));
-        positionListener.start();
-        log("PositionListener initialized.");
 
         log("Initializing WindowListener...");
         windowListener = new Thread(new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
@@ -333,9 +322,6 @@ public class Main {
         logWindowCheckbox = new JCheckBox("Log Window");
         unstickCheckbox = new JCheckBox("Unstick");
         debugCheckbox = new JCheckBox("Debug");
-        globalStatus = new JLabel("Status: Idle.");
-        mouseStatus = new JLabel("Mouse: 0, 0");
-        posnStatus = new JLabel("Posn: 0, 0");
         openDebuggerButton = new JButton("Open Debugger");
         hideButton = new JButton("Hide Sidepane");
 
@@ -395,9 +381,6 @@ public class Main {
         botFrame.add(logWindowCheckbox);
         botFrame.add(unstickCheckbox);
         botFrame.add(debugCheckbox);
-        botFrame.add(globalStatus);
-        botFrame.add(mouseStatus);
-        botFrame.add(posnStatus);
         botFrame.add(openDebuggerButton);
         openDebuggerButton.setMaximumSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);
@@ -676,37 +659,6 @@ public class Main {
         frame.setLocation(x, y);
     }
 
-    /**
-     * Updates the bot status on the right sidepane.
-     *
-     * @param status
-     */
-    public static void updateStatus(String status) {
-        String text = "Status: " + status;
-        globalStatus.setText(text);
-    }
-
-    /**
-     * Updates the mouse position on the right sidepane.
-     *
-     * @param x
-     * @param y
-     */
-    public static void updateMouseStatus(int x, int y) {
-        String text = "Mouse: " + x + ", " + y;
-        mouseStatus.setText(text);
-    }
-
-    /**
-     * Updates the character position status on the right sidepane.
-     *
-     * @param x
-     * @param y
-     */
-    public static void updatePosnStatus(int x, int y) {
-        String text = "Posn: " + x + ", " + y;
-        posnStatus.setText(text);
-    }
 
     /**
      * un-hides the bot sidepanel.
@@ -714,5 +666,7 @@ public class Main {
     public static void showBot() {
         botFrame.setVisible(true);
     }
+
+    public static Controller getController() { return controller; }
 
 }

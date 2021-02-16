@@ -49,6 +49,7 @@ public class GetMeToArdougne extends IdleScript {
 			
 			while(controller.getInventoryItemCount(10) < 60)
 			{
+				controller.setStatus("@yel@Stealing GP..");
 				if(controller.isInCombat()) {
 					controller.walkTo(controller.currentX(), controller.currentZ());
 					controller.sleep(250);
@@ -63,6 +64,7 @@ public class GetMeToArdougne extends IdleScript {
 			}
 			
 			if(walkedToShip == false) {
+				controller.setStatus("@yel@Walking to Port Sarim ship..");
 				controller.walkPath(lumbToShip);
 				walkedToShip = true;
 			}
@@ -70,6 +72,7 @@ public class GetMeToArdougne extends IdleScript {
 			if(inKaramja == false) {
 				ORSCharacter npc;
 				while(controller.isInOptionMenu() == false) {
+					controller.setStatus("@yel@Talking to sailor..");
 					npc = controller.getNearestNpcById(166, false);
 					if(npc != null) { 
 						controller.talkToNpc(npc.serverIndex);
@@ -93,6 +96,7 @@ public class GetMeToArdougne extends IdleScript {
 			}
 			
 			if(inKaramja) {
+				controller.setStatus("@yel@Walking to Brimhaven gate..");
 				controller.walkPath(shipToGate);
 				
 				while(controller.currentX() != 435 || controller.currentZ() != 682) {
@@ -109,10 +113,12 @@ public class GetMeToArdougne extends IdleScript {
 					controller.sleep(5000);
 				}
 				
+				controller.setStatus("@yel@Walking to Brimhaven ship..");
 				controller.walkPath(gateToShip);
 				
 				ORSCharacter npc;
 				while(controller.isInOptionMenu() == false) {
+					controller.setStatus("@yel@Talking to Customs Official..");
 					npc = controller.getNearestNpcById(317, false);
 					if(npc != null) { 
 						controller.talkToNpc(npc.serverIndex);
@@ -139,4 +145,13 @@ public class GetMeToArdougne extends IdleScript {
 			
 		}
 	}
+	
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        	
+            controller.drawBoxAlpha(7, 7, 170, 21, 0x228B22, 128);
+            controller.drawString("@yel@GetMeToArdougne @whi@by @yel@Dvorak", 10, 21, 0xFFFFFF, 1);
+        }
+    }
 }

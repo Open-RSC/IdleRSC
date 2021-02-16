@@ -2199,5 +2199,9 @@ public class Controller {
 	public void drawShadowText(String text, int x, int y, int textColor, int fontSize, boolean center) {
     	mud.getSurface().drawShadowText(text, x, y, textColor, fontSize, center);
 	}
+	
+	public void setStatus(String rstext) {
+		DrawCallback.setStatusText(rstext);
+	}
 }
  

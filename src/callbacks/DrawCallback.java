@@ -8,7 +8,8 @@ public class DrawCallback {
 
     private static long startTimestamp = System.currentTimeMillis() / 1000L;
     private static long startingXp = Long.MAX_VALUE;
-
+    
+    private static String statusText = "@red@Botting!";
 
     public static void drawHook() {
         Controller c = Main.getController();
@@ -17,13 +18,19 @@ public class DrawCallback {
         drawScript(c);
 
     }
+    
+    public static void setStatusText(String str) { 
+    	statusText = str;
+    }
 
     private static void drawBotStatus(Controller c) {
         int y = 130 + 14 + 14 + 14;
-        String statusText = "Idle.";
-        if(Main.isRunning())
-            statusText = "Botting!";
-        c.drawString("Status: @red@" + statusText, 7, y, 0xFFFFFF, 1);
+        String localStatusText = statusText;
+        
+        if(!Main.isRunning()) {
+        	localStatusText = "@red@Idle.";
+        }
+        c.drawString("Status: " + localStatusText, 7, y, 0xFFFFFF, 1);
 
         y+= 14;
         c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentZ()) + "@red@)", 7, y, 0xFFFFFF, 1);

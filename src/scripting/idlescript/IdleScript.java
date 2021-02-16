@@ -22,7 +22,7 @@ public abstract class IdleScript {
 		
 	}
 	
-	public void npcMessageInterrupt(String message) {
+	public void questMessageInterrupt(String message) {
 		
 	}
 	

@@ -8,9 +8,8 @@ public class DrawCallback {
 
     private static long startTimestamp = System.currentTimeMillis() / 1000L;
     private static long startingXp = Long.MAX_VALUE;
-
-
-
+    
+    private static String statusText = "@red@Botting!";
 
     public static void drawHook() {
         Controller c = Main.getController();
@@ -19,13 +18,19 @@ public class DrawCallback {
         drawScript(c);
 
     }
+    
+    public static void setStatusText(String str) { 
+    	statusText = str;
+    }
 
     private static void drawBotStatus(Controller c) {
         int y = 130 + 14 + 14 + 14;
-        String statusText = "Idle.";
-        if(Main.isRunning())
-            statusText = "Botting!";
-        c.drawString("Status: @red@" + statusText, 7, y, 0xFFFFFF, 1);
+        String localStatusText = statusText;
+        
+        if(!Main.isRunning()) {
+        	localStatusText = "@red@Idle.";
+        }
+        c.drawString("Status: " + localStatusText, 7, y, 0xFFFFFF, 1);
 
         y+= 14;
         c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentZ()) + "@red@)", 7, y, 0xFFFFFF, 1);
@@ -66,36 +71,4 @@ public class DrawCallback {
         return result;
 
     }
-
-/**
- * 			if(Main.isRunning() && Main.getCurrentRunningScript() != null) {
- * 				if(controller.getMessages() != null && controller.getMessages().size() > 0) {
- * 					ORSCMessage message = controller.getMessages().get(0);
- *
- * 					if(!message.equals(previousMessage)) {
- * 						if(Main.getCurrentRunningScript() instanceof IdleScript) {
- * 							if(message.getType() == MessageType.GAME) {
- * 								((IdleScript)Main.getCurrentRunningScript()).serverMessageInterrupt(message.getMessage());
- *                                                        } else if(message.getType() == MessageType.CHAT) {
- * 								((IdleScript)Main.getCurrentRunningScript()).chatMessageInterrupt(message.getSender() + ": " + message.getMessage());
- *                            } else if(message.getType() == MessageType.QUEST) {
- * 								((IdleScript)Main.getCurrentRunningScript()).npcMessageInterrupt(message.getMessage());
- *                            } else if(message.getType() == MessageType.TRADE) {
- * 								((IdleScript)Main.getCurrentRunningScript()).tradeMessageInterrupt(message.getMessage());
- *                            }* 						} else if(Main.getCurrentRunningScript() instanceof Script) {
- * 							if(message.getType() == MessageType.GAME) {
- * 								System.out.println(message.getMessage());
- * 								((Script)Main.getCurrentRunningScript()).ServerMessage(message.getM                            );
- * 							} else if(message.getType() == MessageType.CHAT) {
- * 								((Script)Main.getCurrentRunningScript()).ChatMessage(message.getSender() + ": " + message.getM                            );
- * 							} else if(message.getType() == MessageType.QUEST) {
- * 								((Script)Main.getCurrentRunningScript()).NPCMessage(message.getM                            );
- * 							}
- * 							//TODO: Implement trade for SBot per SBot's contract                         ns.
- * 						}
- * 						previousMessage                     age;
- *                }
- *            }
- * 			}
- */
 }

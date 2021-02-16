@@ -1355,24 +1355,6 @@ public class Controller {
 		return EntityHandler.getItemDef(itemId).isStackable();
 	}
 
-	public ArrayList<ORSCMessage> getMessages() {
-		ArrayList<ORSCMessage> result = new ArrayList<ORSCMessage>();
-
-		String[] colors = MessageHistory.messageHistoryColor;
-		int[] crowns = MessageHistory.messageHistoryCrownID;
-		String[] messages = MessageHistory.messageHistoryMessage;
-		String[] senders = MessageHistory.messageHistorySender;
-		int[] timeouts = MessageHistory.messageHistoryTimeout;
-		MessageType[] types = MessageHistory.messageHistoryType;
-
-		for(int i = 0; i < messages.length; i++) {
-			result.add(new ORSCMessage(colors[i], crowns[i], messages[i], senders[i], timeouts[i], types[i]));
-		}
-
-
-		return result;
-	}
-
 	public void setServerMessage(String msg, boolean largeBox, boolean show) {
 		mud.setServerMessage(msg);
 		mud.setServerMessageBoxTop(largeBox);
@@ -2070,11 +2052,13 @@ public class Controller {
 			if (!usedBankerNpc) {
 				// Use a bank chest
 				int[] bankChestId = getNearestObjectById(942);
-				walkToAsync(bankChestId[0], bankChestId[1], 1);
+				if(bankChestId != null) {
+					walkToAsync(bankChestId[0], bankChestId[1], 1);
 
-				while (!isInBank()) {
-					atObject(bankChestId[0], bankChestId[1]);
-					sleep(2000);
+					while (!isInBank()) {
+						atObject(bankChestId[0], bankChestId[1]);
+						sleep(2000);
+					}
 				}
 			}
 
@@ -2083,9 +2067,18 @@ public class Controller {
     
 	public void walkPath(int[] path) {
 		for(int i = 0; i < path.length; i += 2) {
-			while(currentX() != path[i] && currentZ() != path[i+1]) {
+			while(currentX() != path[i] || currentZ() != path[i+1]) {
 				walkTo(path[i], path[i+1]);
-				sleep(100);
+				sleep(618);
+			}
+		}
+	}
+	
+	public void walkPathReverse(int[] path) {
+		for(int i = path.length - 2; i > 0; i -= 2) {
+			while(currentX() != path[i] || currentZ() != path[i+1]) {
+				walkTo(path[i], path[i+1]);
+				sleep(618);
 			}
 		}
 	}
@@ -2205,6 +2198,10 @@ public class Controller {
 
 	public void drawShadowText(String text, int x, int y, int textColor, int fontSize, boolean center) {
     	mud.getSurface().drawShadowText(text, x, y, textColor, fontSize, center);
+	}
+	
+	public void setStatus(String rstext) {
+		DrawCallback.setStatusText(rstext);
 	}
 }
  

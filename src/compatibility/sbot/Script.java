@@ -4,8 +4,8 @@ import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import bot.Main;
+import callbacks.MessageCallback;
 import controller.Controller;
-import controller.ORSCMessage;
 import orsc.ORSCharacter;
 import orsc.enumerations.MessageType;
 
@@ -94,12 +94,12 @@ public abstract class Script
 	public int LastChatter()
 	{
 		Main.logMethod("LastChatter");
-		return 0;
+		return MessageCallback.getSbotLastChatter();
 	}
 	public String LastChatterName()
 	{
 		Main.logMethod("LastChatterName");
-		return controller.getMessages().get(0).getSender();
+		return MessageCallback.getSbotLastChatterName();
 	}
 	public int BankCount(int item)
 	{
@@ -836,24 +836,7 @@ public abstract class Script
 	public String LastChatMessage()
 	{
 		Main.logMethod("LastChatMessage");
-		String messageText = "";
-		
-		for(ORSCMessage message : controller.getMessages()) {
-			if(message.getType() == MessageType.CHAT) {
-				messageText = message.getMessage();
-			}
-		}
-		
-		if(resetLastChatMessage == true) {
-			if(lastChatMessage.equals(messageText)) {
-				return "";
-			} else {
-				resetLastChatMessage = false;
-			}
-		}
-		
-		lastChatMessage = messageText;
-		return messageText;
+		return MessageCallback.getSbotLastChatMessage();
 	}
 	public void ResetLastChatMessage()
 	{
@@ -863,24 +846,7 @@ public abstract class Script
 	public String LastNPCMessage()
 	{
 		Main.logMethod("LastNPCMessage");
-		String messageText = "";
-		
-		for(ORSCMessage message : controller.getMessages()) {
-			if(message.getType() == MessageType.QUEST) {
-				messageText = message.getMessage();
-			}
-		}
-		
-		if(resetLastNPCMessage == true) {
-			if(lastNPCMessage.equals(messageText)) {
-				return "";
-			} else {
-				resetLastNPCMessage = false;
-			}
-		}
-		
-		lastNPCMessage = messageText;
-		return messageText;
+		return MessageCallback.getSbotLastNPCMessage();
 	}
 	public void ResetLastNPCMessage()
 	{
@@ -891,24 +857,7 @@ public abstract class Script
 	public String LastServerMessage()
 	{
 		Main.logMethod("LastServerMessage");
-		String messageText = "";
-		
-		for(ORSCMessage message : controller.getMessages()) {
-			if(message.getType() == MessageType.GAME) {
-				messageText = message.getMessage();
-			}
-		}
-		
-		if(resetLastServerMessage == true) {
-			if(lastServerMessage.equals(messageText)) {
-				return "";
-			} else {
-				resetLastServerMessage = false;
-			}
-		}
-		
-		lastServerMessage = messageText;
-		return messageText;
+		return MessageCallback.getSbotLastServerMessage();
 	}
 	public void ResetLastServerMessage()
 	{

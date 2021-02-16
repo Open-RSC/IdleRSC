@@ -2120,9 +2120,9 @@ public class Controller {
     }
 
 	
-	public int[] getNearestBank() {
-		int[] bankX = { 220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440 };
-		int[] bankY = { 635, 504, 511, 365, 450, 569, 452, 576, 600, 754, 3543, 495 };
+    public int[] getNearestBank() {
+		int[] bankX = { 220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440, 327 };
+		int[] bankY = { 635, 504, 511, 365, 450, 569, 452, 576, 600, 754, 3543, 495, 552 };
 		int prevX = 10000;
 		int prevY = 10000;
 		int index = 0;
@@ -2133,9 +2133,10 @@ public class Controller {
 				index = i;
 			}
 		}
-		int[] bankCoords = {bankX[index],bankY[index]};
+		int[] bankCoords = { bankX[index], bankY[index] };
 		return bankCoords;
 	}
+
 	
 	public boolean shopBuy(int itemId,int amount) {
 		//TODO: check if enough coins in inventory, return false if not enough.

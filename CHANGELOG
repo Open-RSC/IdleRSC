@@ -3,9 +3,13 @@ FEB 15 2021
     The client now shows status, coordinates, and XP gained on the main client window via the DrawCallback class.
     paintInterrupt() is now available to scripts. This is how you paint on the screen -- see AKMiner for an example.
     AKMiner now has a basic paint progress report.
-    -- pending below --
     PositionListener, MessageListener axed
     MessageListener replaced with MessageCallback
+    Fixed NPE in openBank() caused by no teller or bank chest around.
+    Fixed annoying bug in walkPath()
+    Scripts can now modify the status text via Controller.setStatus();
+    "npcMessage" has been changed to "questMessage" to be more consistent
+    Flaxx0r script released! Picks and banks flax in Seers Village.
 
 FEB 12 2021
 	getDirection(x, y) will no longer return null if standing on x,y

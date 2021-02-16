@@ -806,7 +806,7 @@ public class Controller {
 	public void closeDoor(int x, int z) {
 
 		if(isDoorOpen(x, z) == false) {
-			System.out.println("door already open");
+			System.out.println("door already closed");
 			return;
 		}
 
@@ -1267,7 +1267,7 @@ public class Controller {
 		mud.resizeHeight = height;
 	}
 
-	public void takeScreenshot() {
+	public void takeScreenshot(String filename) {
 		MudClientGraphics gfx = getMudGraphics();
 
 
@@ -1302,8 +1302,8 @@ public class Controller {
 		}
 
 		try {
-			ImageIO.write(img, "bmp", new File("screenshot.bmp"));
-			Main.log("saved");
+			ImageIO.write(img, "bmp", new File(filename + ".bmp"));
+			Main.log("Screenshot saved.");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2203,6 +2203,13 @@ public class Controller {
 	
 	public void setStatus(String rstext) {
 		DrawCallback.setStatusText(rstext);
+	}
+	
+	public String getPlayerName() {
+		if(this.getPlayer() != null)
+			return this.getPlayer().accountName;
+		
+		return "";
 	}
 }
  

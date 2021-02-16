@@ -27,6 +27,7 @@ public class SpinStrings extends IdleScript {
 	int input = -1;
 	int output = -1;
 	int totalString = 0;
+	int bankedString = 0;
 	boolean upstairs = false;
 	boolean started = false;
 	int bankSelX = -1;
@@ -80,7 +81,7 @@ public class SpinStrings extends IdleScript {
 			// if player is near spinning wheel, not batching, and not banking, and seer's village selected. spin material.
 			while (controller.getNearestObjectById(121) != null && controller.getInventoryItemCount(input) > 0
 					&& destination.getSelectedIndex() == 0 && controller.getNearestObjectById(121) != null) {
-				controller.displayMessage("@red@Spinning Flax");
+				controller.setStatus("@red@Spinning Flax");
 				//if not batching use material on wheel
 				while (!controller.isBatching()) {
 					//sleep if you have high fatigue
@@ -97,7 +98,7 @@ public class SpinStrings extends IdleScript {
 			// if player is near spinning wheel, not batching, and not banking, and falador selected. spin flax.
 			while (destination.getSelectedIndex() == 1 && controller.getNearestObjectById(121) != null
 					&& controller.getInventoryItemCount(input) > 0) {
-				controller.displayMessage("@red@Spinning Flax");
+				controller.setStatus("@red@Spinning Flax");
 				//if not batching use material on wheel
 				while (!controller.isBatching()) {
 					//sleep if you have high fatigue
@@ -115,7 +116,7 @@ public class SpinStrings extends IdleScript {
 			//if player is in seer's village walk to ladder and go up it
 			while (controller.getNearestObjectById(121) == null && controller.getInventoryItemCount(input) > 0
 					&& destination.getSelectedIndex() == 0) {
-				controller.displayMessage("@red@Going upstairs");
+				controller.setStatus("@red@Going upstairs");
 				//if the ladder at 525,462 is unloaded walk closer to it
 				while (controller.isTileEmpty(525, 462)) {
 					startWalking(524, 463);
@@ -136,18 +137,18 @@ public class SpinStrings extends IdleScript {
 			//go down ladder and walk to seer's village bank
 			while (controller.getNearestObjectById(121) != null && controller.getInventoryItemCount(input) == 0
 					&& destination.getSelectedIndex() == 0) {
-				controller.displayMessage("@red@Going downstairs");
+				controller.setStatus("@red@Going downstairs");
 				controller.atObject(525, 1406);
 				controller.sleep(100);
 			}
 			//walk to falador bank
 			while (controller.getNearestNpcByIds(bankerIds, false) == null
 					&& controller.getInventoryItemCount(input) == 0) {
-				controller.displayMessage("@red@Walking to bank");
+				controller.setStatus("@red@Walking to bank");
 				startWalking(bankSelX, bankSelY);
 			}
 			//open bank
-			controller.displayMessage("@red@Banking");
+			controller.setStatus("@red@Banking");
 			while (!controller.isInBank() && controller.getNearestNpcByIds(bankerIds, false) != null
 					&& controller.getInventoryItemCount(input) == 0) {
 				controller.openBank();
@@ -163,12 +164,12 @@ public class SpinStrings extends IdleScript {
 					}
 				}
 			}
+			bankedString = controller.getBankItemCount(output);
 			//withdraw materials
 			controller.withdrawItem(input, 30);
 			controller.sleep(618);
 			controller.closeBank();
-			controller.displayMessage("@red@Finished Banking");
-			controller.displayMessage("@yel@ Banked " + totalString + " bowstrings");
+			controller.setStatus("@red@Finished Banking");
 		}
 	}
 
@@ -210,5 +211,14 @@ public class SpinStrings extends IdleScript {
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
+	}
+	@Override
+	public void paintInterrupt() {
+		if (controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+			controller.drawString("@red@Spin Strings @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Strings Spun: @yel@" + String.valueOf(this.totalString), 10, 35, 0xFFFFFF, 1);
+			controller.drawString("@red@String in Bank: @yel@" + String.valueOf(this.bankedString), 10, 49, 0xFFFFFF, 1);
+		}
 	}
 }

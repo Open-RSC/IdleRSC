@@ -1,3 +1,10 @@
+FEB 16 2021
+	Global XP/hr calculation is now accurate.
+	AIOThiever, LimpySnapez, HerbHarvester now have paint progress reports. 
+	Flaxx0r now tracks flax per hour.
+	Searos updated Controller isDoorOpen to work on the crafting guild door.
+	Searos updated many of his scripts to support Paint  
+	
 FEB 15 2021
     The client now has a patcher for patching the JAR for callbacks, see updated readme and https://gitlab.com/idlersc/idlersc_patcher
     The client now shows status, coordinates, and XP gained on the main client window via the DrawCallback class.

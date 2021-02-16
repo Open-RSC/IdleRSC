@@ -28,6 +28,8 @@ public class Woodcutting extends IdleScript {
 	int saveY = 0;
 	int bankSelX = -1;
 	int bankSelY = -1;
+	int totalLogs = 0;
+	int bankedLogs = 0;
 	int[] bankX = { 220, 150, 103, 220, 216, 283, 503, 582, 566, 588 };
 	int[] bankY = { 635, 504, 511, 365, 450, 569, 452, 576, 600, 754 };
 	boolean bankTime = false;
@@ -111,19 +113,21 @@ public class Woodcutting extends IdleScript {
 				while (controller.getNearestNpcByIds(bankerIds, true) == null) {
 					startWalking(bankSelX, bankSelY);
 				}
-				controller.displayMessage("@red@Banking");
+				controller.setStatus("@red@Banking");
 				while (!controller.isInBank()) {
 					controller.openBank();
 					controller.sleep(100);
 				}
 			}
 			while (controller.isInBank() && controller.getInventoryItemCount() > 0) {
+				totalLogs = totalLogs + controller.getInventoryItemCount(logId);
 				for (int itemId : controller.getInventoryItemIds()) {
 					if (itemId != 0 && !isAxe(itemId) && itemId != 1263) {
 						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 					}
 					controller.sleep(10);
 				}
+				bankedLogs = controller.getBankItemCount(logId);
 				controller.closeBank();
 				bankTime = false;
 			}
@@ -137,7 +141,7 @@ public class Woodcutting extends IdleScript {
 				}
 				controller.sleep(100);
 				if (controller.getNearestObjectById(treeId) != null) {
-					controller.displayMessage("@red@Chopping");
+					controller.setStatus("@red@Chopping");
 					chopTime = true;
 					return;
 				}
@@ -194,6 +198,15 @@ public class Woodcutting extends IdleScript {
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
+	}
+	@Override
+	public void paintInterrupt() {
+		if(controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21+14+14, 0xFF0000, 64);
+			controller.drawString("@red@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Logs Collected: @yel@" + String.valueOf(this.totalLogs), 10, 21+14, 0xFFFFFF, 1);
+			controller.drawString("@red@Logs in bank: @yel@" + String.valueOf(this.bankedLogs), 10, 21+14+14, 0xFFFFFF, 1);
+		}
 	}
 
 }

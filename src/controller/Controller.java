@@ -746,7 +746,7 @@ public class Controller {
 
 		int _x = removeOffsetX(x), _z = removeOffsetZ(z);
 		
-		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164)
+		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164 || this.getWallObjectIdAtCoord(x, z) == 68)
 			return false;
 
 		for(int i = 0; i < count; i++) {

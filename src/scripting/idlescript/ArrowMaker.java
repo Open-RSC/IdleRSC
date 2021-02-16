@@ -14,10 +14,13 @@ import javax.swing.JLabel;
 
 public class ArrowMaker extends IdleScript {
 	int[] arrowHeads = { 669, 670, 671, 672, 673, 674, 381 };
+	int[] completed = { 11, 638, 640, 642, 644, 646 };
 	int selectedArrowHead = -1;
+	int completeSelected = -1;
 	boolean scriptStarted = false;
 	boolean guiSetup = false;
 	boolean headless = false;
+	int startAmount = 0;
 	JFrame scriptFrame = null;
 
 	public void start(String parameters[]) {
@@ -94,6 +97,8 @@ public class ArrowMaker extends IdleScript {
 					headless = true;
 				}
 				scriptStarted = true;
+				completeSelected = completed[arrowHead.getSelectedIndex()];
+				startAmount = controller.getInventoryItemCount(completeSelected);
 				controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
 				controller.displayMessage("@red@ArrowMaker started");
 
@@ -111,5 +116,15 @@ public class ArrowMaker extends IdleScript {
 		centerWindow(scriptFrame);
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
+	}
+
+	@Override
+	public void paintInterrupt() {
+		if (controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+			controller.drawString("@red@Arrow Maker @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Arrows Made: @yel@" + String.valueOf(this.controller.getInventoryItemCount(completeSelected) - startAmount), 10, 35,
+					0xFFFFFF, 1);
+		}
 	}
 }

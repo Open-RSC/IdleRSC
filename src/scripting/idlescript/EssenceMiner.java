@@ -4,6 +4,10 @@ import java.lang.Math;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
+import controller.Controller;
+import orsc.mudclient;
+import reflector.Reflector;
+
 public class EssenceMiner extends IdleScript {
 	JComboBox<String> destination = new JComboBox<String>(new String[] { "Seers", "Falador" });
 	JFrame scriptFrame = null;
@@ -13,6 +17,7 @@ public class EssenceMiner extends IdleScript {
 	int[] bankX = { 500 };
 	int[] bankY = { 455 };
 	int totalStones = 0;
+	int bankedStones = 0;
 	boolean started = false;
 	boolean inEssenceMine = false;
 	boolean bankTime = false;
@@ -82,7 +87,7 @@ public class EssenceMiner extends IdleScript {
 				controller.sleep(640);
 			}
 			if (!inEssenceMine && !bankTime && controller.getNearestNpcById(54, false) == null) {
-				controller.displayMessage("@red@Walking to Aubury");
+				controller.setStatus("@red@Walking to Aubury");
 				while (controller.getNearestNpcById(54, false) == null) {
 					startWalking(104, 524);
 					controller.sleep(640);
@@ -105,7 +110,7 @@ public class EssenceMiner extends IdleScript {
 				return;
 			}
 			if (inEssenceMine && bankTime) {
-				controller.displayMessage("@red@Leaving Mine");
+				controller.setStatus("@red@Leaving Mine");
 				while (controller.getNearestNpcById(54, true) == null) {
 					controller.atObject(685, 14);
 					controller.sleep(640);
@@ -114,11 +119,11 @@ public class EssenceMiner extends IdleScript {
 				return;
 			}
 			if (!inEssenceMine && bankTime) {
-				controller.displayMessage("@red@Walking to bank");
+				controller.setStatus("@red@Walking to bank");
 				while (controller.getNearestNpcByIds(bankerIds, false) == null) {
 					startWalking(bankX[0], bankY[0]);
 				}
-				controller.displayMessage("@red@Banking");
+				controller.setStatus("@red@Banking");
 				while (!controller.isInBank()) {
 					controller.openBank();
 				}
@@ -131,10 +136,19 @@ public class EssenceMiner extends IdleScript {
 						}
 					}
 				}
+				bankedStones = controller.getBankItemCount(1299);
 				controller.sleep(618);
 				controller.closeBank();
-				controller.displayMessage("@red@Finished Banking");
-				controller.displayMessage("@yel@ Banked " + totalStones + " Rune Stones");
+				controller.setStatus("@red@Finished Banking");
 			}
+	}
+	@Override
+	public void paintInterrupt() {
+		if(controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21+14+14, 0xFF0000, 64);
+			controller.drawString("@red@Essence Miner @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Essence Mined: @yel@" + String.valueOf(this.totalStones), 10, 21+14, 0xFFFFFF, 1);
+			controller.drawString("@red@Essence in bank: @yel@" + String.valueOf(this.bankedStones), 10, 21+14+14, 0xFFFFFF, 1);
+		}
 	}
 }

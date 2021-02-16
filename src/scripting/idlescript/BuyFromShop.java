@@ -22,6 +22,7 @@ public class BuyFromShop extends IdleScript {
 	int shopNumber = -1;
 	int startX = -1;
 	int startY = -1;
+	int purchased = 0;
 	JTextField items = new JTextField("");
 	JTextField shopCount = new JTextField("10");
 	JTextField shopBuyCount = new JTextField("10");
@@ -118,6 +119,7 @@ public class BuyFromShop extends IdleScript {
 			}
 			while (controller.isInBank() && controller.getInventoryItemCount() == 30) {
 				for (int itemId : controller.getInventoryItemIds()) {
+					purchased = purchased + controller.getInventoryItemCount(itemId);
 					if (itemId != 0 && itemId != 10) {
 						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 						controller.sleep(10);
@@ -194,5 +196,13 @@ public class BuyFromShop extends IdleScript {
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
+	}
+	@Override
+	public void paintInterrupt() {
+		if (controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+			controller.drawString("@red@Buy from Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Purchased items banked: @yel@" + String.valueOf(this.purchased), 10, 35, 0xFFFFFF, 1);
+		}
 	}
 }

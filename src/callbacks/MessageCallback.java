@@ -1,5 +1,8 @@
 package callbacks;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import bot.Main;
 import compatibility.sbot.Script;
 import controller.Controller;
@@ -13,12 +16,21 @@ public class MessageCallback {
     private static String sbotLastChatMessage = "";
     private static String sbotLastNPCMessage = "";
     private static String sbotLastServerMessage = "";
+    
+    private static final Pattern p = Pattern.compile("^(.*) (.*) level!"); //for parsing level up messages
 
     public static void messageHook(boolean crownEnabled, String sender, String message, MessageType type, int crownID,
                                    String formerName, String colourOverride) {
+    	
+        if (type == MessageType.GAME) {
+        	if(message.contains("You just advanced")) {
+        		handleLevelUp(message);
+        	}
+        }
+        
         if (Main.isRunning() && Main.getCurrentRunningScript() != null) {
             if (Main.getCurrentRunningScript() instanceof IdleScript) {
-                if (type == MessageType.GAME) {
+            	if (type == MessageType.GAME) {
                     ((IdleScript) Main.getCurrentRunningScript()).serverMessageInterrupt(message);
                 } else if (type == MessageType.CHAT) {
                     ((IdleScript) Main.getCurrentRunningScript()).chatMessageInterrupt(sender + ": " + message);
@@ -45,8 +57,31 @@ public class MessageCallback {
             }
         }
     }
+	
+	private static void handleLevelUp(String message) {
+		Controller c = Main.getController();
+		String skillName = null;
+		int skillLevel = -1;
+		
+		Matcher m = p.matcher(message);
+		
+		if(m.find()) {
+			skillName = m.group(2);
+			if(skillName != null && skillName.length() > 1) {
+				if(skillName.toLowerCase().equals("woodcut"))
+					skillName = "Woodcutting";
+				
+				skillName = Character.toUpperCase(skillName.charAt(0)) + skillName.substring(1);
+				
+				skillLevel = c.getBaseStat(c.getStatId(skillName));
+				
+				DrawCallback.displayAndScreenshotLevelUp(skillName, skillLevel); 
+			}
+		}
+		
+	}
 
-    public static int getSbotLastChatter() {
+	public static int getSbotLastChatter() {
         return sbotLastChatter;
     }
 

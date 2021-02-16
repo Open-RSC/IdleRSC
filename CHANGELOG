@@ -14,6 +14,7 @@ FEB 15 2021
     Updated Searos' BuyFromShop -- now supports non-stackables via banking
     Updated Searos' SellToShop -- now banks if it runs out
     Updated Controller.getNearestBank() to find Falador West (Searos)
+    Added STS style level up message and screenshot. 
 
 FEB 12 2021
 	getDirection(x, y) will no longer return null if standing on x,y

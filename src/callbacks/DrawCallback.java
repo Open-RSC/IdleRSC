@@ -10,6 +10,11 @@ public class DrawCallback {
     private static long startingXp = Long.MAX_VALUE;
     
     private static String statusText = "@red@Botting!";
+    
+    private static String levelUpSkill = "", levelUpLevel = "";
+    private static String levelUpText = "";
+    private static long levelUpTextTimeout = 0;
+    private static boolean screenshotTaken = false;
 
     public static void drawHook() {
         Controller c = Main.getController();
@@ -48,6 +53,16 @@ public class DrawCallback {
         }
         c.drawString("XP Gained: @red@" + String.format("%,d", xpGained)
                        + " @whi@(@red@" + String.format("%,d", xpPerHr) + " @whi@xp/hr)", 7, y, 0xFFFFFF, 1);
+        
+        if(System.currentTimeMillis() / 1000L < levelUpTextTimeout) {
+        	y += 14;
+        	c.drawString(levelUpText, 7, y, 0xFFFFFF, 1);
+        	if(screenshotTaken == false) {
+        		c.takeScreenshot(c.getPlayerName() + "_" + levelUpLevel + "_" + levelUpSkill);
+        		screenshotTaken = true;
+        	}
+        }
+        
     }
 
     private static void drawScript(Controller c) {
@@ -70,5 +85,14 @@ public class DrawCallback {
 
         return result;
 
+    }
+    
+    public static void displayAndScreenshotLevelUp(String statName, int level) {
+    	screenshotTaken = false;
+    	levelUpSkill = statName;
+    	levelUpLevel = String.valueOf(level);
+    	
+    	levelUpText = "@red@" + String.valueOf(level) + " @whi@" + statName + "@red@!";
+    	levelUpTextTimeout = System.currentTimeMillis() / 1000L + 15; //display for 15seconds
     }
 }

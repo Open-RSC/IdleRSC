@@ -1,6 +1,6 @@
 FEB 16 2021
 	Global XP/hr calculation is now accurate.
-	AIOThiever, LimpySnapez, HerbHarvester now have paint progress reports. 
+	AIOFighter, AIOThiever, LimpySnapez, HerbHarvester, HerbIdentifier, PowerFletcha now have paint progress reports. 
 	Flaxx0r now tracks flax per hour.
 	Searos updated Controller isDoorOpen to work on the crafting guild door.
 	Searos updated many of his scripts to support Paint

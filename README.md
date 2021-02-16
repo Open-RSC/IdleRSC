@@ -6,8 +6,9 @@ This is an alpha version. I am not responsible for any lost items or ruined acco
 
 *****
 
-IdleRSC is a reflection and packet injection bot for OpenRSC.
-It has it's own custom scripting API. It also has backwards compatibility with SBot. STS and APOS support are planned.
+IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's own custom scripting API. It also has backwards compatibility with SBot.
+
+[![IdleRSC Demo Video](https://img.youtube.com/vi/Bkp2M3Ja9qc/0.jpg)](https://www.youtube.com/watch?v=Bkp2M3Ja9qc)
 
 
 ## Starting IdleRSC:

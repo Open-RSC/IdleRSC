@@ -2067,9 +2067,18 @@ public class Controller {
     
 	public void walkPath(int[] path) {
 		for(int i = 0; i < path.length; i += 2) {
-			while(currentX() != path[i] && currentZ() != path[i+1]) {
+			while(currentX() != path[i] || currentZ() != path[i+1]) {
 				walkTo(path[i], path[i+1]);
-				sleep(100);
+				sleep(618);
+			}
+		}
+	}
+	
+	public void walkPathReverse(int[] path) {
+		for(int i = path.length - 2; i > 0; i -= 2) {
+			while(currentX() != path[i] || currentZ() != path[i+1]) {
+				walkTo(path[i], path[i+1]);
+				sleep(618);
 			}
 		}
 	}

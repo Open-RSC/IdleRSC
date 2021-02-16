@@ -23,7 +23,7 @@ public class MessageCallback {
                 } else if (type == MessageType.CHAT) {
                     ((IdleScript) Main.getCurrentRunningScript()).chatMessageInterrupt(sender + ": " + message);
                 } else if (type == MessageType.QUEST) {
-                    ((IdleScript) Main.getCurrentRunningScript()).npcMessageInterrupt(message);
+                    ((IdleScript) Main.getCurrentRunningScript()).questMessageInterrupt(message);
                 } else if (type == MessageType.TRADE) {
                     ((IdleScript) Main.getCurrentRunningScript()).tradeMessageInterrupt(message);
                 }

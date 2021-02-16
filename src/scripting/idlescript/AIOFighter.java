@@ -84,7 +84,7 @@ public class AIOFighter extends IdleScript {
     	}
     }
     
-	public void npcMessageInterrupt(String message) {
+	public void questMessageInterrupt(String message) {
 		System.out.println(message);
 		if(message.equals("I can't get a clear shot from here")) {
 			System.out.println("Walking to npc");

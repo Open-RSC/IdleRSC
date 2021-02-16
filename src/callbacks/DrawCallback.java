@@ -46,7 +46,9 @@ public class DrawCallback {
         long xpGained = totalXp - startingXp;
         long xpPerHr;
         try {
-            xpPerHr = (xpGained / (((System.currentTimeMillis() / 1000L) - startTimestamp))) * (60*60);
+    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+    		float scale = (60 * 60) / timeRan;
+    		xpPerHr = (int)(xpGained * scale);
         }
         catch(Exception e) {
             xpPerHr = 0;

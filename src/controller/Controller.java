@@ -2052,11 +2052,13 @@ public class Controller {
 			if (!usedBankerNpc) {
 				// Use a bank chest
 				int[] bankChestId = getNearestObjectById(942);
-				walkToAsync(bankChestId[0], bankChestId[1], 1);
+				if(bankChestId != null) {
+					walkToAsync(bankChestId[0], bankChestId[1], 1);
 
-				while (!isInBank()) {
-					atObject(bankChestId[0], bankChestId[1]);
-					sleep(2000);
+					while (!isInBank()) {
+						atObject(bankChestId[0], bankChestId[1]);
+						sleep(2000);
+					}
 				}
 			}
 

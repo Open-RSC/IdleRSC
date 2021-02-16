@@ -44,6 +44,10 @@ public class HerbHarvester extends IdleScript {
 	
 	int[] unids = {165, 435, 436, 437, 438, 439, 440, 441, 442, 443};
 	
+	int herbsPicked = 0;
+	int herbsBanked = 0;
+	long startTimestamp = System.currentTimeMillis() / 1000L;
+	
 	public void start(String[] param) {
 		
 		controller.displayMessage("@red@HerbHarvester by Dvorak. Let's party like it's 2004!");
@@ -54,11 +58,13 @@ public class HerbHarvester extends IdleScript {
 				int[] coords = controller.getNearestObjectById(1274);
 				
 				if(coords != null) {
+					controller.setStatus("@whi@Picking herbs!");
 					controller.atObject(coords[0], coords[1]);
 					controller.sleep(1000);
 					while(controller.getInventoryItemCount() < 30 && controller.isBatching() == true) controller.sleep(10);
 				} else {
 					//move so we can see all herbs
+					controller.setStatus("@whi@Searching for herbs...");
 					if(controller.currentX() != 363 || controller.currentZ() != 503)
 						controller.walkTo(363, 503);
 				}
@@ -74,7 +80,10 @@ public class HerbHarvester extends IdleScript {
 	}
 	
 	public void walkToBank() {
-		controller.displayMessage("@red@Walking to bank....");
+		controller.setStatus("@whi@Walking to bank..");
+		
+		if(controller.currentX() < 363)
+			controller.walkTo(358,  507);
 		controller.walkPath(herbToDoorPath);
 		controller.sleep(1000);
 		
@@ -103,7 +112,7 @@ public class HerbHarvester extends IdleScript {
 	}
 	
 	public void bank() {
-		controller.displayMessage("@red@Banking...");
+		controller.setStatus("@whi@Banking..");
 		
 		controller.openBank();
 		
@@ -116,10 +125,16 @@ public class HerbHarvester extends IdleScript {
 				}
 			}
 		}
+		
+		herbsBanked = 0;
+		for(int i = 0; i < unids.length; i++) {
+			herbsBanked += controller.getBankItemCount(unids[i]);
+		}
+		
 	}
 	
 	public void walkToTaverly() {
-		controller.displayMessage("@red@Walking back to Taverly...");
+		controller.setStatus("@whi@Walking back to Taverly..");
 		
 		while(controller.getObjectAtCoord(327, 552) == 64) {
 			controller.objectAt(327, 552, 0, 64);
@@ -133,16 +148,40 @@ public class HerbHarvester extends IdleScript {
 		
 		//open door
 		while(controller.currentX() != 342 || controller.currentZ() != 487) {
-			controller.displayMessage("@red@Opening door...");
+			controller.displayMessage("@red@Opening door..");
 			if(controller.getObjectAtCoord(341, 487) == 137)
 				controller.atObject(341, 487);
 			controller.sleep(5000);
 		}
 		
 		controller.walkPath(doorToHerbPath);
-		
-		
 	}
 	
+	
+    @Override
+    public void questMessageInterrupt(String message) {
+        if(message.contains("herb"))
+        	herbsPicked++;
+    }
+	
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        			
+        	int herbsPerHr = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		herbsPerHr = (int)(herbsPicked * scale);
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+        	
+            controller.drawBoxAlpha(7, 7, 160, 21+14+14, 0xFFFFFF, 128);
+            controller.drawString("@gre@HerbHarvester @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@gre@Herbs picked: @whi@" + String.format("%,d", herbsPicked) + " @gre@(@whi@" + String.format("%,d", herbsPerHr) + "@gre@/@whi@hr@gre@)", 10, 21+14, 0xFFFFFF, 1);
+            controller.drawString("@gre@Herbs in bank: @whi@" + String.format("%,d", herbsBanked), 10, 21+14+14, 0xFFFFFF, 1);
+        }
+    }
 
 }

@@ -26,8 +26,9 @@ public class AKMiner extends IdleScript {
     
 	int[] oreIds = {150, 202, 151, 152, 153, 154, 155, 149, 157, 158, 159, 160, 383};
 
-	int startingOres = Integer.MAX_VALUE;
-	int oresBanked = 0;
+	
+	long startTimestamp = (System.currentTimeMillis() / 1000L);
+	int oresMined = 0;
 	int oresInBank = 0;
     
     class MiningObject {
@@ -67,6 +68,7 @@ public class AKMiner extends IdleScript {
 		if(!guiSetup) {
     		setupGUI();
     		guiSetup = true;
+    		controller.setStatus("@red@Waiting for start..");
     	}
     	
     	if(scriptStarted) {
@@ -87,7 +89,10 @@ public class AKMiner extends IdleScript {
 				controller.sleepHandler(98, true);
 				int[] objCoord = controller.getNearestObjectById(target.rockId);
 				if(objCoord != null) {
+					controller.setStatus("@red@Mining!");
 					controller.objectAt(objCoord[0], objCoord[1], 0, target.rockId);
+				} else {
+					controller.setStatus("@red@Waiting for spawn...");
 				}
 				
 				controller.sleep(618);
@@ -97,6 +102,7 @@ public class AKMiner extends IdleScript {
 	
 	
 	public void openDoor() {
+		controller.setStatus("@red@Opening bank door..");
 		while(controller.getObjectAtCoord(86, 695) == 64) {
 			controller.objectAt(86, 695, 0, 64);
 			controller.sleep(100);
@@ -104,6 +110,7 @@ public class AKMiner extends IdleScript {
 	}
 	
 	public void walkToBank() {		
+		controller.setStatus("@red@Walking to bank..");
 		controller.walkTo(71, 594);
 		controller.walkTo(70, 609);
 		controller.walkTo(71, 629);
@@ -116,6 +123,7 @@ public class AKMiner extends IdleScript {
 	}
 	
 	public void walkToMine() {
+		controller.setStatus("@red@Walking to mine..");
 		
 		openDoor();
 		
@@ -132,6 +140,8 @@ public class AKMiner extends IdleScript {
 	
 	public void bank() {
 		
+		controller.setStatus("@red@Banking...");
+		
 		controller.openBank();
 
 
@@ -139,15 +149,10 @@ public class AKMiner extends IdleScript {
 		for(int ore : this.oreIds) {
 			if(controller.getInventoryItemCount(ore) > 0) {
 				controller.depositItem(ore, controller.getInventoryItemCount(ore));
-
-				this.oresInBank = controller.getBankItemCount(ore);
-				this.startingOres = this.oresInBank < this.startingOres ? oresInBank : startingOres;
-				this.oresBanked = oresInBank - startingOres;
-
 				controller.sleep(1000);
+				this.oresInBank = controller.getBankItemCount(ore);
 			}
-		}
-		
+		}		
 	}
 
 	
@@ -194,13 +199,29 @@ public class AKMiner extends IdleScript {
     	scriptFrame.pack();
     }
 
+    @Override
+    public void questMessageInterrupt(String message) {
+        if(message.contains("You manage to"))
+        	oresMined++;
+    }
+    
 	@Override
 	public void paintInterrupt() {
 		if(controller != null) {
-			controller.drawBoxAlpha(7, 7, 128, 21+14+14, 0xFF0000, 64);
+			
+        	int minedPerHr = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		minedPerHr = (int)(oresMined * scale);
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+			
+			controller.drawBoxAlpha(7, 7, 150, 21+14+14, 0xFF0000, 64);
 			controller.drawString("@red@AKMiner @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
-			controller.drawString("@red@Ores Mined: @whi@" + String.valueOf(this.oresBanked), 10, 21+14, 0xFFFFFF, 1);
-			controller.drawString("@red@Ores in bank: @whi@" + String.valueOf(this.oresInBank), 10, 21+14+14, 0xFFFFFF, 1);
+			controller.drawString("@red@Ores mined: @whi@" + String.format("%,d", this.oresMined) + " @red@(@whi@" + String.format("%,d", minedPerHr) + "@red@/@whi@hr@red@)", 10, 21+14, 0xFFFFFF, 1);
+			controller.drawString("@red@Ores in bank: @whi@" + String.format("%,d", this.oresInBank), 10, 21+14+14, 0xFFFFFF, 1);
 		}
 	}
 }

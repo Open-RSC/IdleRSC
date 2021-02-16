@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-public class SellToShop extends IdleScript {
+public class BuyFromShop extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -24,6 +24,7 @@ public class SellToShop extends IdleScript {
 	int startY = -1;
 	JTextField items = new JTextField("");
 	JTextField shopCount = new JTextField("10");
+	JTextField shopBuyCount = new JTextField("10");
 	JTextField vendorId = new JTextField("51,55,87,105,145,168,185,222,391,82,83,88,106,146,169,186,223");
 
 	public void start(String parameters[]) {
@@ -81,24 +82,32 @@ public class SellToShop extends IdleScript {
 	}
 
 	public void scriptStart() {
-		while(controller.getNearestNpcByIds(npcId,false) == null) {
-			startWalking(startX,startY);
-		}
-		while (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
-			controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
-			controller.sleep(640);
-		}
-		while (controller.isInShop() && controller.getInventoryItemCount() > 1 || controller.isInShop()
-				&& controller.getInventoryItemCount(10) < 1 && controller.getInventoryItemCount() == 1) {
-			for (int itemId : itemIds) {
-				if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
-					controller.shopSell(itemId, shopNumber - controller.getBankItemCount(itemId));
+		while (controller.getInventoryItemCount() < 30) {
+			while (controller.getNearestNpcByIds(npcId, false) == null) {
+				startWalking(startX, startY);
+			}
+			while (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
+				if (npcId[0] != 54) {
+					controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
+					controller.sleep(640);
+				} else {
+					controller.npcCommand2(controller.getNearestNpcByIds(npcId, false).serverIndex);
 					controller.sleep(640);
 				}
+
+			}
+			while (controller.isInShop() && controller.getInventoryItemCount() < 30) {
+				for (int itemId : itemIds) {
+					while (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) > shopNumber
+							&& controller.shopItemCount(itemId) > 0) {
+						controller.shopBuy(itemId, shopNumber - controller.shopItemCount(itemId));
+						controller.sleep(430);
+					}
+				}
+				controller.sleep(420);
 			}
 		}
-		while (controller.getInventoryItemCount() == 1 && controller.getInventoryItemCount(10) > 0
-				|| controller.getInventoryItemCount() == 0) {
+		while (controller.getInventoryItemCount() == 30) {
 			startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
 			while (controller.getNearestNpcById(95, false) == null) {
 				startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
@@ -107,18 +116,15 @@ public class SellToShop extends IdleScript {
 				controller.openBank();
 				controller.sleep(430);
 			}
-			if (controller.isInBank()) {
-				controller.depositItem(10, controller.getInventoryItemCount(10));
-				for (int itemId : itemIds) {
-					if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
-						controller.withdrawItem(itemId, 30);
-						controller.sleep(640);
+			while (controller.isInBank() && controller.getInventoryItemCount() == 30) {
+				for (int itemId : controller.getInventoryItemIds()) {
+					if (itemId != 0 && itemId != 10) {
+						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+						controller.sleep(10);
 					}
 				}
 			}
-		}
-		if (!controller.isLoggedIn()) {
-			controller.sleep(1000);
+
 		}
 		if (!controller.isRunning()) {
 			guiSetup = false;
@@ -155,8 +161,8 @@ public class SellToShop extends IdleScript {
 	public void setupGUI() {
 		JLabel header = new JLabel("Sell To Shop");
 		JButton startScriptButton = new JButton("Start");
-		JLabel itemsLabel = new JLabel("Item Ids to sell");
-		JLabel shopCountLabel = new JLabel("Max number the shop can already have");
+		JLabel itemsLabel = new JLabel("Item Ids to buy");
+		JLabel shopCountLabel = new JLabel("Buy until shop has");
 		JLabel vendorIdLabel = new JLabel("Shopkeeper ids");
 
 		startScriptButton.addActionListener(new ActionListener() {
@@ -167,7 +173,7 @@ public class SellToShop extends IdleScript {
 				scriptStarted = true;
 				controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
 				completeSetup();
-				controller.displayMessage("@red@SelltoShop started");
+				controller.displayMessage("@red@buyFromShop started");
 
 			}
 		});

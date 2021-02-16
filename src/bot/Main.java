@@ -33,7 +33,6 @@ import java.util.Comparator;
 
 import listeners.CommandListener;
 import listeners.LoginListener;
-import listeners.MessageListener;
 import listeners.SleepListener;
 import listeners.WindowListener;
 
@@ -71,7 +70,6 @@ public class Main {
     private static Thread sleepListener = null; //see SleepListener.java
 
     private static Controller controller = null; //this is the queen bee that controls the actual bot and is the native scripting language.
-    private static MessageListener messageListenerInstance = null; //see MessageListener.java
     private static Object currentRunningScript = null; //the object instance of the current running script.
 
     private static boolean shouldFilter = true;
@@ -217,12 +215,6 @@ public class Main {
         commandListener = new Thread(new CommandListener(mud, reflector, controller));
         commandListener.start();
         log("CommandListener started.");
-
-        log("Initializing MessageListener...");
-        messageListenerInstance = new MessageListener(controller);
-        messageListener = new Thread(messageListenerInstance);
-        messageListener.start();
-        log("MessageListener started.");
         
         log("Initializing SleepLisetner...");
         sleepListener = new Thread(new SleepListener(mud, controller));

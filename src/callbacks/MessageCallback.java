@@ -1,0 +1,68 @@
+package callbacks;
+
+import bot.Main;
+import compatibility.sbot.Script;
+import controller.Controller;
+import orsc.enumerations.MessageType;
+import scripting.idlescript.IdleScript;
+
+public class MessageCallback {
+
+    private static int sbotLastChatter = 0;
+    private static String sbotLastChatterName = "";
+    private static String sbotLastChatMessage = "";
+    private static String sbotLastNPCMessage = "";
+    private static String sbotLastServerMessage = "";
+
+    public static void messageHook(boolean crownEnabled, String sender, String message, MessageType type, int crownID,
+                                   String formerName, String colourOverride) {
+        if (Main.isRunning() && Main.getCurrentRunningScript() != null) {
+            if (Main.getCurrentRunningScript() instanceof IdleScript) {
+                if (type == MessageType.GAME) {
+                    ((IdleScript) Main.getCurrentRunningScript()).serverMessageInterrupt(message);
+                } else if (type == MessageType.CHAT) {
+                    ((IdleScript) Main.getCurrentRunningScript()).chatMessageInterrupt(sender + ": " + message);
+                } else if (type == MessageType.QUEST) {
+                    ((IdleScript) Main.getCurrentRunningScript()).npcMessageInterrupt(message);
+                } else if (type == MessageType.TRADE) {
+                    ((IdleScript) Main.getCurrentRunningScript()).tradeMessageInterrupt(message);
+                }
+            } else if (Main.getCurrentRunningScript() instanceof Script) {
+                if (type == MessageType.GAME) {
+                    ((Script) Main.getCurrentRunningScript()).ServerMessage(message);
+                    sbotLastServerMessage = message;
+                } else if (type == MessageType.CHAT) {
+                    ((Script) Main.getCurrentRunningScript()).ChatMessage(sender + ": " + message);
+
+                    sbotLastChatter = (int)(System.currentTimeMillis() / 1000L); //2038 problem, but that's what you get for using sbot scripts in 2038.
+                    sbotLastChatMessage = message;
+                    sbotLastChatterName = sender;
+                } else if (type == MessageType.QUEST) {
+                    ((Script) Main.getCurrentRunningScript()).NPCMessage(message);
+                    sbotLastNPCMessage = message;
+                }
+                //TODO: Implement trade for SBot per SBot's contract functions.
+            }
+        }
+    }
+
+    public static int getSbotLastChatter() {
+        return sbotLastChatter;
+    }
+
+    public static String getSbotLastChatterName() {
+        return sbotLastChatterName;
+    }
+
+    public static String getSbotLastChatMessage() {
+        return sbotLastChatMessage;
+    }
+
+    public static String getSbotLastNPCMessage() {
+        return sbotLastNPCMessage;
+    }
+
+    public static String getSbotLastServerMessage() {
+        return sbotLastServerMessage;
+    }
+}

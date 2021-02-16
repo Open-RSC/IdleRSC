@@ -1355,24 +1355,6 @@ public class Controller {
 		return EntityHandler.getItemDef(itemId).isStackable();
 	}
 
-	public ArrayList<ORSCMessage> getMessages() {
-		ArrayList<ORSCMessage> result = new ArrayList<ORSCMessage>();
-
-		String[] colors = MessageHistory.messageHistoryColor;
-		int[] crowns = MessageHistory.messageHistoryCrownID;
-		String[] messages = MessageHistory.messageHistoryMessage;
-		String[] senders = MessageHistory.messageHistorySender;
-		int[] timeouts = MessageHistory.messageHistoryTimeout;
-		MessageType[] types = MessageHistory.messageHistoryType;
-
-		for(int i = 0; i < messages.length; i++) {
-			result.add(new ORSCMessage(colors[i], crowns[i], messages[i], senders[i], timeouts[i], types[i]));
-		}
-
-
-		return result;
-	}
-
 	public void setServerMessage(String msg, boolean largeBox, boolean show) {
 		mud.setServerMessage(msg);
 		mud.setServerMessageBoxTop(largeBox);

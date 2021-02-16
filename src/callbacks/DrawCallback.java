@@ -10,8 +10,6 @@ public class DrawCallback {
     private static long startingXp = Long.MAX_VALUE;
 
 
-
-
     public static void drawHook() {
         Controller c = Main.getController();
 
@@ -66,36 +64,4 @@ public class DrawCallback {
         return result;
 
     }
-
-/**
- * 			if(Main.isRunning() && Main.getCurrentRunningScript() != null) {
- * 				if(controller.getMessages() != null && controller.getMessages().size() > 0) {
- * 					ORSCMessage message = controller.getMessages().get(0);
- *
- * 					if(!message.equals(previousMessage)) {
- * 						if(Main.getCurrentRunningScript() instanceof IdleScript) {
- * 							if(message.getType() == MessageType.GAME) {
- * 								((IdleScript)Main.getCurrentRunningScript()).serverMessageInterrupt(message.getMessage());
- *                                                        } else if(message.getType() == MessageType.CHAT) {
- * 								((IdleScript)Main.getCurrentRunningScript()).chatMessageInterrupt(message.getSender() + ": " + message.getMessage());
- *                            } else if(message.getType() == MessageType.QUEST) {
- * 								((IdleScript)Main.getCurrentRunningScript()).npcMessageInterrupt(message.getMessage());
- *                            } else if(message.getType() == MessageType.TRADE) {
- * 								((IdleScript)Main.getCurrentRunningScript()).tradeMessageInterrupt(message.getMessage());
- *                            }* 						} else if(Main.getCurrentRunningScript() instanceof Script) {
- * 							if(message.getType() == MessageType.GAME) {
- * 								System.out.println(message.getMessage());
- * 								((Script)Main.getCurrentRunningScript()).ServerMessage(message.getM                            );
- * 							} else if(message.getType() == MessageType.CHAT) {
- * 								((Script)Main.getCurrentRunningScript()).ChatMessage(message.getSender() + ": " + message.getM                            );
- * 							} else if(message.getType() == MessageType.QUEST) {
- * 								((Script)Main.getCurrentRunningScript()).NPCMessage(message.getM                            );
- * 							}
- * 							//TODO: Implement trade for SBot per SBot's contract                         ns.
- * 						}
- * 						previousMessage                     age;
- *                }
- *            }
- * 			}
- */
 }

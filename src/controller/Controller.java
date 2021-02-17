@@ -1981,7 +1981,11 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isItemWearable(int itemId) {
-		return EntityHandler.getItemDef(itemId).isWieldable();
+		try {
+			return EntityHandler.getItemDef(itemId).isWieldable();
+		} catch(Exception e) {
+			return false;
+		}
 	}
 
 	/**
@@ -1991,7 +1995,11 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isItemStackable(int itemId) {
-		return EntityHandler.getItemDef(itemId).isStackable();
+		try {
+			return EntityHandler.getItemDef(itemId).isStackable();
+		} catch(Exception e) {
+			return false;
+		}
 	}
 
 	/**

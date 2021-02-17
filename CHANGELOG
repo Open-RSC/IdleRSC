@@ -5,6 +5,7 @@ FEB 17 2021
 	Added documentation in most areas with public methods.  
 	Deleted CommandListener because it was useless. 
 	General code cleanup -- removing commnets which are no longer pertinent, etc.
+	Generic item data lookup calls will no longer return null if you lookup an item which does not exist.
 	
 	*** SCRIPT BREAKING CHANGES ***
 	currentZ() has been renamed to currentY().

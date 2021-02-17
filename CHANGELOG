@@ -1,5 +1,9 @@
 FEB 17 2021
-	IdleScript API now allows you to enable/disable bot paint (i.e. progress reports), bot status, bot coords, and bot xp counter.
+	Minor Controller refactoring. Some functions, notable currentZ() and objectAt() have been refactored. Private scripts may need updating.
+	Controller now allows you to enable/disable bot paint (i.e. progress reports), bot status, bot coords, and bot xp counter.
+	Contreller is now completely documented. Phew. 
+	Deleted CommandListener because it was useless. 
+	
 
 FEB 16 2021
 	Global XP/hr calculation is now accurate.

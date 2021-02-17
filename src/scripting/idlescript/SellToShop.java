@@ -104,7 +104,7 @@ public class SellToShop extends IdleScript {
 		while (controller.isInShop() && controller.getInventoryItemCount() > 1 || controller.isInShop()
 				&& controller.getInventoryItemCount(10) < 1 && controller.getInventoryItemCount() == 1) {
 			for (int itemId : itemIds) {
-				if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
+				if (itemId != 0 && isSellable(itemId) && controller.getShopItemCount(itemId) < shopNumber) {
 					controller.shopSell(itemId, shopNumber - controller.getBankItemCount(itemId));
 					controller.sleep(640);
 					cashMade = controller.getInventoryItemCount(10) - startCash;
@@ -129,7 +129,7 @@ public class SellToShop extends IdleScript {
 				controller.depositItem(10, controller.getInventoryItemCount(10));
 				startCash = 0;
 				for (int itemId : itemIds) {
-					if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
+					if (itemId != 0 && isSellable(itemId) && controller.getShopItemCount(itemId) < shopNumber) {
 						controller.withdrawItem(itemId, 30);
 						controller.sleep(640);
 					}

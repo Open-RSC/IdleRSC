@@ -103,9 +103,9 @@ public class BuyFromShop extends IdleScript {
 			}
 			while (controller.isInShop() && controller.getInventoryItemCount() < 30) {
 				for (int itemId : itemIds) {
-					while (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) > shopNumber
-							&& controller.shopItemCount(itemId) > 0) {
-						controller.shopBuy(itemId, shopNumber - controller.shopItemCount(itemId));
+					while (itemId != 0 && isSellable(itemId) && controller.getShopItemCount(itemId) > shopNumber
+							&& controller.getShopItemCount(itemId) > 0) {
+						controller.shopBuy(itemId, shopNumber - controller.getShopItemCount(itemId));
 						controller.sleep(430);
 					}
 				}

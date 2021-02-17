@@ -85,7 +85,7 @@ public class GetMeToArdougne extends IdleScript {
 					}
 					
 					if(controller.isInOptionMenu()) {
-						if(controller.optionsMenuText(0).contains("Yes"))
+						if(controller.getOptionsMenuText(0).contains("Yes"))
 							controller.optionAnswer(0);
 						else
 							controller.optionAnswer(1); //user has not completed dragon slayer

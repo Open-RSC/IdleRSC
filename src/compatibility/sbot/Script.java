@@ -74,7 +74,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void Accepted()
 	{
@@ -84,7 +83,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void TradeOver()
 	{
@@ -94,7 +92,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void KeyPressed(int key)
 	{
@@ -103,7 +100,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void KeyReleased(int key)
 	{
@@ -204,7 +200,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void UpdateTrade()
 	{
@@ -447,7 +442,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void UseOnPlayer(int player, int slot)
 	{
@@ -526,7 +520,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void MagicDoor(int x, int y, int dir, int spell)
 	{
@@ -563,7 +556,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void Magic(int spell)
 	{
@@ -674,7 +666,6 @@ public abstract class Script
 
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public int[] GetNearestObject(int type, int x1, int y1, int x2, int y2)
 	{
@@ -684,7 +675,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public int[] GetNearestObject(int type[], int x1, int y1, int x2, int y2)
 	{
@@ -714,7 +704,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public int GetNearestNPC(int type, int x1, int y1, int x2, int y2)
 	{
@@ -724,7 +713,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public int GetNearestNPC(int type[], int x1, int y1, int x2, int y2)
 	{
@@ -999,7 +987,7 @@ public abstract class Script
 	public int ShopCount(int item)
 	{
 		Main.logMethod("ShopCount", item);
-		return controller.shopItemCount(item);
+		return controller.getShopItemCount(item);
 	}
 	public void SetWorld(int world)
 	{
@@ -1008,7 +996,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public int LastPlayerAttacked()
 	{
@@ -1018,7 +1005,6 @@ public abstract class Script
 	}
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public void ResetLastPlayerAttacked()
 	{
@@ -1057,7 +1043,7 @@ public abstract class Script
 	{
 		Main.logMethod("GetAnswer", pos);
 		WaitForLoad();
-		return controller.optionsMenuText(pos);
+		return controller.getOptionsMenuText(pos);
 	}
 	public int GetDistance(int x1, int y1, int x2, int y2)
 	{
@@ -1135,7 +1121,6 @@ public abstract class Script
 	
 	/**
 	 * <b> NOT IMPLEMENTED YET </b>
-	 * @param PlayerID
 	 */
 	public int GetNPCType(int id)
 	{
@@ -1160,7 +1145,7 @@ public abstract class Script
 	public int GetAnswerCount()
 	{
 		Main.logMethod("GetAnswerCount");
-		return controller.optionMenuCount();
+		return controller.getOptionMenuCount();
 	}
 	public int GetItemCount()
 	{

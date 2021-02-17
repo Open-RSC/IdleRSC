@@ -104,7 +104,7 @@ public class PowerFletcha extends IdleScript {
 				controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(13), controller.getInventoryItemSlotIndex(target.logId));
 				controller.sleep(700);
 				
-				if(controller.optionMenuCount() > 2 && target.logId != 14)
+				if(controller.getOptionMenuCount() > 2 && target.logId != 14)
 					controller.optionAnswer(target.optionId + 1); //fix for RSC Coleslaw
 				else
 					controller.optionAnswer(target.optionId);

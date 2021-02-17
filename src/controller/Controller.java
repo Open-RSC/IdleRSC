@@ -150,7 +150,7 @@ public class Controller {
 	}
 
 	/**
-	 * The current fight mode set. 
+	 * Retrieves the current fight mode set. 
 	 * 
 	 * @return int -- [0, 3]
 	 */
@@ -161,15 +161,15 @@ public class Controller {
 	/**
 	 * Whether or not the specified item id is in the inventory. 
 	 * 
-	 * @param id
+	 * @param itemId
 	 * @return boolean
 	 */
-	public boolean isItemInInventory(int id) {
-		return mud.getInventoryCount(id) > 0;
+	public boolean isItemInInventory(int itemId) {
+		return mud.getInventoryCount(itemId) > 0;
 	}
 
 	/**
-	 * Returns the itemId of the item at the specified `slotIndex`.
+	 * Retrieves the itemId of the item at the specified `slotIndex`.
 	 *
 	 * @param slotIndex
 	 * @return itemId -- returns -1 if no item in slot.
@@ -196,13 +196,13 @@ public class Controller {
 	}
 
 	/**
-	 * Gets the count of the specified item in the inventory. 
+	 * Retrieves the count of the specified item in the inventory. 
 	 * 
-	 * @param id
+	 * @param itemId
 	 * @return int
 	 */
-	public int getInventoryItemCount(int id) {
-		return mud.getInventoryCount(id);
+	public int getInventoryItemCount(int itemId) {
+		return mud.getInventoryCount(itemId);
 	}
 
 	/**
@@ -266,7 +266,7 @@ public class Controller {
 
 	
 	/**
-	 * Returns the count of different item ids on the ground.
+	 * Retrieves the count of different item ids on the ground.
 	 * 
 	 * @return int
 	 */
@@ -275,7 +275,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns a list of X coordinates of ground items. 
+	 * Retrieves an array of X coordinates of ground items. 
 	 * 
 	 * @return int[] -- no guarantee on nullability.
 	 */
@@ -284,7 +284,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns a list of Y coordinates of ground items. 
+	 * Retrieves an array of Y coordinates of ground items. 
 	 * 
 	 * @return int[] -- no guarantee on nullability.
 	 */
@@ -293,7 +293,7 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of whether or not the ground item is noted.
+	 * Retrieves an array of whether or not the ground item is noted.
 	 * 
 	 * @return boolean[] -- no guarantee on nullability. 
 	 */
@@ -304,12 +304,12 @@ public class Controller {
 	/**
 	 * Retrieves the amount of the item id on the ground at the specified coordinates.
 	 * 
-	 * @param id
+	 * @param itemId
 	 * @param x
 	 * @param y
 	 * @return int -- always returns 0 or greater. 
 	 */
-	public int getGroundItemAmount(int id, int x, int y) {
+	public int getGroundItemAmount(int itemId, int x, int y) {
 		int groundItemCount = this.getGroundItemsCount();
 		int[] groundItemIds = this.getGroundItems();
 		int[] groundItemsX = this.getGroundItemsX();
@@ -322,7 +322,7 @@ public class Controller {
 			int groundItemX = this.offsetX(groundItemsX[i]);
 			int groundItemZ = this.offsetZ(groundItemsZ[i]);
 
-			if(groundItemId == id && groundItemX == x && groundItemZ == y) {
+			if(groundItemId == itemId && groundItemX == x && groundItemZ == y) {
 				groundItemAmount++;
 			}
 		}
@@ -411,7 +411,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns the current X coordinates of the player. 
+	 * Retrieves the current X coordinates of the player. 
 	 * @return int
 	 */
 	public int currentX() {
@@ -419,7 +419,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns the current Y coordinates of the player.
+	 * Retrieves the current Y coordinates of the player.
 	 * @return int
 	 */
 	public int currentY() {
@@ -514,11 +514,11 @@ public class Controller {
 	/**
 	 * Retrieves the coordinates of the specified object id, if nearby. 
 	 * 
-	 * @param id
+	 * @param objectId
 	 * @return int[] -- [x, y]. returns null if no object nearby. 
 	 */
-	public int[] getNearestObjectById(int id) {
-		Main.logMethod("getNearestObjectById", id);
+	public int[] getNearestObjectById(int objectId) {
+		Main.logMethod("getNearestObjectById", objectId);
 		int count = getObjectsCount();
 		int[] xs = getObjectsX();
 		int[] zs = getObjectsZ();
@@ -529,7 +529,7 @@ public class Controller {
 
 
 		for(int i = 0; i < count; i++) {
-			if(ids[i] == id) {
+			if(ids[i] == objectId) {
 				int x = offsetX(xs[i]);
 				int z = offsetZ(zs[i]);
 				int dist = distance(this.currentX(), this.currentY(), x, z);
@@ -596,7 +596,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns whether or not you are within 1 tile of the specified coordinates.
+	 * Whether or not you are within 1 tile of the specified coordinates.
 	 * 
 	 * @param x
 	 * @param y
@@ -676,7 +676,7 @@ public class Controller {
 		return (int[])reflector.getObjectMember(mud, "gameObjectInstanceID");
 	}
 	/**
-	 * Retrieves a list of all of the X coordinates of nearby objects. 
+	 * Retrieves an array of all of the X coordinates of nearby objects. 
 	 * 
 	 * @return int[] -- no guarantee on nullability.
 	 */
@@ -685,7 +685,7 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of all of the Z coordinates of nearby objects. 
+	 * Retrieves an array of all of the Z coordinates of nearby objects. 
 	 * 
 	 * @return int[] -- no guarantee on nullability.
 	 */
@@ -721,7 +721,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns a list of wall objects nearby. 
+	 * Retrieves a list of wall objects nearby. 
 	 * 
 	 * @return List<DoorDef> -- guaranteed to not be null. 
 	 */
@@ -742,14 +742,14 @@ public class Controller {
 	}
 
 	/**
-	 * Returns a list of all wall object IDs nearby. 
+	 * Retrieves an array of all wall object IDs nearby. 
 	 * @return int[] -- no guarantee on nullability
 	 */
 	public int[] getWallObjectIds() {
 		return (int[]) this.getMudClientValue("wallObjectInstanceID");
 	}
 	/**
-	 * Returns the count of wall objects nearby. 
+	 * Retrieves the count of wall objects nearby. 
 	 * @return
 	 */
 	public int getWallObjectsCount() {
@@ -757,7 +757,7 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of all of the X coordinates of nearby wall objects. 
+	 * Retrieves an array of all of the X coordinates of nearby wall objects. 
 	 * 
 	 * @return int[] -- no guarantee on nullability.
 	 */
@@ -766,7 +766,7 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of all of the Z coordinates of nearby wall objects. 
+	 * Retrieves an array of all of the Z coordinates of nearby wall objects. 
 	 * 
 	 * @return int[] -- no guarantee on nullability.
 	 */
@@ -832,7 +832,7 @@ public class Controller {
 	}
 
 	/**
-	 * Gets the coordinates of the specified NPC. 
+	 * Retrieves the coordinates of the specified NPC. 
 	 * 
 	 * @param serverIndex
 	 * @return int[] -- [x, y]. Returns [-1, -1] on no NPC present. 
@@ -1156,7 +1156,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns whether or not the specified item is present at the specified coordinates. 
+	 * Whether or not the specified item is present at the specified coordinates. 
 	 * 
 	 * @param x
 	 * @param y
@@ -1346,7 +1346,6 @@ public class Controller {
 	/**
 	 * Drops one the specified item at the specified item slot. Note that this does not use an item id, but a slot index. 
 	 * @param slotIndex
-	 * @param amount
 	 */
 	public void dropItem(int slotIndex) {
 		int inventoryItemID = mud.getInventoryItemID(slotIndex);
@@ -1419,13 +1418,6 @@ public class Controller {
 	}
 
 	/**
-	 * Creates the specified account provided in the command line and assigns it to example@example.com.
-	 */
-	public void createAccount() {
-		createAccount("example@example.com");
-	}
-
-	/**
 	 * Creates the specified account provided in the command line with the specified email. 
 	 * 
 	 * @param email
@@ -1487,7 +1479,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns the current fatigue. Returns 0 on Coleslaw.
+	 * Retrieves the current fatigue. Returns 0 on Coleslaw.
 	 * 
 	 * @return int -- as a percentage [0, 100]. 
 	 */
@@ -1496,7 +1488,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns the current fatigue status while sleeping. 
+	 * Retrieves the current fatigue status while sleeping. 
 	 * 
 	 * @return int -- as a percentage [0, 100]
 	 */
@@ -1505,7 +1497,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns whether or not the player is currently in combat. 
+	 * Whether or not the player is currently in combat. 
 	 * 
 	 * @return boolean
 	 */
@@ -1544,7 +1536,7 @@ public class Controller {
 	 * 
 	 * @return int
 	 */
-	public int optionMenuCount() {
+	public int getOptionMenuCount() {
 		return (int) reflector.getObjectMember(mud, "optionsMenuCount");
 	}
 
@@ -1553,7 +1545,7 @@ public class Controller {
 	 * @param i
 	 * @return String -- null if option does not exist, or if quest menu is not up.
 	 */
-	public String optionsMenuText(int i) {
+	public String getOptionsMenuText(int i) {
 		String[] optionsMenuText = (String[]) reflector.getObjectMember(mud, "optionsMenuText");
 		if(i < optionsMenuText.length)
 			return optionsMenuText[i];
@@ -1564,10 +1556,10 @@ public class Controller {
 	/**
 	 * Selects an option menu when talking to an NPC or performing an action.
 	 * 
-	 * @param answer -- the index of the answer, starting at 0.
+	 * @param answerIndex -- the index of the answer, starting at 0.
 	 */
 	public void optionAnswer(int answerIndex) {
-		if(answerIndex >= optionMenuCount())
+		if(answerIndex >= getOptionMenuCount())
 			return;
 
 		Main.logMethod("optionAnswer", answerIndex);
@@ -1654,10 +1646,10 @@ public class Controller {
 	/**
 	 * Retrieves the amount of the item in the bank.
 	 * 
-	 * @param id
+	 * @param itemId
 	 * @return int -- returns -1 if bank not open.
 	 */
-	public int getBankItemCount(int id) {
+	public int getBankItemCount(int itemId) {
 		if(this.isInBank() == false)
 			return -1;
 		
@@ -1666,7 +1658,7 @@ public class Controller {
 		for(Item bankItem : bankItems) {
 			int bankItemId = bankItem.getItemDef().id;
 
-			if(bankItemId == id) {
+			if(bankItemId == itemId) {
 				return bankItem.getAmount();
 			}
 		}
@@ -1675,20 +1667,19 @@ public class Controller {
 	}
 
 	/**
-	 * Returns whether or not the specified item ID is in the bank. 
+	 * Whether or not the specified item ID is in the bank. 
 	 * 
-	 * @param id
+	 * @param itemId
 	 * @return boolean -- true if item is in the bank. Returns false if item not present or bank is not open.
 	 */
-	public boolean isItemInBank(int id) {
-		return getBankItemCount(id) > 0;
+	public boolean isItemInBank(int itemId) {
+		return getBankItemCount(itemId) > 0;
 	}
 
 	/**
 	 * Deposits one of specified item into the bank.
 	 * 
 	 * @param itemId
-	 * @param amount
 	 * @return boolean -- returns true on success. Returns false if you do not have that item in your inventory, or if the bank is not open.
 	 */
 	public boolean depositItem(int itemId) {
@@ -1762,8 +1753,8 @@ public class Controller {
 	 * 
 	 * @param rstext -- you may use @col@ colors here.
 	 */
-	public void displayMessage(String msg, int type) {
-		reflector.mudInvoker(mud, "showMessage", false, "", msg, MessageType.lookup(type), 0, "");
+	public void displayMessage(String rstext, int type) {
+		reflector.mudInvoker(mud, "showMessage", false, "", rstext, MessageType.lookup(type), 0, "");
 	}
 
 	/**
@@ -1918,47 +1909,59 @@ public class Controller {
 	 * Retrieves the command of the specified item. 
 	 * 
 	 * @param itemId
-	 * @return String -- guaranteed to not be null if the item exists.
+	 * @return String -- guaranteed to not be null.
 	 */
 	public String getItemCommand(int itemId) {
-		ItemDef item = EntityHandler.getItemDef(itemId);
-
-		if(item == null)
-			return null;
-
-		String[] commands = item.getCommand();
-
-		if(commands == null)
-			return null;
-
-		return commands[0];
+		try {
+			ItemDef item = EntityHandler.getItemDef(itemId);
+	
+			if(item == null)
+				return null;
+	
+			String[] commands = item.getCommand();
+	
+			if(commands == null)
+				return "";
+	
+			return commands[0];
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
 	 * Retrieves the examine text of the specified item. 
 	 * 
 	 * @param itemId
-	 * @return String -- guaranteed to not be null if the item exists.
+	 * @return String -- guaranteed to not be null.
 	 */
 	public String getItemExamineText(int itemId) {
-		return EntityHandler.getItemDef(itemId).getDescription();
+		try {
+			return EntityHandler.getItemDef(itemId).getDescription();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
 	 * Retrieves the name of the specified item. 
 	 * 
 	 * @param itemId
-	 * @return String -- guaranteed to not be null if the item exists.
+	 * @return String -- guaranteed to not be null.
 	 */
 	public String getItemName(int itemId) {
-		return EntityHandler.getItemDef(itemId).getName();
+		try {
+			return EntityHandler.getItemDef(itemId).getName();	
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
 	 * Retrieves the item id of the specified item name.
 	 * 
 	 * @param itemName
-	 * @return int -- returns -1 if 
+	 * @return int -- returns -1 if item does not exist
 	 */
 	public int getItemId(String itemName) {
 		try {
@@ -1975,7 +1978,7 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves whether or not the specified item is a wearable item. 
+	 * Whether or not the specified item is a wearable item. 
 	 * 
 	 * @param itemId
 	 * @return boolean
@@ -1989,7 +1992,7 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves whether or not the specified item is a stackable item.
+	 * Whether or not the specified item is a stackable item.
 	 * 
 	 * @param itemId
 	 * @return boolean
@@ -2038,10 +2041,14 @@ public class Controller {
 	 * @return int -- -1 if spell not found.
 	 */
 	public int getSpellIdFromName(String name) {
-		for(int i = 0; i < EntityHandler.spellCount(); i++) {
-			SpellDef d = EntityHandler.getSpellDef(i);
-			if(EntityHandler.getSpellDef(i).getName().toLowerCase().equals(name.toLowerCase()))
-				return i;
+		try {
+			for(int i = 0; i < EntityHandler.spellCount(); i++) {
+				SpellDef d = EntityHandler.getSpellDef(i);
+				if(EntityHandler.getSpellDef(i).getName().toLowerCase().equals(name.toLowerCase()))
+					return i;
+			}
+		} catch(Exception e) {
+			return -1;
 		}
 
 		return -1;
@@ -2145,125 +2152,173 @@ public class Controller {
 	 * Retrieves the 1st command of the specified NPC.
 	 * 
 	 * @param npcId
-	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getNpcCommand1(int npcId) {
-		return EntityHandler.getNpcDef(npcId).getCommand1();
+		try {
+			return EntityHandler.getNpcDef(npcId).getCommand1();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 	
 	/**
 	 * Retrieves the 2nd command of the specified NPC.
 	 * 
 	 * @param npcId
-	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getNpcCommand2(int npcId) {
-		return EntityHandler.getNpcDef(npcId).getCommand2();
+		try {
+			return EntityHandler.getNpcDef(npcId).getCommand2();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
 	 * Retrieves the examine text of the specified NPC.
 	 * 
 	 * @param npcId
-	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getNpcExamineText(int npcId) {
-		return EntityHandler.getNpcDef(npcId).getDescription();
+		try {
+			return EntityHandler.getNpcDef(npcId).getDescription();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
 	 * Retrieves the name of the specified NPC.
 	 * 
 	 * @param npcId
-	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getNpcName(int npcId) {
-		return EntityHandler.getNpcDef(npcId).getName();
+		try {
+			return EntityHandler.getNpcDef(npcId).getName();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
-	 * Retrieves whether or not the specified npcId is attackable. This does not reflect whether or not the specified NPC is in combat.
+	 * Whether or not the specified npcId is attackable. This does not reflect whether or not the specified NPC is in combat.
 	 * 
 	 * @param npcId -- the id of the npc. This is NOT a server index.
 	 * @return boolean
 	 */
 	public boolean isNpcAttackable(int npcId) {
-		return EntityHandler.getNpcDef(npcId).isAttackable();
+		try {
+			return EntityHandler.getNpcDef(npcId).isAttackable();
+		} catch(Exception e) {
+			return false;
+		}
 	}
 
 	/**
 	 * Retrieves the 1st command of the specified object id.
 	 * 
 	 * @param objId
-	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getObjectCommand1(int objId) {
-		return EntityHandler.getObjectDef(objId).getCommand1();
+		try {
+			return EntityHandler.getObjectDef(objId).getCommand1();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 	
 	/**
 	 * Retrieves the 2nd command of the specified object id.
 	 * 
 	 * @param objId
-	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getObjectCommand2(int objId) {
-		return EntityHandler.getObjectDef(objId).getCommand2();
+		try {
+			return EntityHandler.getObjectDef(objId).getCommand2();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
 	 * Retrieves the examine text of the specified object id.
 	 * 
 	 * @param objId
-	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getObjectExamineText(int objId) {
-		return EntityHandler.getObjectDef(objId).getDescription();
+		try {
+			return EntityHandler.getObjectDef(objId).getDescription();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
 	 * Retrieves the name of the specified object id.
 	 * 
 	 * @param objId
-	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 * @return String -- guaranteed to not be null
 	 */
 	public String getObjectName(int objId) {
-		return EntityHandler.getObjectDef(objId).getName();
+		try {
+			return EntityHandler.getObjectDef(objId).getName();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 
 	/**
-	 * The id of the specified prayerName. 
+	 * Retrieves the id of the specified prayerName. 
 	 * @param prayerName -- must match spelling of what is inside prayer book. Case insensitive.
 	 * @return int -- -1 if the prayer does not exist.
 	 */
 	public int getPrayerId(String prayerName) {
-		for(int i = 0; i < EntityHandler.prayerCount(); i++) {
-			if(prayerName.toLowerCase().equals(EntityHandler.getPrayerDef(i).getName().toLowerCase())) {
-				return i;
+		try {
+			for(int i = 0; i < EntityHandler.prayerCount(); i++) {
+				if(prayerName.toLowerCase().equals(EntityHandler.getPrayerDef(i).getName().toLowerCase())) {
+					return i;
+				}
 			}
+		} catch(Exception e) {
+			return -1;
 		}
 
 		return -1;
 	}
 
 	/**
-	 * The level required to use the specified prayer.
+	 * Retrieves the level required to use the specified prayer.
 	 * 
 	 * @param prayerId
-	 * @return int
+	 * @return int -- -1 if the prayer does not exist
 	 */
 	public int getPrayerLevel(int prayerId) {
-		return EntityHandler.getPrayerDef(prayerId).getReqLevel();
+		try {
+			return EntityHandler.getPrayerDef(prayerId).getReqLevel();
+		} catch(Exception e) {
+			return -1;
+		}
 	}
 
 	/**
-	 * The drain rate of the specified prayer.
+	 * Retrieves the drain rate of the specified prayer.
 	 * 
 	 * @param prayerId
-	 * @return int
+	 * @return int -- -1 if the prayer does not exist
 	 */
 	public int getPrayerDrain(int prayerId) {
-		return EntityHandler.getPrayerDef(prayerId).getDrainRate();
+		try {
+			return EntityHandler.getPrayerDef(prayerId).getDrainRate();
+		} catch(Exception e) {
+			return -1;
+		}
 	}
 
 	/**
@@ -2363,7 +2418,7 @@ public class Controller {
 			int shopItemId = shopItemIds[i];
 
 			if(shopItemId > -1) {
-				int shopItemAmount = this.shopItemCount(shopItemId);
+				int shopItemAmount = this.getShopItemCount(shopItemId);
 				ItemDef shopItemDef = EntityHandler.getItemDef(shopItemId);
 
 				Item shopItem = new Item(shopItemDef);
@@ -2382,7 +2437,7 @@ public class Controller {
 	 * @param itemId
 	 * @return int -- stock amount. If item is not sold at shop, it returns -1.
 	 */
-	public int shopItemCount(int itemId) {
+	public int getShopItemCount(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
 		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
 		int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
@@ -2402,7 +2457,7 @@ public class Controller {
 	 * @param itemId
 	 * @return int -- price. -1 if item is not in the shop at all.
 	 */
-	public int shopItemPrice(int itemId) {
+	public int getShopItemPrice(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
 		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
 		int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
@@ -2424,13 +2479,13 @@ public class Controller {
 	 */
 	public boolean shopBuy(int itemId) {
 		//TODO: check if enough coins in inventory, return false if not enough.
-		if(!isInShop() || shopItemCount(itemId) < 1)
+		if(!isInShop() || getShopItemCount(itemId) < 1)
 			return false;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(236);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
-		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
 		mud.packetHandler.getClientStream().bufferBits.putShort(1);
 		mud.packetHandler.getClientStream().finishPacket();
 
@@ -2444,13 +2499,13 @@ public class Controller {
 	 * @return boolean -- true on success. false if shop is not open, shop does not accept the item, or not enough in inventory. 
 	 */
 	public boolean shopSell(int itemId) {
-		if(!isInShop() || shopItemCount(itemId) == -1 || this.getInventoryItemCount(itemId) < 1)
+		if(!isInShop() || getShopItemCount(itemId) == -1 || this.getInventoryItemCount(itemId) < 1)
 			return false;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(221);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
-		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
 		mud.packetHandler.getClientStream().bufferBits.putShort(1);
 		mud.packetHandler.getClientStream().finishPacket();
 
@@ -2512,31 +2567,31 @@ public class Controller {
 	/**
 	 * Retrieves the base level (excluding boosted/degraded stats) of the specified skill. `id` must be within [0, getStatCount()].
 	 * 
-	 * @param id
+	 * @param statId
 	 * @return int
 	 */
-	public int getBaseStat(int id) {
-		return (int) ((int[]) reflector.getObjectMember(mud, "playerStatBase"))[id];
+	public int getBaseStat(int statId) {
+		return (int) ((int[]) reflector.getObjectMember(mud, "playerStatBase"))[statId];
 	}
 
 	/**
 	 * Retrieves the current level (including boosted/degraded stats) of the specified skill. `id` must be within [0, getStatCount()].
 	 * 
-	 * @param id
+	 * @param statId
 	 * @return int
 	 */
-	public int getCurrentStat(int id) {
-		return (int) ((int[]) reflector.getObjectMember(mud, "playerStatCurrent"))[id];
+	public int getCurrentStat(int statId) {
+		return (int) ((int[]) reflector.getObjectMember(mud, "playerStatCurrent"))[statId];
 	}
 
 	/**
 	 * Retrieves the current XP in the specified skill. `id` must be within [0, getStatCount()]. 
 	 * 
-	 * @param id
+	 * @param statId
 	 * @return int 
 	 */
-	public int getStatXp(int id) {
-		return (int) ((long[]) reflector.getObjectMember(mud, "playerStatXpGained"))[id];
+	public int getStatXp(int statId) {
+		return (int) ((long[]) reflector.getObjectMember(mud, "playerStatXpGained"))[statId];
 	}
 
 	/**
@@ -2544,17 +2599,19 @@ public class Controller {
 	 * 
 	 * @return
 	 */
-	public int getStatCount() { return ((long[]) reflector.getObjectMember(mud, "playerStatXpGained")).length; }
+	public int getStatCount() { 
+		return ((long[]) reflector.getObjectMember(mud, "playerStatXpGained")).length; 
+	}
 
 	
 	/**
 	 * Retrieves the amount of XP gained in the skill since last login. 
 	 * 
-	 * @param id
+	 * @param statId
 	 * @return int
 	 */
-	public int getPlayerExperience(int id) {
-		return mud.getPlayerExperience(id);
+	public int getPlayerExperience(int statId) {
+		return mud.getPlayerExperience(statId);
 	}
 
 	/**
@@ -2739,7 +2796,7 @@ public class Controller {
 	}
 
 	/**
-	 * The name of the trade recipient, if we are in a trade. 
+	 * Retrieves the name of the trade recipient, if we are in a trade. 
 	 * 
 	 * @return String -- no guarantee on nullability. 
 	 */
@@ -2820,7 +2877,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns how many items the player is offering in the trade. 
+	 * Retrieves how many items the player is offering in the trade. 
 	 * 
 	 * @return int
 	 */
@@ -2829,7 +2886,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns an array of item counts inside of the current trade window.
+	 * Retrieves an array of item counts inside of the current trade window.
 	 * 
 	 * @return int[] -- no guarantee on size or nullability.
 	 */
@@ -2945,7 +3002,7 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of all the ids of all items in the inventory. 
+	 * Retrieves an array of all the ids of all items in the inventory. 
 	 * 
 	 * @return int[] -- no guarantee on size or nullability.
 	 */
@@ -3038,7 +3095,7 @@ public class Controller {
 	}
 
 	/** 
-	 * Returns the specified field object value of the `mudclient`. 
+	 * Retrieves the specified field object value of the `mudclient`. 
 	 * 
 	 * @param propertyName -- field name
 	 * @return Object -- null if field does not exist.
@@ -3048,7 +3105,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returns the `mudclient`. 
+	 * Retrieves the `mudclient`. 
 	 * 
 	 * @return mudclient
 	 */
@@ -3224,13 +3281,13 @@ public class Controller {
      */
 	public boolean shopBuy(int itemId,int amount) {
 		//TODO: check if enough coins in inventory, return false if not enough.
-		if(!isInShop() || shopItemCount(itemId) < 1)
+		if(!isInShop() || getShopItemCount(itemId) < 1)
 			return false;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(236);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
-		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
 		mud.packetHandler.getClientStream().bufferBits.putShort(amount);
 		mud.packetHandler.getClientStream().finishPacket();
 
@@ -3246,13 +3303,13 @@ public class Controller {
 	 */
 	public boolean shopSell(int itemId,int amount) {
 		//TODO: check if item in inventory
-		if(!isInShop() || shopItemCount(itemId) == -1 || getInventoryItemCount(itemId) < amount)
+		if(!isInShop() || getShopItemCount(itemId) == -1 || getInventoryItemCount(itemId) < amount)
 			return false;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(221);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
-		mud.packetHandler.getClientStream().bufferBits.putShort(shopItemCount(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
 		mud.packetHandler.getClientStream().bufferBits.putShort(amount);
 		mud.packetHandler.getClientStream().finishPacket();
 
@@ -3375,7 +3432,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Returns the name of the currently logged in player. 
+	 * Retrieves the name of the currently logged in player. 
 	 * @return String
 	 */
 	public String getPlayerName() {
@@ -3386,7 +3443,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Returns the direction of the ORSCharacter (NPC or player.)
+	 * Retrieves the direction of the ORSCharacter (NPC or player.)
 	 * @param c -- character
 	 * @return ORSCharacterDirection
 	 */
@@ -3460,7 +3517,7 @@ public class Controller {
 	
 	
 	/** 
-	 * Determine if the tile is reachable in the current map segment.
+	 * Whether or not the tile is reachable in the current map segment.
 	 * 
 	 * @param x
 	 * @param y

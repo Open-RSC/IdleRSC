@@ -60,6 +60,11 @@ public class Controller {
 	int[] bankerIds = {95, 224, 268, 540, 617};
 
 	final private int GAME_TICK_COUNT = 640;
+	
+	private boolean showStatus = true;
+	private boolean showCoords = true;
+	private boolean showXp = true;
+	private boolean showBotPaint = true;
 
 	public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) {
 		reflector = _reflector; client = _client; mud = _mud;
@@ -2222,6 +2227,38 @@ public class Controller {
 	
 	public ORSCharacterDirection getCharacterDirection(ORSCharacter c) {
 		return (ORSCharacterDirection)reflector.getObjectMember(c, "direction");
+	}
+	
+	public boolean getShowStatus() {
+		return showStatus;
+	}
+	
+	public void setShowStatus(boolean b) {
+		showStatus = b;
+	}
+	
+	public boolean getShowCoords() {
+		return showCoords;
+	}
+	
+	public void setShowCoords(boolean b) {
+		showCoords = b;
+	}
+	
+	public boolean getShowXp() {
+		return showXp;
+	}
+	
+	public void setShowXp(boolean b) {
+		showXp = b;
+	}
+	
+	public boolean getShowBotPaint() {
+		return showBotPaint;
+	}
+	
+	public void setBotPaint(boolean b) {
+		showBotPaint = b;
 	}
 }
  

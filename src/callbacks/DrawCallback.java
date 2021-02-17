@@ -32,29 +32,38 @@ public class DrawCallback {
         int y = 130 + 14 + 14 + 14;
         String localStatusText = statusText;
         
-        if(!Main.isRunning()) {
-        	localStatusText = "@red@Idle.";
+        if(c.getShowBotPaint()) {
+	        if(!Main.isRunning()) {
+	        	localStatusText = "@red@Idle.";
+	        }
+	        
+	        if(c.getShowStatus())
+	        	c.drawString("Status: " + localStatusText, 7, y, 0xFFFFFF, 1);
+	
+	        y+= 14;
+	        
+	        if(c.getShowCoords())
+	        	c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentZ()) + "@red@)", 7, y, 0xFFFFFF, 1);
+	
+	        y += 14;
+	        long totalXp = getTotalXp();
+	        startingXp = totalXp < startingXp ? totalXp : startingXp;
+	        long xpGained = totalXp - startingXp;
+	        long xpPerHr;
+	        try {
+	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+	    		float scale = (60 * 60) / timeRan;
+	    		xpPerHr = (int)(xpGained * scale);
+	        }
+	        catch(Exception e) {
+	            xpPerHr = 0;
+	        }
+	        
+	        if(c.getShowXp()) {
+	        	c.drawString("XP Gained: @red@" + String.format("%,d", xpGained)
+	        			   + " @whi@(@red@" + String.format("%,d", xpPerHr) + " @whi@xp/hr)", 7, y, 0xFFFFFF, 1);
+	        }
         }
-        c.drawString("Status: " + localStatusText, 7, y, 0xFFFFFF, 1);
-
-        y+= 14;
-        c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentZ()) + "@red@)", 7, y, 0xFFFFFF, 1);
-
-        y += 14;
-        long totalXp = getTotalXp();
-        startingXp = totalXp < startingXp ? totalXp : startingXp;
-        long xpGained = totalXp - startingXp;
-        long xpPerHr;
-        try {
-    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
-    		float scale = (60 * 60) / timeRan;
-    		xpPerHr = (int)(xpGained * scale);
-        }
-        catch(Exception e) {
-            xpPerHr = 0;
-        }
-        c.drawString("XP Gained: @red@" + String.format("%,d", xpGained)
-                       + " @whi@(@red@" + String.format("%,d", xpPerHr) + " @whi@xp/hr)", 7, y, 0xFFFFFF, 1);
         
         if(System.currentTimeMillis() / 1000L < levelUpTextTimeout) {
         	y += 14;
@@ -69,7 +78,7 @@ public class DrawCallback {
 
     private static void drawScript(Controller c) {
 
-        if(Main.isRunning() && Main.getCurrentRunningScript() != null) {
+        if(c != null && c.getShowBotPaint() == true && c.isRunning() && Main.getCurrentRunningScript() != null) {
             if(Main.getCurrentRunningScript() instanceof IdleScript) {
                 ((IdleScript)Main.getCurrentRunningScript()).paintInterrupt();
             }

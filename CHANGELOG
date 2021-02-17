@@ -1,7 +1,8 @@
 FEB 17 2021
 	Minor Controller refactoring. Some functions, notable currentZ() and objectAt() have been refactored. Private scripts may need updating.
 	Controller now allows you to enable/disable bot paint (i.e. progress reports), bot status, bot coords, and bot xp counter.
-	Contreller is now completely documented. Phew. 
+	Controller is now completely documented. Phew. 
+	Added documentation in most areas with public methods.  
 	Deleted CommandListener because it was useless. 
 	
 

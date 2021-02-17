@@ -2533,6 +2533,12 @@ public class Controller {
 	public int getStatCount() { return ((long[]) reflector.getObjectMember(mud, "playerStatXpGained")).length; }
 
 	
+	/**
+	 * Retrieves the amount of XP gained in the skill since last login. 
+	 * 
+	 * @param id
+	 * @return int
+	 */
 	public int getPlayerExperience(int id) {
 		return mud.getPlayerExperience(id);
 	}
@@ -2837,6 +2843,11 @@ public class Controller {
 		return recipientTradeItems;
 	}
 
+	/**
+	 * Retrieves the number of items presented by the trade recipient
+	 * 
+	 * @return int
+	 */
 	public int getRecipientTradeItemsCount() {
 		return (int) reflector.getObjectMember(mud, "tradeRecipientItemsCount");
 	}

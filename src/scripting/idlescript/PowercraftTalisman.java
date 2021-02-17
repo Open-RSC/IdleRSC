@@ -1,5 +1,10 @@
 package scripting.idlescript;
 
+/**
+ * Trains mining and crafting at the essence rocks. 
+ * 
+ * @author Searos
+ */
 public class PowercraftTalisman extends IdleScript {
 	int a = 0;
 	int totalTalismans = 0;

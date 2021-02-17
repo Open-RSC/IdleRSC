@@ -17,6 +17,12 @@ import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
 
+/**
+ * A basic thiever that supports most things in the game. Only supports banking in Ardougne at the moment. 
+ * 
+ * @author Dvorak
+ */
+
 public class AIOThiever extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;

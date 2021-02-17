@@ -2,6 +2,11 @@ package scripting.idlescript;
 
 import orsc.ORSCharacter;
 
+/**
+ * Walks from Lumbridge to Ardougne. Thieves men for 60 gp to use the ships to/from Karamja.
+ * 
+ * @author Dvorak
+ */
 public class GetMeToArdougne extends IdleScript {
 	
 	int[] lumbToShip = {

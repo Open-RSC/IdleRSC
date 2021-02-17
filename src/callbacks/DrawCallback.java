@@ -4,6 +4,11 @@ import bot.Main;
 import controller.Controller;
 import scripting.idlescript.IdleScript;
 
+/**
+ * Contains logic for interrupts caused by each drawing of the game frame. 
+ * 
+ * @author Dvorak
+ */
 public class DrawCallback {
 
     private static long startTimestamp = System.currentTimeMillis() / 1000L;
@@ -16,6 +21,9 @@ public class DrawCallback {
     private static long levelUpTextTimeout = 0;
     private static boolean screenshotTaken = false;
 
+    /**
+     * The hook called each frame by the patched client.
+     */
     public static void drawHook() {
         Controller c = Main.getController();
 
@@ -24,6 +32,11 @@ public class DrawCallback {
 
     }
     
+    /**
+     * Sets the left hand pane bot status text. 
+     * 
+     * @param str
+     */
     public static void setStatusText(String str) { 
     	statusText = str;
     }
@@ -98,6 +111,12 @@ public class DrawCallback {
 
     }
     
+    /**
+     * Displays level up messages and takes screenshot the next frame. 
+     * 
+     * @param statName
+     * @param level
+     */
     public static void displayAndScreenshotLevelUp(String statName, int level) {
     	screenshotTaken = false;
     	levelUpSkill = statName;

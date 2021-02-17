@@ -17,6 +17,11 @@ import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
 
+/**
+ * A basic cooking script to use in Catherby. 
+ * 
+ * @author Dvorak
+ */
 public class AIOCooker extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;

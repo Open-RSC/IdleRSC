@@ -1,5 +1,10 @@
 package scripting.idlescript;
 
+/**
+ * Picks herbs in Taverly via harvesting. Coleslaw only.
+ *  
+ * @author Dvorak
+ */
 public class HerbHarvester extends IdleScript {
 	
 	int[] herbToDoorPath = {363, 503, 

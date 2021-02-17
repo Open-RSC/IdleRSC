@@ -31,7 +31,6 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import listeners.CommandListener;
 import listeners.LoginListener;
 import listeners.SleepListener;
 import listeners.WindowListener;
@@ -64,7 +63,6 @@ public class Main {
     private static Thread loginListener = null; //see LoginListener.java
     private static Thread positionListener = null; //see PositionListener.java
     private static Thread windowListener = null; //see WindowListener.java
-    private static Thread commandListener = null; //see CommandListener.java
     private static Thread messageListener = null; //see MessageListener.java
     private static Thread debuggerThread = null;
     private static Thread sleepListener = null; //see SleepListener.java
@@ -87,6 +85,7 @@ public class Main {
     }
 
     /**
+     * Returns whether or not the bot side pane is set to sticky mode.
      * @return boolean with whether or not the sidepanel is sticky.
      */
     public static boolean isSticky() {
@@ -94,6 +93,8 @@ public class Main {
     }
 
     /**
+     * Returns whether or not a script is running.
+     * 
      * @return boolean with whether or not a script is running.
      */
     public static boolean isRunning() {
@@ -101,6 +102,8 @@ public class Main {
     }
 
     /**
+     * Returns whether or not auto-login is enabled.
+     * 
      * @return boolean with whether or not autologin is enabled.
      */
     public static boolean isAutoLogin() {
@@ -108,6 +111,8 @@ public class Main {
     }
 
     /**
+     * Returns whethe or not debug is enabled. 
+     * 
      * @return boolean with whether or not debug is enabled.
      */
     public static boolean isDebug() {
@@ -210,11 +215,6 @@ public class Main {
         windowListener = new Thread(new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
         windowListener.start();
         log("WindowListener started.");
-
-        log("Initializing CommandListener...");
-        commandListener = new Thread(new CommandListener(mud, reflector, controller));
-        commandListener.start();
-        log("CommandListener started.");
         
         log("Initializing SleepLisetner...");
         sleepListener = new Thread(new SleepListener(mud, controller));
@@ -659,6 +659,10 @@ public class Main {
         botFrame.setVisible(true);
     }
 
+    /**
+     * Returns the global Controller instance. 
+     * @return Controller
+     */
     public static Controller getController() { return controller; }
 
 }

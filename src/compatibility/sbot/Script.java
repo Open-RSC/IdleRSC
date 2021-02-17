@@ -62,29 +62,49 @@ public abstract class Script
 		Main.logMethod("NPCMessage", message);
 		//do nothing. this is an interrupt.
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void TradeRequest(int PlayerID)
 	{
 		Main.logMethod("TradeRequest", PlayerID);
 		//do nothing. this is an interrupt.
 		//THIS IS NOT IMPLEMENTED.
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void Accepted()
 	{
 		Main.logMethod("Accepted");
 		//do nothing. this is an interrupt.
 		//THIS IS NOT IMPLEMENTED.
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void TradeOver()
 	{
 		Main.logMethod("TradeOver");
 		//do nothing. this is an interrupt.
 		//THIS IS NOT IMPLEMENTED.
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void KeyPressed(int key)
 	{
 		Main.logMethod("KeyPressed");
 		//THIS IS NOT IMPLEMENTED.
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void KeyReleased(int key)
 	{
 		Main.logMethod("KeyReleased");
@@ -182,7 +202,10 @@ public abstract class Script
 		Main.logMethod("TradeArray", item, amount);
 		controller.setTradeItems(item, amount);
 	}
-//
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void UpdateTrade()
 	{
 		Main.logMethod("UpdateTrade");
@@ -197,10 +220,7 @@ public abstract class Script
 
 	public boolean CanReach(int x, int y)
 	{
-		//THIS IS NOT IMPLEMENTED.
-		//I have no clue how to implement this beyond implementing a pathfinding algorithm
-		//If anyone has a better plan please respond to the issue on GitLab.
-		return true;
+		return controller.isReachable(x, y, false);
 	}
 	public void Beep()
 	{
@@ -361,9 +381,6 @@ public abstract class Script
 		if (!CanReach(x,y))
 			return true;
 		return false;
-		
-		//NOTE: Until CanReach is successfully implemented this function call is BROKEN.
-
 	}
 	public void WalkEmptyNoWait(int x1, int y1, int x2, int y2)
 	{
@@ -428,6 +445,10 @@ public abstract class Script
 		Main.logMethod("MagicPlayer", player, spell);
 		controller.castSpellOnPlayer(spell, player);
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void UseOnPlayer(int player, int slot)
 	{
 		Main.logMethod("UseOnPlayer", player, slot);
@@ -503,6 +524,10 @@ public abstract class Script
 		Main.logMethod("ThieveNPC", serverIndex);
 		controller.thieveNpc(serverIndex);
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void MagicDoor(int x, int y, int dir, int spell)
 	{
 		Main.logMethod("MagicDoor", x, y, dir, spell);
@@ -536,6 +561,10 @@ public abstract class Script
 		WaitForLoad();
 		controller.useItemSlotOnObject(x, y, slotId);
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void Magic(int spell)
 	{
 		//THIS IS NOT IMPLEMENTED.
@@ -643,12 +672,20 @@ public abstract class Script
 		return result;
 	}
 
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public int[] GetNearestObject(int type, int x1, int y1, int x2, int y2)
 	{
 		//THIS IS NOT IMPLEMENTED.
 		//This would be really easy to implement but I'm lazy and someone else can do it :)
 		return new int[] {-1, -1};
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public int[] GetNearestObject(int type[], int x1, int y1, int x2, int y2)
 	{
 		//THIS IS NOT IMPLEMENTED.
@@ -675,12 +712,20 @@ public abstract class Script
 		
 		return npc.serverIndex;
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public int GetNearestNPC(int type, int x1, int y1, int x2, int y2)
 	{
 		//THIS IS NOT IMPLEMENTED.
 		//This would be really easy to implement but I'm lazy and someone else can do it :)
 		return -1;
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public int GetNearestNPC(int type[], int x1, int y1, int x2, int y2)
 	{
 		//THIS IS NOT IMPLEMENTED.
@@ -907,6 +952,9 @@ public abstract class Script
 		Main.logMethod("CheckFighters", check);
 		//THIS IS NOT IMPLEMENTED.
 	}
+	/**
+	 * This function does nothing as sleeping is handled by {@link listeners.SleepListener}
+	 */
 	public void SleepWord()
 	{
 		Main.logMethod("SleepWord");
@@ -958,12 +1006,20 @@ public abstract class Script
 		Main.logMethod("SetWorld", world);
 		Main.log("Script attempted a world hop. No world hop functionality.");
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public int LastPlayerAttacked()
 	{
 		Main.logMethod("LastPlayerAttacked");
 		//THIS IS NOT IMPLEMENTED.
 		return -1;
 	}
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public void ResetLastPlayerAttacked()
 	{
 		Main.logMethod("ResetLastPlayerAttacked");
@@ -1076,6 +1132,11 @@ public abstract class Script
 		
 		return -1;
 	}
+	
+	/**
+	 * <b> NOT IMPLEMENTED YET </b>
+	 * @param PlayerID
+	 */
 	public int GetNPCType(int id)
 	{
 		//THIS IS NOT IMPLEMENTED.
@@ -1326,6 +1387,10 @@ public abstract class Script
 		
 		return -1;
 	}
+	/**
+	 * "PID" is not a real thing on OpenRSC. Always returns 0.
+	 * @return
+	 */
 	public int PID() {
 		Main.logMethod("PID");
 		return 0; //PID isn't a "real thing" anymore :( 

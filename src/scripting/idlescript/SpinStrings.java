@@ -13,6 +13,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * SpinStrings by Searos
+ * @author Searos
+ */
 public class SpinStrings extends IdleScript {
 	JComboBox<String> item = new JComboBox<String>(new String[] { "Flax", "Wool" });
 	JComboBox<String> destination = new JComboBox<String>(new String[] { "Seers", "Falador" });

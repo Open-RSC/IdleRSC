@@ -16,6 +16,11 @@ import controller.Controller;
 import orsc.mudclient;
 import bot.Main;
 
+/**
+ * SleepListener is a listener which will handle sleep, should the bot or user initiate a sleep sequence.
+ * 
+ * @author Dvorak
+ */
 public class SleepListener implements Runnable {
 
 	int count = 43;

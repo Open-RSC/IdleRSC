@@ -13,7 +13,7 @@ import controller.Controller;
 
 
 /**
- * WindowListener updates other windows based on what has been clicked on the side panel.
+ * WindowListener is a listener which updates other windows based on what has been clicked on the side panel.
  * 
  * WindowListener is always running, and it runs as a separate thread from the main bot.
  * 

@@ -13,6 +13,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * Woodcutting by Searos
+ * @author Searos
+ */
 public class Woodcutting extends IdleScript {
 	JCheckBox bank = new JCheckBox("Bank", true);
 	JComboBox<String> destination = new JComboBox<String>(new String[] { "Draynor", "Varrock West", "Varrock East",

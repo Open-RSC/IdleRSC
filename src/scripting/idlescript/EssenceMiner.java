@@ -8,6 +8,10 @@ import controller.Controller;
 import orsc.mudclient;
 import reflector.Reflector;
 
+/**
+ * EssenceMiner by Searos
+ * @author Searos
+ */
 public class EssenceMiner extends IdleScript {
 	JComboBox<String> destination = new JComboBox<String>(new String[] { "Seers", "Falador" });
 	JFrame scriptFrame = null;

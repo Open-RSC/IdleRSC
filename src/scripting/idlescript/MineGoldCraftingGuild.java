@@ -12,6 +12,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * MineGoldCraftinGuild by Searos
+ * @author Searos
+ */
 public class MineGoldCraftingGuild extends IdleScript {
 	JCheckBox silver2 = new JCheckBox("Mine Silver", true);
 	int a = 0;

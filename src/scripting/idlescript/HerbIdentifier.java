@@ -1,5 +1,10 @@
 package scripting.idlescript;
 
+/**
+ * Withdraws unidentified herbs from the bank, identifies them, deposits clean herbs. Rinse, repeat. Does the highest level herb you can identify and have in bank.
+ * 
+ * @author Dvorak
+ */
 public class HerbIdentifier extends IdleScript {
 	
 	int[] unids = {933, 443, 442, 441, 440, 439, 438, 437, 436, 435, 165};

@@ -1,5 +1,10 @@
 package scripting.idlescript;
 
+/**
+ * This is a basic script that picks flax and banks it in Seers Village.
+ * 
+ * @author Dvorak
+ */
 public class Flaxx0r extends IdleScript {
     long flaxPicked = 0;
     long flaxBanked = 0;

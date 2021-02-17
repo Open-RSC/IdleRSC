@@ -3,6 +3,10 @@ package scripting.idlescript;
 import java.lang.Math;
 
 
+/**
+ * ShearSheep by Searos
+ * @author Searos
+ */
 public class ShearSheep extends IdleScript {
 	int startX = -1;
 	int startY = -1;

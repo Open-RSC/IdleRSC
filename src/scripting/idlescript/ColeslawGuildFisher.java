@@ -1,5 +1,9 @@
 package scripting.idlescript;
 
+/**
+ * ColeslawGuildFisher by [unknown author]. Coleslaw only. 
+ * @author Searos
+ */
 public class ColeslawGuildFisher extends IdleScript {
 	final static int HARPOON_ID = 379;
 	final static int LOBSTER_POT_ID = 375;

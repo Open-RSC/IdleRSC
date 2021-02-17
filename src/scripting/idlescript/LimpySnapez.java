@@ -1,5 +1,10 @@
 package scripting.idlescript;
 
+/**
+ * Harvests limpwurt roots and snape grass in Taverly. Coleslaw only.
+ *  
+ * @author Dvorak
+ */
 public class LimpySnapez extends IdleScript {
 
 	int[] herbToDoorPath = {366, 472,

@@ -16,6 +16,10 @@ import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
 
+/**
+ * DamRc by Damrau. Coleslaw only. 
+ * @author Damrau
+ */
 public class DamRc extends IdleScript {
 
 	public boolean started = false, useObj2 = false, debug, mineEss = false;

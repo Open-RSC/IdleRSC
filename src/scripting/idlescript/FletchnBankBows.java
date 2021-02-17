@@ -12,6 +12,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * FletchnBankBows by Searos
+ * @author Searos
+ */
 public class FletchnBankBows extends IdleScript {
 	JCheckBox string = new JCheckBox("String", true);
 	JFrame scriptFrame = null;

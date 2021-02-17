@@ -13,6 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+/**
+ * SellToShop by Searos
+ * @author Searos
+ */
 public class SellToShop extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;

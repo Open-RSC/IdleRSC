@@ -12,6 +12,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * ArrowMaker by Searos
+ * @author Searos
+ */
 public class ArrowMaker extends IdleScript {
 	int[] arrowHeads = { 669, 670, 671, 672, 673, 674, 381 };
 	int[] completed = { 11, 638, 640, 642, 644, 646 };

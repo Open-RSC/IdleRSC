@@ -15,6 +15,11 @@ import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
 
+/**
+ * A basic mining script with banking for Al-Kharid. 
+ * 
+ * @author Dvorak
+ */
 public class AKMiner extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;

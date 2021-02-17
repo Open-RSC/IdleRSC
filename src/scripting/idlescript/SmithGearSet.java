@@ -12,6 +12,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * SmithGearSet by Searos
+ * @author Searos
+ */
 public class SmithGearSet extends IdleScript {
 	JFrame scriptFrame = null;
 	JComboBox<String> barField = new JComboBox<String>(

@@ -1,5 +1,10 @@
 package scripting.idlescript;
 
+/**
+ * Trains Harvesting on Coleslaw in Draynor and Ardougne fields. 
+ * 
+ * @author Dvorak
+ */
 public class HarvesterTrainer extends IdleScript {
 	
 	int harvested = 0;

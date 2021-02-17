@@ -124,7 +124,6 @@ public class HerbHarvester extends IdleScript {
 		while(countHerbs() > 0) { 
 			for(int i = 0; i < unids.length; i++) {
 				if(controller.getInventoryItemCount(unids[i]) > 0) {
-					//controller.depositItem(unids[i]);
 					controller.depositItem(unids[i], controller.getInventoryItemCount(unids[i]));
 					controller.sleep(250);
 				}

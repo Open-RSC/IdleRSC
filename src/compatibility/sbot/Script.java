@@ -316,7 +316,7 @@ public abstract class Script
 	public void Walk(int x, int y, int step)
 	{
 		Main.logMethod("Walk", x, y, step);
-		//WaitForLoad();
+		WaitForLoad();
 		while (GetX() != x && GetY() != y)
 		{
 			Walk(x,y);
@@ -353,7 +353,7 @@ public abstract class Script
 			boolean GoneTo = false;
 			while (GoneTo == false)
 			{
-				//WaitForLoad();
+				WaitForLoad();
 				int TempX = Rand(x1, x2);
 				int TempY = Rand(y1, y2);
 				if (EmptyTile(TempX, TempY) == true)
@@ -1229,7 +1229,7 @@ public abstract class Script
 		if (pathx.length != pathy.length)
 		{
 			Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
-			//return;
+			return;
 		}
 		int startPoint = 0;
 		int startDistance = 8000;
@@ -1249,7 +1249,7 @@ public abstract class Script
 		if (pathx.length != pathy.length)
 		{
 			Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
-			//return;
+			return;
 		}
 		int startPoint = 0;
 		int startDistance = 8000;
@@ -1269,7 +1269,7 @@ public abstract class Script
 		if (pathx.length != pathy.length)
 		{
 			Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
-			//return;
+			return;
 		}
 		int startPoint = 0;
 		int startDistance = 8000;
@@ -1289,7 +1289,7 @@ public abstract class Script
 		if (pathx.length != pathy.length)
 		{
 			Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
-			//return;
+			return;
 		}
 		int startPoint = 0;
 		int startDistance = 8000;

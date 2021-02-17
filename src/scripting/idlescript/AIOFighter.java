@@ -450,7 +450,6 @@ public class AIOFighter extends IdleScript {
 	            	scriptFrame.setVisible(false);
 	            	scriptFrame.dispose();
 	            	scriptStarted = true;
-	            	//scriptStart();
             	}
             }
         });
@@ -473,7 +472,6 @@ public class AIOFighter extends IdleScript {
         
     	scriptFrame = new JFrame("Script Options");
     	
-    	//scriptFrame.setLayout(new BoxLayout(scriptFrame.getContentPane(), BoxLayout.Y_AXIS));
     	scriptFrame.setLayout(new GridLayout(0,2));
     	scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	scriptFrame.add(fightModeLabel);

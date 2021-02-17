@@ -130,8 +130,6 @@ public class GetMeToArdougne extends IdleScript {
 						controller.sleep(5000);
 					}
 					
-					//controller.sleep(3000);
-					
 					if(controller.isInOptionMenu()) {
 						controller.optionAnswer(0);
 						controller.sleep(7000);

@@ -1,9 +1,10 @@
 FEB 17 2021
-	Minor Controller refactoring. Some functions, notable currentZ() and objectAt() have been refactored. Private scripts may need updating.
+	Minor Controller refactoring which does not break scripts. This is to make the javadoc more readable.
 	Controller now allows you to enable/disable bot paint (i.e. progress reports), bot status, bot coords, and bot xp counter.
 	Controller is now completely documented. Phew. 
 	Added documentation in most areas with public methods.  
 	Deleted CommandListener because it was useless. 
+	General code cleanup -- removing commnets which are no longer pertinent, etc.
 	
 	*** SCRIPT BREAKING CHANGES ***
 	currentZ() has been renamed to currentY().

@@ -174,8 +174,6 @@ public class AIOSmelter extends IdleScript {
 				controller.sleep(618);
 			}
 
-			// while(controller.isInBank()) controller.closeBank();
-
 		}
 
 	}

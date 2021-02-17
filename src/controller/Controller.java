@@ -91,7 +91,6 @@ public class Controller {
 		try {
 			Thread.sleep(ms);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -207,15 +206,6 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves all itemIds of items on the ground.
-	 * 
-	 * @return int[] -- no guarantee on nullability.
-	 */
-	public int[] getGroundItems() {
-		return (int[]) reflector.getObjectMember(mud, "groundItemID");
-	}
-
-	/**
 	 * Retrieve a list of items on the ground near the player. Duplicate items on the same tile will be added to the list once, with the actual amount available from the getAmount() method.
 	 *
 	 * @return List<GroundItemDef> -- guaranteed to not be null. 
@@ -263,6 +253,15 @@ public class Controller {
 
 
 		return _list;
+	}
+	
+	/**
+	 * Retrieves all itemIds of items on the ground.
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
+	public int[] getGroundItems() {
+		return (int[]) reflector.getObjectMember(mud, "groundItemID");
 	}
 
 	
@@ -461,7 +460,6 @@ public class Controller {
 
 			int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
 
-			//previously: currentX() != x || currentZ() != z
 			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX() + fudgeFactor, y - mud.getMidRegionBaseZ() + fudgeFactor, false);
 
 			sleep(250);
@@ -484,7 +482,7 @@ public class Controller {
 
 		int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
 
-		walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX() + fudgeFactor, y - mud.getMidRegionBaseZ() + fudgeFactor, false); //TODO: change to packet based.
+		walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX() + fudgeFactor, y - mud.getMidRegionBaseZ() + fudgeFactor, false);
 
 
 	}
@@ -497,9 +495,9 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isTileEmpty(int x, int y) {
-		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
-		int[] xs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceX");
-		int[] zs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceZ");
+		int count = getObjectsCount();
+		int[] xs = getObjectsX();
+		int[] zs = getObjectsZ();
 
 		for(int i = 0; i < count; i++) {
 			int _x = offsetX(xs[i]);
@@ -521,10 +519,10 @@ public class Controller {
 	 */
 	public int[] getNearestObjectById(int id) {
 		Main.logMethod("getNearestObjectById", id);
-		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
-		int[] xs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceX");
-		int[] zs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceZ");
-		int[] ids = (int[])reflector.getObjectMember(mud, "gameObjectInstanceID");
+		int count = getObjectsCount();
+		int[] xs = getObjectsX();
+		int[] zs = getObjectsZ();
+		int[] ids = getObjectsIds();
 
 		int[] closestCoords = {-1, -1};
 		int closestDistance = 99999;
@@ -558,10 +556,10 @@ public class Controller {
 	 */
 	public boolean atObject(int x, int y) {
 		Main.logMethod("atObject", x, y);
-		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
-		int[] xs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceX");
-		int[] zs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceZ");
-		int[] ids = (int[])reflector.getObjectMember(mud, "gameObjectInstanceID");
+		int count = getObjectsCount();
+		int[] xs = getObjectsX();
+		int[] zs = getObjectsZ();
+		int[] ids = getObjectsIds();
 
 		for(int i = 0; i < count; i++) {
 			if(offsetX(xs[i]) == x && offsetZ(zs[i]) == y) {
@@ -582,10 +580,10 @@ public class Controller {
 	 */
 	public boolean atObject2(int x, int y) {
 		Main.logMethod("atObject2", x, y);
-		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
-		int[] xs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceX");
-		int[] zs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceZ");
-		int[] ids = (int[])reflector.getObjectMember(mud, "gameObjectInstanceID");
+		int count = getObjectsCount();
+		int[] xs = getObjectsX();
+		int[] zs = getObjectsZ();
+		int[] ids = getObjectsIds();
 
 		for(int i = 0; i < count; i++) {
 			if(offsetX(xs[i]) == x && offsetZ(zs[i]) == y) {
@@ -617,8 +615,6 @@ public class Controller {
 		if(x < 0 || z < 0)
 			return;
 
-		//if(!isCloseToCoord(x, z))
-		//	reflector.mudInvoker(mud, "walkToObject", x, z, dir, 5126, objectId);
 		reflector.mudInvoker(mud, "walkToObject", x - mud.getMidRegionBaseX(), z - mud.getMidRegionBaseZ(), dir, 5126, objectId);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -647,7 +643,7 @@ public class Controller {
 	 * @return List<GameObjectDef> -- guaranteed to not be null. 
 	 */
 	public List<GameObjectDef> getObjects() {
-		int[] gameObjectInstanceIDs = (int[]) this.getMudClientValue("gameObjectInstanceID");
+		int[] gameObjectInstanceIDs = getObjectsIds();
 
 		List<Integer> _list = new ArrayList();
 		int gameObjectInstanceCount = this.getObjectsCount();
@@ -672,6 +668,13 @@ public class Controller {
 		return (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
 	}
 
+	/**
+	 * Retrieves the IDs of objects nearby.
+	 * @return int[] -- no guarantee on nullability. 
+	 */
+	public int[] getObjectsIds() {
+		return (int[])reflector.getObjectMember(mud, "gameObjectInstanceID");
+	}
 	/**
 	 * Retrieves a list of all of the X coordinates of nearby objects. 
 	 * 
@@ -725,7 +728,7 @@ public class Controller {
 	public List<DoorDef> getWallObjects() {
 		List<Integer> _list = new ArrayList();
 
-		int[] wallObjectInstanceIDs = (int[]) this.getMudClientValue("wallObjectInstanceID");
+		int[] wallObjectInstanceIDs = getWallObjectIds();
 		int wallObjectInstanceCount = this.getWallObjectsCount();
 
 		for(int i = 0; i < wallObjectInstanceCount; i++) {
@@ -738,6 +741,13 @@ public class Controller {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Returns a list of all wall object IDs nearby. 
+	 * @return int[] -- no guarantee on nullability
+	 */
+	public int[] getWallObjectIds() {
+		return (int[]) this.getMudClientValue("wallObjectInstanceID");
+	}
 	/**
 	 * Returns the count of wall objects nearby. 
 	 * @return
@@ -803,7 +813,6 @@ public class Controller {
 			}
 		}
 
-		//npcs[i].serverIndex
 		return npc;
 	}
 
@@ -852,12 +861,11 @@ public class Controller {
 
 		ORSCharacter npc = (ORSCharacter) reflector.mudInvoker(mud, "getServerNPC", npcServerIndex);
 		if(npc != null) {
-			int npcX = (npc.currentX - 64) / mud.getTileSize();// + mud.getMidRegionBaseX();
-			int npcZ = (npc.currentZ - 64) / mud.getTileSize();// + mud.getMidRegionBaseZ();
+			int npcX = (npc.currentX - 64) / mud.getTileSize();
+			int npcZ = (npc.currentZ - 64) / mud.getTileSize();
 
 			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), npcX, npcZ, true);
 			
-//			walkToAsync(npcX, npcZ, radius);
 		} else {
 			return;
 		}
@@ -1031,8 +1039,6 @@ public class Controller {
 				ORSCharacterDirection dir = this.getCharacterDirection(npcs[i]);
 				if(dir == ORSCharacterDirection.COMBAT_A || dir == ORSCharacterDirection.COMBAT_B)
 					return true;
-				//if(npcs[i].combatTimeout > 0)
-				//	return true;
 			}
 		}
 
@@ -1047,10 +1053,10 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isDoorOpen(int x, int y) {
-		int[] ids = (int[]) reflector.getObjectMember(mud, "wallObjectInstanceID");
-		int[] xs = (int[]) reflector.getObjectMember(mud, "wallObjectInstanceX");
-		int[] zs = (int[]) reflector.getObjectMember(mud, "wallObjectInstanceZ");
-		int count = (int) reflector.getObjectMember(mud, "wallObjectInstanceCount");
+		int[] ids = getWallObjectIds();
+		int[] xs = getWallObjectsX();
+		int[] zs = getWallObjectsZ();
+		int count = getWallObjectsCount();
 
 		int _x = removeOffsetX(x), _z = removeOffsetZ(y);
 		
@@ -1158,10 +1164,10 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isItemAtCoord(int x, int y, int itemId) {
-		int groundItemCount = (int) reflector.getObjectMember(mud, "groundItemCount");
-		int[] groundItemID = (int[]) reflector.getObjectMember(mud, "groundItemID");
-		int[] groundItemX = (int[]) reflector.getObjectMember(mud, "groundItemX");
-		int[] groundItemZ = (int[]) reflector.getObjectMember(mud, "groundItemZ");
+		int groundItemCount = getGroundItemsCount();
+		int[] groundItemID = getGroundItems();
+		int[] groundItemX = getGroundItemsX();
+		int[] groundItemZ = getGroundItemsY();
 
 		for(int i = 0; i < groundItemCount; i++) {
 			if(groundItemID[i] == itemId) {
@@ -1182,10 +1188,10 @@ public class Controller {
 	 * @return int[] -- [x, y]. Returns null if item not found.
 	 */
 	public int[] getNearestItemById(int itemId) {
-		int groundItemCount = (int) reflector.getObjectMember(mud, "groundItemCount");
-		int[] groundItemID = (int[]) reflector.getObjectMember(mud, "groundItemID");
-		int[] groundItemX = (int[]) reflector.getObjectMember(mud, "groundItemX");
-		int[] groundItemZ = (int[]) reflector.getObjectMember(mud, "groundItemZ");
+		int groundItemCount = getGroundItemsCount();
+		int[] groundItemID = getGroundItems();
+		int[] groundItemX = getGroundItemsX();
+		int[] groundItemZ = getGroundItemsY();
 
 		int botX = mud.getLocalPlayerX() + mud.getMidRegionBaseX();
 		int botZ = mud.getLocalPlayerX() + mud.getMidRegionBaseX();
@@ -1326,7 +1332,7 @@ public class Controller {
 	 */
 	public int getInventoryItemSlotIndex(int itemId) {
 		int inventoryItemCount = (int) reflector.getObjectMember(mud, "inventoryItemCount");
-		int[] inventoryItemID = this.getInventoryItemIds(); //(int[]) reflector.getObjectMember(mud, "inventoryItemID");
+		int[] inventoryItemID = this.getInventoryItemIds();
 		int slotIndex = -1;
 
 		for(int i = 0; i < inventoryItemCount; i++) {
@@ -1578,7 +1584,8 @@ public class Controller {
 	 * @param serverIndex
 	 * @return true -- true if request to talk sent, false if server index is invalid.
 	 */
-	public boolean talkToNpc(int serverIndex) {//, boolean waitForOptionsMenu) {
+	public boolean talkToNpc(int serverIndex) {
+		//TODO: add boolean parameter for waitForOptionsMenu
 		if(serverIndex < 0)
 			return false;
 
@@ -1827,7 +1834,7 @@ public class Controller {
 	 * @param x
 	 * @return
 	 */
-	public int convertX(int x) { //for usage with playre/npc coords only!!
+	public int convertX(int x) {
 		return (x - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
 	}
 
@@ -1900,7 +1907,6 @@ public class Controller {
 			ImageIO.write(img, "bmp", new File(filename + ".bmp"));
 			Main.log("Screenshot saved.");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
@@ -2589,9 +2595,9 @@ public class Controller {
 		int _x = x - mud.getMidRegionBaseX();
 		int _y = y - mud.getMidRegionBaseZ();
 
-		int[] ids = (int[]) reflector.getObjectMember(mud, "gameObjectInstanceID");
-		int[] xs = (int[]) reflector.getObjectMember(mud, "gameObjectInstanceX");
-		int[] ys = (int[]) reflector.getObjectMember(mud, "gameObjectInstanceZ");
+		int[] ids = getObjectsIds();
+		int[] xs = getObjectsX();
+		int[] ys = getObjectsZ();
 
 		for(int i = 0; i < ids.length; i++) {
 			if(_x == xs[i] && _y == ys[i])
@@ -2876,7 +2882,6 @@ public class Controller {
 		for(int i = 0; i < itemIds.length; i++) {
 			mud.packetHandler.getClientStream().bufferBits.putShort(itemIds[i]);
 			mud.packetHandler.getClientStream().bufferBits.putInt(amounts[i]);
-			//mud.packetHandler.getClientStream().bufferBits.putShort(0); //maybe this is only in the next release
 		}
 
 		mud.packetHandler.getClientStream().finishPacket();
@@ -2947,8 +2952,6 @@ public class Controller {
 		}
 
 		return results;
-
-		//return mud.getInventoryItems();
 	}
 
 	
@@ -3287,7 +3290,7 @@ public class Controller {
 	 * @param color -- RGB "HTML" Color
 	 */
 	public void drawBoxBorder(int x, int y, int width, int height, int color) {
-    	mud.getSurface().drawBoxBorder(x, width, y, height, color); //rearranged per source
+    	mud.getSurface().drawBoxBorder(x, width, y, height, color); //rearranged per source!
 	}
 
 	/**
@@ -3325,7 +3328,7 @@ public class Controller {
 	 * @param color -- RGB "HTML" Color
 	 */
 	public void drawLineVert(int x, int y, int height, int color) {
-    	mud.getSurface().drawLineVert(x, y, color, height); //rearrenged per source
+    	mud.getSurface().drawLineVert(x, y, color, height); //rearrenged per source!
 	}
 
 	/**

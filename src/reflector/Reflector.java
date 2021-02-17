@@ -43,11 +43,9 @@ public class Reflector {
 
             return (OpenRSC)myClassObject;
  
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } 
         
         return null; 
 	}
@@ -63,15 +61,9 @@ public class Reflector {
 			mud = client.getClass().getSuperclass().getDeclaredField("mudclient");
 			mud.setAccessible(true);
 			return (mudclient) mud.get(null);
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
+		} 
 
 		return null;
 	}
@@ -145,8 +137,6 @@ public class Reflector {
             Field mudclientField = cli.getDeclaredField(member);
             mudclientField.setAccessible(true);
             return mudclientField.get(this); 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,11 +161,7 @@ public class Reflector {
 				field = obj.getClass().getDeclaredField(member);
 	    		field.setAccessible(true);
 	    		return field.get(obj);
-			} catch (NoSuchFieldException | SecurityException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
     	
@@ -217,14 +203,9 @@ public class Reflector {
 				}
 			}
     	}
-    	catch (IllegalArgumentException e) {
+    	catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		finally {
-			
-		}
+		} 
     	
     	return null;
     }
@@ -244,13 +225,9 @@ public class Reflector {
 			field = obj.getClass().getDeclaredField(member);
     		field.setAccessible(true);
     		field.set(obj, value);
-		} catch (NoSuchFieldException | SecurityException e) {
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		} 
     }
 }
 

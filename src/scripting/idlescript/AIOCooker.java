@@ -149,8 +149,8 @@ public class AIOCooker extends IdleScript {
 				return;
 			}
 			
-			if(!controller.isEquipped(controller.getInventoryItemIdSlot(700))) {
-				controller.equipItem(controller.getInventoryItemIdSlot(700));
+			if(!controller.isEquipped(controller.getInventoryItemSlotIndex(700))) {
+				controller.equipItem(controller.getInventoryItemSlotIndex(700));
 				controller.sleep(618);
 			}
 		}
@@ -167,7 +167,7 @@ public class AIOCooker extends IdleScript {
 		
 		if(this.dropBurnt) { 
 			while(controller.getInventoryItemCount(target.burntId) > 0) {
-				controller.dropItem(controller.getInventoryItemIdSlot(target.burntId));
+				controller.dropItem(controller.getInventoryItemSlotIndex(target.burntId));
 				controller.sleep(250);
 			}
 		}

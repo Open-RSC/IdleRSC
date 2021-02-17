@@ -94,14 +94,14 @@ public class PowerFletcha extends IdleScript {
 			for(int id : bowIds) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.setStatus("@yel@Dropping bows...");
-					controller.dropItem(controller.getInventoryItemIdSlot(id));
+					controller.dropItem(controller.getInventoryItemSlotIndex(id));
 					controller.sleep(250);
 				}
 			}
 			
 			if(controller.getInventoryItemCount(target.logId) > 0) {
 				controller.setStatus("@yel@Fletching...");
-				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(13), controller.getInventoryItemIdSlot(target.logId));
+				controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(13), controller.getInventoryItemSlotIndex(target.logId));
 				controller.sleep(700);
 				
 				if(controller.optionMenuCount() > 2 && target.logId != 14)

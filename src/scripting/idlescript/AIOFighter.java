@@ -212,9 +212,9 @@ public class AIOFighter extends IdleScript {
 	    			
 		    		for(int id : bowIds) {
 		    			if(controller.getInventoryItemCount(id) > 0) {
-			    			if(!controller.isEquipped(controller.getInventoryItemIdSlot(id))) {
+			    			if(!controller.isEquipped(controller.getInventoryItemSlotIndex(id))) {
 			    				controller.setStatus("@red@Equipping bow");
-			    				controller.equipItem(controller.getInventoryItemIdSlot(id));
+			    				controller.equipItem(controller.getInventoryItemSlotIndex(id));
 			    				controller.sleep(1000);
 			    				break;
 			    			}
@@ -245,9 +245,9 @@ public class AIOFighter extends IdleScript {
     		} else {
         		
     			if(ranging == true) {
-    				if(!controller.isEquipped(controller.getInventoryItemIdSlot(switchId))) {
+    				if(!controller.isEquipped(controller.getInventoryItemSlotIndex(switchId))) {
     					controller.setStatus("@red@Switching to melee weapon");
-    					controller.equipItem(controller.getInventoryItemIdSlot(switchId));
+    					controller.equipItem(controller.getInventoryItemSlotIndex(switchId));
     				}
     			}
     			if(maging == true) {

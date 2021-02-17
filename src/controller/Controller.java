@@ -928,7 +928,7 @@ public class Controller {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(135);
 		mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
-		mud.packetHandler.getClientStream().bufferBits.putShort(this.getInventoryItemIdSlot(itemId));
+		mud.packetHandler.getClientStream().bufferBits.putShort(this.getInventoryItemSlotIndex(itemId));
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
@@ -937,15 +937,15 @@ public class Controller {
 	 * 
 	 * @param x
 	 * @param y
-	 * @param itemSlot
+	 * @param slotIndex
 	 */
-	public void useItemSlotOnObject(int x, int y, int itemSlot) {
+	public void useItemSlotOnObject(int x, int y, int slotIndex) {
 		reflector.mudInvoker(mud, "walkToObject", x - mud.getMidRegionBaseX(), y - mud.getMidRegionBaseZ(), 4, 5126, this.getObjectAtCoord(x, y));
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(115);
 		mud.packetHandler.getClientStream().bufferBits.putShort(x);
 		mud.packetHandler.getClientStream().bufferBits.putShort(y);
-		mud.packetHandler.getClientStream().bufferBits.putShort(itemSlot);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
@@ -956,7 +956,7 @@ public class Controller {
 	 * @param itemId
 	 */
 	public void useItemIdOnObject(int x, int y, int itemId) {
-		useItemSlotOnObject(x, y, this.getInventoryItemIdSlot(itemId));
+		useItemSlotOnObject(x, y, this.getInventoryItemSlotIndex(itemId));
 	}
 
 	/**
@@ -964,16 +964,16 @@ public class Controller {
 	 * 
 	 * @param x
 	 * @param y
-	 * @param slotId
+	 * @param slotIndex
 	 */
-	public void useItemOnWall(int x, int y, int slotId) {
+	public void useItemOnWall(int x, int y, int slotIndex) {
 		//you need to be close to the object for this to work.
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(161);
 		mud.packetHandler.getClientStream().bufferBits.putShort(x);
 		mud.packetHandler.getClientStream().bufferBits.putShort(y);
 		mud.packetHandler.getClientStream().bufferBits.putByte(0);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slotId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
@@ -1275,7 +1275,7 @@ public class Controller {
 	public boolean itemCommand(int itemId) {
 		Main.logMethod("itemCommand", itemId);
 
-		int inventoryIndex = getInventoryItemIdSlot(itemId);
+		int inventoryIndex = getInventoryItemSlotIndex(itemId);
 
 		if(inventoryIndex == -1)
 			return false;
@@ -1294,12 +1294,12 @@ public class Controller {
 	/**
 	 * Uses the command option on the item at the specified slot id. Note that this does not use item ids, but slot ids.
 	 * 
-	 * @param slotId
+	 * @param slotIndex
 	 */
-	public void itemCommandBySlot(int slotId) {
+	public void itemCommandBySlot(int slotIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(90);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slotId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().bufferBits.putInt(1);
 		mud.packetHandler.getClientStream().bufferBits.putByte(0);
 		mud.packetHandler.getClientStream().finishPacket();
@@ -1307,14 +1307,14 @@ public class Controller {
 
 	/**
 	 * Uses the item at `slot1` on `slot2`. Note that this does not use item ids, but slot ids.
-	 * @param slot1
-	 * @param slot2
+	 * @param slotIndex1
+	 * @param slotIndex2
 	 */
-	public void useItemOnItemBySlot(int slot1, int slot2) {
+	public void useItemOnItemBySlot(int slotIndex1, int slotIndex2) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(91);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slot1);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slot2);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex1);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex2);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
@@ -1324,44 +1324,44 @@ public class Controller {
 	 * @param itemId -- returns -1 if item not in inventory. 
 	 * @return
 	 */
-	public int getInventoryItemIdSlot(int itemId) {
+	public int getInventoryItemSlotIndex(int itemId) {
 		int inventoryItemCount = (int) reflector.getObjectMember(mud, "inventoryItemCount");
 		int[] inventoryItemID = this.getInventoryItemIds(); //(int[]) reflector.getObjectMember(mud, "inventoryItemID");
-		int inventoryIndex = -1;
+		int slotIndex = -1;
 
 		for(int i = 0; i < inventoryItemCount; i++) {
 			if(inventoryItemID[i] == itemId)
-				inventoryIndex = i;
+				slotIndex = i;
 		}
 
-		return inventoryIndex;
+		return slotIndex;
 	}
 
 	/**
-	 * Drops one the specified item at the specified item slot. Note that this does not use an item id, but a slot id. 
-	 * @param slot
+	 * Drops one the specified item at the specified item slot. Note that this does not use an item id, but a slot index. 
+	 * @param slotIndex
 	 * @param amount
 	 */
-	public void dropItem(int slot) {
-		int inventoryItemID = mud.getInventoryItemID(slot);
+	public void dropItem(int slotIndex) {
+		int inventoryItemID = mud.getInventoryItemID(slotIndex);
 		int inventoryItemCount = this.getInventoryItemCount(inventoryItemID);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(246);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().bufferBits.putInt(inventoryItemCount);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
 	/**
-	 * Drops the specified item at the specified item slot, of specified amount. Note that this does not use an item id, but a slot id. 
-	 * @param slot
+	 * Drops the specified item at the specified item slot, of specified amount. Note that this does not use an item id, but a slot index. 
+	 * @param slotIndex
 	 * @param amount
 	 */
-	public void dropItem(int slot, int amount) {
+	public void dropItem(int slotIndex, int amount) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(246);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
@@ -1369,15 +1369,15 @@ public class Controller {
 	
 
 	/**
-	 * Whether or not the specified item slot is equipped. Note that this does not use an item id, but a slot id.
-	 * @param slot
+	 * Whether or not the specified item slot is equipped. Note that this does not use an item id, but a slot index.
+	 * @param slotIndex
 	 * @return
 	 */
-	public boolean isEquipped(int slot) {
-		if(slot < 0)
+	public boolean isEquipped(int slotIndex) {
+		if(slotIndex < 0)
 			return false;
 		
-		return mud.getInventory()[slot].getEquipped();
+		return mud.getInventory()[slotIndex].getEquipped();
 //
 //		int[] inventoryItemEquipped = (int[]) reflector.getObjectMember(mud, "inventoryItemEquipped");
 //
@@ -1389,26 +1389,26 @@ public class Controller {
 	}
 
 	/**
-	 * Equips the item in the specified slot. Note that this does not use an item id, but a slot id. 
+	 * Equips the item in the specified slot. Note that this does not use an item id, but a slot index. 
 	 * 
-	 * @param slot
+	 * @param slotIndex
 	 */
-	public void equipItem(int slot) {
+	public void equipItem(int slotIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(169);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
 	/**
-	 * Unequips the item in the specified slot. Note that this does not use an item id, but a slot id. 
+	 * Unequips the item in the specified slot. Note that this does not use an item id, but a slot index. 
 	 * 
-	 * @param slot
+	 * @param slotIndex
 	 */
-	public void unequipItem(int slot) {
+	public void unequipItem(int slotIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(170);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
@@ -2052,13 +2052,13 @@ public class Controller {
 	/**
 	 * Casts the specified spell on the specified inventory item. Based on item slot, not item id.
 	 * @param spellId
-	 * @param slotId
+	 * @param slotIndex
 	 */
-	public void castSpellOnInventoryItem(int spellId, int slotId) {
+	public void castSpellOnInventoryItem(int spellId, int slotIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(4);
 		mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
-		mud.packetHandler.getClientStream().bufferBits.putShort(slotId);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 

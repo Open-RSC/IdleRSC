@@ -36,13 +36,13 @@ public class PowercraftTalisman extends IdleScript {
 			while (controller.getInventoryItemCount(1299) >= 1 && !controller.isBatching()
 					|| controller.getInventoryItemCount(1385) >= 1 && !controller.isBatching()) {
 				controller.setStatus("Crafting");
-				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(167),
-						controller.getInventoryItemIdSlot(1299));
+				controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(167),
+						controller.getInventoryItemSlotIndex(1299));
 				controller.sleep(15);
 				if (controller.getInventoryItemCount(1385) > 0 && controller.getInventoryItemCount(1299) < 1) {
 					controller.setStatus("Dropping");
 					totalTalismans = totalTalismans + controller.getInventoryItemCount(1385);
-					controller.dropItem(controller.getInventoryItemIdSlot(1385));
+					controller.dropItem(controller.getInventoryItemSlotIndex(1385));
 				}
 			}
 		}

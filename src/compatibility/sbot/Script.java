@@ -537,7 +537,7 @@ public abstract class Script
 	{
 		Main.logMethod("UseOnDoor", x, y, dir, item);
 		WaitForLoad();
-		controller.useItemOnWall(x, y, controller.getInventoryItemIdSlot(item));
+		controller.useItemOnWall(x, y, controller.getInventoryItemSlotIndex(item));
 	}
 	public void OpenDoor(int x, int y, int dir)
 	{
@@ -940,7 +940,7 @@ public abstract class Script
 	public int FindInv(int type)
 	{
 		Main.logMethod("FindInv", type);
-		return controller.getInventoryItemIdSlot(type);
+		return controller.getInventoryItemSlotIndex(type);
 	}
 	public boolean Running()
 	{
@@ -1364,7 +1364,7 @@ public abstract class Script
 	public int InvByName(String name)
 	{
 		Main.logMethod("InvByName", name);
-		return controller.getInventoryItemIdSlot(controller.getItemId(name));
+		return controller.getInventoryItemSlotIndex(controller.getItemId(name));
 	}
 	public boolean IsStackable(int id)
 	{

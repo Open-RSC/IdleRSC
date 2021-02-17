@@ -45,8 +45,8 @@ public class ArrowMaker extends IdleScript {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(280) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
-					controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(280),
-							controller.getInventoryItemIdSlot(selectedArrowHead));
+					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(280),
+							controller.getInventoryItemSlotIndex(selectedArrowHead));
 					controller.sleep(100);
 					while (controller.isBatching()) {
 						controller.sleep(100);
@@ -64,8 +64,8 @@ public class ArrowMaker extends IdleScript {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(637) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
-					controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(637),
-							controller.getInventoryItemIdSlot(selectedArrowHead));
+					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(637),
+							controller.getInventoryItemSlotIndex(selectedArrowHead));
 					controller.sleep(100);
 					while (controller.isBatching()) {
 						controller.sleep(100);

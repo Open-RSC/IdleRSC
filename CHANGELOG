@@ -5,6 +5,11 @@ FEB 17 2021
 	Added documentation in most areas with public methods.  
 	Deleted CommandListener because it was useless. 
 	
+	*** SCRIPT BREAKING CHANGES ***
+	currentZ() has been renamed to currentY().
+	objectAt() has been refactored. Direction and object ID are no longer needed.
+	getInventoryItemIdSlot(int itemId) renamed to getInventoryItemSlotIndex(int itemId).
+	
 
 FEB 16 2021
 	Global XP/hr calculation is now accurate.

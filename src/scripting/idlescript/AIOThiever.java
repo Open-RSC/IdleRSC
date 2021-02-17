@@ -156,7 +156,7 @@ public class AIOThiever extends IdleScript {
 			
 			if(controller.getInventoryItemCount(140) > 0) { //drop jugs from heroes
 				controller.setStatus("@red@Dropping empty jugs..");
-				controller.dropItem(controller.getInventoryItemIdSlot(140));
+				controller.dropItem(controller.getInventoryItemSlotIndex(140));
 				controller.sleep(500);
 			}
 			

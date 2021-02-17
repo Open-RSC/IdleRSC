@@ -13,6 +13,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * Woodcutting by Searos
+ * @author Searos
+ */
 public class Woodcutting extends IdleScript {
 	JCheckBox bank = new JCheckBox("Bank", true);
 	JComboBox<String> destination = new JComboBox<String>(new String[] { "Draynor", "Varrock West", "Varrock East",
@@ -53,23 +57,23 @@ public class Woodcutting extends IdleScript {
 		// shitty autowalk
 		int newX = x;
 		int newY = y;
-		while (controller.currentX() != x || controller.currentZ() != y) {
+		while (controller.currentX() != x || controller.currentY() != y) {
 			if (controller.currentX() - x > 20) {
 				newX = controller.currentX() - 20;
 			}
-			if (controller.currentZ() - y > 20) {
-				newY = controller.currentZ() - 20;
+			if (controller.currentY() - y > 20) {
+				newY = controller.currentY() - 20;
 			}
 			if (controller.currentX() - x < -20) {
 				newX = controller.currentX() + 20;
 			}
-			if (controller.currentZ() - y < -20) {
-				newY = controller.currentZ() + 20;
+			if (controller.currentY() - y < -20) {
+				newY = controller.currentY() + 20;
 			}
 			if (Math.abs(controller.currentX() - x) <= 20) {
 				newX = x;
 			}
-			if (Math.abs(controller.currentZ() - y) <= 20) {
+			if (Math.abs(controller.currentY() - y) <= 20) {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
@@ -177,7 +181,7 @@ public class Woodcutting extends IdleScript {
 				controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
 				controller.displayMessage("@red@Saving position");
 				saveX = controller.currentX();
-				saveY = controller.currentZ();
+				saveY = controller.currentY();
 				bankSelX = bankX[destination.getSelectedIndex()];
 				bankSelY = bankY[destination.getSelectedIndex()];
 				controller.displayMessage("@red@Woodcutter started");

@@ -12,6 +12,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * FletchnBankBows by Searos
+ * @author Searos
+ */
 public class FletchnBankBows extends IdleScript {
 	JCheckBox string = new JCheckBox("String", true);
 	JFrame scriptFrame = null;
@@ -136,8 +140,8 @@ public class FletchnBankBows extends IdleScript {
 			while (controller.getInventoryItemCount(bowId) > 0 && stringTime
 					&& controller.getInventoryItemCount(676) > 0) {
 				controller.setStatus("Stringing");
-				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(bowId),
-						controller.getInventoryItemIdSlot(676));
+				controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(bowId),
+						controller.getInventoryItemSlotIndex(676));
 				controller.sleep(15);
 			}
 		}

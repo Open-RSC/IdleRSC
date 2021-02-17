@@ -132,7 +132,7 @@ public class AIOSmelter extends IdleScript {
 					controller.sleep(10);
 
 				if (controller.getInventoryItemCount(699) > 0) { // wield gauntlets
-					controller.equipItem(controller.getInventoryItemIdSlot(699));
+					controller.equipItem(controller.getInventoryItemSlotIndex(699));
 					controller.sleep(618);
 				}
 
@@ -173,8 +173,6 @@ public class AIOSmelter extends IdleScript {
 				controller.withdrawItem(entry.getKey(), entry.getValue());
 				controller.sleep(618);
 			}
-
-			// while(controller.isInBank()) controller.closeBank();
 
 		}
 

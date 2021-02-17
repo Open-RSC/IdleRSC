@@ -12,6 +12,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * ArrowMaker by Searos
+ * @author Searos
+ */
 public class ArrowMaker extends IdleScript {
 	int[] arrowHeads = { 669, 670, 671, 672, 673, 674, 381 };
 	int[] completed = { 11, 638, 640, 642, 644, 646 };
@@ -41,8 +45,8 @@ public class ArrowMaker extends IdleScript {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(280) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
-					controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(280),
-							controller.getInventoryItemIdSlot(selectedArrowHead));
+					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(280),
+							controller.getInventoryItemSlotIndex(selectedArrowHead));
 					controller.sleep(100);
 					while (controller.isBatching()) {
 						controller.sleep(100);
@@ -60,8 +64,8 @@ public class ArrowMaker extends IdleScript {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(637) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
-					controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(637),
-							controller.getInventoryItemIdSlot(selectedArrowHead));
+					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(637),
+							controller.getInventoryItemSlotIndex(selectedArrowHead));
 					controller.sleep(100);
 					while (controller.isBatching()) {
 						controller.sleep(100);

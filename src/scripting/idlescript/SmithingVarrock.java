@@ -11,6 +11,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * SmithingVarrock by Searos
+ * @author Searos
+ */
 public class SmithingVarrock extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;

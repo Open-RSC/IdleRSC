@@ -17,6 +17,11 @@ import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
 
+/**
+ * A basic cooking script to use in Catherby. 
+ * 
+ * @author Dvorak
+ */
 public class AIOCooker extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
@@ -144,8 +149,8 @@ public class AIOCooker extends IdleScript {
 				return;
 			}
 			
-			if(!controller.isEquipped(controller.getInventoryItemIdSlot(700))) {
-				controller.equipItem(controller.getInventoryItemIdSlot(700));
+			if(!controller.isEquipped(controller.getInventoryItemSlotIndex(700))) {
+				controller.equipItem(controller.getInventoryItemSlotIndex(700));
 				controller.sleep(618);
 			}
 		}
@@ -162,7 +167,7 @@ public class AIOCooker extends IdleScript {
 		
 		if(this.dropBurnt) { 
 			while(controller.getInventoryItemCount(target.burntId) > 0) {
-				controller.dropItem(controller.getInventoryItemIdSlot(target.burntId));
+				controller.dropItem(controller.getInventoryItemSlotIndex(target.burntId));
 				controller.sleep(250);
 			}
 		}
@@ -173,7 +178,7 @@ public class AIOCooker extends IdleScript {
 	
 	public void openDoor() {
 		while(controller.getObjectAtCoord(439, 497) == 64) {
-			controller.objectAt(439, 497, 0, 64);
+			controller.atObject(439, 497);
 			controller.sleep(100);
 		}
 	}

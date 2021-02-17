@@ -16,6 +16,10 @@ import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
 
+/**
+ * DamRc by Damrau. Coleslaw only. 
+ * @author Damrau
+ */
 public class DamRc extends IdleScript {
 
 	public boolean started = false, useObj2 = false, debug, mineEss = false;
@@ -39,7 +43,7 @@ public class DamRc extends IdleScript {
 
 	public boolean inArea(int[] nwTile, int[] seTile) {
 		if (controller.currentX() <= nwTile[0] && controller.currentX() >= seTile[0]
-				&& controller.currentZ() >= nwTile[1] && controller.currentZ() <= seTile[1]) {
+				&& controller.currentY() >= nwTile[1] && controller.currentY() <= seTile[1]) {
 			return true;
 		}
 		return false;
@@ -58,7 +62,7 @@ public class DamRc extends IdleScript {
 	public void scriptStart() {
 		while (controller.isRunning()) {
 			if (debug) {
-				controller.displayMessage("@cya@" + "Current Z: " + controller.currentZ());
+				controller.displayMessage("@cya@" + "Current Z: " + controller.currentY());
 			}
 			if (mineEss) {
 				if (inArea(mineNW, mineSE)) {
@@ -70,7 +74,7 @@ public class DamRc extends IdleScript {
 						}
 					}
 				}
-				if (!inArea(mineNW, mineSE) && controller.currentZ() > 30 && controller.currentZ() <= 600) {
+				if (!inArea(mineNW, mineSE) && controller.currentY() > 30 && controller.currentY() <= 600) {
 					if (controller.getInventoryItemCount() >= 30) {
 						if (!inArea(bankNW, bankSE)) {
 							walkToBank();
@@ -95,7 +99,7 @@ public class DamRc extends IdleScript {
 					}
 				}
 
-				if (!inArea(alterNW, alterSE) && controller.currentZ() > alterZ && controller.currentZ() <= 600) {
+				if (!inArea(alterNW, alterSE) && controller.currentY() > alterZ && controller.currentY() <= 600) {
 					if (controller.getInventoryItemCount() >= 30) {
 						if (!inArea(spotNW, spotSE)) {
 							walkToSpot();

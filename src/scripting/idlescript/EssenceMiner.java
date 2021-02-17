@@ -8,6 +8,10 @@ import controller.Controller;
 import orsc.mudclient;
 import reflector.Reflector;
 
+/**
+ * EssenceMiner by Searos
+ * @author Searos
+ */
 public class EssenceMiner extends IdleScript {
 	JComboBox<String> destination = new JComboBox<String>(new String[] { "Seers", "Falador" });
 	JFrame scriptFrame = null;
@@ -35,23 +39,23 @@ public class EssenceMiner extends IdleScript {
 		// shitty autowalk
 		int newX = x;
 		int newY = y;
-		while (controller.currentX() != x || controller.currentZ() != y) {
+		while (controller.currentX() != x || controller.currentY() != y) {
 			if (controller.currentX() - x > 23) {
 				newX = controller.currentX() - 20;
 			}
-			if (controller.currentZ() - y > 23) {
-				newY = controller.currentZ() - 20;
+			if (controller.currentY() - y > 23) {
+				newY = controller.currentY() - 20;
 			}
 			if (controller.currentX() - x < -23) {
 				newX = controller.currentX() + 20;
 			}
-			if (controller.currentZ() - y < -23) {
-				newY = controller.currentZ() + 20;
+			if (controller.currentY() - y < -23) {
+				newY = controller.currentY() + 20;
 			}
 			if (Math.abs(controller.currentX() - x) <= 23) {
 				newX = x;
 			}
-			if (Math.abs(controller.currentZ() - y) <= 23) {
+			if (Math.abs(controller.currentY() - y) <= 23) {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
@@ -74,7 +78,7 @@ public class EssenceMiner extends IdleScript {
 	}
 
 	public void scriptStart() {
-			if (controller.currentZ() <= 95) {
+			if (controller.currentY() <= 95) {
 				inEssenceMine = true;
 			} else {
 				inEssenceMine = false;

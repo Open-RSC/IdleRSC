@@ -13,6 +13,11 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+/**
+ * Cuts, fletches and drops bows of any log type. 
+ *  
+ * @author Dvorak
+ */
 public class PowerFletcha extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
@@ -89,17 +94,17 @@ public class PowerFletcha extends IdleScript {
 			for(int id : bowIds) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.setStatus("@yel@Dropping bows...");
-					controller.dropItem(controller.getInventoryItemIdSlot(id));
+					controller.dropItem(controller.getInventoryItemSlotIndex(id));
 					controller.sleep(250);
 				}
 			}
 			
 			if(controller.getInventoryItemCount(target.logId) > 0) {
 				controller.setStatus("@yel@Fletching...");
-				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(13), controller.getInventoryItemIdSlot(target.logId));
+				controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(13), controller.getInventoryItemSlotIndex(target.logId));
 				controller.sleep(700);
 				
-				if(controller.optionMenuCount() > 2 && target.logId != 14)
+				if(controller.getOptionMenuCount() > 2 && target.logId != 14)
 					controller.optionAnswer(target.optionId + 1); //fix for RSC Coleslaw
 				else
 					controller.optionAnswer(target.optionId);
@@ -112,7 +117,7 @@ public class PowerFletcha extends IdleScript {
 			int[] objCoords = controller.getNearestObjectById(target.treeId);
 			if(objCoords != null) {
 				controller.setStatus("@yel@Cutting wood..");
-				controller.objectAt(objCoords[0], objCoords[1], 0, target.treeId);
+				controller.atObject(objCoords[0], objCoords[1]);
 				controller.sleep(618);
 				while(controller.isBatching()) controller.sleep(10);
 			} else {

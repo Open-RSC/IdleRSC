@@ -43,11 +43,9 @@ public class Reflector {
 
             return (OpenRSC)myClassObject;
  
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } 
         
         return null; 
 	}
@@ -63,19 +61,9 @@ public class Reflector {
 			mud = client.getClass().getSuperclass().getDeclaredField("mudclient");
 			mud.setAccessible(true);
 			return (mudclient) mud.get(null);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 
 		return null;
 	}
@@ -149,8 +137,6 @@ public class Reflector {
             Field mudclientField = cli.getDeclaredField(member);
             mudclientField.setAccessible(true);
             return mudclientField.get(this); 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,14 +161,7 @@ public class Reflector {
 				field = obj.getClass().getDeclaredField(member);
 	    		field.setAccessible(true);
 	    		return field.get(obj);
-			} catch (NoSuchFieldException | SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
     	
@@ -224,16 +203,9 @@ public class Reflector {
 				}
 			}
     	}
-    	catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+    	catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally {
-			
-		}
+		} 
     	
     	return null;
     }
@@ -253,16 +225,9 @@ public class Reflector {
 			field = obj.getClass().getDeclaredField(member);
     		field.setAccessible(true);
     		field.set(obj, value);
-		} catch (NoSuchFieldException | SecurityException e) {
-			// TODO Auto-generated catch block
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
     }
 }
 

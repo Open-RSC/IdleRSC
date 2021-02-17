@@ -2,6 +2,11 @@ package scripting.idlescript;
 
 import orsc.ORSCharacter;
 
+/**
+ * Walks from Lumbridge to Ardougne. Thieves men for 60 gp to use the ships to/from Karamja.
+ * 
+ * @author Dvorak
+ */
 public class GetMeToArdougne extends IdleScript {
 	
 	int[] lumbToShip = {
@@ -51,7 +56,7 @@ public class GetMeToArdougne extends IdleScript {
 			{
 				controller.setStatus("@yel@Stealing GP..");
 				if(controller.isInCombat()) {
-					controller.walkTo(controller.currentX(), controller.currentZ());
+					controller.walkTo(controller.currentX(), controller.currentY());
 					controller.sleep(250);
 				}
 				
@@ -80,14 +85,14 @@ public class GetMeToArdougne extends IdleScript {
 					}
 					
 					if(controller.isInOptionMenu()) {
-						if(controller.optionsMenuText(0).contains("Yes"))
+						if(controller.getOptionsMenuText(0).contains("Yes"))
 							controller.optionAnswer(0);
 						else
 							controller.optionAnswer(1); //user has not completed dragon slayer
 						
 						controller.sleep(9000);
 					
-						if(controller.currentX() == 324 && controller.currentZ() == 713) {
+						if(controller.currentX() == 324 && controller.currentY() == 713) {
 							inKaramja = true;
 							break;
 						}
@@ -99,11 +104,11 @@ public class GetMeToArdougne extends IdleScript {
 				controller.setStatus("@yel@Walking to Brimhaven gate..");
 				controller.walkPath(shipToGate);
 				
-				while(controller.currentX() != 435 || controller.currentZ() != 682) {
+				while(controller.currentX() != 435 || controller.currentY() != 682) {
 					controller.displayMessage("@red@Opening door...");
 					
 					while(controller.isInCombat()) {
-						controller.walkTo(controller.currentX(), controller.currentZ());
+						controller.walkTo(controller.currentX(), controller.currentY());
 						controller.sleep(250);
 					}
 					
@@ -124,8 +129,6 @@ public class GetMeToArdougne extends IdleScript {
 						controller.talkToNpc(npc.serverIndex);
 						controller.sleep(5000);
 					}
-					
-					//controller.sleep(3000);
 					
 					if(controller.isInOptionMenu()) {
 						controller.optionAnswer(0);

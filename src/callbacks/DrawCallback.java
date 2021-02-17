@@ -4,6 +4,11 @@ import bot.Main;
 import controller.Controller;
 import scripting.idlescript.IdleScript;
 
+/**
+ * Contains logic for interrupts caused by each drawing of the game frame. 
+ * 
+ * @author Dvorak
+ */
 public class DrawCallback {
 
     private static long startTimestamp = System.currentTimeMillis() / 1000L;
@@ -16,6 +21,9 @@ public class DrawCallback {
     private static long levelUpTextTimeout = 0;
     private static boolean screenshotTaken = false;
 
+    /**
+     * The hook called each frame by the patched client.
+     */
     public static void drawHook() {
         Controller c = Main.getController();
 
@@ -24,6 +32,11 @@ public class DrawCallback {
 
     }
     
+    /**
+     * Sets the left hand pane bot status text. 
+     * 
+     * @param str
+     */
     public static void setStatusText(String str) { 
     	statusText = str;
     }
@@ -32,29 +45,38 @@ public class DrawCallback {
         int y = 130 + 14 + 14 + 14;
         String localStatusText = statusText;
         
-        if(!Main.isRunning()) {
-        	localStatusText = "@red@Idle.";
+        if(c.getShowBotPaint()) {
+	        if(!Main.isRunning()) {
+	        	localStatusText = "@red@Idle.";
+	        }
+	        
+	        if(c.getShowStatus())
+	        	c.drawString("Status: " + localStatusText, 7, y, 0xFFFFFF, 1);
+	
+	        y+= 14;
+	        
+	        if(c.getShowCoords())
+	        	c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentY()) + "@red@)", 7, y, 0xFFFFFF, 1);
+	
+	        y += 14;
+	        long totalXp = getTotalXp();
+	        startingXp = totalXp < startingXp ? totalXp : startingXp;
+	        long xpGained = totalXp - startingXp;
+	        long xpPerHr;
+	        try {
+	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+	    		float scale = (60 * 60) / timeRan;
+	    		xpPerHr = (int)(xpGained * scale);
+	        }
+	        catch(Exception e) {
+	            xpPerHr = 0;
+	        }
+	        
+	        if(c.getShowXp()) {
+	        	c.drawString("XP Gained: @red@" + String.format("%,d", xpGained)
+	        			   + " @whi@(@red@" + String.format("%,d", xpPerHr) + " @whi@xp/hr)", 7, y, 0xFFFFFF, 1);
+	        }
         }
-        c.drawString("Status: " + localStatusText, 7, y, 0xFFFFFF, 1);
-
-        y+= 14;
-        c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentZ()) + "@red@)", 7, y, 0xFFFFFF, 1);
-
-        y += 14;
-        long totalXp = getTotalXp();
-        startingXp = totalXp < startingXp ? totalXp : startingXp;
-        long xpGained = totalXp - startingXp;
-        long xpPerHr;
-        try {
-    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
-    		float scale = (60 * 60) / timeRan;
-    		xpPerHr = (int)(xpGained * scale);
-        }
-        catch(Exception e) {
-            xpPerHr = 0;
-        }
-        c.drawString("XP Gained: @red@" + String.format("%,d", xpGained)
-                       + " @whi@(@red@" + String.format("%,d", xpPerHr) + " @whi@xp/hr)", 7, y, 0xFFFFFF, 1);
         
         if(System.currentTimeMillis() / 1000L < levelUpTextTimeout) {
         	y += 14;
@@ -69,7 +91,7 @@ public class DrawCallback {
 
     private static void drawScript(Controller c) {
 
-        if(Main.isRunning() && Main.getCurrentRunningScript() != null) {
+        if(c != null && c.getShowBotPaint() == true && c.isRunning() && Main.getCurrentRunningScript() != null) {
             if(Main.getCurrentRunningScript() instanceof IdleScript) {
                 ((IdleScript)Main.getCurrentRunningScript()).paintInterrupt();
             }
@@ -89,6 +111,12 @@ public class DrawCallback {
 
     }
     
+    /**
+     * Displays level up messages and takes screenshot the next frame. 
+     * 
+     * @param statName
+     * @param level
+     */
     public static void displayAndScreenshotLevelUp(String statName, int level) {
     	screenshotTaken = false;
     	levelUpSkill = statName;

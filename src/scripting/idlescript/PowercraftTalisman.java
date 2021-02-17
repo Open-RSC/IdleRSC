@@ -1,5 +1,10 @@
 package scripting.idlescript;
 
+/**
+ * Trains mining and crafting at the essence rocks. 
+ * 
+ * @author Searos
+ */
 public class PowercraftTalisman extends IdleScript {
 	int a = 0;
 	int totalTalismans = 0;
@@ -16,8 +21,8 @@ public class PowercraftTalisman extends IdleScript {
 			if (controller.getInventoryItemCount(1299) < 1 && controller.getInventoryItemCount(1385) < 1) {
 				if (!controller.isBatching()) {
 					controller.setStatus("Preventing Logout");
-					controller.walkTo(controller.currentX() + 1, controller.currentZ());
-					controller.walkTo(controller.currentX() - 1, controller.currentZ());
+					controller.walkTo(controller.currentX() + 1, controller.currentY());
+					controller.walkTo(controller.currentX() - 1, controller.currentY());
 				}
 				while(controller.getInventoryItemCount()<30 && !controller.isBatching()) {
 				controller.setStatus("Mining");
@@ -31,13 +36,13 @@ public class PowercraftTalisman extends IdleScript {
 			while (controller.getInventoryItemCount(1299) >= 1 && !controller.isBatching()
 					|| controller.getInventoryItemCount(1385) >= 1 && !controller.isBatching()) {
 				controller.setStatus("Crafting");
-				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(167),
-						controller.getInventoryItemIdSlot(1299));
+				controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(167),
+						controller.getInventoryItemSlotIndex(1299));
 				controller.sleep(15);
 				if (controller.getInventoryItemCount(1385) > 0 && controller.getInventoryItemCount(1299) < 1) {
 					controller.setStatus("Dropping");
 					totalTalismans = totalTalismans + controller.getInventoryItemCount(1385);
-					controller.dropItem(controller.getInventoryItemIdSlot(1385));
+					controller.dropItem(controller.getInventoryItemSlotIndex(1385));
 				}
 			}
 		}

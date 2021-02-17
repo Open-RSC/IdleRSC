@@ -9,6 +9,12 @@ import controller.Controller;
 import orsc.enumerations.MessageType;
 import scripting.idlescript.IdleScript;
 
+/** 
+ * Contains interrupts which are called every time the patched client receives a message. 
+ * 
+ * @author Dvorak
+ */
+
 public class MessageCallback {
 
     private static int sbotLastChatter = 0;
@@ -19,6 +25,16 @@ public class MessageCallback {
     
     private static final Pattern p = Pattern.compile("^(.*) (.*) level!"); //for parsing level up messages
 
+    /**
+     * The hook called my the patched client every time a message is printed on screen. 
+     * @param crownEnabled
+     * @param sender
+     * @param message
+     * @param type
+     * @param crownID
+     * @param formerName
+     * @param colourOverride
+     */
     public static void messageHook(boolean crownEnabled, String sender, String message, MessageType type, int crownID,
                                    String formerName, String colourOverride) {
     	
@@ -81,22 +97,42 @@ public class MessageCallback {
 		
 	}
 
+	/**
+	 * Provides data for the LastChatter() function in SBot. 
+	 * @return int
+	 */
 	public static int getSbotLastChatter() {
         return sbotLastChatter;
     }
 
+	/**
+	 * Provides data for the LastChatterName() function in SBot. 
+	 * @return String -- guaranteed to not be null. 
+	 */
     public static String getSbotLastChatterName() {
         return sbotLastChatterName;
     }
 
+	/**
+	 * Provides data for the LastChatMessage() function in SBot. 
+	 * @return String -- guaranteed to not be null. 
+	 */
     public static String getSbotLastChatMessage() {
         return sbotLastChatMessage;
     }
 
+	/**
+	 * Provides data for the LastNPCMessage() function in SBot. 
+	 * @return String -- guaranteed to not be null. 
+	 */
     public static String getSbotLastNPCMessage() {
         return sbotLastNPCMessage;
     }
 
+	/**
+	 * Provides data for the LastServerMessage() function in SBot. 
+	 * @return String -- guaranteed to not be null. 
+	 */
     public static String getSbotLastServerMessage() {
         return sbotLastServerMessage;
     }

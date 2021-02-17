@@ -13,6 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+/**
+ * SellToShop by Searos
+ * @author Searos
+ */
 public class SellToShop extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
@@ -35,7 +39,7 @@ public class SellToShop extends IdleScript {
 			startCash = controller.getInventoryItemCount(10);
 		}
 		startX = controller.currentX();
-		startY = controller.currentZ();
+		startY = controller.currentY();
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -49,23 +53,23 @@ public class SellToShop extends IdleScript {
 		// shitty autowalk
 		int newX = x;
 		int newY = y;
-		while (controller.currentX() != x || controller.currentZ() != y) {
+		while (controller.currentX() != x || controller.currentY() != y) {
 			if (controller.currentX() - x > 23) {
 				newX = controller.currentX() - 20;
 			}
-			if (controller.currentZ() - y > 23) {
-				newY = controller.currentZ() - 20;
+			if (controller.currentY() - y > 23) {
+				newY = controller.currentY() - 20;
 			}
 			if (controller.currentX() - x < -23) {
 				newX = controller.currentX() + 20;
 			}
-			if (controller.currentZ() - y < -23) {
-				newY = controller.currentZ() + 20;
+			if (controller.currentY() - y < -23) {
+				newY = controller.currentY() + 20;
 			}
 			if (Math.abs(controller.currentX() - x) <= 23) {
 				newX = x;
 			}
-			if (Math.abs(controller.currentZ() - y) <= 23) {
+			if (Math.abs(controller.currentY() - y) <= 23) {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
@@ -100,7 +104,7 @@ public class SellToShop extends IdleScript {
 		while (controller.isInShop() && controller.getInventoryItemCount() > 1 || controller.isInShop()
 				&& controller.getInventoryItemCount(10) < 1 && controller.getInventoryItemCount() == 1) {
 			for (int itemId : itemIds) {
-				if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
+				if (itemId != 0 && isSellable(itemId) && controller.getShopItemCount(itemId) < shopNumber) {
 					controller.shopSell(itemId, shopNumber - controller.getBankItemCount(itemId));
 					controller.sleep(640);
 					cashMade = controller.getInventoryItemCount(10) - startCash;
@@ -125,7 +129,7 @@ public class SellToShop extends IdleScript {
 				controller.depositItem(10, controller.getInventoryItemCount(10));
 				startCash = 0;
 				for (int itemId : itemIds) {
-					if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
+					if (itemId != 0 && isSellable(itemId) && controller.getShopItemCount(itemId) < shopNumber) {
 						controller.withdrawItem(itemId, 30);
 						controller.sleep(640);
 					}

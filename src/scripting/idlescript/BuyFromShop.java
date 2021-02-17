@@ -13,6 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+/**
+ * BuyFromShop by Searos
+ * @author Searos
+ */
 public class BuyFromShop extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
@@ -30,7 +34,7 @@ public class BuyFromShop extends IdleScript {
 
 	public void start(String parameters[]) {
 		startX = controller.currentX();
-		startY = controller.currentZ();
+		startY = controller.currentY();
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -44,23 +48,23 @@ public class BuyFromShop extends IdleScript {
 		// shitty autowalk
 		int newX = x;
 		int newY = y;
-		while (controller.currentX() != x || controller.currentZ() != y) {
+		while (controller.currentX() != x || controller.currentY() != y) {
 			if (controller.currentX() - x > 23) {
 				newX = controller.currentX() - 20;
 			}
-			if (controller.currentZ() - y > 23) {
-				newY = controller.currentZ() - 20;
+			if (controller.currentY() - y > 23) {
+				newY = controller.currentY() - 20;
 			}
 			if (controller.currentX() - x < -23) {
 				newX = controller.currentX() + 20;
 			}
-			if (controller.currentZ() - y < -23) {
-				newY = controller.currentZ() + 20;
+			if (controller.currentY() - y < -23) {
+				newY = controller.currentY() + 20;
 			}
 			if (Math.abs(controller.currentX() - x) <= 23) {
 				newX = x;
 			}
-			if (Math.abs(controller.currentZ() - y) <= 23) {
+			if (Math.abs(controller.currentY() - y) <= 23) {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
@@ -99,9 +103,9 @@ public class BuyFromShop extends IdleScript {
 			}
 			while (controller.isInShop() && controller.getInventoryItemCount() < 30) {
 				for (int itemId : itemIds) {
-					while (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) > shopNumber
-							&& controller.shopItemCount(itemId) > 0) {
-						controller.shopBuy(itemId, shopNumber - controller.shopItemCount(itemId));
+					while (itemId != 0 && isSellable(itemId) && controller.getShopItemCount(itemId) > shopNumber
+							&& controller.getShopItemCount(itemId) > 0) {
+						controller.shopBuy(itemId, shopNumber - controller.getShopItemCount(itemId));
 						controller.sleep(430);
 					}
 				}

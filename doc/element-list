@@ -1,0 +1,11 @@
+bot
+bot.debugger
+bot.ui.table
+callbacks
+compatibility.sbot
+controller
+listeners
+models.entities
+reflector
+scripting.idlescript
+scripting.sbot

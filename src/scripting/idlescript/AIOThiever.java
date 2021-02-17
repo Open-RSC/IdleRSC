@@ -17,6 +17,12 @@ import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
 
+/**
+ * A basic thiever that supports most things in the game. Only supports banking in Ardougne at the moment. 
+ * 
+ * @author Dvorak
+ */
+
 public class AIOThiever extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
@@ -150,7 +156,7 @@ public class AIOThiever extends IdleScript {
 			
 			if(controller.getInventoryItemCount(140) > 0) { //drop jugs from heroes
 				controller.setStatus("@red@Dropping empty jugs..");
-				controller.dropItem(controller.getInventoryItemIdSlot(140));
+				controller.dropItem(controller.getInventoryItemSlotIndex(140));
 				controller.sleep(500);
 			}
 			
@@ -174,10 +180,10 @@ public class AIOThiever extends IdleScript {
 						if(controller.getInventoryItemCount() < 30) {
 							controller.setStatus("@red@Stealing..");
 							
-							if(controller.currentX() != 543 && controller.currentZ() != 600)
+							if(controller.currentX() != 543 && controller.currentY() != 600)
 								controller.walkTo(543, 600);
 								
-							controller.objectAt(544, 599, 0, 322);
+							controller.atObject(544, 599);
 						} 
 					}
 					
@@ -216,9 +222,9 @@ public class AIOThiever extends IdleScript {
 						if(coords != null) {
 							controller.setStatus("@red@Stealing..");
 							if(target.name.contains("Chest")) {
-								controller.objectAt2(coords[0], coords[1], 0, target.id);
+								controller.atObject2(coords[0], coords[1]);
 							} else {
-								controller.objectAt(coords[0], coords[1], 0, target.id);
+								controller.atObject(coords[0], coords[1]);
 								controller.sleep(618);
 							}
 						} else {
@@ -228,7 +234,7 @@ public class AIOThiever extends IdleScript {
 				}
 			} else {
 				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
 				
 				controller.sleep(400);				
 			}
@@ -244,7 +250,7 @@ public class AIOThiever extends IdleScript {
 			
 			while(controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
 				controller.sleep(250);
 			}
 			controller.setStatus("@red@Eating..");
@@ -263,7 +269,7 @@ public class AIOThiever extends IdleScript {
 			while(!doBank && !ate) {
 				controller.setStatus("@red@Logging out..");
 				while(controller.isInCombat()) {
-					controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
+					controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
 					controller.sleep(250);
 				}
 				controller.setAutoLogin(false);

@@ -1,3 +1,23 @@
+FEB 17 2021
+	Minor Controller refactoring which does not break scripts. This is to make the javadoc more readable.
+	Controller now allows you to enable/disable bot paint (i.e. progress reports), bot status, bot coords, and bot xp counter.
+	Controller is now completely documented. Phew. 
+	Added documentation in most areas with public methods.  
+	Deleted CommandListener because it was useless. 
+	General code cleanup -- removing commnets which are no longer pertinent, etc.
+	Generic item data lookup calls will no longer return null if you lookup an item which does not exist.
+	
+	*** SCRIPT BREAKING CHANGES ***
+	currentZ() has been renamed to currentY().
+	objectAt() has been refactored. Direction and object ID are no longer needed.
+	getInventoryItemIdSlot(int itemId) renamed to getInventoryItemSlotIndex(int itemId).
+	shopItemCount(int itemId) renamed to getShopItemCount(int itemId)
+	shopItemPrice(int itemId) renamed to getShopItemPrice(int itemId)
+	optionsMenuText(int i) renamed to getOptionsMenuText(int i)
+	optionMenuCount() renamed to getOptionMenuCount()
+	createAccount() method deleted. createAccount(email) and createAccount(email, username, password) still remain.
+	
+
 FEB 16 2021
 	Global XP/hr calculation is now accurate.
 	AIOFighter, AIOThiever, LimpySnapez, GetMeToArdougne, HarvesterTrainer, HerbHarvester, HerbIdentifier, PowerFletcha now have paint progress reports. 

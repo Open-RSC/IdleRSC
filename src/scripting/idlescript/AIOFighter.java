@@ -99,7 +99,7 @@ public class AIOFighter extends IdleScript {
     	}
     	
     	startTile[0] = controller.currentX();
-    	startTile[1] = controller.currentZ();
+    	startTile[1] = controller.currentY();
     	
     	while(controller.isRunning()) {
     		
@@ -114,7 +114,7 @@ public class AIOFighter extends IdleScript {
     		
     		controller.sleep(618); //wait 1 tick
     		
-    		if(!isWithinWander(controller.currentX(), controller.currentZ())) {
+    		if(!isWithinWander(controller.currentX(), controller.currentY())) {
     			controller.setStatus("@red@Out of range! Walking back.");
     			controller.walkTo(startTile[0], startTile[1], 0, true);
     		}
@@ -139,7 +139,7 @@ public class AIOFighter extends IdleScript {
     		
     		if(controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
     			controller.setStatus("@red@Eating food");
-    			controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
+    			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
     			
     			boolean ate = false;
     			
@@ -212,9 +212,9 @@ public class AIOFighter extends IdleScript {
 	    			
 		    		for(int id : bowIds) {
 		    			if(controller.getInventoryItemCount(id) > 0) {
-			    			if(!controller.isEquipped(controller.getInventoryItemIdSlot(id))) {
+			    			if(!controller.isEquipped(controller.getInventoryItemSlotIndex(id))) {
 			    				controller.setStatus("@red@Equipping bow");
-			    				controller.equipItem(controller.getInventoryItemIdSlot(id));
+			    				controller.equipItem(controller.getInventoryItemSlotIndex(id));
 			    				controller.sleep(1000);
 			    				break;
 			    			}
@@ -236,7 +236,7 @@ public class AIOFighter extends IdleScript {
 	    			continue;
 	    		} else {
 	    			//no npc found! walk back to starting tile..
-	    			if(controller.currentX() != startTile[0] && controller.currentZ() != startTile[1]) {
+	    			if(controller.currentX() != startTile[0] && controller.currentY() != startTile[1]) {
 		    			controller.setStatus("@red@No NPCs found, walking back to start...");
 		    			controller.walkToAsync(startTile[0], startTile[1], 0);
 		    			controller.sleep(1000);
@@ -245,9 +245,9 @@ public class AIOFighter extends IdleScript {
     		} else {
         		
     			if(ranging == true) {
-    				if(!controller.isEquipped(controller.getInventoryItemIdSlot(switchId))) {
+    				if(!controller.isEquipped(controller.getInventoryItemSlotIndex(switchId))) {
     					controller.setStatus("@red@Switching to melee weapon");
-    					controller.equipItem(controller.getInventoryItemIdSlot(switchId));
+    					controller.equipItem(controller.getInventoryItemSlotIndex(switchId));
     				}
     			}
     			if(maging == true) {
@@ -450,7 +450,6 @@ public class AIOFighter extends IdleScript {
 	            	scriptFrame.setVisible(false);
 	            	scriptFrame.dispose();
 	            	scriptStarted = true;
-	            	//scriptStart();
             	}
             }
         });
@@ -473,7 +472,6 @@ public class AIOFighter extends IdleScript {
         
     	scriptFrame = new JFrame("Script Options");
     	
-    	//scriptFrame.setLayout(new BoxLayout(scriptFrame.getContentPane(), BoxLayout.Y_AXIS));
     	scriptFrame.setLayout(new GridLayout(0,2));
     	scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	scriptFrame.add(fightModeLabel);

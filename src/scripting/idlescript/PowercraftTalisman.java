@@ -16,8 +16,8 @@ public class PowercraftTalisman extends IdleScript {
 			if (controller.getInventoryItemCount(1299) < 1 && controller.getInventoryItemCount(1385) < 1) {
 				if (!controller.isBatching()) {
 					controller.setStatus("Preventing Logout");
-					controller.walkTo(controller.currentX() + 1, controller.currentZ());
-					controller.walkTo(controller.currentX() - 1, controller.currentZ());
+					controller.walkTo(controller.currentX() + 1, controller.currentY());
+					controller.walkTo(controller.currentX() - 1, controller.currentY());
 				}
 				while(controller.getInventoryItemCount()<30 && !controller.isBatching()) {
 				controller.setStatus("Mining");

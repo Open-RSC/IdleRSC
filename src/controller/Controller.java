@@ -41,11 +41,8 @@ import orsc.graphics.two.MudClientGraphics;
 import reflector.Reflector;
 /**
  *
- * This is the native scripting library abstraction layer for IdleRSC.
+ * This is the native scripting API for IdleRSC.
  *
- *
- * No documentation ATM because for the most part this is self-documenting.
- * If you would like to document these, please respond to the documentation issue on Gitlab.
  *
  * @author Dvorak
  *
@@ -70,14 +67,26 @@ public class Controller {
 		reflector = _reflector; client = _client; mud = _mud;
 	}
 
+	/**
+	 * Whether or not a script is currently running. 
+	 * @return
+	 */
 	public boolean isRunning() {
 		return Main.isRunning();
 	}
 
+	/**
+	 * Stops the currently running script. 
+	 */
 	public void stop() {
 		Main.setRunning(false);
 	}
 
+	/**
+	 * Sleeps for the specified amount of milliseconds.
+	 * 
+	 * @param ms
+	 */
 	public void sleep(int ms) {
 		try {
 			Thread.sleep(ms);
@@ -87,49 +96,51 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Whether or not the client is loaded.
+	 * 
+	 * @return boolean
+	 */
 	public boolean isLoaded() {
 		return (int)reflector.getObjectMember(mud, "controlLoginStatus2") == 1;
 	}
 
+	/**
+	 * Whether or not the player is currently logged in.
+	 * 
+	 * @return boolean
+	 */
 	public boolean isLoggedIn() {		
 		GameMode currentViewMode = (GameMode) reflector.getObjectMember(mud, "currentViewMode");
 		return currentViewMode == GameMode.GAME;
 	}
 
+	/**
+	 * Types a single key of the specified char.  
+	 * 
+	 * @param key
+	 */
 	public void typeKey(char key) {
 		client.keyPressed(new KeyEvent(client, 1, 20, 1, 10, key));
 	}
 
-	public void chatMessage(String text) {
-		for(char c : text.toCharArray()) {
+	/**
+	 * Sends the specified message via chat. 
+	 * 
+	 * @param rstext -- you may use @col@ colors here.
+	 */
+	public void chatMessage(String rstext) {
+		for(char c : rstext.toCharArray()) {
 			typeKey(c);
 		}
 		typeKey('\n');
 	}
 
-	public int currentMouseX() {
-		return mud.mouseX;
-	}
-
-	public int currentMouseY() {
-		return mud.mouseY;
-	}
-
-	public void moveMouse(int x, int y) {
-		if(x < 0 || y < 0)
-			return;
-
-		client.mouseMoved(new MouseEvent(client, 1, 20, 0, x, y, 0, false));
-	}
-
-	public void clickMouse(int x, int y) {
-		if(x < 0 || y < 0)
-			return;
-
-		moveMouse(x, y);
-		client.mousePressed(new MouseEvent(client, 1, 21, 0, x, y, 1, false));
-	}
-
+	/**
+	 * Sets the fight mode. 
+	 * 
+	 * @param mode
+	 */
 	public void setFightMode(int mode) {
 		mud.setCombatStyle(mode);
 
@@ -139,10 +150,21 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * The current fight mode set. 
+	 * 
+	 * @return int -- [0, 3]
+	 */
 	public int getFightMode() {
 		return (int) reflector.getObjectMember(mud, "combatStyle");
 	}
 
+	/**
+	 * Whether or not the specified item id is in the inventory. 
+	 * 
+	 * @param id
+	 * @return boolean
+	 */
 	public boolean isItemInInventory(int id) {
 		return mud.getInventoryCount(id) > 0;
 	}
@@ -150,10 +172,8 @@ public class Controller {
 	/**
 	 * Returns the itemId of the item at the specified `slotIndex`.
 	 *
-	 * If there is no item, the return value is -1.
-	 *
 	 * @param slotIndex
-	 * @return itemId
+	 * @return itemId -- returns -1 if no item in slot.
 	 */
 	public int getInventorySlotItemId(int slotIndex) {
 		Item slot = mud.getInventory()[slotIndex];
@@ -167,29 +187,43 @@ public class Controller {
 		return slot.getItemDef().id;
 	}
 
+	/**
+	 * Retrieves the number of items currently in the inventory. 
+	 * 
+	 * @return int
+	 */
 	public int getInventoryItemCount() {
 		return mud.getInventoryItemCount();
 	}
 
+	/**
+	 * Gets the count of the specified item in the inventory. 
+	 * 
+	 * @param id
+	 * @return int
+	 */
 	public int getInventoryItemCount(int id) {
 		return mud.getInventoryCount(id);
 	}
 
+	/**
+	 * Retrieves all itemIds of items on the ground.
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
 	public int[] getGroundItems() {
 		return (int[]) reflector.getObjectMember(mud, "groundItemID");
 	}
 
 	/**
-	 * Retrieve a list of items on the ground near the player.
-	 * Duplicate items on the same tile will be added to the list once, with the
-	 * sactual amount available from the getAmount() method.
+	 * Retrieve a list of items on the ground near the player. Duplicate items on the same tile will be added to the list once, with the actual amount available from the getAmount() method.
 	 *
-	 * @return a list of ground objects around the player
+	 * @return List<GroundItemDef> -- guaranteed to not be null. 
 	 */
 	public List<GroundItemDef> getGroundItemsStacked() {
 		int[] groundItemIDs = this.getGroundItems();
 		int[] groundItemsX = this.getGroundItemsX();
-		int[] groundItemsZ = this.getGroundItemsZ();
+		int[] groundItemsZ = this.getGroundItemsY();
 		boolean[] groundItemsNoted = this.getGroundItemsNoted();
 
 		int groundItemsCount = this.getGroundItemsCount();
@@ -231,27 +265,56 @@ public class Controller {
 		return _list;
 	}
 
+	
+	/**
+	 * Returns the count of different item ids on the ground.
+	 * 
+	 * @return int
+	 */
 	public int getGroundItemsCount() {
 		return (int) reflector.getObjectMember(mud, "groundItemCount");
 	}
 
+	/**
+	 * Returns a list of X coordinates of ground items. 
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
 	public int[] getGroundItemsX() {
 		return (int[]) reflector.getObjectMember(mud, "groundItemX");
 	}
 
-	public int[] getGroundItemsZ() {
+	/**
+	 * Returns a list of Y coordinates of ground items. 
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
+	public int[] getGroundItemsY() {
 		return (int[]) reflector.getObjectMember(mud, "groundItemZ");
 	}
 
+	/**
+	 * Retrieves a list of whether or not the ground item is noted.
+	 * 
+	 * @return boolean[] -- no guarantee on nullability. 
+	 */
 	public boolean[] getGroundItemsNoted() {
 		return (boolean[]) reflector.getObjectMember(mud, "groundItemNoted");
 	}
 
-	public int getGroundItemAmount(int id, int x, int z) {
+	/**
+	 * Retrieves the amount of the item id on the ground at the specified coordinates.
+	 * 
+	 * @param id
+	 * @param x
+	 * @param y
+	 * @return int -- always returns 0 or greater. 
+	 */
+	public int getGroundItemAmount(int id, int x, int y) {
 		int groundItemCount = this.getGroundItemsCount();
 		int[] groundItemIds = this.getGroundItems();
 		int[] groundItemsX = this.getGroundItemsX();
-		int[] groundItemsZ = this.getGroundItemsZ();
+		int[] groundItemsZ = this.getGroundItemsY();
 
 		int groundItemAmount = 0;
 
@@ -260,7 +323,7 @@ public class Controller {
 			int groundItemX = this.offsetX(groundItemsX[i]);
 			int groundItemZ = this.offsetZ(groundItemsZ[i]);
 
-			if(groundItemId == id && groundItemX == x && groundItemZ == z) {
+			if(groundItemId == id && groundItemX == x && groundItemZ == y) {
 				groundItemAmount++;
 			}
 		}
@@ -268,20 +331,30 @@ public class Controller {
 		return groundItemAmount;
 	}
 
-	public void panCamera() {
-		mud.cameraRotation++;
-		if(mud.cameraRotation >= 360)
-			mud.cameraRotation = 0;
-	}
-
+	/**
+	 * Retrieves the ORSCharacter of the local player.
+	 * 
+	 * @return ORSCharacter -- no guarantee on nullability. 
+	 */
 	public ORSCharacter getPlayer() {
 		return mud.getLocalPlayer();
 	}
 
-	public ORSCharacter getPlayer(int id) {
-		return mud.getPlayer(id);
+	/**
+	 * Retrieves the ORSCharacter of the specified player server index.
+	 * 
+	 * @param serverIndex
+	 * @return ORSCharacter -- no guarantee on nullability.
+	 */
+	public ORSCharacter getPlayer(int serverIndex) {
+		return mud.getPlayer(serverIndex);
 	}
 
+	/**
+	 * Retrieves a list of nearby players.
+	 * 
+	 * @return List<ORSCharacter> -- guaranteed to not be null.
+	 */
 	public List<ORSCharacter> getPlayers() {
 
 		List<ORSCharacter> _list = new ArrayList();
@@ -296,11 +369,22 @@ public class Controller {
 
 		return _list;
 	}
+	
 
+	/**
+	 * Retrieves the number of nearby players. 
+	 * 
+	 * @return int
+	 */
 	public int getPlayerCount() {
 		return (int) reflector.getObjectMember(mud, "playerCount");
 	}
 
+	/**
+	 * Whether or not the player is currently walking.
+	 * 
+	 * @return boolean
+	 */
 	public boolean isCurrentlyWalking() {
 		int x = mud.getLocalPlayerX();
 		int z = mud.getLocalPlayerZ();
@@ -313,64 +397,106 @@ public class Controller {
 		return x != 0 || z != 0;
 	}
 
-	public int getDistanceFromLocalPlayer(int coordX, int coordZ) {
+	/**
+	 * Retrieves the distance of the coordinates from the player.
+	 *  
+	 * @param coordX
+	 * @param coordY
+	 * @return
+	 */
+	public int getDistanceFromLocalPlayer(int coordX, int coordY) {
 		int localCoordX = this.currentX();
-		int localCoordZ = this.currentZ();
+		int localCoordY = this.currentY();
 
-		return this.distance(localCoordX, localCoordZ, coordX, coordZ);
+		return this.distance(localCoordX, localCoordY, coordX, coordY);
 	}
 
+	/**
+	 * Returns the current X coordinates of the player. 
+	 * @return int
+	 */
 	public int currentX() {
 		return mud.getLocalPlayerX() + mud.getMidRegionBaseX();
 	}
 
-	public int currentZ() {
+	/**
+	 * Returns the current Y coordinates of the player.
+	 * @return int
+	 */
+	public int currentY() {
 		return mud.getLocalPlayerZ() + mud.getMidRegionBaseZ();
 	}
 	
+	/**
+	 * Walks to the specified tile, does not return until at tile.
+	 * @param x
+	 * @param y
+	 */
 	public void walkTo(int x, int y) {
 		walkTo(x, y, 0, true);
 	}
 
-	public void walkTo(int x, int z, int radius, boolean force) { //offset applied
-		if(x < 0 || z < 0)
+	/**
+	 * Walks to the specified tile, does not return until at tile or within tile radius.
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param force
+	 */
+	public void walkTo(int x, int y, int radius, boolean force) { //offset applied
+		//TODO: re-examine usage of force, can this be removed?
+		if(x < 0 || y < 0)
 			return;
 
-		Main.logMethod("WalkTo", x, z, radius);
+		Main.logMethod("WalkTo", x, y, radius);
 
 		if(force) {
-			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX(), z - mud.getMidRegionBaseZ(), false);
+			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX(), y - mud.getMidRegionBaseZ(), false);
 		}
 
 		while( (currentX() < x - radius) ||
 			   (currentX() > x + radius) ||
-			   (currentZ() < z - radius) ||
-			   (currentZ() > z + radius) ) { //offset applied
+			   (currentY() < y - radius) ||
+			   (currentY() > y + radius) ) { //offset applied
 
 			int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
 
 			//previously: currentX() != x || currentZ() != z
-			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX() + fudgeFactor, z - mud.getMidRegionBaseZ() + fudgeFactor, false);
+			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX() + fudgeFactor, y - mud.getMidRegionBaseZ() + fudgeFactor, false);
 
 			sleep(250);
 		}
 
 	}
 
-	public void walkToAsync(int x, int z, int radius) { //offset applied
-		if(x < 0 || z < 0)
+	/**
+	 * Walks to the specified tile, non-blocking.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param radius
+	 */
+	public void walkToAsync(int x, int y, int radius) { //offset applied
+		if(x < 0 || y < 0)
 			return;
 
-		Main.logMethod("WalkToAsync", x, z, radius);
+		Main.logMethod("WalkToAsync", x, y, radius);
 
 		int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
 
-		walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX() + fudgeFactor, z - mud.getMidRegionBaseZ() + fudgeFactor, false); //TODO: change to packet based.
+		walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX() + fudgeFactor, y - mud.getMidRegionBaseZ() + fudgeFactor, false); //TODO: change to packet based.
 
 
 	}
 
-	public boolean isTileEmpty(int x, int z) {
+	/**
+	 * Whether or not the specified tile has an object at it. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @return boolean
+	 */
+	public boolean isTileEmpty(int x, int y) {
 		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
 		int[] xs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceX");
 		int[] zs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceZ");
@@ -379,7 +505,7 @@ public class Controller {
 			int _x = offsetX(xs[i]);
 			int _z = offsetZ(zs[i]);
 
-			if(x == _x && z == _z)
+			if(x == _x && y == _z)
 				return false;
 
 		}
@@ -387,6 +513,12 @@ public class Controller {
 		return true;
 	}
 
+	/**
+	 * Retrieves the coordinates of the specified object id, if nearby. 
+	 * 
+	 * @param id
+	 * @return int[] -- [x, y]. returns null if no object nearby. 
+	 */
 	public int[] getNearestObjectById(int id) {
 		Main.logMethod("getNearestObjectById", id);
 		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
@@ -402,7 +534,7 @@ public class Controller {
 			if(ids[i] == id) {
 				int x = offsetX(xs[i]);
 				int z = offsetZ(zs[i]);
-				int dist = distance(this.currentX(), this.currentZ(), x, z);
+				int dist = distance(this.currentX(), this.currentY(), x, z);
 				if(dist < closestDistance) {
 					closestDistance = dist;
 					closestCoords[0] = x;
@@ -417,15 +549,22 @@ public class Controller {
 		return closestCoords;
 	}
 
-	public boolean atObject(int x, int z) {
-		Main.logMethod("atObject", x, z);
+	/**
+	 * Performs the primary command option on the specified object id at the specified coordinates. 
+	 * 
+	 * @param x
+	 * @param y 
+	 * @return boolean -- returns false if no object at those coordinates.
+	 */
+	public boolean atObject(int x, int y) {
+		Main.logMethod("atObject", x, y);
 		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
 		int[] xs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceX");
 		int[] zs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceZ");
 		int[] ids = (int[])reflector.getObjectMember(mud, "gameObjectInstanceID");
 
 		for(int i = 0; i < count; i++) {
-			if(offsetX(xs[i]) == x && offsetZ(zs[i]) == z) {
+			if(offsetX(xs[i]) == x && offsetZ(zs[i]) == y) {
 				objectAt(offsetX(xs[i]), offsetZ(zs[i]), this.getDirection(offsetX(xs[i]), offsetZ(zs[i])), ids[i]);
 				return true;
 			}
@@ -434,15 +573,22 @@ public class Controller {
 		return false;
 	}
 
-	public boolean atObject2(int x, int z) {
-		Main.logMethod("atObject2", x, z);
+	/**
+	 * Performs the 2nd command option on the specified object id at the specified coordinates. 
+	 * 
+	 * @param x
+	 * @param y 
+	 * @return boolean -- returns false if no object at those coordinates.
+	 */
+	public boolean atObject2(int x, int y) {
+		Main.logMethod("atObject2", x, y);
 		int count = (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
 		int[] xs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceX");
 		int[] zs = (int[])reflector.getObjectMember(mud, "gameObjectInstanceZ");
 		int[] ids = (int[])reflector.getObjectMember(mud, "gameObjectInstanceID");
 
 		for(int i = 0; i < count; i++) {
-			if(offsetX(xs[i]) == x && offsetZ(zs[i]) == z) {
+			if(offsetX(xs[i]) == x && offsetZ(zs[i]) == y) {
 				objectAt2(offsetX(xs[i]), offsetZ(zs[i]), this.getDirection(offsetX(xs[i]), offsetZ(zs[i])), ids[i]);
 				return true;
 			}
@@ -451,17 +597,23 @@ public class Controller {
 		return false;
 	}
 
-	public boolean isCloseToCoord(int x, int z) {
-		System.out.println(currentX() + ", " + currentZ() + ", " + x + ", " + z);
-		System.out.println(distance(currentX(), currentZ(), x, z));
-		if(this.distance(currentX(), currentZ(), x, z) <= 1)
+	/**
+	 * Returns whether or not you are within 1 tile of the specified coordinates.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isCloseToCoord(int x, int y) {
+		System.out.println(currentX() + ", " + currentY() + ", " + x + ", " + y);
+		System.out.println(distance(currentX(), currentY(), x, y));
+		if(this.distance(currentX(), currentY(), x, y) <= 1)
 			return true;
 
 		return false;
 	}
 
-	public void objectAt(int x, int z, int dir, int objectId) { //gets called with coords WITH offset.
-		Main.logMethod("objectAt", x, z, dir, objectId);
+	private void objectAt(int x, int z, int dir, int objectId) { 
 		if(x < 0 || z < 0)
 			return;
 
@@ -476,8 +628,7 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
-	public void objectAt2(int x, int z, int dir, int objectId) {
-		Main.logMethod("objectAt2", x, z, dir, objectId);
+	private void objectAt2(int x, int z, int dir, int objectId) {		
 		if(x < 0 || z < 0)
 			return;
 
@@ -489,6 +640,12 @@ public class Controller {
 		mud.packetHandler.getClientStream().bufferBits.putShort(z);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
+	
+	/**
+	 * Retrieves a list of nearby objects. 
+	 * 
+	 * @return List<GameObjectDef> -- guaranteed to not be null. 
+	 */
 	public List<GameObjectDef> getObjects() {
 		int[] gameObjectInstanceIDs = (int[]) this.getMudClientValue("gameObjectInstanceID");
 
@@ -506,18 +663,38 @@ public class Controller {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Retrieves the count of objects nearby. 
+	 * 
+	 * @return int
+	 */
 	public int getObjectsCount() {
 		return (int)reflector.getObjectMember(mud, "gameObjectInstanceCount");
 	}
 
+	/**
+	 * Retrieves a list of all of the X coordinates of nearby objects. 
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
 	public int[] getObjectsX() {
 		return (int[]) reflector.getObjectMember(mud, "gameObjectInstanceX");
 	}
 
+	/**
+	 * Retrieves a list of all of the Z coordinates of nearby objects. 
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
 	public int[] getObjectsZ() {
 		return (int[]) reflector.getObjectMember(mud, "gameObjectInstanceZ");
 	}
 
+	/**
+	 * Retrieves a list of NPCs nearby. 
+	 * 
+	 * @return List<ORSCharacter> -- guaranteed to not be null. 
+	 */
 	public List<ORSCharacter> getNpcs() {
 		List<ORSCharacter> _list = new ArrayList();
 
@@ -532,10 +709,19 @@ public class Controller {
 		return _list;
 	}
 
+	/**
+	 * Retrieves the count of NPCs nearby. 
+	 * @return
+	 */
 	public int getNpcCount() {
 		return mud.getNpcCount();
 	}
 
+	/**
+	 * Returns a list of wall objects nearby. 
+	 * 
+	 * @return List<DoorDef> -- guaranteed to not be null. 
+	 */
 	public List<DoorDef> getWallObjects() {
 		List<Integer> _list = new ArrayList();
 
@@ -552,18 +738,40 @@ public class Controller {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Returns the count of wall objects nearby. 
+	 * @return
+	 */
 	public int getWallObjectsCount() {
 		return (int) reflector.getObjectMember(mud, "wallObjectInstanceCount");
 	}
 
+	/**
+	 * Retrieves a list of all of the X coordinates of nearby wall objects. 
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
 	public int[] getWallObjectsX() {
 		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceX");
 	}
 
+	/**
+	 * Retrieves a list of all of the Z coordinates of nearby wall objects. 
+	 * 
+	 * @return int[] -- no guarantee on nullability.
+	 */
 	public int[] getWallObjectsZ() {
 		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceZ");
 	}
 
+	/**
+	 * Retrieves the character object of the nearest NPC specified in the list of ids.
+	 * 
+	 * @param npcIds
+	 * @param inCombatAllowed -- whether or not to return NPCs which are currently engaged in combat.
+	 *  
+	 * @return orsc.ORSCharacter -- returns null if npc not present.
+	 */
 	public ORSCharacter getNearestNpcByIds(int[] npcIds, boolean inCombatAllowed) {
 		ORSCharacter npc = null;
 		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
@@ -599,6 +807,14 @@ public class Controller {
 		return npc;
 	}
 
+	/**
+	 * Retrieves the character object of the nearest npc.
+	 * 
+	 * @param npcId
+	 * @param inCombatAllowed -- whether or not to return NPCs which are currently engaged in combat.
+	 * 
+	 * @return orsc.ORSCharacter -- returns null if NPC not present.
+	 */
 	public ORSCharacter getNearestNpcById(int npcId, boolean inCombatAllowed) {
 		int[] tmp = new int[1];
 		tmp[0] = npcId;
@@ -606,6 +822,12 @@ public class Controller {
 		return getNearestNpcByIds(tmp, inCombatAllowed);
 	}
 
+	/**
+	 * Gets the coordinates of the specified NPC. 
+	 * 
+	 * @param serverIndex
+	 * @return int[] -- [x, y]. Returns [-1, -1] on no NPC present. 
+	 */
 	public int[] getNpcCoordsByServerIndex(int serverIndex) {
 		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
 
@@ -615,9 +837,15 @@ public class Controller {
 			}
 		}
 
+		//TODO: return null for consistency and update scripts.
 		return new int[] {-1, -1};
 	}
 
+	/**
+	 * Walks to the specified NPC. This function is non-blocking.
+	 * 
+	 * @param npcServerIndex
+	 */
 	public void walktoNPCAsync(int npcServerIndex) {
 		if(npcServerIndex < 0)
 			return;
@@ -635,6 +863,12 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Walks to the specified NPC. 
+	 * 
+	 * @param npcServerIndex
+	 * @param radius -- must be 0 or greater.
+	 */
 	public void walktoNPC(int npcServerIndex, int radius) {
 		if(npcServerIndex < 0)
 			return;
@@ -650,6 +884,11 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Attacks the specified NPC. 
+	 * 
+	 * @param npcServerIndex
+	 */
 	public void attackNpc(int npcServerIndex) {
 		Main.logMethod("attackNpc", npcServerIndex);
 
@@ -665,6 +904,12 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Casts the specified spell on the specified npc. 
+	 * 
+	 * @param serverIndex
+	 * @param spellId
+	 */
 	public void castSpellOnNpc(int serverIndex, int spellId) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(50);
@@ -673,6 +918,12 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Uses the specified item on the specified npc. 
+	 * 
+	 * @param serverIndex
+	 * @param itemId
+	 */
 	public void useItemOnNpc(int serverIndex, int itemId) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(135);
@@ -681,6 +932,13 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Uses the specified item slot on the object at the specified coordinates. Note that this uses a slot id, not an item id.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param itemSlot
+	 */
 	public void useItemSlotOnObject(int x, int y, int itemSlot) {
 		reflector.mudInvoker(mud, "walkToObject", x - mud.getMidRegionBaseX(), y - mud.getMidRegionBaseZ(), 4, 5126, this.getObjectAtCoord(x, y));
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -691,10 +949,23 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
+	/**
+	 * Uses the specified item id on the object at the specified coordinates.
+	 * @param x
+	 * @param y
+	 * @param itemId
+	 */
 	public void useItemIdOnObject(int x, int y, int itemId) {
 		useItemSlotOnObject(x, y, this.getInventoryItemIdSlot(itemId));
 	}
 
+	/**
+	 * Uses the item at the specified slot on the wall object at the specified coordinates. Note that you need to be close to the object, this does not walk to the wall object. Note that this uses a slot id, not item id. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @param slotId
+	 */
 	public void useItemOnWall(int x, int y, int slotId) {
 		//you need to be close to the object for this to work.
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -706,10 +977,19 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Thieves the NPC.
+	 * @param serverIndex
+	 */
 	public void thieveNpc(int serverIndex) {
 		npcCommand1(serverIndex);
 	}
 
+	/**
+	 * Walks to the NPC and select the 2nd command option. 
+	 * 
+	 * @param serverIndex
+	 */
 	public void npcCommand1(int serverIndex) {
 		Main.logMethod("npcCommand1", serverIndex);
 		walktoNPCAsync(serverIndex);
@@ -720,6 +1000,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Walks to the NPC and select the 2nd command option. 
+	 * 
+	 * @param serverIndex
+	 */
 	public void npcCommand2(int serverIndex) {
 		Main.logMethod("npcCommand2", serverIndex);
 		walktoNPCAsync(serverIndex);
@@ -730,12 +1015,19 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
-	public boolean isNpcInCombat(int id) {
+	
+	/**
+	 * Whether or not the specified npc is in combat. 
+	 * 
+	 * @param serverIndex
+	 * @return boolena -- returns true if in combat. Returns false if not in combat, or if server index not found.
+	 */
+	public boolean isNpcInCombat(int serverIndex) {
 		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
 		int npcCount = (int) reflector.getObjectMember(mud, "npcCount");
 
 		for(int i = 0; i < npcCount; i++) {
-			if(npcs[i].serverIndex == id) {
+			if(npcs[i].serverIndex == serverIndex) {
 				ORSCharacterDirection dir = this.getCharacterDirection(npcs[i]);
 				if(dir == ORSCharacterDirection.COMBAT_A || dir == ORSCharacterDirection.COMBAT_B)
 					return true;
@@ -747,15 +1039,22 @@ public class Controller {
 		return false;
 	}
 
-	public boolean isDoorOpen(int x, int z) {
+	/**
+	 * Whether or not the door at the specified coordinates is open.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return boolean
+	 */
+	public boolean isDoorOpen(int x, int y) {
 		int[] ids = (int[]) reflector.getObjectMember(mud, "wallObjectInstanceID");
 		int[] xs = (int[]) reflector.getObjectMember(mud, "wallObjectInstanceX");
 		int[] zs = (int[]) reflector.getObjectMember(mud, "wallObjectInstanceZ");
 		int count = (int) reflector.getObjectMember(mud, "wallObjectInstanceCount");
 
-		int _x = removeOffsetX(x), _z = removeOffsetZ(z);
+		int _x = removeOffsetX(x), _z = removeOffsetZ(y);
 		
-		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164 || this.getWallObjectIdAtCoord(x, z) == 68)
+		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164 || this.getWallObjectIdAtCoord(x, y) == 68)
 			return false;
 
 		for(int i = 0; i < count; i++) {
@@ -767,6 +1066,13 @@ public class Controller {
 		return true;
 	}
 	
+	/**
+	 * Retrieves the id of the wall object at the specified coordinates. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @return int -- returns -1 if no wall object present.
+	 */
 	public int getWallObjectIdAtCoord(int x, int y) {
 		int _x = removeOffsetX(x);
 		int _y = removeOffsetZ(y);
@@ -784,9 +1090,14 @@ public class Controller {
 		
 	}
 
-	public void openDoor(int x, int z) {
+	/**
+	 * Opens the door at the specified coordinates. Does nothing if the door is already open.
+	 * @param x
+	 * @param y
+	 */
+	public void openDoor(int x, int y) {
 		
-		if(isDoorOpen(x, z) == true) {
+		if(isDoorOpen(x, y) == true) {
 			System.out.println("door already open");
 			return;
 		}
@@ -794,17 +1105,17 @@ public class Controller {
 		int opcode = 127;
 		int height = 0;
 		
-		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164) {
+		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164) {
 			opcode = 14; //we want WALL_COMMAND1 for these IDs
 			height = 1;
 		}
 		
-		while(isDoorOpen(x, z) == false) {
-			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(z), height);
+		while(isDoorOpen(x, y) == false) {
+			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), height);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 			mud.packetHandler.getClientStream().newPacket(opcode);
 			mud.packetHandler.getClientStream().bufferBits.putShort(x); 
-			mud.packetHandler.getClientStream().bufferBits.putShort(z); 
+			mud.packetHandler.getClientStream().bufferBits.putShort(y); 
 			mud.packetHandler.getClientStream().bufferBits.putByte(height);
 			mud.packetHandler.getClientStream().finishPacket();
 
@@ -812,19 +1123,25 @@ public class Controller {
 		}
 	}
 
-	public void closeDoor(int x, int z) {
+	/**
+	 * Closes the door at the specified coordinates. Does nothing if the door is already closed.
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void closeDoor(int x, int y) {
 
-		if(isDoorOpen(x, z) == false) {
+		if(isDoorOpen(x, y) == false) {
 			System.out.println("door already closed");
 			return;
 		}
 
-		while(isDoorOpen(x, z) == true) {
-			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(z), 0);
+		while(isDoorOpen(x, y) == true) {
+			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), 0);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 			mud.packetHandler.getClientStream().newPacket(127);
 			mud.packetHandler.getClientStream().bufferBits.putShort(x);
-			mud.packetHandler.getClientStream().bufferBits.putShort(z);
+			mud.packetHandler.getClientStream().bufferBits.putShort(y);
 			mud.packetHandler.getClientStream().bufferBits.putByte(0); //direction
 			mud.packetHandler.getClientStream().finishPacket();
 
@@ -832,6 +1149,14 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Returns whether or not the specified item is present at the specified coordinates. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @param itemId
+	 * @return boolean
+	 */
 	public boolean isItemAtCoord(int x, int y, int itemId) {
 		int groundItemCount = (int) reflector.getObjectMember(mud, "groundItemCount");
 		int[] groundItemID = (int[]) reflector.getObjectMember(mud, "groundItemID");
@@ -850,6 +1175,12 @@ public class Controller {
 		return false;
 	}
 
+	/**
+	 * Retrieves the coordinates of the specified item, if on the ground. 
+	 * 
+	 * @param itemId
+	 * @return int[] -- [x, y]. Returns null if item not found.
+	 */
 	public int[] getNearestItemById(int itemId) {
 		int groundItemCount = (int) reflector.getObjectMember(mud, "groundItemCount");
 		int[] groundItemID = (int[]) reflector.getObjectMember(mud, "groundItemID");
@@ -879,6 +1210,12 @@ public class Controller {
 		return new int[] {groundItemX[closestItemIndex] + mud.getMidRegionBaseX(), groundItemZ[closestItemIndex] + mud.getMidRegionBaseZ()};
 	}
 
+	/**
+	 * Retrieves the coordinates of the specified items, if on the ground. 
+	 * 
+	 * @param itemIds
+	 * @return int[] -- [x, y, itemId]. Returns null if no items found.
+	 */
 	public int[] getNearestItemByIds(int[] itemIds) {
 		for(int itemId : itemIds) {
 			int[] result = getNearestItemById(itemId);
@@ -891,35 +1228,50 @@ public class Controller {
 		return null;
 	}
 
-	public void pickupItem(int x, int z, int itemId, boolean reachable, boolean async) {
-		if(x < 0 || z < 0)
+	/**
+	 * Picks up the item at the specified coordinates.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param itemId
+	 * @param reachable -- whether or not you can stand on top of the item. Set to false if the item is on a table.
+	 * @param async -- whether or not to block when walking to the item. If set to true, it will keep attempting to walk to the item, until it is close enough to pick it up. 
+	 */
+	public void pickupItem(int x, int y, int itemId, boolean reachable, boolean async) {
+		if(x < 0 || y < 0)
 			return;
 
-		Main.logMethod("pickupItem", x, z, itemId);
+		Main.logMethod("pickupItem", x, y, itemId);
 
-		Main.logMethod("pickupItem calling walkTo...", x, z);
+		Main.logMethod("pickupItem calling walkTo...", x, y);
 		if(reachable) {
 			if(async)
-				this.walkToAsync(x, z, 0);
+				this.walkToAsync(x, y, 0);
 			else
-				walkTo(x, z, 0, false);
+				walkTo(x, y, 0, false);
 		} else {
 			if(async)
-				this.walkToAsync(x, z, 1);
+				this.walkToAsync(x, y, 1);
 			else
-				this.walkTo(x, z, 1, false);
+				this.walkTo(x, y, 1, false);
 
 		}
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(247);
 		mud.packetHandler.getClientStream().bufferBits.putShort(x);
-		mud.packetHandler.getClientStream().bufferBits.putShort(z);
+		mud.packetHandler.getClientStream().bufferBits.putShort(y);
 		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
 
+	/**
+	 * Uses the command option on the specified item id.
+	 * 
+	 * @param itemId
+	 * @return boolean -- returns true on success. returns false if the item is not in the inventory. 
+	 */
 	public boolean itemCommand(int itemId) {
 		Main.logMethod("itemCommand", itemId);
 
@@ -938,17 +1290,26 @@ public class Controller {
 		return true;
 	}
 
-	public boolean itemCommandBySlot(int slotId) {
+
+	/**
+	 * Uses the command option on the item at the specified slot id. Note that this does not use item ids, but slot ids.
+	 * 
+	 * @param slotId
+	 */
+	public void itemCommandBySlot(int slotId) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(90);
 		mud.packetHandler.getClientStream().bufferBits.putShort(slotId);
 		mud.packetHandler.getClientStream().bufferBits.putInt(1);
 		mud.packetHandler.getClientStream().bufferBits.putByte(0);
 		mud.packetHandler.getClientStream().finishPacket();
-
-		return true;
 	}
 
+	/**
+	 * Uses the item at `slot1` on `slot2`. Note that this does not use item ids, but slot ids.
+	 * @param slot1
+	 * @param slot2
+	 */
 	public void useItemOnItemBySlot(int slot1, int slot2) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(91);
@@ -957,6 +1318,12 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Retrieves the slot id of the specified item id.
+	 * 
+	 * @param itemId -- returns -1 if item not in inventory. 
+	 * @return
+	 */
 	public int getInventoryItemIdSlot(int itemId) {
 		int inventoryItemCount = (int) reflector.getObjectMember(mud, "inventoryItemCount");
 		int[] inventoryItemID = this.getInventoryItemIds(); //(int[]) reflector.getObjectMember(mud, "inventoryItemID");
@@ -970,6 +1337,11 @@ public class Controller {
 		return inventoryIndex;
 	}
 
+	/**
+	 * Drops one the specified item at the specified item slot. Note that this does not use an item id, but a slot id. 
+	 * @param slot
+	 * @param amount
+	 */
 	public void dropItem(int slot) {
 		int inventoryItemID = mud.getInventoryItemID(slot);
 		int inventoryItemCount = this.getInventoryItemCount(inventoryItemID);
@@ -981,8 +1353,12 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
+	/**
+	 * Drops the specified item at the specified item slot, of specified amount. Note that this does not use an item id, but a slot id. 
+	 * @param slot
+	 * @param amount
+	 */
 	public void dropItem(int slot, int amount) {
-
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(246);
 		mud.packetHandler.getClientStream().bufferBits.putShort(slot);
@@ -992,6 +1368,11 @@ public class Controller {
 	
 	
 
+	/**
+	 * Whether or not the specified item slot is equipped. Note that this does not use an item id, but a slot id.
+	 * @param slot
+	 * @return
+	 */
 	public boolean isEquipped(int slot) {
 		if(slot < 0)
 			return false;
@@ -1007,7 +1388,11 @@ public class Controller {
 //		return false;
 	}
 
-
+	/**
+	 * Equips the item in the specified slot. Note that this does not use an item id, but a slot id. 
+	 * 
+	 * @param slot
+	 */
 	public void equipItem(int slot) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(169);
@@ -1015,6 +1400,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Unequips the item in the specified slot. Note that this does not use an item id, but a slot id. 
+	 * 
+	 * @param slot
+	 */
 	public void unequipItem(int slot) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(170);
@@ -1022,16 +1412,31 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
-
+	/**
+	 * Creates the specified account provided in the command line and assigns it to example@example.com.
+	 */
 	public void createAccount() {
 		createAccount("example@example.com");
 	}
 
+	/**
+	 * Creates the specified account provided in the command line with the specified email. 
+	 * 
+	 * @param email
+	 */
 	public void createAccount(String email) {
 		createAccount(email, Main.username, Main.password);
 	}
 	
+	/**
+	 * Creates the specified account on the server. 
+	 * 
+	 * @param email
+	 * @param username
+	 * @param password
+	 */
 	public void createAccount(String email, String username, String password) {
+		//TODO: return true/false based on success
 		boolean autoLogin = Main.isAutoLogin();
 		Main.setAutoLogin(false);
 
@@ -1054,7 +1459,12 @@ public class Controller {
 		Main.setAutoLogin(autoLogin);
 	}
 
+	/**
+	 * Attempts in using the credentials specified in the command line.
+	 */
 	public void login() {
+		//TODO: return true/false based on success
+		
 		Main.logMethod("login", "nothing");
 
 		reflector.setObjectMember(mud, "loginScreenNumber", 2);
@@ -1070,14 +1480,29 @@ public class Controller {
 		reflector.setObjectMember(mud, "enterPressed", true);
 	}
 
+	/**
+	 * Returns the current fatigue. Returns 0 on Coleslaw.
+	 * 
+	 * @return int -- as a percentage [0, 100]. 
+	 */
 	public int getFatigue() {
 		return mud.getStatFatigue();
 	}
 
+	/**
+	 * Returns the current fatigue status while sleeping. 
+	 * 
+	 * @return int -- as a percentage [0, 100]
+	 */
 	public int getFatigueDuringSleep() {
 		return (int) reflector.getObjectMember(mud, "fatigueSleeping");
 	}
 
+	/**
+	 * Returns whether or not the player is currently in combat. 
+	 * 
+	 * @return boolean
+	 */
 	public boolean isInCombat() {
 		ORSCharacterDirection dir = this.getCharacterDirection(this.getPlayer());
 		if(dir == ORSCharacterDirection.COMBAT_A || dir == ORSCharacterDirection.COMBAT_B)
@@ -1086,21 +1511,42 @@ public class Controller {
 		return false;
 	}
 
-	public boolean isPlayerInCombat(int id) {
-		if(mud.getPlayer(id) == null)
+	/**
+	 * Whether or not the specified player index is in combat.
+	 * 
+	 * @param playerIndex
+	 * @return boolean -- returns true if in combat. returns false if not in combat, or if player index is non-existent.
+	 */
+	public boolean isPlayerInCombat(int playerIndex) {
+		if(mud.getPlayer(playerIndex) == null)
 			return false;
 
-		return mud.getPlayer(id).combatTimeout == 499;
+		return mud.getPlayer(playerIndex).combatTimeout == 499;
 	}
 
+	/**
+	 * Whether or not an NPC/action option menu is currently presented to the player.
+	 *  
+	 * @return boolean
+	 */
 	public boolean isInOptionMenu() {
 		return (boolean) reflector.getObjectMember(mud, "optionsMenuShow");
 	}
 
+	/**
+	 * Retrieves the amount of options currently presented to the user. 
+	 * 
+	 * @return int
+	 */
 	public int optionMenuCount() {
 		return (int) reflector.getObjectMember(mud, "optionsMenuCount");
 	}
 
+	/**
+	 * Retrieves the text of the specified option index when talking to an NPC or performing an action. 
+	 * @param i
+	 * @return String -- null if option does not exist, or if quest menu is not up.
+	 */
 	public String optionsMenuText(int i) {
 		String[] optionsMenuText = (String[]) reflector.getObjectMember(mud, "optionsMenuText");
 		if(i < optionsMenuText.length)
@@ -1109,18 +1555,29 @@ public class Controller {
 		return null;
 	}
 
-	public void optionAnswer(int answer) {
-		if(answer >= optionMenuCount())
+	/**
+	 * Selects an option menu when talking to an NPC or performing an action.
+	 * 
+	 * @param answer -- the index of the answer, starting at 0.
+	 */
+	public void optionAnswer(int answerIndex) {
+		if(answerIndex >= optionMenuCount())
 			return;
 
-		Main.logMethod("optionAnswer", answer);
+		Main.logMethod("optionAnswer", answerIndex);
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(116);
-		mud.packetHandler.getClientStream().bufferBits.putByte(answer);
+		mud.packetHandler.getClientStream().bufferBits.putByte(answerIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Talks to the specified npc server index.
+	 * 
+	 * @param serverIndex
+	 * @return true -- true if request to talk sent, false if server index is invalid.
+	 */
 	public boolean talkToNpc(int serverIndex) {//, boolean waitForOptionsMenu) {
 		if(serverIndex < 0)
 			return false;
@@ -1135,14 +1592,27 @@ public class Controller {
 		return true;
 	}
 
+	/**
+	 * Whether or not the bank window is currently open.
+	 * 
+	 * @return boolean
+	 */
 	public boolean isInBank() {
 		return (boolean) reflector.getObjectMember(mud, "showDialogBank");
 	}
 
+	/**
+	 * Closes the bank window. No effect if window is not currently open.
+	 */
 	public void closeBank() {
 		reflector.setObjectMember(mud, "showDialogBank", false);
 	}
 
+	/**
+	 * Retrieves a list of all the items inside the bank.
+	 * 
+	 * @return List<Item> -- guaranteed to not be null.
+	 */
 	public List<Item> getBankItems() {
 		List<Item> bankItems = new ArrayList();
 
@@ -1165,11 +1635,25 @@ public class Controller {
 		return bankItems;
 	}
 
+	/**
+	 * Retrieves the total count of all items in the bank.
+	 * 
+	 * @return int
+	 */
 	public int getBankItemsCount() {
 		return (int) this.getMudClientValue("newBankItemCount");
 	}
 
+	/**
+	 * Retrieves the amount of the item in the bank.
+	 * 
+	 * @param id
+	 * @return int -- returns -1 if bank not open.
+	 */
 	public int getBankItemCount(int id) {
+		if(this.isInBank() == false)
+			return -1;
+		
 		List<Item> bankItems = this.getBankItems();
 
 		for(Item bankItem : bankItems) {
@@ -1180,17 +1664,37 @@ public class Controller {
 			}
 		}
 
-		return -1;
+		return 0;
 	}
 
+	/**
+	 * Returns whether or not the specified item ID is in the bank. 
+	 * 
+	 * @param id
+	 * @return boolean -- true if item is in the bank. Returns false if item not present or bank is not open.
+	 */
 	public boolean isItemInBank(int id) {
 		return getBankItemCount(id) > 0;
 	}
 
+	/**
+	 * Deposits one of specified item into the bank.
+	 * 
+	 * @param itemId
+	 * @param amount
+	 * @return boolean -- returns true on success. Returns false if you do not have that item in your inventory, or if the bank is not open.
+	 */
 	public boolean depositItem(int itemId) {
 		return depositItem(itemId, 1);
 	}
 
+	/**
+	 * Deposits the specified item, of specified amount, into the bank.
+	 * 
+	 * @param itemId
+	 * @param amount
+	 * @return boolean -- returns true on success. Returns false if you do not have that item in your inventory, or if the bank is not open.
+	 */
 	public boolean depositItem(int itemId, int amount) {
 		if(!isInBank()) {
 			return false;
@@ -1209,10 +1713,23 @@ public class Controller {
 		return true;
 	}
 
+	/**
+	 * Withdraws one of the specified item from the bank.
+	 * 
+	 * @param itemId
+	 * @return boolean -- returns true if you already have one or more of those items in your inventory. Returns false if you currently do not have that amount, or if you do not have the bank open.
+	 */
 	public boolean withdrawItem(int itemId) {
 		return withdrawItem(itemId, 1);
 	}
 	
+	/**
+	 * Withdraws the specified item, of specified amount, from the bank.
+	 * 
+	 * @param itemId
+	 * @param amount
+	 * @return boolean -- returns true if you already have that amount in your inventory. Returns false if you do not currently have that amount, or if you do not have the bank open.
+	 */
 	public boolean withdrawItem(int itemId, int amount) {
 		if(isInBank() == false)
 			return false;
@@ -1233,40 +1750,93 @@ public class Controller {
 		return false;
 	}
 	
+	/**
+	 * Dislays a message in the client chat window, of the specified orsc.enumerations.MessageType.
+	 * 
+	 * @param rstext -- you may use @col@ colors here.
+	 */
 	public void displayMessage(String msg, int type) {
 		reflector.mudInvoker(mud, "showMessage", false, "", msg, MessageType.lookup(type), 0, "");
 	}
 
-	public void displayMessage(String msg) {
-		reflector.mudInvoker(mud, "showMessage", false, "", msg, MessageType.GAME, 0, "");
+	/**
+	 * Dislays a message in the client chat window. 
+	 * 
+	 * @param rstext -- you may use @col@ colors here.
+	 */
+	public void displayMessage(String rstext) {
+		reflector.mudInvoker(mud, "showMessage", false, "", rstext, MessageType.GAME, 0, "");
 	}
 
-
-
+	/**
+	 * Retrieves the distance between two tiles.
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @return
+	 */
 	public int distance(int x1, int y1, int x2, int y2) {
 		return (int) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}
 
+	/**
+	 * Converts local region coordinates to global coordinates.
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public int offsetX(int x) {
 		return x + mud.getMidRegionBaseX();
 	}
 
+	/**
+	 * Converts local region coordinates to global coordinates.
+	 * 
+	 * @param z
+	 * @return
+	 */
 	public int offsetZ(int z) {
 		return z + mud.getMidRegionBaseZ();
 	}
 
+	/**
+	 * Converts global coordinates to local region coordinates.
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public int removeOffsetX(int x) {
 		return x - mud.getMidRegionBaseX();
 	}
 
+	/**
+	 * Converts global coordinates to local region coordinates.
+	 * 
+	 * @param z
+	 * @return
+	 */
 	public int removeOffsetZ(int z) {
 		return z - mud.getMidRegionBaseZ();
 	}
 
+	/**
+	 * Converts player/NPC coordinates to local region coordinates to global coordinates. 
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public int convertX(int x) { //for usage with playre/npc coords only!!
 		return (x - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
 	}
 
+	/**
+	 * Converts player/NPC coordinates to local region coordinates to global coordinates. 
+	 * 
+	 * @param z
+	 * @return
+	 */
 	public int convertZ(int z) {
 		return (z - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
 	}
@@ -1275,12 +1845,24 @@ public class Controller {
 		return (MudClientGraphics) reflector.getObjectMember(mud, "surface");
 	}
 
+	/**
+	 * Resizes the client applet window.
+	 * 
+	 * @param width
+	 * @param height
+	 */
 	public void resizeWindow(int width, int height) {
 		mud.resizeWidth = width;
 		mud.resizeHeight = height;
 	}
 
-	public void takeScreenshot(String filename) {
+	/**
+	 * Takes a screenshot of the client applet and saves a bitmap as the specified filename.
+	 *  
+	 * @param filename
+	 * @return boolean -- returns true on success. Returns false if image could not be saved.
+	 */
+	public boolean takeScreenshot(String filename) {
 		MudClientGraphics gfx = getMudGraphics();
 
 
@@ -1320,10 +1902,18 @@ public class Controller {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
+		
+		return true;
 	}
 
-	//utilities
+	/**
+	 * Retrieves the command of the specified item. 
+	 * 
+	 * @param itemId
+	 * @return String -- guaranteed to not be null if the item exists.
+	 */
 	public String getItemCommand(int itemId) {
 		ItemDef item = EntityHandler.getItemDef(itemId);
 
@@ -1338,14 +1928,32 @@ public class Controller {
 		return commands[0];
 	}
 
+	/**
+	 * Retrieves the examine text of the specified item. 
+	 * 
+	 * @param itemId
+	 * @return String -- guaranteed to not be null if the item exists.
+	 */
 	public String getItemExamineText(int itemId) {
 		return EntityHandler.getItemDef(itemId).getDescription();
 	}
 
+	/**
+	 * Retrieves the name of the specified item. 
+	 * 
+	 * @param itemId
+	 * @return String -- guaranteed to not be null if the item exists.
+	 */
 	public String getItemName(int itemId) {
 		return EntityHandler.getItemDef(itemId).getName();
 	}
 
+	/**
+	 * Retrieves the item id of the specified item name.
+	 * 
+	 * @param itemName
+	 * @return int -- returns -1 if 
+	 */
 	public int getItemId(String itemName) {
 		try {
 			for(int i = 0; i <= 10000; i++) {
@@ -1360,14 +1968,32 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Retrieves whether or not the specified item is a wearable item. 
+	 * 
+	 * @param itemId
+	 * @return boolean
+	 */
 	public boolean isItemWearable(int itemId) {
 		return EntityHandler.getItemDef(itemId).isWieldable();
 	}
 
+	/**
+	 * Retrieves whether or not the specified item is a stackable item.
+	 * 
+	 * @param itemId
+	 * @return boolean
+	 */
 	public boolean isItemStackable(int itemId) {
 		return EntityHandler.getItemDef(itemId).isStackable();
 	}
 
+	/**
+	 * Sets the current server message window text. 
+	 * @param msg
+	 * @param largeBox
+	 * @param show
+	 */
 	public void setServerMessage(String msg, boolean largeBox, boolean show) {
 		mud.setServerMessage(msg);
 		mud.setServerMessageBoxTop(largeBox);
@@ -1375,14 +2001,28 @@ public class Controller {
 		return;
 	}
 
+	/**
+	 * Closes the current server message popup window. 
+	 */
 	public void closeServerMessage() {
 		mud.setShowDialogServerMessage(false);
 	}
 
+	/**
+	 * Retrieves the current server message popup window text.
+	 * 
+	 * @return String -- no guarantee on nullability. 
+	 */
 	public String getServerMessage() {
 		return (String) reflector.getObjectMember(mud, "serverMessage");
 	}
 
+	/**
+	 * Retrieves the spellId of the spell name.
+	 * 
+	 * @param name -- must match spelling of the spell book. case insensitive.
+	 * @return int -- -1 if spell not found.
+	 */
 	public int getSpellIdFromName(String name) {
 		for(int i = 0; i < EntityHandler.spellCount(); i++) {
 			SpellDef d = EntityHandler.getSpellDef(i);
@@ -1393,6 +2033,13 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Casts the specified spell on the object at the specified coordinates.
+	 * 
+	 * @param spellId
+	 * @param x
+	 * @param y
+	 */
 	public void castSpellOnObject(int spellId, int x, int y) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(99);
@@ -1402,6 +2049,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Casts the specified spell on the specified inventory item. Based on item slot, not item id.
+	 * @param spellId
+	 * @param slotId
+	 */
 	public void castSpellOnInventoryItem(int spellId, int slotId) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(4);
@@ -1410,6 +2062,14 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Casts the specified spell on the specified ground item on the specified tile.
+	 * 
+	 * @param spellId
+	 * @param itemId
+	 * @param x
+	 * @param y
+	 */
 	public void castSpellOnGroundItem(int spellId, int itemId, int x, int y) {
 		int a = mud.getMidRegionBaseX();
 		int b = mud.getMidRegionBaseZ();
@@ -1425,6 +2085,13 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Retrieves the direction of the specified coordinate, relative to the player.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return int -- returns NORTH if standing on specified tile.
+	 */
 	public int getDirection(int x, int y) {
 		ORSCharacterDirection direction = ORSCharacterDirection.NORTH;
 
@@ -1435,7 +2102,7 @@ public class Controller {
 			direction = ORSCharacterDirection.EAST;
 		}
 
-		if(y > currentZ()) {
+		if(y > currentY()) {
 			if(direction != null) {
 				if(direction == ORSCharacterDirection.WEST) {
 					direction = ORSCharacterDirection.SOUTH_WEST;
@@ -1445,7 +2112,7 @@ public class Controller {
 			} else {
 				direction = ORSCharacterDirection.SOUTH;
 			}
-		} else if (y < currentZ() ) {
+		} else if (y < currentY() ) {
 			if(direction != null) {
 				if(direction == ORSCharacterDirection.WEST) {
 					direction = ORSCharacterDirection.NORTH_WEST;
@@ -1460,43 +2127,101 @@ public class Controller {
 		return direction.rsDir;
 	}
 
+	/**
+	 * Retrieves the 1st command of the specified NPC.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 */
 	public String getNpcCommand1(int npcId) {
 		return EntityHandler.getNpcDef(npcId).getCommand1();
 	}
 	
+	/**
+	 * Retrieves the 2nd command of the specified NPC.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 */
 	public String getNpcCommand2(int npcId) {
 		return EntityHandler.getNpcDef(npcId).getCommand2();
 	}
 
+	/**
+	 * Retrieves the examine text of the specified NPC.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 */
 	public String getNpcExamineText(int npcId) {
 		return EntityHandler.getNpcDef(npcId).getDescription();
 	}
 
+	/**
+	 * Retrieves the name of the specified NPC.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null, so long as the npcId exists.
+	 */
 	public String getNpcName(int npcId) {
 		return EntityHandler.getNpcDef(npcId).getName();
 	}
 
-
+	/**
+	 * Retrieves whether or not the specified npcId is attackable. This does not reflect whether or not the specified NPC is in combat.
+	 * 
+	 * @param npcId -- the id of the npc. This is NOT a server index.
+	 * @return boolean
+	 */
 	public boolean isNpcAttackable(int npcId) {
 		return EntityHandler.getNpcDef(npcId).isAttackable();
 	}
 
+	/**
+	 * Retrieves the 1st command of the specified object id.
+	 * 
+	 * @param objId
+	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 */
 	public String getObjectCommand1(int objId) {
 		return EntityHandler.getObjectDef(objId).getCommand1();
 	}
-
+	
+	/**
+	 * Retrieves the 2nd command of the specified object id.
+	 * 
+	 * @param objId
+	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 */
 	public String getObjectCommand2(int objId) {
 		return EntityHandler.getObjectDef(objId).getCommand2();
 	}
 
+	/**
+	 * Retrieves the examine text of the specified object id.
+	 * 
+	 * @param objId
+	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 */
 	public String getObjectExamineText(int objId) {
 		return EntityHandler.getObjectDef(objId).getDescription();
 	}
 
+	/**
+	 * Retrieves the name of the specified object id.
+	 * 
+	 * @param objId
+	 * @return String -- guaranteed to not be null, so long as the objId exists.
+	 */
 	public String getObjectName(int objId) {
 		return EntityHandler.getObjectDef(objId).getName();
 	}
 
+	/**
+	 * The id of the specified prayerName. 
+	 * @param prayerName -- must match spelling of what is inside prayer book. Case insensitive.
+	 * @return int -- -1 if the prayer does not exist.
+	 */
 	public int getPrayerId(String prayerName) {
 		for(int i = 0; i < EntityHandler.prayerCount(); i++) {
 			if(prayerName.toLowerCase().equals(EntityHandler.getPrayerDef(i).getName().toLowerCase())) {
@@ -1507,18 +2232,41 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * The level required to use the specified prayer.
+	 * 
+	 * @param prayerId
+	 * @return int
+	 */
 	public int getPrayerLevel(int prayerId) {
 		return EntityHandler.getPrayerDef(prayerId).getReqLevel();
 	}
 
+	/**
+	 * The drain rate of the specified prayer.
+	 * 
+	 * @param prayerId
+	 * @return int
+	 */
 	public int getPrayerDrain(int prayerId) {
 		return EntityHandler.getPrayerDef(prayerId).getDrainRate();
 	}
 
+	/**
+	 * Whether or not the specified prayer is currently on. 
+	 * 
+	 * @param prayerId
+	 * @return boolean
+	 */
 	public boolean isPrayerOn(int prayerId) {
 		return mud.checkPrayerOn(prayerId);
 	}
 
+	/**
+	 * Enables the prayer.
+	 * 
+	 * @param prayerId
+	 */
 	public void enablePrayer(int prayerId) {
 		//TODO: check prayer lvl and return true/false based off it
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -1529,6 +2277,11 @@ public class Controller {
 
 	}
 
+	/**
+	 * Disables the prayer.
+	 * 
+	 * @param prayerId 
+	 */
 	public void disablePrayer(int prayerId) {
 		//TODO: check prayer lvl and return true/false based off it
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -1538,14 +2291,26 @@ public class Controller {
 		mud.togglePrayer(prayerId, false);
 	}
 
+	/**
+	 * Whether or not a shop window is currently open.
+	 * @return
+	 */
 	public boolean isInShop() {
 		return (boolean) reflector.getObjectMember(mud, "showDialogShop");
 	}
 
+	/**
+	 * Closes the currently open shop window. Does nothing if no shop window is open.
+	 */
 	public void closeShop() {
 		reflector.setObjectMember(mud, "showDialogShop", false);
 	}
 
+	/** 
+	 * Retrieves the number of different items which the shop sells.
+	 * 
+	 * @return int -- amount of different items. Returns -1 if shop is not open.
+	 */
 	public int getShopItemsCount() {
 		if(!this.isInShop()) {
 			return -1;
@@ -1565,6 +2330,11 @@ public class Controller {
 		return count;
 	}
 
+	/**
+	 * Retrieves a list of all the shop items in the shop. 
+	 * 
+	 * @return List<Item> -- guaranteed to not be null.
+	 */
 	public List<Item> getShopItems() {
 		List<Item> shopItems = new ArrayList();
 
@@ -1592,6 +2362,12 @@ public class Controller {
 		return shopItems;
 	}
 
+	/**
+	 * Retrieves how many of the specified item is in stock. 
+	 * 
+	 * @param itemId
+	 * @return int -- stock amount. If item is not sold at shop, it returns -1.
+	 */
 	public int shopItemCount(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
 		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
@@ -1606,6 +2382,12 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Retrieves the price of the item in the shop.
+	 * 
+	 * @param itemId
+	 * @return int -- price. -1 if item is not in the shop at all.
+	 */
 	public int shopItemPrice(int itemId) {
 		int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
 		int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
@@ -1620,6 +2402,12 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Buys the specified item from the currently open shop. 
+	 * 
+	 * @param itemId
+	 * @return boolean -- true on success. false if the shop is not open or shop does not have enough stock.
+	 */
 	public boolean shopBuy(int itemId) {
 		//TODO: check if enough coins in inventory, return false if not enough.
 		if(!isInShop() || shopItemCount(itemId) < 1)
@@ -1635,9 +2423,14 @@ public class Controller {
 		return true;
 	}
 
+	/**
+	 * Sells the specified item to the currently open shop. 
+	 * 	
+	 * @param itemId
+	 * @return boolean -- true on success. false if shop is not open, shop does not accept the item, or not enough in inventory. 
+	 */
 	public boolean shopSell(int itemId) {
-		//TODO: check if item in inventory
-		if(!isInShop() || shopItemCount(itemId) == -1)
+		if(!isInShop() || shopItemCount(itemId) == -1 || this.getInventoryItemCount(itemId) < 1)
 			return false;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -1650,6 +2443,11 @@ public class Controller {
 		return true;
 	}
 
+	/**
+	 * Retrieves a list of all the skills.
+	 * 
+	 * @return List<SkillDef> -- guaranteed to not be null. 
+	 */
 	public List<SkillDef> getSkills() {
 		String[] skillNames = this.getSkillNamesLong();
 
@@ -1680,6 +2478,12 @@ public class Controller {
 		return _list;
 	}
 
+	/**
+	 * Retrieves the id of the specified skill name. Skill name is case insensitive and must match what is spelled inside the stat tab.
+	 * 
+	 * @param statName
+	 * @return int -- -1 if the skill does not exist.
+	 */
 	public int getStatId(String statName) {
 		String[] skillNames = mud.getSkillNamesLong();
 
@@ -1691,24 +2495,53 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Retrieves the base level (excluding boosted/degraded stats) of the specified skill. `id` must be within [0, getStatCount()].
+	 * 
+	 * @param id
+	 * @return int
+	 */
 	public int getBaseStat(int id) {
 		return (int) ((int[]) reflector.getObjectMember(mud, "playerStatBase"))[id];
 	}
 
+	/**
+	 * Retrieves the current level (including boosted/degraded stats) of the specified skill. `id` must be within [0, getStatCount()].
+	 * 
+	 * @param id
+	 * @return int
+	 */
 	public int getCurrentStat(int id) {
 		return (int) ((int[]) reflector.getObjectMember(mud, "playerStatCurrent"))[id];
 	}
 
+	/**
+	 * Retrieves the current XP in the specified skill. `id` must be within [0, getStatCount()]. 
+	 * 
+	 * @param id
+	 * @return int 
+	 */
 	public int getStatXp(int id) {
 		return (int) ((long[]) reflector.getObjectMember(mud, "playerStatXpGained"))[id];
 	}
 
+	/**
+	 * Retrieves the number of skills in the game.
+	 * 
+	 * @return
+	 */
 	public int getStatCount() { return ((long[]) reflector.getObjectMember(mud, "playerStatXpGained")).length; }
 
+	
 	public int getPlayerExperience(int id) {
 		return mud.getPlayerExperience(id);
 	}
 
+	/**
+	 * Retrieves an array of all the skill names. 
+	 * 
+	 * @return String[] -- no guarantee on size or nullability.
+	 */
 	public String[] getSkillNamesLong() {
 		return (String[]) this.getMudClientValue("skillNameLong");
 	}
@@ -1728,6 +2561,9 @@ public class Controller {
 //		//overrideable
 //	}
 
+	/**
+	 * Disables autologin and attempts to logout. No guarantee on success.
+	 */
 	public void logout() {
 		this.setAutoLogin(false);
 		
@@ -1736,6 +2572,13 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Retrieves the id of the object at the specified coordinates.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return int -- -1 if no object at the coordinates.
+	 */
 	public int getObjectAtCoord(int x, int y) {
 		int _x = x - mud.getMidRegionBaseX();
 		int _y = y - mud.getMidRegionBaseZ();
@@ -1752,6 +2595,14 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Uses the specified item in the inventory on the specified ground item.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param itemId
+	 * @param groundItemId
+	 */
 	public void useItemOnGroundItem(int x, int y, int itemId, int groundItemId) {
 		//TODO: check if item in inventory
 		//TODO: check if item is on ground
@@ -1764,6 +2615,13 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Retrieves the server index of the player at the specified coordinates.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return int -- returns -1 if no player at specified tile.
+	 */
 	public int getPlayerAtCoord(int x, int y) {
 		for(ORSCharacter player : getPlayers()) {
 			if(player != null) {
@@ -1777,6 +2635,12 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Retrieves the server index of the specified player name.
+	 * 
+	 * @param name -- must not be null.
+	 * @return int -- returns -1 if no player with that name nearby.
+	 */
 	public int getPlayerServerIndexByName(String name) {
 		for(ORSCharacter player : getPlayers()) {
 			if(player != null) {
@@ -1789,6 +2653,11 @@ public class Controller {
 		return -1;
 	}
 
+	/**
+	 * Duels the specified player.
+	 * 
+	 * @param playerServerIndex
+	 */
 	public void duelPlayer(int playerServerIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(103);
@@ -1796,6 +2665,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Follows the specified player.
+	 * 
+	 * @param playerServerIndex
+	 */
 	public void followPlayer(int playerServerIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(165);
@@ -1803,6 +2677,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Attacks the specified player.
+	 * 
+	 * @param playerServerIndex
+	 */
 	public void attackPlayer(int playerServerIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(171);
@@ -1810,6 +2689,12 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Casts the specified spell on the specified player.
+	 * 
+	 * @param spellId
+	 * @param playerServerIndex 
+	 */
 	public void castSpellOnPlayer(int spellId, int playerServerIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(229);
@@ -1821,6 +2706,11 @@ public class Controller {
 
 
 
+	/**
+	 * Trades the specified player.
+	 * 
+	 * @param playerServerIndex -- player index, retrievable with getPlayerServerIndexByName("name").
+	 */
 	public void tradePlayer(int playerServerIndex) {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(142);
@@ -1828,40 +2718,73 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * The name of the trade recipient, if we are in a trade. 
+	 * 
+	 * @return String -- no guarantee on nullability. 
+	 */
 	public String getTradeRecipientName() {
 		return (String) reflector.getObjectMember(mud, "tradeRecipientName");
 	}
 
+	/**
+	 * Whether or not we are currently engaged in a trade.
+	 * 
+	 * @return boolean
+	 */
 	public boolean isInTrade() {
 		return (boolean) reflector.getObjectMember(mud, "showDialogTrade") || isInTradeConfirmation();
 	}
 
+	/**
+	 * Whether or not we are currently in the trade confirmation window. 
+	 * 
+	 * @return boolean
+	 */
 	public boolean isInTradeConfirmation() {
 		return (boolean) reflector.getObjectMember(mud, "showDialogTradeConfirm");
 	}
 
+	/**
+	 * Whether or not the recipient is currently accepting the trade.
+	 * @return boolean
+	 */
 	public boolean isTradeRecipientAccepting() {
 		return (boolean) reflector.getObjectMember(mud, "tradeRecipientAccepted");
 	}
 
+	/**
+	 * Declines the trade.
+	 */
 	public void declineTrade() {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(230);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Accepts the trade on the first trade window.
+	 */
 	public void acceptTrade() {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(55);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Accepts the current trade on the final trade window. 
+	 */
 	public void acceptTradeConfirmation() {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(104);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 
+	/**
+	 * Retrieves items which the player is offering in the trade.
+	 * 
+	 * @return List<Item> -- guaranteed to not be null.
+	 */
 	public List<Item> getLocalTradeItems() {
 		List<Item> localTradeItems = new ArrayList();
 
@@ -1876,15 +2799,30 @@ public class Controller {
 		return localTradeItems;
 	}
 
+	/**
+	 * Returns how many items the player is offering in the trade. 
+	 * 
+	 * @return int
+	 */
 	public int getLocalTradeItemsCount() {
 		return (int) this.getMudClientValue("tradeItemCount");
 	}
 
+	/**
+	 * Returns an array of item counts inside of the current trade window.
+	 * 
+	 * @return int[] -- no guarantee on size or nullability.
+	 */
 	public int[] getTradeItemsCounts() {
 		return (int[]) reflector.getObjectMember(mud, "tradeItemSize");
 
 	}
 
+	/**
+	 * Retrieves  a list of items which your trade recipient is offering. 
+	 * 
+	 * @return List<Item> -- guaranteed to not be null.
+	 */
 	public List<Item> getRecipientTradeItems() {
 		List<Item> recipientTradeItems = new ArrayList();
 
@@ -1903,7 +2841,14 @@ public class Controller {
 		return (int) reflector.getObjectMember(mud, "tradeRecipientItemsCount");
 	}
 
-//	example; controller.setTradeItems(new int[] {33, 36}, new int[] {1, 1});
+
+	/**
+	 * Will put up the specified items and amounts on the trade window. 
+	 * 
+	 * @param itemIds -- int[]
+	 * @param amounts -- int[]
+	 * @return boolean -- returns true on success. false on mismatched array lengths or if you do not have enough of an item.
+	 */
 	public boolean setTradeItems(int[] itemIds, int[] amounts) {
 		if(itemIds.length != amounts.length)
 			return false;
@@ -1930,19 +2875,37 @@ public class Controller {
 		return true;
 
 	}
-//
+
+	/**
+	 * Removes all trade items from the current trade window. 
+	 */
 	public void removeAllTradeItems() {
 		setTradeItems(new int[] { }, new int[] { });
 	}
 
+	/**
+	 * Toggles auto-login. 
+	 * 
+	 * @param value
+	 */
 	public void setAutoLogin(boolean value) {
 		Main.setAutoLogin(value);
 	}
 
+	/**
+	 * Toggles the client interlacer, which is for saving CPU cycles.
+	 * 
+	 * @param value
+	 */
 	public void setInterlacer(boolean value) {
 		mud.interlace = value;
 	}
 
+	/**
+	 * Retrieves a list of all items in the inventory.
+	 * 
+	 * @return List<Item> -- guaranteed to not be null.
+	 */
 	public List<Item> getInventoryItems() {
 		List<Item> _list = new ArrayList();
 
@@ -1957,6 +2920,11 @@ public class Controller {
 		return _list;
 	}
 
+	/**
+	 * Retrieves a list of all the ids of all items in the inventory. 
+	 * 
+	 * @return int[] -- no guarantee on size or nullability.
+	 */
 	public int[] getInventoryItemIds() {
 		int[] results = new int[] {};
 
@@ -1972,14 +2940,25 @@ public class Controller {
 		//return mud.getInventoryItems();
 	}
 
-    public void walkToActionSource(mudclient mud, int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
+	
+    private void walkToActionSource(mudclient mud, int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
     	reflector.mudInvoker(mud, "walkToActionSource", startX, startZ, destX, destZ, walkToEntity);
     }
 
+    /**
+     * Retrieves the list of all food items in the game.
+     * 
+     * @return int[] -- will never be null.
+     */
     public int[] getFoodIds() {
     	return foodIds;
     }
 
+    /**
+     * Retrieves a list of users on the friends list. 
+     * 
+     * @return List<String> -- guaranteed to never be null.
+     */
 	public List<String> getFriendList() {
 		List<String> friendList = new ArrayList();
 
@@ -1994,6 +2973,11 @@ public class Controller {
 		return friendList;
 	}
 
+	/**
+	 * Retrieves a list of users on the ignore list.
+	 * 
+	 * @return List<String> -- guaranteed to never be null.
+	 */
 	public List<String> getIgnoreList() {
 		List<String> ignoreList = new ArrayList();
 
@@ -2008,6 +2992,11 @@ public class Controller {
 		return ignoreList;
 	}
 
+	/**
+	 * Whether or not the batch progress bar is currently shown on screen.
+	 * 
+	 * @return boolean
+	 */
     public boolean isBatching() {
 		ProgressBarInterface progressBarInterface = (ProgressBarInterface) reflector.getObjectMember(mud, "batchProgressBar");
 
@@ -2017,20 +3006,36 @@ public class Controller {
 		return progressBarInterface.progressBarComponent.isVisible();
 	}
 
+    /** 
+     * Whether or not the server is configured to be authentic. This returns true for Uranium, false for Coleslaw. 
+     * 
+     * @return boolean
+     */
 	public boolean isAuthentic() {
 		return mud.authenticSettings;
 	}
 
+	/** 
+	 * Returns the specified field object value of the `mudclient`. 
+	 * 
+	 * @param propertyName -- field name
+	 * @return Object -- null if field does not exist.
+	 */
 	public Object getMudClientValue(String propertyName) {
 		return this.reflector.getObjectMember(mud, propertyName);
 	}
 
+	/**
+	 * Returns the `mudclient`. 
+	 * 
+	 * @return mudclient
+	 */
     public mudclient getMud() {
     	return this.mud;
     }
 
     /**
-     * Will open bank near any bank NPC. Uses right click option if possible.
+     * Will open bank near any bank NPC or bank chest. Uses right click option if possible. Does not return until the bank screen is open. Hence, if no banker/chest is present, this function will block and not return until one is found.
      */
     public void openBank() {
 
@@ -2078,38 +3083,70 @@ public class Controller {
 		}
     }
     
+    /**
+	 * Walks the specified coordinates path. Will be blocked by objects such as doors or gates.
+	 * 
+	 * @param path -- length must be divisible by 2.
+	 */
 	public void walkPath(int[] path) {
 		for(int i = 0; i < path.length; i += 2) {
-			while(currentX() != path[i] || currentZ() != path[i+1]) {
+			while(currentX() != path[i] || currentY() != path[i+1]) {
 				walkTo(path[i], path[i+1]);
 				sleep(618);
 			}
 		}
 	}
 	
+	/**
+	 * Walks the specified coordinates path, but in reverse. Will be blocked by objects such as doors or gates.
+	 * 
+	 * @param path -- length must be divisible by 2.
+	 */
 	public void walkPathReverse(int[] path) {
 		for(int i = path.length - 2; i > 0; i -= 2) {
-			while(currentX() != path[i] || currentZ() != path[i+1]) {
+			while(currentX() != path[i] || currentY() != path[i+1]) {
 				walkTo(path[i], path[i+1]);
 				sleep(618);
 			}
 		}
 	}
 	
+	/**
+	 * Logs text to the console, bot log window, and OpenRSC applet.
+	 * 
+	 * @param text
+	 */
 	public void log(String text) {
 		log(text, "red");
 	}
 	
+	/**
+	 * Logs text to the console, bot log window, and OpenRSC applet with the specified @col@. 
+	 * 
+	 * @param text
+	 * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s. 
+	 */
 	public void log(String text, String rsTextColor) {
 		System.out.println(text);
 		Main.log(text);
 		displayMessage("@" + rsTextColor + "@" + text);
 	}
 	
+	/**
+	 * Whether or not the player is currently sleeping.
+	 * 
+	 * @return boolean
+	 */
 	public boolean isSleeping() {
 		return mud.getIsSleeping();
 	}
 	
+	/**
+	 * If fatigue is greater or equal to `fatigueToSleepAt`, this will commence the sleep process and IdleRSC will fill in the answer from the OCR. Has no effect on Coleslaw.
+	 * 
+	 * @param fatigueToSleepAt -- fatigue to sleep at. Must be between 1 and 100. 
+	 * @param quitOnNoSleepingBag -- whether or not to logout and stop the script if no sleeping bag is present. If no sleeping bag is present and this is false, this function has no effect.
+	 */
     public void sleepHandler(int fatigueToSleepAt, boolean quitOnNoSleepingBag) {
         if(!isLoggedIn())
                 return;
@@ -2133,6 +3170,11 @@ public class Controller {
     }
 
 	
+    /**
+     * Retrieves the coordinates of the nearest bank, based on your current position.
+     * 
+     * @return int[] -- [x, y] with the coordinates of the bank. Never returns null.
+     */
     public int[] getNearestBank() {
 		int[] bankX = { 220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440, 327 };
 		int[] bankY = { 635, 504, 511, 365, 450, 569, 452, 576, 600, 754, 3543, 495, 552 };
@@ -2140,9 +3182,9 @@ public class Controller {
 		int prevY = 10000;
 		int index = 0;
 		for (int i = 0; i < bankX.length; i++) {
-			if (Math.abs((bankX[i] - currentX())) < prevX && Math.abs((bankY[i] - currentZ())) < prevY) {
+			if (Math.abs((bankX[i] - currentX())) < prevX && Math.abs((bankY[i] - currentY())) < prevY) {
 				prevX = Math.abs(bankX[i] - currentX());
-				prevY = Math.abs(bankY[i] - currentZ());
+				prevY = Math.abs(bankY[i] - currentY());
 				index = i;
 			}
 		}
@@ -2151,6 +3193,13 @@ public class Controller {
 	}
 
 	
+    /**
+     * Buys the specified itemId from the shop. 
+     * 
+     * @param itemId
+     * @param amount
+     * @return boolean -- returns true on success. False if not in shop, or if shop has no stock.
+     */
 	public boolean shopBuy(int itemId,int amount) {
 		//TODO: check if enough coins in inventory, return false if not enough.
 		if(!isInShop() || shopItemCount(itemId) < 1)
@@ -2166,9 +3215,16 @@ public class Controller {
 		return true;
 	}
 
+	/**
+	 * Sells the specified itemId to the shop.
+	 * 
+	 * @param itemId
+	 * @param amount
+	 * @return boolean -- returns true on success. False if not in shop, if shop does not accept item, or not enough items in inventory. 
+	 */
 	public boolean shopSell(int itemId,int amount) {
 		//TODO: check if item in inventory
-		if(!isInShop() || shopItemCount(itemId) == -1)
+		if(!isInShop() || shopItemCount(itemId) == -1 || getInventoryItemCount(itemId) < amount)
 			return false;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
@@ -2182,42 +3238,124 @@ public class Controller {
 	}
 
 
+	/**
+	 * Draws a gradient box at the specified coordinates. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height 
+	 * @param topColor -- RGB "HTML" Color
+	 * @param bottomColor -- RGB "HTML" Color
+	 */
 	public void drawVerticalGradient(int x, int y, int width, int height, int topColor, int bottomColor) {
     	mud.getSurface().drawVerticalGradient(x, y, width, height, topColor, bottomColor);
 	}
 
-	public void drawBoxAlpha(int x, int y, int width, int height, int color, int alpha) {
-    	mud.getSurface().drawBoxAlpha(x, y, width, height, color, alpha);
+	/**
+	 * Draws a box at the specified coordinates with the specified color and transparency. Must be used inside paintInterrupt(). 
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color -- RGB "HTML" Color
+	 * @param transparency -- must be between 0 and 255
+	 */
+	public void drawBoxAlpha(int x, int y, int width, int height, int color, int transparency) {
+    	mud.getSurface().drawBoxAlpha(x, y, width, height, color, transparency);
 	}
 
+	/**
+	 * Draws a hollow rectangle at the specified coordinates. Must be used inside paintInterrupt(). 
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color -- RGB "HTML" Color
+	 */
 	public void drawBoxBorder(int x, int y, int width, int height, int color) {
     	mud.getSurface().drawBoxBorder(x, width, y, height, color); //rearranged per source
 	}
 
-	public void drawCircle(int x, int y, int radius, int color, int alpha, int dummy) {
-    	mud.getSurface().drawCircle(x, y, radius, color, alpha, dummy);
+	/**
+	 * Draws a circle at the specified coordinates with specified radius, color, and transparency. Must be used inside paintInterrupt(). 
+	 * 
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param color -- RGB "HTML" Color
+	 * @param transparency -- must be between 0 and 255
+	 * @param dummy
+	 */
+	public void drawCircle(int x, int y, int radius, int color, int transparency, int dummy) {
+    	mud.getSurface().drawCircle(x, y, radius, color, transparency, dummy);
 	}
 
+	/** 
+	 * Draws a horizontal line at the specified coordinates with the specified width. Must be used inside paintInterrupt(). 
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param color -- RGB "HTML" Color
+	 */
 	public void drawLineHoriz(int x, int y, int width, int color) {
     	mud.getSurface().drawLineHoriz(x, y, width, color);
 	}
 
+	/**
+	 * Draws a vertical line at the specified coordinates with the specified height.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param height
+	 * @param color -- RGB "HTML" Color
+	 */
 	public void drawLineVert(int x, int y, int height, int color) {
     	mud.getSurface().drawLineVert(x, y, color, height); //rearrenged per source
 	}
 
+	/**
+	 * Draws text at the specified coordinates. Must be used inside paintInterrupt(). 
+	 * 
+	 * @param str -- you may use @col@ colors here.
+	 * @param x
+	 * @param y
+	 * @param color -- RGB "HTML" Color
+	 * @param font -- 1 or greater
+	 */
 	public void drawString(String str, int x, int y, int color, int font) {
     	mud.getSurface().drawString(str, x, y, color, font);
 	}
 
+	/**
+	 * Draws shadow text at the specified coordinates. Must be used inside paintInterrupt(). 
+	 * 
+	 * @param text -- you may use @col@ colors here.
+	 * @param x
+	 * @param y
+	 * @param textColor -- RGB "HTML" color
+	 * @param fontSize -- 1 or greater
+	 * @param center
+	 */
 	public void drawShadowText(String text, int x, int y, int textColor, int fontSize, boolean center) {
     	mud.getSurface().drawShadowText(text, x, y, textColor, fontSize, center);
 	}
 	
+	/**
+	 * Sets the left-hand status indicator text value.
+	 * @param rstext -- You may use @col@ colors here.
+	 */
 	public void setStatus(String rstext) {
 		DrawCallback.setStatusText(rstext);
 	}
 	
+	/**
+	 * Returns the name of the currently logged in player. 
+	 * @return String
+	 */
 	public String getPlayerName() {
 		if(this.getPlayer() != null)
 			return this.getPlayer().accountName;
@@ -2225,40 +3363,99 @@ public class Controller {
 		return "";
 	}
 	
+	/**
+	 * Returns the direction of the ORSCharacter (NPC or player.)
+	 * @param c -- character
+	 * @return ORSCharacterDirection
+	 */
 	public ORSCharacterDirection getCharacterDirection(ORSCharacter c) {
 		return (ORSCharacterDirection)reflector.getObjectMember(c, "direction");
 	}
 	
+	/**
+	 * Whether or not the left-hand status indicator is enabled.
+	 * @return boolean
+	 */
 	public boolean getShowStatus() {
 		return showStatus;
 	}
 	
+	/**
+	 * Toggles the left-hand status indicator.
+	 * @param b
+	 */
 	public void setShowStatus(boolean b) {
 		showStatus = b;
 	}
 	
+	/**
+	 * Whether or not the the left-hand coordinates indicator is enabled.
+	 * @return boolean
+	 */
 	public boolean getShowCoords() {
 		return showCoords;
 	}
 	
+	/** 
+	 * Toggles the left-hand coordinates indicator.
+	 * @param b
+	 */
 	public void setShowCoords(boolean b) {
 		showCoords = b;
 	}
 	
+	/** 
+	 * Whether or not the left-hand XP counter is enabled.
+	 * @return boolean
+	 */
 	public boolean getShowXp() {
 		return showXp;
 	}
 	
+	/** 
+	 * Toggles the left-hand XP counter.
+	 * @param b
+	 */
 	public void setShowXp(boolean b) {
 		showXp = b;
 	}
 	
+	/**
+	 * Whether or not bot painting is enabled.
+	 * @return boolean
+	 */
 	public boolean getShowBotPaint() {
 		return showBotPaint;
 	}
 	
+	/** 
+	 * Toggle bot painting (such as progress reports.) This does not disable client graphics.
+	 * @param b
+	 */
 	public void setBotPaint(boolean b) {
 		showBotPaint = b;
+	}
+	
+	
+	/** 
+	 * Determine if the tile is reachable in the current map segment.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param includeTileEdges -- whether or not the edges of the tile are permitted. Such as picking up an item on a table -- you can't walk on top of the table, but you can reach the edges.
+	 * @return true if the tile is reachable, false if blocked.
+	 */
+	public boolean isReachable(int x, int y, boolean includeTileEdges) {
+		int[] pathX = new int[8000];
+		int[] pathZ = new int[8000];
+		int startX = removeOffsetX(currentX());
+		int startZ = removeOffsetZ(currentY());
+				
+		int _x = removeOffsetX(x);
+		int _y = removeOffsetZ(y);
+		
+
+		return mud.getWorld().findPath(pathX, pathZ, startX, startZ, _x, _x, _y, _y, includeTileEdges) >= 1;
 	}
 }
  

@@ -43,7 +43,7 @@ public class DrawCallback {
 	        y+= 14;
 	        
 	        if(c.getShowCoords())
-	        	c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentZ()) + "@red@)", 7, y, 0xFFFFFF, 1);
+	        	c.drawString("Coords: @red@(@whi@" + String.valueOf(c.currentX()) + "@red@,@whi@" + String.valueOf(c.currentY()) + "@red@)", 7, y, 0xFFFFFF, 1);
 	
 	        y += 14;
 	        long totalXp = getTotalXp();

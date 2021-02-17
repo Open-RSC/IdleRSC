@@ -173,7 +173,7 @@ public class AIOCooker extends IdleScript {
 	
 	public void openDoor() {
 		while(controller.getObjectAtCoord(439, 497) == 64) {
-			controller.objectAt(439, 497, 0, 64);
+			controller.atObject(439, 497);
 			controller.sleep(100);
 		}
 	}

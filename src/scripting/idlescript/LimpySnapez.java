@@ -107,7 +107,7 @@ public class LimpySnapez extends IdleScript {
 		
 		//open bank door
 		while(controller.getObjectAtCoord(327, 552) == 64) {
-			controller.objectAt(327, 552, 0, 64);
+			controller.atObject(327, 552);
 			controller.sleep(100);
 		}
 		
@@ -145,7 +145,7 @@ public class LimpySnapez extends IdleScript {
 		controller.setStatus("@whi@Walking back to Taverly...");
 		
 		while(controller.getObjectAtCoord(327, 552) == 64) {
-			controller.objectAt(327, 552, 0, 64);
+			controller.atObject(327, 552);
 			controller.sleep(100);
 		}
 		
@@ -155,7 +155,7 @@ public class LimpySnapez extends IdleScript {
 		controller.sleep(1000);
 		
 		//open door
-		while(controller.currentX() != 342 || controller.currentZ() != 487) {
+		while(controller.currentX() != 342 || controller.currentY() != 487) {
 			controller.displayMessage("@red@Opening door...");
 			if(controller.getObjectAtCoord(341, 487) == 137)
 				controller.atObject(341, 487);

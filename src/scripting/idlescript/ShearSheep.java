@@ -16,7 +16,7 @@ public class ShearSheep extends IdleScript {
 			a = 1;
 		}
 		startX = controller.currentX();
-		startY = controller.currentZ();
+		startY = controller.currentY();
 		while (controller.isRunning()) {
 			scriptStart();
 		}
@@ -26,23 +26,23 @@ public class ShearSheep extends IdleScript {
 		// shitty autowalk
 		int newX = x;
 		int newY = y;
-		while (controller.currentX() != x || controller.currentZ() != y) {
+		while (controller.currentX() != x || controller.currentY() != y) {
 			if (controller.currentX() - x > 23) {
 				newX = controller.currentX() - 20;
 			}
-			if (controller.currentZ() - y > 23) {
-				newY = controller.currentZ() - 20;
+			if (controller.currentY() - y > 23) {
+				newY = controller.currentY() - 20;
 			}
 			if (controller.currentX() - x < -23) {
 				newX = controller.currentX() + 20;
 			}
-			if (controller.currentZ() - y < -23) {
-				newY = controller.currentZ() + 20;
+			if (controller.currentY() - y < -23) {
+				newY = controller.currentY() + 20;
 			}
 			if (Math.abs(controller.currentX() - x) <= 23) {
 				newX = x;
 			}
-			if (Math.abs(controller.currentZ() - y) <= 23) {
+			if (Math.abs(controller.currentY() - y) <= 23) {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {

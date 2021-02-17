@@ -18,7 +18,7 @@ public class Flaxx0r extends IdleScript {
     public void start(String parameters[]) {
         while(controller.isRunning()) {
             if(controller.getInventoryItemCount() < 30) {
-                if(controller.currentZ() < 454) {
+                if(controller.currentY() < 454) {
                     //we are inside the bank
                     openDoor();
                 }
@@ -52,7 +52,7 @@ public class Flaxx0r extends IdleScript {
     public void openDoor() {
         while(controller.getObjectAtCoord(500, 454) == 64) {
         	controller.setStatus("@cya@Opening bank door...");
-            controller.objectAt(500, 454, 0, 64);
+            controller.atObject(500, 454);
             controller.sleep(618);
         }
     }

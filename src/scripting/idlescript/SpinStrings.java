@@ -47,23 +47,23 @@ public class SpinStrings extends IdleScript {
 		// shitty autowalk
 		int newX = x;
 		int newY = y;
-		while (controller.currentX() != x || controller.currentZ() != y) {
+		while (controller.currentX() != x || controller.currentY() != y) {
 			if (controller.currentX() - x > 23) {
 				newX = controller.currentX() - 20;
 			}
-			if (controller.currentZ() - y > 23) {
-				newY = controller.currentZ() - 20;
+			if (controller.currentY() - y > 23) {
+				newY = controller.currentY() - 20;
 			}
 			if (controller.currentX() - x < -23) {
 				newX = controller.currentX() + 20;
 			}
-			if (controller.currentZ() - y < -23) {
-				newY = controller.currentZ() + 20;
+			if (controller.currentY() - y < -23) {
+				newY = controller.currentY() + 20;
 			}
 			if (Math.abs(controller.currentX() - x) <= 23) {
 				newX = x;
 			}
-			if (Math.abs(controller.currentZ() - y) <= 23) {
+			if (Math.abs(controller.currentY() - y) <= 23) {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
@@ -141,12 +141,20 @@ public class SpinStrings extends IdleScript {
 				controller.atObject(525, 1406);
 				controller.sleep(100);
 			}
+			
+			while(controller.getNearestNpcByIds(bankerIds, false) == null && destination.getSelectedIndex() == 1) {
+				controller.setStatus("@red@No banker visible, walking closer...");
+				controller.walkTo(291, 573);
+			}
+			
 			//walk to falador bank
 			while (controller.getNearestNpcByIds(bankerIds, false) == null
 					&& controller.getInventoryItemCount(input) == 0) {
 				controller.setStatus("@red@Walking to bank");
 				startWalking(bankSelX, bankSelY);
 			}
+			
+
 			//open bank
 			controller.setStatus("@red@Banking");
 			while (!controller.isInBank() && controller.getNearestNpcByIds(bankerIds, false) != null

@@ -51,7 +51,7 @@ public class GetMeToArdougne extends IdleScript {
 			{
 				controller.setStatus("@yel@Stealing GP..");
 				if(controller.isInCombat()) {
-					controller.walkTo(controller.currentX(), controller.currentZ());
+					controller.walkTo(controller.currentX(), controller.currentY());
 					controller.sleep(250);
 				}
 				
@@ -87,7 +87,7 @@ public class GetMeToArdougne extends IdleScript {
 						
 						controller.sleep(9000);
 					
-						if(controller.currentX() == 324 && controller.currentZ() == 713) {
+						if(controller.currentX() == 324 && controller.currentY() == 713) {
 							inKaramja = true;
 							break;
 						}
@@ -99,11 +99,11 @@ public class GetMeToArdougne extends IdleScript {
 				controller.setStatus("@yel@Walking to Brimhaven gate..");
 				controller.walkPath(shipToGate);
 				
-				while(controller.currentX() != 435 || controller.currentZ() != 682) {
+				while(controller.currentX() != 435 || controller.currentY() != 682) {
 					controller.displayMessage("@red@Opening door...");
 					
 					while(controller.isInCombat()) {
-						controller.walkTo(controller.currentX(), controller.currentZ());
+						controller.walkTo(controller.currentX(), controller.currentY());
 						controller.sleep(250);
 					}
 					

@@ -112,7 +112,7 @@ public class PowerFletcha extends IdleScript {
 			int[] objCoords = controller.getNearestObjectById(target.treeId);
 			if(objCoords != null) {
 				controller.setStatus("@yel@Cutting wood..");
-				controller.objectAt(objCoords[0], objCoords[1], 0, target.treeId);
+				controller.atObject(objCoords[0], objCoords[1]);
 				controller.sleep(618);
 				while(controller.isBatching()) controller.sleep(10);
 			} else {

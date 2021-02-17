@@ -407,7 +407,7 @@ public abstract class Script
 	public int GetY()
 	{
 		Main.logMethod("GetY");
-		return controller.currentZ();
+		return controller.currentY();
 	}
 	public int Rand(int lower, int higher)
 	{

@@ -37,23 +37,23 @@ public class MineGoldCraftingGuild extends IdleScript {
 		// shitty autowalk
 		int newX = x;
 		int newY = y;
-		while (controller.currentX() != x || controller.currentZ() != y) {
+		while (controller.currentX() != x || controller.currentY() != y) {
 			if (controller.currentX() - x > 23) {
 				newX = controller.currentX() - 20;
 			}
-			if (controller.currentZ() - y > 23) {
-				newY = controller.currentZ() - 20;
+			if (controller.currentY() - y > 23) {
+				newY = controller.currentY() - 20;
 			}
 			if (controller.currentX() - x < -23) {
 				newX = controller.currentX() + 20;
 			}
-			if (controller.currentZ() - y < -23) {
-				newY = controller.currentZ() + 20;
+			if (controller.currentY() - y < -23) {
+				newY = controller.currentY() + 20;
 			}
 			if (Math.abs(controller.currentX() - x) <= 23) {
 				newX = x;
 			}
-			if (Math.abs(controller.currentZ() - y) <= 23) {
+			if (Math.abs(controller.currentY() - y) <= 23) {
 				newY = y;
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
@@ -126,7 +126,7 @@ public class MineGoldCraftingGuild extends IdleScript {
 
 		if (controller.isAuthentic() && controller.getInventoryItemCount() == 30) {
 			controller.setStatus("Leaving Guild");
-			while (controller.currentZ() > 600) {
+			while (controller.currentY() > 600) {
 				controller.openDoor(347, 601);
 				controller.sleep(430);
 			}
@@ -150,11 +150,11 @@ public class MineGoldCraftingGuild extends IdleScript {
 					bankedGold = controller.getBankItemCount(152);
 				}
 			}
-			while (controller.currentX() != 347 && controller.currentZ() !=  600) {
+			while (controller.currentX() != 347 && controller.currentY() !=  600) {
 				controller.setStatus("Walking to Guild");
 				startWalking(347, 600);
 			}
-			while (controller.currentZ() < 601) {
+			while (controller.currentY() < 601) {
 				controller.setStatus("Entering guild");
 				controller.openDoor(347, 601);
 				controller.sleep(430);

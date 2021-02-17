@@ -90,7 +90,7 @@ public class AKMiner extends IdleScript {
 				int[] objCoord = controller.getNearestObjectById(target.rockId);
 				if(objCoord != null) {
 					controller.setStatus("@red@Mining!");
-					controller.objectAt(objCoord[0], objCoord[1], 0, target.rockId);
+					controller.atObject(objCoord[0], objCoord[1]);
 				} else {
 					controller.setStatus("@red@Waiting for spawn...");
 				}
@@ -104,7 +104,7 @@ public class AKMiner extends IdleScript {
 	public void openDoor() {
 		controller.setStatus("@red@Opening bank door..");
 		while(controller.getObjectAtCoord(86, 695) == 64) {
-			controller.objectAt(86, 695, 0, 64);
+			controller.atObject(86, 695);
 			controller.sleep(100);
 		}
 	}

@@ -3,7 +3,6 @@ package scripting.idlescript;
 public class Flaxx0r extends IdleScript {
     long flaxPicked = 0;
     long flaxBanked = 0;
-    int backgroundColor = 0x00c000;
     int modifier = 128;
     
     int[] bankPath = {501, 454,
@@ -13,6 +12,8 @@ public class Flaxx0r extends IdleScript {
             501, 478,
             496, 482,
             490, 486};
+    
+    long startTimestamp = System.currentTimeMillis() / 1000L;
 
     public void start(String parameters[]) {
         while(controller.isRunning()) {
@@ -66,9 +67,17 @@ public class Flaxx0r extends IdleScript {
     @Override
     public void paintInterrupt() {
         if(controller != null) {
-            controller.drawBoxAlpha(7, 7, 128, 21+14+14, 0x00FFFF, 128);
+        	int flaxPerHr = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		flaxPerHr = (int)(flaxPicked * scale);
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+            controller.drawBoxAlpha(7, 7, 155, 21+14+14, 0x00FFFF, 128);
             controller.drawString("@dgr@Flax@cya@x0r @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
-            controller.drawString("@dgr@Flax picked: @cya@" + String.format("%,d", flaxPicked), 10, 21+14, 0xFFFFFF, 1);
+            controller.drawString("@dgr@Flax picked: @cya@" + String.format("%,d", flaxPicked) + " @gre@(@cya@" + String.format("%,d", flaxPerHr) + "@gre@/@cya@hr@gre@)", 10, 21+14, 0xFFFFFF, 1);
             controller.drawString("@dgr@Flax in bank: @cya@" + String.format("%,d", flaxBanked), 10, 21+14+14, 0xFFFFFF, 1);
         }
     }

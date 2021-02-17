@@ -23,6 +23,9 @@ public class PowerFletcha extends IdleScript {
     int eatingHealth = 0;
     
 	int[] bowIds = {276, 277, 658, 659, 660, 661, 662, 663, 664, 665, 666, 667};
+	
+	int itemsFletched = 0;
+	long startTimestamp = System.currentTimeMillis() / 1000L;
     
     class FletchObject {
 		String name;
@@ -74,6 +77,7 @@ public class PowerFletcha extends IdleScript {
     	
     	if(scriptStarted) {
     		scriptStart();
+    		controller.setStatus("@yel@Waiting for start...");
     	}
 	}
 	
@@ -84,12 +88,14 @@ public class PowerFletcha extends IdleScript {
 			
 			for(int id : bowIds) {
 				if(controller.getInventoryItemCount(id) > 0) {
+					controller.setStatus("@yel@Dropping bows...");
 					controller.dropItem(controller.getInventoryItemIdSlot(id));
 					controller.sleep(250);
 				}
 			}
 			
 			if(controller.getInventoryItemCount(target.logId) > 0) {
+				controller.setStatus("@yel@Fletching...");
 				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(13), controller.getInventoryItemIdSlot(target.logId));
 				controller.sleep(700);
 				
@@ -105,9 +111,12 @@ public class PowerFletcha extends IdleScript {
 			
 			int[] objCoords = controller.getNearestObjectById(target.treeId);
 			if(objCoords != null) {
+				controller.setStatus("@yel@Cutting wood..");
 				controller.objectAt(objCoords[0], objCoords[1], 0, target.treeId);
 				controller.sleep(618);
 				while(controller.isBatching()) controller.sleep(10);
+			} else {
+				controller.setStatus("@yel@Waiting for tree spawn..");
 			}
 			
 		}
@@ -155,5 +164,29 @@ public class PowerFletcha extends IdleScript {
     	scriptFrame.setVisible(true);
     	scriptFrame.pack();
     }
-    	
+    
+    @Override
+    public void serverMessageInterrupt(String message) {
+    	if(message.contains("You carefully"))
+    		itemsFletched++;
+    }
+    
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        			
+        	int fletchedPerHr = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		fletchedPerHr = (int)(itemsFletched * scale);
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+        	
+            controller.drawBoxAlpha(7, 7, 160, 21+14, 0x228B22, 128);
+            controller.drawString("@yel@PowerFletcha @whi@by @yel@Dvorak", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@yel@Items fletched: @whi@" + String.format("%,d", itemsFletched) + " @yel@(@whi@" + String.format("%,d", fletchedPerHr) + "@yel@/@whi@hr@yel@)", 10, 21+14, 0xFFFFFF, 1);
+        }
+    }
 }

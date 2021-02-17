@@ -19,14 +19,21 @@ public class SellToShop extends IdleScript {
 	boolean scriptStarted = false;
 	int[] itemIds = {};
 	int[] npcId = {};
+	int bankedCash = 0;
 	int shopNumber = -1;
 	int startX = -1;
 	int startY = -1;
+	int startCash = 0;
+	int cashMade = 0;
+	int totalCash = 0;
 	JTextField items = new JTextField("");
 	JTextField shopCount = new JTextField("10");
 	JTextField vendorId = new JTextField("51,55,87,105,145,168,185,222,391,82,83,88,106,146,169,186,223");
 
 	public void start(String parameters[]) {
+		if (controller.getInventoryItemCount(10) > 0) {
+			startCash = controller.getInventoryItemCount(10);
+		}
 		startX = controller.currentX();
 		startY = controller.currentZ();
 		if (!guiSetup) {
@@ -81,10 +88,12 @@ public class SellToShop extends IdleScript {
 	}
 
 	public void scriptStart() {
-		while(controller.getNearestNpcByIds(npcId,false) == null) {
-			startWalking(startX,startY);
+		while (controller.getNearestNpcByIds(npcId, false) == null) {
+			controller.setStatus("Selling");
+			startWalking(startX, startY);
 		}
 		while (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
+			controller.setStatus("Selling");
 			controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
 			controller.sleep(640);
 		}
@@ -94,6 +103,7 @@ public class SellToShop extends IdleScript {
 				if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
 					controller.shopSell(itemId, shopNumber - controller.getBankItemCount(itemId));
 					controller.sleep(640);
+					cashMade = controller.getInventoryItemCount(10) - startCash;
 				}
 			}
 		}
@@ -101,20 +111,26 @@ public class SellToShop extends IdleScript {
 				|| controller.getInventoryItemCount() == 0) {
 			startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
 			while (controller.getNearestNpcById(95, false) == null) {
+				controller.setStatus("Banking");
 				startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
 			}
 			while (!controller.isInBank()) {
+				controller.setStatus("Banking");
 				controller.openBank();
 				controller.sleep(430);
 			}
 			if (controller.isInBank()) {
+				controller.setStatus("Banking");
+				totalCash = totalCash + controller.getInventoryItemCount(10);
 				controller.depositItem(10, controller.getInventoryItemCount(10));
+				startCash = 0;
 				for (int itemId : itemIds) {
 					if (itemId != 0 && isSellable(itemId) && controller.shopItemCount(itemId) < shopNumber) {
 						controller.withdrawItem(itemId, 30);
 						controller.sleep(640);
 					}
 				}
+				bankedCash = controller.getBankItemCount(10);
 			}
 		}
 		if (!controller.isLoggedIn()) {
@@ -188,5 +204,15 @@ public class SellToShop extends IdleScript {
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
+	}
+	@Override
+	public void paintInterrupt() {
+		if (controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+			controller.drawString("@red@Sell to Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Profit this inventory: @yel@" + String.valueOf(this.cashMade), 10, 35, 0xFFFFFF, 1);
+			controller.drawString("@red@Gold banked: @yel@" + String.valueOf(this.totalCash), 10, 49, 0xFFFFFF, 1);
+			controller.drawString("@red@Gold in bank: @yel@" + String.valueOf(this.bankedCash), 10, 49+14, 0xFFFFFF, 1);
+		}
 	}
 }

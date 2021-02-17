@@ -72,6 +72,11 @@ public class AIOFighter extends IdleScript {
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	
+	long startTimestamp = System.currentTimeMillis() / 1000L;
+	int bonesBuried = 0;
+	int spellsCasted = 0;
+
+	
     public void start(String parameters[])
     {
     	if(!guiSetup) {
@@ -83,14 +88,6 @@ public class AIOFighter extends IdleScript {
     		scriptStart();
     	}
     }
-    
-	public void questMessageInterrupt(String message) {
-		System.out.println(message);
-		if(message.equals("I can't get a clear shot from here")) {
-			System.out.println("Walking to npc");
-			controller.walktoNPC(currentAttackingNpc, 1);
-		}
-	}
     
     public void scriptStart() {
     	lootTable = Arrays.copyOf(loot, loot.length);
@@ -118,7 +115,7 @@ public class AIOFighter extends IdleScript {
     		controller.sleep(618); //wait 1 tick
     		
     		if(!isWithinWander(controller.currentX(), controller.currentZ())) {
-    			controller.displayMessage("@red@AIOFighter: out of range! Walking back.");
+    			controller.setStatus("@red@Out of range! Walking back.");
     			controller.walkTo(startTile[0], startTile[1], 0, true);
     		}
     		
@@ -127,7 +124,7 @@ public class AIOFighter extends IdleScript {
     				int[] doorCoords = controller.getNearestObjectById(doorId);
     				
     				if(doorCoords != null && this.isWithinWander(doorCoords[0], doorCoords[1])){
-    					controller.displayMessage("@red@AIOFighter: Opening door...");
+    					controller.setStatus("@red@Opening door...");
     					controller.atObject(doorCoords[0], doorCoords[1]);
     					controller.sleep(5000);
     				}
@@ -136,12 +133,12 @@ public class AIOFighter extends IdleScript {
     		}
     		
     		if(controller.getFightMode() != fightMode) {
-    			controller.displayMessage("@red@AIOFighter: Changing fightmode");
+    			controller.setStatus("@red@Changing fightmode");
     			controller.setFightMode(fightMode);
     		}
     		
     		if(controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
-    			controller.displayMessage("@red@AIOFighter: Eating food");
+    			controller.setStatus("@red@Eating food");
     			controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
     			
     			boolean ate = false;
@@ -155,7 +152,7 @@ public class AIOFighter extends IdleScript {
     			}
     			
     			if(!ate) {
-    				controller.displayMessage("@red@AIOFighter: We ran out of food! Logging out.");
+    				controller.setStatus("@red@We ran out of food! Logging out.");
     				controller.setAutoLogin(false);
     				controller.logout();
     			}
@@ -169,7 +166,7 @@ public class AIOFighter extends IdleScript {
     		for(int lootId : lootTable) {
         		int[] lootCoord = controller.getNearestItemById(lootId);
         		if(lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
-        			controller.displayMessage("@red@AIOFighter: Picking up loot");
+        			controller.setStatus("@red@Picking up loot");
         			controller.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
         			controller.sleep(618);
         			
@@ -192,7 +189,7 @@ public class AIOFighter extends IdleScript {
 	    			
 	    			int[] arrowCoord = controller.getNearestItemById(arrowId);
 	    			if(arrowCoord != null) {
-	    				controller.displayMessage("@red@AIOFighter: Picking up arrows");
+	    				controller.setStatus("@red@Picking up arrows");
 	    				controller.pickupItem(arrowCoord[0], arrowCoord[1], arrowId, false, true);
 	    				continue;
 	    			}
@@ -206,7 +203,7 @@ public class AIOFighter extends IdleScript {
 	    			}
 	    			
 	    			if(hasArrows == false) {
-	    				controller.displayMessage("@red@AIOFighter: Out of arrows!");
+	    				controller.setStatus("@red@Out of arrows!");
 	    				controller.setAutoLogin(false);
 	    				controller.logout();
 	    				controller.stop();
@@ -216,7 +213,7 @@ public class AIOFighter extends IdleScript {
 		    		for(int id : bowIds) {
 		    			if(controller.getInventoryItemCount(id) > 0) {
 			    			if(!controller.isEquipped(controller.getInventoryItemIdSlot(id))) {
-			    				controller.displayMessage("@red@AIOFighter: Equipping bow");
+			    				controller.setStatus("@red@Equipping bow");
 			    				controller.equipItem(controller.getInventoryItemIdSlot(id));
 			    				controller.sleep(1000);
 			    				break;
@@ -231,7 +228,7 @@ public class AIOFighter extends IdleScript {
 	    				currentAttackingNpc = npc.serverIndex;
 	    				controller.castSpellOnNpc(npc.serverIndex, spellId);
 	    			} else {
-		    			controller.displayMessage("@red@AIOFighter: Attacking NPC");
+		    			controller.setStatus("@red@Attacking NPC");
 		    			controller.attackNpc(npc.serverIndex);
 		    			controller.sleep(1000);
 	    			}
@@ -240,7 +237,7 @@ public class AIOFighter extends IdleScript {
 	    		} else {
 	    			//no npc found! walk back to starting tile..
 	    			if(controller.currentX() != startTile[0] && controller.currentZ() != startTile[1]) {
-		    			controller.displayMessage("@red@AIOFighter: No NPCs found, walking back to start...");
+		    			controller.setStatus("@red@No NPCs found, walking back to start...");
 		    			controller.walkToAsync(startTile[0], startTile[1], 0);
 		    			controller.sleep(1000);
 	    			}
@@ -249,12 +246,12 @@ public class AIOFighter extends IdleScript {
         		
     			if(ranging == true) {
     				if(!controller.isEquipped(controller.getInventoryItemIdSlot(switchId))) {
-    					controller.displayMessage("@red@AIOFighter: Switching to melee weapon");
+    					controller.setStatus("@red@Switching to melee weapon");
     					controller.equipItem(controller.getInventoryItemIdSlot(switchId));
     				}
     			}
     			if(maging == true) {
-    				controller.displayMessage("@red@AIOFighter: Maging...");
+    				controller.setStatus("@red@Maging...");
     				ORSCharacter victimNpc = controller.getNearestNpcByIds(npcIds, true);
     				if(victimNpc != null)
     					controller.castSpellOnNpc(victimNpc.serverIndex, spellId);
@@ -270,7 +267,7 @@ public class AIOFighter extends IdleScript {
     	if(!controller.isInCombat()) {
 			for(int id : bones) {
 				if(controller.getInventoryItemCount(id) > 0) {
-					controller.displayMessage("@red@AIOFighter: Burying bones");
+					controller.setStatus("@red@Burying bones..");
 					controller.itemCommand(id);
 					
 					controller.sleep(618);
@@ -512,6 +509,8 @@ public class AIOFighter extends IdleScript {
     	centerWindow(scriptFrame);
     	scriptFrame.setVisible(true);
     	scriptFrame.pack();
+    	
+    	controller.setStatus("@red@Waiting for start...");
     }
     
 	public static void centerWindow(Window frame) {
@@ -521,4 +520,51 @@ public class AIOFighter extends IdleScript {
 	    frame.setLocation(x, y);
 	}
     
+	@Override
+	public void serverMessageInterrupt(String message) {
+		if(message.contains("bury"))
+        	bonesBuried++;
+	}
+	
+	@Override
+    public void questMessageInterrupt(String message) {
+        if(message.contains("successfully"))
+        	spellsCasted++;
+        else if(message.equals("I can't get a clear shot from here")) {
+			controller.setStatus("@red@Walking to NPC to get a shot...");
+			controller.walktoNPC(currentAttackingNpc, 1);
+		}
+    }
+	
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        	int bonesPerHr = 0;
+        	int spellsPerHr = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		bonesPerHr = (int)(bonesBuried * scale);
+        		spellsPerHr = (int)(spellsCasted * scale);
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+        	
+        	int y = 21;
+            controller.drawBoxAlpha(7, 7, 160, 21+14+14, 0xFF0000, 128);
+            controller.drawString("@red@AIOFighter @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+            y += 14;
+            
+            if(buryBones) {
+            	controller.drawString("@red@Bones Buried: @whi@" + String.format("%,d", bonesBuried) + " @red@(@whi@" + String.format("%,d", bonesPerHr) + "@red@/@whi@hr@red@)", 10, y, 0xFFFFFF, 1);
+            	y += 14;
+            }
+            
+            if(maging) {
+            	controller.drawString("@red@Spells Casted: @whi@" + String.format("%,d", spellsCasted) + " @red@(@whi@" + String.format("%,d", spellsPerHr) + "@red@/@whi@hr@red@)", 10, y, 0xFFFFFF, 1);
+            	y += 14;
+            }
+                    
+        }
+    }
 }

@@ -45,6 +45,12 @@ public class LimpySnapez extends IdleScript {
 	
 	boolean tileFlick = false;
 	
+	int snapezPicked = 0;
+	int snapezInBank = 0;
+	int limpzPicked = 0;
+	int limpzInBank = 0;
+	long startTimestamp = System.currentTimeMillis() / 1000L;
+	
 	public void start(String[] param) {
 	
 		controller.displayMessage("@red@LimpySnapez by Dvorak. Let's party like it's 2004!");
@@ -58,6 +64,7 @@ public class LimpySnapez extends IdleScript {
 					int[] coords = controller.getNearestObjectById(plantId);
 					
 					if(coords != null) {
+						controller.setStatus("@whi@Picking plant.");
 						foundPlants = true;
 						controller.atObject(coords[0], coords[1]);
 						controller.sleep(1000);
@@ -67,6 +74,7 @@ public class LimpySnapez extends IdleScript {
 				}
 				
 				if(foundPlants == false) {
+					controller.setStatus("@whi@Searching for plants...");
 					if(!tileFlick) {
 						controller.walkTo(364, 472);
 					} else {
@@ -87,7 +95,7 @@ public class LimpySnapez extends IdleScript {
 	}
 	
 	public void walkToBank() {
-		controller.displayMessage("@red@Walking to bank....");
+		controller.setStatus("@whi@Walking to bank....");
 		controller.walkPath(herbToDoorPath);
 		controller.sleep(1000);
 		
@@ -116,7 +124,7 @@ public class LimpySnapez extends IdleScript {
 	}
 	
 	public void bank() {
-		controller.displayMessage("@red@Banking...");
+		controller.setStatus("@whi@Banking...");
 		
 		controller.openBank();
 		
@@ -128,10 +136,13 @@ public class LimpySnapez extends IdleScript {
 				}
 			}
 		}
+		
+		snapezInBank = controller.getBankItemCount(220);
+		limpzInBank = controller.getBankItemCount(469);
 	}
 	
 	public void walkToTaverly() {
-		controller.displayMessage("@red@Walking back to Taverly...");
+		controller.setStatus("@whi@Walking back to Taverly...");
 		
 		while(controller.getObjectAtCoord(327, 552) == 64) {
 			controller.objectAt(327, 552, 0, 64);
@@ -153,5 +164,36 @@ public class LimpySnapez extends IdleScript {
 		
 		controller.walkPath(doorToHerbPath);	
 	}
-		
+	
+    @Override
+    public void questMessageInterrupt(String message) {
+        if(message.contains("some grass"))
+            snapezPicked++;
+        else if(message.contains("some root"))
+        	limpzPicked++;
+    }
+	
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        			
+        	int snapezPerHr = 0;
+        	int limpzPerHr = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		snapezPerHr = (int)(snapezPicked * scale);
+        		limpzPerHr = (int)(limpzPicked * scale);
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+        	
+            controller.drawBoxAlpha(7, 7, 160, 21+14+14+14+14, 0xFFFFFF, 128);
+            controller.drawString("@lre@Limpy@gre@Snapez @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@gre@Snapez picked: @whi@" + String.format("%,d", snapezPicked) + " @gre@(@whi@" + String.format("%,d", snapezPerHr) + "@gre@/@whi@hr@gre@)", 10, 21+14, 0xFFFFFF, 1);
+            controller.drawString("@gre@Snapez in bank: @whi@" + String.format("%,d", snapezInBank), 10, 21+14+14, 0xFFFFFF, 1);
+            controller.drawString("@lre@Limpz picked: @whi@" + String.format("%,d", limpzPicked) + " @lre@(@whi@" + String.format("%,d", limpzPerHr) + "@lre@/@whi@hr@lre@)", 10, 21+14+14+14, 0xFFFFFF, 1);
+            controller.drawString("@lre@Limpz in bank: @whi@" + String.format("%,d", limpzInBank), 10, 21+14+14+14+14, 0xFFFFFF, 1);
+        }
+    }
 }

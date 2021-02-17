@@ -21,6 +21,7 @@ public class SmithingVarrock extends IdleScript {
 	int ans3 = -1;
 	int ans4 = -1;
 	int barsLeft = -1;
+	int totalSmithed =0;
 	int[] barIds = { 169, 170, 171, 173, 174, 408 };
 	int[] bankerIds = { 95, 224, 268, 485, 540, 617 };
 
@@ -38,11 +39,13 @@ public class SmithingVarrock extends IdleScript {
 	public void scriptStart() {
 		while (controller.isRunning()) {
 			if (controller.getInventoryItemCount(barId) < 5 && !controller.isInBank()) {
+				controller.setStatus("@red@Banking");
 				controller.openBank();
 				controller.sleep(1000);
 				if (controller.getInventoryItemCount() > 1 && controller.isInBank()) {
 					for (int itemId : controller.getInventoryItemIds()) {
 						if (itemId != 168 && itemId != 1263) {
+							totalSmithed = totalSmithed + controller.getInventoryItemCount(itemId);
 							controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 						}
 					}
@@ -84,6 +87,7 @@ public class SmithingVarrock extends IdleScript {
 				}
 			}
 			while (controller.getInventoryItemCount(barId) > 5 && !controller.isInBank()) {
+				controller.setStatus("Smithing");
 				controller.sleepHandler(98, true);
 				controller.useItemIdOnObject(controller.getNearestObjectById(50)[0],
 						controller.getNearestObjectById(50)[1], barId);
@@ -277,5 +281,13 @@ public class SmithingVarrock extends IdleScript {
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
 
+	}
+	@Override
+	public void paintInterrupt() {
+		if(controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21+14+14, 0xFF0000, 64);
+			controller.drawString("@red@Smithing Varrock @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Items Smithed: @yel@" + String.valueOf(this.totalSmithed), 10, 21+14, 0xFFFFFF, 1);
+		}
 	}
 }

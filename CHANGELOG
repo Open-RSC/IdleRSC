@@ -1,3 +1,12 @@
+FEB 16 2021
+	Global XP/hr calculation is now accurate.
+	AIOFighter, AIOThiever, LimpySnapez, GetMeToArdougne, HarvesterTrainer, HerbHarvester, HerbIdentifier, PowerFletcha now have paint progress reports. 
+	Flaxx0r now tracks flax per hour.
+	Searos updated Controller isDoorOpen to work on the crafting guild door.
+	Searos updated many of his scripts to support Paint
+	isInCombat() and isNpcInCombat() are now realtime and do not work based off the health bar. Thieving and fighting are _much_ more efficient!
+	Added DamRc by Damrau
+	
 FEB 15 2021
     The client now has a patcher for patching the JAR for callbacks, see updated readme and https://gitlab.com/idlersc/idlersc_patcher
     The client now shows status, coordinates, and XP gained on the main client window via the DrawCallback class.

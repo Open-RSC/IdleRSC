@@ -730,9 +730,13 @@ public class Controller {
 		int npcCount = (int) reflector.getObjectMember(mud, "npcCount");
 
 		for(int i = 0; i < npcCount; i++) {
-			if(npcs[i].serverIndex == id)
-				if(npcs[i].combatTimeout > 0)
+			if(npcs[i].serverIndex == id) {
+				ORSCharacterDirection dir = this.getCharacterDirection(npcs[i]);
+				if(dir == ORSCharacterDirection.COMBAT_A || dir == ORSCharacterDirection.COMBAT_B)
 					return true;
+				//if(npcs[i].combatTimeout > 0)
+				//	return true;
+			}
 		}
 
 		return false;
@@ -746,7 +750,7 @@ public class Controller {
 
 		int _x = removeOffsetX(x), _z = removeOffsetZ(z);
 		
-		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164)
+		if(this.getWallObjectIdAtCoord(x, z) == 163 || this.getWallObjectIdAtCoord(x, z) == 164 || this.getWallObjectIdAtCoord(x, z) == 68)
 			return false;
 
 		for(int i = 0; i < count; i++) {
@@ -1070,7 +1074,11 @@ public class Controller {
 	}
 
 	public boolean isInCombat() {
-		return ((int)reflector.getObjectMember(mud, "combatTimeout")) == 499;
+		ORSCharacterDirection dir = this.getCharacterDirection(this.getPlayer());
+		if(dir == ORSCharacterDirection.COMBAT_A || dir == ORSCharacterDirection.COMBAT_B)
+			return true;
+		
+		return false;
 	}
 
 	public boolean isPlayerInCombat(int id) {
@@ -2210,6 +2218,10 @@ public class Controller {
 			return this.getPlayer().accountName;
 		
 		return "";
+	}
+	
+	public ORSCharacterDirection getCharacterDirection(ORSCharacter c) {
+		return (ORSCharacterDirection)reflector.getObjectMember(c, "direction");
 	}
 }
  

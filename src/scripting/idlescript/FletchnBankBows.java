@@ -26,6 +26,8 @@ public class FletchnBankBows extends IdleScript {
 	int[] bowCompleteShort = { 189, 649, 651, 653, 655, 657 };
 	int[] bowCompleteLong = { 188, 648, 650, 652, 654, 656 };
 	int[] logIds = { 14, 632, 633, 634, 635, 636 };
+	int totalBows = 0;
+	int totalFletched = 0;
 	boolean bankTime = false;
 	boolean stringTime = false;
 	int[] bankerIds = { 95, 224, 268, 485, 540, 617 };
@@ -44,11 +46,18 @@ public class FletchnBankBows extends IdleScript {
 	public void scriptStart() {
 		while (controller.isRunning()) {
 			if (controller.getInventoryItemCount(logId) < 1 && !stringTime && !controller.isInBank()) {
+				controller.setStatus("Banking");
 				controller.openBank();
 				controller.sleep(431);
 				if (controller.getInventoryItemCount() > 1) {
 					for (int itemId : controller.getInventoryItemIds()) {
 						if (itemId != 13 && itemId != 1263) {
+							if(controller.getInventoryItemCount(itemId) == bowId) {
+								totalFletched = totalFletched + controller.getInventoryItemCount(itemId);
+							}
+							if(controller.getInventoryItemCount(itemId) == bowComplete) {
+								totalBows = totalBows + controller.getInventoryItemCount(itemId);
+							}
 							controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 						}
 					}
@@ -77,12 +86,19 @@ public class FletchnBankBows extends IdleScript {
 			}
 			if (controller.getInventoryItemCount(bowId) < 1 && stringTime && !controller.isInBank()
 					|| controller.getInventoryItemCount(676) < 1 && stringTime && !controller.isInBank()) {
+				controller.setStatus("Banking");
 				controller.openBank();
 				controller.sleep(431);
 				{
 					if (controller.getInventoryItemCount() > 1) {
 						for (int itemId : controller.getInventoryItemIds()) {
 							if (itemId != 0 && itemId != 1263) {
+								if(controller.getInventoryItemCount(itemId) == bowId) {
+									totalFletched = totalFletched + controller.getInventoryItemCount(itemId);
+								}
+								if(controller.getInventoryItemCount(itemId) == bowComplete) {
+									totalBows = totalBows + controller.getInventoryItemCount(itemId);
+								}
 								controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 							}
 						}
@@ -105,6 +121,7 @@ public class FletchnBankBows extends IdleScript {
 
 			}
 			while (controller.getInventoryItemCount(logId) > 0 && !stringTime) {
+				controller.setStatus("Fletching Bow");
 				controller.sleepHandler(98, true);
 				controller.useItemOnItemBySlot(0, 1);
 				controller.sleep(500);
@@ -118,6 +135,7 @@ public class FletchnBankBows extends IdleScript {
 			}
 			while (controller.getInventoryItemCount(bowId) > 0 && stringTime
 					&& controller.getInventoryItemCount(676) > 0) {
+				controller.setStatus("Stringing");
 				controller.useItemOnItemBySlot(controller.getInventoryItemIdSlot(bowId),
 						controller.getInventoryItemIdSlot(676));
 				controller.sleep(15);
@@ -180,5 +198,13 @@ public class FletchnBankBows extends IdleScript {
 		scriptFrame.pack();
 		scriptFrame.requestFocus();
 	}
-
+	@Override
+	public void paintInterrupt() {
+		if (controller != null) {
+			controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+			controller.drawString("@red@Fletch Bows @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+			controller.drawString("@red@Unstrung Bows Crafted: @yel@" + String.valueOf(this.totalFletched), 10, 35, 0xFFFFFF, 1);
+			controller.drawString("@red@Bows Completed: @yel@" + String.valueOf(this.totalBows), 10, 49, 0xFFFFFF, 1);
+		}
+	}
 }

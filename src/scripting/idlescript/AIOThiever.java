@@ -26,6 +26,10 @@ public class AIOThiever extends IdleScript {
 	int[] doorObjectIds = {60, 64};
 
 	
+	long startTimestamp = System.currentTimeMillis() / 1000L;
+	int success = 0;
+	int failure = 0;
+	
     class ThievingObject {
 		String name;
 		int id;
@@ -96,6 +100,7 @@ public class AIOThiever extends IdleScript {
     			if(!guiSetup) {
     	    		setupGUI();
     	    		guiSetup = true;
+    	    		controller.setStatus("@red@Waiting for start..");
     	    	}
     		} else {
     			try {
@@ -136,7 +141,7 @@ public class AIOThiever extends IdleScript {
 				int[] doorCoords = controller.getNearestObjectById(doorId);
 				
 				if(doorCoords != null){
-					controller.displayMessage("@red@AIOThiever: Opening door...");
+					controller.setStatus("@red@AIOThiever: Opening door...");
 					controller.atObject(doorCoords[0], doorCoords[1]);
 					controller.sleep(5000);
 				}
@@ -144,6 +149,7 @@ public class AIOThiever extends IdleScript {
 			}
 			
 			if(controller.getInventoryItemCount(140) > 0) { //drop jugs from heroes
+				controller.setStatus("@red@Dropping empty jugs..");
 				controller.dropItem(controller.getInventoryItemIdSlot(140));
 				controller.sleep(500);
 			}
@@ -155,13 +161,19 @@ public class AIOThiever extends IdleScript {
 				if(target.isNpc == true) {
 					controller.sleepHandler(98, true);
 					ORSCharacter npc = controller.getNearestNpcById(target.id, false);
-					if(npc != null && npc.serverIndex > 0)
+					if(npc != null && npc.serverIndex > 0) {
+						controller.setStatus("@red@Stealing..");
 						controller.npcCommand1(npc.serverIndex);
+					} else {
+						controller.setStatus("@red@Waiting for NPC to become available..");
+					}
 				}
 				
 				if(doBank) { 
 					if(target.name.contains("Bakers")) {
 						if(controller.getInventoryItemCount() < 30) {
+							controller.setStatus("@red@Stealing..");
+							
 							if(controller.currentX() != 543 && controller.currentZ() != 600)
 								controller.walkTo(543, 600);
 								
@@ -170,7 +182,7 @@ public class AIOThiever extends IdleScript {
 					}
 					
 					if(controller.getInventoryItemCount() == 30 || countFood() == 0) {
-						controller.displayMessage("@red@Banking...");
+						controller.setStatus("@red@Banking...");
 						controller.walkTo(548, 589);
 						controller.walkTo(547, 607);
 						controller.openBank();
@@ -202,16 +214,20 @@ public class AIOThiever extends IdleScript {
 					if(target.isObject == true) {
 						int[] coords = controller.getNearestObjectById(target.id);
 						if(coords != null) {
+							controller.setStatus("@red@Stealing..");
 							if(target.name.contains("Chest")) {
 								controller.objectAt2(coords[0], coords[1], 0, target.id);
 							} else {
 								controller.objectAt(coords[0], coords[1], 0, target.id);
 								controller.sleep(618);
 							}
+						} else {
+							controller.setStatus("@red@Waiting for respawn..");
 						}
 					}
 				}
 			} else {
+				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
 				
 				controller.sleep(400);				
@@ -224,12 +240,14 @@ public class AIOThiever extends IdleScript {
 
 	public void eat() {
 		if(controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
-			controller.displayMessage("@red@AIOThiever: Eating food");
+			
 			
 			while(controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
 				controller.sleep(250);
 			}
+			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
 			
@@ -243,11 +261,11 @@ public class AIOThiever extends IdleScript {
 			}
 			
 			while(!doBank && !ate) {
+				controller.setStatus("@red@Logging out..");
 				while(controller.isInCombat()) {
 					controller.walkTo(controller.currentX(), controller.currentZ(), 0, true);
 					controller.sleep(250);
 				}
-				controller.displayMessage("@red@AIOThiever: We ran out of food! Logging out.");
 				controller.setAutoLogin(false);
 				controller.logout();
 				controller.sleep(1000);
@@ -331,6 +349,43 @@ public class AIOThiever extends IdleScript {
     	centerWindow(scriptFrame);
     	scriptFrame.setVisible(true);
     	scriptFrame.pack();
+    }
+    
+    @Override
+    public void serverMessageInterrupt(String message) {
+    	if(message.contains("You steal"))
+    		success++;
+    }
+    
+    @Override
+    public void questMessageInterrupt(String message) {
+        if(message.contains("You pick") || message.contains("You steal"))
+        	success++;
+        else if(message.contains("You fail") || message.contains("Hey thats mine") || message.contains("hands off there"))
+        	failure++;
+    }
+	
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        			
+        	int successPerHr = 0;
+        	float ratio = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		successPerHr = (int)(success * scale);
+        		ratio = (float)success / (float)failure;
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+        	
+            controller.drawBoxAlpha(7, 7, 160, 21+14+14+14, 0xFF0000, 128);
+            controller.drawString("@red@AIOThiever @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@red@Successes: @whi@" + String.format("%,d", success) + " @red@(@whi@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 10, 21+14, 0xFFFFFF, 1);
+            controller.drawString("@red@Failures: @whi@" + String.format("%,d", failure), 10, 21+14+14, 0xFFFFFF, 1);
+            controller.drawString("@red@Ratio: @whi@" + String.format("%.2f", ratio), 10, 21+14+14+14, 0xFFFFFF, 1);
+        }
     }
     	
 }

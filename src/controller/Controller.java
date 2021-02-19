@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -1392,6 +1393,26 @@ public class Controller {
 //
 //		return false;
 	}
+	
+	/**
+	 * Whether or not the specified item ID is equipped. This is different from {@link Controller.isEquipped} due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected on Uranium.
+	 * @param itemId
+	 * @return
+	 */
+	public boolean isItemIdEquipped(int itemId) {
+		if(this.isAuthentic())
+			return this.isEquipped(this.getInventoryItemSlotIndex(itemId));
+		
+		ItemDef[] equippedItems = this.getMud().equippedItems;
+		for(ItemDef item : equippedItems) {
+			if(item != null) {
+				if(item.getName() == this.getItemName(itemId))
+					return true;
+			}
+		}
+		
+		return false;
+	}
 
 	/**
 	 * Equips the item in the specified slot. Note that this does not use an item id, but a slot index. 
@@ -1749,6 +1770,36 @@ public class Controller {
 	}
 	
 	/**
+	 * Withdraws the specified item, as a note, of specified amount, from the bank. Only works on Coleslaw. 
+	 * 
+	 * @param itemId
+	 * @param amount
+	 * @return boolean -- returns true if you already have that amount in your inventory. Returns false if you do not currently have that amount, or if you do not have the bank open.
+	 */
+	public boolean withdrawItemAsNote(int itemId, int amount) {
+		if(!Config.S_WANT_BANK_NOTES) {
+			this.displayMessage("@whi@ERROR: @red@Server is not configured to use bank notes");
+			return false;
+		}
+		
+		if(isInBank() == false)
+			return false;
+
+		if(getInventoryItemCount(itemId) >= amount)
+			return true;
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(22);
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
+		mud.packetHandler.getClientStream().bufferBits.putByte(1);
+		
+		mud.packetHandler.getClientStream().finishPacket();
+
+		return false;
+	}
+	
+	/**
 	 * Dislays a message in the client chat window, of the specified orsc.enumerations.MessageType.
 	 * 
 	 * @param rstext -- you may use @col@ colors here.
@@ -1895,7 +1946,7 @@ public class Controller {
 		}
 
 		try {
-			ImageIO.write(img, "bmp", new File(filename + ".bmp"));
+			ImageIO.write(img, "png", new File("Screenshots/" + filename + ".png"));
 			Main.log("Screenshot saved.");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -3018,6 +3069,10 @@ public class Controller {
 
 		return results;
 	}
+	
+	public int[] getInventoryUniqueItemIds() {
+		return IntStream.of(this.getInventoryItemIds()).distinct().toArray();
+	}
 
 	
     private void walkToActionSource(mudclient mud, int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
@@ -3535,6 +3590,16 @@ public class Controller {
 		
 
 		return mud.getWorld().findPath(pathX, pathZ, startX, startZ, _x, _x, _y, _y, includeTileEdges) >= 1;
+	}
+	
+	/**
+	 * If running on an authentic server, this stops the script and outputs a message about compatability. 
+	 */
+	public void quitIfAuthentic() {
+		if(this.isAuthentic()) {
+			this.log("This script is not designed to run on authentic servers (\"Uranium\".) This is only supported on Coleslaw.");
+			this.stop();
+		}
 	}
 }
  

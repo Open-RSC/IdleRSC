@@ -213,7 +213,9 @@ public class AIOThiever extends IdleScript {
 								controller.sleep(500);
 								break;
 							}
-						}						
+						}
+						
+						controller.walkTo(548, 605);
 					}
 					
 				} else { //we are not banking

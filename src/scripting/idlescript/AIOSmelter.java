@@ -38,6 +38,10 @@ public class AIOSmelter extends IdleScript {
 
 	int barId = -1;
 	int[] barIds = { 169, 170, 384, 171, 1041, 172, 173, 174, 408 };
+	
+	long startTimestamp = System.currentTimeMillis() / 1000L;
+	int success = 0;
+	
 
 	Map<Integer, Map<Integer, Integer>> ingredientsMapping = new HashMap<Integer, Map<Integer, Integer>>() {
 		{
@@ -159,18 +163,24 @@ public class AIOSmelter extends IdleScript {
 			}
 			controller.openBank();
 
-			while (controller.getInventoryItemCount() > 0) {
-				for (int itemId : controller.getInventoryItemIds()) {
-					if (itemId != 0) {
-						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-					}
+			for (int itemId : controller.getInventoryUniqueItemIds()) {
+				if (itemId != 0 && itemId != 1263 && itemId != 1057) {
+					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+					controller.sleep(618);
 				}
-
-				controller.sleep(618);
 			}
 
 			for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
-				controller.withdrawItem(entry.getKey(), entry.getValue());
+				if(entry.getKey() == 699)
+					continue; 
+				
+				if(entry.getKey() == 151 || entry.getKey() == 153) {
+					if(controller.getInventoryItemCount(1263) > 0)
+						controller.withdrawItem(entry.getKey(), entry.getValue() - 1);
+						
+				} else {
+					controller.withdrawItem(entry.getKey(), entry.getValue());
+				}
 				controller.sleep(618);
 			}
 
@@ -180,8 +190,16 @@ public class AIOSmelter extends IdleScript {
 
 	public boolean isEnoughOre() {
 		for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
-			if (controller.getInventoryItemCount(entry.getKey()) < entry.getValue())
-				return false;
+			if(entry.getKey() == 699)
+				continue;
+				
+			if(controller.getInventoryItemCount(1263) > 0) {
+				if (controller.getInventoryItemCount(entry.getKey()) < entry.getValue() - 1) 
+					return false;
+			} else {
+				if (controller.getInventoryItemCount(entry.getKey()) < entry.getValue())
+					return false;
+			}
 		}
 
 		return true;
@@ -229,5 +247,37 @@ public class AIOSmelter extends IdleScript {
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();
 	}
-
+    
+    @Override
+    public void serverMessageInterrupt(String message) {
+    	if(message.contains("very heavy"))
+    		success++;
+    }
+	
+	
+    @Override
+    public void questMessageInterrupt(String message) {
+    	if(message.contains("retrieve a"))
+        	success++;
+    }
+	
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        			
+        	int successPerHr = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		successPerHr = (int)(success * scale);
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+        	
+            controller.drawBoxAlpha(7, 7, 160, 21+14, 0xFF0000, 128);
+            controller.drawString("@red@AIOCooker @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@red@Smelts: @whi@" + String.format("%,d", success) + " @red@(@whi@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 10, 21+14, 0xFFFFFF, 1);
+        }
+    }
+	
 }

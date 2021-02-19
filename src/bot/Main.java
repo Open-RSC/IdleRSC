@@ -1,10 +1,7 @@
 package bot;
 
 import bot.debugger.Debugger;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.Window;
+
 import java.awt.*;
 
 import compatibility.sbot.Script;
@@ -24,10 +21,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -158,6 +160,8 @@ public class Main {
      * The initial program entrypoint for IdleRSC.
      */
     public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
+    	handleCache();
+    	
         Reflector reflector = new Reflector(); //start up our reflector helper
         OpenRSC client = reflector.createClient(); //start up our client jar
         mudclient mud = reflector.getMud(client); //grab the mud from the client 
@@ -664,5 +668,79 @@ public class Main {
      * @return Controller
      */
     public static Controller getController() { return controller; }
+    
+    /**
+     * Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder.
+     */
+    private static void handleCache() {
+    	//Does the directory exist?
+    	File cacheDirectory = new File("Cache/");
+    	
+    	if(cacheDirectory.exists())
+    		return;
+    	
+    	JFrame cacheFrame = new JFrame("Cache Setup");
+    	JLabel cacheLabel = new JLabel("First setup: you must select either Uranium or Coleslaw.");
+    	JButton uraniumButton = new JButton("Uranium (2018 RSC)");
+    	JButton coleslawButton = new JButton("Coleslaw (modified RSC, new content)");
+    	
+    	uraniumButton.addActionListener(new ActionListener() {
+    		@Override
+    		public void actionPerformed(ActionEvent e) { 
+    			copyDirectory("UraniumCache", "Cache");
+    		}
+    	});
+    	
+    	coleslawButton.addActionListener(new ActionListener() {
+    		@Override
+    		public void actionPerformed(ActionEvent e) { 
+    			copyDirectory("ColeslawCache", "Cache");
+    		}
+    	});
+    	
+    	cacheFrame.setLayout(new GridLayout(0, 1));
+    	cacheFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	cacheFrame.add(cacheLabel);
+    	cacheFrame.add(uraniumButton);
+    	cacheFrame.add(coleslawButton);
+    	centerWindow(cacheFrame);
+    	cacheFrame.setVisible(true);
+    	cacheFrame.pack();
+		
+
+    	
+    	while(cacheDirectory.exists() == false) {
+    		
+    		try {
+    			Thread.sleep(100);
+    		} catch (InterruptedException e) {
+    			e.printStackTrace();
+    		}
+    		
+    		cacheDirectory = new File("Cache/");
+    	}
+    	
+    	cacheFrame.setVisible(false);
+    	cacheFrame.dispose();
+    }
+
+    private static void copyDirectory(String sourceDirectoryLocation, String destinationDirectoryLocation)  {
+    	try {
+    		    Files.walk(Paths.get(sourceDirectoryLocation))
+    		      .forEach(source -> {
+    		          Path destination = Paths.get(destinationDirectoryLocation, source.toString()
+    		            .substring(sourceDirectoryLocation.length()));
+    		          try {
+    		              Files.copy(source, destination);
+    		          } catch (IOException e) {
+    		              e.printStackTrace();
+    		          }
+    		      });
+    		}
+    	catch(Exception e) {
+    		e.printStackTrace();
+    		System.exit(1);
+    	}
+    }
 
 }

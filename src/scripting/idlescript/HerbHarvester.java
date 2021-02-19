@@ -54,9 +54,9 @@ public class HerbHarvester extends IdleScript {
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
 	public void start(String[] param) {
-		
 		controller.displayMessage("@red@HerbHarvester by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@Start in Taverly with herb clippers!");
+		controller.quitIfAuthentic();
 		
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount() < 30) {
@@ -93,8 +93,12 @@ public class HerbHarvester extends IdleScript {
 		controller.sleep(1000);
 		
 		//open gate
-		controller.atObject(341, 487);
-		controller.sleep(1000);
+		while(controller.currentX() != 341 || controller.currentY() != 487) {
+			controller.displayMessage("@red@Opening door..");
+			if(controller.getObjectAtCoord(341, 487) == 137)
+				controller.atObject(341, 487);
+			controller.sleep(5000);
+		}
 		
 		controller.walkPath(doorToBankPath);
 		

@@ -4,11 +4,9 @@ IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's
 
 
 ## Starting IdleRSC:
-1. Modify run.bat/sh
-2. Select the proper cache file:
-* If you are running OpenRSC "preservation" (i.e. original RSC menus, items, etc.) then rename the "UraniumCache" folder to "Cache".
-* If you are running OpenRSC with modifications (such as Coleslaw), then rename "ColeslawCache" to "Cache".
-3. Modify Cache/ip.txt and Cache/port.txt if needed (if you are playing on the default game.openrsc.com servers then you do not need to.)
+1. Modify run.bat/sh.
+2. Select which server you want.
+3. **Optional**: if playing on a different server which allows botting, modify Cache/ip.txt and Cache/port.txt if needed.
 4. Run .bat/.sh file!
 
 ## Sleeping:

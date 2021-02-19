@@ -1,3 +1,22 @@
+FEB 18 2021
+	You no longer have to create the Cache folder. Upon starting the bot for the first time, you can select Uranium or Coleslaw via a popup GUI.  
+	Screenshots are now output as PNG, not BMP.
+	Screenshots are now saved to the "Screenshots/" folder.
+	
+	AIOSmelter's goldsmithing gauntlets bug fixed.
+	AIOFighter now no longer freezes the whole client when unable to mage monsters. 
+	AIOFighter now will no longer logout if you equip arrows on Coleslaw.
+	AIOThiever will now walk outside after banking, instead of waiting for an NPC to become visible.
+	HerbHarvester and LimpySnapez should not get stuck on the Taverly gate if someone else walks through it. 
+	AIOCooker now has paint.
+	
+	New Controller method: getInventoryUniqueItemIds(). Useful for banking.
+	New Controller method: withdrawItemAsNote(id, amount). Only works on Coleslaw.
+	New Controller method: isItemIdEquipped(itemId). Required for Coleslaw support, since when you equip an item in Coleslaw, it is removed from your inventory.
+	New Controller method: quitIfAuthentic(). For scripts which are designed to only work on Coleslaw.
+	
+	
+
 FEB 17 2021
 	Minor Controller refactoring which does not break scripts. This is to make the javadoc more readable.
 	Controller now allows you to enable/disable bot paint (i.e. progress reports), bot status, bot coords, and bot xp counter.

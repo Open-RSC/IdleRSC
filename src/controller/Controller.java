@@ -1393,6 +1393,26 @@ public class Controller {
 //
 //		return false;
 	}
+	
+	/**
+	 * Whether or not the specified item ID is equipped. This is different from {@link Controller.isEquipped} due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected on Uranium.
+	 * @param itemId
+	 * @return
+	 */
+	public boolean isItemIdEquipped(int itemId) {
+		if(this.isAuthentic())
+			return this.isEquipped(this.getInventoryItemSlotIndex(itemId));
+		
+		ItemDef[] equippedItems = this.getMud().equippedItems;
+		for(ItemDef item : equippedItems) {
+			if(item != null) {
+				if(item.getName() == this.getItemName(itemId))
+					return true;
+			}
+		}
+		
+		return false;
+	}
 
 	/**
 	 * Equips the item in the specified slot. Note that this does not use an item id, but a slot index. 
@@ -3570,6 +3590,16 @@ public class Controller {
 		
 
 		return mud.getWorld().findPath(pathX, pathZ, startX, startZ, _x, _x, _y, _y, includeTileEdges) >= 1;
+	}
+	
+	/**
+	 * If running on an authentic server, this stops the script and outputs a message about compatability. 
+	 */
+	public void quitIfAuthentic() {
+		if(this.isAuthentic()) {
+			this.log("This script is not designed to run on authentic servers (\"Uranium\".) This is only supported on Coleslaw.");
+			this.stop();
+		}
 	}
 }
  

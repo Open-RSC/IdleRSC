@@ -130,6 +130,7 @@ public class AIOThiever extends IdleScript {
     			} catch(Exception e) {
     				System.out.println("Could not parse parameters!");
     				controller.displayMessage("@red@Could not parse parameters!");
+    				controller.stop();
     			}
     		}
     	}

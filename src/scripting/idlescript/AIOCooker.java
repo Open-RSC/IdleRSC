@@ -27,6 +27,10 @@ public class AIOCooker extends IdleScript {
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	
+	long startTimestamp = System.currentTimeMillis() / 1000L;
+	int success = 0;
+	int failure = 0;
+	
 	
     class FoodObject {
 		String name;
@@ -241,6 +245,41 @@ public class AIOCooker extends IdleScript {
     	centerWindow(scriptFrame);
     	scriptFrame.setVisible(true);
     	scriptFrame.pack();
+    }
+    
+    @Override
+    public void serverMessageInterrupt(String message) {
+    	if(message.contains("nicely cooked"))
+    		success++;
+    }
+    
+    @Override
+    public void questMessageInterrupt(String message) {
+    	if(message.contains("burn the"))
+        	failure++;
+    }
+	
+    @Override
+    public void paintInterrupt() {
+        if(controller != null) {
+        			
+        	int successPerHr = 0;
+        	float ratio = 0;
+        	try {
+        		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        		float scale = (60 * 60) / timeRan;
+        		successPerHr = (int)(success * scale);
+        		ratio = (float)success / (float)failure;
+        	} catch(Exception e) {
+        		//divide by zero
+        	}
+        	
+            controller.drawBoxAlpha(7, 7, 160, 21+14+14+14, 0xFF0000, 128);
+            controller.drawString("@red@AIOCooker @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@red@Successes: @whi@" + String.format("%,d", success) + " @red@(@whi@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 10, 21+14, 0xFFFFFF, 1);
+            controller.drawString("@red@Failures: @whi@" + String.format("%,d", failure), 10, 21+14+14, 0xFFFFFF, 1);
+            controller.drawString("@red@Ratio: @whi@" + String.format("%.2f", ratio), 10, 21+14+14+14, 0xFFFFFF, 1);
+        }
     }
     	
 }

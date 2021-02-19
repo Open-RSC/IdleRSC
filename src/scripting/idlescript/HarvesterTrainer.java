@@ -11,10 +11,10 @@ public class HarvesterTrainer extends IdleScript {
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
 	public void start(String parameters[]) {
-		
 		controller.displayMessage("@red@HarvesterTrainer by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@If less than 85 harvesting, start in Draynor/Lumbridge field.");
 		controller.displayMessage("@red@If >85 harvesting, start in Ardougne field.");
+		controller.quitIfAuthentic();
 		
 		while(controller.isRunning()) {
 			int objectId = 1265;

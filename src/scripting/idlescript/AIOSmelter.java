@@ -7,7 +7,9 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,7 +39,7 @@ public class AIOSmelter extends IdleScript {
 	boolean scriptStarted = false;
 
 	int barId = -1;
-	int[] barIds = { 169, 170, 384, 171, 1041, 172, 173, 174, 408 };
+	int[] barIds = { 169, 170, 384, 171, 1041, 172, 173, 174, 408, 44, 1027, 283, 288, 296, 284, 289, 297, 285, 290, 298, 286, 291, 299, 287, 292, 300, 543, 544, 524 };
 	
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	int success = 0;
@@ -97,6 +99,161 @@ public class AIOSmelter extends IdleScript {
 					put(155, 24);
 				}
 			});
+			//Holy symbol
+			put(44, new HashMap<Integer, Integer>() {
+				{
+					put(384, 29);
+					put(386, 1);
+				}
+			});
+			//Unholy symbol
+			put(1027, new HashMap<Integer, Integer>() {
+				{
+					put(384, 29);
+					put(1026, 1);
+				}
+			});
+			//Gold ring
+			put(283, new HashMap<Integer, Integer>() {
+				{
+					put(293, 1);
+					put(691, 29);
+				}
+			});
+			//Gold necklace
+			put(288, new HashMap<Integer, Integer>() {
+				{
+					put(295, 1);
+					put(691, 29);
+				}
+			});
+			//Gold amulet
+			put(296, new HashMap<Integer, Integer>() {
+				{
+					put(294, 1);
+					put(691, 29);
+				}
+			});
+			//Sapphire ring
+			put(284, new HashMap<Integer, Integer>() {
+				{
+					put(293, 1);
+					put(691, 14);
+					put(164, 14);
+				}
+			});
+			//Sapphire necklace
+			put(289, new HashMap<Integer, Integer>() {
+				{
+					put(295, 1);
+					put(691, 14);
+					put(164, 14);
+				}
+			});
+			//Sapphire amulet
+			put(297, new HashMap<Integer, Integer>() {
+				{
+					put(294, 1);
+					put(691, 14);
+					put(164, 14);
+				}
+			});
+			//Emerald ring
+			put(285, new HashMap<Integer, Integer>() {
+				{
+					put(293, 1);
+					put(691, 14);
+					put(163, 14);
+				}
+			});
+			//Emerald necklace
+			put(290, new HashMap<Integer, Integer>() {
+				{
+					put(295, 1);
+					put(691, 14);
+					put(163, 14);
+				}
+			});
+			//Emerald amulet
+			put(298, new HashMap<Integer, Integer>() {
+				{
+					put(294, 1);
+					put(691, 14);
+					put(163, 14);
+				}
+			});
+			//Ruby ring
+			put(286, new HashMap<Integer, Integer>() {
+				{
+					put(293, 1);
+					put(691, 14);
+					put(162, 14);
+				}
+			});
+			//Ruby necklace
+			put(291, new HashMap<Integer, Integer>() {
+				{
+					put(295, 1);
+					put(691, 14);
+					put(162, 14);
+				}
+			});
+			//Ruby amulet
+			put(299, new HashMap<Integer, Integer>() {
+				{
+					put(294, 1);
+					put(691, 14);
+					put(162, 14);
+				}
+			});
+			//Diamond ring
+			put(287, new HashMap<Integer, Integer>() {
+				{
+					put(293, 1);
+					put(691, 14);
+					put(161, 14);
+				}
+			});
+			//Diamond necklace
+			put(292, new HashMap<Integer, Integer>() {
+				{
+					put(295, 1);
+					put(691, 14);
+					put(161, 14);
+				}
+			});
+			//Diamond amulet
+			put(300, new HashMap<Integer, Integer>() {
+				{
+					put(294, 1);
+					put(691, 14);
+					put(161, 14);
+				}
+			});
+			//Dragonstone ring
+			put(543, new HashMap<Integer, Integer>() {
+				{
+					put(293, 1);
+					put(691, 14);
+					put(523, 14);
+				}
+			});
+			//Dragonstone necklace
+			put(544, new HashMap<Integer, Integer>() {
+				{
+					put(295, 1);
+					put(691, 14);
+					put(523, 14);
+				}
+			});
+			//Dragonstone amulet
+			put(524, new HashMap<Integer, Integer>() {
+				{
+					put(294, 1);
+					put(691, 14);
+					put(523, 14);
+				}
+			});
 		}
 	};
 
@@ -116,6 +273,7 @@ public class AIOSmelter extends IdleScript {
 	public void scriptStart() {
 		if (isEnoughOre()) {
 			while (controller.getNearestObjectById(118) == null) {
+				controller.setStatus("Walking to furnace..");
 				if (destination.getSelectedIndex() == 0) {
 					controller.walkTo(318, 551, 0, true);
 					controller.walkTo(311, 545, 0, true);
@@ -124,36 +282,69 @@ public class AIOSmelter extends IdleScript {
 					controller.walkTo(84, 679, 0, true);
 				}
 			}
-			int oreId = ingredients.entrySet().iterator().next().getKey();
-
+			Iterator<Entry<Integer, Integer>> iterator = ingredients.entrySet().iterator();
+			int oreId = iterator.next().getKey();
+			int mouldAnswer = -1;
+			int gemAnswer = 0;
+			
 			if (oreId == 1057) { // do not use the cannonball mold on the furnace!
 				oreId = 171;
+			} else if(controller.getInventoryItemCount(293) > 0) {
+				oreId = 691;
+				mouldAnswer = 0;
+			} else if(controller.getInventoryItemCount(295) > 0) {
+				oreId = 691;
+				mouldAnswer = 1;
+			} else if(controller.getInventoryItemCount(294) > 0) {
+				oreId = 691;
+				mouldAnswer = 2;
 			}
 
+			if(controller.getInventoryItemCount(164) > 0)
+				gemAnswer = 1;
+			if(controller.getInventoryItemCount(163) > 0)
+				gemAnswer = 2;
+			if(controller.getInventoryItemCount(162) > 0)
+				gemAnswer = 3;
+			if(controller.getInventoryItemCount(161) > 0)
+				gemAnswer = 4;
+			if(controller.getInventoryItemCount(523) > 0) 
+				gemAnswer = 5;
+			
 			while (controller.getInventoryItemCount(oreId) > 0 && controller.getNearestObjectById(118) != null) {
 
 				while (controller.isBatching())
 					controller.sleep(10);
 
 				if (controller.getInventoryItemCount(699) > 0) { // wield gauntlets
+					controller.setStatus("Wielding gauntlets..");
 					controller.equipItem(controller.getInventoryItemSlotIndex(699));
 					controller.sleep(618);
 				}
 
+				controller.setStatus("Smelting!");
 				controller.sleepHandler(98, true);
 				controller.useItemIdOnObject(controller.getNearestObjectById(118)[0],
 						controller.getNearestObjectById(118)[1], oreId);
-				if (oreId == 171)
-					controller.sleep(3000); // cannonballs take way longer and can be interrupted by starting another
-											// one.
-				else
+				
+				if (oreId == 171) {
+					controller.sleep(3000); // cannonballs take way longer and can be interrupted by starting another one
+				} else if(oreId == 691) {
+					controller.sleep(800);
+					controller.optionAnswer(mouldAnswer);
+					controller.sleep(800);
+					controller.optionAnswer(gemAnswer);
+					controller.sleep(250);
+				} else {
 					controller.sleep(618);
+				}
 
 				while (controller.isBatching())
 					controller.sleep(10);
 			}
 
 		} else {
+			controller.setStatus("Banking..");
 			if (destination.getSelectedIndex() == 0) {
 				controller.walkTo(318, 551, 0, true);
 				controller.walkTo(329, 553, 0, true);
@@ -216,7 +407,11 @@ public class AIOSmelter extends IdleScript {
 		JLabel header = new JLabel("Start in Falador or Al-Kharid bank!");
 		JLabel barLabel = new JLabel("Bar Type:");
 		JComboBox<String> barField = new JComboBox<String>(new String[] { "Bronze Bar", "Iron Bar", "Silver Bar",
-				"Steel Bar", "Cannonball", "Gold Bar", "Mithril Bar", "Adamantite Bar", "Runite Bar" });
+				"Steel Bar", "Cannonball", "Gold Bar", "Mithril Bar", "Adamantite Bar", "Runite Bar", 
+				"Holy symbol","Unholy symbol","Gold ring","Gold necklace","Gold amulet","Sapphire ring",
+				"Sapphire necklace","Sapphire amulet","Emerald ring","Emerald necklace","Emerald amulet",
+				"Ruby ring","Ruby necklace","Ruby amulet","Diamond ring","Diamond necklace","Diamond amulet",
+				"Dragonstone ring","Dragonstone necklace","Dragonstone amulet" });
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
@@ -257,7 +452,7 @@ public class AIOSmelter extends IdleScript {
 	
     @Override
     public void questMessageInterrupt(String message) {
-    	if(message.contains("retrieve a"))
+    	if(message.contains("retrieve a") || message.contains("make a"))
         	success++;
     }
 	
@@ -275,7 +470,7 @@ public class AIOSmelter extends IdleScript {
         	}
         	
             controller.drawBoxAlpha(7, 7, 160, 21+14, 0xFF0000, 128);
-            controller.drawString("@red@AIOCooker @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@red@AIOSmelter @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
             controller.drawString("@red@Smelts: @whi@" + String.format("%,d", success) + " @red@(@whi@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 10, 21+14, 0xFFFFFF, 1);
         }
     }

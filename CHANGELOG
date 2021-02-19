@@ -1,3 +1,7 @@
+FEB 19 2021
+	AIOSmelter now supports silver, gold, and gem furnace crafting items
+	AIOSmelter now supports command line arguments
+
 FEB 18 2021
 	You no longer have to create the Cache folder. Upon starting the bot for the first time, you can select Uranium or Coleslaw via a popup GUI.  
 	Screenshots are now output as PNG, not BMP.

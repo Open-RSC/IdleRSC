@@ -1,14 +1,6 @@
-!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
-
-This is an alpha version. I am not responsible for any lost items or ruined accounts.
-
-!WARNING! !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!!WARNING! !WARNING! !WARNING! !WARNING! 
-
-*****
-
 IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's own custom scripting API. It also has backwards compatibility with SBot.
 
-[![IdleRSC Demo Video](https://img.youtube.com/vi/Bkp2M3Ja9qc/0.jpg)](https://www.youtube.com/watch?v=Bkp2M3Ja9qc)
+[![IdleRSC Demo Video](https://i.imgur.com/NMU2sbB.png)](https://www.youtube.com/watch?v=Bkp2M3Ja9qc)
 
 
 ## Starting IdleRSC:
@@ -18,11 +10,14 @@ IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's
 4. Run .bat/.sh file!
 
 ## Sleeping:
-IdleRSC does not have a built in sleeper. Anyone with experience dealing with making OCR programs, please see issue #25.
+IdleRSC can be used with any sleeper which will take hc.bmp and spit out slword.txt. You can also use [FOCR Resurrection](https://gitlab.com/idlersc/focr-resurrection). 
 
 ## Account Security:
 Please be aware that run.bat is not encrypted. If someone has your run.bat, they have your username and password. 
 Please be aware that you should not run any .class files from sources you do not trust. Running a rogue .class file is akin to running a .exe file on your computer. IF YOU DON'T TRUST IT, READ THE SOURCE CODE AND COMPILE IT!!!
+
+## Lost Items, Accounts, etc:
+Developers of IdleRSC are not responsible for ruined, banned, hacked accounts, or anything else. 
 	
 ## Compiling Scripts:
 ### Linux:
@@ -35,7 +30,8 @@ Please be aware that you should not run any .class files from sources you do not
 2. Add a new script to the `scripting` package.
 3. Your class file will be spit out into bin/scripting/ if successfully compiled.		
 #### SBot:
-Easy Method: (((NOT PREFERRED IF YOU ARE WANTING TO DEVELOP SCRIPTS))) WARNING: This will delete your JAR file!!!
+Easy Method: (NOT PREFERRED IF YOU ARE WANTING TO DEVELOP SCRIPTS) 
+WARNING: This will delete your JAR file!!!
 1. Place your script in src/scripting/sbot/
 2. Run compile_windows.bat (or compile_linux.sh)
 3. Ensure no issues compiling (they will be towards the top.)

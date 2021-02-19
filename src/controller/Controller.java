@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -3017,6 +3018,10 @@ public class Controller {
 		}
 
 		return results;
+	}
+	
+	public int[] getInventoryUniqueItemIds() {
+		return IntStream.of(this.getInventoryItemIds()).distinct().toArray();
 	}
 
 	

@@ -1198,6 +1198,12 @@ public abstract class Script
 		WaitForLoad();
 		return controller.isItemWearable(type);
 	}
+	
+	/**
+	 * Since this function uses an item slot, on Coleslaw, it is permanently broken. Scripts will have to be rewritten which use this function on Coleslaw.
+	 * @param slot
+	 * @return
+	 */
 	public boolean IsWorn(int slot)
 	{
 		Main.logMethod("IsWorn", slot);

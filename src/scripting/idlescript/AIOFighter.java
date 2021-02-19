@@ -196,7 +196,7 @@ public class AIOFighter extends IdleScript {
 	    			
 	    			boolean hasArrows = false;
 	    			for(int id : arrowIds) {
-		    			if(controller.getInventoryItemCount(id) > 0) {
+		    			if(controller.getInventoryItemCount(id) > 0 || controller.isItemIdEquipped(id)) {
 		    				hasArrows = true;
 		    				break;
 		    			}

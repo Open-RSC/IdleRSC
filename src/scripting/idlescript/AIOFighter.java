@@ -530,7 +530,7 @@ public class AIOFighter extends IdleScript {
         	spellsCasted++;
         else if(message.equals("I can't get a clear shot from here")) {
 			controller.setStatus("@red@Walking to NPC to get a shot...");
-			controller.walktoNPC(currentAttackingNpc, 1);
+			controller.walktoNPCAsync(currentAttackingNpc);
 		}
     }
 	

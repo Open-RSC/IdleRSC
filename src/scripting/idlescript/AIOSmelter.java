@@ -24,25 +24,36 @@ import javax.swing.JLabel;
  * It has the following features:
  * 
  * * GUI 
+ * * CLI arg support (example: "AIOSmelter" "Falador" "Gold amulet")
  * * All bars smeltable 
  * * Goldsmithing gauntlets support 
  * * Cannonball support
+ * * Silver/gold/gem items craftable
  * 
  * 
  * @author Dvorak (modified by Searos)
  */
 
 public class AIOSmelter extends IdleScript {
-	JComboBox<String> destination = new JComboBox<String>(new String[] { "Falador", "Al-Kharid" });
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 
 	int barId = -1;
+	int destinationId = -1;
 	int[] barIds = { 169, 170, 384, 171, 1041, 172, 173, 174, 408, 44, 1027, 283, 288, 296, 284, 289, 297, 285, 290, 298, 286, 291, 299, 287, 292, 300, 543, 544, 524 };
 	
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	int success = 0;
+	
+	String[] options = new String[] {"Bronze Bar", "Iron Bar", "Silver Bar",
+			"Steel Bar", "Cannonballs", "Gold Bar", "Mithril Bar", "Adamantite Bar", "Runite Bar", 
+			"Holy symbol","Unholy symbol","Gold ring","Gold necklace","Gold amulet","Sapphire ring",
+			"Sapphire necklace","Sapphire amulet","Emerald ring","Emerald necklace","Emerald amulet",
+			"Ruby ring","Ruby necklace","Ruby amulet","Diamond ring","Diamond necklace","Diamond amulet",
+			"Dragonstone ring","Dragonstone necklace","Dragonstone amulet"};
+	
+	String[] destinations = new String[] { "Falador", "Al-Kharid" };
 	
 
 	Map<Integer, Map<Integer, Integer>> ingredientsMapping = new HashMap<Integer, Map<Integer, Integer>>() {
@@ -260,13 +271,53 @@ public class AIOSmelter extends IdleScript {
 	Map<Integer, Integer> ingredients = null;
 
 	public void start(String parameters[]) {
-		if (!guiSetup) {
-			setupGUI();
-			guiSetup = true;
-		}
-
-		if (scriptStarted) {
+		if(scriptStarted) { 
 			scriptStart();
+		} else {
+			if(parameters[0].equals("")) {
+				if (!guiSetup) {
+					setupGUI();
+					guiSetup = true;
+				}
+		
+				if (scriptStarted) {
+					scriptStart();
+				}
+			} else {
+				try {
+					
+					for(int i = 0; i < destinations.length; i++) {
+						String option = destinations[i];
+						
+						if(option.toLowerCase().equals(parameters[0].toLowerCase())) {
+							destinationId = i;
+							break;
+						}
+					}
+					
+					for(int i = 0; i < options.length; i++) {
+						String option = options[i];
+						
+						if(option.toLowerCase().equals(parameters[1].toLowerCase())) {
+							barId = barIds[i];
+							ingredients = ingredientsMapping.get(barId);
+							break;
+						}
+					}
+					
+					if(barId == -1 || ingredients == null)
+						throw new Exception("Ingredients not selected!");
+					
+					scriptStarted = true;
+					controller.displayMessage("@red@AIOSmelter by Dvorak. Let's party like it's 2004!");
+				}
+				catch(Exception e) {
+					System.out.println("Could not parse parameters!");
+					controller.displayMessage("@red@Could not parse parameters!");
+					controller.stop();
+				}
+				
+			}
 		}
 	}
 
@@ -274,11 +325,11 @@ public class AIOSmelter extends IdleScript {
 		if (isEnoughOre()) {
 			while (controller.getNearestObjectById(118) == null) {
 				controller.setStatus("Walking to furnace..");
-				if (destination.getSelectedIndex() == 0) {
+				if (destinationId == 0) {
 					controller.walkTo(318, 551, 0, true);
 					controller.walkTo(311, 545, 0, true);
 				}
-				if (destination.getSelectedIndex() == 1) {
+				if (destinationId == 1) {
 					controller.walkTo(84, 679, 0, true);
 				}
 			}
@@ -345,11 +396,11 @@ public class AIOSmelter extends IdleScript {
 
 		} else {
 			controller.setStatus("Banking..");
-			if (destination.getSelectedIndex() == 0) {
+			if (destinationId == 0) {
 				controller.walkTo(318, 551, 0, true);
 				controller.walkTo(329, 553, 0, true);
 			}
-			if (destination.getSelectedIndex() == 1) {
+			if (destinationId == 1) {
 				controller.walkTo(87, 694, 0, true);
 			}
 			controller.openBank();
@@ -368,6 +419,8 @@ public class AIOSmelter extends IdleScript {
 				if(entry.getKey() == 151 || entry.getKey() == 153) {
 					if(controller.getInventoryItemCount(1263) > 0)
 						controller.withdrawItem(entry.getKey(), entry.getValue() - 1);
+					else
+						controller.withdrawItem(entry.getKey(), entry.getValue());
 						
 				} else {
 					controller.withdrawItem(entry.getKey(), entry.getValue());
@@ -405,19 +458,16 @@ public class AIOSmelter extends IdleScript {
 
 	public void setupGUI() {
 		JLabel header = new JLabel("Start in Falador or Al-Kharid bank!");
+		JComboBox<String> destination = new JComboBox<String>(destinations);
 		JLabel barLabel = new JLabel("Bar Type:");
-		JComboBox<String> barField = new JComboBox<String>(new String[] { "Bronze Bar", "Iron Bar", "Silver Bar",
-				"Steel Bar", "Cannonball", "Gold Bar", "Mithril Bar", "Adamantite Bar", "Runite Bar", 
-				"Holy symbol","Unholy symbol","Gold ring","Gold necklace","Gold amulet","Sapphire ring",
-				"Sapphire necklace","Sapphire amulet","Emerald ring","Emerald necklace","Emerald amulet",
-				"Ruby ring","Ruby necklace","Ruby amulet","Diamond ring","Diamond necklace","Diamond amulet",
-				"Dragonstone ring","Dragonstone necklace","Dragonstone amulet" });
+		JComboBox<String> barField = new JComboBox<String>(options);
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				barId = barIds[barField.getSelectedIndex()];
+				destinationId = destination.getSelectedIndex();
 				ingredients = ingredientsMapping.get(barId);
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();

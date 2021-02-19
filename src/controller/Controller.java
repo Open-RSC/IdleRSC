@@ -1895,7 +1895,7 @@ public class Controller {
 		}
 
 		try {
-			ImageIO.write(img, "bmp", new File(filename + ".bmp"));
+			ImageIO.write(img, "png", new File(filename + ".png"));
 			Main.log("Screenshot saved.");
 		} catch (IOException e) {
 			e.printStackTrace();

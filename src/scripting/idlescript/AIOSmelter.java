@@ -170,6 +170,9 @@ public class AIOSmelter extends IdleScript {
 			}
 
 			for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
+				if(entry.getKey() == 699)
+					continue; 
+				
 				controller.withdrawItem(entry.getKey(), entry.getValue());
 				controller.sleep(618);
 			}
@@ -180,6 +183,9 @@ public class AIOSmelter extends IdleScript {
 
 	public boolean isEnoughOre() {
 		for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
+			if(entry.getKey() == 699)
+				continue;
+				
 			if (controller.getInventoryItemCount(entry.getKey()) < entry.getValue())
 				return false;
 		}

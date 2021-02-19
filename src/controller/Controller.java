@@ -1750,6 +1750,36 @@ public class Controller {
 	}
 	
 	/**
+	 * Withdraws the specified item, as a note, of specified amount, from the bank. Only works on Coleslaw. 
+	 * 
+	 * @param itemId
+	 * @param amount
+	 * @return boolean -- returns true if you already have that amount in your inventory. Returns false if you do not currently have that amount, or if you do not have the bank open.
+	 */
+	public boolean withdrawItemAsNote(int itemId, int amount) {
+		if(!Config.S_WANT_BANK_NOTES) {
+			this.displayMessage("@whi@ERROR: @red@Server is not configured to use bank notes");
+			return false;
+		}
+		
+		if(isInBank() == false)
+			return false;
+
+		if(getInventoryItemCount(itemId) >= amount)
+			return true;
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(22);
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
+		mud.packetHandler.getClientStream().bufferBits.putByte(1);
+		
+		mud.packetHandler.getClientStream().finishPacket();
+
+		return false;
+	}
+	
+	/**
 	 * Dislays a message in the client chat window, of the specified orsc.enumerations.MessageType.
 	 * 
 	 * @param rstext -- you may use @col@ colors here.

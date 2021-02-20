@@ -94,6 +94,7 @@ public class AIOMagic extends IdleScript {
 				//we are just teleporting
 				controller.setStatus("Casting!");
 				controller.castSpellOnSelf(spellId);
+				controller.sleep(1300);
 			} else {
 				if(selectedItemId != -1 || selectedJewelryId != -1) {
 					//we are just withdrawing 29 or 28 of a single item and casting a spell on it
@@ -148,7 +149,6 @@ public class AIOMagic extends IdleScript {
 			}
 			
 			controller.sleepHandler(98, true);
-			controller.sleep(1300);
 		}
 	}
 

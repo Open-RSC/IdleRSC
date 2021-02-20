@@ -1,3 +1,9 @@
+FEB 20 2021
+	AIOSmelter no longer tries to use "perfect gold bar" instead of "gold bar" for crafting jewelry
+	AIOMagic now has quicker wait times, leading to increased casts per hr. 
+	Controller.openBank() will now immediately return within ~10ms of the bank opening, leading to MUCH faster banking times for scripts that use it.
+
+
 FEB 19 2021
 	AIOSmelter now supports silver, gold, and gem furnace crafting items
 	AIOSmelter now supports command line arguments

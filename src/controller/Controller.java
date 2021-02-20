@@ -2830,9 +2830,18 @@ public class Controller {
 		mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
-
-
-
+	
+	/**
+	 * Casts the specified spell on the player.
+	 * 
+	 * @param spellId
+	 */
+	public void castSpellOnSelf(int spellId) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(137);
+		mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
 
 	/**
 	 * Trades the specified player.

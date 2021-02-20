@@ -907,11 +907,13 @@ public abstract class Script
 		controller.useItemSlotOnObject(x, y, slotId);
 	}
 	/**
-	 * <b> NOT IMPLEMENTED YET </b>
+	 * Casts the specified spell id on the player.
 	 */
 	public void Magic(int spell)
 	{
-		//THIS IS NOT IMPLEMENTED.
+		Main.logMethod("Magic", spell);
+		WaitForLoad();
+		controller.castSpellOnSelf(spell);
 	}
 	/**
 	 * Whether or not an NPC option menu is present.

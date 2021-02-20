@@ -128,28 +128,28 @@ public class AIOSmelter extends IdleScript {
 			put(283, new HashMap<Integer, Integer>() {
 				{
 					put(293, 1);
-					put(691, 29);
+					put(172, 29);
 				}
 			});
 			//Gold necklace
 			put(288, new HashMap<Integer, Integer>() {
 				{
 					put(295, 1);
-					put(691, 29);
+					put(172, 29);
 				}
 			});
 			//Gold amulet
 			put(296, new HashMap<Integer, Integer>() {
 				{
 					put(294, 1);
-					put(691, 29);
+					put(172, 29);
 				}
 			});
 			//Sapphire ring
 			put(284, new HashMap<Integer, Integer>() {
 				{
 					put(293, 1);
-					put(691, 14);
+					put(172, 14);
 					put(164, 14);
 				}
 			});
@@ -157,7 +157,7 @@ public class AIOSmelter extends IdleScript {
 			put(289, new HashMap<Integer, Integer>() {
 				{
 					put(295, 1);
-					put(691, 14);
+					put(172, 14);
 					put(164, 14);
 				}
 			});
@@ -165,7 +165,7 @@ public class AIOSmelter extends IdleScript {
 			put(297, new HashMap<Integer, Integer>() {
 				{
 					put(294, 1);
-					put(691, 14);
+					put(172, 14);
 					put(164, 14);
 				}
 			});
@@ -173,7 +173,7 @@ public class AIOSmelter extends IdleScript {
 			put(285, new HashMap<Integer, Integer>() {
 				{
 					put(293, 1);
-					put(691, 14);
+					put(172, 14);
 					put(163, 14);
 				}
 			});
@@ -181,7 +181,7 @@ public class AIOSmelter extends IdleScript {
 			put(290, new HashMap<Integer, Integer>() {
 				{
 					put(295, 1);
-					put(691, 14);
+					put(172, 14);
 					put(163, 14);
 				}
 			});
@@ -189,7 +189,7 @@ public class AIOSmelter extends IdleScript {
 			put(298, new HashMap<Integer, Integer>() {
 				{
 					put(294, 1);
-					put(691, 14);
+					put(172, 14);
 					put(163, 14);
 				}
 			});
@@ -197,7 +197,7 @@ public class AIOSmelter extends IdleScript {
 			put(286, new HashMap<Integer, Integer>() {
 				{
 					put(293, 1);
-					put(691, 14);
+					put(172, 14);
 					put(162, 14);
 				}
 			});
@@ -205,7 +205,7 @@ public class AIOSmelter extends IdleScript {
 			put(291, new HashMap<Integer, Integer>() {
 				{
 					put(295, 1);
-					put(691, 14);
+					put(172, 14);
 					put(162, 14);
 				}
 			});
@@ -213,7 +213,7 @@ public class AIOSmelter extends IdleScript {
 			put(299, new HashMap<Integer, Integer>() {
 				{
 					put(294, 1);
-					put(691, 14);
+					put(172, 14);
 					put(162, 14);
 				}
 			});
@@ -221,7 +221,7 @@ public class AIOSmelter extends IdleScript {
 			put(287, new HashMap<Integer, Integer>() {
 				{
 					put(293, 1);
-					put(691, 14);
+					put(172, 14);
 					put(161, 14);
 				}
 			});
@@ -229,7 +229,7 @@ public class AIOSmelter extends IdleScript {
 			put(292, new HashMap<Integer, Integer>() {
 				{
 					put(295, 1);
-					put(691, 14);
+					put(172, 14);
 					put(161, 14);
 				}
 			});
@@ -237,7 +237,7 @@ public class AIOSmelter extends IdleScript {
 			put(300, new HashMap<Integer, Integer>() {
 				{
 					put(294, 1);
-					put(691, 14);
+					put(172, 14);
 					put(161, 14);
 				}
 			});
@@ -245,7 +245,7 @@ public class AIOSmelter extends IdleScript {
 			put(543, new HashMap<Integer, Integer>() {
 				{
 					put(293, 1);
-					put(691, 14);
+					put(172, 14);
 					put(523, 14);
 				}
 			});
@@ -253,7 +253,7 @@ public class AIOSmelter extends IdleScript {
 			put(544, new HashMap<Integer, Integer>() {
 				{
 					put(295, 1);
-					put(691, 14);
+					put(172, 14);
 					put(523, 14);
 				}
 			});
@@ -261,7 +261,7 @@ public class AIOSmelter extends IdleScript {
 			put(524, new HashMap<Integer, Integer>() {
 				{
 					put(294, 1);
-					put(691, 14);
+					put(172, 14);
 					put(523, 14);
 				}
 			});
@@ -274,7 +274,7 @@ public class AIOSmelter extends IdleScript {
 		if(scriptStarted) { 
 			scriptStart();
 		} else {
-			if(parameters[0].equals("")) {
+			if(parameters.length == 0) {
 				if (!guiSetup) {
 					setupGUI();
 					guiSetup = true;
@@ -341,13 +341,13 @@ public class AIOSmelter extends IdleScript {
 			if (oreId == 1057) { // do not use the cannonball mold on the furnace!
 				oreId = 171;
 			} else if(controller.getInventoryItemCount(293) > 0) {
-				oreId = 691;
+				oreId = 172;
 				mouldAnswer = 0;
 			} else if(controller.getInventoryItemCount(295) > 0) {
-				oreId = 691;
+				oreId = 172;
 				mouldAnswer = 1;
 			} else if(controller.getInventoryItemCount(294) > 0) {
-				oreId = 691;
+				oreId = 172;
 				mouldAnswer = 2;
 			}
 
@@ -380,7 +380,7 @@ public class AIOSmelter extends IdleScript {
 				
 				if (oreId == 171) {
 					controller.sleep(3000); // cannonballs take way longer and can be interrupted by starting another one
-				} else if(oreId == 691) {
+				} else if(oreId == 172) {
 					controller.sleep(800);
 					controller.optionAnswer(mouldAnswer);
 					controller.sleep(800);

@@ -1,3 +1,7 @@
+FEB 20 2021
+	AIOSmelter no longer tries to use "perfect gold bar" instead of "gold bar" for crafting jewelry
+
+
 FEB 19 2021
 	AIOSmelter now supports silver, gold, and gem furnace crafting items
 	AIOSmelter now supports command line arguments

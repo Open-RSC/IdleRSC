@@ -1,6 +1,10 @@
 FEB 19 2021
 	AIOSmelter now supports silver, gold, and gem furnace crafting items
 	AIOSmelter now supports command line arguments
+	Updated README.md to include OpenRSC Discord and IdleRSC donation link 
+	Added castSpellOnSelf to IdleRSC and SBot
+	Added AlchWheat for high/low alchemy training
+	AIOMagic -- handles magic bank spells (alching, enchanting, superheat) and teleporting.
 
 FEB 18 2021
 	You no longer have to create the Cache folder. Upon starting the bot for the first time, you can select Uranium or Coleslaw via a popup GUI.  

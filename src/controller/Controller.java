@@ -3184,6 +3184,22 @@ public class Controller {
     }
 
     /**
+     * This will sleep for max 2000ms, unless bank window comes open first.
+     */
+    private void openBank_sleep() {
+    	int ticks = 0;
+    	
+    	while(ticks < 200) {
+    		if(this.isInBank())
+    			return;
+    		
+    		this.sleep(10);
+    		ticks++;
+    	}
+    	
+    }
+    
+    /**
      * Will open bank near any bank NPC or bank chest. Uses right click option if possible. Does not return until the bank screen is open. Hence, if no banker/chest is present, this function will block and not return until one is found.
      */
     public void openBank() {
@@ -3205,12 +3221,12 @@ public class Controller {
 					while (!isInBank()) {
 						if(getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
 							 npcCommand1(bankerIndex);
-							 sleep(2000);
+							 openBank_sleep();
 						} else {
 							 talkToNpc(bankerIndex);
 							 sleep(3000);
 							 optionAnswer(0);
-							 sleep(2000);
+							 openBank_sleep();
 						}
 					}
 				}
@@ -3224,7 +3240,7 @@ public class Controller {
 
 					while (!isInBank()) {
 						atObject(bankChestId[0], bankChestId[1]);
-						sleep(2000);
+						openBank_sleep();
 					}
 				}
 			}

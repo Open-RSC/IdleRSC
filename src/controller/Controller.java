@@ -1722,6 +1722,9 @@ public class Controller {
 		if(!isItemInInventory(itemId)) {
 			return false;
 		}
+		
+		if(amount <= 0)
+			return true;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(23);
@@ -1754,6 +1757,9 @@ public class Controller {
 			return false;
 
 		if(getInventoryItemCount(itemId) >= amount)
+			return true;
+		
+		if(amount <= 0)
 			return true;
 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);

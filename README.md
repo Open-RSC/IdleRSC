@@ -64,16 +64,16 @@ public alch(mudclient rs)
 * Please submit issues, questions, bugs on Gitlab. Provide stack traces for crashes, etc. 
 * Please submit pull requests to Gitlab. 
 * Please do not use this on servers which do not allow botting. There are servers which allow botting, such as those already included UraniumCache/ or ColeslawCache/.
-	
-## About:
-This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure.
-	
-This is the next step after APOS.
-APOS was the next step after STS.
-STS was the next step after SBot.
-SBot was the next step after many more... 
 
-Jagex can't kill the RSC botting scene, even by killing RSC. Cheers to the OGs who made this scene what it was, and here's to hoping it will come back. 
-	
-After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released.
-	
+## Discussion: 
+Please join the <a href="https://discord.gg/CutQxDZ8Np">OpenRSC Discord</a> and post in the #botting-client-development channel. Other channels are not tied to botting, so please do not discuss botting in those channels.
+
+## Donations:
+IdleRSC is provided for free under GPLv3, due to passion for RSC botting. However, if you wish, you may donate via Liberapay, which supports all major card carriers. Absolutely no donations are accepted in exchange for features, scripts, etc. 
+
+<a href="https://liberapay.com/dvorak.keys/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
+
+## About:
+This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure. After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released.
+
+The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after APOS, STS, SBot, and AutoRune!

@@ -3,6 +3,7 @@ FEB 20 2021
 	AIOMagic now has quicker wait times, leading to increased casts per hr. 
 	Controller.openBank() will now immediately return within ~10ms of the bank opening, leading to MUCH faster banking times for scripts that use it.
 	TaverlyBuyer script added -- buys vials and newts
+	VialFiller script added -- fills vials in Falador
 
 
 FEB 19 2021

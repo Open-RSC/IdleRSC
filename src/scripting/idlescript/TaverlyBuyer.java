@@ -73,7 +73,6 @@ public class TaverlyBuyer extends IdleScript {
 	public void scriptStart() {
 		controller.displayMessage("@red@TaverlyBuyer by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@Start in Taverly with herb clippers!");
-		controller.quitIfAuthentic();
 		
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount() < 30) {

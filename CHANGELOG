@@ -1,9 +1,12 @@
+FEB 22 201
+	TaverlyBuyer script added -- buys vials and newts
+	VialFiller script added -- fills vials in Falador
+	Monkz -- basic script that kills monks in the lower level of the monastery. supports bone burying and prayer, with recharging at altar. 
+
 FEB 20 2021
 	AIOSmelter no longer tries to use "perfect gold bar" instead of "gold bar" for crafting jewelry
 	AIOMagic now has quicker wait times, leading to increased casts per hr. 
 	Controller.openBank() will now immediately return within ~10ms of the bank opening, leading to MUCH faster banking times for scripts that use it.
-	TaverlyBuyer script added -- buys vials and newts
-	VialFiller script added -- fills vials in Falador
 
 
 FEB 19 2021

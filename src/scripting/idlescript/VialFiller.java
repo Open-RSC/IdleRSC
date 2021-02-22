@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
 import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
- * Buys vials or newts in Taverly, banks in Falador
+ * Fills vials in Falador
  *  
  * @author Dvorak
  */

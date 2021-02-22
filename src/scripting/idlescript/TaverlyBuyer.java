@@ -95,19 +95,19 @@ public class TaverlyBuyer extends IdleScript {
 					
 					while(controller.getInventoryItemCount() < 30) {
 						if(option == 0) {
-							if(controller.getShopItemCount(465) > 0) { 
+							if(controller.isInShop() && controller.getShopItemCount(465) > 0) { 
 								controller.shopBuy(465, controller.getShopItemCount(465));
 							}
 						} else if(option == 1) {
-							if(controller.getShopItemCount(270) > 0) { 
+							if(controller.isInShop() && controller.getShopItemCount(270) > 0) { 
 								controller.shopBuy(270, controller.getShopItemCount(270));
 							}
 						} else {
-							if(controller.getShopItemCount(465) > 0) { 
+							if(controller.isInShop() && controller.getShopItemCount(465) > 0) { 
 								controller.shopBuy(465, controller.getShopItemCount(465));
 								controller.sleep(250);
 							}
-							if(controller.getShopItemCount(270) > 0) { 
+							if(controller.isInShop() && controller.getShopItemCount(270) > 0) { 
 								controller.shopBuy(270, controller.getShopItemCount(270));
 							}
 						}

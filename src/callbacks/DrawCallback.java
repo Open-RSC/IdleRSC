@@ -104,7 +104,7 @@ public class DrawCallback {
         long result = 0;
 
         for(int statIndex = 0; statIndex < c.getStatCount(); statIndex++) {
-            result += c.getStatXp(statIndex);
+            result += c.getPlayerExperience(statIndex);//c.getStatXp(statIndex);
         }
 
         return result;

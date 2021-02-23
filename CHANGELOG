@@ -2,6 +2,9 @@ FEB 22 201
 	TaverlyBuyer script added -- buys vials and newts
 	VialFiller script added -- fills vials in Falador
 	Monkz -- basic script that kills monks in the lower level of the monastery. supports bone burying and prayer, with recharging at altar. 
+	Updated PowerFletcha to use better tree id for normal trees
+	Taverly Buyer -- if not in shop window, it will not crash now
+	Updated SpinStrings to work on Uranium
 
 FEB 20 2021
 	AIOSmelter no longer tries to use "perfect gold bar" instead of "gold bar" for crafting jewelry

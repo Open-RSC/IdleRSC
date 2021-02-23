@@ -87,7 +87,7 @@ public class SpinStrings extends IdleScript {
 					&& destination.getSelectedIndex() == 0 && controller.getNearestObjectById(121) != null) {
 				controller.setStatus("@red@Spinning Flax");
 				//if not batching use material on wheel
-				while (!controller.isBatching()) {
+				while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
 					//sleep if you have high fatigue
 					controller.sleepHandler(98, true);
 					controller.useItemIdOnObject(controller.getNearestObjectById(121)[0],
@@ -104,7 +104,7 @@ public class SpinStrings extends IdleScript {
 					&& controller.getInventoryItemCount(input) > 0) {
 				controller.setStatus("@red@Spinning Flax");
 				//if not batching use material on wheel
-				while (!controller.isBatching()) {
+				while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
 					//sleep if you have high fatigue
 					controller.sleepHandler(98, true);
 					controller.useItemIdOnObject(controller.getNearestObjectById(121)[0],
@@ -167,18 +167,18 @@ public class SpinStrings extends IdleScript {
 			}
 			//deposit anything that is not a sleeping bag
 			totalString = totalString + controller.getInventoryItemCount(output);
-			while (controller.getInventoryItemCount(input) == 0 && controller.getInventoryItemCount() > 0
+			while (controller.getInventoryItemCount(input) == 0 && controller.getInventoryItemCount() > 1
 					&& controller.isInBank()) {
-				for (int itemId : controller.getInventoryItemIds()) {
+				for (int itemId : controller.getInventoryUniqueItemIds()) {
 					if (itemId != 0 && itemId != 1263) {
 						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-						controller.sleep(10);
+						controller.sleep(618);
 					}
 				}
 			}
 			bankedString = controller.getBankItemCount(output);
 			//withdraw materials
-			controller.withdrawItem(input, 30);
+			controller.withdrawItem(input, 30 - controller.getInventoryItemCount());
 			controller.sleep(618);
 			controller.closeBank();
 			controller.setStatus("@red@Finished Banking");

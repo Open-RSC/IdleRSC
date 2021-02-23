@@ -3186,10 +3186,10 @@ public class Controller {
     /**
      * This will sleep for max 2000ms, unless bank window comes open first.
      */
-    private void openBank_sleep() {
+    private void openBank_sleep(int maxTicks) {
     	int ticks = 0;
     	
-    	while(ticks < 200) {
+    	while(ticks < maxTicks) {
     		if(this.isInBank())
     			return;
     		
@@ -3197,6 +3197,18 @@ public class Controller {
     		ticks++;
     	}
     	
+    }
+    
+    private void openBank_optionMenu_sleep(int maxTicks) {
+    	int ticks = 0;
+    	
+    	while(ticks < maxTicks) {
+    		if(this.isInOptionMenu())
+    			return;
+    		
+    		this.sleep(10);
+    		ticks++;
+    	}
     }
     
     /**
@@ -3221,12 +3233,12 @@ public class Controller {
 					while (!isInBank()) {
 						if(getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
 							 npcCommand1(bankerIndex);
-							 openBank_sleep();
+							 openBank_sleep(200);
 						} else {
 							 talkToNpc(bankerIndex);
-							 sleep(3000);
+							 openBank_optionMenu_sleep(500);
 							 optionAnswer(0);
-							 openBank_sleep();
+							 openBank_sleep(200);
 						}
 					}
 				}
@@ -3240,7 +3252,7 @@ public class Controller {
 
 					while (!isInBank()) {
 						atObject(bankChestId[0], bankChestId[1]);
-						openBank_sleep();
+						openBank_sleep(200);
 					}
 				}
 			}

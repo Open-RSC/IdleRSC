@@ -1,4 +1,4 @@
-FEB 22 201
+
 	TaverlyBuyer script added -- buys vials and newts
 	VialFiller script added -- fills vials in Falador
 	Monkz -- basic script that kills monks in the lower level of the monastery. supports bone burying and prayer, with recharging at altar. 
@@ -6,8 +6,9 @@ FEB 22 201
 	Taverly Buyer -- if not in shop window, it will not crash now
 	Updated SpinStrings to work on Uranium
 	XP counter now works on Uranium
+	Improved Uranium banking performance
 	
-	Controller.getStatXp(int statId) deprecated because it only works on Coleslaw and you are better off with Controller.getPlayerExperience(int statId)
+	tba: Controller.getStatXp(int statId) deprecated because it only works on Coleslaw and you are better off with Controller.getPlayerExperience(int statId)
 	
 
 FEB 20 2021

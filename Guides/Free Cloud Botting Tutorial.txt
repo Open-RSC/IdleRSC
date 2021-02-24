@@ -11,8 +11,6 @@ Create a Google compute engine running Ubuntu for free
   | Image     |   Ubuntu 20.04 |
   +-----------+----------------+
   
-Get Gcloud command line app: https://cloud.google.com/sdk/docs/install
-
 Click the SSH button to enter your new OS
 
 Download Java 8 headless and a fake Xorg
@@ -26,8 +24,8 @@ Set up IdleRSC
     cd idlersc
     mv ColeslawCache Cache
     
-    Edit run_linux.sh to be <xvfb-run java -cp "IdleRSC.jar:patched_client.jar" bot.Main "username" "password" "scriptname" "scriptparams, leave this random one if script takes no param" &>
-    
+    Edit run_linux.sh to be 
+    xvfb-run java -cp "IdleRSC.jar:patched_client.jar" bot.Main "username" "password" "scriptname" "scriptparams, leave this random one if script takes no param" &>
     
 
 Debugging:
@@ -35,7 +33,8 @@ Debugging:
 Finding what went wrong can be difficult. Here are my debugging tips:
 
 1. View what's happening (SSH forward)
-    Click the dropdown beside the SSH button on Google Cloud, copy the "gcloud version", and add --ssh-flag="-X" after the ssh, i.e. 
+    * Get Gcloud command line app: https://cloud.google.com/sdk/docs/install
+    * Click the dropdown beside the SSH button on Google Cloud, copy the "gcloud version", and add --ssh-flag="-X" after the ssh, i.e. 
     $ gcloud beta compute ssh --ssh-flag="-X" --zone "us-east1-b" "Y" --project "test-bot-218721"
 
 2. Test your launch script locally
@@ -43,6 +42,9 @@ Finding what went wrong can be difficult. Here are my debugging tips:
     
 3. Walk to where your bot is on another account
     This one's self explanatory
+
+4. Getting "no icedtea-sound in java.library.path"
+    Mute the sound in OpenRSC settings
 
 
 Credits:

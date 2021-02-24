@@ -57,6 +57,10 @@ public class Controller {
 	int[] foodIds = {335, 333, 350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193, 1191, 325, 326, 327, 328, 329, 330, 332, 334, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210, 1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179, 1352, 1245, 1348, 1349, 1350, 1353, 1354, 1359, 1360, 1459, 1460, 210, 1417, 1463};
 	int[] bankerIds = {95, 224, 268, 540, 617};
 
+	int[] closedObjectDoorIds = {57, 60, 64, 93, 94, 137, 138, 142, 180, 252, 253, 254, 256, 305, 311, 319, 346, 347, 356, 358, 371, 392, 443, 457, 480, 504, 508, 513, 563, 577, 611, 624, 626, 660, 702, 703, 704, 712, 722, 723, 916, 926, 932, 988, 989, 1019, 1020, 1068, 1079, 1089, 1140, 1165, 465, 471, 472, 486, 583, 869, 958, 1080, 1160};
+	int[] closedWallDoorIds = {2, 8, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 43, 44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 60, 61, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 112, 113, 114, 115, 116, 117, 120, 121, 122, 123, 124, 125, 128, 129, 130, 131, 132, 133, 134, 135, 136, 138, 139, 140, 141, 142, 143, 145, 146, 147, 148, 149, 150, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 165, 173, 176, 177, 179, 180, 187, 188, 189, 190, 191, 192, 194, 196, 197, 198, 204, 209, 210, 211, 212, 213};
+
+
 	final private int GAME_TICK_COUNT = 640;
 	
 	private boolean showStatus = true;
@@ -775,6 +779,42 @@ public class Controller {
 	 */
 	public int[] getWallObjectsZ() {
 		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceZ");
+	}
+
+	/**
+	 * Retrieves the coordinates of the specified wall object id, if nearby.
+	 *
+	 * @param wallObjectId
+	 * @return int[] -- [x, y]. returns null if no wall object nearby.
+	 */
+	public int[] getNearestWallObjectById(int wallObjectId) {
+		Main.logMethod("getNearestWallObjectById", wallObjectId);
+		int count = this.getWallObjectsCount();
+		int[] xs = this.getWallObjectsX();
+		int[] zs = this.getWallObjectsZ();
+		int[] ids = this.getWallObjectIds();
+
+		int[] closestCoords = {-1, -1};
+		int closestDistance = 99999;
+
+
+		for(int i = 0; i < count; i++) {
+			if(ids[i] == wallObjectId) {
+				int x = offsetX(xs[i]);
+				int z = offsetZ(zs[i]);
+				int dist = distance(this.currentX(), this.currentY(), x, z);
+				if(dist < closestDistance) {
+					closestDistance = dist;
+					closestCoords[0] = x;
+					closestCoords[1] = z;
+				}
+			}
+		}
+
+		if(closestCoords[0] == -1)
+			return null;
+
+		return closestCoords;
 	}
 
 	/**
@@ -3701,6 +3741,106 @@ public class Controller {
 	 */
 	public boolean getMoveCharacter() {
 		return needToMove;
+	}
+
+	/**
+	 * Auto walks to any tile on the current map level. Does not support transitions. Will get caught on gates/doors.
+	 * To open these, autowalk to the tile nearby, then use openAdjacentDoor().
+	 *
+	 * @param x
+	 * @param y
+	 */
+	public void autoWalk(int x, int y) {
+		//adapted from Searos' scripts
+		int newX = x;
+		int newY = y;
+		int modifier = 20;
+
+		while ((currentX() != x || currentY() != y) && isRunning()) {
+			if (currentX() - x > modifier + 3) {
+				newX = currentX() - modifier;
+			}
+			if (currentY() - y > modifier + 3) {
+				newY = currentY() - modifier;
+			}
+			if (currentX() - x < 0 - (modifier + 3)) {
+				newX = currentX() + modifier;
+			}
+			if (currentY() - y < 0 - (modifier + 3)) {
+				newY = currentY() + modifier;
+			}
+			if (Math.abs(currentX() - x) <= modifier + 3) {
+				newX = x;
+			}
+			if (Math.abs(currentY() - y) <= modifier + 3) {
+				newY = y;
+			}
+			if (!this.isReachable(newX, newY, true)) {
+				if (modifier > 1) {
+					modifier--;
+				} else {
+					return;
+				}
+			} else {
+				walkToAsync(newX, newY, 0);
+				sleep(640);
+			}
+		}
+	}
+
+	/**
+	 * If standing next to a closed door or gate within the specified radius, open it.
+	 *
+	 * @param radius -- within how many tiles to find said door
+	 */
+	public void openNearbyDoor(int radius) {
+		int x = this.currentX();
+		int y = this.currentY();
+
+		int objectId = -1;
+		int wallObjectId = -1;
+
+		for(int id : this.closedObjectDoorIds) {
+			int[] coords = this.getNearestObjectById(id);
+			if(coords != null) {
+				if(this.distance(currentX(), currentY(), coords[0], coords[1]) <= radius) {
+					objectId = id;
+					break;
+				}
+			}
+		}
+
+		if(objectId != -1) {
+			int[] coords = this.getNearestObjectById(objectId);
+
+			while(coords != null) {
+				this.atObject(coords[0], coords[1]);
+				this.sleep(250);
+				coords = this.getNearestObjectById(objectId);
+			}
+			return;
+		}
+
+
+		for(int id : this.closedWallDoorIds) {
+			int[] coords = this.getNearestWallObjectById(id);
+			if(coords != null) {
+				if(this.distance(currentX(), currentY(), coords[0], coords[1]) <= radius) {
+					wallObjectId = id;
+					break;
+				}
+			}
+		}
+
+		if(wallObjectId != -1) {
+			int[] coords = this.getNearestWallObjectById(wallObjectId);
+
+			while(coords != null) {
+				this.openDoor(coords[0], coords[1]);
+				this.sleep(250);
+				coords = this.getNearestWallObjectById(wallObjectId);
+			}
+		}
 	}
 }
  

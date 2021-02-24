@@ -141,4 +141,15 @@ public class DrawCallback {
     	levelUpText = "@red@" + String.valueOf(level) + " @whi@" + statName + "@red@!";
     	levelUpTextTimeout = System.currentTimeMillis() / 1000L + 15; //display for 15seconds
     }
+    
+    public static void resetXpCounter() {
+    	Controller c = Main.getController();
+    	
+        startTimestamp = System.currentTimeMillis() / 1000L;
+        startingXp = Long.MAX_VALUE;
+        
+        if(c != null) {
+        	c.displayMessage("@red@IdleRSC@yel@: XP counter reset!");
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package bot;
 
 import bot.debugger.Debugger;
+import callbacks.DrawCallback;
 
 import java.awt.*;
 
@@ -53,7 +54,7 @@ public class Main {
 
     private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
-    private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton; //all the buttons on the sidepanel.
+    private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton, resetXpButton; //all the buttons on the sidepanel.
     private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, graphicsCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
 
 
@@ -321,6 +322,7 @@ public class Main {
         graphicsCheckbox = new JCheckBox("Graphics");
         openDebuggerButton = new JButton("Open Debugger");
         hideButton = new JButton("Hide Sidepane");
+        resetXpButton = new JButton("Reset XP");
 
         startStopButton.addActionListener(new ActionListener() {
             @Override
@@ -362,6 +364,13 @@ public class Main {
                 botFrame.setVisible(false);
             }
         });
+        
+        resetXpButton.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		DrawCallback.resetXpCounter();
+        	}
+        });
 
         graphicsCheckbox.addActionListener(new ActionListener() {
             @Override
@@ -395,6 +404,11 @@ public class Main {
         botFrame.add(hideButton);
         hideButton.setMaximumSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);
+        
+        resetXpButton.setPreferredSize(buttonSize);
+        resetXpButton.setMaximumSize(buttonSize);
+        botFrame.add(resetXpButton);
+        
 
 
         autoLoginCheckbox.setSelected(true);

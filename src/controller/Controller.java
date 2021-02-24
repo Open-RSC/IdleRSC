@@ -3161,7 +3161,7 @@ public class Controller {
      * @return boolean
      */
 	public boolean isAuthentic() {
-		return mud.authenticSettings;
+		return !Config.S_WANT_CUSTOM_SPRITES;
 	}
 
 	/** 

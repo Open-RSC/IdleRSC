@@ -511,7 +511,7 @@ public class Main {
         Arrays.sort(sbotScripts, fileComparator);
 
         for (final File file : nativeScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
+            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
                 String scriptName = file.getName().replace(".class", "");
 
                 // Create row with script name and

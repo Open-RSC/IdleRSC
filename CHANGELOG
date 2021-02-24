@@ -1,3 +1,14 @@
+FEB 23 2021
+	XP counter now works on Uranium
+	Improved Uranium banking performance
+	GnomeFlaxx0r -- picks flax, optionally strings, in Gnome Stronghold
+	TaverlyBuyer script added -- buys vials and newts
+	VialFiller script added -- fills vials in Falador
+	Monkz -- basic script that kills monks in the lower level of the monastery. supports bone burying and prayer, with recharging at altar. 
+	Updated Searos' SpinStrings to work on Uranium
+	Updated PowerFletcha to use better tree id for normal trees
+	Searos' ArrowMaker now supports headless arrows
+	
 FEB 20 2021
 	AIOSmelter no longer tries to use "perfect gold bar" instead of "gold bar" for crafting jewelry
 	AIOMagic now has quicker wait times, leading to increased casts per hr. 

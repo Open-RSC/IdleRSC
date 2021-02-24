@@ -58,9 +58,9 @@ public class PowerFletcha extends IdleScript {
 	}
 	
 	ArrayList<FletchObject> objects = new ArrayList<FletchObject>() {{
-		add(new FletchObject("Arrow Shafts", 0, 14, 0));
-		add(new FletchObject("Shortbow", 0, 14, 1));
-		add(new FletchObject("Longbow", 0, 14, 2));
+		add(new FletchObject("Arrow Shafts", 1, 14, 0));
+		add(new FletchObject("Shortbow", 1, 14, 1));
+		add(new FletchObject("Longbow", 1, 14, 2));
 		add(new FletchObject("Oak Shortbow", 306, 632, 0));
 		add(new FletchObject("Oak Longbow", 306, 632, 1));
 		add(new FletchObject("Willow Shortbow", 307, 633, 0));

@@ -18,9 +18,11 @@ import javax.swing.JLabel;
  */
 public class ArrowMaker extends IdleScript {
 	int[] arrowHeads = { 669, 670, 671, 672, 673, 674, 381 };
-	int[] completed = { 11, 638, 640, 642, 644, 646 };
+	int[] completed = { 11, 638, 640, 642, 644, 646, 637 };
 	int selectedArrowHead = -1;
 	int completeSelected = -1;
+	JComboBox<String> arrowHead = new JComboBox<String>(
+			new String[] { "Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite", "Headless" });
 	boolean scriptStarted = false;
 	boolean guiSetup = false;
 	boolean headless = false;
@@ -54,6 +56,12 @@ public class ArrowMaker extends IdleScript {
 				}
 				if (controller.getInventoryItemCount(280) < 9
 						|| controller.getInventoryItemCount(selectedArrowHead) < 9) {
+					if (controller.getInventoryItemCount(280) < 9) {
+						controller.displayMessage("Not enough Arrow Shafts");
+					}
+					if (controller.getInventoryItemCount(selectedArrowHead) < 9){
+						controller.displayMessage("Not enough Feathers");
+					}
 					scriptStarted = false;
 					guiSetup = false;
 					controller.stop();
@@ -73,6 +81,12 @@ public class ArrowMaker extends IdleScript {
 				}
 				if (controller.getInventoryItemCount(637) < 9
 						|| controller.getInventoryItemCount(selectedArrowHead) < 9) {
+					if (controller.getInventoryItemCount(637) < 9) {
+						controller.displayMessage("Not enough Headless Arrows");
+					}
+					if (controller.getInventoryItemCount(selectedArrowHead) < 9){
+						controller.displayMessage("Not enough " + arrowHead.getSelectedItem() + " Arrowheads");
+					}
 					scriptStarted = false;
 					guiSetup = false;
 					controller.stop();
@@ -91,8 +105,7 @@ public class ArrowMaker extends IdleScript {
 	public void setupGUI() {
 		JLabel header = new JLabel("Select Arrowhead");
 		JButton startScriptButton = new JButton("Start");
-		JComboBox<String> arrowHead = new JComboBox<String>(
-				new String[] { "Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite", "Headless" });
+		
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

@@ -6,6 +6,7 @@ FEB 24 2021
 	KeyListener has been added. This allows for scripts to implement actions on key presses.
     Pressing F12 will show ::bothelp
     Pressing F11 will stop the current running script and open the load script window.
+    Bot paint is no longer drawn over existing UI windows.
 
 	New IdleScript interrupt - keyPressInterrupt
 	Implemented SBot function - KeyPress(int keycode)

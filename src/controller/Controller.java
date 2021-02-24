@@ -64,6 +64,7 @@ public class Controller {
 	private boolean showXp = true;
 	private boolean showBotPaint = true;
 	private boolean drawing = true;
+	private boolean needToMove = false;
 
 	public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) {
 		reflector = _reflector; client = _client; mud = _mud;
@@ -3679,6 +3680,27 @@ public class Controller {
 	 */
 	public void setDrawing(boolean b) {
 		drawing = b;
+	}
+
+	/**
+	 * <b>Internal use only.</b> Called by {@link callbacks.MessageCallback} to avoid 5 minute logout.
+	 */
+	public void moveCharacter() {
+		needToMove = true;
+	}
+
+	/**
+	 * <b>Internal use only.</b>
+	 */
+	public void charactedMoved() {
+		needToMove = false;
+	}
+
+	/**
+	 * <b>Internal use only.</b> Used by LoginListener to move character every 5 min.
+	 */
+	public boolean getMoveCharacter() {
+		return needToMove;
 	}
 }
  

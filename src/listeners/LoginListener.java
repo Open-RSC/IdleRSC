@@ -41,10 +41,34 @@ public class LoginListener implements Runnable {
 					}
 				}
 
+				if(controller.getMoveCharacter()) {
+					moveCharacter();
+					controller.charactedMoved();
+				}
+
 				Thread.sleep(1000);
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}	
+	}
+
+	private static void moveCharacter() {
+		Controller c = Main.getController();
+		int x = c.currentX();
+		int y = c.currentY();
+
+		if(c.isReachable(x + 1, y, false))
+			c.walkTo(x+1, y, 0, false);
+		else if(c.isReachable(x - 1, y, false))
+			c.walkTo(x - 1, y, 0, false);
+		else if(c.isReachable(x, y+1, false))
+			c.walkTo(x, y+1,0 , false);
+		else if(c.isReachable(x, y-1, false))
+			c.walkTo(x, y-1,0, false);
+
+		c.sleep(1000);
+
+		c.walkTo(x, y, 0, false);
+	}
 }

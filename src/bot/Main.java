@@ -226,7 +226,7 @@ public class Main {
 
         while (true) {
             Thread.sleep(618); //wait 1 tick before performing next action
-            
+
             if (isRunning()) {
             	
                 if (currentRunningScript != null) {

@@ -81,4 +81,11 @@ public abstract class IdleScript {
 	public void chatCommandInterrupt(String commandText) {
 
 	}
+
+	/**
+	 * This is called by {@link callbacks.KeyCallback} every time the user presses a key. <b>Override this in your script to implement actions on key presses.</b>
+	 */
+	public void keyPressInterrupt(int keyCode) {
+
+	}
 }

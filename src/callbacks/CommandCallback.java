@@ -17,9 +17,12 @@ public class CommandCallback {
 			+ "%"
 			+ " %"
 			+ " %"
+			+ " %@red@F11 -- @yel@Stop the current script and load a new one"
+			+ " %@red@F12 -- @yel@Show help menu"
 			+ " %"
-			+ " %"
-			+ " %"
+            + " %"
+            + " %"
+            + " %"
 			+ "@red@IdleRSC @yel@by @red@Dvorak @yel@2021";
 
     public static void commandHook(String command) {

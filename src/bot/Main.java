@@ -333,12 +333,7 @@ public class Main {
         loadScriptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isRunning) {
-                    scriptFrame.setVisible(true);
-                    scriptFrame.requestFocus();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Stop the current script first.");
-                }
+                showLoadScript();
             }
         });
 
@@ -769,6 +764,15 @@ public class Main {
         }
 
         return true;
+    }
+
+    public static void showLoadScript() {
+        if (!isRunning) {
+            scriptFrame.setVisible(true);
+            scriptFrame.requestFocus();
+        } else {
+            JOptionPane.showMessageDialog(null, "Stop the current script first.");
+        }
     }
 
 }

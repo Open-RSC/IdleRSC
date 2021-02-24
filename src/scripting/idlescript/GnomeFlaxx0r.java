@@ -43,8 +43,15 @@ public class GnomeFlaxx0r extends IdleScript {
 	                
 	                while(controller.getInventoryItemCount(675) > 0) {
 	                	controller.sleepHandler(98, true);
+	                	
+	                	//sometimes we walk away from the spinning wheel for some reason?
+	                	if(controller.currentX() != 692 || controller.currentY() != 1459) {
+	                		controller.walkTo(692, 1459); 
+	                		controller.sleep(1000);
+	                	}
+	                	
 	                	controller.useItemIdOnObject(693, 1459, 675);
-	                	controller.sleep(150);
+	                	controller.sleep(500);
 	                }
 	                
 	                while(controller.currentX() != 692 || controller.currentY() != 515) {

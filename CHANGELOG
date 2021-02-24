@@ -1,15 +1,20 @@
 FEB 24 2021
-	Reset XP counter button added to sidepane
-	::bothelp command added
-	SleepListener has been replaced with SleepCallback. This will increase performance, since one less thread will be
-	    running and monitoring for packets every 10ms.
-	KeyListener has been added. This allows for scripts to implement actions on key presses.
-    Pressing F12 will show ::bothelp
-    Pressing F11 will stop the current running script and open the load script window.
-    Bot paint is no longer drawn over existing UI windows.
+    New features:
+        Reset XP counter button added to sidepane
+        ::bothelp command added
+        SleepListener has been replaced with SleepCallback. This will increase performance, since one less thread will be
+            running and monitoring for packets every 10ms.
+        KeyListener has been added. This allows for scripts to implement actions on key presses.
+        Pressing F12 will show ::bothelp
+        Pressing F11 will stop the current running script and open the load script window.
 
-	New IdleScript interrupt - keyPressInterrupt
-	Implemented SBot function - KeyPress(int keycode)
+        New IdleScript interrupt - keyPressInterrupt
+        Implemented SBot function - KeyPress(int keycode)
+
+	Bug fixes:
+	    Bot paint is no longer drawn over existing UI windows.
+	    package-info no longer shows in script loader.
+	    AIOSmelter will now run with no parameters, as before.
 
 
 FEB 23 2021 (again)

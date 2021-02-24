@@ -274,7 +274,7 @@ public class AIOSmelter extends IdleScript {
 		if(scriptStarted) { 
 			scriptStart();
 		} else {
-			if(parameters.length == 0) {
+			if(parameters.length == 1) {
 				if (!guiSetup) {
 					setupGUI();
 					guiSetup = true;

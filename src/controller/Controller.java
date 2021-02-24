@@ -1395,7 +1395,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Whether or not the specified item ID is equipped. This is different from {@link Controller.isEquipped} due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected on Uranium.
+	 * Whether or not the specified item ID is equipped. This is different from Controller.isEquipped due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected on Uranium.
 	 * @param itemId
 	 * @return
 	 */
@@ -3643,6 +3643,25 @@ public class Controller {
 			this.log("This script is not designed to run on authentic servers (\"Uranium\".) This is only supported on Coleslaw.");
 			this.stop();
 		}
+	}
+
+	/**
+	 * Retrieves the coordinates of the specified NPC.
+	 *
+	 * @param serverIndex
+	 * @return int[] -- [x, y]. Returns [-1, -1] on no NPC present.
+	 */
+	public int[] getPlayerCoordsByServerIndex(int serverIndex) {
+		ORSCharacter[] players = (ORSCharacter[]) reflector.getObjectMember(mud, "players");
+
+		for(ORSCharacter player : players) {
+			if(player.serverIndex == serverIndex) {
+				return new int[] { this.convertX(player.currentX), this.convertZ(player.currentZ) };
+			}
+		}
+
+		//TODO: return null for consistency and update scripts.
+		return new int[] {-1, -1};
 	}
 }
  

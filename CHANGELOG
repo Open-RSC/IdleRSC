@@ -1,6 +1,11 @@
 	Hits, prayer, fatigue now displayed on Uranium
 	Fixed isAuthentic() returning true on Uranium for some reason.
 
+	Hitsplat interrupts have been added -- scripts will now be able to detect when a hitsplat occurs by overriding
+	    npcDamagedInterrupt(int, int) or playerDamagedInterrupt(int, int).
+
+
+
 FEB 23 2021
 	XP counter now works on Uranium
 	Improved Uranium banking performance

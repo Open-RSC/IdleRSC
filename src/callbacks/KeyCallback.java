@@ -14,8 +14,6 @@ public class KeyCallback {
         char keyChar = key.getKeyChar();
         int keycode = key.getKeyCode();
 
-        System.out.println("key pressed");
-
         if(keycode == KeyEvent.VK_F11) {
             if(Main.isRunning())
                 c.displayMessage("@red@IdleRSC@yel@: SCRIPT STOPPED");

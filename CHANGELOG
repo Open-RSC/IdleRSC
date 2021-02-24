@@ -1,3 +1,5 @@
+
+    Graphics can now be enabled or disabled via the bot sidepane!
 	Hits, prayer, fatigue now displayed on Uranium
 	Fixed isAuthentic() returning true on Uranium for some reason.
 

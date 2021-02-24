@@ -54,7 +54,7 @@ public class Main {
     private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
     private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton; //all the buttons on the sidepanel.
-    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
+    private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, graphicsCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
 
 
     private static JTextArea logArea; //self explanatory
@@ -113,7 +113,7 @@ public class Main {
     }
 
     /**
-     * Returns whethe or not debug is enabled. 
+     * Returns whether or not debug is enabled.
      * 
      * @return boolean with whether or not debug is enabled.
      */
@@ -318,6 +318,7 @@ public class Main {
         logWindowCheckbox = new JCheckBox("Log Window");
         unstickCheckbox = new JCheckBox("Unstick");
         debugCheckbox = new JCheckBox("Debug");
+        graphicsCheckbox = new JCheckBox("Graphics");
         openDebuggerButton = new JButton("Open Debugger");
         hideButton = new JButton("Hide Sidepane");
 
@@ -362,6 +363,15 @@ public class Main {
             }
         });
 
+        graphicsCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(controller != null) {
+                    controller.setDrawing(graphicsCheckbox.isSelected());
+                }
+            }
+        });
+
         Dimension buttonSize = new Dimension(125, 25);
 
         botFrame.add(startStopButton);
@@ -378,6 +388,7 @@ public class Main {
         botFrame.add(logWindowCheckbox);
         botFrame.add(unstickCheckbox);
         botFrame.add(debugCheckbox);
+        botFrame.add(graphicsCheckbox);
         botFrame.add(openDebuggerButton);
         openDebuggerButton.setMaximumSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);
@@ -387,6 +398,7 @@ public class Main {
 
 
         autoLoginCheckbox.setSelected(true);
+        graphicsCheckbox.setSelected(true);
 
 
         botFrame.pack();
@@ -742,6 +754,14 @@ public class Main {
     		e.printStackTrace();
     		System.exit(1);
     	}
+    }
+
+    public static boolean isDrawEnabled() {
+        if(controller != null) {
+            return controller.isDrawEnabled();
+        }
+
+        return true;
     }
 
 }

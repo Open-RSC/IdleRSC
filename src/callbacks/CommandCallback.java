@@ -24,6 +24,10 @@ public class CommandCallback {
                 c.setBotPaint(true);
                 c.displayMessage("@red@IdleRSC@yel@: Paint unhidden.");
             }
+        } else if(command.equals("gfx")) {
+            if(c != null) {
+                c.setDrawing(!c.isDrawEnabled());
+            }
         } else {
             //pass to script
             if(c != null && c.getShowBotPaint() == true && c.isRunning() && Main.getCurrentRunningScript() != null) {

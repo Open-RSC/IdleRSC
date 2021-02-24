@@ -63,6 +63,7 @@ public class Controller {
 	private boolean showCoords = true;
 	private boolean showXp = true;
 	private boolean showBotPaint = true;
+	private boolean drawing = true;
 
 	public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) {
 		reflector = _reflector; client = _client; mud = _mud;
@@ -3662,6 +3663,22 @@ public class Controller {
 
 		//TODO: return null for consistency and update scripts.
 		return new int[] {-1, -1};
+	}
+
+	/**
+	 * Whether or not draw/graphics is currently enabled.
+	 *
+	 * @return
+	 */
+	public boolean isDrawEnabled() {
+		return drawing;
+	}
+
+	/**
+	 * Toggle draw/graphics.
+	 */
+	public void setDrawing(boolean b) {
+		drawing = b;
 	}
 }
  

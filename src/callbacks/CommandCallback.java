@@ -7,6 +7,20 @@ import scripting.idlescript.IdleScript;
 import java.util.Locale;
 
 public class CommandCallback {
+	
+	private static String helpMessageText = "@red@IdleRSC @yel@Help:"
+			+ "% @red@::bothelp -- @yel@Shows this message"
+			+ "% @red@::show -- @yel@Unhides the bot sidepane"
+			+ "% @red@::gfx -- @yel@toggle graphics"
+			+ "% @red@::hidepaint -- @yel@turn off bot painting (progress reports, xp counter, etc)"
+			+ "% @red@::showpaint -- @yel@turn on bot painting (progress reports, xp counter, etc)"
+			+ "%"
+			+ " %"
+			+ " %"
+			+ " %"
+			+ " %"
+			+ " %"
+			+ "@red@IdleRSC @yel@by @red@Dvorak @yel@2021";
 
     public static void commandHook(String command) {
         Controller c = Main.getController();
@@ -28,6 +42,10 @@ public class CommandCallback {
             if(c != null) {
                 c.setDrawing(!c.isDrawEnabled());
             }
+        } else if(command.equals("bothelp")) {
+        	if(c != null) {
+        		c.setServerMessage(helpMessageText, true, true);
+        	}
         } else {
             //pass to script
             if(c != null && c.getShowBotPaint() == true && c.isRunning() && Main.getCurrentRunningScript() != null) {

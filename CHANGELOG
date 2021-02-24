@@ -1,6 +1,8 @@
 FEB 24 2021
 	Reset XP counter button added to sidepane
 	::bothelp command added
+	SleepListener has been replaced with SleepCallback. This will increase performance, since one less thread will be
+	    running and monitoring for packets every 10ms.
 
 
 FEB 23 2021 (again)

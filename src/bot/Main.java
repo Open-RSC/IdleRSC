@@ -1,6 +1,7 @@
 package bot;
 
 import bot.debugger.Debugger;
+import callbacks.DrawCallback;
 
 import java.awt.*;
 
@@ -34,7 +35,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import listeners.LoginListener;
-import listeners.SleepListener;
 import listeners.WindowListener;
 
 
@@ -53,7 +53,7 @@ public class Main {
 
     private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
-    private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton; //all the buttons on the sidepanel.
+    private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton, resetXpButton; //all the buttons on the sidepanel.
     private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, graphicsCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
 
 
@@ -67,7 +67,6 @@ public class Main {
     private static Thread windowListener = null; //see WindowListener.java
     private static Thread messageListener = null; //see MessageListener.java
     private static Thread debuggerThread = null;
-    private static Thread sleepListener = null; //see SleepListener.java
 
     private static Controller controller = null; //this is the queen bee that controls the actual bot and is the native scripting language.
     private static Object currentRunningScript = null; //the object instance of the current running script.
@@ -219,11 +218,6 @@ public class Main {
         windowListener = new Thread(new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
         windowListener.start();
         log("WindowListener started.");
-        
-        log("Initializing SleepLisetner...");
-        sleepListener = new Thread(new SleepListener(mud, controller));
-        sleepListener.start();
-        log("SleepListener started.");
 
 
         //give everything a nice synchronization break juuuuuuuuuuuuuust in case...
@@ -232,7 +226,7 @@ public class Main {
 
         while (true) {
             Thread.sleep(618); //wait 1 tick before performing next action
-            
+
             if (isRunning()) {
             	
                 if (currentRunningScript != null) {
@@ -321,6 +315,7 @@ public class Main {
         graphicsCheckbox = new JCheckBox("Graphics");
         openDebuggerButton = new JButton("Open Debugger");
         hideButton = new JButton("Hide Sidepane");
+        resetXpButton = new JButton("Reset XP");
 
         startStopButton.addActionListener(new ActionListener() {
             @Override
@@ -338,12 +333,7 @@ public class Main {
         loadScriptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isRunning) {
-                    scriptFrame.setVisible(true);
-                    scriptFrame.requestFocus();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Stop the current script first.");
-                }
+                showLoadScript();
             }
         });
 
@@ -361,6 +351,13 @@ public class Main {
                 controller.displayMessage("@red@IdleRSC@yel@: Type '::show' to bring back the sidepane.");
                 botFrame.setVisible(false);
             }
+        });
+        
+        resetXpButton.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		DrawCallback.resetXpCounter();
+        	}
         });
 
         graphicsCheckbox.addActionListener(new ActionListener() {
@@ -395,6 +392,11 @@ public class Main {
         botFrame.add(hideButton);
         hideButton.setMaximumSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);
+        
+        resetXpButton.setPreferredSize(buttonSize);
+        resetXpButton.setMaximumSize(buttonSize);
+        botFrame.add(resetXpButton);
+        
 
 
         autoLoginCheckbox.setSelected(true);
@@ -509,7 +511,7 @@ public class Main {
         Arrays.sort(sbotScripts, fileComparator);
 
         for (final File file : nativeScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
+            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
                 String scriptName = file.getName().replace(".class", "");
 
                 // Create row with script name and
@@ -762,6 +764,15 @@ public class Main {
         }
 
         return true;
+    }
+
+    public static void showLoadScript() {
+        if (!isRunning) {
+            scriptFrame.setVisible(true);
+            scriptFrame.requestFocus();
+        } else {
+            JOptionPane.showMessageDialog(null, "Stop the current script first.");
+        }
     }
 
 }

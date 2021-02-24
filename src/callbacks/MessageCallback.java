@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import bot.Main;
 import compatibility.sbot.Script;
 import controller.Controller;
+import listeners.LoginListener;
 import orsc.enumerations.MessageType;
 import scripting.idlescript.IdleScript;
 
@@ -41,7 +42,14 @@ public class MessageCallback {
         if (type == MessageType.GAME) {
         	if(message.contains("You just advanced")) {
         		handleLevelUp(message);
-        	}
+        	} else if(message.contains("You have been standing here for")) {
+        	    Controller c = Main.getController();
+        	    System.out.println("got standing message!");
+
+        	    if(c != null)
+        	        c.moveCharacter();
+
+            }
         }
         
         if (Main.isRunning() && Main.getCurrentRunningScript() != null) {

@@ -60,4 +60,25 @@ public abstract class IdleScript {
 	public void paintInterrupt() {
 
 	}
+
+	/**
+	 * This is called by {@link callbacks.DamageCallback} every time the NPC we are currently fighting is damaged. <b>Override this in your script to intercept hitsplats.</b>
+	 */
+	public void npcDamagedInterrupt(int currentHealth, int damageAmount) {
+
+	}
+
+	/**
+	 * This is called by {@link callbacks.DamageCallback} every time the player is damaged. <b>Override this in your script to intercept hitsplats.</b>
+	 */
+	public void playerDamagedInterrupt(int currentHealth, int damageAmount) {
+
+	}
+
+	/**
+	 * This is called by {@link callbacks.CommandCallback} if a player types a "::" command into the chatbox. <b>Override this in your script to intercept and read these.</b>
+	 */
+	public void chatCommandInterrupt(String commandText) {
+
+	}
 }

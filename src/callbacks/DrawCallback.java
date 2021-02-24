@@ -42,10 +42,26 @@ public class DrawCallback {
     }
 
     private static void drawBotStatus(Controller c) {
-        int y = 130 + 14 + 14 + 14;
+        int y = 130;
         String localStatusText = statusText;
         
         if(c.getShowBotPaint()) {
+        	if(c.isAuthentic()) {
+        		int currentHits = c.getCurrentStat(c.getStatId("Hits"));
+        		int currentPrayer = c.getCurrentStat(c.getStatId("Prayer"));
+        		int maxHits = c.getBaseStat(c.getStatId("Hits"));
+        		int maxPrayer  = c.getCurrentStat(c.getStatId("Prayer"));
+        		int fatigue = c.getFatigue();
+        		
+        		c.drawString("Hits: " + String.valueOf(currentHits) + "@red@/@whi@" + String.valueOf(maxHits), 7, y, 0xFFFFFF, 1);
+        		y += 14;
+        		c.drawString("Prayer: " + String.valueOf(currentPrayer) + "@red@/@whi@" + String.valueOf(maxPrayer), 7, y, 0xFFFFFF, 1);
+        		y += 14;
+        		c.drawString("Fatigue: " + String.valueOf(fatigue) + "@red@%", 7, y, 0xFFFFFF, 1);
+        		y += 14;
+        	} else {
+        		y += 14 + 14 + 14;
+        	}
 	        if(!Main.isRunning()) {
 	        	localStatusText = "@red@Idle.";
 	        }

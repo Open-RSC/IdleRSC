@@ -63,6 +63,7 @@ public class Controller {
 	private boolean showCoords = true;
 	private boolean showXp = true;
 	private boolean showBotPaint = true;
+	private boolean drawing = true;
 
 	public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) {
 		reflector = _reflector; client = _client; mud = _mud;
@@ -1395,7 +1396,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Whether or not the specified item ID is equipped. This is different from {@link Controller.isEquipped} due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected on Uranium.
+	 * Whether or not the specified item ID is equipped. This is different from Controller.isEquipped due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected on Uranium.
 	 * @param itemId
 	 * @return
 	 */
@@ -3161,7 +3162,7 @@ public class Controller {
      * @return boolean
      */
 	public boolean isAuthentic() {
-		return mud.authenticSettings;
+		return !Config.S_WANT_CUSTOM_SPRITES;
 	}
 
 	/** 
@@ -3643,6 +3644,41 @@ public class Controller {
 			this.log("This script is not designed to run on authentic servers (\"Uranium\".) This is only supported on Coleslaw.");
 			this.stop();
 		}
+	}
+
+	/**
+	 * Retrieves the coordinates of the specified NPC.
+	 *
+	 * @param serverIndex
+	 * @return int[] -- [x, y]. Returns [-1, -1] on no NPC present.
+	 */
+	public int[] getPlayerCoordsByServerIndex(int serverIndex) {
+		ORSCharacter[] players = (ORSCharacter[]) reflector.getObjectMember(mud, "players");
+
+		for(ORSCharacter player : players) {
+			if(player.serverIndex == serverIndex) {
+				return new int[] { this.convertX(player.currentX), this.convertZ(player.currentZ) };
+			}
+		}
+
+		//TODO: return null for consistency and update scripts.
+		return new int[] {-1, -1};
+	}
+
+	/**
+	 * Whether or not draw/graphics is currently enabled.
+	 *
+	 * @return
+	 */
+	public boolean isDrawEnabled() {
+		return drawing;
+	}
+
+	/**
+	 * Toggle draw/graphics.
+	 */
+	public void setDrawing(boolean b) {
+		drawing = b;
 	}
 }
  

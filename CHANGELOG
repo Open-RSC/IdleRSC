@@ -1,3 +1,19 @@
+FEB 23 2021 (again)
+    Graphics can now be enabled or disabled via the bot sidepane!
+	Hits, prayer, fatigue now displayed on Uranium
+	Fixed isAuthentic() returning true on Uranium for some reason.
+
+	Hitsplat interrupts have been added -- scripts will now be able to detect when a hitsplat occurs by overriding
+	    npcDamagedInterrupt(int, int) or playerDamagedInterrupt(int, int).
+    "::command" interrupts have been added -- scripts will now be able to detect and parse these commands by overriding
+        chatCommandInterrupt(String).
+
+	::show command added -- this unhides the bot sidepane if you've hidden it.
+	::hidepaint -- hides any paint from scripts etc
+	::showpaint -- shows any paint from scripts etc if previously hidden
+
+
+
 FEB 23 2021
 	XP counter now works on Uranium
 	Improved Uranium banking performance

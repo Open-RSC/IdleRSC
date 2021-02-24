@@ -9,13 +9,20 @@ FEB 24 2021
         Pressing F11 will stop the current running script and open the load script window.
         Anti logout -- when the 'standing in one spot for too long' message comes up, your character will move.
 
+    API Changes:
         New IdleScript interrupt - keyPressInterrupt
         Implemented SBot function - KeyPress(int keycode)
+
+        Controller.openNearbyDoor(radius) -- opens any door within specific radius, if a closed door is found.
+        Controller.getNearestWallObjectById(id)
 
 	Bug fixes:
 	    Bot paint is no longer drawn over existing UI windows.
 	    package-info no longer shows in script loader.
 	    AIOSmelter will now run with no parameters, as before.
+
+	Bugs added:
+	    Who knows? :)
 
 
 FEB 23 2021 (again)

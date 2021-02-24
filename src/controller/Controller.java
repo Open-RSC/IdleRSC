@@ -392,13 +392,13 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isCurrentlyWalking() {
-		int x = mud.getLocalPlayerX();
-		int z = mud.getLocalPlayerZ();
+		int x = mud.getLocalPlayer().currentX;
+		int z = mud.getLocalPlayer().currentZ;
 
 		sleep(50);
 
-		x -= mud.getLocalPlayerX();
-		z -= mud.getLocalPlayerZ();
+		x -= mud.getLocalPlayer().currentX;
+		z -= mud.getLocalPlayer().currentZ;
 
 		return x != 0 || z != 0;
 	}
@@ -3674,7 +3674,12 @@ public class Controller {
 		int _y = removeOffsetZ(y);
 		
 
-		return mud.getWorld().findPath(pathX, pathZ, startX, startZ, _x, _x, _y, _y, includeTileEdges) >= 1;
+		try {
+			return mud.getWorld().findPath(pathX, pathZ, startX, startZ, _x, _x, _y, _y, includeTileEdges) >= 1;
+		} catch(Exception e) {
+			this.sleep(1000); //in case we are loading a new segment
+			return false;
+		}
 	}
 	
 	/**
@@ -3741,51 +3746,6 @@ public class Controller {
 	 */
 	public boolean getMoveCharacter() {
 		return needToMove;
-	}
-
-	/**
-	 * Auto walks to any tile on the current map level. Does not support transitions. Will get caught on gates/doors.
-	 * To open these, autowalk to the tile nearby, then use openAdjacentDoor().
-	 *
-	 * @param x
-	 * @param y
-	 */
-	public void autoWalk(int x, int y) {
-		//adapted from Searos' scripts
-		int newX = x;
-		int newY = y;
-		int modifier = 20;
-
-		while ((currentX() != x || currentY() != y) && isRunning()) {
-			if (currentX() - x > modifier + 3) {
-				newX = currentX() - modifier;
-			}
-			if (currentY() - y > modifier + 3) {
-				newY = currentY() - modifier;
-			}
-			if (currentX() - x < 0 - (modifier + 3)) {
-				newX = currentX() + modifier;
-			}
-			if (currentY() - y < 0 - (modifier + 3)) {
-				newY = currentY() + modifier;
-			}
-			if (Math.abs(currentX() - x) <= modifier + 3) {
-				newX = x;
-			}
-			if (Math.abs(currentY() - y) <= modifier + 3) {
-				newY = y;
-			}
-			if (!this.isReachable(newX, newY, true)) {
-				if (modifier > 1) {
-					modifier--;
-				} else {
-					return;
-				}
-			} else {
-				walkToAsync(newX, newY, 0);
-				sleep(640);
-			}
-		}
 	}
 
 	/**

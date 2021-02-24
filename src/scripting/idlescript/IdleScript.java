@@ -74,4 +74,11 @@ public abstract class IdleScript {
 	public void playerDamagedInterrupt(int currentHealth, int damageAmount) {
 
 	}
+
+	/**
+	 * This is called by {@link callbacks.CommandCallback} if a player types a "::" command into the chatbox. <b>Override this in your script to intercept and read these.</b>
+	 */
+	public void chatCommandInterrupt(String commandText) {
+
+	}
 }

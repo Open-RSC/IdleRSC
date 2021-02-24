@@ -357,6 +357,7 @@ public class Main {
         hideButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                controller.displayMessage("@red@IdleRSC@yel@: Type '::show' to bring back the sidepane.");
                 botFrame.setVisible(false);
             }
         });

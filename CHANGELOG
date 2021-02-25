@@ -1,8 +1,4 @@
 
-    Zoom out extended
-    XP drops no longer queue when graphics are turned off
-
-
 FEB 24 2021
     New features:
         Reset XP counter button added to sidepane
@@ -13,6 +9,7 @@ FEB 24 2021
         Pressing F12 will show ::bothelp
         Pressing F11 will stop the current running script and open the load script window.
         Anti logout -- when the 'standing in one spot for too long' message comes up, your character will move.
+        Zoom out limit extended
 
     API Changes:
         New IdleScript interrupt - keyPressInterrupt
@@ -25,6 +22,8 @@ FEB 24 2021
 	    Bot paint is no longer drawn over existing UI windows.
 	    package-info no longer shows in script loader.
 	    AIOSmelter will now run with no parameters, as before.
+	    XP drops no longer queue when graphics are turned off.
+	    Client updated. 
 
 	Bugs added:
 	    Who knows? :)

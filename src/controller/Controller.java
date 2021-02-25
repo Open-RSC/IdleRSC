@@ -3720,10 +3720,15 @@ public class Controller {
 		return drawing;
 	}
 
+
 	/**
 	 * Toggle draw/graphics.
 	 */
 	public void setDrawing(boolean b) {
+		if (!isAuthentic()) {
+			Config.C_EXPERIENCE_DROPS = b;
+		}
+
 		drawing = b;
 	}
 

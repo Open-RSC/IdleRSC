@@ -25,7 +25,7 @@ Set up IdleRSC
     mv ColeslawCache Cache
     
     Edit run_linux.sh to be 
-    xvfb-run -a java -cp "IdleRSC.jar:patched_client.jar" bot.Main "username" "password" "scriptname" "scriptparams, leave this random one if script takes no param"
+    xvfb-run -a java -Xmx80m -cp "IdleRSC.jar:patched_client.jar" bot.Main --username "username" --password "password" --scriptname "scriptname" --scriptarguments "scriptarg1 arg2" --enablegfx false
     
 
 Debugging & Tips:

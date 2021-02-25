@@ -1486,7 +1486,7 @@ public class Controller {
 	 * @param email
 	 */
 	public void createAccount(String email) {
-		createAccount(email, Main.username, Main.password);
+		createAccount(email, Main.config.getUsername(), Main.config.getPassword());
 	}
 	
 	/**
@@ -1511,8 +1511,8 @@ public class Controller {
 		int menuNewUserPassword = (int) reflector.getObjectMember(mud, "menuNewUserPassword");
 		int menuNewUserEmail = (int) reflector.getObjectMember(mud, "menuNewUserEmail");
 
-		panelLogin.setText(menuNewUserUsername, Main.username);
-		panelLogin.setText(menuNewUserPassword, Main.password);
+		panelLogin.setText(menuNewUserUsername, Main.config.getUsername());
+		panelLogin.setText(menuNewUserPassword, Main.config.getPassword());
 		panelLogin.setText(menuNewUserEmail, email);
 
 		reflector.setObjectMember(mud, "enterPressed", true);
@@ -1535,8 +1535,8 @@ public class Controller {
 		int controlLoginUser = (int) reflector.getObjectMember(mud, "controlLoginUser");
 		int controlLoginPass = (int) reflector.getObjectMember(mud, "controlLoginPass");
 
-		panelLogin.setText(controlLoginUser, Main.username);
-		panelLogin.setText(controlLoginPass, Main.password);
+		panelLogin.setText(controlLoginUser, Main.config.getUsername());
+		panelLogin.setText(controlLoginPass, Main.config.getPassword());
 
 		reflector.setObjectMember(mud, "enterPressed", true);
 	}

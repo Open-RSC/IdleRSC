@@ -1,0 +1,51 @@
+Note: This guide is fairly technical. You'll set up a Google cloud project, create a free VM, and run IdleRSC through the VM. All parameters will be passed through command-line, and there will be no visual interface for your bot.
+
+
+Create a Google Cloud account: https://console.cloud.google.com
+
+Create a Google compute engine running Ubuntu for free
+  +-----------+----------------+
+  | Region    |       us-east1 |
+  | Series    |             N1 |
+  | Type      |       f1-micro |
+  | Image     |   Ubuntu 20.04 |
+  +-----------+----------------+
+  
+Click the SSH button to enter your new OS
+
+Download Java 8 headless and a fake Xorg
+    sudo apt update ; sudo apt-get install openjdk-8-jre-headless xvfb
+
+Disable gnome assistive technology for Java
+    sudo sed -i -e '/^assistive_technologies=/s/^/#/' /etc/java-*-openjdk/accessibility.properties
+    
+Set up IdleRSC
+    git clone https://gitlab.com/idlersc/idlersc.git
+    cd idlersc
+    mv ColeslawCache Cache
+    
+    Edit run_linux.sh to be 
+    xvfb-run -a java -Xmx80m -cp "IdleRSC.jar:patched_client.jar" bot.Main --username "username" --password "password" --scriptname "scriptname" --scriptarguments "scriptarg1 arg2" --enablegfx false
+    
+
+Debugging & Tips:
+
+Finding what went wrong can be difficult. Here are my debugging tips:
+
+1. View what's happening (SSH forward)
+    * Get Gcloud command line app: https://cloud.google.com/sdk/docs/install
+    * Click the dropdown beside the SSH button on Google Cloud, copy the "gcloud version", and add --ssh-flag="-X" after the ssh, i.e. 
+    $ gcloud beta compute ssh --ssh-flag="-X" --zone "us-east1-b" "Y" --project "test-bot-218721"
+
+2. Test your launch script locally
+    Surprisingly, passing the script name was throwing an exception for me on some Sbot scripts, and I had to pass an additional garbage argument. While possibly a bug in IdleRSC that won't exist in the future, always test locally!
+    
+3. Walk to where your bot is on another account
+    This one's self explanatory
+
+4. Getting "no icedtea-sound in java.library.path"
+    Mute the sound in OpenRSC settings
+
+
+Credits:
+- This tutorial was originally written by Red Bracket. Feel free to edit, improve, and reshare!

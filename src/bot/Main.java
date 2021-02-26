@@ -30,7 +30,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -45,13 +44,9 @@ import listeners.WindowListener;
  * @author Dvorak
  */
 public class Main {
-    public static String username = "testaccount"; //this will be replaced by CLI arguments. modify for debugging with eclipse.
-    public static String password = "testaccount";
+    public static Config config;
 
-    public static String scriptName = "";
-    private static String[] scriptArguments = {};
-
-    private static boolean isRunning = false; //this is tied to the start/stop button on the side panel.
+    private static boolean isRunning = false; // this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
     private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton, resetXpButton; //all the buttons on the sidepanel.
     private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, graphicsCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
@@ -160,6 +155,7 @@ public class Main {
      */
     public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
     	handleCache();
+    	config = new Config(args);
     	
         Reflector reflector = new Reflector(); //start up our reflector helper
         OpenRSC client = reflector.createClient(); //start up our client jar
@@ -179,34 +175,40 @@ public class Main {
         initializeConsoleFrame(consoleFrame);
         initializeScriptFrame(scriptFrame);
 
+        if (config.getHidesidepanel())
+        {
+            botFrame.setVisible(false);
+        }
 
         log("IdleRSC initialized.");
 
-        //dont' do anything until RSC is loaded.
-        while (controller.isLoaded() == false) controller.sleep(1);
+        //don't do anything until RSC is loaded.
+        while (!controller.isLoaded()) controller.sleep(1);
 
-        if (args.length < 2) {
-            System.out.println("You may need to set your username/password via the command line.");
-        } else {
-            username = args[0];
-            password = args[1];
+        if (autoLoginCheckbox.isSelected() != config.getAutologin()) {
+            autoLoginCheckbox.doClick();
         }
-        
-        if(args.length >= 3 || !scriptName.equals("")) {
-        	scriptName = args[2];
-        	
-        	if(args.length - 3 > 0) {
-        		scriptArguments = Arrays.copyOfRange(args, 3, args.length);
-        	} 
-        	
-        	if(loadAndRunScript(scriptName) == false) {
-        		System.out.println("Could not find script: " + scriptName);
-        		System.exit(1);
-        	}
-        	isRunning = true;
-        	startStopButton.setText("Stop");
+        if (logWindowCheckbox.isSelected() != config.getLogwindow()) {
+            logWindowCheckbox.doClick();
         }
-        
+        if (unstickCheckbox.isSelected() != config.getUnstick()) {
+            unstickCheckbox.doClick();
+        }
+        if (debugCheckbox.isSelected() != config.getDebug()) {
+            debugCheckbox.doClick();
+        }
+        if (graphicsCheckbox.isSelected() != config.getEnablegfx()) {
+            graphicsCheckbox.doClick();
+        }
+
+        if (!config.getScriptName().equals("")) {
+            if(!loadAndRunScript(config.getScriptName())) {
+                System.out.println("Could not find script: " + config.getScriptName());
+                System.exit(1);
+            }
+            isRunning = true;
+            startStopButton.setText("Stop");
+        }
 
         //start up our listener threads
         log("Initializing LoginListener...");
@@ -222,7 +224,6 @@ public class Main {
 
         //give everything a nice synchronization break juuuuuuuuuuuuuust in case...
         Thread.sleep(3000);
-        
 
         while (true) {
             Thread.sleep(618); //wait 1 tick before performing next action
@@ -234,7 +235,7 @@ public class Main {
                     //handle native scripts
                     if (currentRunningScript instanceof IdleScript) {
                         ((IdleScript) currentRunningScript).setController(controller);
-                        ((IdleScript) currentRunningScript).start(scriptArguments); 
+                        ((IdleScript) currentRunningScript).start(config.getScriptArguments());
                     }
 
                     //handle sbot scripts
@@ -243,9 +244,8 @@ public class Main {
                         controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
                         ((Script) currentRunningScript).setController(controller);
                         
-                        String sbotScriptName = scriptArguments[0];
-                        String[] params = scriptArguments.length > 1 ? Arrays.copyOfRange(scriptArguments, 1, scriptArguments.length) : new String[] {};
-                        ((Script) currentRunningScript).start(sbotScriptName, params); 
+                        String sbotScriptName = config.getScriptName();
+                        ((Script) currentRunningScript).start(sbotScriptName, config.getScriptArguments());
                     }
                 }
 
@@ -266,6 +266,11 @@ public class Main {
      * @param text
      */
     public static void log(String text) {
+        System.out.println(text);
+        if (logArea == null) {
+            return;
+        }
+
         logArea.append (text + "\n");
 
         if (autoscrollLogsCheckbox.isSelected()) {
@@ -308,11 +313,13 @@ public class Main {
         startStopButton = new JButton(isRunning ? "Stop" : "Start");
         loadScriptButton = new JButton("Load Script");
         settingsButton = new JButton("Settings");
+
         autoLoginCheckbox = new JCheckBox("Auto-Login");
         logWindowCheckbox = new JCheckBox("Log Window");
         unstickCheckbox = new JCheckBox("Unstick");
         debugCheckbox = new JCheckBox("Debug");
         graphicsCheckbox = new JCheckBox("Graphics");
+
         openDebuggerButton = new JButton("Open Debugger");
         hideButton = new JButton("Hide Sidepane");
         resetXpButton = new JButton("Reset XP");
@@ -381,7 +388,6 @@ public class Main {
         settingsButton.setMaximumSize(buttonSize);
         settingsButton.setPreferredSize(buttonSize);
         botFrame.add(autoLoginCheckbox);
-        botFrame.add(autoLoginCheckbox);
         botFrame.add(logWindowCheckbox);
         botFrame.add(unstickCheckbox);
         botFrame.add(debugCheckbox);
@@ -398,7 +404,7 @@ public class Main {
         botFrame.add(resetXpButton);
         
 
-
+        // abcd
         autoLoginCheckbox.setSelected(true);
         graphicsCheckbox.setSelected(true);
 
@@ -482,7 +488,7 @@ public class Main {
 				currentRunningScript = (Script) clazz.newInstance();
 			}
 
-			Main.scriptName = scriptName;
+			Main.config.setScriptName(scriptName);
 			
 			return true;
 		} catch(Exception e) {
@@ -608,7 +614,7 @@ public class Main {
                             scriptArgs.setText("");
                         }
 
-                        scriptArguments = scriptArgs.getText().split(" ");
+                        config.setScriptArguments(scriptArgs.getText().split(" "));
                         isRunning = true;
                         startStopButton.setText("Stop");
                         scriptFrame.setVisible(false);

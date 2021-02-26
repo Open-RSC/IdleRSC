@@ -1666,8 +1666,8 @@ public abstract class Script
 	public void Login(String username, String password)
 	{
 		Main.logMethod("Login", username, password);
-		Main.username = username;
-		Main.password = password;
+		Main.config.setUsername(username);
+		Main.config.setPassword(password);
 		controller.login();
 	}
 	/**

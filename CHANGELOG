@@ -1,3 +1,8 @@
+FEB 25 2021
+	Command line parameters have been changed, see updated run bat/sh scripts. This will allow us to customize configs for the clients later on, such as disabling graphics on startup -- Red Bracket
+	Cloud botting tutorial using Google Cloud added to Guides -- Red Bracket
+	ColeslawGuildFisher parameter bugfix -- Red Bracket
+	Updated documentation 
 
 FEB 24 2021
     New features:

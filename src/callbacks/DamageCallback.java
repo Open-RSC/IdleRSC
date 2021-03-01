@@ -31,7 +31,8 @@ public class DamageCallback {
                 if (coords[0] == c.currentX() && coords[1] == c.currentY()) {
                     //we are fighting this NPC!
 
-                    if (Main.getCurrentRunningScript() != null) {
+                	Object currentRunningScript = Main.getCurrentRunningScript();
+                    if (currentRunningScript != null && currentRunningScript instanceof IdleScript) {
                         ((IdleScript)Main.getCurrentRunningScript()).npcDamagedInterrupt(npc.healthCurrent, npc.damageTaken);
                     }
                 }
@@ -53,7 +54,8 @@ public class DamageCallback {
                 if (coords[0] == c.currentX() && coords[1] == c.currentY()) {
                     //this is us getting damaged!
 
-                    if (Main.getCurrentRunningScript() != null) {
+                	Object currentRunningScript = Main.getCurrentRunningScript();
+                    if (currentRunningScript != null && currentRunningScript instanceof IdleScript) {
                         ((IdleScript)Main.getCurrentRunningScript()).playerDamagedInterrupt(player.healthCurrent, player.damageTaken);
                     }
                 }

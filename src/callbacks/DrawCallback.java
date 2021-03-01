@@ -50,7 +50,7 @@ public class DrawCallback {
         		int currentHits = c.getCurrentStat(c.getStatId("Hits"));
         		int currentPrayer = c.getCurrentStat(c.getStatId("Prayer"));
         		int maxHits = c.getBaseStat(c.getStatId("Hits"));
-        		int maxPrayer  = c.getCurrentStat(c.getStatId("Prayer"));
+        		int maxPrayer  = c.getBaseStat(c.getStatId("Prayer"));
         		int fatigue = c.getFatigue();
         		
         		c.drawString("Hits: " + String.valueOf(currentHits) + "@red@/@whi@" + String.valueOf(maxHits), 7, y, 0xFFFFFF, 1);

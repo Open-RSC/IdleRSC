@@ -1,3 +1,10 @@
+FEB 28 2021
+	SBot scripts no longer crash when getting in combat.
+	The prayer indicator on Uranium now correctly displays your max prayer.
+	Searos' ArrowMaker now correctly handles headless arrows
+	Damrau's DamRc now more reliable
+	
+
 FEB 25 2021
 	Command line parameters have been changed, see updated run bat/sh scripts. This will allow us to customize configs for the clients later on, such as disabling graphics on startup -- Red Bracket
 	Cloud botting tutorial using Google Cloud added to Guides -- Red Bracket

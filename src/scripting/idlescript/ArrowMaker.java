@@ -43,12 +43,12 @@ public class ArrowMaker extends IdleScript {
 	}
 
 	public void scriptStart() {
-		if (headless) {
+		while (headless) {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(280) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
-					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(280),
-							controller.getInventoryItemSlotIndex(selectedArrowHead));
+					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(selectedArrowHead),
+							controller.getInventoryItemSlotIndex(280));
 					controller.sleep(100);
 					while (controller.isBatching()) {
 						controller.sleep(100);
@@ -68,12 +68,12 @@ public class ArrowMaker extends IdleScript {
 				}
 			}
 		}
-		if (!headless) {
+		while (!headless) {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(637) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
-					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(637),
-							controller.getInventoryItemSlotIndex(selectedArrowHead));
+					controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(selectedArrowHead),
+							controller.getInventoryItemSlotIndex(637));
 					controller.sleep(100);
 					while (controller.isBatching()) {
 						controller.sleep(100);
@@ -110,7 +110,7 @@ public class ArrowMaker extends IdleScript {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectedArrowHead = arrowHeads[arrowHead.getSelectedIndex()];
-				if (arrowHead.getSelectedIndex() == 7) {
+				if (arrowHead.getSelectedIndex() == 6) {
 					headless = true;
 				}
 				scriptStarted = true;

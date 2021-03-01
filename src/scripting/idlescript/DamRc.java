@@ -6,6 +6,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -17,8 +19,11 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * DamRc by Damrau. Coleslaw only. 
+ * DamRc by Damrau. Coleslaw only.
+ * 
  * @author Damrau
+ * @version 1.1 Conditional sleeps to help with locking up & cut down on total
+ *          amount of packets sent
  */
 public class DamRc extends IdleScript {
 
@@ -37,6 +42,9 @@ public class DamRc extends IdleScript {
 	int essRockId = 1227;
 	int[] toBank;
 	int[] toSpot;
+	int runesMade, runesInBank, startExpRc, startExpMining;
+
+	long startTime;
 
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
@@ -47,6 +55,53 @@ public class DamRc extends IdleScript {
 			return true;
 		}
 		return false;
+	}
+
+	public void sleepItem(int item, boolean gettingItem) {
+		long sleepTimeout = System.currentTimeMillis() + 10000;
+		while (System.currentTimeMillis() < sleepTimeout) {
+			if (controller.getInventoryItemCount(item) == 0 && !gettingItem
+					|| controller.getInventoryItemCount(item) > 0 && gettingItem) {
+				if (debug && !gettingItem) {
+					status = "No item left breaking sleep";
+					controller.displayMessage("@cya@" + "No item left breaking sleep");
+				}
+				if (debug && gettingItem) {
+					status = "We have the item breaking sleep";
+					controller.displayMessage("@cya@" + "We have the item breaking sleep");
+				}
+				break;
+			} else {
+				if (debug && !gettingItem) {
+					status = "Sleeping until item is gone";
+					controller.displayMessage("@cya@" + "Sleeping until item is gone");
+				}
+				if (debug && gettingItem) {
+					status = "Sleeping until we have the item";
+					controller.displayMessage("@cya@" + "Sleeping until we have the item");
+				}
+				controller.sleep(640);
+			}
+		}
+	}
+
+	public void sleepInArea(int[] nwTile, int[] seTile) {
+		long sleepTimeout = System.currentTimeMillis() + 10000;
+		while (System.currentTimeMillis() < sleepTimeout) {
+			if (inArea(nwTile, seTile)) {
+				if (debug) {
+					status = "In area breaking sleep";
+					controller.displayMessage("@cya@" + "inArea break from sleep");
+				}
+				break;
+			} else {
+				if (debug) {
+					status = "Sleeping until in area";
+					controller.displayMessage("@cya@" + "!inArea keep sleeping");
+				}
+				controller.sleep(640);
+			}
+		}
 	}
 
 	public void start(String parameters[]) {
@@ -61,13 +116,13 @@ public class DamRc extends IdleScript {
 
 	public void scriptStart() {
 		while (controller.isRunning()) {
-			if (debug) {
-				controller.displayMessage("@cya@" + "Current Z: " + controller.currentY());
-			}
 			if (mineEss) {
 				if (inArea(mineNW, mineSE)) {
 					if (controller.getInventoryItemCount() >= 30) {
-						useObject(portalId);
+						if (!controller.isBatching()) {
+							useObject(portalId);
+							sleepInArea(spotNW, spotSE);
+						}
 					} else {
 						if (!controller.isBatching()) {
 							useObject(essRockId);
@@ -92,19 +147,22 @@ public class DamRc extends IdleScript {
 			}
 			if (!mineEss) {
 				if (inArea(alterNW, alterSE)) {
-					if (controller.getInventoryItemCount() >= 30) {
+					if (controller.getInventoryItemCount(essId) > 0) {
 						useObject(alterId);
+						sleepItem(essId, false);
 					} else {
 						useObject(portalId);
+						sleepInArea(spotNW, spotSE);
 					}
 				}
 
 				if (!inArea(alterNW, alterSE) && controller.currentY() > alterZ && controller.currentY() <= 600) {
-					if (controller.getInventoryItemCount() >= 30) {
+					if (controller.getInventoryItemCount(essId) > 0) {
 						if (!inArea(spotNW, spotSE)) {
 							walkToSpot();
 						} else {
 							useObject(ruinsId);
+							sleepInArea(alterNW, alterSE);
 						}
 					} else {
 						if (!inArea(bankNW, bankSE)) {
@@ -117,18 +175,17 @@ public class DamRc extends IdleScript {
 			}
 		}
 		controller.sleep(640);
-
 	}
 
 	public void teleport() {
 		ORSCharacter aubury = controller.getNearestNpcById(auburyId, false);
 		status = "Teleporting to mine";
-		if (debug) {	
+		if (debug) {
 			controller.displayMessage("@cya@" + "Teleporting to ess");
 		}
 		if (aubury != null && aubury.serverIndex > 0) {
 			controller.npcCommand1(aubury.serverIndex);
-			controller.sleep(600);
+			sleepInArea(mineNW, mineSE);
 		}
 	}
 
@@ -151,20 +208,22 @@ public class DamRc extends IdleScript {
 
 	public void bank() {
 		if (controller.isInBank()) {
-
+			runesInBank = controller.getBankItemCount(runeId);
 			if (controller.getInventoryItemCount(runeId) > 0) {
 				status = "Deposit runes";
-				if (debug) {	
+				if (debug) {
 					controller.displayMessage("@cya@" + "Deposit runes");
 				}
+				runesMade = runesMade + controller.getInventoryItemCount(runeId);
 				controller.depositItem(runeId, controller.getInventoryItemCount(runeId));
+				sleepItem(runeId, false);
 			} else {
 				status = "Withdraw ess";
-				if (debug) {	
+				if (debug) {
 					controller.displayMessage("@cya@" + "Withdraw ess");
 				}
 				controller.withdrawItem(essId, 29);
-				controller.sleep(640);
+				sleepItem(essId, true);
 			}
 
 		} else {
@@ -387,6 +446,9 @@ public class DamRc extends IdleScript {
 				debug = debugCheckbox.isSelected();
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
+				startTime = System.currentTimeMillis();
+				startExpRc = controller.getStatXp(18);
+				startExpMining = controller.getStatXp(14);
 				started = true;
 			}
 		});
@@ -405,12 +467,58 @@ public class DamRc extends IdleScript {
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();
 	}
-	 @Override
-    public void paintInterrupt() {
-        if(controller != null) {
-            controller.drawString("@cya@DamRc - By Damrau", 10, 21, 0xFFFFFF, 1);
-            controller.drawString("@cya@Script Status: " + status, 10, 21+14, 0xFFFFFF, 1);
-            controller.drawString("@cya@Method: " + method, 10, 21+28, 0xFFFFFF, 1);
-        }
-    }
+
+	public static String msToString(long milliseconds) {
+		long sec = milliseconds / 1000;
+		long min = sec / 60;
+		long hour = min / 60;
+		sec %= 60;
+		min %= 60;
+		DecimalFormat twoDigits = new DecimalFormat("00");
+
+		return new String(twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
+	}
+
+	@Override
+	public void paintInterrupt() {
+		if (started) {
+			String runTime = msToString(System.currentTimeMillis() - startTime);
+			int gainedExpRc = controller.getStatXp(18) - startExpRc;
+			double expHrRc = ((double) gainedExpRc * (3600000.0 / (System.currentTimeMillis() - startTime)));
+			double runesHr = ((double) runesMade * (3600000.0 / (System.currentTimeMillis() - startTime)));
+			int gainedExpMining = controller.getStatXp(14) - startExpMining;
+			double expHrMining = ((double) gainedExpMining * (3600000.0 / (System.currentTimeMillis() - startTime)));
+			if (controller != null) {
+				controller.setShowCoords(false);
+				controller.setShowStatus(false);
+				controller.setShowXp(false);
+				controller.drawString("@cya@DamRc v1.1 - By Damrau", 7, 25, 0xFFFFFF, 1);
+				controller.drawString("@cya@Runtime: " + runTime, 7, 25 + 14, 0xFFFFFF, 1);
+				controller.drawString("@cya@Status: " + status, 7, 25 + 28, 0xFFFFFF, 1);
+				if (mineEss) {
+					controller.drawString(
+							"@cya@Ess mined: " + NumberFormat.getInstance().format(runesMade) + " ("
+									+ NumberFormat.getInstance().format(Math.floor(runesHr)) + "/Hr)",
+							7, 25 + 42, 0xFFFFFF, 1);
+					controller.drawString("@cya@Total ess: " + NumberFormat.getInstance().format(runesInBank), 7, 25 + 56, 0xFFFFFF, 1);
+					controller.drawString(
+							"@cya@Mining exp gained: " + NumberFormat.getInstance().format(gainedExpMining) + " ("
+									+ NumberFormat.getInstance().format(Math.floor(expHrMining)) + "/Hr)",
+							7, 25 + 70, 0xFFFFFF, 1);
+				}
+				if (!mineEss) {
+					controller.drawString(
+							"@cya@Runes made: " + NumberFormat.getInstance().format(runesMade) + " ("
+									+ NumberFormat.getInstance().format(Math.floor(runesHr)) + "/Hr)",
+							7, 25 + 42, 0xFFFFFF, 1);
+					controller.drawString("@cya@Total runes: " + NumberFormat.getInstance().format(runesInBank), 7, 25 + 56, 0xFFFFFF, 1);
+					controller.drawString(
+							"@cya@Rc exp gained: " + NumberFormat.getInstance().format(gainedExpRc) + " ("
+									+ NumberFormat.getInstance().format(Math.floor(expHrRc)) + "/Hr)",
+							7, 25 + 70, 0xFFFFFF, 1);
+				}
+				controller.drawString("@cya@Method: " + method, 7, 25 + 84, 0xFFFFFF, 1);
+			}
+		}
+	}
 }

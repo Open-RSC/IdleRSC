@@ -17,6 +17,8 @@ import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
 
+import static bot.Main.log;
+
 /**
  * A basic cooking script to use in Catherby. 
  * 
@@ -44,7 +46,18 @@ public class AIOCooker extends IdleScript {
 			cookedId = _cookedId;
 			burntId = _burntId;
 		}
-		
+
+		public FoodObject (String name) {
+			for (FoodObject food : objects) {
+				if (food.name.equalsIgnoreCase(name)) {
+					name = food.name;
+					rawId = food.rawId;
+					cookedId = food.cookedId;
+					burntId = food.burntId;
+				}
+			}
+		}
+
 		@Override
 		public boolean equals(Object o) {
 			if(o instanceof FoodObject) {
@@ -82,14 +95,30 @@ public class AIOCooker extends IdleScript {
 	}};
 	
 	public void start(String parameters[]) {
-		if(!guiSetup) {
-    		setupGUI();
-    		guiSetup = true;
-    	}
-    	
-    	if(scriptStarted) {
-    		scriptStart();
-    	}
+		if (parameters.length < 3) {
+			if(!guiSetup) {
+				setupGUI();
+				guiSetup = true;
+			}
+
+			if(scriptStarted) {
+				log("Equivalent parameters: ");
+				log(target.name + " " + dropBurnt + " " + gauntlets);
+				scriptStart();
+			}
+		} else {
+			try {
+				target = new FoodObject(parameters[0]);
+				dropBurnt = Boolean.parseBoolean(parameters[1]);
+				gauntlets = Boolean.parseBoolean(parameters[2]);
+
+				scriptStart();
+			} catch (Exception e) {
+				log("Invalid parameters! Usage: ");
+				log("foodname true true");
+				controller.stop();
+			}
+		}
 	}
 	
 	public void scriptStart() {

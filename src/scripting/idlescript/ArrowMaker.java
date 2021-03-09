@@ -43,7 +43,7 @@ public class ArrowMaker extends IdleScript {
 	}
 
 	public void scriptStart() {
-		while (headless) {
+		if (headless) {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(280) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
@@ -68,7 +68,7 @@ public class ArrowMaker extends IdleScript {
 				}
 			}
 		}
-		while (!headless) {
+		if (!headless) {
 			while (controller.isRunning()) {
 				while (controller.getInventoryItemCount(637) > 9
 						&& controller.getInventoryItemCount(selectedArrowHead) > 9) {
@@ -142,6 +142,7 @@ public class ArrowMaker extends IdleScript {
 			controller.drawString("@red@Arrow Maker @gre@by Searos", 10, 21, 0xFFFFFF, 1);
 			controller.drawString("@red@Arrows Made: @yel@" + String.valueOf(this.controller.getInventoryItemCount(completeSelected) - startAmount), 10, 35,
 					0xFFFFFF, 1);
+					
 		}
 	}
 }

@@ -1,9 +1,10 @@
 70a77a7b18554b81941b23e966b76561  ./config.txt
-22ea467349b23c4986d6ec925ac4a6ef  ./OpenRSC.jar
-2722baed6981dc6c4ba8f7bc66e76137  ./openrsc.apk
-59f8d97492fdb1286018ec89b0755657  ./Open_RSC_Client_dev.jar
+fc584e7bff459d1f2b7d9efa74919bfa  ./OpenRSC.jar
+8cfd5b48aeced80bf53bb1e9b95dbd38  ./openrsc.apk
+5d87069d3f0ffab5b027908165b048e5  ./Open_RSC_Client_dev.jar
 b8419160170a41ae01abab13a3b887df  ./ip.txt
 2bc77ee6aff6405a4233e55c87138d8c  ./port.txt
+cfcd208495d565ef66e7dff9f98764da  ./discord_inuse.txt
 e7db55346a3c9e1e2dc4156a5080e3e3  ./audio/spellfail.wav
 a35f59926c22a2763a898509ac46ac05  ./audio/chisel.wav
 e975b69136d8cea9eafd1f7dad2f6e92  ./audio/spellok.wav
@@ -51,4 +52,4 @@ c95ded5d48c3a78c5a267e0301160367  ./video/spritepacks/Menus.osar
 6cdb4549a7813f54a3473564a3231399  ./video/Authentic_Landscape.orsc
 96abb7ef4a9d1f2160153eb09b79d024  ./video/Custom_Sprites.osar
 4445d7d9c1535a6f47a09ef33c02c15f  ./video/library.orsc
-bd015a91557c42d8a1c9b67f1ff914ff  ./Open_RSC_Client.jar
+08a4757afb297ee5546155a48416ef0d  ./Open_RSC_Client.jar

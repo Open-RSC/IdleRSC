@@ -48,11 +48,6 @@ public class MiningGuild extends IdleScript {
 		}
 		while (controller.isRunning() && setupCompleted) {
 			String x = param[0].toLowerCase();
-			if (!x.isBlank()) {
-				if (x == "debug") {
-					debug = true;
-				}
-			}
 			if (!runiteCheck.isSelected() && !adamantiteCheck.isSelected() && !mithrilCheck.isSelected() && !coalCheck.isSelected()) {
 				quit(3); //You can't mine nothing!
 			}
@@ -194,16 +189,16 @@ public class MiningGuild extends IdleScript {
 			for (Integer i = 0 ; i < oreIDs.length ; i++) {	//deposits all ores
 				if (controller.getInventoryItemCount(oreIDs[i]) > 0) {
 					banked[i] += controller.getInventoryItemCount(oreIDs[i]); //adds ore to array for paint
-					controller.depositItem(oreIDs[i], controller.getInventoryItemCount(oreIDs[i]));
 					while (controller.getInventoryItemCount(oreIDs[i]) > 0) {
+						controller.depositItem(oreIDs[i], controller.getInventoryItemCount(oreIDs[i]));
 						controller.sleep(640);
 					}
 				}			
 			}
 			for (Integer i = 0 ; i < gemIDs.length ; i++) { //deposits all gems
 				if (controller.getInventoryItemCount(gemIDs[i]) > 0) {
-					controller.depositItem(gemIDs[i], controller.getInventoryItemCount(gemIDs[i]));
 					while (controller.getInventoryItemCount(gemIDs[i]) > 0) {
+						controller.depositItem(gemIDs[i], controller.getInventoryItemCount(gemIDs[i]));
 						controller.sleep(640);
 					}
 				}				
@@ -312,17 +307,6 @@ public class MiningGuild extends IdleScript {
             controller.drawString("@whi@" + String.valueOf(banked[1]), 81, 21+52, 0xFFFFFF, 1);
             controller.drawString("@whi@" + String.valueOf(banked[2]), 81, 21+66, 0xFFFFFF, 1);
             controller.drawString("@whi@" + String.valueOf(banked[3]), 81, 21+80, 0xFFFFFF, 1);	
-            if (debug) {
-                controller.drawBoxAlpha(130, 25, 165, 25+77, 0xFFFFFF, 64);	 
-                controller.drawString("@cya@Mining:@whi@ " + isMining, 133, 25+12, 0xFFFFFF, 1);
-                controller.drawString("@cya@Empty:@whi@ " + rockEmpty(), 133, 25+26, 0xFFFFFF, 1);
-                controller.drawString("@cya@Coordinates:@whi@ (" + currentOre[0] + "," + currentOre[1] + ")", 133, 25+40, 0xFFFFFF, 1);
-                controller.drawString("@cya@Runite Available:@whi@ " + runiteAvailable(), 133, 25+55, 0xFFFFFF, 1);
-                controller.drawString("@cya@Adamantite Available:@whi@ " + adamantiteAvailable(), 133, 25+69, 0xFFFFFF, 1);
-                controller.drawString("@cya@Mithril Available:@whi@ " + mithrilAvailable(), 133, 25+83, 0xFFFFFF, 1);
-                controller.drawString("@cya@Coal Available:@whi@ " + coalAvailable(), 133, 25+97, 0xFFFFFF, 1);
-            	
-            }
         }
     }
 }

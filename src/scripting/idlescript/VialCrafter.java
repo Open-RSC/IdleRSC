@@ -87,7 +87,7 @@ public class VialCrafter extends IdleScript {
 				controller.sleep(640);
 			}
 			//Pick up seaweed spawns if on northern side of the island
-			if (controller.currentY() < 550) {
+			if (controller.currentY() < 550 && controller.getInventoryItemCount() < 30) {
 				pickupSeaweed();
 			}
 			//Finds and harvests nearest seaweed plant

@@ -446,6 +446,7 @@ public class AIOFighter extends IdleScript {
             		setValuesFromGUI(fightModeField, npcIdsField, maxWanderField, eatAtHpField, lootTableField, openDoorsCheckbox, buryBonesCheckbox, magingCheckbox, spellNameField, rangingCheckbox, arrowIdField, switchIdField);
             		
             		controller.displayMessage("@red@AIOFighter by Dvorak. Let's party like it's 2004!");
+            		controller.setStatus("@red@Started...");
             		
 	            	scriptFrame.setVisible(false);
 	            	scriptFrame.dispose();

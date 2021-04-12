@@ -1,3 +1,10 @@
+APR 11 2021
+	Added fatigueHook which tells the client what the current fatigue% is during sleep.
+	Fixed glitch where sleeping was causing client to break.
+
+APR 4 2021
+	Forgot to update sprites for Easter.
+	
 APR 3 2021
 	Client update
 

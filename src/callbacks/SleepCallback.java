@@ -14,6 +14,8 @@ import java.nio.file.Files;
 
 public class SleepCallback {
     private static String previousSleepWord = "";
+    private static int currentFatigue = 100;
+    
 
     /**
      * Sleep hook which is called by the patched jar whenever the client goes to sleep.
@@ -22,6 +24,35 @@ public class SleepCallback {
      * @param length -- the length of the raw packet data
      */
     public static void sleepHook(byte[] packet, int length) {
+        if (packet[0] == 117) {
+            saveSleepImage(packet, packet.length);
+
+            Main.log("HC.bmp saved.");
+            if(currentFatigue == 0) 
+            	handleSleep();
+            //Main.log("Waiting for fatigue to reach 0...");
+                
+        } else {
+            Main.log("Packet received was not a legitimate sleep image!");
+        }
+    }
+    
+    /**
+     * Fatigue hook which is called by the patched jar whenever the client receives an update on fatigue.
+     *
+     * @param fatigue -- the current fatigue
+     */
+    public static void fatigueHook(int fatigue) {
+    	Main.log("Current fatigue in sleep: " + Integer.toString(fatigue));
+    	currentFatigue = fatigue;
+    	
+    	if(fatigue == 0) {
+    		handleSleep();
+    	}
+    	
+    }
+
+    private static void handleSleep() {
         Controller controller = Main.getController();
         mudclient mud = null;
 
@@ -30,47 +61,32 @@ public class SleepCallback {
             return;
 
         mud = controller.getMud();
-
-
-        try {
-            if (packet[0] == 117) {
-                saveSleepImage(packet, packet.length);
-
-                Main.log("HC.bmp saved.");
-                Main.log("Waiting for fatigue to reach 0...");
-                while (controller.getFatigueDuringSleep() != 0) controller.sleep(10);
-
-
-                try {
-                    String guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
-                    int fileReadAttempts = 0;
-                    while (guess.equals(previousSleepWord) && fileReadAttempts < 5) {
-                        Main.log("Sleep word has not updated... is OCR running?");
-                        guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
-                        Thread.sleep(1000);
-                        fileReadAttempts++;
-                    }
-
-                    if(fileReadAttempts == 10) {
-                        Main.log("OCR is not running or not functioning properly!");
-                        return;
-                    }
-
-                    Main.log("guess: " + guess);
-                    controller.chatMessage(guess);
-                    previousSleepWord = guess;
-                } catch (IOException e) {
-                    Main.log("error reading slword.txt! Ensure sleeper has access to write slword.txt and correct directory is set.");
-                    e.printStackTrace();
-                }
-            } else {
-                Main.log("Packet received was not a legitimate sleep image!");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        
+        controller.sleep(1000); //give OCR time to catch up. 
+        
+    	try {
+    		String guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
+    		int fileReadAttempts = 0;
+    		while (guess.equals(previousSleepWord) && fileReadAttempts < 5) {
+    			Main.log("Sleep word has not updated... is OCR running?");
+    			guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
+    			controller.sleep(1000);
+    			fileReadAttempts++;
+    		}
+  	  
+    		if(fileReadAttempts == 10) {
+    			Main.log("OCR is not running or not functioning properly!");
+    			return;
+    		}
+    		Main.log("guess: " + guess);
+    		controller.chatMessage(guess);
+    		previousSleepWord = guess;
+    	} catch (IOException e) {
+    		Main.log("error reading slword.txt! Ensure sleeper has access to write slword.txt and correct directory is set.");
+    		e.printStackTrace();
+    	}
     }
-
+    
     private static BufferedImage convertImageTo1Bpp(BufferedImage o) { //we have to convert the sleep image to 1bpp otherwise FOCR will freak out and cause an 8 hour investigation into why it broke
         BufferedImage img = new BufferedImage(o.getWidth(), o.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 

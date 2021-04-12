@@ -69,9 +69,7 @@ public alch(mudclient rs)
 Please join the <a href="https://discord.gg/CutQxDZ8Np">OpenRSC Discord</a> and post in the #botting-client-development channel. Other channels are not tied to botting, so please do not discuss botting in those channels.
 
 ## Donations:
-IdleRSC is provided for free under GPLv3, due to passion for RSC botting. However, if you wish, you may donate via Liberapay, which supports all major card carriers. Absolutely no donations are accepted in exchange for features, scripts, etc. 
-
-<a href="https://liberapay.com/dvorak.keys/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
+IdleRSC is provided for free under GPLv3, due to passion for RSC botting. If you wish, you may donate via Monero to the following address: 83XpZtrvQTdK6aW5fp3DgtBmtemqpQYf97nPtqf7yPs9VtFa4p71NYyfCmcCe2D7kcEDUvtyc58Bi7xhp772v1ah8dax4CV
 
 ## About:
 This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure. After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released.

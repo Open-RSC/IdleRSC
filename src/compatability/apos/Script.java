@@ -3,7 +3,13 @@ package compatability.apos;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import com.openrsc.client.entityhandling.defs.DoorDef;
+import com.openrsc.client.entityhandling.defs.GameObjectDef;
+import com.openrsc.client.entityhandling.defs.ItemDef;
+import com.openrsc.client.entityhandling.instances.Item;
 
 import bot.Main;
 import callbacks.MessageCallback;
@@ -338,9 +344,7 @@ public abstract class Script implements IScript {
 	}
 
 	public boolean isTalking() {
-		Main.log("apos.isTalking() unimplemented");
-		return false;
-		//return this.isMobTalking(this.getPlayer());
+		return controller.getPlayer().messageTimeout > 0;
 	}
 
 	public boolean isHpBarShowing() {
@@ -365,9 +369,7 @@ public abstract class Script implements IScript {
 	 * @return true if the player has a head icon visible.
 	 */
 	public boolean isSkilling() {
-		Main.log("apos.isSkilling() unimplemented");
-		return false;
-		//return this.isHeadIconVisible(this.getPlayer());
+		return controller.getPlayer().bubbleTimeout > 0;
 	}
 
 	/**
@@ -652,21 +654,24 @@ public abstract class Script implements IScript {
 	}
 
 	public int getGroundItemId(int index) {
-		Main.log("apos.getGroundItemId() unimplemented");
-		return 0;
-		//return this.getGroundItemId(index);
+		if(index >= controller.getGroundItemsCount())
+			return -1;
+		
+		return controller.getGroundItems()[index];
 	}
 
 	public int getItemX(int index) {
-		Main.log("apos.getItemX() unimplemented");
-		return 0;
-		//return this.getGroundItemLocalX(index) + this.getAreaX();
+		if(index >= controller.getGroundItemsCount())
+			return -1;
+		
+		return controller.getGroundItemsX()[index];
 	}
 
 	public int getItemY(int index) {
-		Main.log("apos.getItemY() unimplemented");
-		return 0;
-		//return this.getGroundItemLocalY(index) + this.getAreaY();
+		if(index >= controller.getGroundItemsCount())
+			return -1;
+		
+		return controller.getGroundItemsY()[index];
 	}
 
 	/**
@@ -957,26 +962,26 @@ public abstract class Script implements IScript {
 	 *		 will contain the NPC's local index, X, Y.
 	 */
 	public int[] getNpcByIdNotTalk(int... ids) {
-		abcd
-	}
-//		final int[] npc = new int[] {
-//			-1, -1, -1
-//		};
-//		int max_dist = Integer.MAX_VALUE;
-//		for (int i = 0; i < this.getNpcCount(); i++) {
-//			if (inArray(ids, this.getNpcId(this.getNpc(i))) && !this.isMobTalking(this.getNpc(i))) {
-//				final int x = this.getMobLocalX(this.getNpc(i)) + this.getAreaX();
-//				final int y = this.getMobLocalY(this.getNpc(i)) + this.getAreaY();
-//				final int dist = distanceTo(x, y, getX(), getY());
-//				if (dist < max_dist) {
-//					npc[0] = i;
-//					npc[1] = x;
-//					npc[2] = y;
-//					max_dist = dist;
-//				}
-//			}
-//		}
-//		return npc;
+		final int[] finalNpc = new int[] { -1, -1, -1 };
+		int max_dist = Integer.MAX_VALUE;
+		for(int id : ids) {
+			for(ORSCharacter npc : controller.getNpcs()) {
+				if(npc.npcId == id) {
+					if(!controller.isNpcTalking(npc.serverIndex)) {
+						final int[] coords = controller.getNpcCoordsByServerIndex(npc.serverIndex);
+						final int dist = distanceTo(coords[0], coords[1], getX(), getY());
+						
+						if(dist < max_dist) {
+							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
+							finalNpc[1] = coords[0];
+							finalNpc[2] = coords[2];
+						}
+					}
+				}
+			}
+		}
+		
+		return finalNpc;
 	}
 
 	/**
@@ -1029,24 +1034,28 @@ public abstract class Script implements IScript {
 	 */
 	public int[] getNpcInExtendedRadius(int id, int start_x, int start_y,
 		int latitude, int longitude) {
-		final int[] npc = new int[] {
-			-1, -1, -1
-		};
+		
+		final int[] finalNpc = new int[] { -1, -1, -1 };
 		int max_dist = Integer.MAX_VALUE;
-		for (int i = 0; i < this.getNpcCount(); i++) {
-			final int x = this.getMobLocalX(this.getNpc(i)) + this.getAreaX();
-			final int y = this.getMobLocalY(this.getNpc(i)) + this.getAreaY();
-			if (id == this.getNpcId(this.getNpc(i)) && !this.isMobInCombat(this.getNpc(i)) && Math.abs(x - start_x) <= latitude && Math.abs(y - start_y) <= longitude) {
-				final int dist = distanceTo(x, y, getX(), getY());
-				if (dist < max_dist) {
-					npc[0] = i;
-					npc[1] = x;
-					npc[2] = y;
-					max_dist = dist;
+		for(ORSCharacter npc : controller.getNpcs()) {
+			if(npc.npcId == id) {
+				if(!controller.isNpcInCombat(npc.serverIndex)) {
+					final int[] coords = controller.getNpcCoordsByServerIndex(npc.serverIndex);
+					
+					if(Math.abs(coords[0] - start_x) <= latitude && Math.abs(coords[1] - start_y) <= longitude) {
+						final int dist = distanceTo(coords[0], coords[1], getX(), getY());
+						if(dist < max_dist) {
+							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
+							finalNpc[1] = coords[0];
+							finalNpc[2] = coords[2];
+						}
+					}
 				}
 			}
 		}
-		return npc;
+		
+		return finalNpc;
+
 	}
 
 	/**
@@ -1129,7 +1138,7 @@ public abstract class Script implements IScript {
 	 * @return an array of the visible quest menu options.
 	 */
 	public String[] questMenuOptions() {
-		return this.getDialogOptions();
+		return controller.getOptionsMenuText();
 	}
 
 	/**
@@ -1209,18 +1218,14 @@ public abstract class Script implements IScript {
 	 */
 	@Deprecated
 	public int[] getPlayerByPid(int server_index) {
-		final int[] player = new int[] {
-			-1, -1, -1
-		};
-		for (int i = 0; i < countPlayers(); i++) {
-			if (getPlayerPID(i) == server_index) {
-				player[0] = i;
-				player[1] = this.getMobLocalX(this.getPlayer(i)) + this.getAreaX();
-				player[2] = this.getMobLocalY(this.getPlayer(i)) + this.getAreaY();
-				break;
-			}
-		}
-		return player;
+		int[] coords = controller.getPlayerCoordsByServerIndex(server_index);
+		
+		if(coords[0] == -1)
+			return new int[] {-1, -1, -1};
+		
+		int localIndex = this.getPlayerLocalIndexFromServerIndex(server_index);
+		
+		return new int[] {localIndex, coords[0], coords[1]};
 	}
 
 	/**
@@ -1309,8 +1314,13 @@ public abstract class Script implements IScript {
 	 * @return the player's combat level.
 	 */
 	public int getPlayerCombatLevel(int local_index) {
-		abcd
-		//return this.getPlayerCombatLevel(this.getPlayer(local_index));
+		int serverIndex = this.getPlayerServerIndexFromLocalIndex(local_index);
+		
+		if(serverIndex == -1)
+			return -1;
+		
+		ORSCharacter player = controller.getPlayer(serverIndex);
+		return player.level;
 	}
 
 	/**
@@ -1331,8 +1341,13 @@ public abstract class Script implements IScript {
 	}
 
 	public boolean isPlayerHpBarVisible(int index) {
-		abcd
-		//return this.isHpBarVisible(this.getPlayer(index));
+		int serverIndex = this.getPlayerServerIndexFromLocalIndex(index);
+		
+		if(serverIndex == -1)
+			return false;
+		
+		ORSCharacter player = controller.getPlayer(serverIndex);
+		return player.combatTimeout > 0;
 	}
 
 	/**
@@ -1345,8 +1360,13 @@ public abstract class Script implements IScript {
 	 * @return true if the player is in talking.
 	 */
 	public boolean isPlayerTalking(int local_index) {
-		abcd
-		//return this.isMobTalking(this.getPlayer(local_index));
+		int serverIndex = this.getPlayerServerIndexFromLocalIndex(local_index);
+		
+		if(serverIndex == -1)
+			return false;
+		
+		ORSCharacter player = controller.getPlayer(serverIndex);
+		return player.messageTimeout > 0;
 	}
 
 	/**
@@ -1359,8 +1379,7 @@ public abstract class Script implements IScript {
 	 * @return true if the player is in walking.
 	 */
 	public boolean isPlayerWalking(int local_index) {
-		abcd
-		//return this.isMobWalking(this.getPlayer(local_index));
+		return controller.isPlayerCurrentlyWalking(getPlayerServerIndexFromLocalIndex(local_index));
 	}
 
 	/**
@@ -1416,25 +1435,15 @@ public abstract class Script implements IScript {
 	 *		 will contain the object's id, X, Y.
 	 */
 	public int[] getObjectById(int... ids) {
-		final int[] object = new int[] {
-			-1, -1, -1
-		};
-		int max_dist = Integer.MAX_VALUE;
-		for (int i = 0; i < this.getObjectCount(); i++) {
-			final int id = this.getObjectId(i);
-			if (inArray(ids, id)) {
-				final int x = this.getObjectLocalX(i) + this.getAreaX();
-				final int y = this.getObjectLocalY(i) + this.getAreaY();
-				final int dist = distanceTo(x, y, getX(), getY());
-				if (dist < max_dist) {
-					object[0] = id;
-					object[1] = x;
-					object[2] = y;
-					max_dist = dist;
-				}
+		for(int id : ids) {
+			int[] coords = controller.getNearestObjectById(id);
+			
+			if(coords != null) {
+				return new int[] {id, coords[0], coords[1]};
 			}
 		}
-		return object;
+		
+		return new int[] {-1, -1, -1};
 	}
 
 	public int getObjectCount() {
@@ -1446,11 +1455,17 @@ public abstract class Script implements IScript {
 	}
 
 	public int getObjectX(int index) {
-		return this.getObjectLocalX(index) + this.getAreaX();
+		if(index >= controller.getObjectsCount())
+			return -1;
+		
+		return controller.offsetX(controller.getObjectsX()[index]);
 	}
 
 	public int getObjectY(int index) {
-		return this.getObjectLocalY(index) + this.getAreaY();
+		if(index >= controller.getObjectsCount())
+			return -1;
+		
+		return controller.offsetZ(controller.getObjectsZ()[index]);
 	}
 
 	public static String getObjectName(int id) {
@@ -1528,16 +1543,16 @@ public abstract class Script implements IScript {
 	 *		 the array will contain -1, -1, -1. If a boundary was found, the
 	 *		 array will contain the boundary's id, X, Y.
 	 */
-	public int[] getWallObjectById(int... ids) {
-		final int[] bound = new int[] {
-			-1, -1, -1
-		};
+	public int[] getWallObjectById(int... ids) {		
+		final int[] bound = new int[] {-1, -1, -1};
 		int max_dist = Integer.MAX_VALUE;
-		for (int i = 0; i < this.getBoundCount(); i++) {
-			final int id = this.getBoundId(i);
-			if (inArray(ids, this.getBoundId(i))) {
-				final int x = this.getBoundLocalX(i) + this.getAreaX();
-				final int y = this.getBoundLocalY(i) + this.getAreaY();
+		
+		for (int i = 0; i < controller.getWallObjectsCount(); i++) {
+			final int id = controller.getWallObjectIds()[i];
+			if (inArray(ids, id)) {
+				final int x = controller.offsetX(controller.getWallObjectsX()[i]);
+				final int y = controller.offsetZ(controller.getWallObjectsZ()[i]);
+				
 				final int dist = distanceTo(x, y, getX(), getY());
 				if (dist < max_dist) {
 					bound[0] = id;
@@ -1547,6 +1562,7 @@ public abstract class Script implements IScript {
 				}
 			}
 		}
+		
 		return bound;
 	}
 
@@ -1568,23 +1584,32 @@ public abstract class Script implements IScript {
 	}
 
 	public int getWallObjectId(int index) {
-		return this.getBoundId(index);
+		if(controller.getWallObjectsCount() >= index)
+			return -1;
+		
+		return controller.getWallObjectIds()[index];
 	}
 
 	public int getWallObjectX(int index) {
-		return this.getBoundLocalX(index) + this.getAreaX();
+		if(controller.getWallObjectsCount() >= index)
+			return -1;
+		
+		return controller.offsetX(controller.getWallObjectsX()[index]);
 	}
 
 	public int getWallObjectY(int index) {
-		return this.getBoundLocalY(index) + this.getAreaY();
+		if(controller.getWallObjectsCount() >= index)
+			return -1;
+		
+		return controller.offsetZ(controller.getWallObjectsZ()[index]);
 	}
 
 	public static String getWallObjectName(int id) {
-		return StaticAccess.get().getBoundName(id);
+		return controller.getWallObjectExamineText(id);
 	}
 
 	public static String getWallObjectDesc(int id) {
-		return StaticAccess.get().getBoundDesc(id);
+		return controller.getWallObjectExamineText(id);
 	}
 
 //	private int getBoundIndex(int x, int y) {
@@ -1849,12 +1874,16 @@ public abstract class Script implements IScript {
 	 * @return the position of the item with the given id in the shop screen.
 	 */
 	public int getShopItemById(int id) {
-		final int count = this.getShopSize();
-		for (int i = 0; i < count; i++) {
-			if (this.getShopId(i) == id) {
+		
+		int i = 0;
+		for(Item item : controller.getShopItems()) {
+			if(item.getCatalogID() == id) {
 				return i;
 			}
+			
+			i++;
 		}
+		
 		return -1;
 	}
 
@@ -1893,18 +1922,11 @@ public abstract class Script implements IScript {
 	 *			the number to buy.
 	 */
 	public void buyShopItem(int i, int amount) {
-		if (i >= this.getShopSize() || i < 0) {
+		if(i >= controller.getShopItems().size())
 			return;
-		}
-		if (!isShopOpen()) {
-			System.out.println("Trying to buy but not in shop screen.");
-		} else {
-			this.createPacket(Constants.OP_SHOP_BUY);
-			this.put2(this.getShopId(i));
-			this.put2(this.getShopStack(i));
-			this.put2(amount);
-			this.finishPacket();
-		}
+		
+		int id = controller.getShopItems().get(i).getCatalogID();
+		controller.shopBuy(id, amount);
 	}
 
 	/**
@@ -1917,18 +1939,11 @@ public abstract class Script implements IScript {
 	 *			the number to sell.
 	 */
 	public void sellShopItem(int i, int amount) {
-		if (i >= this.getShopSize() || i < 0) {
+		if(i >= controller.getShopItems().size())
 			return;
-		}
-		if (!isShopOpen()) {
-			System.out.println("Trying to sell but not in shop screen.");
-		} else {
-			this.createPacket(Constants.OP_SHOP_SELL);
-			this.put2(this.getShopId(i));
-			this.put2(this.getShopStack(i));
-			this.put2(amount);
-			this.finishPacket();
-		}
+		
+		int id = controller.getShopItems().get(i).getCatalogID();
+		controller.shopSell(id, amount);
 	}
 
 	/**
@@ -1972,8 +1987,7 @@ public abstract class Script implements IScript {
 	 *			the item's ID.
 	 */
 	public void useItemWithPlayer(int local_index, int slot) {
-		abcd
-		
+		Main.log("apos.useItemWithPlayer() unimplemented");
 		
 //		if (local_index < 0 || slot < 0) {
 //			return;
@@ -2030,17 +2044,15 @@ public abstract class Script implements IScript {
 	 *		 the given item.
 	 */
 	public boolean hasOtherTraded(int id, int amount) {
-		final int count = this.getRemoteTradeItemCount();
-		final boolean stacks = StaticAccess.get().isItemStackable(id);
-		for (int i = 0; i < count; i++) {
-			if (this.getRemoteTradeItemId(i) != id) {
-				continue;
+		List<Item> items = controller.getRecipientTradeItems();
+		
+		for(Item item : items) {
+			if(item.getItemDef().id == id) {
+				if(item.getAmount() >= amount)
+					return true;
 			}
-			if (stacks) {
-				return this.getRemoteTradeItemStack(i) >= amount;
-			}
-			return true;
 		}
+		
 		return false;
 	}
 
@@ -2103,10 +2115,12 @@ public abstract class Script implements IScript {
 	}
 
 	public boolean hasLocalAcceptedTrade() {
-		if (isInTradeConfirm()) {
-			return this.hasLocalConfirmedTrade();
-		}
-		return this.hasLocalAcceptedTrade();
+		Main.log("apos.hasLocalAcceptedTrade() unimplemented");
+		return false;
+//		if (isInTradeConfirm()) {
+//			return this.hasLocalConfirmedTrade();
+//		}
+//		return this.hasLocalAcceptedTrade();
 	}
 
 	public boolean hasRemoteAcceptedTrade() {
@@ -2374,32 +2388,33 @@ public abstract class Script implements IScript {
 	}
 
 	public int getNpcId(int index) {
-		return this.getNpcId(this.getNpc(index));
+		ORSCharacter npc = controller.getNpc(index);
+		
+		if(npc == null)
+			return -1;
+		
+		return npc.npcId;
 	}
 
 	public int getNpcX(int index) {
-		return this.getMobLocalX(this.getNpc(index)) + this.getAreaX();
+		return controller.getNpcCoordsByServerIndex(index)[0];
 	}
 
 	public int getNpcY(int index) {
-		return this.getMobLocalY(this.getNpc(index)) + this.getAreaY();
+		return controller.getNpcCoordsByServerIndex(index)[1];
 	}
 
 	public boolean isNpcInCombat(int index) {
-		return controller.isNpcInCombat(this.g(index));
+		return controller.isNpcInCombat(index);
 		//return this.isMobInCombat(this.getNpc(index));
 	}
 
 	public boolean isNpcTalking(int index) {
-		Main.log("apos.isNpcTalking() unimplemented");
-		return false;
-		//return this.isMobTalking(this.getNpc(index));
+		return controller.isNpcTalking(this.getNpcServerIndexFromLocalIndex(index));
 	}
 
 	public boolean isNpcHpBarVisible(int index) {
-		Main.log("apos.isNpcHpBarVisible() unimplemented");
-		return false;
-		//return this.isHpBarVisible(this.getNpc(index));
+		return controller.getNpc(this.getNpcServerIndexFromLocalIndex(index)).combatTimeout > 0;
 	}
 
 	/**
@@ -2410,7 +2425,12 @@ public abstract class Script implements IScript {
 	 * @return the NPC's name.
 	 */
 	public String getNpcName(int index) {
-		return StaticAccess.get().getNpcName(this.getNpcId(this.getNpc((index))));
+		ORSCharacter npc = controller.getNpc(index);
+		
+		if(npc == null)
+			return "NO_NPC";
+		
+		return npc.displayName;
 	}
 
 	public static String getNpcNameId(int id) {
@@ -2425,7 +2445,12 @@ public abstract class Script implements IScript {
 	 * @return the NPC's description (examine text).
 	 */
 	public String getNpcDescription(int index) {
-		return StaticAccess.get().getNpcDesc(this.getNpcId(this.getNpc((index))));
+		ORSCharacter npc = controller.getNpc(index);
+		
+		if(npc == null)
+			return "NO_NPC";
+		
+		return controller.getNpcExamineText(npc.npcId);
 	}
 
 	public static String getNpcDescriptionId(int id) {
@@ -2440,9 +2465,7 @@ public abstract class Script implements IScript {
 	 * @return the NPC's combat level.
 	 */
 	public int getNpcCombatLevel(int index) {
-		Main.log("apos.getNpcCombatLevel() unimplemented");
-		return 0;
-		//return StaticAccess.get().getNpcLevel(this.getNpcId(this.getNpc((index))));
+		return controller.getNpc(this.getNpcServerIndexFromLocalIndex(index)).level;
 	}
 
 	public static int getNpcCombatLevelId(int id) {
@@ -2456,9 +2479,8 @@ public abstract class Script implements IScript {
 	}
 
 	public int getInventoryStack(int slot) {
-		Main.log("apos.getInventoryStack() unimplemented");
-		return 0;
-		//return this.getInventoryStack(slot);
+		int id = controller.getInventorySlotItemId(slot);
+		return controller.getInventoryItemCount(id);
 	}
 
 	/**
@@ -2520,14 +2542,11 @@ public abstract class Script implements IScript {
 	 * @return true if the item is tradeable.
 	 */
 	public boolean isItemTradable(int slot) {
-		Main.log("apos.isItemTradable() unimplemented");
-		return false;
+		return controller.isItemTradeable(controller.getInventorySlotItemId(slot));
 	}
 
 	public static boolean isItemTradableId(int id) {
-		Main.log("apos.isItemTradableId() unimplemented");
-		return false;
-		//return StaticAccess.get().isItemTradable(id);
+		return controller.isItemTradeable(id);
 	}
 
 	public boolean isItemStackable(int slot) {
@@ -2565,15 +2584,17 @@ public abstract class Script implements IScript {
 	 *		 cast the given spell.
 	 */
 	public boolean canCastSpell(int spell) {
-		if (getCurrentLevel(6) < StaticAccess.get().getSpellReqLevel(spell)) {
-			return false;
-		}
-		for (int i = 0; i < StaticAccess.get().getReagentCount(spell); i++) {
-			if (!ensureRunes(StaticAccess.get().getReagentId(spell, i), StaticAccess.get().getReagentAmount(spell, i))) {
-				return false;
-			}
-		}
+		Main.log("apos.canCastSpell() unimplemented");
 		return true;
+//		if (getCurrentLevel(6) < StaticAccess.get().getSpellReqLevel(spell)) {
+//			return false;
+//		}
+//		for (int i = 0; i < StaticAccess.get().getReagentCount(spell); i++) {
+//			if (!ensureRunes(StaticAccess.get().getReagentId(spell, i), StaticAccess.get().getReagentAmount(spell, i))) {
+//				return false;
+//			}
+//		}
+//		return true;
 	}
 
 //	private boolean ensureRunes(int id, int amount) {
@@ -2662,7 +2683,7 @@ public abstract class Script implements IScript {
 	 *			the skip_lines flag.
 	 */
 	public void setSkipLines(boolean flag) {
-		return controller.setInterlacer(flag);
+		controller.setInterlacer(flag);
 	}
 
 	/**
@@ -2849,13 +2870,11 @@ public abstract class Script implements IScript {
 	}
 
 	public static int getPrayerCount() {
-		Main.log("apos.getPrayercount() unimplemented");
-		return 0;
+		return controller.getPrayersCount();
 	}
 
 	public static String getPrayerName(int i) {
-		Main.log("apos.getPrayerName() unimplemented");
-		return "unimplemented";
+		return controller.getPrayerName(i);
 	}
 
 	public static int getPrayerLevel(int i) {

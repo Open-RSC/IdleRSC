@@ -402,6 +402,30 @@ public class Controller {
 
 		return x != 0 || z != 0;
 	}
+	
+	public boolean isPlayerCurrentlyWalking(int serverIndex) {
+		int x = this.getPlayer(serverIndex).currentX;
+		int z = this.getPlayer(serverIndex).currentZ;
+		
+		sleep(50);
+		
+		x -= this.getPlayer(serverIndex).currentX;
+		z -= this.getPlayer(serverIndex).currentZ;
+		
+		return x != 0 || z != 0;
+	}
+	
+	public boolean isNpcCurrentlyWalking(int serverIndex) {
+		int x = this.getNpc(serverIndex).currentX;
+		int z = this.getNpc(serverIndex).currentZ;
+		
+		sleep(50);
+		
+		x -= this.getNpc(serverIndex).currentX;
+		z -= this.getNpc(serverIndex).currentZ;
+		
+		return x != 0 || z != 0;
+	}
 
 	/**
 	 * Retrieves the distance of the coordinates from the player.
@@ -891,6 +915,18 @@ public class Controller {
 
 		//TODO: return null for consistency and update scripts.
 		return new int[] {-1, -1};
+	}
+	
+	public ORSCharacter getNpc(int serverIndex) {
+		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
+
+		for(ORSCharacter npc : npcs) {
+			if(npc.serverIndex == serverIndex) {
+				return npc;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -1615,6 +1651,15 @@ public class Controller {
 
 		return null;
 	}
+	
+	/**
+	 * Retrieves the array of options inside of an option menu.
+	 * 
+	 * @return String[]
+	 */
+	public String[] getOptionsMenuText() {
+		return (String[]) reflector.getObjectMember(mud, "optionsMenuText");
+	}
 
 	/**
 	 * Selects an option menu when talking to an NPC or performing an action.
@@ -2041,6 +2086,19 @@ public class Controller {
 			return "";
 		}
 	}
+	
+	/**
+	 * Retrieves whether or not the item is tradeable.
+	 * 
+	 * @param itemId
+	 */
+	public boolean isItemTradeable(int itemId) {
+		try {
+			return !EntityHandler.getItemDef(itemId).untradeable;
+		} catch(Exception e) {
+			return false;
+		}
+	}
 
 	/**
 	 * Retrieves the name of the specified item. 
@@ -2373,6 +2431,14 @@ public class Controller {
 		}
 	}
 
+	/** 
+	 * Retrieves the number of prayers in the game.
+	 */
+	
+	public int getPrayersCount() {
+		return EntityHandler.prayerCount();
+	}
+	
 	/**
 	 * Retrieves the id of the specified prayerName. 
 	 * @param prayerName -- must match spelling of what is inside prayer book. Case insensitive.
@@ -2390,6 +2456,20 @@ public class Controller {
 		}
 
 		return -1;
+	}
+	
+	/**
+	 * Retrieves the name of the specified prayer id.
+	 * 
+	 * @param prayerId -- the id of the prayer
+	 * @return String -- null if no prayer found.
+	 */
+	public String getPrayerName(int prayerId) {
+		try {
+			return EntityHandler.getPrayerDef(prayerId).getName();
+		} catch(Exception e) {
+			return null;
+		}
 	}
 
 	/**
@@ -3846,6 +3926,43 @@ public class Controller {
 	 */
 	public int getGameWidth() {
 		return mud.getGameWidth();
+	}
+	
+	public boolean isNpcTalking(int serverIndex) {
+		ORSCharacter npc = this.getNpc(serverIndex);
+		
+		if(npc == null)
+			return false;
+		
+		return npc.messageTimeout > 0;
+	}
+	
+	/**
+	 * Retrieves the examine text of the specified wall object id.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null
+	 */
+	public String getWallObjectExamineText(int objId) {
+		try {
+			return EntityHandler.getDoorDef(objId).getDescription();
+		} catch(Exception e) {
+			return "";
+		}
+	}
+	
+	/**
+	 * Retrieves the examine text of the specified wall object id.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null
+	 */
+	public String getWallObjectName(int objId) {
+		try {
+			return EntityHandler.getDoorDef(objId).getName();
+		} catch(Exception e) {
+			return "";
+		}
 	}
 }
  

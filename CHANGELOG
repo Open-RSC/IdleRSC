@@ -1,3 +1,6 @@
+APR 13 2021
+	Sleeping on a few SBot scripts should be fixed now.
+
 APR 11 2021
 	Added fatigueHook which tells the client what the current fatigue% is during sleep.
 	Fixed glitch where sleeping was causing client to break.

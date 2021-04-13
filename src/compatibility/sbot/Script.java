@@ -1565,7 +1565,7 @@ public abstract class Script
 	public boolean Sleeping()
 	{
 		Main.logMethod("Sleeping");
-		return false;
+		return controller.isSleeping();
 	}
 	/**
 	 * Retrieves the current amount of fatigue. 

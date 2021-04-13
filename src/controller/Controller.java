@@ -3081,6 +3081,14 @@ public class Controller {
 		Main.setAutoLogin(value);
 	}
 
+	
+	/**
+	 * Retrieves whether or not auto-login is set.
+	 */
+	public boolean isAutoLogin() {
+		return Main.isAutoLogin();
+	}
+	
 	/**
 	 * Toggles the client interlacer, which is for saving CPU cycles.
 	 * 
@@ -3088,6 +3096,13 @@ public class Controller {
 	 */
 	public void setInterlacer(boolean value) {
 		mud.interlace = value;
+	}
+	
+	/**
+	 * Retrieves whether or not the interlacer is set.
+	 */
+	public boolean isInterlacing() {
+		return mud.interlace;
 	}
 
 	/**
@@ -3814,6 +3829,23 @@ public class Controller {
 	public void hideWelcomeMessage() {
 		this.log("Hiding welcome screen...");
 		client.mousePressed(new MouseEvent(client, 1, 21, 0, 2, 2, 1, false)); //click on (2,2)
+	}
+	
+	
+	/**
+	 * Returns the height, in pixels, of the game window.
+	 * @return int
+	 */
+	public int getGameHeight() {
+		return mud.getGameHeight();
+	}
+	
+	/**
+	 * Retuns the width, in pixels, of the game window. 
+	 * @return
+	 */
+	public int getGameWidth() {
+		return mud.getGameWidth();
 	}
 }
  

@@ -16,6 +16,7 @@ public class Config {
     private boolean debug = false;
     private boolean hidesidepanel = false;
     private boolean enablegfx = true;
+    private boolean localOCR = false;
 
     /*
       Add the following?
@@ -44,7 +45,9 @@ public class Config {
                 + " --unstick " + unstick
                 + " --debug " + debug
                 + " --hidesidepanel " + hidesidepanel
-                + " --enablegfx " + enablegfx);
+                + " --enablegfx " + enablegfx
+                + " --localOCR " + localOCR
+                );
     }
 
     public void printUsage() {
@@ -131,6 +134,9 @@ public class Config {
                 case "--enablegfx":
                     enablegfx = clientArgs[++argIndex].equalsIgnoreCase("true");
                     break;
+                case "--localocr":
+                	localOCR = clientArgs[++argIndex].equalsIgnoreCase("true");
+                	break;
                 default:
                     if (clientArgs[argIndex].startsWith("--")) {
                         System.out.println("Unknown client argument \"" + clientArgs[argIndex] + "\"... Ignoring!");
@@ -200,5 +206,9 @@ public class Config {
 
     public boolean getEnablegfx() {
         return enablegfx;
+    }
+    
+    public boolean getLocalOCR() {
+    	return localOCR;
     }
 }

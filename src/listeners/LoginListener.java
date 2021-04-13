@@ -30,8 +30,18 @@ public class LoginListener implements Runnable {
 					if (!controller.isLoggedIn()) {
 						controller.log("Logged out! Logging back in...");
 						controller.login();
-						Thread.sleep(5000);
-
+						
+						int ticks = 0;
+						while(ticks < 50) {
+							if(controller.isLoggedIn()) {
+								controller.hideWelcomeMessage();
+								break;
+							}
+							controller.sleep(100);
+							ticks++;
+						}
+						
+						
 						if (controller.isLoggedIn() == false) {
 							int sleepTime = (int) (Math.random() * (30000)) + 30000;
 							controller.log("Looks like we could not login... trying again in " + String.valueOf(sleepTime) + " ms...");

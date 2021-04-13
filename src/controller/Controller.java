@@ -3807,5 +3807,13 @@ public class Controller {
 			}
 		}
 	}
+	
+	/**
+	 * <b>Internal use only.</b> Used by LoginListener to hide the welcome message.
+	 */
+	public void hideWelcomeMessage() {
+		this.log("Hiding welcome screen...");
+		client.mousePressed(new MouseEvent(client, 1, 21, 0, 2, 2, 1, false)); //click on (2,2)
+	}
 }
  

@@ -15,7 +15,7 @@ public class AgilityNet extends Script
       while (Running())
       {
          AtObject(683,502);
-         Wait(100);
+         Wait(618);
          {
             if (Fatigue()>=95&&Running()==true)
             {

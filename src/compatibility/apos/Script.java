@@ -1,4 +1,4 @@
-package compatability.apos;
+package compatibility.apos;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -3,4 +3,4 @@
  *
  */
 
-package compatability.apos;
+package compatibility.apos;

@@ -1,4 +1,4 @@
-package compatability.apos;
+package compatibility.apos;
 
 public interface IScript {
 

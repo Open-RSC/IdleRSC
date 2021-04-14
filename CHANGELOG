@@ -1,3 +1,46 @@
+APR 14 2021
+	**APOS compatibility layer implemented!**
+	
+	Tested and verified scripts:
+		AByte0_DarkWizard
+		AByte0_Paladin
+		AlchWheatApos
+		ASCGiants
+		BankDepositAll
+		PathWalker
+		S_Catherby
+		S_Miner
+		S_Pickpocket
+		S_LowWall
+		S_Teleporter
+		SAF_Herblaw
+		
+	Please report any other scripts which have crashes. I am tracking them in a spreadsheet to fix them. **There WILL be broken scripts, but it will be better than the SBot trials we had.**
+	
+	APOS Compatibility limitations:
+		A small handful of non-critical functions are not implemented. Scripts should be able to work without these. If not, please let me know.
+		 
+		**Fatiguing scripts are not recommended to be ran at this time.**
+		 
+		The below scripts were removed because they use JSONgui or FieldPair: (they can probably be converted to not use these fairly easily.)
+			S_HeroesBlueDragon
+			S_ShieldCollector
+			S_TreeFletch
+			
+		The below scripts were removed because they have dependencies which are not implemented in IdleRSC:
+			JSONgui
+			JSON_Fighter
+			
+		**APOS is not aware of batching. Please update scripts with Script.isBatching().**
+			
+	Bug Fixes:
+		openDoor(x,y) now handles the Paladin tower door and cooking guild.
+		Assuming scripts are coded correctly, they should now actually 'stop'. (If they do not stop, it is because you have a loop which does not check for isRunning())
+
+	Other changes:		
+		**Potentially script breaking change**: openDoor(x,y) no longer "keeps trying" to open the door, please update your scripts if they need to 'keep trying.' (i.e. it is now non-blocking.)
+		In coding the APOS compatibility layer, a lot of Controller functions have been added, too many to list here.
+		
 APR 13 2021
 	Sleeping on a few SBot scripts should be fixed now.
 	Sleeper implemented. CAPTCHAs are solved by the idlersc.com:8080 server. If you would like to run a local OCR, specify "--localOCR true" on the command line.

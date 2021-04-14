@@ -70,6 +70,9 @@ public class Main {
 
     private final static String nativeScriptPath = "bin/scripting/idlescript";
     private final static String sbotScriptPath = "bin/scripting/sbot";
+    private final static String aposScriptPath = "bin/scripting/apos";
+    
+    private static boolean aposInitCalled = false;
 
     /**
      * Used by the WindowListener for tracking the log window.
@@ -226,29 +229,57 @@ public class Main {
         Thread.sleep(3000);
 
         while (true) {
-            Thread.sleep(618); //wait 1 tick before performing next action
 
             if (isRunning()) {
-            	
                 if (currentRunningScript != null) {
 
                     //handle native scripts
                     if (currentRunningScript instanceof IdleScript) {
                         ((IdleScript) currentRunningScript).setController(controller);
                         ((IdleScript) currentRunningScript).start(config.getScriptArguments());
-                    }
-
-                    //handle sbot scripts
-                    if (currentRunningScript instanceof Script) {
+                        
+                        Thread.sleep(618); //wait 1 tick before performing next action
+                    } else if (currentRunningScript instanceof compatibility.sbot.Script) {
                         controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
                         controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
-                        ((Script) currentRunningScript).setController(controller);
+                        ((compatibility.sbot.Script) currentRunningScript).setController(controller);
                         
                         String sbotScriptName = config.getScriptName();
-                        ((Script) currentRunningScript).start(sbotScriptName, config.getScriptArguments());
+                        ((compatibility.sbot.Script) currentRunningScript).start(sbotScriptName, config.getScriptArguments());
+                        
+                        Thread.sleep(618); //wait 1 tick before performing next action
+                    } else if(currentRunningScript instanceof compatibility.apos.Script) {
+                    	if(!controller.isSleeping()) { 
+                    		String params = "";
+                    		
+                    		if(config.getScriptArguments() != null) {
+                    			for(int i = 0; i < config.getScriptArguments().length; i++) {
+                    				String arg = config.getScriptArguments()[i];
+                    				if(i == 0) {
+                    					params = arg;
+                    				} else {
+                    					params += " " + arg;
+                    				}
+                    			}
+                    		}
+	                    	
+	                    	if(!aposInitCalled) {
+	                    		((compatibility.apos.Script) currentRunningScript).setController(controller);
+	                    		((compatibility.apos.Script) currentRunningScript).init(params);
+	                    		aposInitCalled = true;
+	                    	}
+	                    	
+	                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main();
+	                    	Thread.sleep(sleepAmount);
+                    	} else {
+                    		Thread.sleep(10);
+                    	}
                     }
                 }
 
+            } else {
+            	aposInitCalled = false;
+            	Thread.sleep(100);
             }
         }
     }
@@ -480,12 +511,25 @@ public class Main {
 				currentRunningScript = (IdleScript) clazz.newInstance();
 			}
 			catch(Exception e) {
-				scriptFile = new File(sbotScriptPath);
-				url = scriptFile.toURI().toURL();
-				urls = new URL[] {url};
-				ClassLoader cl = new URLClassLoader(urls);
-				Class clazz = cl.loadClass("scripting.sbot." + scriptName);
-				currentRunningScript = (Script) clazz.newInstance();
+				try {
+					scriptFile = new File(sbotScriptPath);
+					url = scriptFile.toURI().toURL();
+					urls = new URL[] {url};
+					ClassLoader cl = new URLClassLoader(urls);
+					Class clazz = cl.loadClass("scripting.sbot." + scriptName);
+					currentRunningScript = (compatibility.sbot.Script) clazz.newInstance();
+				}
+				catch(Exception _e) {
+					scriptFile = new File(aposScriptPath);
+					url = scriptFile.toURI().toURL();
+					urls = new URL[] {url};
+					ClassLoader cl = new URLClassLoader(urls);
+					Class clazz = cl.loadClass("scripting.apos." + scriptName);
+					
+
+					//currentRunningScript = (compatibility.apos.Script) clazz.newInstance();
+					currentRunningScript = (compatibility.apos.Script) clazz.getDeclaredConstructor(String.class).newInstance("");
+				}
 			}
 
 			Main.config.setScriptName(scriptName);
@@ -508,12 +552,14 @@ public class Main {
 
         File[] nativeScripts = new File(nativeScriptPath).listFiles();
         File[] sbotScripts = new File(sbotScriptPath).listFiles();
+        File[] aposScripts = new File(aposScriptPath).listFiles();
 
         // Create Comparator object to use in sorting the list
         Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
 
         // Sort each list of scripts
         Arrays.sort(nativeScripts, fileComparator);
+        Arrays.sort(aposScripts, fileComparator);
         Arrays.sort(sbotScripts, fileComparator);
 
         for (final File file : nativeScripts) {
@@ -527,9 +573,21 @@ public class Main {
                 tableModel.addRow(row);
             }
         }
+        
+        for (final File file : aposScripts) {
+            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
+                String scriptName = file.getName().replace(".class", "");
 
+                // Create row with script name and
+                String[] row = {scriptName, "APOS"};
+
+                // Add row to the table model
+                tableModel.addRow(row);
+            }
+        }
+        
         for (final File file : sbotScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
+            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
                 String scriptName = file.getName().replace(".class", "");
 
                 // Create row with script name and

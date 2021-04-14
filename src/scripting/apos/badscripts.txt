@@ -1,0 +1,8 @@
+The below scripts were removed because they have dependencies which are not implemented in IdleRSC:
+	JSONgui
+	JSON_Fighter
+	
+The below scripts were removed because they use JSONgui or FieldPair: (they can probably be converted to not use these fairly easily.)
+	S_HeroesBlueDragon
+	S_ShieldCollector
+	S_TreeFletch

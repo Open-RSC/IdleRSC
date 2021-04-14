@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,6 +35,7 @@ import orsc.ORSCharacter;
 import orsc.OpenRSC;
 import orsc.graphics.gui.SocialLists;
 import orsc.mudclient;
+import orsc.buffers.RSBufferUtils;
 import orsc.enumerations.GameMode;
 import orsc.enumerations.MessageType;
 import orsc.enumerations.ORSCharacterDirection;
@@ -402,6 +405,30 @@ public class Controller {
 
 		return x != 0 || z != 0;
 	}
+	
+	public boolean isPlayerCurrentlyWalking(int serverIndex) {
+		int x = this.getPlayer(serverIndex).currentX;
+		int z = this.getPlayer(serverIndex).currentZ;
+		
+		sleep(50);
+		
+		x -= this.getPlayer(serverIndex).currentX;
+		z -= this.getPlayer(serverIndex).currentZ;
+		
+		return x != 0 || z != 0;
+	}
+	
+	public boolean isNpcCurrentlyWalking(int serverIndex) {
+		int x = this.getNpc(serverIndex).currentX;
+		int z = this.getNpc(serverIndex).currentZ;
+		
+		sleep(50);
+		
+		x -= this.getNpc(serverIndex).currentX;
+		z -= this.getNpc(serverIndex).currentZ;
+		
+		return x != 0 || z != 0;
+	}
 
 	/**
 	 * Retrieves the distance of the coordinates from the player.
@@ -460,10 +487,10 @@ public class Controller {
 			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX(), y - mud.getMidRegionBaseZ(), false);
 		}
 
-		while( (currentX() < x - radius) ||
+		while( ((currentX() < x - radius) ||
 			   (currentX() > x + radius) ||
 			   (currentY() < y - radius) ||
-			   (currentY() > y + radius) ) { //offset applied
+			   (currentY() > y + radius)) && Main.isRunning()) { //offset applied
 
 			int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
 
@@ -780,6 +807,10 @@ public class Controller {
 	public int[] getWallObjectsZ() {
 		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceZ");
 	}
+	
+	public int[] getWallObjectsDirections() {
+		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceDir");	
+	}
 
 	/**
 	 * Retrieves the coordinates of the specified wall object id, if nearby.
@@ -884,13 +915,25 @@ public class Controller {
 		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
 
 		for(ORSCharacter npc : npcs) {
-			if(npc.serverIndex == serverIndex) {
+			if(npc != null && npc.serverIndex == serverIndex) {
 				return new int[] { this.convertX(npc.currentX), this.convertZ(npc.currentZ) };
 			}
 		}
 
 		//TODO: return null for consistency and update scripts.
 		return new int[] {-1, -1};
+	}
+	
+	public ORSCharacter getNpc(int serverIndex) {
+		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
+
+		for(ORSCharacter npc : npcs) {
+			if(npc != null && npc.serverIndex == serverIndex) {
+				return npc;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -1096,6 +1139,8 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isDoorOpen(int x, int y) {
+		int[] naughtyDoors = new int[] {163, 164, 68, 97, 43};
+		
 		int[] ids = getWallObjectIds();
 		int[] xs = getWallObjectsX();
 		int[] zs = getWallObjectsZ();
@@ -1103,8 +1148,10 @@ public class Controller {
 
 		int _x = removeOffsetX(x), _z = removeOffsetZ(y);
 		
-		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164 || this.getWallObjectIdAtCoord(x, y) == 68)
-			return false;
+		for(int id : naughtyDoors) {
+			if(this.getWallObjectIdAtCoord(x, y) == id)
+				return false;
+		}
 
 		for(int i = 0; i < count; i++) {
 			if(xs[i] == _x && zs[i] == _z)
@@ -1138,6 +1185,30 @@ public class Controller {
 		return -1;
 		
 	}
+	
+	/**
+	 * Returns the direction of the wall object. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public int getWallObjectDirectionAtCoord(int x, int y) {
+		int _x = removeOffsetX(x);
+		int _y = removeOffsetZ(y);
+		
+		int[] xs = this.getWallObjectsX();
+		int[] ys = this.getWallObjectsZ();
+		
+		for(int i = 0; i < xs.length; i++) {
+			if(xs[i] == _x && ys[i] == _y)
+				return this.getWallObjectsDirections()[i];
+		}
+		
+		return -1;
+		
+	}
+
 
 	/**
 	 * Opens the door at the specified coordinates. Does nothing if the door is already open.
@@ -1152,24 +1223,25 @@ public class Controller {
 		}
 
 		int opcode = 127;
-		int height = 0;
+		int direction = getWallObjectDirectionAtCoord(x, y); 
 		
-		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164) {
+		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164 || this.getWallObjectIdAtCoord(x, y) == 43 
+				|| ((this.currentX() == 609) && this.currentY() == 1548)) {
 			opcode = 14; //we want WALL_COMMAND1 for these IDs
-			height = 1;
+			//height = 1;
 		}
 		
-		while(isDoorOpen(x, y) == false) {
-			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), height);
+		//while(isDoorOpen(x, y) == false && Main.isRunning()) {
+			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 			mud.packetHandler.getClientStream().newPacket(opcode);
 			mud.packetHandler.getClientStream().bufferBits.putShort(x); 
 			mud.packetHandler.getClientStream().bufferBits.putShort(y); 
-			mud.packetHandler.getClientStream().bufferBits.putByte(height);
+			mud.packetHandler.getClientStream().bufferBits.putByte(direction);
 			mud.packetHandler.getClientStream().finishPacket();
 
-			sleep(GAME_TICK_COUNT);
-		}
+		//	sleep(GAME_TICK_COUNT);
+		//}
 	}
 
 	/**
@@ -1185,7 +1257,7 @@ public class Controller {
 			return;
 		}
 
-		while(isDoorOpen(x, y) == true) {
+		while(isDoorOpen(x, y) == true && Main.isRunning() == true) {
 			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), 0);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 			mud.packetHandler.getClientStream().newPacket(127);
@@ -1615,6 +1687,15 @@ public class Controller {
 
 		return null;
 	}
+	
+	/**
+	 * Retrieves the array of options inside of an option menu.
+	 * 
+	 * @return String[]
+	 */
+	public String[] getOptionsMenuText() {
+		return (String[]) reflector.getObjectMember(mud, "optionsMenuText");
+	}
 
 	/**
 	 * Selects an option menu when talking to an NPC or performing an action.
@@ -2041,6 +2122,19 @@ public class Controller {
 			return "";
 		}
 	}
+	
+	/**
+	 * Retrieves whether or not the item is tradeable.
+	 * 
+	 * @param itemId
+	 */
+	public boolean isItemTradeable(int itemId) {
+		try {
+			return !EntityHandler.getItemDef(itemId).untradeable;
+		} catch(Exception e) {
+			return false;
+		}
+	}
 
 	/**
 	 * Retrieves the name of the specified item. 
@@ -2373,6 +2467,14 @@ public class Controller {
 		}
 	}
 
+	/** 
+	 * Retrieves the number of prayers in the game.
+	 */
+	
+	public int getPrayersCount() {
+		return EntityHandler.prayerCount();
+	}
+	
 	/**
 	 * Retrieves the id of the specified prayerName. 
 	 * @param prayerName -- must match spelling of what is inside prayer book. Case insensitive.
@@ -2390,6 +2492,20 @@ public class Controller {
 		}
 
 		return -1;
+	}
+	
+	/**
+	 * Retrieves the name of the specified prayer id.
+	 * 
+	 * @param prayerId -- the id of the prayer
+	 * @return String -- null if no prayer found.
+	 */
+	public String getPrayerName(int prayerId) {
+		try {
+			return EntityHandler.getPrayerDef(prayerId).getName();
+		} catch(Exception e) {
+			return null;
+		}
 	}
 
 	/**
@@ -2866,6 +2982,20 @@ public class Controller {
 	}
 
 	/**
+	 * Uses the specified item on the player.
+	 * 
+	 * @param slotIndex
+	 * @param playerServerIndex
+	 */
+	public void useItemOnPlayer(int slotIndex, int playerServerIndex) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(113);
+		mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	/**
 	 * Casts the specified spell on the specified player.
 	 * 
 	 * @param spellId
@@ -3081,6 +3211,14 @@ public class Controller {
 		Main.setAutoLogin(value);
 	}
 
+	
+	/**
+	 * Retrieves whether or not auto-login is set.
+	 */
+	public boolean isAutoLogin() {
+		return Main.isAutoLogin();
+	}
+	
 	/**
 	 * Toggles the client interlacer, which is for saving CPU cycles.
 	 * 
@@ -3088,6 +3226,13 @@ public class Controller {
 	 */
 	public void setInterlacer(boolean value) {
 		mud.interlace = value;
+	}
+	
+	/**
+	 * Retrieves whether or not the interlacer is set.
+	 */
+	public boolean isInterlacing() {
+		return mud.interlace;
 	}
 
 	/**
@@ -3258,7 +3403,7 @@ public class Controller {
      */
     public void openBank() {
 
-		while(!isInBank()) {
+		while(!isInBank() && Main.isRunning()) {
 
 			boolean usedBankerNpc = false;
 
@@ -3272,7 +3417,7 @@ public class Controller {
 					
 					walkToAsync(coords[0], coords[1], 1);
 					
-					while (!isInBank()) {
+					while (!isInBank() && Main.isRunning()) {
 						if(getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
 							 npcCommand1(bankerIndex);
 							 openBank_sleep(200);
@@ -3292,7 +3437,7 @@ public class Controller {
 				if(bankChestId != null) {
 					walkToAsync(bankChestId[0], bankChestId[1], 1);
 
-					while (!isInBank()) {
+					while (!isInBank() && Main.isRunning()) {
 						atObject(bankChestId[0], bankChestId[1]);
 						openBank_sleep(200);
 					}
@@ -3309,7 +3454,7 @@ public class Controller {
 	 */
 	public void walkPath(int[] path) {
 		for(int i = 0; i < path.length; i += 2) {
-			while(currentX() != path[i] || currentY() != path[i+1]) {
+			while((currentX() != path[i] || currentY() != path[i+1]) && Main.isRunning()){
 				walkTo(path[i], path[i+1]);
 				sleep(618);
 			}
@@ -3323,7 +3468,7 @@ public class Controller {
 	 */
 	public void walkPathReverse(int[] path) {
 		for(int i = path.length - 2; i > 0; i -= 2) {
-			while(currentX() != path[i] || currentY() != path[i+1]) {
+			while((currentX() != path[i] || currentY() != path[i+1]) && Main.isRunning()) {
 				walkTo(path[i], path[i+1]);
 				sleep(618);
 			}
@@ -3778,7 +3923,7 @@ public class Controller {
 		if(objectId != -1) {
 			int[] coords = this.getNearestObjectById(objectId);
 
-			while(coords != null) {
+			while(coords != null && Main.isRunning()) {
 				this.atObject(coords[0], coords[1]);
 				this.sleep(250);
 				coords = this.getNearestObjectById(objectId);
@@ -3800,7 +3945,7 @@ public class Controller {
 		if(wallObjectId != -1) {
 			int[] coords = this.getNearestWallObjectById(wallObjectId);
 
-			while(coords != null) {
+			while(coords != null && Main.isRunning()) {
 				this.openDoor(coords[0], coords[1]);
 				this.sleep(250);
 				coords = this.getNearestWallObjectById(wallObjectId);
@@ -3815,5 +3960,189 @@ public class Controller {
 		this.log("Hiding welcome screen...");
 		client.mousePressed(new MouseEvent(client, 1, 21, 0, 2, 2, 1, false)); //click on (2,2)
 	}
+	
+	
+	/**
+	 * Returns the height, in pixels, of the game window.
+	 * @return int
+	 */
+	public int getGameHeight() {
+		return mud.getGameHeight();
+	}
+	
+	/**
+	 * Retuns the width, in pixels, of the game window. 
+	 * @return
+	 */
+	public int getGameWidth() {
+		return mud.getGameWidth();
+	}
+	
+	public boolean isNpcTalking(int serverIndex) {
+		ORSCharacter npc = this.getNpc(serverIndex);
+		
+		if(npc == null)
+			return false;
+		
+		return npc.messageTimeout > 0;
+	}
+	
+	/**
+	 * Retrieves the examine text of the specified wall object id.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null
+	 */
+	public String getWallObjectExamineText(int objId) {
+		try {
+			return EntityHandler.getDoorDef(objId).getDescription();
+		} catch(Exception e) {
+			return "";
+		}
+	}
+	
+	/**
+	 * Retrieves the examine text of the specified wall object id.
+	 * 
+	 * @param npcId
+	 * @return String -- guaranteed to not be null
+	 */
+	public String getWallObjectName(int objId) {
+		try {
+			return EntityHandler.getDoorDef(objId).getName();
+		} catch(Exception e) {
+			return "";
+		}
+	}
+	
+	public int getSpellsCount() {
+		int result = 0;
+		try {
+			for(; result < 999; result++) EntityHandler.getSpellDef(result).getName();
+			return result;
+		}
+		catch(Exception e) {
+			return result;
+		}
+	}
+	
+	public String[] getSpellNames() {
+		int spellsCount = getSpellsCount();
+		String[] result = new String[spellsCount];
+		
+		for(int i = 0; i < spellsCount; i++)
+			result[i] = EntityHandler.getSpellDef(i).getName();
+		
+		return result;
+	}
+	
+	public int getSpellLevel(int spellId) {
+		try {
+			return EntityHandler.getSpellDef(spellId).getReqLevel();
+		} catch(Exception e) {
+			return -1;
+		}
+	}
+	
+	public int getSpellType(int spellId) {
+		try {
+			return EntityHandler.getSpellDef(spellId).getSpellType();
+		} catch(Exception e) {
+			return -1;
+		}
+	}
+	
+	public Set<Entry<Integer, Integer>> getSpellRunes(int spellId) {
+		try {
+			return EntityHandler.getSpellDef(spellId).getRunesRequired();
+		} catch(Exception e) {
+			return null;
+		}
+	}
+	
+	public boolean canCastSpell(int spellId) {
+		if(this.getCurrentStat(6) < this.getSpellLevel(spellId))
+			return false;
+		
+		Set<Entry<Integer, Integer>> ingredients = this.getSpellRunes(spellId);
+		for(Entry<Integer, Integer> entry : ingredients) {
+			int runeId = entry.getKey();
+			int runeAmount = entry.getValue();
+			
+			if(this.getInventoryItemCount(runeId) < runeAmount)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	public String[] getQuestNames() {
+		return ((String[])reflector.getObjectMember(mud, "questNames"));
+	}
+	
+	public int getQuestsCount() {
+		return this.getQuestNames().length;
+	}
+	
+	public int getQuestStage(int questId) {
+		if(questId >= this.getQuestsCount())
+			return 0;
+		
+		return ((int[])reflector.getObjectMember(mud, "questStages"))[questId];
+	}
+	
+	public boolean isQuestComplete(int questId) {
+		return this.getQuestStage(questId) == -1;
+	}
+	
+	public void addFriend(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(195);
+		mud.packetHandler.getClientStream().bufferBits.putString(username);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void addIgnore(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(132);
+		mud.packetHandler.getClientStream().bufferBits.putString(username);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	/**
+	 * Does not update on client side
+	 */
+	public void removeFriend(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(167);
+		mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, 110);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	/**
+	 * Does not update on client side
+	 */
+	public void removeIgnore(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(241);
+		mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, -78);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void sendPrivateMessage(String username, String message) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(218);
+		mud.packetHandler.getClientStream().bufferBits.putString(username);
+		RSBufferUtils.putEncryptedString(mud.packetHandler.getClientStream().bufferBits, message);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+/**
+sendPrivateMessage
+addFriend
+removeFriend
+addIgnore
+removeIgnore
+ */
 }
  

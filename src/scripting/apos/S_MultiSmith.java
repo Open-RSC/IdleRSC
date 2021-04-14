@@ -174,9 +174,9 @@ public final class S_MultiSmith extends Script
     public S_MultiSmith(String ex) {
     }
     
-    public static void main(String[] argv) {
-        new S_MultiSmith(null).init("");
-    }
+//    public static void main(String[] argv) {
+//        new S_MultiSmith(null).init("");
+//    }
 
     @Override
     public void init(String params) {
@@ -282,6 +282,12 @@ public final class S_MultiSmith extends Script
 
     @Override
     public int main() {
+		while (this.frame.isVisible()) {
+			try {
+				Thread.sleep(1L);
+			} catch (InterruptedException e) {
+			}
+		}
         if (start_time == -1L) {
             start_time = System.currentTimeMillis();
             start_xp = getXpForLevel(LEVEL_SMITHING);

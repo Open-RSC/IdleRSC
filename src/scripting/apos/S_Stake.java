@@ -91,9 +91,9 @@ public final class S_Stake extends Script {
 	private int wear_id = -1;
 	private boolean power;
 
-	public static void main(String[] argv) {
-		new S_Stake(null).show_ac_frame();
-	}
+//	public static void main(String[] argv) {
+//		new S_Stake(null).show_ac_frame();
+//	}
 
 	public S_Stake(String ex) {
 //		super(ex);

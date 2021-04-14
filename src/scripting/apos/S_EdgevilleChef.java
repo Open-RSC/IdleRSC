@@ -119,6 +119,12 @@ public final class S_EdgevilleChef extends Script
 
     @Override
     public int main() {
+		while (this.frame.isVisible()) {
+			try {
+				Thread.sleep(1L);
+			} catch (InterruptedException e) {
+			}
+		}
         if (isBanking()) {
             bank_time = -1L;
             for (int id : ids_bank) {

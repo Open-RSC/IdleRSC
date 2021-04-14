@@ -80,10 +80,10 @@ implements ActionListener {
 	   
    }
    
-   public static void main(String[] argv) {
-       Shantay_Trader t = new Shantay_Trader(null);
-       t.init(null);
-   }
+//   public static void main(String[] argv) {
+//       Shantay_Trader t = new Shantay_Trader(null);
+//       t.init(null);
+//   }
 
    @Override
    public void init(String params) {
@@ -147,6 +147,12 @@ implements ActionListener {
 
    @Override
    public int main() {
+		while (this.frame.isVisible()) {
+			try {
+				Thread.sleep(1L);
+			} catch (InterruptedException e) {
+			}
+		}
        if (stop_now && (ptr >= (give_ids.length))) {
            stopScript();
            return 0;

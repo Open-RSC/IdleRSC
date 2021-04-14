@@ -131,6 +131,12 @@ implements ActionListener {
 
 	@Override
 	public int main() {
+		while (this.frame.isVisible()) {
+			try {
+				Thread.sleep(1L);
+			} catch (InterruptedException e) {
+			}
+		}
 
 		if (giveOrTake == 0)
 		{

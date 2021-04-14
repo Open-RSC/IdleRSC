@@ -179,7 +179,14 @@ public final class SAF_HerblawGUI extends Script implements ActionListener {
 
     @Override
     public int main() {
+		while (this.frame.isVisible()) {
+			try {
+				Thread.sleep(1L);
+			} catch (InterruptedException e) {
+			}
+		}
         if (start_time == -1L) {
+        	
             start_time = System.currentTimeMillis();
             for (int i = 0; i < xp_start.length; ++i) {
                 xp_start[i] = getXpForLevel(i);

@@ -36,10 +36,10 @@ implements ActionListener {
 
    }
 
-   public static void main(String[] argv) {
-       ChestTrader t = new ChestTrader(null);
-       t.init(null);
-   }
+//   public static void main(String[] argv) {
+//       ChestTrader t = new ChestTrader(null);
+//       t.init(null);
+//   }
 
    @Override
    public void init(String params) {
@@ -88,6 +88,12 @@ implements ActionListener {
 
    @Override
    public int main() {
+		while (this.frame.isVisible()) {
+			try {
+				Thread.sleep(1L);
+			} catch (InterruptedException e) {
+			}
+		}
        if (startTime == -1L) startTime = System.currentTimeMillis();
 
        // resets the trade timer when the other player declines the trade

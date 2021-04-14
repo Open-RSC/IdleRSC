@@ -1136,7 +1136,7 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isDoorOpen(int x, int y) {
-		int[] naughtyDoors = new int[] {163, 164, 68, 97};
+		int[] naughtyDoors = new int[] {163, 164, 68, 97, 43};
 		
 		int[] ids = getWallObjectIds();
 		int[] xs = getWallObjectsX();
@@ -1222,7 +1222,8 @@ public class Controller {
 		int opcode = 127;
 		int direction = getWallObjectDirectionAtCoord(x, y); 
 		
-		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164 || ((this.currentX() == 609) && this.currentY() == 1548)) {
+		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164 || this.getWallObjectIdAtCoord(x, y) == 43 
+				|| ((this.currentX() == 609) && this.currentY() == 1548)) {
 			opcode = 14; //we want WALL_COMMAND1 for these IDs
 			//height = 1;
 		}

@@ -812,7 +812,7 @@ public abstract class Script implements IScript {
 	 *			the y position of the ground item.
 	 */
 	public void pickupItem(int id, int x, int y) {
-		controller.pickupItem(x, y, id, true, true);
+		controller.pickupItem(x, y, id, false, true);
 	}
 
 	/**

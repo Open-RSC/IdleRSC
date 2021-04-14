@@ -310,12 +310,13 @@ public abstract class Script implements IScript {
 	}
 
 	public double getAccurateFatigue() {
-		Main.log("apos.getAccurateFatigue() unimplemented");
-		return 0;
-//		if (isSleeping()) {
-//			return this.getSleepingFatigue();
-//		}
-//		return this.getFatigue();
+		controller.log("WARNING: Scripts which do fatiguing on IdleRSC may be inaccurate.");
+		
+		if(controller.isSleeping()) {
+			return (double) controller.getFatigueDuringSleep();
+		}
+		
+		return (double) controller.getFatigue();
 	}
 
 	/**
@@ -517,9 +518,8 @@ public abstract class Script implements IScript {
 	 * @return the client's experience in specified skill.
 	 */
 	public double getAccurateXpForLevel(int skill) {
-		Main.log("apos.getAccurateXpForLevel() unimplemented");
-		return 0;
-		//return this.getExperience(skill);
+		controller.log("WARNING: Scripts which do fatiguing on IdleRSC may be inaccurate.");
+		return controller.getPlayerExperience(skill);
 	}
 
 	/**
@@ -2005,16 +2005,7 @@ public abstract class Script implements IScript {
 	 *			the item's ID.
 	 */
 	public void useItemWithPlayer(int local_index, int slot) {
-		Main.log("apos.useItemWithPlayer() unimplemented");
-		
-//		if (local_index < 0 || slot < 0) {
-//			return;
-//		}
-//		this.walkDirectly(this.getMobLocalX(this.getPlayer(local_index)), this.getMobLocalY(this.getPlayer(local_index)), true);
-//		this.createPacket(Constants.OP_PLAYER_USEWITH);
-//		this.put2(this.getMobServerIndex(this.getPlayer(local_index)));
-//		this.put2(slot);
-//		this.finishPacket();
+		controller.useItemOnPlayer(slot, this.getPlayerLocalIndexFromServerIndex(local_index));
 	}
 
 	/**
@@ -2082,33 +2073,25 @@ public abstract class Script implements IScript {
 	 */
 	@Deprecated
 	public int getOurTradedItemCount() {
-		Main.log("apos.getOurTradedItemCount() unimplemented");
-		return -1;
-//		return this.getLocalTradeItemCount();
+		return this.getLocalTradeItemCount();
 	}
 
 	public int getLocalTradeItemCount() {
-		Main.log("apos.getLocalTradeItemCount() unimplemented");
-		return -1;
-//		return getOurTradedItemCount();
+		return controller.getLocalTradeItemsCount();
 	}
 
 	public int getLocalTradeItemId(int i) {
-		Main.log("apos.getLocalTradeItemId() unimplemented");
-		return -1;
-//		if (i >= this.getLocalTradeItemCount()) {
-//			return -1;
-//		}
-//		return this.getLocalTradeItemId(i);
+		if(i >= controller.getLocalTradeItemsCount())
+			return -1;
+		
+		return controller.getLocalTradeItems().get(i).getCatalogID();
 	}
 
 	public int getLocalTradeItemStack(int i) {
-		Main.log("apos.getLocalTradeItemStack() unimplemented");
-		return -1;
-//		if (i >= this.getLocalTradeItemCount()) {
-//			return -1;
-//		}
-//		return this.getLocalTradeItemStack(i);
+		if(i >= controller.getLocalTradeItemsCount())
+			return -1;
+		
+		return controller.getLocalTradeItems().get(i).getAmount();
 	}
 
 	/**
@@ -2127,31 +2110,21 @@ public abstract class Script implements IScript {
 	}
 
 	public int getRemoteTradeItemId(int i) {
-		Main.log("apos.getRemoteTradeItemId() unimplemented");
-		return -1;
-//		if (i >= this.getRemoteTradeItemCount()) {
-//			return -1;
-//		}
-//		return this.getRemoteTradeItemId(i);
+		if(i >= controller.getRecipientTradeItemsCount())
+			return -1;
+		
+		return controller.getRecipientTradeItems().get(i).getCatalogID();
 	}
 
 	public int getRemoteTradeItemStack(int i) {
-		Main.log("apos.getRemoteTradeItemStack() unimplemented");
-		return -1;
-//		if (i >= this.getRemoteTradeItemCount()) {
-//			return -1;
-//		}
-//		return this.getRemoteTradeItemStack(i);
+		if(i >= controller.getRecipientTradeItemsCount())
+			return -1;
+		
+		return controller.getRecipientTradeItems().get(i).getAmount();
 	}
 
-	public boolean hasLocalAcceptedTrade() {
-		Main.log("apos.hasLocalAcceptedTrade() unimplemented");
-		return false;
-//		if (isInTradeConfirm()) {
-//			return this.hasLocalConfirmedTrade();
-//		}
-//		return this.hasLocalAcceptedTrade();
-	}
+//	public boolean hasLocalAcceptedTrade() {
+//	}
 
 	public boolean hasRemoteAcceptedTrade() {
 		return controller.isTradeRecipientAccepting();
@@ -2275,6 +2248,7 @@ public abstract class Script implements IScript {
 	 *			the colour (24-bit RGB) of the shape.
 	 */
 	public void drawBoxFill(int x, int y, int width, int height, int colour) {
+		//only 1 script used this
 		Main.log("apos.drawBoxFill() unimplemented");
 	}
 
@@ -2334,6 +2308,7 @@ public abstract class Script implements IScript {
 //		RasterOps.setPixel(this.getPixels(),
 //		this.getGameWidth(), this.getGameHeight(),
 //		x, y, colour);
+		//no scripts use this.
 		Main.log("apos.setPixel() unimplemented");
 		return;
 	}
@@ -2349,6 +2324,7 @@ public abstract class Script implements IScript {
 	 *			the y position to start drawing.
 	 */
 	public void drawImage(Image image, int start_x, int start_y) {
+		//no scripts use this.
 		Main.log("apos.drawImage() unimplemented");
 		return;
 	}
@@ -2417,14 +2393,7 @@ public abstract class Script implements IScript {
 		return controller.getNpcCount();
 	}
 
-	public int getNpcId(int index) {
-//		ORSCharacter npc = controller.getNpc(index);
-//		
-//		if(npc == null)
-//			return -1;
-//		
-//		return npc.npcId;
-//		
+	public int getNpcId(int index) {		
 		return controller.getNpc(getNpcServerIndexFromLocalIndex(index)).npcId;
 	}
 
@@ -2438,7 +2407,6 @@ public abstract class Script implements IScript {
 
 	public boolean isNpcInCombat(int index) {
 		return controller.isNpcInCombat(getNpcServerIndexFromLocalIndex(index));
-		//return this.isMobInCombat(this.getNpc(index));
 	}
 
 	public boolean isNpcTalking(int index) {
@@ -2616,53 +2584,8 @@ public abstract class Script implements IScript {
 	 *		 cast the given spell.
 	 */
 	public boolean canCastSpell(int spell) {
-		Main.log("apos.canCastSpell() unimplemented");
-		return true;
-//		if (getCurrentLevel(6) < StaticAccess.get().getSpellReqLevel(spell)) {
-//			return false;
-//		}
-//		for (int i = 0; i < StaticAccess.get().getReagentCount(spell); i++) {
-//			if (!ensureRunes(StaticAccess.get().getReagentId(spell, i), StaticAccess.get().getReagentAmount(spell, i))) {
-//				return false;
-//			}
-//		}
-//		return true;
+		return controller.canCastSpell(spell);
 	}
-
-//	private boolean ensureRunes(int id, int amount) {
-//		switch (id) {
-//			case 31:
-//				if (isEquippedId(197) || isEquippedId(615) || isEquippedId(682)) {
-//					return true;
-//				}
-//				break;
-//			case 32:
-//				if (isEquippedId(102) || isEquippedId(616) || isEquippedId(683)) {
-//					return true;
-//				}
-//				break;
-//			case 33:
-//				if (isEquippedId(101) || isEquippedId(617) || isEquippedId(684)) {
-//					return true;
-//				}
-//				break;
-//			case 34:
-//				if (isEquippedId(103) || isEquippedId(618) || isEquippedId(685)) {
-//					return true;
-//				}
-//				break;
-//		}
-//		return getInventoryCount(id) >= amount;
-//	}
-
-//	private boolean isEquippedId(int id) {
-//		for (int i = 0; i < getInventoryCount(); i++) {
-//			if (getInventoryId(i) == id) {
-//				return isItemEquipped(i);
-//			}
-//		}
-//		return false;
-//	}
 
 	/**
 	 * Enables or disables autologin.
@@ -2819,40 +2742,24 @@ public abstract class Script implements IScript {
 	 *			the display name to send the private message to.
 	 */
 	public void sendPrivateMessage(String msg, String name) {
-		Main.log("apos.sendPrivateMessage() unimplemented");
-//		if (isFriend(name)) {
-//			this.sendPrivateMessage(msg, name);
-//		}
+		controller.sendPrivateMessage(name, msg);
 	}
 
 	public void addFriend(String name) {
-		Main.log("apos.addFriend() unimplemented");
-//		final String lname = this.getPlayerName(this.getPlayer());
-//		if (name.length() > 0 && !name.equalsIgnoreCase(lname)) {
-//			this.addFriend(name);
-//		}
+		controller.addFriend(name);
+
 	}
 
 	public void removeFriend(String name) {
-		Main.log("apos.removeFriend() unimplemented");
-//		if (isFriend(name)) {
-//			this.removeFriend(name);
-//		}
+		controller.removeFriend(name);
 	}
 
 	public void addIgnore(String name) {
-		Main.log("apos.addIgnore() unimplemented");
-//		final String lname = this.getPlayerName(this.getPlayer());
-//		if (name.length() > 0 && !name.equalsIgnoreCase(lname)) {
-//			this.addIgnore(name);
-//		}
+		controller.addIgnore(name);
 	}
 
 	public void removeIgnore(String name) {
-		Main.log("apos.removeIgnore() unimplemented");
-//		if (isIgnored(name)) {
-//			this.removeIgnore(name);
-//		}
+		controller.removeIgnore(name);
 	}
 
 	public int getFriendCount() {
@@ -2884,24 +2791,19 @@ public abstract class Script implements IScript {
 	}
 
 	public static boolean isCombatSpell(int spell) {
-		Main.log("apos.isCombatSpell() unimplemented");
-		return false;
-
+		return controller.getSpellType(spell) == 2;
 	}
 
 	public static boolean isCastableOnInv(int spell) {
-		Main.log("apos.isCastableOninv() unimplemented");
-		return false;
+		return controller.getSpellType(spell) == 3;
 	}
 
 	public static boolean isCastableOnGroundItem(int spell) {
-		Main.log("apos.isCastableOnGroundItem() unimplemented");
-		return false;
+		return controller.getSpellType(spell) == 3;
 	}
 
 	public static boolean isCastableOnSelf(int spell) {
-		Main.log("apos.isCastableOnSelf() unimplemented");
-		return false;
+		return controller.getSpellType(spell) == 0;
 	}
 
 	public static int getPrayerCount() {
@@ -2917,21 +2819,18 @@ public abstract class Script implements IScript {
 	}
 
 	public int getQuestCount() {
-		Main.log("apos.getQuestCount() unimplemented");
-		return 0;
-		//return this.getQuestCount();
+		return controller.getQuestsCount();
 	}
 
 	public String getQuestName(int i) {
-		Main.log("apos.getQuestName() unimplemented");
-		return "unimplemented";
-		//return this.getQuestName(i);
+		if(i > this.getQuestCount())
+			return "NO_QUEST";
+		
+		return controller.getQuestNames()[i];
 	}
 
 	public boolean isQuestComplete(int i) {
-		Main.log("apos.isQuestComplete() unimplemented");
-		return false;
-		//return this.isQuestComplete(i);
+		return controller.isQuestComplete(i);
 	}
 
 	public int getGameWidth() {
@@ -2995,3 +2894,20 @@ public abstract class Script implements IScript {
 		return controller != null;
 	}
 }
+
+
+
+
+/**
+unimplemented functions:
+
+x hop (currently there aren't multiple worlds on openrsc)
+x getAccurateFatigue (inauthentic, no decimal precision)
+x getAccurateXpForLevel (inauthentic, no decimal precision)
+
+x drawBoxFill (no scripts use this.)
+x drawImage (no scripts use this.)
+x setPixel (no scripts use this.)
+x getNpcCombatLevelId (no scripts use this. additionally, this informaiton is not provided by entityhandler.)
+x hasLocalAcceptedTrade (no scripts use this.)
+**/

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,6 +35,7 @@ import orsc.ORSCharacter;
 import orsc.OpenRSC;
 import orsc.graphics.gui.SocialLists;
 import orsc.mudclient;
+import orsc.buffers.RSBufferUtils;
 import orsc.enumerations.GameMode;
 import orsc.enumerations.MessageType;
 import orsc.enumerations.ORSCharacterDirection;
@@ -2979,6 +2982,20 @@ public class Controller {
 	}
 
 	/**
+	 * Uses the specified item on the player.
+	 * 
+	 * @param slotIndex
+	 * @param playerServerIndex
+	 */
+	public void useItemOnPlayer(int slotIndex, int playerServerIndex) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(113);
+		mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
+		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	/**
 	 * Casts the specified spell on the specified player.
 	 * 
 	 * @param spellId
@@ -4018,5 +4035,114 @@ public class Controller {
 		
 		return result;
 	}
+	
+	public int getSpellLevel(int spellId) {
+		try {
+			return EntityHandler.getSpellDef(spellId).getReqLevel();
+		} catch(Exception e) {
+			return -1;
+		}
+	}
+	
+	public int getSpellType(int spellId) {
+		try {
+			return EntityHandler.getSpellDef(spellId).getSpellType();
+		} catch(Exception e) {
+			return -1;
+		}
+	}
+	
+	public Set<Entry<Integer, Integer>> getSpellRunes(int spellId) {
+		try {
+			return EntityHandler.getSpellDef(spellId).getRunesRequired();
+		} catch(Exception e) {
+			return null;
+		}
+	}
+	
+	public boolean canCastSpell(int spellId) {
+		if(this.getCurrentStat(6) < this.getSpellLevel(spellId))
+			return false;
+		
+		Set<Entry<Integer, Integer>> ingredients = this.getSpellRunes(spellId);
+		for(Entry<Integer, Integer> entry : ingredients) {
+			int runeId = entry.getKey();
+			int runeAmount = entry.getValue();
+			
+			if(this.getInventoryItemCount(runeId) < runeAmount)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	public String[] getQuestNames() {
+		return ((String[])reflector.getObjectMember(mud, "questNames"));
+	}
+	
+	public int getQuestsCount() {
+		return this.getQuestNames().length;
+	}
+	
+	public int getQuestStage(int questId) {
+		if(questId >= this.getQuestsCount())
+			return 0;
+		
+		return ((int[])reflector.getObjectMember(mud, "questStages"))[questId];
+	}
+	
+	public boolean isQuestComplete(int questId) {
+		return this.getQuestStage(questId) == -1;
+	}
+	
+	public void addFriend(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(195);
+		mud.packetHandler.getClientStream().bufferBits.putString(username);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void addIgnore(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(132);
+		mud.packetHandler.getClientStream().bufferBits.putString(username);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	/**
+	 * Does not update on client side
+	 */
+	public void removeFriend(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(167);
+		mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, 110);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	/**
+	 * Does not update on client side
+	 */
+	public void removeIgnore(String username) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(241);
+		mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, -78);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void sendPrivateMessage(String username, String message) {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(218);
+		mud.packetHandler.getClientStream().bufferBits.putString(username);
+		RSBufferUtils.putEncryptedString(mud.packetHandler.getClientStream().bufferBits, message);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+/**
+sendPrivateMessage
+addFriend
+removeFriend
+addIgnore
+removeIgnore
+ */
 }
  

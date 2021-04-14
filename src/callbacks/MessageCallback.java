@@ -74,10 +74,12 @@ public class MessageCallback {
                     sbotLastChatMessage = message;
                     sbotLastChatterName = sender;
                 } else if (type == MessageType.QUEST) {
-                    ((Script) Main.getCurrentRunningScript()).NPCMessage(message);
+                    ((compatibility.sbot.Script) Main.getCurrentRunningScript()).NPCMessage(message);
                     sbotLastNPCMessage = message;
                 }
-                //TODO: Implement trade for SBot per SBot's contract functions.
+//                else if (type == MessageType.TRADE) { //UNTESTED
+//                    ((compatibility.sbot.Script) Main.getCurrentRunningScript()).TradeRequest(message.split(" ")[0]); //needs to be converted to player pid
+//                } 
             } else if(Main.getCurrentRunningScript() instanceof compatibility.apos.Script) {
             	if (type == MessageType.GAME) {
                     ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
@@ -86,12 +88,12 @@ public class MessageCallback {
                 } else if (type == MessageType.QUEST) {
                     ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
                 } 
-//                else if (type == MessageType.TRADE) { //todo
-//                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).tradeMessageInterrupt(message);
-//                } 
-//                else if(type == MessageType.PRIVATE_RECIEVE) { // TODO
-//                	((compatibility.apos.Script) Main.getCurrentRunningScript()).onPrivateMessage(message, sender, false, false);
-//                }
+                else if (type == MessageType.TRADE) { //UNTESTED
+                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onTradeRequest(message.split(" ")[0]);
+                } 
+                else if(type == MessageType.PRIVATE_RECIEVE) { // UNTESTED
+                	((compatibility.apos.Script) Main.getCurrentRunningScript()).onPrivateMessage(message, sender, false, false);
+                }
             }
         }
     }

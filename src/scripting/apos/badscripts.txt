@@ -1,0 +1,3 @@
+Completely broken:
+	GnomeAgilityApos: fails to click net?
+	Abyte0_Nature: thieves OK for a while then breaks after 2 nats. not sure if this ever worked.

@@ -1458,7 +1458,11 @@ public abstract class Script implements IScript {
 	}
 
 	public int getObjectId(int index) {
-		return this.getObjectId(index);
+		if(index > controller.getObjectsCount())
+			return -1;
+		
+		return controller.getObjectsIds()[index];
+//		return this.getObjectId(index);
 	}
 
 	public int getObjectX(int index) {
@@ -1723,15 +1727,24 @@ public abstract class Script implements IScript {
 	}
 
 	public int getBankSize() {
-		return this.getBankSize();
+		return controller.getBankItemsCount();
+//		return this.getBankSize();
 	}
 
 	public int getBankId(int i) {
-		return this.getBankId(i);
+		if(i >= controller.getBankItemsCount())
+			return -1;
+		
+		return controller.getBankItems().get(i).getCatalogID();
+//		return this.getBankId(i);
 	}
 
 	public int getBankStack(int i) {
-		return this.getBankStack(i);
+		if(i >= controller.getBankItemsCount())
+			return -1;
+		
+		return controller.getBankItems().get(i).getAmount();
+//		return this.getBankStack(i);
 	}
 
 	/**
@@ -2071,25 +2084,33 @@ public abstract class Script implements IScript {
 	 */
 	@Deprecated
 	public int getOurTradedItemCount() {
-		return this.getLocalTradeItemCount();
+		Main.log("apos.getOurTradedItemCount() unimplemented");
+		return -1;
+//		return this.getLocalTradeItemCount();
 	}
 
 	public int getLocalTradeItemCount() {
-		return getOurTradedItemCount();
+		Main.log("apos.getLocalTradeItemCount() unimplemented");
+		return -1;
+//		return getOurTradedItemCount();
 	}
 
 	public int getLocalTradeItemId(int i) {
-		if (i >= this.getLocalTradeItemCount()) {
-			return -1;
-		}
-		return this.getLocalTradeItemId(i);
+		Main.log("apos.getLocalTradeItemId() unimplemented");
+		return -1;
+//		if (i >= this.getLocalTradeItemCount()) {
+//			return -1;
+//		}
+//		return this.getLocalTradeItemId(i);
 	}
 
 	public int getLocalTradeItemStack(int i) {
-		if (i >= this.getLocalTradeItemCount()) {
-			return -1;
-		}
-		return this.getLocalTradeItemStack(i);
+		Main.log("apos.getLocalTradeItemStack() unimplemented");
+		return -1;
+//		if (i >= this.getLocalTradeItemCount()) {
+//			return -1;
+//		}
+//		return this.getLocalTradeItemStack(i);
 	}
 
 	/**
@@ -2108,17 +2129,21 @@ public abstract class Script implements IScript {
 	}
 
 	public int getRemoteTradeItemId(int i) {
-		if (i >= this.getRemoteTradeItemCount()) {
-			return -1;
-		}
-		return this.getRemoteTradeItemId(i);
+		Main.log("apos.getRemoteTradeItemId() unimplemented");
+		return -1;
+//		if (i >= this.getRemoteTradeItemCount()) {
+//			return -1;
+//		}
+//		return this.getRemoteTradeItemId(i);
 	}
 
 	public int getRemoteTradeItemStack(int i) {
-		if (i >= this.getRemoteTradeItemCount()) {
-			return -1;
-		}
-		return this.getRemoteTradeItemStack(i);
+		Main.log("apos.getRemoteTradeItemStack() unimplemented");
+		return -1;
+//		if (i >= this.getRemoteTradeItemCount()) {
+//			return -1;
+//		}
+//		return this.getRemoteTradeItemStack(i);
 	}
 
 	public boolean hasLocalAcceptedTrade() {
@@ -2395,24 +2420,26 @@ public abstract class Script implements IScript {
 	}
 
 	public int getNpcId(int index) {
-		ORSCharacter npc = controller.getNpc(index);
-		
-		if(npc == null)
-			return -1;
-		
-		return npc.npcId;
+//		ORSCharacter npc = controller.getNpc(index);
+//		
+//		if(npc == null)
+//			return -1;
+//		
+//		return npc.npcId;
+//		
+		return controller.getNpc(getNpcServerIndexFromLocalIndex(index)).npcId;
 	}
 
 	public int getNpcX(int index) {
-		return controller.getNpcCoordsByServerIndex(index)[0];
+		return controller.getNpcCoordsByServerIndex(getNpcServerIndexFromLocalIndex(index))[0];
 	}
 
 	public int getNpcY(int index) {
-		return controller.getNpcCoordsByServerIndex(index)[1];
+		return controller.getNpcCoordsByServerIndex(getNpcServerIndexFromLocalIndex(index))[1];
 	}
 
 	public boolean isNpcInCombat(int index) {
-		return controller.isNpcInCombat(index);
+		return controller.isNpcInCombat(getNpcServerIndexFromLocalIndex(index));
 		//return this.isMobInCombat(this.getNpc(index));
 	}
 
@@ -2432,7 +2459,7 @@ public abstract class Script implements IScript {
 	 * @return the NPC's name.
 	 */
 	public String getNpcName(int index) {
-		ORSCharacter npc = controller.getNpc(index);
+		ORSCharacter npc = controller.getNpc(getNpcServerIndexFromLocalIndex(index));
 		
 		if(npc == null)
 			return "NO_NPC";
@@ -2452,7 +2479,7 @@ public abstract class Script implements IScript {
 	 * @return the NPC's description (examine text).
 	 */
 	public String getNpcDescription(int index) {
-		ORSCharacter npc = controller.getNpc(index);
+		ORSCharacter npc = controller.getNpc(getNpcServerIndexFromLocalIndex(index));
 		
 		if(npc == null)
 			return "NO_NPC";
@@ -2757,6 +2784,9 @@ public abstract class Script implements IScript {
 	 * @return true if the int[] contains the int.
 	 */
 	public static boolean inArray(int[] haystack, int needle) {
+		if(haystack == null)
+			return false;
+		
 		for (final int element : haystack) {
 			if (element == needle) {
 				return true;

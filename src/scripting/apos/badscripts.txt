@@ -7,6 +7,8 @@ Working:
 
 
 
+	S_Pickpocket: get nearest bank broken???
+
 	
 Promising but broken:
 	Abyte0_Paladin: if chest has been looted, can't get out via normal means, as the door is 'already unlocked' lol.

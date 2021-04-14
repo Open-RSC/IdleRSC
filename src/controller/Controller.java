@@ -912,7 +912,7 @@ public class Controller {
 		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
 
 		for(ORSCharacter npc : npcs) {
-			if(npc.serverIndex == serverIndex) {
+			if(npc != null && npc.serverIndex == serverIndex) {
 				return new int[] { this.convertX(npc.currentX), this.convertZ(npc.currentZ) };
 			}
 		}
@@ -925,7 +925,7 @@ public class Controller {
 		ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
 
 		for(ORSCharacter npc : npcs) {
-			if(npc.serverIndex == serverIndex) {
+			if(npc != null && npc.serverIndex == serverIndex) {
 				return npc;
 			}
 		}

@@ -484,10 +484,10 @@ public class Controller {
 			walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), x - mud.getMidRegionBaseX(), y - mud.getMidRegionBaseZ(), false);
 		}
 
-		while( (currentX() < x - radius) ||
+		while( ((currentX() < x - radius) ||
 			   (currentX() > x + radius) ||
 			   (currentY() < y - radius) ||
-			   (currentY() > y + radius) ) { //offset applied
+			   (currentY() > y + radius)) && Main.isRunning()) { //offset applied
 
 			int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
 
@@ -1136,6 +1136,8 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isDoorOpen(int x, int y) {
+		int[] naughtyDoors = new int[] {163, 164, 68, 97};
+		
 		int[] ids = getWallObjectIds();
 		int[] xs = getWallObjectsX();
 		int[] zs = getWallObjectsZ();
@@ -1143,8 +1145,10 @@ public class Controller {
 
 		int _x = removeOffsetX(x), _z = removeOffsetZ(y);
 		
-		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164 || this.getWallObjectIdAtCoord(x, y) == 68)
-			return false;
+		for(int id : naughtyDoors) {
+			if(this.getWallObjectIdAtCoord(x, y) == id)
+				return false;
+		}
 
 		for(int i = 0; i < count; i++) {
 			if(xs[i] == _x && zs[i] == _z)
@@ -1223,7 +1227,7 @@ public class Controller {
 			height = 1;
 		}
 		
-		while(isDoorOpen(x, y) == false) {
+		while(isDoorOpen(x, y) == false && Main.isRunning()) {
 			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), height);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 			mud.packetHandler.getClientStream().newPacket(opcode);
@@ -1249,7 +1253,7 @@ public class Controller {
 			return;
 		}
 
-		while(isDoorOpen(x, y) == true) {
+		while(isDoorOpen(x, y) == true && Main.isRunning() == true) {
 			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), 0);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 			mud.packetHandler.getClientStream().newPacket(127);
@@ -3381,7 +3385,7 @@ public class Controller {
      */
     public void openBank() {
 
-		while(!isInBank()) {
+		while(!isInBank() && Main.isRunning()) {
 
 			boolean usedBankerNpc = false;
 
@@ -3395,7 +3399,7 @@ public class Controller {
 					
 					walkToAsync(coords[0], coords[1], 1);
 					
-					while (!isInBank()) {
+					while (!isInBank() && Main.isRunning()) {
 						if(getNpcCommand1(95).equals("Bank")) { //Can we right click bank? If so, do that.
 							 npcCommand1(bankerIndex);
 							 openBank_sleep(200);
@@ -3415,7 +3419,7 @@ public class Controller {
 				if(bankChestId != null) {
 					walkToAsync(bankChestId[0], bankChestId[1], 1);
 
-					while (!isInBank()) {
+					while (!isInBank() && Main.isRunning()) {
 						atObject(bankChestId[0], bankChestId[1]);
 						openBank_sleep(200);
 					}
@@ -3432,7 +3436,7 @@ public class Controller {
 	 */
 	public void walkPath(int[] path) {
 		for(int i = 0; i < path.length; i += 2) {
-			while(currentX() != path[i] || currentY() != path[i+1]) {
+			while((currentX() != path[i] || currentY() != path[i+1]) && Main.isRunning()){
 				walkTo(path[i], path[i+1]);
 				sleep(618);
 			}
@@ -3446,7 +3450,7 @@ public class Controller {
 	 */
 	public void walkPathReverse(int[] path) {
 		for(int i = path.length - 2; i > 0; i -= 2) {
-			while(currentX() != path[i] || currentY() != path[i+1]) {
+			while((currentX() != path[i] || currentY() != path[i+1]) && Main.isRunning()) {
 				walkTo(path[i], path[i+1]);
 				sleep(618);
 			}
@@ -3901,7 +3905,7 @@ public class Controller {
 		if(objectId != -1) {
 			int[] coords = this.getNearestObjectById(objectId);
 
-			while(coords != null) {
+			while(coords != null && Main.isRunning()) {
 				this.atObject(coords[0], coords[1]);
 				this.sleep(250);
 				coords = this.getNearestObjectById(objectId);
@@ -3923,7 +3927,7 @@ public class Controller {
 		if(wallObjectId != -1) {
 			int[] coords = this.getNearestWallObjectById(wallObjectId);
 
-			while(coords != null) {
+			while(coords != null && Main.isRunning()) {
 				this.openDoor(coords[0], coords[1]);
 				this.sleep(250);
 				coords = this.getNearestWallObjectById(wallObjectId);

@@ -227,10 +227,8 @@ public class Main {
         Thread.sleep(3000);
 
         while (true) {
-            
 
             if (isRunning()) {
-            	
                 if (currentRunningScript != null) {
 
                     //handle native scripts
@@ -249,13 +247,31 @@ public class Main {
                         
                         Thread.sleep(618); //wait 1 tick before performing next action
                     } else if(currentRunningScript instanceof compatibility.apos.Script) {
-                    	((compatibility.apos.Script) currentRunningScript).setController(controller);
-                    	//((compatibility.apos.Script) currentRunningScript).init(config.getScriptArguments()); //TODO
-                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main();
-                    	Thread.sleep(sleepAmount);
+                    	if(!controller.isSleeping()) { 
+                    		String params = "";
+                    		
+                    		if(config.getScriptArguments() != null) {
+                    			for(int i = 0; i < config.getScriptArguments().length; i++) {
+                    				String arg = config.getScriptArguments()[i];
+                    				if(i == 0) {
+                    					params = arg;
+                    				} else {
+                    					params += " " + arg;
+                    				}
+                    			}
+                    		}
+	                    	((compatibility.apos.Script) currentRunningScript).setController(controller);
+	                    	((compatibility.apos.Script) currentRunningScript).init(params); 
+	                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main();
+	                    	Thread.sleep(sleepAmount);
+                    	} else {
+                    		Thread.sleep(10);
+                    	}
                     }
                 }
 
+            } else {
+            	Thread.sleep(100);
             }
         }
     }
@@ -548,7 +564,7 @@ public class Main {
         }
         
         for (final File file : aposScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
+            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
                 String scriptName = file.getName().replace(".class", "");
 
                 // Create row with script name and
@@ -560,7 +576,7 @@ public class Main {
         }
         
         for (final File file : sbotScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$")) {
+            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
                 String scriptName = file.getName().replace(".class", "");
 
                 // Create row with script name and

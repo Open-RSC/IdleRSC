@@ -55,7 +55,7 @@ public void print(String txt)
       System.out.println(txt);
 }
     
-//    public Abyte0_DarkWizard(Extension e) {        super(e);    }
+    public Abyte0_DarkWizard(String e) {  }
     public void init(String params)
     {
     

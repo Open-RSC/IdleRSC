@@ -4,9 +4,9 @@ import compatibility.apos.Script;
 public class AlchWheatApos extends Script {
  
   int fmode = 3;
-//  public AlchWheat(Extension e) {
+  public AlchWheatApos(String e) {
 //     super(e);
-//  }
+  }
  
   public void init(String params) {
      if(!params.equals(""))

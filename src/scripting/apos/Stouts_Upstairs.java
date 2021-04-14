@@ -74,11 +74,11 @@ public class Stouts_Upstairs extends Script {
 
 
 
-// public Stouts_Upstairs(Extension e) {
-//
+ public Stouts_Upstairs(String e) {
+
 // super(e);
-//
-// }
+
+ }
 
 
 

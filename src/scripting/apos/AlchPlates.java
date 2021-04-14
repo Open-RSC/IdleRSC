@@ -4,13 +4,13 @@ public class AlchPlates extends Script
 
 {
 
-// public AlchPlates(Extension paramExtension)
-//
-// {
-//
+ public AlchPlates(String paramExtension)
+
+ {
+
 //   super(paramExtension);
-//
-// }
+
+ }
 
 
 

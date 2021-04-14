@@ -36,10 +36,10 @@ public class SAF_BloodThiever extends Script
     private final DecimalFormat int_format = new DecimalFormat("#,##0");
     private final DecimalFormat dec_format = new DecimalFormat("#,##0.00"); 
 
-//    public SAF_BloodThiever(Extension e)
-//    {
+    public SAF_BloodThiever(String e)
+    {
 //        super(e);
-//    }
+    }
 
     @Override
     public void init(String params) 

@@ -46,9 +46,9 @@ public class EdgeEggs extends Script {
     private long idleTime = 0;
     
     
-//    public EdgeEggs(Extension arg0) {
+    public EdgeEggs(String arg0) {
 //        super(arg0);
-//    }
+    }
     
     @Override
     public void init(String arg0) {

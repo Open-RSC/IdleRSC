@@ -14,9 +14,9 @@ public class k_ShopBuyer extends Script {
    private long time;
    private long answering;
 
-//   public k_ShopBuyer(Extension e) {
+   public k_ShopBuyer(String e) {
 //       super(e);
-//   }
+   }
 
    public void init(String s) {
        System.out.println();

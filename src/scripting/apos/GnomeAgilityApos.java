@@ -9,9 +9,9 @@ public class GnomeAgilityApos extends Script {
  
   int fmode = 1;
  
-//  public GnomeAgility(Extension e)  {
+  public GnomeAgilityApos(String e)  {
 //  super(e);
-//  }
+  }
  
   public void init(String params){
      if(!params.equals(""))

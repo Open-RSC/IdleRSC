@@ -66,9 +66,9 @@ implements ActionListener {
 
 	private final DecimalFormat int_format = new DecimalFormat("#,##0");
 
-//	public SAF_BankTransfer(Extension e) {
+	public SAF_BankTransfer(String e) {
 //		super(e);
-//	}
+	}
 
 	@Override
 	public void init(String s) {

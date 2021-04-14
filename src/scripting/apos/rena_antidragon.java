@@ -30,11 +30,11 @@ public class rena_antidragon extends Script
         5,11,17,23,29
     };
     
-//    public rena_antidragon (Extension e)
-// 
-//    {
+    public rena_antidragon (String e)
+ 
+    {
 //        super(e);
-//    }
+    }
  
      public void init(String params) 
     {

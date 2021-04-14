@@ -5,10 +5,10 @@ import javax.swing.JOptionPane;
 
 public class D_WildyDarkWiz extends Script {
 
-//public D_WildyDarkWiz(Extension arg0) {
-//super(arg0);
-//// TODO Auto-generated constructor stub
-//}
+public D_WildyDarkWiz(String arg0) {
+//super(arg0);]]]==///[[[sss---
+// TODO Auto-generated constructor stub
+}
 
 int banker = 95;
 

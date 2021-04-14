@@ -17,11 +17,11 @@ public class SAF_Market extends Script
 	long time;
 	
 //	Extension e;
-//	public SAF_Market(Extension e)
-//	{
+	public SAF_Market(String e)
+	{
 //		super(e);
 //		this.e = e;
-//	}
+	}
     
     //Parameter parsing
     public void init(String params)

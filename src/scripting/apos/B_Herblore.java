@@ -28,10 +28,10 @@ public class B_Herblore extends Script {
     private int potion_choice;
     private Potion potion;
 //
-//    public B_Herblore(Extension e) {
-//        super(e);
-//        //this.e = e;
-//    }
+    public B_Herblore(String e) {
+        //
+        //this.e = e;
+    }
 
     @Override
     public void init(String s) {

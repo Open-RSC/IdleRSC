@@ -24,9 +24,9 @@ public final class OgrePicker extends Script {
     
     private static final int COMBAT_STYLE = 1;
 
-//    public OgrePicker(Extension e) {
+    public OgrePicker(String e) {
 //        super(e);
-//    }
+    }
 
     @Override
     public void init(String s) {

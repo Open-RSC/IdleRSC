@@ -2692,7 +2692,7 @@ public abstract class Script implements IScript {
 	 * @return a psuedo-random number between min and max.
 	 */
 	public static int random(int min, int max) {
-		return ThreadLocalRandom.current().nextInt(min, max);
+		return ThreadLocalRandom.current().nextInt(min, max+1);
 	}
 
 	/**

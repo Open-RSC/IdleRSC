@@ -6,10 +6,10 @@ import javax.swing.JOptionPane;
 
 public class D_DeepWildyGiants extends Script {
 
-//public D_DeepWildyGiants(Extension arg0) {
+public D_DeepWildyGiants(String arg0) {
 //super(arg0);
-//// TODO Auto-generated constructor stub
-//}
+// TODO Auto-generated constructor stub
+}
 
 int banker = 792;
 int hob = 61;

@@ -6,9 +6,9 @@ public class getlimp extends Script {
    int[] path = null;
    int loop = 0;
 
-//   public getlimp(Extension e) {
+   public getlimp(String e) {
 //      super(e);
-//   }
+   }
 
    public void init(String params) {
       System.out.println("Snape / Limp Collector - By mofo");

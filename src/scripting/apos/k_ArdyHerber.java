@@ -29,9 +29,9 @@ public class k_ArdyHerber extends Script {
         0
     };
    
-//	public k_ArdyHerber(Extension e) {
+	public k_ArdyHerber(String e) {
 //		super(e);
-//	}
+	}
 
 	public void init(String params) {
 		initial_xp = new int[SKILL.length];

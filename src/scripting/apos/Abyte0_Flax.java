@@ -15,8 +15,8 @@ public class Abyte0_Flax extends Script
 	int idBanker = 540;
 	boolean power = false;
 
-//	public Abyte0_Flax(Extension e)
-//	{ super(e); }
+	public Abyte0_Flax(String e)
+	{}
 
 	public void print(String s)
 	{

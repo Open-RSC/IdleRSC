@@ -21,10 +21,10 @@ public final class S_AmuletStringer extends Script {
     private int[] banked_counts;
     private long start_time;
     private long bank_time;
-//
-//    public S_AmuletStringer(Extension e) {
+
+    public S_AmuletStringer(String e) {
 //        super(e);
-//    }
+    }
 
     @Override
     public void init(String params) {

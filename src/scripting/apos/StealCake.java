@@ -8,9 +8,9 @@ public class StealCake extends Script {
     int[] bankArea = new int[] { 551, 612 };
     boolean power = true;
 
-//    public StealCake(Extension e) {
+    public StealCake(String e) {
 //        super(e);
-//    }
+    }
 
     public void init(String params)    {
         if (params.equals("bank"))

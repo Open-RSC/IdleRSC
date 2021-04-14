@@ -61,7 +61,7 @@ public class Abyte0_Fletch extends Script
         System.out.println(gameText);
     }
     
-//    public Abyte0_Fletch(Extension e) {super(e);}    
+    public Abyte0_Fletch(String e) {}    
     
     public void init(String param)
     {

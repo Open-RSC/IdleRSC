@@ -10,9 +10,9 @@ public class Rope extends Script {
    private String filename;
    private long[] screenshot = new long[4];
 
-//   public Rope(Extension e) {
+   public Rope(String e) {
 //       super(e);
-//   }
+   }
 
    @Override
    public void init(String s) {

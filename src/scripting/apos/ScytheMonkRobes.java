@@ -25,9 +25,9 @@ public final class ScytheMonkRobes extends Script{
    TOP = 0,
    BOTTOM = 0;
    
-//   public ScytheMonkRobes(Extension e) {
+   public ScytheMonkRobes(String e) {
 //       super(e);
-//   }
+   }
    
    public void init(String params) {
    System.out.println("Monk Robe Collector - Check code for sources - Start in West Falador Bank");

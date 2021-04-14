@@ -60,9 +60,9 @@ implements ActionListener {
 
 	private final DecimalFormat int_format = new DecimalFormat("#,##0");
 
-//	public SAF_PurgeShit(Extension e) {
+	public SAF_PurgeShit(String e) {
 //		super(e);
-//	}
+	}
 
 	@Override
 	public void init(String s) {

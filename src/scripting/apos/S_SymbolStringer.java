@@ -22,9 +22,9 @@ public final class S_SymbolStringer extends Script {
     private long start_time;
     private long bank_time;
 
-//    public S_SymbolStringer(Extension e) {
+    public S_SymbolStringer(String e) {
 //        super(e);
-//    }
+    }
 
     @Override
     public void init(String params) {

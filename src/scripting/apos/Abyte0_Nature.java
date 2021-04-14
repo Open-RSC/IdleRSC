@@ -15,10 +15,10 @@ import compatibility.apos.Script;
 public class Abyte0_Nature extends Script
 {
     int cpt = 0;
-//    public Abyte0_Nature(Extension e)
-//    {
+    public Abyte0_Nature(String e)
+    {
 //        super(e);
-//    }
+    }
 
     public void init(String params)
     {

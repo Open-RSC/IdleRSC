@@ -38,9 +38,9 @@ public class ASCGiants extends Script {
     int stat;
     long time = -1L;
 
-//    public ASCGiants(Extension var1) {
+    public ASCGiants(String var1) {
 //        super(var1);
-//    }
+    }
 
     public void init(String var1) {
         Object[] var2 = new Object[]{"Bank", "Walking", "Fighting"};

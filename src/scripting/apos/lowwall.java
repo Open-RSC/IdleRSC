@@ -10,9 +10,9 @@ public final class lowwall extends Script {
     private int wall = 0;
     private long time;
 
-//    public lowwall(Extension e) {
+    public lowwall(String e) {
 //        super(e);
-//    }
+    }
 
     public int main() {
         if (getFatigue() >= 90) {

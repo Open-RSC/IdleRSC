@@ -6,9 +6,9 @@ public class getSnape extends Script {
   int[] path = null;
   int loop = 0;
 
-//  public getSnape(Extension e) {
+  public getSnape(String e) {
 //     super(e);
-//  }
+  }
 
   public void init(String params) {
      System.out.println("Snape / Limp Collector - By mofo");

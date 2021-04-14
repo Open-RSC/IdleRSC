@@ -29,10 +29,10 @@ public final class OgreRanger extends Script {
     private String partner_name;
     
     private static final int COMBAT_STYLE = 1;
-//
-//    public OgreRanger(Extension e) {
+
+    public OgreRanger(String e) {
 //        super(e);
-//    }
+    }
 
     @Override
     public void init(String s) {

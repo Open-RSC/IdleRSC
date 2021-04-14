@@ -38,9 +38,9 @@ import compatibility.apos.Script;
   int[] actArea = new int[2];
   long talk = System.currentTimeMillis();
 
-//  public Stoutsdownstairs(Extension e) {
+  public Stoutsdownstairs(String e) {
 //  super(e);
-//  }
+  }
 
   public void init(String params) {
      params = params.trim().toLowerCase();

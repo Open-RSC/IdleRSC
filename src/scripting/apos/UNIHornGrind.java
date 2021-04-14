@@ -1,9 +1,9 @@
 package scripting.apos;
 import compatibility.apos.Script;
 public class UNIHornGrind extends Script {
-//public UNIHornGrind (Extension e) {
+public UNIHornGrind (String e) {
 //  super(e);
-//}
+}
 public int main(){
   int Horn=466;
   int Ground=473;

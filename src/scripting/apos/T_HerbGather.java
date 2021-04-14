@@ -17,10 +17,10 @@ public class T_HerbGather extends Script {
 	int weapid; //75,593, 594
 	int wepid;
 
-//	public T_HerbGather(Extension e) 
-//	{
+	public T_HerbGather(String e) 
+	{
 //		super(e);
-//	}
+	}
 
 	public void init(String params) 
 	{

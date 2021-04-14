@@ -804,6 +804,10 @@ public class Controller {
 	public int[] getWallObjectsZ() {
 		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceZ");
 	}
+	
+	public int[] getWallObjectsDirections() {
+		return (int[]) reflector.getObjectMember(mud, "wallObjectInstanceDir");	
+	}
 
 	/**
 	 * Retrieves the coordinates of the specified wall object id, if nearby.
@@ -1174,6 +1178,30 @@ public class Controller {
 		return -1;
 		
 	}
+	
+	/**
+	 * Returns the direction of the wall object. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public int getWallObjectDirectionAtCoord(int x, int y) {
+		int _x = removeOffsetX(x);
+		int _y = removeOffsetZ(y);
+		
+		int[] xs = this.getWallObjectsX();
+		int[] ys = this.getWallObjectsZ();
+		
+		for(int i = 0; i < xs.length; i++) {
+			if(xs[i] == _x && ys[i] == _y)
+				return this.getWallObjectsDirections()[i];
+		}
+		
+		return -1;
+		
+	}
+
 
 	/**
 	 * Opens the door at the specified coordinates. Does nothing if the door is already open.
@@ -1188,7 +1216,7 @@ public class Controller {
 		}
 
 		int opcode = 127;
-		int height = 0;
+		int height = getWallObjectDirectionAtCoord(x, y); 
 		
 		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164) {
 			opcode = 14; //we want WALL_COMMAND1 for these IDs

@@ -1,4 +1,4 @@
-IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's own custom scripting API. It also has backwards compatibility with SBot.
+IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's own custom scripting API. It also has backwards compatibility with APOS and SBot.
 
 [![IdleRSC Demo Video](https://i.imgur.com/NMU2sbB.png)](https://www.youtube.com/watch?v=Bkp2M3Ja9qc)
 
@@ -10,7 +10,7 @@ IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's
 4. Run .bat/.sh file!
 
 ## Sleeping:
-IdleRSC can be used with any sleeper which will take hc.bmp and spit out slword.txt. You can also use [FOCR Resurrection](https://gitlab.com/idlersc/focr-resurrection). 
+IdleRSC uses a sleeper server which is provided free of charge. However, if you would like, you can run the FOCR sleeper locally with --localOCR on the command line. Get the latest copy of FOCR here: [FOCR Resurrection](https://gitlab.com/idlersc/focr-resurrection). 
 
 ## Account Security:
 Please be aware that run.bat is not encrypted. If someone has your run.bat, they have your username and password. 
@@ -29,15 +29,18 @@ Developers of IdleRSC are not responsible for ruined, banned, hacked accounts, o
 1. Open up the Eclipse project
 2. Add a new script to the `scripting` package.
 3. Your class file will be spit out into bin/scripting/ if successfully compiled.		
-#### SBot:
+#### APOS/SBot:
 Easy Method: (NOT PREFERRED IF YOU ARE WANTING TO DEVELOP SCRIPTS) 
 WARNING: This will delete your JAR file!!!
-1. Place your script in src/scripting/sbot/
+1. Place your script in src/scripting/apos/
 2. Run compile_windows.bat (or compile_linux.sh)
 3. Ensure no issues compiling (they will be towards the top.)
 4. Re-run the bat file.
 Read "converting SBot scripts" section for compilitation issues.
-		
+
+## Converting APOS Scripts:
+APOS scripts require several changes in order to be made compatible. Please see changes made to scripts which were added. I will publish a basic script conversion tutorial at some point. 
+
 ## Converting SBot Scripts:
 1. Open SBot script in a text editor.
 2. Place these lines at the top of the file: 

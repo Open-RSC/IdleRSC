@@ -2842,9 +2842,13 @@ public abstract class Script implements IScript {
 	}
 	
 	
-	
-	
-	
+	/**
+	 * <b>New APOS function.</b> On Coleslaw, returns whether or not we are currently batching. 
+	 * @return
+	 */
+	public boolean isBatching() {
+		return controller.isBatching();
+	}
 	
 	
 	

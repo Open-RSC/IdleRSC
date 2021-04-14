@@ -268,6 +268,7 @@ public class Main {
 	                    		((compatibility.apos.Script) currentRunningScript).init(params);
 	                    		aposInitCalled = true;
 	                    	}
+	                    	
 	                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main();
 	                    	Thread.sleep(sleepAmount);
                     	} else {

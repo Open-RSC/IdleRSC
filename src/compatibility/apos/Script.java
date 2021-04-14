@@ -687,7 +687,11 @@ public abstract class Script implements IScript {
 	 *		 will contain the item's ID, X, Y.
 	 */
 	public int[] getItemById(int... ids) {
-		return controller.getNearestItemByIds(ids);
+		int[] result = controller.getNearestItemByIds(ids);
+		if(result == null)
+			return new int[] {-1, -1, -1};
+		
+		return new int[] {result[2], result[0], result[1]};
 	}
 
 	/**

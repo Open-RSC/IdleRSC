@@ -1220,24 +1220,24 @@ public class Controller {
 		}
 
 		int opcode = 127;
-		int height = getWallObjectDirectionAtCoord(x, y); 
+		int direction = getWallObjectDirectionAtCoord(x, y); 
 		
-		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164) {
+		if(this.getWallObjectIdAtCoord(x, y) == 163 || this.getWallObjectIdAtCoord(x, y) == 164 || ((this.currentX() == 609) && this.currentY() == 1548)) {
 			opcode = 14; //we want WALL_COMMAND1 for these IDs
-			height = 1;
+			//height = 1;
 		}
 		
-		while(isDoorOpen(x, y) == false && Main.isRunning()) {
-			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), height);
+		//while(isDoorOpen(x, y) == false && Main.isRunning()) {
+			reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
 			while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 			mud.packetHandler.getClientStream().newPacket(opcode);
 			mud.packetHandler.getClientStream().bufferBits.putShort(x); 
 			mud.packetHandler.getClientStream().bufferBits.putShort(y); 
-			mud.packetHandler.getClientStream().bufferBits.putByte(height);
+			mud.packetHandler.getClientStream().bufferBits.putByte(direction);
 			mud.packetHandler.getClientStream().finishPacket();
 
-			sleep(GAME_TICK_COUNT);
-		}
+		//	sleep(GAME_TICK_COUNT);
+		//}
 	}
 
 	/**

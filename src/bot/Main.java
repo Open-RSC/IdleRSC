@@ -525,7 +525,10 @@ public class Main {
 					urls = new URL[] {url};
 					ClassLoader cl = new URLClassLoader(urls);
 					Class clazz = cl.loadClass("scripting.apos." + scriptName);
-					currentRunningScript = (compatibility.apos.Script) clazz.newInstance();
+					
+
+					//currentRunningScript = (compatibility.apos.Script) clazz.newInstance();
+					currentRunningScript = (compatibility.apos.Script) clazz.getDeclaredConstructor(String.class).newInstance("");
 				}
 			}
 

@@ -25,9 +25,9 @@ public final class S_DraynorPower extends Script {
 
     private int stage;
 
-//    public S_DraynorPower(Extension ex) {
-//        super(ex);
-//    }
+    public S_DraynorPower(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

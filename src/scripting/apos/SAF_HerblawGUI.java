@@ -113,9 +113,9 @@ public final class SAF_HerblawGUI extends Script implements ActionListener {
 	potionModeStrings = { "Identify Herbs", "Unfinished Potion", "Potion" },
 	potionChoiceStrings = { "Attack Potion", "Cure Poison", "Strength Potion", "Stat Restore Potion", "Defense Potion", "Restore Prayer Potion", "Super Attack Potion", "Poison Antidote", "Fishing Potion", "Super Strength Potion", "Weapon Poison Potion", "Super Defense Potion", "Ranging Potion", "Potion of Zamorak" };
 
-//    public SAF_HerblawGUI(Extension ex) {
-//        super(ex);
-//    }
+    public SAF_HerblawGUI(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

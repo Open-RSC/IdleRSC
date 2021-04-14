@@ -9,9 +9,9 @@ public final class S_Idle extends Script {
     private long move_time;
     private boolean idle_move_dir;
 
-//    public S_Idle(Extension ex) {
-//        super(ex);
-//    }
+    public S_Idle(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

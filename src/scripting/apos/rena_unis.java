@@ -17,9 +17,9 @@ extends Script {
    boolean walk_unistoedge;
    boolean started;
 
-//   public rena_unis(Extension extension) {
+   public rena_unis(String extension) {
 //       super(extension);
-//   }
+   }
 
    public void init(String string) {
        System.out.println(" ");

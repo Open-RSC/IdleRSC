@@ -22,9 +22,9 @@ public final class S_HighAlcher extends Script {
     private static final int ID_NATURE = 40; 
     private static final int ID_COINS = 10;
 
-//    public S_HighAlcher(Extension ex) {
-//        super(ex);
-//    }
+    public S_HighAlcher(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

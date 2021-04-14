@@ -18,9 +18,9 @@ public final class S_Enchant extends Script {
     private int start_xp;
     private int xp;
 
-//    public S_Enchant(Extension ex) {
-//        super(ex);
-//    }
+    public S_Enchant(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

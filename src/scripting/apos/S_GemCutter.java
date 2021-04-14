@@ -15,9 +15,9 @@ public final class S_GemCutter extends Script {
     private int xp;
     private int start_xp;
 
-//    public S_GemCutter(Extension ex) {
-//        super(ex);
-//    }
+    public S_GemCutter(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

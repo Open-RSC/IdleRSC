@@ -14,9 +14,9 @@ public final class S_TradeGiver extends Script {
     private boolean move_to;
 	private long menu_time;
 
-//    public S_TradeGiver(Extension ex) {
-//        super(ex);
-//    }
+    public S_TradeGiver(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {       

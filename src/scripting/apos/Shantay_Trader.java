@@ -72,12 +72,8 @@ implements ActionListener {
    private boolean loc;
 
 
-//   public Shantay_Trader(Extension ex) {
-//       super(ex);
-//   }
-
    public Shantay_Trader(String ex) {
-	   
+       //super(ex);
    }
    
 //   public static void main(String[] argv) {

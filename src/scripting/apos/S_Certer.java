@@ -40,9 +40,9 @@ public final class S_Certer extends Script
     private Point last_pos = new Point(-1, -1);
     private static boolean abort;
 
-//    public S_Certer(Extension ex) {
-//        super(ex);
-//    }
+    public S_Certer(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

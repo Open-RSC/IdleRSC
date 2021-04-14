@@ -22,10 +22,10 @@ public final class S_Stitcher extends Script {
     private static int SKILL_CRAFTING = -1;
     private long menu_time;
     private long bank_time;
-//
-//    public S_Stitcher(Extension ex) {
-//        super(ex);
-//    }
+
+    public S_Stitcher(String ex) {
+        //super(ex);
+    }
     
     @Override
     public void init(String params) {

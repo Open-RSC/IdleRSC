@@ -52,9 +52,9 @@ public final class S_ArmourConverter extends Script {
     private boolean idle_move_dir;
     private int used;
     
-//    public S_ArmourConverter(Extension ex) {
-//        super(ex);
-//    }
+    public S_ArmourConverter(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

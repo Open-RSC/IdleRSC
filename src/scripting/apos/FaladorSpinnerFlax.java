@@ -23,9 +23,9 @@ public final class FaladorSpinnerFlax extends Script {
 
     private int spun_count;
 
-//    public FaladorSpinnerFlax(Extension ex) {
+    public FaladorSpinnerFlax(String ex) {
 //        super(ex);
-//    }
+    }
 
     @Override
     public void init(String params) {

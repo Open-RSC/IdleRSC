@@ -60,9 +60,9 @@ public final class S_JailRanged extends Script {
 	private long start_time;
 	private long attack_time;
 
-//	public S_JailRanged(Extension ex) {
-//		super(ex);
-//	}
+	public S_JailRanged(String ex) {
+		//super(ex);
+	}
 
 	@Override
 	public void init(String params) {

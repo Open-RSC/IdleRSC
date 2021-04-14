@@ -24,9 +24,9 @@ public final class S_ArrowMaker extends Script {
 	private int start_xp;
 	private int xp;
 
-//    public S_ArrowMaker(Extension ex) {
-//        super(ex);
-//    }
+    public S_ArrowMaker(String ex) {
+        //super(ex);
+    }
     
     @Override
     public void init(String str) {

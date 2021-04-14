@@ -14,10 +14,10 @@ public final class S_BankBury extends Script {
 	private long bank_time;
 	private int bury_count;
 	private long start_time;
-//
-//	public S_BankBury(Extension ex) {
-//		super(ex);
-//	}
+
+	public S_BankBury(String ex) {
+		//super(ex);
+	}
 
 	@Override
 	public void init(String params) {

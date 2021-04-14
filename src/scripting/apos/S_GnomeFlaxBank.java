@@ -9,9 +9,9 @@ public final class S_GnomeFlaxBank extends Script {
     private static final int ID_STRING = 676;
     private static final int ID_WHEEL = 121;
     
-//    public S_GnomeFlaxBank(Extension ex) {
-//        super(ex);
-//    }
+    public S_GnomeFlaxBank(String ex) {
+        //super(ex);
+    }
  
     @Override
     public void init(String params) {

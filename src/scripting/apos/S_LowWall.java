@@ -13,9 +13,9 @@ public final class S_LowWall extends Script {
     private int wall = 0;
     private long start_time;
 
-//    public S_LowWall(Extension ex) {
-//        super(ex);
-//    }
+    public S_LowWall(String ex) {
+        //super(ex);
+    }
     
     @Override
     public void init(String params) {

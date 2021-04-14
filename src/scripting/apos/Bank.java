@@ -7,9 +7,9 @@ public final class Bank extends Script {
 	private long bank_time;
 	private long menu_time;
 
-//	public Bank(Extension ex) {
+	public Bank(String ex) {
 //		super(ex);
-//	}
+	}
 
 	@Override
 	public void init(String params) {

@@ -442,16 +442,14 @@ public abstract class Script implements IScript {
 	 * @return false until it has finished typing the set line.
 	 */
 	public boolean next() {
-		Main.log("apos.next() unimplemented");
+		if (typeOffset >= toType.length()) {
+			controller.typeKey('\n');
+			typeOffset = 0;
+			return true;
+		}
+		final char c = toType.charAt(typeOffset++);
+		controller.typeKey(c);
 		return false;
-//		if (typeOffset >= toType.length()) {
-//			this.typeChar('\n', 10);
-//			typeOffset = 0;
-//			return true;
-//		}
-//		final char c = toType.charAt(typeOffset++);
-//		this.typeChar(c, c);
-//		return false;
 	}
 
 	/**

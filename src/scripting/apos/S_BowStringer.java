@@ -20,9 +20,9 @@ public final class S_BowStringer extends Script {
     private int xp;
     private int start_xp;
 
-//    public S_BowStringer(Extension ex) {
-//        super(ex);
-//    }
+    public S_BowStringer(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

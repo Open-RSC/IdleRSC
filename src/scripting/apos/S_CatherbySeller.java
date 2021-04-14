@@ -17,9 +17,9 @@ public final class S_CatherbySeller extends Script {
     private long menu_time;
     private boolean banked;
 
-//    public S_CatherbySeller(Extension ex) {
-//        super(ex);
-//    }
+    public S_CatherbySeller(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

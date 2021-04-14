@@ -39,9 +39,9 @@ public final class Just_Shantay_TradeGiver extends Script {
   private List<Integer> banked_items = new ArrayList<>();
   private List<Integer> banked_count = new ArrayList<>();
 
-//  public Just_Shantay_TradeGiver(Extension ex) {
+  public Just_Shantay_TradeGiver(String ex) {
 //      super(ex);
-//  }
+  }
 
   @Override
   public void init(String params) {      

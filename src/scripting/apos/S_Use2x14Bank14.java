@@ -17,9 +17,9 @@ public final class S_Use2x14Bank14 extends Script {
     private final DecimalFormat f = new DecimalFormat("#,##0");
     private int sleep_at;
 
-//    public S_Use2x14Bank14(Extension ex) {
-//        super(ex);
-//    }
+    public S_Use2x14Bank14(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

@@ -9,9 +9,9 @@ public final class BankDepositAll extends Script {
 	private long bank_time;
 	private long menu_time;
 
-//	public BankDepositAll(Extension ex) {
+	public BankDepositAll(String ex) {
 //		super(ex);
-//	}
+	}
 
 	@Override
 	public void init(String params) {

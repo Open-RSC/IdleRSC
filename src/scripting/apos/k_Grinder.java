@@ -22,9 +22,9 @@ public final class k_Grinder extends Script {
     private long menu_time;
     private final DecimalFormat f = new DecimalFormat("#,##0");
 
-//    public k_Grinder(Extension ex) {
-//        super(ex);
-//    }
+    public k_Grinder(String ex) {
+        //////super(ex);
+    }
 
     @Override
     public void init(String params) {

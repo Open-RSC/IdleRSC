@@ -36,9 +36,9 @@ public final class S_SuperSetCerter extends Script {
     private boolean force_bank;
     private boolean force_ignore_menu;
 
-//    public S_SuperSetCerter(Extension ex) {
-//        super(ex);
-//    }
+    public S_SuperSetCerter(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

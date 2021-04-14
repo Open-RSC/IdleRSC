@@ -6,9 +6,9 @@ public final class S_AutoTalker extends Script {
     private int delay1;
     private int delay2;
 
-//    public S_AutoTalker(Extension ex) {
+    public S_AutoTalker(String ex) {
 //        super(ex);
-//    }
+    }
 
     @Override
     public void init(String params) {

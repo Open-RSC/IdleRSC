@@ -52,9 +52,9 @@ public final class S_EdgevilleChef extends Script
     
     private long bank_time;
 
-//    public S_EdgevilleChef(Extension ex) {
-//        super(ex);
-//    }
+    public S_EdgevilleChef(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

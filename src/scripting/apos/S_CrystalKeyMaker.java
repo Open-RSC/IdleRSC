@@ -9,9 +9,9 @@ public final class S_CrystalKeyMaker extends Script {
     private static final int ID_TEETH = 526;
     private static final int ID_LOOP = 527;
 
-//    public S_CrystalKeyMaker(Extension ex) {
-//        super(ex);
-//    }
+    public S_CrystalKeyMaker(String ex) {
+        //super(ex);
+    }
     
     public void init(String params) {
         bank_time = -1L;

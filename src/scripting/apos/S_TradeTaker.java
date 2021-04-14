@@ -13,9 +13,9 @@ public final class S_TradeTaker extends Script {
     private long menu_time;
     private boolean move_to;
 
-//    public S_TradeTaker(Extension ex) {
-//        super(ex);
-//    }
+    public S_TradeTaker(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

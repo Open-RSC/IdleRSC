@@ -17,9 +17,9 @@ public final class S_GnomeFlaxPower extends Script {
     private static final int SPINNER = 121;
     private long start_time;
 
-//    public S_GnomeFlaxPower(Extension ex) {
-//        super(ex);
-//    }
+    public S_GnomeFlaxPower(String ex) {
+        //super(ex);
+    }
     
     public void init(String params) {
         start_time = -1L;

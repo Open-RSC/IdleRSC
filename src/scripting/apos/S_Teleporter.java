@@ -8,9 +8,9 @@ public final class S_Teleporter extends Script {
 
     private int spell_id;
 
-//    public S_Teleporter(Extension ex) {
-//        super(ex);
-//    }
+    public S_Teleporter(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

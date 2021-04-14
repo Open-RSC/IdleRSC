@@ -11,9 +11,9 @@ public final class S_VialFiller extends Script {
     private long start_time;
     private int banked_count;
 
-//    public S_VialFiller(Extension ex) {
-//        super(ex);
-//    }
+    public S_VialFiller(String ex) {
+        //super(ex);
+    }
     
     @Override
     public void init(String params) {

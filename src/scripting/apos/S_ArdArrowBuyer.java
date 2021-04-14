@@ -10,10 +10,10 @@ public final class S_ArdArrowBuyer extends Script {
 	private long menu_time;
 	private long shop_time;
 
-//	public S_ArdArrowBuyer(Extension ex)
-//	{
-//		super(ex);
-//	}
+	public S_ArdArrowBuyer(String ex)
+	{
+		//super(ex);
+	}
 
 	@Override
 	public void init(String params)

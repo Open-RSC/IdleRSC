@@ -58,10 +58,10 @@ public final class S_DummyTrainer extends Script {
 	private int withdrawn_count;
 	private boolean has_withdrawn;
 
-//	public S_DummyTrainer(Extension ex)
-//	{
-//		super(ex);
-//	}
+	public S_DummyTrainer(String ex)
+	{
+		//super(ex);
+	}
 
 	@Override
 	public void init(String params)

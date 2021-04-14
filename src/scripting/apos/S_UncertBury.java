@@ -37,9 +37,9 @@ public final class S_UncertBury extends Script {
     
     private final DecimalFormat iformat = new DecimalFormat("#,##0");
 
-//    public S_UncertBury(Extension ex) {
-//        super(ex);
-//    }
+    public S_UncertBury(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

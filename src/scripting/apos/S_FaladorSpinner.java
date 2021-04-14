@@ -22,10 +22,10 @@ public final class S_FaladorSpinner extends Script {
     private long lvl_time;
 
     private int spun_count;
-//
-//    public S_FaladorSpinner(Extension ex) {
-//        super(ex);
-//    }
+
+    public S_FaladorSpinner(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

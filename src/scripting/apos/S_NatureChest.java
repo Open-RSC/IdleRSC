@@ -8,9 +8,9 @@ public final class S_NatureChest extends Script {
     private long move_time;
     private long fake_attempt;
 
-//    public S_NatureChest(Extension ex) {
-//        super(ex);
-//    }
+    public S_NatureChest(String ex) {
+        //super(ex);
+    }
 
     @Override
     public void init(String params) {

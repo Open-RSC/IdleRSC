@@ -262,8 +262,9 @@ public class Main {
                     				}
                     			}
                     		}
-	                    	((compatibility.apos.Script) currentRunningScript).setController(controller);
+	                    	
 	                    	if(!aposInitCalled) {
+	                    		((compatibility.apos.Script) currentRunningScript).setController(controller);
 	                    		((compatibility.apos.Script) currentRunningScript).init(params);
 	                    		aposInitCalled = true;
 	                    	}

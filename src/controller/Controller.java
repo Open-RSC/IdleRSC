@@ -3964,5 +3964,26 @@ public class Controller {
 			return "";
 		}
 	}
+	
+	public int getSpellsCount() {
+		int result = 0;
+		try {
+			for(; result < 999; result++) EntityHandler.getSpellDef(result).getName();
+			return result;
+		}
+		catch(Exception e) {
+			return result;
+		}
+	}
+	
+	public String[] getSpellNames() {
+		int spellsCount = getSpellsCount();
+		String[] result = new String[spellsCount];
+		
+		for(int i = 0; i < spellsCount; i++)
+			result[i] = EntityHandler.getSpellDef(i).getName();
+		
+		return result;
+	}
 }
  

@@ -1,3 +1,51 @@
 Completely broken:
 	GnomeAgilityApos: fails to click net?
 	Abyte0_Nature: thieves OK for a while then breaks after 2 nats. not sure if this ever worked.
+
+The below scripts were removed because they have dependencies which are not implemented in IdleRSC:
+	JSONgui
+	JSON_Fighter
+	
+The below scripts were removed because they use pathwalker:
+	J_Quester.java (3 matches)
+	PathWalker_Wild.java (4 matches)
+	PathWalker.java (4 matches)
+	PW_SAF_MossFatigue.java (5 matches)
+	PW_SAF_Wolf.java (5 matches)
+	PW_sS_EdgevilleDruids.java (3 matches)
+	PWStormyTanner.java (4 matches)
+	S_AmuletSmelter.java (4 matches)
+	S_ArdBuyVials.java (4 matches)
+	S_ArdMinePickup.java (4 matches)
+	S_ArdougneShearer.java (4 matches)
+	S_Barbarian.java (6 matches)
+	S_Catherby.java (6 matches)
+	S_CatherbyBNet.java (6 matches)
+	S_CrystalKeyChest.java (10 matches)
+	S_EdgevilleDruids.java (3 matches)
+	S_EdgevilleGiants.java (6 matches)
+	S_Fatigue.java (6 matches)
+	S_FatigueCrandor.java (6 matches)
+	S_FirePower.java (3 matches)
+	S_FishingTrawler.java (5 matches)
+	S_GnomeFlax.java (4 matches)
+	S_HerblawShop.java (6 matches)
+	S_HeroesBlueDragon.java (5 matches)
+	S_KBDKiller.java (4 matches)
+	S_KBDLooter.java (4 matches)
+	S_Miner.java (8 matches)
+	S_OgreFatigue.java (4 matches)
+	S_OgreFatigueBones.java (4 matches)
+	S_Pickpocket.java (5 matches)
+	S_RedDragons.java (3 matches)
+	S_ShieldCollector.java (3 matches)
+	S_Shilo.java (6 matches)
+	S_Smelter.java (4 matches)
+	S_SymbolSmelter.java (4 matches)
+	S_Tanner.java (4 matches)
+	S_TavBlackDemons.java (5 matches)
+	S_TavBlueDragons.java (5 matches)
+	S_TavChaosDruids.java (8 matches)
+	S_TreeFletch.java (10 matches)
+	S_WineMaker.java (4 matches)
+	SAF_Fally_DnD.java (7 matches)

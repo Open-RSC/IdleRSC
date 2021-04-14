@@ -52,12 +52,12 @@ public abstract class Script implements IScript {
 	/**
 	 * An array of all the skill names.
 	 */
-	//public static final String[] SKILL = StaticAccess.get().getSkillNames();
+	public static String[] SKILL = new String[] {""};
 
 	/**
 	 * An array of all the spell names.
 	 */
-	//public static final String[] SPELL = StaticAccess.get().getSpellNames();
+	public static String[] SPELL = new String[] {""};
 
 	/**
 	 * An array containing: "Controlled", "Strength", "Attack", "Defence"
@@ -106,6 +106,9 @@ public abstract class Script implements IScript {
 	 */
 	public void setController(Controller _controller) {
 		controller = _controller;
+		SKILL = controller.getSkillNamesLong();
+		SPELL = controller.getSpellNames();
+		
 	}
 	
 	/**

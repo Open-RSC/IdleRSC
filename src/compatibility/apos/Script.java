@@ -974,7 +974,7 @@ public abstract class Script implements IScript {
 						if(dist < max_dist) {
 							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
 							finalNpc[1] = coords[0];
-							finalNpc[2] = coords[2];
+							finalNpc[2] = coords[1];
 						}
 					}
 				}
@@ -1047,7 +1047,7 @@ public abstract class Script implements IScript {
 						if(dist < max_dist) {
 							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
 							finalNpc[1] = coords[0];
-							finalNpc[2] = coords[2];
+							finalNpc[2] = coords[1];
 						}
 					}
 				}
@@ -2475,7 +2475,7 @@ public abstract class Script implements IScript {
 	}
 
 	public int getInventoryId(int slot) {
-		return this.getInventoryId(slot);
+		return controller.getInventorySlotItemId(slot);
 	}
 
 	public int getInventoryStack(int slot) {

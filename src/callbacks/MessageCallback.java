@@ -63,12 +63,12 @@ public class MessageCallback {
                 } else if (type == MessageType.TRADE) {
                     ((IdleScript) Main.getCurrentRunningScript()).tradeMessageInterrupt(message);
                 }
-            } else if (Main.getCurrentRunningScript() instanceof Script) {
+            } else if (Main.getCurrentRunningScript() instanceof compatibility.sbot.Script) {
                 if (type == MessageType.GAME) {
-                    ((Script) Main.getCurrentRunningScript()).ServerMessage(message);
+                    ((compatibility.sbot.Script) Main.getCurrentRunningScript()).ServerMessage(message);
                     sbotLastServerMessage = message;
                 } else if (type == MessageType.CHAT) {
-                    ((Script) Main.getCurrentRunningScript()).ChatMessage(sender + ": " + message);
+                    ((compatibility.sbot.Script) Main.getCurrentRunningScript()).ChatMessage(sender + ": " + message);
 
                     sbotLastChatter = (int)(System.currentTimeMillis() / 1000L); //2038 problem, but that's what you get for using sbot scripts in 2038.
                     sbotLastChatMessage = message;
@@ -78,6 +78,20 @@ public class MessageCallback {
                     sbotLastNPCMessage = message;
                 }
                 //TODO: Implement trade for SBot per SBot's contract functions.
+            } else if(Main.getCurrentRunningScript() instanceof compatibility.apos.Script) {
+            	if (type == MessageType.GAME) {
+                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
+                } else if (type == MessageType.CHAT) {
+                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onChatMessage(message, sender, false, false);
+                } else if (type == MessageType.QUEST) {
+                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
+                } 
+//                else if (type == MessageType.TRADE) { //todo
+//                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).tradeMessageInterrupt(message);
+//                } 
+//                else if(type == MessageType.PRIVATE_RECIEVE) { // TODO
+//                	((compatibility.apos.Script) Main.getCurrentRunningScript()).onPrivateMessage(message, sender, false, false);
+//                }
             }
         }
     }

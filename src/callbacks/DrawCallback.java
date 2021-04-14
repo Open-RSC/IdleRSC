@@ -110,6 +110,9 @@ public class DrawCallback {
         if(c != null && c.getShowBotPaint() == true && c.isRunning() && Main.getCurrentRunningScript() != null) {
             if(Main.getCurrentRunningScript() instanceof IdleScript) {
                 ((IdleScript)Main.getCurrentRunningScript()).paintInterrupt();
+            } else if(Main.getCurrentRunningScript() instanceof compatibility.apos.Script) {
+            	if(((compatibility.apos.Script)Main.getCurrentRunningScript()).isControllerSet())
+            		((compatibility.apos.Script)Main.getCurrentRunningScript()).paint();
             }
         }
     }

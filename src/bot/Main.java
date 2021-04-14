@@ -71,6 +71,8 @@ public class Main {
     private final static String nativeScriptPath = "bin/scripting/idlescript";
     private final static String sbotScriptPath = "bin/scripting/sbot";
     private final static String aposScriptPath = "bin/scripting/apos";
+    
+    private static boolean aposInitCalled = false;
 
     /**
      * Used by the WindowListener for tracking the log window.
@@ -261,7 +263,10 @@ public class Main {
                     			}
                     		}
 	                    	((compatibility.apos.Script) currentRunningScript).setController(controller);
-	                    	((compatibility.apos.Script) currentRunningScript).init(params); 
+	                    	if(!aposInitCalled) {
+	                    		((compatibility.apos.Script) currentRunningScript).init(params);
+	                    		aposInitCalled = true;
+	                    	}
 	                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main();
 	                    	Thread.sleep(sleepAmount);
                     	} else {
@@ -271,6 +276,7 @@ public class Main {
                 }
 
             } else {
+            	aposInitCalled = false;
             	Thread.sleep(100);
             }
         }

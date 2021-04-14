@@ -2955,4 +2955,8 @@ public abstract class Script implements IScript {
 		
 		return controller.getPlayers().get(local_index).serverIndex;
 	}
+	
+	public boolean isControllerSet() {
+		return controller != null;
+	}
 }

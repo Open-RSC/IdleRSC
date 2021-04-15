@@ -1,8 +1,10 @@
 package scripting.apos;
-import compatibility.apos.Script;
+
 import java.util.Locale;
 
 import javax.swing.JOptionPane;
+
+import compatibility.apos.Script;
 
 public final class S_EdgevilleDruids extends Script {
     
@@ -46,11 +48,11 @@ public final class S_EdgevilleDruids extends Script {
         int result = JOptionPane.showConfirmDialog(null, "Pick up low leveled herbs?");
         if (result == JOptionPane.YES_OPTION) {
             pickup = new int[] {
-                165, 435, 436, 437, 438, 439, 440, 441, 442, 443, 469, 464, 466, 270, 40, 42, 526, 527, 1277, 1276
+                165, 435, 436, 437, 438, 439, 440, 441, 442, 443, 469, 464, 466, 270, 40, 42
             };
         } else {
             pickup = new int[] {
-                438, 439, 440, 441, 442, 443, 466, 40, 42, 165, 435, 436, 437, 469, 464, 270, 526, 527, 1277, 1276
+                438, 439, 440, 441, 442, 443, 466, 40, 42
             };
         }
         cur_tile = 0;
@@ -70,11 +72,11 @@ public final class S_EdgevilleDruids extends Script {
         }
         
         if (walking) {
-            if (isAtApproxCoords(217, 3243, 4)) {
+            if (isAtApproxCoords(212, 3254, 4)) {
                 walking = false;
                 return random(600, 800);
             }
-            walkTo(217 + random(-2, 2), 3243 + random(-2, 2));
+            walkTo(212 + random(-2, 2), 3254 + random(-2, 2));
             return random(800, 1200);
         }
         
@@ -198,7 +200,7 @@ public final class S_EdgevilleDruids extends Script {
                 attackNpc(npc[0]);
                 return random(1000, 1500);
             }
-            walkTo(217 + random(-2, 2), 3243 + random(-2, 2));
+            walkTo(212 + random(-2, 2), 3254 + random(-2, 2));
             return random(600, 800);
         }
         if (inCombat()) {
@@ -210,12 +212,12 @@ public final class S_EdgevilleDruids extends Script {
                 atObject(196, 3266);
                 return random(2000, 3000);
             }
-            if (getY() < 3240) {
-                walkTo(217, 3243);
+            if (getY() < 3250) {
+                walkTo(212, 3254);
                 return random(900, 1200);
             }
-            if (getX() > 219) {
-                walkTo(217, 3243);
+            if (getX() > 210) {
+                walkTo(210, 3253);
                 return random(900, 1200);
             }
             walkTo(197, 3265);

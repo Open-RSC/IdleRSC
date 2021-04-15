@@ -528,6 +528,7 @@ public class Main {
 					
 
 					//currentRunningScript = (compatibility.apos.Script) clazz.newInstance();
+					compatibility.apos.Script.setController(controller);
 					currentRunningScript = (compatibility.apos.Script) clazz.getDeclaredConstructor(String.class).newInstance("");
 				}
 			}
@@ -838,5 +839,9 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Stop the current script first.");
         }
     }
+//    
+//    public static boolean wasAposInitCalled() {
+//    	return aposInitCalled;
+//    }
 
 }

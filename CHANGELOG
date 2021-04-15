@@ -1,3 +1,33 @@
+APR 15 2021
+	New scripts:
+		Follow -- follows the username specified in command line args
+		Ledger -- does yanille ledge. Not death safe for the most part. Will withdraw food from bank if you fail. Start in Yanille dungeon.
+		
+	New IdleScript API calls:
+		getBlockingNpcServerIndex(int npcId) -- returns the server index of the specified NPC id, if it is blocking the bot from proceeding. (Not perfect yet, but better than nothing. Good script optimization.)
+		getNpcAtCoords(int x, int y) -- returns the server index of whatever NPC is currently on that tile. Good for preventing NPCs from blocking.
+		
+		
+		 
+	APOS conversions:
+		APOS constructors are now called at the correct time. This should fix several scripts. 
+		
+		S_EdgevilleDruids confirmed working
+		
+		S_Barbarian now works
+		S_Certer now works
+		S_EdgeGiants now works
+		
+		J_Quester confirmed broken
+		
+		YanilleLedge removed, crappy script, replaced by Ledger
+		
+	API Bugfixes:
+		walkPathReverse() will now actually walk the very last tile.
+		getGroundItemsX() and getGroundItemsY() now return coordinates with appropriate offsets.
+		
+	
+
 APR 14 2021
 	**APOS compatibility layer implemented!**
 	

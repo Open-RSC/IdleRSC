@@ -104,7 +104,7 @@ public abstract class Script implements IScript {
 	 *  
 	 * @param _controller
 	 */
-	public void setController(Controller _controller) {
+	public static void setController(Controller _controller) {
 		controller = _controller;
 		SKILL = controller.getSkillNamesLong();
 		SPELL = controller.getSpellNames();

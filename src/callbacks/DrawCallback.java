@@ -111,8 +111,13 @@ public class DrawCallback {
             if(Main.getCurrentRunningScript() instanceof IdleScript) {
                 ((IdleScript)Main.getCurrentRunningScript()).paintInterrupt();
             } else if(Main.getCurrentRunningScript() instanceof compatibility.apos.Script) {
-            	if(((compatibility.apos.Script)Main.getCurrentRunningScript()).isControllerSet())
-            		((compatibility.apos.Script)Main.getCurrentRunningScript()).paint();
+//            	if(((compatibility.apos.Script)Main.getCurrentRunningScript()).isControllerSet()) {
+            		try {
+            			((compatibility.apos.Script)Main.getCurrentRunningScript()).paint();
+            		} catch(Exception e) {
+            			//catch paint exceptions caused by a lot of apos scripts
+            		}
+//            	}
             }
         }
     }

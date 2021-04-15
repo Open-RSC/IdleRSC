@@ -81,19 +81,21 @@ public class MessageCallback {
 //                    ((compatibility.sbot.Script) Main.getCurrentRunningScript()).TradeRequest(message.split(" ")[0]); //needs to be converted to player pid
 //                } 
             } else if(Main.getCurrentRunningScript() instanceof compatibility.apos.Script) {
-            	if (type == MessageType.GAME) {
-                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
-                } else if (type == MessageType.CHAT) {
-                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onChatMessage(message, sender, false, false);
-                } else if (type == MessageType.QUEST) {
-                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
-                } 
-                else if (type == MessageType.TRADE) { //UNTESTED
-                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onTradeRequest(message.split(" ")[0]);
-                } 
-                else if(type == MessageType.PRIVATE_RECIEVE) { // UNTESTED
-                	((compatibility.apos.Script) Main.getCurrentRunningScript()).onPrivateMessage(message, sender, false, false);
-                }
+//            	if(((compatibility.apos.Script)Main.getCurrentRunningScript()).isControllerSet()) {
+	            	if (type == MessageType.GAME) {
+	                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
+	                } else if (type == MessageType.CHAT) {
+	                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onChatMessage(message, sender, false, false);
+	                } else if (type == MessageType.QUEST) {
+	                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
+	                } 
+	                else if (type == MessageType.TRADE) { //UNTESTED
+	                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onTradeRequest(message.split(" ")[0]);
+	                } 
+	                else if(type == MessageType.PRIVATE_RECIEVE) { // UNTESTED
+	                	((compatibility.apos.Script) Main.getCurrentRunningScript()).onPrivateMessage(message, sender, false, false);
+	                }
+//            	}
             }
         }
     }

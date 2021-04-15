@@ -11,7 +11,7 @@ public class AlchWheat extends IdleScript {
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	int success = 0;
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		controller.displayMessage("@red@Start near wheat with fires and nats!");
 		while(controller.isRunning()) {
 			controller.sleepHandler(98, true);
@@ -35,6 +35,8 @@ public class AlchWheat extends IdleScript {
 				controller.sleep(618);
 			}
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
     @Override

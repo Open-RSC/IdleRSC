@@ -7,7 +7,7 @@ public class VialCrafter extends IdleScript {
 	Boolean stopped = false;
 	Integer coords[] = {0,0};
 	
-	public void start(String param[]) {
+	public int start(String param[]) {
 		vials = controller.getInventoryItemCount(465);
 		//Check for required levels
 		if (controller.getBaseStat(controller.getStatId("Harvesting")) < 23 || controller.getBaseStat(controller.getStatId("Crafting")) < 33 && controller.isRunning()) {
@@ -67,6 +67,8 @@ public class VialCrafter extends IdleScript {
 		if (buckets > 0) {
 			quit(1);
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}	
 	
 	public void fillBuckets() {

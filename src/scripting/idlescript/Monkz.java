@@ -13,7 +13,7 @@ public class Monkz extends IdleScript {
 	int prayerId = -1;
 	
 
-    public void start(String parameters[]) {
+    public int start(String parameters[]) {
     	
     	if(parameters.length != 3) {
     		controller.displayMessage("@red@Script args: fightmode doburybones prayerid");
@@ -37,6 +37,8 @@ public class Monkz extends IdleScript {
         	attack();
         	controller.sleep(1000);
         }
+        
+        return 1000; //start() must return a int value now. 
     }
 
     public void pray() {

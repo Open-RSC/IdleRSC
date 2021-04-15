@@ -46,7 +46,7 @@ public class GetMeToArdougne extends IdleScript {
 	
 	boolean walkedToShip = false;
 	boolean inKaramja = false;
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		controller.displayMessage("@red@GetMeToArdougne by Dvorak. Start in Lumbridge!");
 		controller.displayMessage("@yel@WARNING: @red@Script is not death safe.");
 		
@@ -147,6 +147,8 @@ public class GetMeToArdougne extends IdleScript {
 			}
 			
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
     @Override

@@ -24,7 +24,7 @@ public class PotionMaker extends IdleScript{
 	//Ingredients: Full Vial, Clean Herb, Secondary, Empty Vial, Unid Herb, Unfinished Potion
 	Integer ingredients[] = {464,0,0,465,0,0};
 	
-	public void start(String param[]) {
+	public int start(String param[]) {
 		if (!guiSetup) {
 			controller.setStatus("@cya@Setting up script");
 			setup();
@@ -33,6 +33,8 @@ public class PotionMaker extends IdleScript{
 		while (controller.isRunning() && setupCompleted) {
 			run();
 		}		
+		
+		return 1000; //start() must return a int value now. 
 	}
 	public void setup() {
 		JLabel potionLabel = new JLabel("Select Potion/Secondary");

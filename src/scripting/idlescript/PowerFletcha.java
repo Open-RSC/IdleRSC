@@ -74,7 +74,7 @@ public class PowerFletcha extends IdleScript {
 	}};
 	
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if(!guiSetup) {
     		setupGUI();
     		guiSetup = true;
@@ -84,6 +84,8 @@ public class PowerFletcha extends IdleScript {
     		scriptStart();
     		controller.setStatus("@yel@Waiting for start...");
     	}
+    	
+    	return 1000; //start() must return a int value now. 
 	}
 	
 	public void scriptStart() {

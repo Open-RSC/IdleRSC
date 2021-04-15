@@ -270,7 +270,7 @@ public class AIOSmelter extends IdleScript {
 
 	Map<Integer, Integer> ingredients = null;
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if(scriptStarted) { 
 			scriptStart();
 		} else {
@@ -319,6 +319,8 @@ public class AIOSmelter extends IdleScript {
 				
 			}
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

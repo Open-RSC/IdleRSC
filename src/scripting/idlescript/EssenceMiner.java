@@ -28,11 +28,13 @@ public class EssenceMiner extends IdleScript {
 
 	int[] pickaxes = { 12, 87, 88, 203, 204, 405, 1263 };
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 			controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
 		while (controller.isRunning()) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void startWalking(int x, int y) {

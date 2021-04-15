@@ -238,8 +238,8 @@ public class Controller {
 
 			ItemDef itemDef = EntityHandler.getItemDef(groundItemID, groundItemNoted);
 			GroundItemDef groundItemDef = new GroundItemDef(itemDef);
-			groundItemDef.setX(this.offsetX(groundItemXI));
-			groundItemDef.setZ(this.offsetZ(groundItemZI));
+			groundItemDef.setX(groundItemXI);
+			groundItemDef.setZ(groundItemZI);
 			groundItemDef.setAmount(this.getGroundItemAmount(groundItemDef.getID(), groundItemDef.getX(), groundItemDef.getZ()));
 			groundItemDef.setDistance(this.getDistanceFromLocalPlayer(groundItemDef.getX(), groundItemDef.getZ()));
 
@@ -341,8 +341,8 @@ public class Controller {
 
 		for(int i = 0; i < groundItemCount; i++) {
 			int groundItemId = groundItemIds[i];
-			int groundItemX = this.offsetX(groundItemsX[i]);
-			int groundItemZ = this.offsetZ(groundItemsZ[i]);
+			int groundItemX = groundItemsX[i];
+			int groundItemZ = groundItemsZ[i];
 
 			if(groundItemId == itemId && groundItemX == x && groundItemZ == y) {
 				groundItemAmount++;
@@ -1301,8 +1301,8 @@ public class Controller {
 
 		for(int i = 0; i < groundItemCount; i++) {
 			if(groundItemID[i] == itemId) {
-				if(groundItemX[i] + mud.getMidRegionBaseX() == x
-				&& groundItemZ[i] + mud.getMidRegionBaseZ() == y) {
+				if(groundItemX[i] == x
+				&& groundItemZ[i] == y) {
 					return true;
 				}
 			}
@@ -1330,7 +1330,7 @@ public class Controller {
 
 		for(int i = 0; i < groundItemCount; i++) {
 			if(itemId == groundItemID[i]) {
-				int result = distance(groundItemX[i] + mud.getMidRegionBaseX(), groundItemZ[i] + mud.getMidRegionBaseZ(), botX, botZ);
+				int result = distance(groundItemX[i], groundItemZ[i], botX, botZ);
 				if(result < closestDistance) {
 					//Main.logMethod("getnearestitem bleh", botX, botZ, groundItemX[i], groundItemZ[i], result, closestDistance);
 					closestDistance = result;

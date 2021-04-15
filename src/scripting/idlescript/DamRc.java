@@ -104,7 +104,7 @@ public class DamRc extends IdleScript {
 		}
 	}
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -112,6 +112,8 @@ public class DamRc extends IdleScript {
 		if (started) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

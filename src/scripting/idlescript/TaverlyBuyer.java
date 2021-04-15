@@ -59,7 +59,7 @@ public class TaverlyBuyer extends IdleScript {
 	
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if(!guiSetup) {
     		setupGUI();
     		guiSetup = true;
@@ -68,6 +68,8 @@ public class TaverlyBuyer extends IdleScript {
     	if(scriptStarted) {
     		scriptStart();
     	}
+    	
+    	return 1000; //start() must return a int value now. 
 	}
 	
 	public void scriptStart() {

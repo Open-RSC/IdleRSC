@@ -29,7 +29,7 @@ public class ArrowMaker extends IdleScript {
 	int startAmount = 0;
 	JFrame scriptFrame = null;
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -40,6 +40,8 @@ public class ArrowMaker extends IdleScript {
 				scriptStart();
 			}
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

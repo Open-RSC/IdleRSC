@@ -62,7 +62,7 @@ public class HerbIdentifier extends IdleScript {
 		return controller.getCurrentStat(controller.getStatId("Herblaw")) >= lvl;
 	}
 	
-	public void start(String[] param) {
+	public int start(String[] param) {
 		
 		controller.displayMessage("@red@HerbIdentifier by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@Start in any bank with herbs in the bank!");
@@ -106,6 +106,8 @@ public class HerbIdentifier extends IdleScript {
 				}
 			}
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
     
     @Override

@@ -56,7 +56,7 @@ public class LimpySnapez extends IdleScript {
 	int limpzInBank = 0;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
-	public void start(String[] param) {
+	public int start(String[] param) {
 	
 		controller.displayMessage("@red@LimpySnapez by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@Start in Taverly with herb clippers!");
@@ -98,6 +98,8 @@ public class LimpySnapez extends IdleScript {
 			
 			controller.sleep(100);
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
 	public void walkToBank() {

@@ -77,7 +77,7 @@ public class AIOFighter extends IdleScript {
 	int spellsCasted = 0;
 
 	
-    public void start(String parameters[])
+    public int start(String parameters[])
     {
     	if(!guiSetup) {
     		setupGUI();
@@ -87,6 +87,8 @@ public class AIOFighter extends IdleScript {
     	if(scriptStarted) {
     		scriptStart();
     	}
+    	
+    	return 1000; //start() must return a int value now. 
     }
     
     public void scriptStart() {

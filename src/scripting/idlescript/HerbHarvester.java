@@ -53,7 +53,7 @@ public class HerbHarvester extends IdleScript {
 	int herbsBanked = 0;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
-	public void start(String[] param) {
+	public int start(String[] param) {
 		controller.displayMessage("@red@HerbHarvester by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@Start in Taverly with herb clippers!");
 		controller.quitIfAuthentic();
@@ -82,6 +82,8 @@ public class HerbHarvester extends IdleScript {
 			
 			controller.sleep(100);
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
 	public void walkToBank() {

@@ -10,7 +10,7 @@ public class HarvesterTrainer extends IdleScript {
 	int harvested = 0;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		controller.displayMessage("@red@HarvesterTrainer by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@If less than 85 harvesting, start in Draynor/Lumbridge field.");
 		controller.displayMessage("@red@If >85 harvesting, start in Ardougne field.");
@@ -46,6 +46,8 @@ public class HarvesterTrainer extends IdleScript {
 			
 			controller.sleep(100);
 		}
+		
+		return 1000; //start() must return a int value now. 
 		
 	}
 	

@@ -28,7 +28,7 @@ public class VialFiller extends IdleScript {
 	
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		controller.displayMessage("@red@VialFiller by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@Start in Falador West bank!");
 		
@@ -44,6 +44,8 @@ public class VialFiller extends IdleScript {
 				openDoor();
 			}
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
 	public void openDoor() {

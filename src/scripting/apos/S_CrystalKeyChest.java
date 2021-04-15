@@ -8,7 +8,7 @@ public final class S_CrystalKeyChest extends Script {
     // banks in Catherby
     
 
-    private static final int WITHDRAW_COUNT = 30;
+    private static final int WITHDRAW_COUNT = 5;
     
     private static final class ChestItem {
         

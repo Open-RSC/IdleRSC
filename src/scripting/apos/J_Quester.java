@@ -212,7 +212,7 @@ public class J_Quester extends Script
                 if (questMenuOptions()[0].contains("I want to come through this gate")) {
                     answer(0);
                 }
-                if (questMenuOptions()[1].contains("Looks can be deceiving") || questMenuOptions()[1].contains("I'm doing Alfred Grimhand's barcrawl")) {
+                if (questMenuCount() >= 2 && questMenuOptions()[1].contains("Looks can be deceiving") || questMenuOptions()[1].contains("I'm doing Alfred Grimhand's barcrawl")) {
                     answer(1);
                     if (isAtApproxCoords(fally_doors.x, fally_doors.y, 15)) {
                         fally_card = true;
@@ -222,7 +222,7 @@ public class J_Quester extends Script
                     }
 
                 }
-                if (questMenuOptions()[2].contains("I'm doing Alfred Grimhand's barcrawl")) {
+                if (questMenuCount() >= 3 && questMenuOptions()[2].contains("I'm doing Alfred Grimhand's barcrawl")) {
                     seers_card = true;
                     if (isAtApproxCoords(ps_doors.x, ps_doors.y, 8)) {
                         ps_card = true;
@@ -232,7 +232,7 @@ public class J_Quester extends Script
                     }
                     answer(2);
                 }
-                if (questMenuOptions()[3].contains("I'm doing Alfred Grimhand's barcrawl")) {
+                if (questMenuCount() >= 4 && questMenuOptions()[3].contains("I'm doing Alfred Grimhand's barcrawl")) {
                     brim_card = true;
                     if ( isAtApproxCoords(v1_doors.x, v1_doors.y, 6)) {
                         v1_card = true;

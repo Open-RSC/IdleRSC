@@ -808,6 +808,8 @@ public final class S_Certer extends Script
     }
     
     private String getItemsCerted() {
+    	if(item == null) return "";
+    	
         if (uncert) {
             return String.format("Uncerted: %d/%d %s (%d%%)", items_certed, total_items, getItemNameId(item.getCertId()), getPercent(items_certed, total_items)); 
         } else {

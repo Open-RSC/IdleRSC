@@ -290,7 +290,13 @@ public class Controller {
 	 * @return int[] -- no guarantee on nullability.
 	 */
 	public int[] getGroundItemsX() {
-		return (int[]) reflector.getObjectMember(mud, "groundItemX");
+		int[] xs = (int[]) reflector.getObjectMember(mud, "groundItemX");
+		int[] tmp = new int[xs.length];
+		
+		for(int i = 0; i < xs.length; i++)
+			tmp[i] = this.offsetX(xs[i]);
+			
+		return tmp;
 	}
 
 	/**
@@ -299,7 +305,13 @@ public class Controller {
 	 * @return int[] -- no guarantee on nullability.
 	 */
 	public int[] getGroundItemsY() {
-		return (int[]) reflector.getObjectMember(mud, "groundItemZ");
+		int[] ys = (int[]) reflector.getObjectMember(mud, "groundItemZ");
+		int[] tmp = new int[ys.length];
+		
+		for(int i = 0; i < ys.length; i++)
+			tmp[i] = this.offsetZ(ys[i]);
+			
+		return tmp;
 	}
 
 	/**
@@ -356,6 +368,9 @@ public class Controller {
 	 * @return ORSCharacter -- no guarantee on nullability.
 	 */
 	public ORSCharacter getPlayer(int serverIndex) {
+		if(serverIndex < 0)
+			return null;
+		
 		return mud.getPlayer(serverIndex);
 	}
 
@@ -3467,7 +3482,7 @@ public class Controller {
 	 * @param path -- length must be divisible by 2.
 	 */
 	public void walkPathReverse(int[] path) {
-		for(int i = path.length - 2; i > 0; i -= 2) {
+		for(int i = path.length - 2; i >= 0; i -= 2) {
 			while((currentX() != path[i] || currentY() != path[i+1]) && Main.isRunning()) {
 				walkTo(path[i], path[i+1]);
 				sleep(618);
@@ -4137,12 +4152,82 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
-/**
-sendPrivateMessage
-addFriend
-removeFriend
-addIgnore
-removeIgnore
- */
+	
+	/**
+	 * Returns the server index of the NPC which is currently blocking you. Useful for scripts where an NPC blocking you is bad. Only works if your character is facing the NPC directly.
+	 * 
+	 * @param npcId -- necessary because you don't want to accidentally attack the wrong npc.
+	 * @return the NPC's server index. returns -1 on no NPC blocking.
+	 */
+	public int getBlockingNpcServerIndex(int npcId) {
+		ORSCharacterDirection dir = this.getCharacterDirection(this.getPlayer());
+		int x = 0, y = 0;
+		
+		if(this.isInCombat())
+			return -1;
+		
+		switch(dir) {
+		case NORTH:
+			y = -1;
+			break;
+		case NORTH_EAST:
+			x = -1;
+			y = -1;
+			break;
+		case EAST:
+			x = -1;
+			break;
+		case SOUTH_EAST:
+			x = -1;
+			y = 1;
+			break;
+		case SOUTH:
+			y = 1;
+			break;
+		case SOUTH_WEST:
+			x = 1;
+			y = 1;
+			break;
+		case WEST:
+			x = 1;
+			break;
+		case NORTH_WEST:
+			x = 1;
+			y = -1;
+			break;
+		}
+		
+		for(ORSCharacter npc : this.getNpcs()) {
+			if(npc.npcId == npcId) {
+				if(this.getNpcCoordsByServerIndex(npc.serverIndex)[0] == (this.currentX() + x)
+				&& this.getNpcCoordsByServerIndex(npc.serverIndex)[1] == (this.currentY() + y))
+					return npc.serverIndex;
+//				if(npc.currentX == (mud.getLocalPlayerX() + x)
+//				&& npc.currentZ == (mud.getLocalPlayerZ() + y))
+//					return npc.serverIndex;
+			}
+		}
+		
+		return -1;
+		
+	}
+	
+	/**
+	 * Returns the NPC object of the NPC at the specified coordinates. If there is no NPC at those coordinates, it returns nothing.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public ORSCharacter getNpcAtCoords(int x, int y) {
+		int[] coords = new int[] {x, y};
+		for(ORSCharacter npc : this.getNpcs()) {
+			if(this.getNpcCoordsByServerIndex(npc.serverIndex)[0] == x
+			&& this.getNpcCoordsByServerIndex(npc.serverIndex)[1] == y) {
+				return npc;
+			}
+		}
+	
+		return null;
+	}
 }
  

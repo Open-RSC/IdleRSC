@@ -34,6 +34,7 @@ import javax.swing.BoxLayout;
  * 105+ combat highly recommended
  * @author Storm
  */
+//370 3355
 public final class S_TavBlueDragons extends Script
     implements ActionListener {
     
@@ -45,7 +46,7 @@ public final class S_TavBlueDragons extends Script
     food_count = 2,
     ppot_count = 3,
     food_id = 546, /* shark */
-    sleep_at_bank = 20,
+    sleep_at_bank = 20, //TODO: modified by dvorak for testing, change back!!!!
     min_bank_hp = 80,
     min_bank_pray = 50,
     min_att = 99,
@@ -134,13 +135,13 @@ public final class S_TavBlueDragons extends Script
     private static final Point[] dung_path = {
         new Point(367, 3358), new Point(366, 3357),
         new Point(361, 3356), new Point(356, 3354), new Point(355, 3353),
-        new Point(354, 3353), new Point(351, 3354), new Point(350, 3359),
+        new Point(354, 3353), new Point(351, 3354), new Point(350, 3358),
         new Point(348, 3364), new Point(348, 3369), new Point(350, 3374),
         new Point(349, 3375), new Point(347, 3376), new Point(342, 3376),
         new Point(342, 3371), new Point(342, 3366), new Point(338, 3367),
-        new Point(337, 3370), new Point(336, 3372), new Point(332, 3371),
+        new Point(337, 3370), new Point(335, 3372), new Point(332, 3371),
         new Point(331, 3366), new Point(332, 3364), new Point(333, 3363),
-        new Point(338, 3360), new Point(340, 3355), new Point(342, 3350),
+        new Point(338, 3361), new Point(340, 3355), new Point(342, 3350),
         new Point(344, 3345), new Point(345, 3341), new Point(349, 3338),
         new Point(349, 3333), new Point(349, 3328), new Point(350, 3323),
         new Point(355, 3321), new Point(360, 3321), new Point(365, 3321),
@@ -571,10 +572,10 @@ public final class S_TavBlueDragons extends Script
             return random(1000, 2000);
         }
         
-        if (getY() == MEMB_GATE_WALK_Y) {
+        if (getY() == MEMB_GATE_WALK_Y || getY() == MEMB_GATE_WALK_Y - 1) {
             if (getX() == MEMB_GATE_WALK_X_E) {
                 atObject(MEMB_GATE_X, MEMB_GATE_Y);
-                return random(1000, 2000);
+                return random(1000, 2000); 
             } else if (getX() == MEMB_GATE_WALK_X_W) {
                 pw.setPath(gate_to_ladder);
             }

@@ -2888,7 +2888,7 @@ public abstract class Script implements IScript {
 	}
 	
 	private int getPlayerServerIndexFromLocalIndex(int local_index) {
-		if(local_index >= controller.getNpcCount())
+		if(local_index >= controller.getPlayerCount())
 			return -1;
 		
 		return controller.getPlayers().get(local_index).serverIndex;

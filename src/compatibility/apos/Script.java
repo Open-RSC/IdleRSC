@@ -1440,15 +1440,22 @@ public abstract class Script implements IScript {
 	 *		 will contain the object's id, X, Y.
 	 */
 	public int[] getObjectById(int... ids) {
+		int[] closest = new int[] {-1, -1, -1};
+		int distance = Integer.MAX_VALUE;
+		
 		for(int id : ids) {
 			int[] coords = controller.getNearestObjectById(id);
 			
 			if(coords != null) {
-				return new int[] {id, coords[0], coords[1]};
+				
+				if(controller.getDistanceFromLocalPlayer(coords[0], coords[1]) < distance) {
+					distance = controller.getDistanceFromLocalPlayer(coords[0], coords[1]);
+					closest = new int[] {id, coords[0], coords[1]};
+				}
 			}
 		}
 		
-		return new int[] {-1, -1, -1};
+		return closest;
 	}
 
 	public int getObjectCount() {

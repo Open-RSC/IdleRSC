@@ -41,7 +41,7 @@ public class MiningGuild extends IdleScript {
 	String isMining = "none";
 	Integer miningLevel;	
 	
-	public void start(String param[]) {
+	public int start(String param[]) {
 		if (!guiSetup) {
 			setup();
 			guiSetup = true;
@@ -68,6 +68,8 @@ public class MiningGuild extends IdleScript {
 			}
 			run();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	public void run() {
 		if (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5 && controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223) { 

@@ -34,7 +34,7 @@ public class SellToShop extends IdleScript {
 	JTextField shopCount = new JTextField("10");
 	JTextField vendorId = new JTextField("51,55,87,105,145,168,185,222,391,82,83,88,106,146,169,186,223");
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (controller.getInventoryItemCount(10) > 0) {
 			startCash = controller.getInventoryItemCount(10);
 		}
@@ -47,6 +47,8 @@ public class SellToShop extends IdleScript {
 		while (scriptStarted && controller.isRunning()) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void startWalking(int x, int y) {

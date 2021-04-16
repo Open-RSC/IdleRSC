@@ -13,7 +13,7 @@ public class ColeslawGuildFisher extends IdleScript {
 	int equipId = HARPOON_ID;
 	int spotId = SHARK_FISH_SPOT;
 
-	public void start(String[] parameters) {
+	public int start(String[] parameters) {
 		if (parameters.length > 0 && !parameters[0].equals("")) {
 			if (parameters[0].toLowerCase().startsWith("lobster")) {
 				controller.displayMessage("Got param " + parameters[0] + ". Fishing Lobsters!", 0);
@@ -36,12 +36,14 @@ public class ColeslawGuildFisher extends IdleScript {
 		} else {
 			controller.displayMessage("@red@Please grab either a harpoon or lobster pot, and use the parameter \"Lobster\" or \"Shark\".");
 			controller.stop();
-			return;
+			return 1000;
 		}
 		controller.displayMessage("If you want to override this, either put the parameter \"Lobster\" or \"Shark\"!", 0);
 		controller.sleep(5000);
 
 		scriptStart();
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

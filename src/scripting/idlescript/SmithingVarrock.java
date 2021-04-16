@@ -29,7 +29,7 @@ public class SmithingVarrock extends IdleScript {
 	int[] barIds = { 169, 170, 171, 173, 174, 408 };
 	int[] bankerIds = { 95, 224, 268, 485, 540, 617 };
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -38,6 +38,8 @@ public class SmithingVarrock extends IdleScript {
 		if (scriptStarted) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

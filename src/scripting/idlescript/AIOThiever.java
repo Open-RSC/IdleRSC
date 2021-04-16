@@ -98,7 +98,7 @@ public class AIOThiever extends IdleScript {
 
 	}};
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
     	if(scriptStarted) {
     		scriptStart();
     	} else {
@@ -134,6 +134,8 @@ public class AIOThiever extends IdleScript {
     			}
     		}
     	}
+    	
+    	return 1000; //start() must return a int value now. 
 	}
 	
 	public void scriptStart() {

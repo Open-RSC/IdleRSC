@@ -14,7 +14,7 @@ public class ShearSheep extends IdleScript {
 	int bankedWool = 0;
 	int a = 0;
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (a == 0) {
 			controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
 			a = 1;
@@ -24,6 +24,8 @@ public class ShearSheep extends IdleScript {
 		while (controller.isRunning()) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void startWalking(int x, int y) {

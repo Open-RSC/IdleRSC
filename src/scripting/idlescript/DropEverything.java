@@ -8,7 +8,7 @@ package scripting.idlescript;
 
 public class DropEverything extends IdleScript {
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		controller.displayMessage("@red@DropEverything by Dvorak. Let's party like it's 2018!");
 		controller.displayMessage("Dropping everything in inventory...");
 		
@@ -19,6 +19,7 @@ public class DropEverything extends IdleScript {
 		controller.displayMessage("Done.");
 		controller.stop();
 		
+		return 1000; //start() must return a int value now. 
 	}
 	
 }

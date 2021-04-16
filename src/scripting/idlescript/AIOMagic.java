@@ -74,7 +74,7 @@ public class AIOMagic extends IdleScript {
 	boolean scriptStarted = false;
 	boolean guiSetup = false;
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		
 		if(scriptStarted) {
 			scriptStart();
@@ -85,6 +85,8 @@ public class AIOMagic extends IdleScript {
 				controller.setStatus("@blu@Waiting for start..");
 			}
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
 	public void scriptStart() {

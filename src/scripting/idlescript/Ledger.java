@@ -17,7 +17,7 @@ public class Ledger extends IdleScript {
 	int failureCount = 0;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
-	public void start(String[] param) {
+	public int start(String[] param) {
 		
 		controller.displayMessage("@red@Ledger by Dvorak. Let's party like it's 2004!");
 		controller.displayMessage("@red@Start in Yanille agility dungeon with food!");
@@ -63,6 +63,8 @@ public class Ledger extends IdleScript {
 			
 			
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
 	private void bank() {

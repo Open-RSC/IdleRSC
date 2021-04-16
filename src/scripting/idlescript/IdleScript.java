@@ -49,9 +49,10 @@ public abstract class IdleScript {
 		controller = _controller;
 	}
 	
-    public void start(String parameters[])
+    public int start(String parameters[])
     {
     	System.out.println("If you see this, your script did not come with the start function.");
+    	return 0;
     }
 
 	/**

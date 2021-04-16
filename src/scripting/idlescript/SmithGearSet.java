@@ -36,7 +36,7 @@ public class SmithGearSet extends IdleScript {
 	int[][] itemType = { { 108, 117, 206, 124, 205, 76 }, { 6, 8, 9, 2, 89, 77 }, { 109, 118, 121, 129, 90, 78 },
 			{ 110, 119, 122, 130, 91, 79 }, { 111, 120, 123, 131, 92, 80 }, { 112, 401, 402, 404, 93, 81 } };
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -44,6 +44,8 @@ public class SmithGearSet extends IdleScript {
 		while (controller.isRunning() && scriptStarted) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

@@ -42,7 +42,7 @@ public class Woodcutting extends IdleScript {
 	
 	int[] axes = {12, 87, 88, 203, 204, 405, 1263};
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -51,6 +51,8 @@ public class Woodcutting extends IdleScript {
 		if (scriptStarted) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void startWalking(int x, int y) {

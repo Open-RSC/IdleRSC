@@ -13,7 +13,7 @@ public class GnomeFlaxx0r extends IdleScript {
     
     long startTimestamp = System.currentTimeMillis() / 1000L;
 
-    public void start(String parameters[]) {
+    public int start(String parameters[]) {
     	
     	if(parameters.length != 1) {
     		controller.displayMessage("@red@Put true or false in arguments. True to spin flax, false to just pick flax.");
@@ -99,6 +99,8 @@ public class GnomeFlaxx0r extends IdleScript {
                 }
             }
         }
+        
+        return 1000; //start() must return a int value now. 
     }
 
     public void openDoor() {

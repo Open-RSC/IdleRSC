@@ -8,12 +8,14 @@ package scripting.idlescript;
 public class PowercraftTalisman extends IdleScript {
 	int a = 0;
 	int totalTalismans = 0;
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (a == 0) {
 			controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
 			a = 1;
 		}
 		scriptStart();
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

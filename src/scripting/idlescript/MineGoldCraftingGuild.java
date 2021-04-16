@@ -27,7 +27,7 @@ public class MineGoldCraftingGuild extends IdleScript {
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -35,6 +35,7 @@ public class MineGoldCraftingGuild extends IdleScript {
 		while (controller.isRunning() && scriptStarted) {
 			scriptStart();
 		}
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void startWalking(int x, int y) {

@@ -36,7 +36,7 @@ public class FletchnBankBows extends IdleScript {
 	boolean stringTime = false;
 	int[] bankerIds = { 95, 224, 268, 485, 540, 617 };
 
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
@@ -45,6 +45,8 @@ public class FletchnBankBows extends IdleScript {
 		if (scriptStarted) {
 			scriptStart();
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 
 	public void scriptStart() {

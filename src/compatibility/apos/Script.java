@@ -1701,7 +1701,7 @@ public abstract class Script implements IScript {
 	 *			the number of the given item to withdraw.
 	 */
 	public void withdraw(int id, int amount) {
-		controller.withdrawItem(id, amount);
+		controller.withdrawItem_apos(id, amount);
 	}
 
 	/**

@@ -94,7 +94,7 @@ public class AIOCooker extends IdleScript {
 		add(new FoodObject("Manta Ray", 1190, 1191, 1247));
 	}};
 	
-	public void start(String parameters[]) {
+	public int start(String parameters[]) {
 		if (parameters.length < 3) {
 			if(!guiSetup) {
 				setupGUI();
@@ -119,6 +119,8 @@ public class AIOCooker extends IdleScript {
 				controller.stop();
 			}
 		}
+		
+		return 1000; //start() must return a int value now. 
 	}
 	
 	public void scriptStart() {

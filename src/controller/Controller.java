@@ -493,6 +493,8 @@ public class Controller {
 	 */
 	public void walkTo(int x, int y, int radius, boolean force) { //offset applied
 		//TODO: re-examine usage of force, can this be removed?
+		
+		
 		if(x < 0 || y < 0)
 			return;
 
@@ -1077,11 +1079,13 @@ public class Controller {
 	 */
 	public void useItemOnWall(int x, int y, int slotIndex) {
 		//you need to be close to the object for this to work.
+		
+		
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(161);
 		mud.packetHandler.getClientStream().bufferBits.putShort(x);
 		mud.packetHandler.getClientStream().bufferBits.putShort(y);
-		mud.packetHandler.getClientStream().bufferBits.putByte(0);
+		mud.packetHandler.getClientStream().bufferBits.putByte(1); //0 or 1??? not sure what the difference is here... 1 is needed for blue drags door though. not sure if 0 is needed anywhere else.
 		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
@@ -1323,8 +1327,8 @@ public class Controller {
 		int[] groundItemX = getGroundItemsX();
 		int[] groundItemZ = getGroundItemsY();
 
-		int botX = mud.getLocalPlayerX() + mud.getMidRegionBaseX();
-		int botZ = mud.getLocalPlayerX() + mud.getMidRegionBaseX();
+		int botX = currentX();
+		int botZ = currentY();
 		int closestDistance = 99999;
 		int closestItemIndex = -1;
 
@@ -1343,7 +1347,7 @@ public class Controller {
 			return null;
 		}
 
-		return new int[] {groundItemX[closestItemIndex] + mud.getMidRegionBaseX(), groundItemZ[closestItemIndex] + mud.getMidRegionBaseZ()};
+		return new int[] {groundItemX[closestItemIndex], groundItemZ[closestItemIndex]};
 	}
 
 	/**
@@ -1896,6 +1900,26 @@ public class Controller {
 
 		if(getInventoryItemCount(itemId) >= amount)
 			return true;
+		
+		if(amount <= 0)
+			return true;
+
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(22);
+		mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+		mud.packetHandler.getClientStream().bufferBits.putInt(amount);
+		
+		if(Config.S_WANT_BANK_NOTES)
+			mud.packetHandler.getClientStream().bufferBits.putByte(0);
+		
+		mud.packetHandler.getClientStream().finishPacket();
+
+		return false;
+	}
+	
+	public boolean withdrawItem_apos(int itemId, int amount) {
+		if(isInBank() == false)
+			return false;
 		
 		if(amount <= 0)
 			return true;

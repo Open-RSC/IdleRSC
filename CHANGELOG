@@ -1,3 +1,23 @@
+APR 15 2021 (again)
+	API Changes:
+		Similar to APOS, you can now code IdleRSC in an asynchronous fashion. This is not a requirement. 
+			For example; if you return 500, it will sleep for 500ms.  
+		**Script breaking change**: change the return type of start() to int. Return some int value at the end of your script.
+		useItemOnWall should work now.
+		
+	New scripts:
+		AntiDragonShields -- grabs shields from duke, banks in dray. Requires you to be at least that far in the quest, or quest completed.
+		CatherbyFishFarm -- fishes shrimps/anchovies and tuna/swords in Catherby. Automagically switches from net to harpoon when the time comes. Must start with both net and harpoon in inventory.
+		Wildberries -- gathers whiteberries in the wilderness. Requires antidragon shield and cooked sharks in the bank. Start in V East. **Will crash if you die. Have fun.**
+		Added a few of Cleaned's APOS scripts
+
+
+	APOS Bugfixes:
+		S_TavBlueDragons did not work on the members gate (the gate coords is not authentic.)
+		A few function calls which relied on getGroundItemsX/Y() were broken. They have been fixed.
+		APOS withdrawItem did not act correctly
+		
+
 APR 15 2021
 	New scripts:
 		Follow -- follows the username specified in command line args

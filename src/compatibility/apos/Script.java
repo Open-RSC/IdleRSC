@@ -507,7 +507,7 @@ public abstract class Script implements IScript {
 	 * @return the client's experience in specified skill.
 	 */
 	public int getXpForLevel(int skill) {
-		return controller.getStatXp(skill);
+		return controller.getPlayerExperience(skill);
 	}
 
 	/**

@@ -236,7 +236,7 @@ public class Main {
                     //handle native scripts
                     if (currentRunningScript instanceof IdleScript) {
                         ((IdleScript) currentRunningScript).setController(controller);
-                        int sleepAmount = ((IdleScript) currentRunningScript).start(config.getScriptArguments());
+                        int sleepAmount = ((IdleScript) currentRunningScript).start(config.getScriptArguments()) + 1;
                         Thread.sleep(sleepAmount);
                     } else if (currentRunningScript instanceof compatibility.sbot.Script) {
                         controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
@@ -268,7 +268,7 @@ public class Main {
 	                    		aposInitCalled = true;
 	                    	}
 	                    	
-	                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main();
+	                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main() + 1;
 	                    	Thread.sleep(sleepAmount);
                     	} else {
                     		Thread.sleep(10);

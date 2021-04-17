@@ -3224,6 +3224,7 @@ public class Controller {
 		for(int i = 0; i < itemIds.length; i++) {
 			mud.packetHandler.getClientStream().bufferBits.putShort(itemIds[i]);
 			mud.packetHandler.getClientStream().bufferBits.putInt(amounts[i]);
+			mud.packetHandler.getClientStream().bufferBits.putShort(0); //TODO: fix for noted, 1 = noted
 		}
 
 		mud.packetHandler.getClientStream().finishPacket();

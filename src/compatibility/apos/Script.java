@@ -2895,10 +2895,11 @@ public abstract class Script implements IScript {
 	}
 	
 	private int getPlayerServerIndexFromLocalIndex(int local_index) {
-		if(local_index >= controller.getPlayerCount())
+		try {
+			return controller.getPlayers().get(local_index).serverIndex;
+		} catch(Exception e) {
 			return -1;
-		
-		return controller.getPlayers().get(local_index).serverIndex;
+		}
 	}
 	
 	public boolean isControllerSet() {

@@ -597,6 +597,26 @@ public class Controller {
 
 		return closestCoords;
 	}
+	
+	public int[] getNearestObjectByIds(int[] objectIds) {
+		int distance = Integer.MAX_VALUE;
+		int[] result = null;
+		
+		for(int id : objectIds) {
+			int[] coord = getNearestObjectById(id);
+			
+			if(coord != null) {
+				int tmpDistance = this.distance(currentX(), currentY(), coord[0], coord[1]);
+				
+				if(tmpDistance < distance) {
+					distance = tmpDistance;
+					result = coord;
+				}
+			}
+		}
+		
+		return result;
+	}
 
 	/**
 	 * Performs the primary command option on the specified object id at the specified coordinates. 
@@ -3558,9 +3578,11 @@ public class Controller {
         if(this.getFatigue() >= fatigueToSleepAt) {
                 if(this.getInventoryItemCount(1263) < 1) {
                         while(isLoggedIn() && quitOnNoSleepingBag) {
-                                log("No sleeping bag! Logging out...");
+                                log(this.getPlayerName() + " has no sleeping bag! Logging out...");
+                                this.setAutoLogin(false);
                                 this.logout();
                                 this.stop();
+                                this.sleep(1000);
                         }
 
                         return;
@@ -4253,6 +4275,12 @@ public class Controller {
 		}
 	
 		return null;
+	}
+	
+	public void skipTutorialIsland() {
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(84);
+		mud.packetHandler.getClientStream().finishPacket();
 	}
 }
  

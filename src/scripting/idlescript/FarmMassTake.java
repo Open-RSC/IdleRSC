@@ -3,7 +3,7 @@ package scripting.idlescript;
 /**
  * MassGive by Dvorak. 
  */
-public class MassTake extends IdleScript {
+public class FarmMassTake extends IdleScript {
 	
 	public int start(String[] parameters) {
 		
@@ -16,12 +16,15 @@ public class MassTake extends IdleScript {
 			}
 			
 			controller.tradePlayer(serverIndex);
-			return 1000;
+			return 3000;
 		} else {
 			if(controller.isInTradeConfirmation()) {
 				controller.acceptTradeConfirmation();
 				controller.log("Finished trading.");
+				controller.sleep(3000);
 				controller.stop();
+				controller.logout();
+				System.exit(0);
 			} else {
 				controller.acceptTrade();
 				return 1000;

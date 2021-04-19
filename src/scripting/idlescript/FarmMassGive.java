@@ -3,7 +3,7 @@ package scripting.idlescript;
 /**
  * MassGive by Dvorak. 
  */
-public class MassGive extends IdleScript {
+public class FarmMassGive extends IdleScript {
 
 	private String[] names = new String[] {
 			"DVORAK 00", 

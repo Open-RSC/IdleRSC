@@ -2,12 +2,12 @@ package scripting.apos;
 import compatibility.apos.Script;
 import java.util.Locale;
 
-public final class PathWalkerArgs extends Script {
+public final class FarmPathWalkerArgs extends Script {
     
     private PathWalker pw;
     private PathWalker.Path walkingPath;
 
-    public PathWalkerArgs(String ex) {
+    public FarmPathWalkerArgs(String ex) {
         this.pw = new PathWalker(ex);
     }
     
@@ -28,8 +28,9 @@ public final class PathWalkerArgs extends Script {
     public int main() {
     	if(pw.walkPath()) return 100;
     	
-    	
+    	logout();
     	stopScript();
+    	System.exit(0);
     	return 0;
     }
 }

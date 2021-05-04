@@ -3909,7 +3909,7 @@ public class Controller {
 		ORSCharacter[] players = (ORSCharacter[]) reflector.getObjectMember(mud, "players");
 
 		for(ORSCharacter player : players) {
-			if(player.serverIndex == serverIndex) {
+			if(player != null && player.serverIndex == serverIndex) {
 				return new int[] { this.convertX(player.currentX), this.convertZ(player.currentZ) };
 			}
 		}

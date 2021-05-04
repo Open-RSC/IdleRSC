@@ -977,6 +977,7 @@ public abstract class Script implements IScript {
 						final int dist = distanceTo(coords[0], coords[1], getX(), getY());
 						
 						if(dist < max_dist) {
+							max_dist = dist;
 							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
 							finalNpc[1] = coords[0];
 							finalNpc[2] = coords[1];
@@ -1050,6 +1051,7 @@ public abstract class Script implements IScript {
 					if(Math.abs(coords[0] - start_x) <= latitude && Math.abs(coords[1] - start_y) <= longitude) {
 						final int dist = distanceTo(coords[0], coords[1], getX(), getY());
 						if(dist < max_dist) {
+							max_dist = dist;
 							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
 							finalNpc[1] = coords[0];
 							finalNpc[2] = coords[1];

@@ -6,26 +6,26 @@ package scripting.idlescript;
 public class FarmMassGive extends IdleScript {
 
 	private String[] names = new String[] {
-			"DVORAK 00", 
-			"DVORAK 01", 
 			"DVORAK 02", 
-			"DVORAK 03", 
-			"DVORAK 04", 
-			"DVORAK 05", 
-			"DVORAK 06", 
-			"DVORAK 07", 
-			"DVORAK 08", 
-			"DVORAK 09", 
-			"DVORAK 10", 
 			"DVORAK 11", 
-			"DVORAK 12", 
 			"DVORAK 13", 
-			"DVORAK 14", 
-			"DVORAK 15", 
 			"DVORAK 16", 
-			"DVORAK 17", 
-			"DVORAK 18", 
-			"DVORAK 19"
+			"DVORAK 19", 
+			"DVORAK 20", 
+			"DVORAK 29", 
+			"DVORAK 32", 
+			"DVORAK 35", 
+			"DVORAK 41", 
+			"DVORAK 43", 
+			"DVORAK 56", 
+			"DVORAK 72", 
+			"DVORAK 75", 
+			"DVORAK 84", 
+			"DVORAK 85", 
+			"DVORAK 88", 
+			"DVORAK 92", 
+			"DVORAK 96", 
+			"DVORAK 99"
 	};
 	
 	private boolean[] given = new boolean[names.length];

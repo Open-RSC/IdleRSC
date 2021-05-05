@@ -2,21 +2,22 @@ package scripting.apos;
 import compatibility.apos.Script;
 import java.util.Locale;
 
-public final class BronzePickaxe extends Script {
-    
+public class SleepingBag extends Script {
     private PathWalker pw;
     private PathWalker.Path walkingPath;
 
-    public BronzePickaxe(String ex) {
+    public SleepingBag(String ex) {
         this.pw = new PathWalker(ex);
     }
     
     @Override
     public void init(String params) {
-   	
+    	int x = 120;
+    	int y = 648;
+    	
         if (walkingPath == null) {
             pw.init(null);
-            walkingPath = pw.calcPath(getX(), getY(), 231, 509);
+            walkingPath = pw.calcPath(getX(), getY(), x, y);
         }
         
         pw.setPath(walkingPath);
@@ -24,15 +25,13 @@ public final class BronzePickaxe extends Script {
     
     @Override
     public int main() {
+    	if(this.isLoggedIn() && this.getInventoryCount(1263) > 0)
+    		System.exit(0);
+    	
     	if(pw.walkPath()) return 100;
     	
-    	while(this.getInventoryCount(156) < 1) {
-    		this.pickupItem(156, 231, 508);
-    		return 1000;
-    	}
-    	
-    	stopScript();
     	System.exit(0);
+    	stopScript();
     	return 0;
     }
 }

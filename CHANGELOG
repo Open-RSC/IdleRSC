@@ -1,3 +1,34 @@
+MAY 5 2021
+	Client update
+	
+	New scripts to aid with farms:
+		SkipTutorialIsland -- skips tutorial island. After skipping, the bot will exit the process.
+		ObtainSleepingBag -- assuming the account is in lumbridge, trades "bilbo baggin" in Lumbridge. Upon receiving a sleeping bag, the bot will exit the process. 
+		BronzePickaxe -- walks to Barbarian village and picks up a bronze pickaxe. After picking up the pickaxe, the bot will exit the process. 
+		FarmPathWalkerArgs -- given x,y CLI args, walks to the coords. Upon reaching the specified coords, the bot will exit the process. 
+		FarmMassGive -- trades every user in a list and gives them the specified id, amount in the parameters.
+		FarmMassTake -- trades a user and accepts anything they give. (To be used with FarmMassGive)
+		FarmDropItemById -- drops all of the specified item ID in command line args. After dropping, the bot will exit the process.
+		FarmFollow -- follows the username specified in cli args. 
+		FarmLogout -- just logs out. After logging out, the bot will exit the process. Useful for creating accounts on tutorial island, during the creation screen.
+	
+	New API Call:
+		added getNearestObjectByIds -- not sure how i missed this one, but it's been added.
+		
+	General bugfixes:
+		Fixed compile_windows.bat (thanks Cleaned)
+		setTradeItems was broken due to a protocol change, it has been fixed
+		sleepHandler() now disables autologin
+
+	APOS Bugfixes:
+		NPE fix, accidentally used getNpcCount(), but getPlayerCount() should have been used instead.
+		NPE fix for getPlayerServerIndexFromLocalIndex(int local_index), which fixes S_Miner
+		NPE fix for getPlayerCoordsByServerIndex, which fixes S_Miner
+		getNpcByIdNotTalk and getNpcInExtendedRadius now correctly grab the nearest npc
+		getObjectById now returns the nearest object.
+		Naughty scripts which sleep for 0ms will be forced to sleep at least 1ms to reduce CPU usage.
+		getXpForLevel(statId) now uses the correct IdleRSC function
+	
 APR 15 2021 (again)
 	API Changes:
 		Similar to APOS, you can now code IdleRSC in an asynchronous fashion. This is not a requirement. 

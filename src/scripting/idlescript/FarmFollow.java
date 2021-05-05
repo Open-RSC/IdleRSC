@@ -6,7 +6,7 @@ package scripting.idlescript;
  *
  */
 
-public class Follow extends IdleScript {
+public class FarmFollow extends IdleScript {
 	public int start(String[] param) {
 		if(controller.isRunning()) {
 			if(controller.isInCombat())

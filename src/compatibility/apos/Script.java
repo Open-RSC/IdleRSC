@@ -507,7 +507,7 @@ public abstract class Script implements IScript {
 	 * @return the client's experience in specified skill.
 	 */
 	public int getXpForLevel(int skill) {
-		return controller.getStatXp(skill);
+		return controller.getPlayerExperience(skill);
 	}
 
 	/**
@@ -977,6 +977,7 @@ public abstract class Script implements IScript {
 						final int dist = distanceTo(coords[0], coords[1], getX(), getY());
 						
 						if(dist < max_dist) {
+							max_dist = dist;
 							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
 							finalNpc[1] = coords[0];
 							finalNpc[2] = coords[1];
@@ -1050,6 +1051,7 @@ public abstract class Script implements IScript {
 					if(Math.abs(coords[0] - start_x) <= latitude && Math.abs(coords[1] - start_y) <= longitude) {
 						final int dist = distanceTo(coords[0], coords[1], getX(), getY());
 						if(dist < max_dist) {
+							max_dist = dist;
 							finalNpc[0] = this.getNpcLocalIndexFromServerIndex(npc.serverIndex);
 							finalNpc[1] = coords[0];
 							finalNpc[2] = coords[1];
@@ -1440,15 +1442,22 @@ public abstract class Script implements IScript {
 	 *		 will contain the object's id, X, Y.
 	 */
 	public int[] getObjectById(int... ids) {
+		int[] closest = new int[] {-1, -1, -1};
+		int distance = Integer.MAX_VALUE;
+		
 		for(int id : ids) {
 			int[] coords = controller.getNearestObjectById(id);
 			
 			if(coords != null) {
-				return new int[] {id, coords[0], coords[1]};
+				
+				if(controller.getDistanceFromLocalPlayer(coords[0], coords[1]) < distance) {
+					distance = controller.getDistanceFromLocalPlayer(coords[0], coords[1]);
+					closest = new int[] {id, coords[0], coords[1]};
+				}
 			}
 		}
 		
-		return new int[] {-1, -1, -1};
+		return closest;
 	}
 
 	public int getObjectCount() {
@@ -2888,10 +2897,11 @@ public abstract class Script implements IScript {
 	}
 	
 	private int getPlayerServerIndexFromLocalIndex(int local_index) {
-		if(local_index >= controller.getPlayerCount())
+		try {
+			return controller.getPlayers().get(local_index).serverIndex;
+		} catch(Exception e) {
 			return -1;
-		
-		return controller.getPlayers().get(local_index).serverIndex;
+		}
 	}
 	
 	public boolean isControllerSet() {

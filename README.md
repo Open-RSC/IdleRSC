@@ -71,6 +71,8 @@ public alch(mudclient rs)
 ## Discussion: 
 Please join the <a href="https://discord.gg/CutQxDZ8Np">OpenRSC Discord</a> and post in the #botting-client-development channel. Other channels are not tied to botting, so please do not discuss botting in those channels.
 
+New Discord Username: DvorakKeys#3329
+
 ## Donations:
 IdleRSC is provided for free under GPLv3, due to passion for RSC botting. If you wish, you may donate via Monero to the following address: 83XpZtrvQTdK6aW5fp3DgtBmtemqpQYf97nPtqf7yPs9VtFa4p71NYyfCmcCe2D7kcEDUvtyc58Bi7xhp772v1ah8dax4CV
 

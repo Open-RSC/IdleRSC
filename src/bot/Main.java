@@ -229,9 +229,6 @@ public class Main {
 
         //give everything a nice synchronization break juuuuuuuuuuuuuust in case...
         Thread.sleep(3000);
-        
-        Reflector reflector2 = new Reflector(); //start up our reflector helper
-        OpenRSC client2 = reflector2.createClient(); //start up our client jar
 
         while (true) {
 

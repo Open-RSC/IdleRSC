@@ -1178,7 +1178,7 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isDoorOpen(int x, int y) {
-		int[] naughtyDoors = new int[] {163, 164, 68, 97, 43};
+		int[] naughtyDoors = new int[] {163, 164, 68, 97, 96, 43, 162};
 		
 		int[] ids = getWallObjectIds();
 		int[] xs = getWallObjectsX();
@@ -4277,9 +4277,21 @@ public class Controller {
 		return null;
 	}
 	
+	/**
+	 * If on tutorial island, skips tutorial island.
+	 * @return 
+	 */
 	public void skipTutorialIsland() {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(84);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void sendSleepWord(String word) { 
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(45);
+		mud.packetHandler.getClientStream().bufferBits.putByte(1);
+		mud.packetHandler.getClientStream().bufferBits.putNullThenString(word, 116);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 }

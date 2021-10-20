@@ -1,3 +1,39 @@
+OCT 20 2021
+	New scripts pulled from APOS repository:
+		Abyte0_ArdMiner.java
+		Abyte0_ArdSmelter.java
+		Abyte0_ArdThiever.java
+		Abyte0_Blood.java
+		Abyte0_CatherbyCooker.java
+		Abyte0_CatherbyFisher.java
+		Abyte0_FallyMiner.java
+		Abyte0_Firemaking.java
+		Abyte0_GetSnape.java
+		Abyte0_GuildMiner.java
+		Abyte0_MagicSmelter.java
+		Abyte0_PowerWc.java
+		Abyte0_SAF.java
+		Abyte0_Script.java
+		Abyte0_Shaft.java
+		Abyte0_Sinister.java
+		Abyte0_Smither.java
+		Abyte0_SwampMiner.java
+		Abyte0_TraverlyShop.java
+		AlchWheat.java
+		B_Smithy.java
+		flax.java
+		GnomeAgility.java
+		PathWalker_Wild.java
+		rena_rdkpro.java
+		S_HighAlcher.java
+		S_TradeGiver.java
+		Shrimp.java
+		Storm_Script.java
+		YanilleLedge.java
+		
+	General bugfixes:
+		IdleRSC Sleeper will no longer type messages into the chat.
+
 MAY 5 2021
 	Client update
 	

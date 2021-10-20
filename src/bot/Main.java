@@ -162,6 +162,8 @@ public class Main {
     	
         Reflector reflector = new Reflector(); //start up our reflector helper
         OpenRSC client = reflector.createClient(); //start up our client jar
+        
+
         mudclient mud = reflector.getMud(client); //grab the mud from the client 
         controller = new Controller(reflector, client, mud); //start up our controller
         debugger = new Debugger(reflector, client, mud, controller);
@@ -227,6 +229,9 @@ public class Main {
 
         //give everything a nice synchronization break juuuuuuuuuuuuuust in case...
         Thread.sleep(3000);
+        
+        Reflector reflector2 = new Reflector(); //start up our reflector helper
+        OpenRSC client2 = reflector2.createClient(); //start up our client jar
 
         while (true) {
 

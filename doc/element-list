@@ -2,10 +2,12 @@ bot
 bot.debugger
 bot.ui.table
 callbacks
+compatibility.apos
 compatibility.sbot
 controller
 listeners
 models.entities
 reflector
+scripting.apos
 scripting.idlescript
 scripting.sbot

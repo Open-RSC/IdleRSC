@@ -162,6 +162,8 @@ public class Main {
     	
         Reflector reflector = new Reflector(); //start up our reflector helper
         OpenRSC client = reflector.createClient(); //start up our client jar
+        
+
         mudclient mud = reflector.getMud(client); //grab the mud from the client 
         controller = new Controller(reflector, client, mud); //start up our controller
         debugger = new Debugger(reflector, client, mud, controller);

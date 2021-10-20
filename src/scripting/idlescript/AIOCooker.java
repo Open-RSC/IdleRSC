@@ -95,7 +95,11 @@ public class AIOCooker extends IdleScript {
 	}};
 	
 	public int start(String parameters[]) {
-		if (parameters.length < 3) {
+		String[] splitParams = null;
+		if(parameters != null && parameters[0].contains(" "))
+			splitParams = parameters[0].split(" ");
+		
+		if (splitParams.length < 3) {
 			if(!guiSetup) {
 				setupGUI();
 				guiSetup = true;
@@ -108,9 +112,9 @@ public class AIOCooker extends IdleScript {
 			}
 		} else {
 			try {
-				target = new FoodObject(parameters[0]);
-				dropBurnt = Boolean.parseBoolean(parameters[1]);
-				gauntlets = Boolean.parseBoolean(parameters[2]);
+				target = new FoodObject(splitParams[0]);
+				dropBurnt = Boolean.parseBoolean(splitParams[1]);
+				gauntlets = Boolean.parseBoolean(splitParams[2]);
 
 				scriptStart();
 			} catch (Exception e) {

@@ -89,7 +89,8 @@ public class SleepCallback {
 	    			return;
 	    		}
 	    		Main.log("guess: " + guess);
-	    		controller.chatMessage(guess);
+	    		//controller.chatMessage(guess);
+	    		controller.sendSleepWord(guess);
 	    		previousSleepWord = guess;
 	    	} catch (IOException e) {
 	    		Main.log("error reading slword.txt! Ensure sleeper has access to write slword.txt and correct directory is set.");
@@ -105,7 +106,8 @@ public class SleepCallback {
         		handleSleep();
         	}
         	Main.log("guess: " + result);
-        	controller.chatMessage(result);
+        	//controller.chatMessage(result);
+        	controller.sendSleepWord(result);
         	controller.sleep(1000);
         }
     }

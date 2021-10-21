@@ -1,3 +1,7 @@
+OCT 21 2021
+	Gradle job fixed to support newer versions of Gradle.
+	IdleRSC patcher made simpler (see other repository.)
+
 OCT 20 2021
 	New scripts pulled from APOS repository:
 		Abyte0_ArdMiner.java

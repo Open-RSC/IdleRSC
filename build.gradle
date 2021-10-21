@@ -34,7 +34,7 @@ jar {
 
     // Include all the source files
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        //configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } //removed to support newer versions of gradle
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }

@@ -265,17 +265,17 @@ public class PathWalker extends Script
 		//super(ex);
 	}
 
-	public static void main(String[] argv) {
-		PathWalker pw = new PathWalker(null);
-		pw.init("");
-		while (pw.frame.isVisible()) {
-			try {
-				Thread.sleep(50L);
-			} catch (InterruptedException ex) {
-			}
-		}
-		System.exit(0);
-	}
+//	public static void main(String[] argv) {
+//		PathWalker pw = new PathWalker(null);
+//		pw.init("");
+//		while (pw.frame.isVisible()) {
+//			try {
+//				Thread.sleep(50L);
+//			} catch (InterruptedException ex) {
+//			}
+//		}
+//		System.exit(0);
+//	}
 
 	@Override
 	public void init(String params) {
@@ -343,21 +343,33 @@ public class PathWalker extends Script
 
 	@Override
 	public int main() {
-		if (start_time == -1L) {
-		start_time = System.currentTimeMillis();
-		}
-		if (inCombat()) {
-			resetWait();
-			walkTo(getX(), getY());
-			return random(400, 600);
-		}
-		if (!walkPath()) {
-			System.out.println("Reached destination.");
-			System.out.println("Stopping.");
-			stopScript();
-			Toolkit.getDefaultToolkit().beep();
-		}
-		return 0;
+        while (this.frame.isVisible()) {
+            try {
+                Thread.sleep(50L);
+            } catch (InterruptedException ex) {
+            }
+        }
+    	
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException ex) {
+        }
+        
+        if (start_time == -1L) {
+        start_time = System.currentTimeMillis();
+        }
+        if (inCombat()) {
+            resetWait();
+            walkTo(getX(), getY());
+            return random(400, 600);
+        }
+        if (!walkPath()) {
+            System.out.println("Reached destination.");
+            System.out.println("Stopping.");
+            stopScript();
+            Toolkit.getDefaultToolkit().beep();
+        }
+        return 0;
 	}
 
 	@Override

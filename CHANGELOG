@@ -1,3 +1,27 @@
+OCT 24 2021
+	Script breaks:
+		Should be no breaks this update, if there are any, please let me know!
+
+	APOS Scripts:
+		Quester_F2P -- Bugs ironed out, script is ready! Thanks Cleaned!
+		Updated PathWalker to Kristof's gate edits.
+		PathWalker now handles the Draynor Maynor gate.
+		
+	New IdleRSC API calls:
+		atWallObject and atWallObject2, in case your script needs functionality which is not openDoor(x,y) friendly.
+			If you can, try to add it to openDoor(x,y) and submit a pull request, would appreciate it. It's much nicer to script with!
+		
+	Bugfixes:
+		APOS compatibility
+			useOnNpc now will use correct pathfinding when using item on an npc. Before, it would get stuck on walls.
+			Doors are now handled correctly.
+			getBankId array exception fix.
+			probable getQuestMenuOption NPE fix.
+			
+		Controller API
+			useItemOnWall now correctly uses direction in packet.
+			pickupItem now correctly will walk to the tile the item is on, as opposed to within 1 tile of the object.
+
 OCT 21 2021
 	Gradle job fixed to support newer versions of Gradle.
 	IdleRSC patcher made simpler (see other repository.)

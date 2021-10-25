@@ -1,4 +1,4 @@
-OCT XX 2021 -- *** Staking Pumpkins Edition ***
+OCT 25 2021 -- *** Staking Pumpkins Edition ***
 	Player HP indicators added!
 	Item switcher added!
 		F5 => Attack
@@ -9,12 +9,19 @@ OCT XX 2021 -- *** Staking Pumpkins Edition ***
 			--attack-items 123,456
 			--strength-items 123,456
 			--defence-items 123,456
+	Spell caster added!
+		F8 to cast. 
+		
+		Set via command line in your bat/sh file:
+			--spell-id 2
+			
 	
 	Objects and NPCs will now show their IDs upon right clicking.
 	The inert "Settings" button has been replaced with a "PathWalker" button. This button conveniently launches PathWalker for manual playing!
 	
 	Bugfixes:
 		Last release broke running PathWalker. Sorry about that!
+		getPlayerAtCoord(x,y) no longer returns the local player.
 
 OCT 24 2021
 	Script breaks:

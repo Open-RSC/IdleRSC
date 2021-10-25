@@ -7,6 +7,7 @@ import controller.Controller;
 import scripting.idlescript.IdleScript;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 public class KeyCallback {
 	
@@ -26,15 +27,51 @@ public class KeyCallback {
 		@Override
 		public void run() {
 			if(attack) {
+				ArrayList<Integer> items = Main.config.getAttackItems();
+				
+				if(items == null) {
+					c.displayMessage("@red@IdleRSC@yel@: @gre@Attack items not configured! See README!");
+					return;
+				}
+				c.displayMessage("@red@IdleRSC@yel@: @gre@Attack switching!");
+				
+				for(Integer id : items) {
+					c.equipItem(c.getInventoryItemSlotIndex(id));
+					c.sleep(640);
+				}
+				
 				c.displayMessage("@red@IdleRSC@yel@: @gre@Attack switched!");
-	        	c.equipItem(c.getInventoryItemSlotIndex(75));
-	        	c.sleep(640);
-	        	c.equipItem(c.getInventoryItemSlotIndex(597));
+
 			} else if(strength) {
-	        	c.displayMessage("@red@IdleRSC@yel@: @red@Strength switched!");
-	        	c.equipItem(c.getInventoryItemSlotIndex(81));
-	        	c.sleep(640);
-	        	c.equipItem(c.getInventoryItemSlotIndex(316));
+				ArrayList<Integer> items = Main.config.getStrengthItems();
+				if(items == null) {
+					c.displayMessage("@red@IdleRSC@yel@: @gre@Strength items not configured! See README!");
+					return;
+				}
+	        	c.displayMessage("@red@IdleRSC@yel@: @red@Strength switching!");
+	        	
+				for(Integer id : items) {
+					c.equipItem(c.getInventoryItemSlotIndex(id));
+					c.sleep(640);
+				}
+				
+				c.displayMessage("@red@IdleRSC@yel@: @red@Strength switched!");
+
+			} else if(defence) {
+				ArrayList<Integer> items = Main.config.getDefenceItems(); 
+				if(items == null) {
+					c.displayMessage("@red@IdleRSC@yel@: @gre@Defence items not configured! See README!");
+					return;
+				}
+				
+				c.displayMessage("@red@IdleRSC@yel@: @cya@Defense switching!");
+				
+				for(Integer id : items) {
+					c.equipItem(c.getInventoryItemSlotIndex(id));
+					c.sleep(640);
+				}
+				
+				c.displayMessage("@red@IdleRSC@yel@: @cya@Defense switched!");
 			}
 		}
 	}
@@ -48,23 +85,17 @@ public class KeyCallback {
         	SwitchThread switchThread = new SwitchThread(c, true, false, false);
         	Thread t = new Thread(switchThread);
         	t.start();
-        	
-//        	c.displayMessage("@red@IdleRSC@yel@: @gre@Attack switched!");
-//        	c.equipItem(c.getInventoryItemSlotIndex(75));
-//        	c.sleep(640);
-//        	c.equipItem(c.getInventoryItemSlotIndex(597));
         	return;
         } else if(keycode == KeyEvent.VK_F6) {
         	SwitchThread switchThread = new SwitchThread(c, false, true, false);
         	Thread t = new Thread(switchThread);
         	t.start();
-//        	c.displayMessage("@red@IdleRSC@yel@: @red@Strength switched!");
-//        	c.equipItem(c.getInventoryItemSlotIndex(81));
-//        	c.sleep(640);
-//        	c.equipItem(c.getInventoryItemSlotIndex(316));
         	return;
         } else if(keycode == KeyEvent.VK_F7) {
-        	c.displayMessage("@red@IdleRSC@yel@: @cya@Defense switched!");
+        	SwitchThread switchThread = new SwitchThread(c, false, false, true);
+        	Thread t = new Thread(switchThread);
+        	t.start();
+        	return;
         } else  if(keycode == KeyEvent.VK_F11) {
             if(Main.isRunning())
                 c.displayMessage("@red@IdleRSC@yel@: SCRIPT STOPPED");

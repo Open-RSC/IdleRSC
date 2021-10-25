@@ -2978,6 +2978,10 @@ public class Controller {
 	public int getPlayerAtCoord(int x, int y) {
 		for(ORSCharacter player : getPlayers()) {
 			if(player != null) {
+				
+				if(player.serverIndex == getPlayer().serverIndex)
+					continue;
+				
 				if((x == convertX(player.currentX))
 				&&  y == convertZ(player.currentZ)) {
 					return player.serverIndex;

@@ -64,11 +64,12 @@ public alch(mudclient rs)
 4. Test a compilation, then code away! If you have problems, you can create a new issue or ask for help in the OpenRSC Discord.
 	
 ## Configuring Stake Switcher
-Inside your run_windows.bat or run_linux.sh, add the following lines. Restart the bot. Press F5, F6, F7 to validate.
+Inside your run_windows.bat or run_linux.sh, add the following lines. Restart the bot. Press F5, F6, F7, F8 to validate.
 ```
 --attack-items 123,456
 --strength-items 123,456
 --defence-items 123,456
+--spell-id 2
 ```
 
 	

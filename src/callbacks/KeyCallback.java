@@ -4,6 +4,7 @@ package callbacks;
 import bot.Main;
 import compatibility.sbot.Script;
 import controller.Controller;
+import orsc.ORSCharacter;
 import scripting.idlescript.IdleScript;
 
 import java.awt.event.KeyEvent;
@@ -96,7 +97,26 @@ public class KeyCallback {
         	Thread t = new Thread(switchThread);
         	t.start();
         	return;
-        } else  if(keycode == KeyEvent.VK_F11) {
+        } else if(keycode == KeyEvent.VK_F8) {
+        	ORSCharacter npc = c.getNpcAtCoords(c.currentX(), c.currentY());
+        	int playerIndex = c.getPlayerAtCoord(c.currentX(), c.currentY());
+        	
+        	if(Main.config.getSpellId() == -1) {
+        		c.displayMessage("@red@IdleRSC@yel@: @gre@Spell not configured! See README!");
+        		return;
+        	}
+        	
+        	
+        	if(npc != null) {
+        		c.displayMessage("@red@IdleRSC@yel@: @gre@Casting spell!");
+        		c.castSpellOnNpc(npc.serverIndex, Main.config.getSpellId());
+        	} else if(playerIndex != -1) {
+        		c.displayMessage("@red@IdleRSC@yel@: @gre@Casting spell!");
+        		c.castSpellOnPlayer(Main.config.getSpellId(), playerIndex);
+        	} else {
+        		c.displayMessage("@red@IdleRSC@yel@: @gre@Not in combat! Cannot cast spell!");
+        	}
+        } else if(keycode == KeyEvent.VK_F11) {
             if(Main.isRunning())
                 c.displayMessage("@red@IdleRSC@yel@: SCRIPT STOPPED");
 

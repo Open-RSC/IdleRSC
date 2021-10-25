@@ -22,6 +22,7 @@ public class Config {
     private String attackItems = "";
     private String strengthItems = "";
     private String defenceItems = "";
+    private String spellId = "";
 
     /*
       Add the following?
@@ -55,6 +56,7 @@ public class Config {
                 + "--attack-items" + attackItems
                 + "--strength-items" + strengthItems
                 + "--defence-items" + defenceItems
+                + "--spell-id" + spellId
                 );
     }
 
@@ -154,7 +156,9 @@ public class Config {
                 case "--defence-items":
                 	defenceItems = clientArgs[++argIndex];
                 	break;
-
+                case "--spell-id":
+                	spellId = clientArgs[++argIndex];
+                	break;
                 default:
                     if (clientArgs[argIndex].startsWith("--")) {
                         System.out.println("Unknown client argument \"" + clientArgs[argIndex] + "\"... Ignoring!");
@@ -256,5 +260,13 @@ public class Config {
     
     public ArrayList<Integer> getDefenceItems() { 
     	return itemsStringToIntArray(defenceItems);
+    }
+    
+    public int getSpellId() {
+    	try {
+    		return Integer.parseInt(spellId);
+    	} catch(Exception e) {
+    		return -1;
+    	}
     }
 }

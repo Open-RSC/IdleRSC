@@ -231,6 +231,7 @@ public class Main {
         Thread.sleep(3000);
 
         while (true) {
+        	controller.fakeDeveloper();
 
             if (isRunning()) {
                 if (currentRunningScript != null) {

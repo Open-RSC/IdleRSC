@@ -1,3 +1,6 @@
+OCT XX 2021
+	Objects and NPCs will now show their IDs upon right clicking.
+
 OCT 24 2021
 	Script breaks:
 		Should be no breaks this update, if there are any, please let me know!
@@ -5,7 +8,6 @@ OCT 24 2021
 	APOS Scripts:
 		Quester_F2P -- Bugs ironed out, script is ready! Thanks Cleaned!
 		Updated PathWalker to Kristof's gate edits.
-		PathWalker now handles the Draynor Maynor gate.
 		
 	New IdleRSC API calls:
 		atWallObject and atWallObject2, in case your script needs functionality which is not openDoor(x,y) friendly.

@@ -13,7 +13,6 @@ OCT XX 2021 -- *** Staking Pumpkins Edition ***
 	Objects and NPCs will now show their IDs upon right clicking.
 	The inert "Settings" button has been replaced with a "PathWalker" button. This button conveniently launches PathWalker for manual playing!
 	
-	
 	Bugfixes:
 		Last release broke running PathWalker. Sorry about that!
 

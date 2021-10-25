@@ -1056,6 +1056,8 @@ public class Controller {
 	 * @param itemId
 	 */
 	public void useItemOnNpc(int serverIndex, int itemId) {
+		walktoNPCAsync(serverIndex);
+		
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(135);
 		mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
@@ -1091,21 +1093,21 @@ public class Controller {
 	}
 
 	/**
-	 * Uses the item at the specified slot on the wall object at the specified coordinates. Note that you need to be close to the object, this does not walk to the wall object. Note that this uses a slot id, not item id. 
+	 * Uses the item at the specified slot on the wall object at the specified coordinates. Note that this uses a slot id, not item id. 
 	 * 
 	 * @param x
 	 * @param y
 	 * @param slotIndex
 	 */
 	public void useItemOnWall(int x, int y, int slotIndex) {
-		//you need to be close to the object for this to work.
+		int direction = getWallObjectDirectionAtCoord(x, y);
 		
-		
+		reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(161);
 		mud.packetHandler.getClientStream().bufferBits.putShort(x);
 		mud.packetHandler.getClientStream().bufferBits.putShort(y);
-		mud.packetHandler.getClientStream().bufferBits.putByte(1); //0 or 1??? not sure what the difference is here... 1 is needed for blue drags door though. not sure if 0 is needed anywhere else.
+		mud.packetHandler.getClientStream().bufferBits.putByte(direction); 
 		mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
@@ -1411,9 +1413,9 @@ public class Controller {
 				walkTo(x, y, 0, false);
 		} else {
 			if(async)
-				this.walkToAsync(x, y, 1);
+				this.walkToAsync(x, y, 0);
 			else
-				this.walkTo(x, y, 1, false);
+				this.walkTo(x, y, 0, false);
 
 		}
 
@@ -4292,6 +4294,32 @@ public class Controller {
 		mud.packetHandler.getClientStream().newPacket(45);
 		mud.packetHandler.getClientStream().bufferBits.putByte(1);
 		mud.packetHandler.getClientStream().bufferBits.putNullThenString(word, 116);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void atWallObject(int x, int y) {
+		int opcode = 127;
+		int direction = getWallObjectDirectionAtCoord(x, y); 
+
+		reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(opcode);
+		mud.packetHandler.getClientStream().bufferBits.putShort(x); 
+		mud.packetHandler.getClientStream().bufferBits.putShort(y); 
+		mud.packetHandler.getClientStream().bufferBits.putByte(direction);
+		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	public void atWallObject2(int x, int y) {
+		int opcode = 14;
+		int direction = getWallObjectDirectionAtCoord(x, y); 
+
+		reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
+		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+		mud.packetHandler.getClientStream().newPacket(opcode);
+		mud.packetHandler.getClientStream().bufferBits.putShort(x); 
+		mud.packetHandler.getClientStream().bufferBits.putShort(y); 
+		mud.packetHandler.getClientStream().bufferBits.putByte(direction);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 }

@@ -1158,7 +1158,12 @@ public abstract class Script implements IScript {
 	}
 
 	public String getQuestMenuOption(int i) {
-		return controller.getOptionsMenuText(i);
+		String returnValue = controller.getOptionsMenuText(i);
+		
+		if(returnValue == null)
+			return "";
+		
+		return returnValue;
 	}
 
 	/**
@@ -1653,7 +1658,8 @@ public abstract class Script implements IScript {
 	 *			the y position of the boundary to interact with.
 	 */
 	public void atWallObject(int x, int y) {
-		controller.openDoor(x, y);
+		//controller.openDoor(x, y);
+		controller.atWallObject(x, y);
 	}
 
 	/**
@@ -1668,7 +1674,7 @@ public abstract class Script implements IScript {
 	 *			the y position of the boundary to interact with.
 	 */
 	public void atWallObject2(int x, int y) {
-		controller.openDoor(x, y);
+		controller.atWallObject2(x, y);
 	}
 
 	/**
@@ -1739,7 +1745,8 @@ public abstract class Script implements IScript {
 	}
 
 	public int getBankId(int i) {
-		if(i >= controller.getBankItemsCount())
+		//if(i >= controller.getBankItemsCount())
+		if(i >= controller.getBankItems().size())
 			return -1;
 		
 		return controller.getBankItems().get(i).getCatalogID();
@@ -1747,7 +1754,9 @@ public abstract class Script implements IScript {
 	}
 
 	public int getBankStack(int i) {
-		if(i >= controller.getBankItemsCount())
+		int bankCount = controller.getBankItemsCount();
+		
+		if(i >= bankCount)
 			return -1;
 		
 		return controller.getBankItems().get(i).getAmount();

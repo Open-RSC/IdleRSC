@@ -46,6 +46,9 @@ public class DrawCallback {
         String localStatusText = statusText;
         
         if(c.getShowBotPaint()) {
+        	
+        	c.fakeDeveloper();
+        	
         	if(c.isAuthentic()) {
         		int currentHits = c.getCurrentStat(c.getStatId("Hits"));
         		int currentPrayer = c.getCurrentStat(c.getStatId("Prayer"));

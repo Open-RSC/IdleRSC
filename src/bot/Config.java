@@ -1,5 +1,7 @@
 package bot;
 
+import java.awt.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static bot.Main.log;
@@ -17,6 +19,9 @@ public class Config {
     private boolean hidesidepanel = false;
     private boolean enablegfx = true;
     private boolean localOCR = false;
+    private String attackItems = "";
+    private String strengthItems = "";
+    private String defenceItems = "";
 
     /*
       Add the following?
@@ -47,6 +52,9 @@ public class Config {
                 + " --hidesidepanel " + hidesidepanel
                 + " --enablegfx " + enablegfx
                 + " --localOCR " + localOCR
+                + "--attack-items" + attackItems
+                + "--strength-items" + strengthItems
+                + "--defence-items" + defenceItems
                 );
     }
 
@@ -137,6 +145,16 @@ public class Config {
                 case "--localocr":
                 	localOCR = clientArgs[++argIndex].equalsIgnoreCase("true");
                 	break;
+                case "--attack-items":
+                	attackItems = clientArgs[++argIndex];
+                	break;
+                case "--strength-items":
+                	strengthItems = clientArgs[++argIndex];
+                	break;
+                case "--defence-items":
+                	defenceItems = clientArgs[++argIndex];
+                	break;
+
                 default:
                     if (clientArgs[argIndex].startsWith("--")) {
                         System.out.println("Unknown client argument \"" + clientArgs[argIndex] + "\"... Ignoring!");
@@ -210,5 +228,33 @@ public class Config {
     
     public boolean getLocalOCR() {
     	return localOCR;
+    }
+    
+    private ArrayList<Integer> itemsStringToIntArray(String items) {
+    	try {
+    		String[] itemsArray = items.split(",");
+    		ArrayList<Integer> itemIds = new ArrayList<Integer>();
+    		
+    		for(String id : itemsArray) {
+    			itemIds.add(Integer.parseInt(id));
+    		}
+    		
+    		return itemIds;
+    		
+    	} catch(Exception e) {
+    		return null;
+    	}
+    }
+    
+    public ArrayList<Integer> getAttackItems() {
+    	return itemsStringToIntArray(attackItems);
+    }
+    
+    public ArrayList<Integer> getStrengthItems() {
+    	return itemsStringToIntArray(strengthItems);
+    }
+    
+    public ArrayList<Integer> getDefenceItems() { 
+    	return itemsStringToIntArray(defenceItems);
     }
 }

@@ -1,4 +1,4 @@
-IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's own custom scripting API. It also has backwards compatibility with APOS and SBot.
+IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's own custom scripting API. It also has backwards compatibility with APOS and SBot. It also has built in staker bot functionality!
 
 [![IdleRSC Demo Video](https://i.imgur.com/NMU2sbB.png)](https://www.youtube.com/watch?v=Bkp2M3Ja9qc)
 
@@ -62,6 +62,15 @@ public alch(mudclient rs)
 2. Open the project in Eclipse or IntelliJ
 3. If client JAR is out of date, run patcher utility from https://gitlab.com/idlersc/idlersc_patcher (follow README in that project).
 4. Test a compilation, then code away! If you have problems, you can create a new issue or ask for help in the OpenRSC Discord.
+	
+## Configuring Stake Switcher
+Inside your run_windows.bat or run_linux.sh, add the following lines. Restart the bot. Press F5, F6, F7 to validate.
+```
+--attack-items 123,456
+--strength-items 123,456
+--defence-items 123,456
+```
+
 	
 ## Contributing:
 * Please submit issues, questions, bugs on Gitlab. Provide stack traces for crashes, etc. 

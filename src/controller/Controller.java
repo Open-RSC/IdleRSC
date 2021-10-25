@@ -4289,6 +4289,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
+	/**
+	 * Internal function used for sleeping. 
+	 * 
+	 * @param word
+	 */
 	public void sendSleepWord(String word) { 
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(45);
@@ -4297,6 +4302,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
+	/**
+	 * Walks to the wall object and then interacts with it.
+	 * @param x
+	 * @param y
+	 */
 	public void atWallObject(int x, int y) {
 		int opcode = 127;
 		int direction = getWallObjectDirectionAtCoord(x, y); 
@@ -4310,6 +4320,11 @@ public class Controller {
 		mud.packetHandler.getClientStream().finishPacket();
 	}
 	
+	/**
+	 * Walks to the wall object and then interacts with it (secondary interaction.)
+	 * @param x
+	 * @param y
+	 */
 	public void atWallObject2(int x, int y) {
 		int opcode = 14;
 		int direction = getWallObjectDirectionAtCoord(x, y); 
@@ -4321,6 +4336,19 @@ public class Controller {
 		mud.packetHandler.getClientStream().bufferBits.putShort(y); 
 		mud.packetHandler.getClientStream().bufferBits.putByte(direction);
 		mud.packetHandler.getClientStream().finishPacket();
+	}
+	
+	/**
+	 * Internal function used to grant the ability for normal accounts to access the developer ID menus.
+	 */
+	public void fakeDeveloper() {
+		if(isLoggedIn()) {
+			int groupId = getPlayer().groupID;
+			
+			if(groupId == 10) {
+				getPlayer().groupID = 8;
+			}
+		}
 	}
 }
  

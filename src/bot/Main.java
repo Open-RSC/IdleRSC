@@ -48,7 +48,7 @@ public class Main {
 
     private static boolean isRunning = false; // this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
-    private static JButton startStopButton, loadScriptButton, settingsButton, openDebuggerButton, hideButton, resetXpButton; //all the buttons on the sidepanel.
+    private static JButton startStopButton, loadScriptButton, pathwalkerButton, openDebuggerButton, hideButton, resetXpButton; //all the buttons on the sidepanel.
     private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, graphicsCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
 
 
@@ -231,8 +231,6 @@ public class Main {
         Thread.sleep(3000);
 
         while (true) {
-        	controller.fakeDeveloper();
-
             if (isRunning()) {
                 if (currentRunningScript != null) {
 
@@ -345,7 +343,7 @@ public class Main {
 
         startStopButton = new JButton(isRunning ? "Stop" : "Start");
         loadScriptButton = new JButton("Load Script");
-        settingsButton = new JButton("Settings");
+        pathwalkerButton = new JButton("PathWalker");
 
         autoLoginCheckbox = new JCheckBox("Auto-Login");
         logWindowCheckbox = new JCheckBox("Log Window");
@@ -374,6 +372,20 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showLoadScript();
+            }
+        });
+        
+        pathwalkerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!isRunning) {
+                	loadAndRunScript("PathWalker");
+                	config.setScriptArguments(new String[]{""});
+                	isRunning = true;
+                    startStopButton.setText("Stop");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Stop the current script first.");
+                }
             }
         });
 
@@ -417,9 +429,9 @@ public class Main {
         botFrame.add(loadScriptButton);
         loadScriptButton.setMaximumSize(buttonSize);
         loadScriptButton.setPreferredSize(buttonSize);
-        botFrame.add(settingsButton);
-        settingsButton.setMaximumSize(buttonSize);
-        settingsButton.setPreferredSize(buttonSize);
+        botFrame.add(pathwalkerButton);
+        pathwalkerButton.setMaximumSize(buttonSize);
+        pathwalkerButton.setPreferredSize(buttonSize);
         botFrame.add(autoLoginCheckbox);
         botFrame.add(logWindowCheckbox);
         botFrame.add(unstickCheckbox);

@@ -4360,6 +4360,8 @@ public class Controller {
 		if(isLoggedIn()) {
 			int groupId = getPlayer().groupID;
 			
+			orsc.Config.C_SIDE_MENU_OVERLAY = false; //bugfix for coleslaw flickering
+			
 			if(groupId == 10) {
 				getPlayer().groupID = 8;
 			}

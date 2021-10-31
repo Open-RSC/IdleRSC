@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -3501,16 +3502,23 @@ public class Controller {
 				// Use a bank chest
 				int[] bankChestId = getNearestObjectById(942);
 				if(bankChestId != null) {
-					walkToAsync(bankChestId[0], bankChestId[1], 1);
 
 					while (!isInBank() && Main.isRunning()) {
+						if(currentX() != 59 && currentY() != 731)
+							walkToAsync(bankChestId[0], bankChestId[1], 1);
+						
 						atObject(bankChestId[0], bankChestId[1]);
-						openBank_sleep(200);
+						openBank_sleep(600);
+						this.sleep(1000);
 					}
+					
+					//this.sleep(2000);
 				}
 			}
 
 		}
+		
+		this.sleep(640); //to avoid crashing caused by concurrency
     }
     
     /**
@@ -3557,7 +3565,7 @@ public class Controller {
 	 * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s. 
 	 */
 	public void log(String text, String rsTextColor) {
-		System.out.println(text);
+		//System.out.println(text);
 		Main.log(text);
 		displayMessage("@" + rsTextColor + "@" + text);
 	}
@@ -4026,9 +4034,12 @@ public class Controller {
 	 */
 	public void hideWelcomeMessage() {
 		this.log("Hiding welcome screen...");
-		client.mousePressed(new MouseEvent(client, 1, 21, 0, 2, 2, 1, false)); //click on (2,2)
+		client.mousePressed(new MouseEvent(client, 1, 21, 0, 99, 99, 1, false)); //click on (99,99)
 	}
 	
+	public int[] getMudMouseCoords() {
+		return new int[] {mud.getMouseX(), mud.getMouseY()};
+	}
 	
 	/**
 	 * Returns the height, in pixels, of the game window.

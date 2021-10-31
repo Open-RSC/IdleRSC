@@ -8,9 +8,11 @@ OCT 31 2021
 		FarmTradeEverything -- Opens bank and trades everything inside bank to account specified in arguments. To be used with FarmMassAcceptShantay.
 	
 	Bugfixes:
+		Coleslaw flickering fix.
 		Trade interrupts were broken somehow, now they're fixed.
 		S_Certer now properly handles bars in Draynor.
 		controller.log() now doesn't print twice to stdout
+		
 
 OCT 25 2021 -- *** Staking Pumpkins Edition ***
 	Player HP indicators added!

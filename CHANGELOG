@@ -1,3 +1,17 @@
+OCT 31 2021
+	Client update.
+	
+	New Scripts:
+		FarmBankEverything -- Banks everything on the account then quits client.
+		BankGetBankItems -- Prints what is inside the bank then quits client.
+		FarmMassAcceptShantay -- Accepts all items at Shantay and then banks them. Waits for a trade.
+		FarmTradeEverything -- Opens bank and trades everything inside bank to account specified in arguments. To be used with FarmMassAcceptShantay.
+	
+	Bugfixes:
+		Trade interrupts were broken somehow, now they're fixed.
+		S_Certer now properly handles bars in Draynor.
+		controller.log() now doesn't print twice to stdout
+
 OCT 25 2021 -- *** Staking Pumpkins Edition ***
 	Player HP indicators added!
 	Item switcher added!

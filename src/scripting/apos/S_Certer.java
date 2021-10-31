@@ -671,27 +671,27 @@ public final class S_Certer extends Script
             case 13:
                 item = new CertOption(new int[] {
                     226, 467
-                }, 170, 528, "bars", "iron bar");
+                }, 170, 528, "bars", "iron");
                 break;
             case 14:
                 item = new CertOption(new int[] {
                     226, 467
-                }, 171, 529, "bars", "steel bar");
+                }, 171, 529, "bars", "steel");
                 break;
             case 15:
                 item = new CertOption(new int[] {
                     226, 467
-                }, 173, 530, "bars", "mithril bar");
+                }, 173, 530, "bars", "mithril");
                 break;
             case 16:
                 item = new CertOption(new int[] {
                     226, 467
-                }, 172, 532, "bars", "Gold bar");
+                }, 172, 532, "bars", "Gold");
                 break;
             case 17:
                 item = new CertOption(new int[] {
                     226, 467
-                }, 384, 531, "bars", "silver bar");
+                }, 384, 531, "bars", "silver");
                 break;
             case 18:
                 item = new CertOption(new int[] {

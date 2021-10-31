@@ -61,7 +61,7 @@ public class MessageCallback {
                 } else if (type == MessageType.QUEST) {
                     ((IdleScript) Main.getCurrentRunningScript()).questMessageInterrupt(message);
                 } else if (type == MessageType.TRADE) {
-                    ((IdleScript) Main.getCurrentRunningScript()).tradeMessageInterrupt(message);
+                    ((IdleScript) Main.getCurrentRunningScript()).tradeMessageInterrupt(sender);
                 }
             } else if (Main.getCurrentRunningScript() instanceof compatibility.sbot.Script) {
                 if (type == MessageType.GAME) {
@@ -90,7 +90,7 @@ public class MessageCallback {
 	                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onServerMessage(message);
 	                } 
 	                else if (type == MessageType.TRADE) { //UNTESTED
-	                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onTradeRequest(message.split(" ")[0]);
+	                    ((compatibility.apos.Script) Main.getCurrentRunningScript()).onTradeRequest(sender);
 	                } 
 	                else if(type == MessageType.PRIVATE_RECIEVE) { // UNTESTED
 	                	((compatibility.apos.Script) Main.getCurrentRunningScript()).onPrivateMessage(message, sender, false, false);

@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.openrsc.client.entityhandling.instances.Item;
@@ -8,8 +10,6 @@ import com.openrsc.client.entityhandling.instances.Item;
  * MassGive by Dvorak. 
  */
 public class FarmTradeEverything extends IdleScript {
-	int itemId, amount;
-	boolean stackable;
 	
     private void trade_sleep(int maxTicks) {
     	int ticks = 0;
@@ -26,8 +26,8 @@ public class FarmTradeEverything extends IdleScript {
 	
 	public int start(String[] parameters) {
 		
+		controller.log(Integer.toString(controller.getMudMouseCoords()[0]) + "," + Integer.toString(controller.getMudMouseCoords()[1]));
 		
-		controller.log("cycle");
 		if(controller.getInventoryItemCount() == 0) {
 			controller.log("opening...");
 			controller.openBank();
@@ -35,6 +35,7 @@ public class FarmTradeEverything extends IdleScript {
 			
 			
 			if(controller.isInBank()) {
+				
 				if(controller.getBankItemsCount() > 0) {
 					
 					while(controller.getInventoryItemCount() < 24) {
@@ -48,9 +49,9 @@ public class FarmTradeEverything extends IdleScript {
 						}
 						
 						
-						itemId = items.get(0).getCatalogID();
-						amount = items.get(0).getAmount();
-						stackable = items.get(0).getItemDef().stackable;
+						int itemId = items.get(0).getCatalogID();
+						int amount = items.get(0).getAmount();
+						boolean stackable = items.get(0).getItemDef().stackable;
 						
 						
 						if(!stackable && amount > 24)
@@ -58,7 +59,7 @@ public class FarmTradeEverything extends IdleScript {
 						
 						
 						controller.withdrawItem(itemId, amount);
-						controller.sleep(640);
+						controller.sleep(1000);
 					}
 					
 					controller.closeBank();
@@ -89,27 +90,75 @@ public class FarmTradeEverything extends IdleScript {
 				controller.sleep(800);
 			} else {
 				
-				itemId = controller.getInventorySlotItemId(0);
-				amount = controller.getInventoryItemCount(itemId);
-				stackable = controller.isItemStackable(itemId);
-				if(stackable) {
-					controller.setTradeItems(new int[] {itemId}, new int[] {amount});
-					controller.sleep(1000);
-				} else {
-					itemId = controller.getInventorySlotItemId(0);
-					amount = controller.getInventoryItemCount(itemId);
+				int[] _itemIds = controller.getInventoryItemIds();
+				HashSet<Integer> itemIds = new HashSet<Integer>();
+				ArrayList<Integer> tradeIds = new ArrayList<Integer>();
+				ArrayList<Integer> tradeAmounts = new ArrayList<Integer>();
+				
+				//grab unique inventory ids
+				for(int id : itemIds) {
+					itemIds.add(id);
+				}
+				
+				//keep track of how many items we're trading
+				int totalSlots = 0;
+				
+				//create map for trade
+				//for(int id : itemIds) {
+				for(int i = 0; i < controller.getInventoryItemCount(); i++) {
+					int id = controller.getInventorySlotItemId(i);
+					int amount = controller.getInventoryItemCount(id);
 					
-					int[] items = new int[amount];
-					int[] amounts = new int[amount];
-					
-					for(int i = 0; i < amount; i++) {
-						items[i] = itemId;
-						amounts[i] = 1;
+					if(totalSlots >= 12) {
+						break;
 					}
 					
-					controller.setTradeItems(items, amounts);
-					controller.sleep(640); //changed -- good
+					if(controller.isItemStackable(id)) {
+						tradeIds.add(id);
+						tradeAmounts.add(amount);
+						totalSlots++;
+					} else {
+						tradeIds.add(id);
+						tradeAmounts.add(1);
+						totalSlots++;
+					}
+					
 				}
+				
+				//convert map to idlersc api
+				int[] finalTradeIds = new int[totalSlots];
+				int[] finalTradeAmounts = new int[totalSlots];
+				
+				for(int i = 0; i < totalSlots; i++) {
+					finalTradeIds[i] = tradeIds.get(i);
+					finalTradeAmounts[i] = tradeAmounts.get(i);
+				}
+				
+				controller.setTradeItems(finalTradeIds, finalTradeAmounts);
+				controller.sleep(640);
+				
+				
+//				int itemId = controller.getInventorySlotItemId(0);
+//				int amount = controller.getInventoryItemCount(itemId);
+//				boolean stackable = controller.isItemStackable(itemId);
+//				if(stackable) {
+//					controller.setTradeItems(new int[] {itemId}, new int[] {amount});
+//					controller.sleep(1000);
+//				} else {
+//					itemId = controller.getInventorySlotItemId(0);
+//					amount = controller.getInventoryItemCount(itemId);
+//					
+//					int[] items = new int[amount];
+//					int[] amounts = new int[amount];
+//					
+//					for(int i = 0; i < amount; i++) {
+//						items[i] = itemId;
+//						amounts[i] = 1;
+//					}
+//					
+//					controller.setTradeItems(items, amounts);
+//					controller.sleep(640); //changed -- good
+//				}
 				controller.acceptTrade();
 				return 800; //changed
 			}

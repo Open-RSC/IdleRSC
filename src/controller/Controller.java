@@ -1181,7 +1181,7 @@ public class Controller {
 	 * @return boolean
 	 */
 	public boolean isDoorOpen(int x, int y) {
-		int[] naughtyDoors = new int[] {163, 164, 68, 97, 96, 43, 162};
+		int[] naughtyDoors = new int[] {163, 164, 68, 97, 96, 43, 162, 94};
 		
 		int[] ids = getWallObjectIds();
 		int[] xs = getWallObjectsX();
@@ -2918,9 +2918,7 @@ public class Controller {
 	/**
 	 * Disables autologin and attempts to logout. No guarantee on success.
 	 */
-	public void logout() {
-		this.setAutoLogin(false);
-		
+	public void logout() {		
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
 		mud.packetHandler.getClientStream().newPacket(102);
 		mud.packetHandler.getClientStream().finishPacket();

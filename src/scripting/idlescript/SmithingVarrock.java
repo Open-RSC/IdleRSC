@@ -44,7 +44,7 @@ public class SmithingVarrock extends IdleScript {
 
 	public void scriptStart() {
 		while (controller.isRunning()) {
-			if (controller.getInventoryItemCount(barId) < 5 && !controller.isInBank()) {
+			if (controller.getInventoryItemCount(barId) <= 5 && !controller.isInBank()) {
 				controller.setStatus("@red@Banking");
 				controller.openBank();
 				controller.sleep(1000);

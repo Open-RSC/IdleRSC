@@ -1,6 +1,9 @@
-NOV XXXXXXXXXXXXXXXXXXXXXXXX 2021
+DEC 23 2021 -- XMAS RELEASE
+
+	New JAR release for Coleslaw update.
+
 	API Changes
-		*** logout() will no longer set auto login to false. ***
+		*** logout() will no longer set auto login to false. Use setAutoLogin instead.***
 		 
 	New Scripts:
 		FarmGetInventoryItems -- prints items in the account.
@@ -8,6 +11,7 @@ NOV XXXXXXXXXXXXXXXXXXXXXXXX 2021
 
 	Bugfixes:
 		SmithingVarrock had a glitch which caused it not to bank.
+		AIOCooker bugfix
 
 OCT 31 2021
 	Client update.

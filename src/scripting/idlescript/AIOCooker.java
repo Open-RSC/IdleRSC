@@ -99,7 +99,7 @@ public class AIOCooker extends IdleScript {
 		if(parameters != null && parameters[0].contains(" "))
 			splitParams = parameters[0].split(" ");
 		
-		if (splitParams.length < 3) {
+		if (splitParams == null || splitParams.length < 3) {
 			if(!guiSetup) {
 				setupGUI();
 				guiSetup = true;

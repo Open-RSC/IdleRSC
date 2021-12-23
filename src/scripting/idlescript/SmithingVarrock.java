@@ -246,9 +246,15 @@ public class SmithingVarrock extends IdleScript {
 				}
 				if (ans2Field.getSelectedIndex() == 2 && ans1Field.getSelectedIndex() == 1) {
 					ans3Label.setText("Armour Type");
-					ans3Field.setModel(new JComboBox<>(
-							new String[] { "Chain Legs", "Chain Body", "Plate Body", "Plate Legs", "Plate Skirt" })
-									.getModel());
+					if(controller.isAuthentic()) {
+						ans3Field.setModel(new JComboBox<>(
+								new String[] { "Chain Body", "Plate Body", "Plate Legs", "Plate Skirt" })
+										.getModel());
+					} else {
+						ans3Field.setModel(new JComboBox<>(
+								new String[] { "Chain Legs", "Chain Body", "Plate Body", "Plate Legs", "Plate Skirt" })
+										.getModel());
+					}
 					ans4Label.setText("How many");
 					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());
 					scriptFrame.setVisible(false);

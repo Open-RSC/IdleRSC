@@ -82,7 +82,7 @@ public class Woodcutting extends IdleScript {
 				controller.walkToAsync(newX, newY, 2);
 				controller.sleep(640);
 			} else {
-				controller.walkToAsync(newX, newY, 0);
+				controller.walkToAsync(newX, newY, 2); 
 				controller.sleep(640);
 			}
 		}
@@ -106,14 +106,16 @@ public class Woodcutting extends IdleScript {
 			if (controller.getInventoryItemCount() <= 29) {
 				bankTime = false;
 			}
-			if (controller.getNearestObjectById(treeId) != null && chopTime && !controller.isBatching()) {
+			if (controller.getNearestObjectById(treeId) != null && chopTime && !controller.isBatching()) {  //bot spams  getNearestObjectById and goes to 25% cpu, this specific one 
 				controller.sleepHandler(98, true);
 				int[] treeCoords = controller.getNearestObjectById(treeId);
 				controller.atObject(treeCoords[0], treeCoords[1]);
-				controller.sleep(640);
+				controller.sleep(1200);  //more sleep to let batching catch up!
 				while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
 					controller.sleep(100);
 				}
+			} else {  //added else so when getNearestObjectById == null this function doesn't repeat and overflow cpu usage
+				controller.sleep(1000); //added sleep to this function to stop cpu overflow issue going to high usage (IMPORTANT)
 			}
 			if (bank.isSelected() && bankTime) {
 				while (controller.getNearestNpcByIds(bankerIds, true) == null) {
@@ -125,7 +127,7 @@ public class Woodcutting extends IdleScript {
 					controller.sleep(100);
 				}
 			}
-			while (controller.isInBank() && controller.getInventoryItemCount() > 0) {
+			while (controller.isInBank()) { // && controller.getInventoryItemCount() > 0  //removed, not needed
 				totalLogs = totalLogs + controller.getInventoryItemCount(logId);
 				for (int itemId : controller.getInventoryItemIds()) {
 					if (itemId != 0 && !isAxe(itemId) && itemId != 1263) {
@@ -136,17 +138,19 @@ public class Woodcutting extends IdleScript {
 				bankedLogs = controller.getBankItemCount(logId);
 				controller.closeBank();
 				bankTime = false;
+				controller.sleep(640); //added
 			}
 			if (controller.getInventoryItemCount() == 0 && controller.isInBank()) {
 				controller.sleep(1000);
 				controller.closeBank();
 			}
 			if (!bankTime && !chopTime) {
-				while (controller.getNearestObjectById(treeId) == null) {
+				//controller.sleep(1000);
+				if (controller.getNearestObjectById(treeId) == null) {  //changed to if
 					startWalking(saveX, saveY);
-				}
-				controller.sleep(100);
-				if (controller.getNearestObjectById(treeId) != null) {
+					controller.sleep(340); //added sleep, this one probably not needed, but small sleep after pathwalking is fine
+				} else { //changed to else to remove 2nd getNearestObjectById check
+				//if (controller.getNearestObjectById(treeId) != null) { //removed
 					controller.setStatus("@red@Chopping");
 					chopTime = true;
 					return;

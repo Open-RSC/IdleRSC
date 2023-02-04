@@ -273,19 +273,22 @@ public class K_Paladins extends IdleScript {
 				controller.sleep(340);
 				controller.atObject2(610,2487);  
 				controller.sleep(340);
+				controller.atObject2(610,2487);  
+				controller.sleep(340);
 				if(controller.currentX() == 610 && controller.currentY() == 2488) {  //got stuck here!!!
 					controller.atObject2(610,2487);
 					controller.sleep(1340);
 				}
 				witchhavenToBank();
-				
-		} else if(coords2 == null) {
+		}
+		if(coords2 == null) {
 			controller.setStatus("@red@Chest Empty, Walking...");
 			controller.walkTo(611,2494);
 			controller.atObject(611,2495);
    			controller.sleep(320);
 			controller.walkTo(609,1548);
 			controller.atWallObject(609,1548);  //added this, some chance of breaking before.....
+			controller.sleep(320);
    			if(controller.currentX() == 609 && controller.currentY() == 1548) {
    				controller.atWallObject(609,1548);     //locked door
    				controller.sleep(640);

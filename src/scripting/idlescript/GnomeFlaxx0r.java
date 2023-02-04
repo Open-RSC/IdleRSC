@@ -4,6 +4,8 @@ package scripting.idlescript;
  * This is a basic script that picks flax, optionally spins it, in Tree Stronghold.
  * 
  * @author Dvorak
+ * 
+ * bugfixes by Kaila
  */
 public class GnomeFlaxx0r extends IdleScript {
 	boolean spin = false;
@@ -32,12 +34,14 @@ public class GnomeFlaxx0r extends IdleScript {
 	                	controller.setStatus("@cya@Picking flax!");
 	                    controller.atObject(693, 517);
 	                    controller.sleep(150);
+	    				while(controller.isBatching()) controller.sleep(1000); //added batching - kaila
 	                }
 	                
 	                controller.setStatus("@cya@Spinnin' flax!");
 	                while(controller.currentX() != 692 || controller.currentY() != 1459) {
 	                	controller.atObject(691, 515);
-	                	controller.sleep(1000);
+	                    controller.sleep(2000);
+	    				while(controller.isBatching()) controller.sleep(100);
 	                }
 	                
 	                
@@ -59,10 +63,11 @@ public class GnomeFlaxx0r extends IdleScript {
 	                	controller.sleep(1000);
 	                }
             	} else {
-	                while(controller.getInventoryItemCount() < 30) {
+	                if(controller.getInventoryItemCount() < 30) {
 	                	controller.setStatus("@cya@Picking flax!");
 	                    controller.atObject(712, 517);
-	                    controller.sleep(150);
+	                    controller.sleep(2000);
+	    				while(controller.isBatching()) controller.sleep(100); //added batching (untested)
 	                }            		
             	}
             } else {
@@ -76,20 +81,25 @@ public class GnomeFlaxx0r extends IdleScript {
             	
                 controller.setStatus("@cya@Banking...");
                 controller.openBank();
-
-                while(controller.getInventoryItemCount(675) > 0) {
-                    controller.depositItem(675, controller.getInventoryItemCount(675));
-                    controller.sleep(618);
-                }
-                while(controller.getInventoryItemCount(676) > 0) {
-                    controller.depositItem(676, controller.getInventoryItemCount(676));
-                    controller.sleep(618);
-                }
-                if(spin) 
+        		controller.sleep(1000);
+        		
+        		while(controller.isInBank()) {  //should fix bank freezing
+        			if(controller.getInventoryItemCount(675) > 0) {  //changed to if
+        				controller.depositItem(675, 30);  //just bank all (untested)
+        				controller.sleep(1280); //increased
+        			}
+        			if(controller.getInventoryItemCount(676) > 0) {  //changed to if
+        				controller.depositItem(676, 30);  //just bank all
+        				controller.sleep(1280);  //increased
+        			}
+        			controller.closeBank();
+        			controller.sleep(640);
+        		}
+                if(spin) { 
                 	flaxBanked = controller.getBankItemCount(676);
-                else 
+                } else {
                 	flaxBanked = controller.getBankItemCount(675);
-                
+                }
                 controller.setStatus("@cya@Going back to flax..");
                 
                 controller.walkTo(714, 1459);

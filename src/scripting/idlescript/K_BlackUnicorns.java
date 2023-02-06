@@ -92,6 +92,8 @@ public class K_BlackUnicorns extends IdleScript {
 			    			//controller.walktoNPC(npc.serverIndex,1);
 			    			controller.attackNpc(npc.serverIndex);
 			    			controller.sleep(1000);
+			    		} else {
+							controller.sleep(1000);
 			    		}
 		    		}
 	    			controller.sleep(1380);

@@ -20,7 +20,8 @@ import orsc.ORSCharacter;
 
 /**
  * DamRc by Damrau. Coleslaw only.
- * 
+ * Added artisan crowns AND cosmic runecrafting - Kaila
+ *
  * @author Damrau
  * @version 1.1 Conditional sleeps to help with locking up & cut down on total
  *          amount of packets sent
@@ -48,6 +49,7 @@ public class DamRc extends IdleScript {
 
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
+	boolean crown = false;
 
 	public boolean inArea(int[] nwTile, int[] seTile) {
 		if (controller.currentX() <= nwTile[0] && controller.currentX() >= seTile[0]
@@ -148,8 +150,13 @@ public class DamRc extends IdleScript {
 				}
 			}
 			if (!mineEss) {
+
 				if (inArea(alterNW, alterSE)) {
 					if (controller.getInventoryItemCount(essId) > 0) {
+						if (crown == true && !controller.isItemIdEquipped(1511) && controller.isItemInInventory(1511)) {
+							controller.equipItem(controller.getInventoryItemSlotIndex(1511));
+							controller.sleep(1000);
+						}
 						useObject(alterId);
 						sleepItem(essId, false);
 					} else {
@@ -157,8 +164,7 @@ public class DamRc extends IdleScript {
 						sleepInArea(spotNW, spotSE);
 					}
 				}
-
-				if (!inArea(alterNW, alterSE) && controller.currentY() > alterZ && controller.currentY() <= 600) {
+				if (!inArea(alterNW, alterSE) && controller.currentY() > alterZ && controller.currentY() <= 6000) {
 					if (controller.getInventoryItemCount(essId) > 0) {
 						if (!inArea(spotNW, spotSE)) {
 							walkToSpot();
@@ -211,6 +217,10 @@ public class DamRc extends IdleScript {
 	public void bank() {
 		if (controller.isInBank()) {
 			runesInBank = controller.getBankItemCount(runeId);
+			if (crown == true && !mineEss && !controller.isItemIdEquipped(1511) && controller.getBankItemCount(1511) > 0) {
+				controller.withdrawItem(1511, 1);
+				controller.sleep(640);
+			}
 			if (controller.getInventoryItemCount(runeId) > 0) {
 				status = "Deposit runes";
 				if (debug) {
@@ -412,7 +422,28 @@ public class DamRc extends IdleScript {
 			method = "Body rune crafting";
 			controller.displayMessage("@cya@" + "We're crafting bodies");
 		}
+		//Added Cosmics By Kailash
 		if (i == 6) {
+			taliId = 1306;
+			alterId = 1203;
+			ruinsId = 1202;
+			portalId = 1220;
+			runeId = 46;
+			alterZ = 19;
+			toBank = new int[] { 104, 3566, 100, 3563, 100, 3556, 114, 3555, 130, 3555, 148, 3556, 149, 3541, 155, 3531, 161, 3527,
+					174, 3527 };
+			toSpot = new int[] { 174, 3527, 161, 3527, 155, 3531, 149, 3541, 148, 3556, 130, 3555, 114, 3555, 100, 3555,
+					100, 3563, 104, 3566 };
+			bankNW = new int[] { 182, 3516 };
+			bankSE = new int[] { 168, 3535 };
+			spotNW = new int[] { 110, 3564 };
+			spotSE = new int[] { 101, 3567 };
+			alterNW = new int[] { 845, 15 };
+			alterSE = new int[] { 833, 28 };
+			method = "Cosmic rune crafting";
+			controller.displayMessage("@cya@" + "We're crafting cosmics");
+		}
+		if (i == 7) {
 			mineEss = true;
 			portalId = 1226;
 			runeId = essId;
@@ -434,6 +465,7 @@ public class DamRc extends IdleScript {
 		JLabel headerLabel2 = new JLabel("If mining start at the bank or in the mine please.");
 		JComboBox<String> guiField = new JComboBox<String>();
 		JCheckBox debugCheckbox = new JCheckBox("Debug", false);
+		JCheckBox crownCheckbox = new JCheckBox("Artisan Crown?", false);
 		JButton startScriptButton = new JButton("Start");
 
 		for (guiObject obj : objects) {
@@ -446,6 +478,7 @@ public class DamRc extends IdleScript {
 				controller.displayMessage("@cya@" + "Ty for using DamScripts <3" + " - Damrau");
 				setValuesFromGUI(guiField.getSelectedIndex());
 				debug = debugCheckbox.isSelected();
+				crown = crownCheckbox.isSelected();
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				startTime = System.currentTimeMillis();
@@ -463,6 +496,7 @@ public class DamRc extends IdleScript {
 		scriptFrame.add(headerLabel2);
 		scriptFrame.add(guiField);
 		scriptFrame.add(debugCheckbox);
+		scriptFrame.add(crownCheckbox);
 		scriptFrame.add(startScriptButton);
 
 		centerWindow(scriptFrame);

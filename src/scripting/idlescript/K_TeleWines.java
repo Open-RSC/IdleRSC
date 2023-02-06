@@ -81,8 +81,7 @@ public class K_TeleWines extends IdleScript {
 					controller.sleep(100);
 					controller.walkTo(332,434);
 					controller.sleep(100);
-				}
-				if(coords == null) {
+				} else {
 					controller.sleep(1500);
 				}				
 			}

@@ -98,7 +98,7 @@ public class SpinStrings extends IdleScript {
 				}
 				//if batching do nothing
 				while (controller.isBatching()) {
-					controller.sleep(100);
+					controller.sleep(340);
 				}
 			}
 			// if player is near spinning wheel, not batching, and not banking, and falador selected. spin flax.
@@ -115,7 +115,7 @@ public class SpinStrings extends IdleScript {
 				}
 				//if batching do nothing
 				while (controller.isBatching()) {
-					controller.sleep(100);
+					controller.sleep(340);
 				}
 			}
 			//if player is not near spinning wheel and has materials, walk to spinning wheel

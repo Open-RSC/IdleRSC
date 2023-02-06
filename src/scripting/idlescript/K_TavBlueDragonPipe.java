@@ -152,7 +152,9 @@ public class K_TavBlueDragonPipe extends IdleScript {
 					   	if(npc != null) {
 					    	controller.attackNpc(npc.serverIndex);
 					    	controller.sleep(1000);
-					    }
+					    } else {
+							controller.sleep(1000);
+						}
 				    }
 			    	controller.sleep(1380);
 			    	

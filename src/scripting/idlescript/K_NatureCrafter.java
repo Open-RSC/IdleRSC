@@ -56,7 +56,7 @@ public class K_NatureCrafter extends IdleScript {
 				if(controller.currentY() < 770 && controller.currentY() > 500) {
 					bank();
 					BankToNat();
-					controller.sleep(1380);
+					controller.sleep(100);
 				}
 				if(controller.currentY() > 790) {
 					controller.walkTo(392,803);
@@ -128,28 +128,21 @@ public class K_NatureCrafter extends IdleScript {
 		controller.setStatus("@yel@Buying Runes..");
 		if(!controller.isInShop() && controller.getInventoryItemCount() != 30) {
 			ORSCharacter npc = controller.getNearestNpcById(522, false);
-		   	if(npc != null && controller.currentY() < 760) {
-		   		controller.walktoNPC(npc.serverIndex,0);  //added, bot doesnt always get runes....
+		   	if(npc != null && controller.getInventoryItemCount() != 30 && controller.currentY() < 760) {
+		   		controller.walktoNPC(npc.serverIndex,0);  //added, bot doesnt always get runes if npc moves >2 or 3 tiles away
 		    	controller.npcCommand1(npc.serverIndex);
-		    	controller.sleep(3200); //need LONG sleep or it breaks npccommand
-		    	
-		    	
-		    	
-		    	
-		    	
-		    }
+		    	controller.sleep(4000); //need LONG sleep or it breaks npccommand1
+		    } else {
+				controller.sleep(1000);
+			}
 		}
-		if(controller.isInShop() && controller.getInventoryItemCount() != 30){
-			
-			//totalTopz = totalTopz + controller.getInventoryItemCount(388);
-			//totalBotz = totalBotz + controller.getInventoryItemCount(389);
-			
+		if(controller.isInShop() && controller.getInventoryItemCount() != 30) {
 			controller.shopSell(1299,27); 
-			controller.sleep(2000);
+			controller.sleep(800);
 			controller.shopBuy(1299,27);
-			controller.sleep(1000);
+			controller.sleep(340);
 			controller.closeShop();
-			controller.sleep(640);
+			controller.sleep(340);
 		}
 	}
 	

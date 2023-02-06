@@ -38,7 +38,7 @@ public class SmithingVarrock extends IdleScript {
 		if (scriptStarted) {
 			scriptStart();
 		}
-		
+
 		return 1000; //start() must return a int value now. 
 	}
 
@@ -55,10 +55,11 @@ public class SmithingVarrock extends IdleScript {
 							controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 						}
 					}
-					controller.sleep(429);
+					controller.sleep(1280); // increased sleep here to prevent double banking
 				}
 				if (controller.getInventoryItemCount(168) < 1) {
 					controller.withdrawItem(168, 1);
+					controller.sleep(1000);    //added sleep here
 				}
 				if (controller.getInventoryItemCount(barId) < 1) {
 					controller.withdrawItem(barId, 29);
@@ -73,6 +74,7 @@ public class SmithingVarrock extends IdleScript {
 							controller.getNearestObjectById(50)[1], barId);
 					controller.sleep(8000);
 					if (controller.isInOptionMenu()) {
+						controller.sleep(640); //Added sleep time to fix menuing bug
 						controller.optionAnswer(ans1);
 						controller.sleep(640);
 						controller.optionAnswer(ans2);
@@ -92,13 +94,13 @@ public class SmithingVarrock extends IdleScript {
 					return;
 				}
 			}
-			while (controller.getInventoryItemCount(barId) > 5 && !controller.isInBank()) {
+			if (controller.getInventoryItemCount(barId) > 5 && !controller.isInBank()) { //changed from if to while to fix menuing bug
 				controller.setStatus("Smithing");
 				controller.sleepHandler(98, true);
 				controller.useItemIdOnObject(controller.getNearestObjectById(50)[0],
 						controller.getNearestObjectById(50)[1], barId);
-				controller.sleep(640);
-				if (controller.isInOptionMenu()) {
+				controller.sleep(2000); //increased sleep time to fix menuing bug
+				while (controller.isInOptionMenu()) { //changed from if to while to fix menuing bug
 					controller.optionAnswer(ans1);
 					controller.sleep(640);
 					controller.optionAnswer(ans2);
@@ -249,11 +251,11 @@ public class SmithingVarrock extends IdleScript {
 					if(controller.isAuthentic()) {
 						ans3Field.setModel(new JComboBox<>(
 								new String[] { "Chain Body", "Plate Body", "Plate Legs", "Plate Skirt" })
-										.getModel());
+								.getModel());
 					} else {
 						ans3Field.setModel(new JComboBox<>(
 								new String[] { "Chain Legs", "Chain Body", "Plate Body", "Plate Legs", "Plate Skirt" })
-										.getModel());
+								.getModel());
 					}
 					ans4Label.setText("How many");
 					ans4Field.setModel(new JComboBox<>(new String[] { "1", "5", "10", "all" }).getModel());

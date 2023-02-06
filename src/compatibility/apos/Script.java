@@ -518,7 +518,7 @@ public abstract class Script implements IScript {
 	 * @return the client's experience in specified skill.
 	 */
 	public double getAccurateXpForLevel(int skill) {
-		controller.log("WARNING: Scripts which do fatiguing on IdleRSC may be inaccurate.");
+		//controller.log("WARNING: Scripts which do fatiguing on IdleRSC may be inaccurate.");
 		return controller.getPlayerExperience(skill);
 	}
 

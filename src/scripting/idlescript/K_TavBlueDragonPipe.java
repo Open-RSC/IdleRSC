@@ -13,6 +13,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
 import scripting.idlescript.AIOCooker.FoodObject;
@@ -46,7 +47,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
     int totalHerb = 0;
     int bankDbones = 0;
     int totalTrips = 0;
-    
+	int foodWithdrawAmount = 20;
     
     
    // DRAGON_BONES, 396, 93, LAW_RUNE, 40, WATER_RUNE, 31, 526, 527, 1277
@@ -87,28 +88,39 @@ public class K_TavBlueDragonPipe extends IdleScript {
 	
 	
 	public int start(String parameters[]) {
-		if (!guiSetup) {
-			setupGUI();
-			guiSetup = true;
-		}
 		if (scriptStarted) {
 			controller.displayMessage("@red@Tavelry Blue Dragons (Pipe) - By Kaila");
 			controller.displayMessage("@red@Start in Fally west with gear on, or in dragon room!");
 			controller.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
 			controller.displayMessage("@red@70 Agility required, for the shortcut!");
-			if(controller.isInBank() == true) {
+			if (controller.isInBank() == true) {
 				controller.closeBank();
 			}
-			if(controller.currentY() < 2800) {
+			if (controller.currentY() < 2800) {
 				bank();
-				BankToDragons();  
+				BankToDragons();
 				controller.sleep(1380);
 			}
-			scriptStart();
-		}
-		return 1000; //start() must return a int value now. 
-	}
 
+			scriptStart();
+		} else {
+			if (parameters[0].equals("")) {
+				if (!guiSetup) {
+					setupGUI();
+					guiSetup = true;
+				}
+			} else {
+				try {
+					foodWithdrawAmount = Integer.parseInt(parameters[0]);
+				} catch (Exception e) {
+					System.out.println("Could not parse parameters!");
+					controller.displayMessage("@red@Could not parse parameters!");
+					controller.stop();
+				}
+			}
+		}
+		return 1000; //start() must return a int value now.
+	}
 	public void scriptStart() {
 			while(controller.isRunning()) {
 						
@@ -154,6 +166,10 @@ public class K_TavBlueDragonPipe extends IdleScript {
 					    	controller.sleep(1000);
 					    } else {
 							controller.sleep(1000);
+							if (controller.currentX() != 370 || controller.currentY() != 3353){
+								controller.walkTo(370,3353);
+								controller.sleep(1000);
+							}
 						}
 				    }
 			    	controller.sleep(1380);
@@ -244,7 +260,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
 		//controller.npcCommand2(792);   //need to fix to work with colodian option2 on npc?
-		controller.sleep(2000);
+		controller.sleep(500);
 		
 		while(controller.isInBank()){
 			
@@ -274,7 +290,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 			
 		
 			for (int itemId : controller.getInventoryItemIds()) {
-				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 546 ) {
+				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 ) {
 					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				}
 			}
@@ -300,8 +316,8 @@ public class K_TavBlueDragonPipe extends IdleScript {
 				controller.withdrawItem(strPot[2], 1);
 				controller.sleep(340);
 			}
-			if(controller.getInventoryItemCount(546) < 20) {  //withdraw 20 shark
-				controller.withdrawItem(546, 20 - controller.getInventoryItemCount(546));
+			if(controller.getInventoryItemCount(546) < foodWithdrawAmount) {  //withdraw 20 shark
+				controller.withdrawItem(546, foodWithdrawAmount - controller.getInventoryItemCount(546));
 				controller.sleep(340);
 			}
 			bankDbones = controller.getBankItemCount(814);
@@ -384,6 +400,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
     	controller.setStatus("@gre@Walking to Blue Dragons..");
 		controller.walkTo(327,552);
 		controller.walkTo(324,548);
+		controller.walkTo(324,541);
 		controller.walkTo(324,530); 
 		controller.walkTo(317,523);
 		controller.walkTo(317,515);
@@ -395,7 +412,9 @@ public class K_TavBlueDragonPipe extends IdleScript {
 			controller.sleep(640);
 		}
 		controller.walkTo(342,493);
-		controller.walkTo(352,503);
+		controller.walkTo(350,501);
+		controller.walkTo(355,506);
+		controller.walkTo(360,511);
 		controller.walkTo(362,513);
 		controller.walkTo(367,514);
 		controller.walkTo(374,521);
@@ -444,11 +463,16 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		JLabel label1 = new JLabel("Start in Fally west with gear on, or in Dragon room!");
 		JLabel label2 = new JLabel("Sharks, Law, Water, Air IN BANK required");
 		JLabel label3 = new JLabel("70 Agility required, for the shortcut!");
+		JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+		JTextField foodWithdrawAmountField = new JTextField(String.valueOf(20));
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(!foodWithdrawAmountField.getText().equals(""))
+					foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				startTime = System.currentTimeMillis();
@@ -464,6 +488,8 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
 		scriptFrame.add(label3);
+		scriptFrame.add(foodWithdrawAmountLabel);
+		scriptFrame.add(foodWithdrawAmountField);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);

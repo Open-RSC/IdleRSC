@@ -80,10 +80,10 @@ public class Woodcutting extends IdleScript {
 			}
 			if (!controller.isTileEmpty(newX, newY)) {
 				controller.walkToAsync(newX, newY, 2);
-				controller.sleep(640);
+				controller.sleep(1000);
 			} else {
 				controller.walkToAsync(newX, newY, 2); 
-				controller.sleep(640);
+				controller.sleep(1000);
 			}
 		}
 	}
@@ -112,17 +112,17 @@ public class Woodcutting extends IdleScript {
 				controller.atObject(treeCoords[0], treeCoords[1]);
 				controller.sleep(1200);  //more sleep to let batching catch up!
 				while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-					controller.sleep(100);
+					controller.sleep(1000);
 				}
 			} else {  //added else so when getNearestObjectById == null this function doesn't repeat and overflow cpu usage
-				controller.sleep(1000); //added sleep to this function to stop cpu overflow issue going to high usage (IMPORTANT)
+				controller.sleep(2000); //added sleep to this function to stop cpu overflow issue going to high usage (IMPORTANT)
 			}
 			if (bank.isSelected() && bankTime) {
 				while (controller.getNearestNpcByIds(bankerIds, true) == null) {
 					startWalking(bankSelX, bankSelY);
 				}
 				controller.setStatus("@red@Banking");
-				while (!controller.isInBank()) {
+				if (!controller.isInBank()) { //changed from while to if, might fix occasional bank break?
 					controller.openBank();
 					controller.sleep(100);
 				}
@@ -133,16 +133,17 @@ public class Woodcutting extends IdleScript {
 					if (itemId != 0 && !isAxe(itemId) && itemId != 1263) {
 						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 					}
-					controller.sleep(10);
+					controller.sleep(100);
 				}
 				bankedLogs = controller.getBankItemCount(logId);
+				controller.sleep(100);
 				controller.closeBank();
 				bankTime = false;
-				controller.sleep(640); //added
+				controller.sleep(1000); //added
 			}
 			if (controller.getInventoryItemCount() == 0 && controller.isInBank()) {
-				controller.sleep(1000);
 				controller.closeBank();
+				controller.sleep(100);
 			}
 			if (!bankTime && !chopTime) {
 				//controller.sleep(1000);

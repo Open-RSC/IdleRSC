@@ -130,6 +130,9 @@ public class DamRc extends IdleScript {
 					} else {
 						if (!controller.isBatching()) {
 							useObject(essRockId);
+							controller.sleep(1000); //sleep after clicking rock (wait for batching)
+						} else {
+							controller.sleep(1000); //should reduce cpu usage while batching
 						}
 					}
 				}
@@ -295,6 +298,7 @@ public class DamRc extends IdleScript {
 			add(new guiObject("Water - Draynor"));
 			add(new guiObject("Fire -  Al Kharid"));
 			add(new guiObject("Body - Edge"));
+			add(new guiObject("Cosmic - Zanaris"));
 			add(new guiObject("Mine ess - Varrock east"));
 
 		}

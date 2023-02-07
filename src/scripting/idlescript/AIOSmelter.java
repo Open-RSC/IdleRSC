@@ -29,7 +29,7 @@ import javax.swing.JLabel;
  * * Goldsmithing gauntlets support 
  * * Cannonball support
  * * Silver/gold/gem items craftable
- * 
+ * * All Crowns added - Kaila
  * 
  * @author Dvorak (modified by Searos)
  */
@@ -51,7 +51,8 @@ public class AIOSmelter extends IdleScript {
 			"Holy symbol","Unholy symbol","Gold ring","Gold necklace","Gold amulet","Sapphire ring",
 			"Sapphire necklace","Sapphire amulet","Emerald ring","Emerald necklace","Emerald amulet",
 			"Ruby ring","Ruby necklace","Ruby amulet","Diamond ring","Diamond necklace","Diamond amulet",
-			"Dragonstone ring","Dragonstone necklace","Dragonstone amulet"};
+			"Dragonstone ring","Dragonstone necklace","Dragonstone amulet","Gold crown","Sapphire crown",
+			"Emerald crown","Ruby crown","Diamond crown","Dragonstone crown"};
 	
 	String[] destinations = new String[] { "Falador", "Al-Kharid" };
 	
@@ -265,6 +266,53 @@ public class AIOSmelter extends IdleScript {
 					put(523, 14);
 				}
 			});
+			//Gold Crown
+			put(1503, new HashMap<Integer, Integer>() {
+				{
+					put(1502, 1);
+					put(172, 29);
+				}
+			});
+			//Sapp Crown
+			put(1504, new HashMap<Integer, Integer>() {
+				{
+					put(1502, 1);
+					put(172, 14);
+					put(164, 14);
+				}
+			});
+			//Emerald Crown
+			put(1505, new HashMap<Integer, Integer>() {
+				{
+					put(1502, 1);
+					put(172, 14);
+					put(163, 14);
+				}
+			});
+			//ruby Crown
+			put(1506, new HashMap<Integer, Integer>() {
+				{
+					put(1502, 1);
+					put(172, 14);
+					put(162, 14);
+				}
+			});
+			//Diamond Crown
+			put(1507, new HashMap<Integer, Integer>() {
+				{
+					put(1502, 1);
+					put(172, 14);
+					put(161, 14);
+				}
+			});
+			//Dragonstone Crown
+			put(1508, new HashMap<Integer, Integer>() {
+				{
+					put(1502, 1);
+					put(172, 14);
+					put(523, 14);
+				}
+			});
 		}
 	};
 
@@ -347,10 +395,13 @@ public class AIOSmelter extends IdleScript {
 				mouldAnswer = 0;
 			} else if(controller.getInventoryItemCount(295) > 0) {
 				oreId = 172;
-				mouldAnswer = 1;
+				mouldAnswer = 0;   //was 1, Fixes menuing after crafting update
 			} else if(controller.getInventoryItemCount(294) > 0) {
 				oreId = 172;
-				mouldAnswer = 2;
+				mouldAnswer = 0;  //was 2, Fixes menuing after crafting update
+			} else if(controller.getInventoryItemCount(1502) > 0) {
+				oreId = 172;
+				mouldAnswer = 0;
 			}
 
 			if(controller.getInventoryItemCount(164) > 0)
@@ -367,7 +418,7 @@ public class AIOSmelter extends IdleScript {
 			while (controller.getInventoryItemCount(oreId) > 0 && controller.getNearestObjectById(118) != null) {
 
 				while (controller.isBatching())
-					controller.sleep(10);
+					controller.sleep(340);
 
 				if (controller.getInventoryItemCount(699) > 0) { // wield gauntlets
 					controller.setStatus("Wielding gauntlets..");
@@ -393,7 +444,7 @@ public class AIOSmelter extends IdleScript {
 				}
 
 				while (controller.isBatching())
-					controller.sleep(10);
+					controller.sleep(340);
 			}
 
 		} else {

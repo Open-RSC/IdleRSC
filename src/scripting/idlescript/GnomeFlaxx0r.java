@@ -34,14 +34,14 @@ public class GnomeFlaxx0r extends IdleScript {
 	                	controller.setStatus("@cya@Picking flax!");
 	                    controller.atObject(693, 517);
 	                    controller.sleep(150);
-	    				while(controller.isBatching()) controller.sleep(1000); //added batching - kaila
+						while(controller.isBatching() && controller.getInventoryItemCount() < 30)  controller.sleep(640); //added batching - kaila
 	                }
 	                
 	                controller.setStatus("@cya@Spinnin' flax!");
 	                while(controller.currentX() != 692 || controller.currentY() != 1459) {
 	                	controller.atObject(691, 515);
 	                    controller.sleep(2000);
-	    				while(controller.isBatching()) controller.sleep(100);
+						while(controller.isBatching() && controller.getInventoryItemCount() < 30)  controller.sleep(640);  //added batching (spinning untested)
 	                }
 	                
 	                
@@ -67,7 +67,7 @@ public class GnomeFlaxx0r extends IdleScript {
 	                	controller.setStatus("@cya@Picking flax!");
 	                    controller.atObject(712, 517);
 	                    controller.sleep(2000);
-	    				while(controller.isBatching()) controller.sleep(100); //added batching (untested)
+						while(controller.isBatching() && controller.getInventoryItemCount() < 30)  controller.sleep(640); //added batching - kaila
 	                }            		
             	}
             } else {

@@ -128,7 +128,9 @@ public class K_EdgeChaosDruids extends IdleScript {
 					    	//controller.walktoNPC(npc.serverIndex,1);
 					    	controller.attackNpc(npc.serverIndex);
 					    	controller.sleep(1000);
-					    }
+					    } else {
+							controller.sleep(1000);
+						}
 				    }
 			    	controller.sleep(1380);
 				} else if(controller.getInventoryItemCount() > 29 || controller.getInventoryItemCount(546) == 0) {

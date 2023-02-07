@@ -31,6 +31,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
+	boolean d2hWield = false;
 	
 	int totalDbones = 0;
     int totalRdagger = 0;
@@ -114,10 +115,10 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			guiSetup = true;
 		}
 		if (scriptStarted) {
-			controller.displayMessage("@red@Tavelry Black Demons - By Kaila");
+			controller.displayMessage("@red@Taverley Black Demons - By Kaila");
 			controller.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
 			controller.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
-			controller.displayMessage("70 Agility required, for the shortcut!");
+			controller.displayMessage("@red@70 Agility required, for the shortcut!");
 			if(controller.isInBank() == true) {
 				controller.closeBank();
 			}
@@ -178,6 +179,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 					   	if(npc != null) {
 					    	controller.attackNpc(npc.serverIndex);
 					    	controller.sleep(1000);
+					    } else {
+							controller.sleep(1000);
 					    }
 				    }
 			    	controller.sleep(1380);
@@ -262,7 +265,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			
 			//ppotCount() = (controller.getInventoryItemCount(483) + controller.getInventoryItemCount(483) +controller.getInventoryItemCount(483));
 			for (int itemId : controller.getInventoryItemIds()) {
-				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 546 && itemId != 420 && itemId != 485 && itemId != 484 && itemId != 483 ) {
+				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 546 && itemId != 420 && itemId != 485 && itemId != 484 && itemId != 483 && itemId != 1346 ) {
 					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				}
 			}
@@ -443,7 +446,9 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.sleep(640);
 		controller.walkTo(372,3364);
 		controller.walkTo(377,3369);
-		controller.equipItem(controller.getInventoryItemSlotIndex(404));
+		if (d2hWield == true) {
+			controller.equipItem(controller.getInventoryItemSlotIndex(1346));
+		}
 		controller.enablePrayer(controller.getPrayerId("Paralyze Monster"));
 		controller.sleep(320);
 		controller.walkTo(380,3372);
@@ -554,18 +559,25 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 		frame.setLocation(x, y);
 	}
+	public void setValuesFromGUI(JCheckBox d2hCheckbox) {
+		if(d2hCheckbox.isSelected()) {
+			d2hWield = true;
+		}
+	}
 	public void setupGUI() {
-		JLabel header = new JLabel("Tavelry Black Demons (Pipe) - By Kaila");
+		JLabel header = new JLabel("Taverley Black Demon (Pipe) - By Kaila");
 		JLabel label1 = new JLabel("Start in Fally west with gear on, or in Demon room!");
 		JLabel label2 = new JLabel("Sharks, Law, Water, Air IN BANK required");
 		JLabel label3 = new JLabel("70 Agility required, for the shortcut!");
 		JLabel label4 = new JLabel("Bot will attempt to wield dragonfire shield");
 		JLabel label5 = new JLabel("When walking through Blue Dragon Room");
+		JCheckBox d2hCheckbox = new JCheckBox("Check This if using D2H");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				setValuesFromGUI(d2hCheckbox);
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				startTime = System.currentTimeMillis();
@@ -583,6 +595,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		scriptFrame.add(label3);
 		scriptFrame.add(label4);
 		scriptFrame.add(label5);
+		scriptFrame.add(d2hCheckbox);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);

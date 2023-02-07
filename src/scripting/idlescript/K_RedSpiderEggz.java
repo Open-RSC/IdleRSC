@@ -54,7 +54,7 @@ public class K_RedSpiderEggz extends IdleScript {
 					bank();
 					eat();
 					BankToEgg();
-					controller.sleep(1380);
+					controller.sleep(100);
 				}
 				scriptStart();
 			}
@@ -82,11 +82,6 @@ public class K_RedSpiderEggz extends IdleScript {
 				} else {  //fixed cpu overrun issue
 					controller.sleep(1000); //fixed cpu overrun issue
 				}
-				
-				
-				
-				
-				
 			}
 		}
 					
@@ -127,7 +122,7 @@ public class K_RedSpiderEggz extends IdleScript {
 				controller.withdrawItem(546, 1);
 				controller.sleep(340);
 			}
-			if(controller.getBankItemCount(546) == 0) {
+			if(controller.getBankItemCount(546) == 0 || controller.getBankItemCount(33) == 0 || controller.getBankItemCount(34) == 0 || controller.getBankItemCount(42) == 0) {
 				controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
 				controller.logout();
@@ -150,7 +145,7 @@ public class K_RedSpiderEggz extends IdleScript {
 			
 			while(controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.walkTo(201,3240, 0, true);
 				controller.sleep(250);
 			}
 			controller.setStatus("@red@Eating..");
@@ -167,16 +162,16 @@ public class K_RedSpiderEggz extends IdleScript {
 			}
 			if(!ate) {  //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
 				controller.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-	    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-	    		controller.sleep(308);
+				controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
+				controller.sleep(500);
+				if(controller.currentY() > 3000) {
+					controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
+					controller.sleep(500);
+				}
 		    	if(controller.currentY() > 3000) {
 		    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-		    		controller.sleep(308);
+		    		controller.sleep(500);
 				}
-	    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-	    		controller.sleep(308);
-	    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-	    		controller.sleep(308);
 				controller.walkTo(120,644);
 				controller.atObject(119,642);
 				controller.walkTo(217,447);

@@ -46,15 +46,15 @@ public class K_WildyFireGiants extends IdleScript {
     int totalTooth = 0;
     int totalDstone = 0;
     int totalLeft = 0;
-    int totalSpear = 0;  //~18-20 max lines of text
-    int totalMed = 0; //line 18 here with runtime
+    int totalSpear = 0;
+    int totalMed = 0;
     int totalHerb = 0;
     int totalTrips = 0;
     
 	int[] bones = {20, 413, 604, 814};
    	int[] attackPot = {488,487,486};
    	int[] strPot = {494,493,492};
-	int[] loot = {  //413,		 // big bones
+	int[] loot = {  //413,   // big bones //un-comment this to loot and bury dbones, it will reduce Kills per Hr significantly b/c of Shadow Spiders
 					438, 	 //Grimy ranarr
 					439,  	 //Grimy irit
 					440,  	 //Grimy ava
@@ -173,17 +173,20 @@ public class K_WildyFireGiants extends IdleScript {
 				    	controller.sleepHandler(98, true);
 					   	ORSCharacter npc = controller.getNearestNpcById(344, false);
 					   	if(npc != null) {
-					    	controller.walktoNPC(npc.serverIndex,1);
-					    	controller.attackNpc(npc.serverIndex);
-					    	controller.sleep(1000);
-					    }
+							controller.walktoNPC(npc.serverIndex, 1);
+							controller.attackNpc(npc.serverIndex);
+							controller.sleep(1000);
+						} else {
+							controller.sleep(1000);
+						}
 				    }
+					controller.sleep(340);
 				}
 				if(controller.getInventoryItemCount() == 30) {
 					while(controller.isInCombat()) {
 						controller.setStatus("@red@Leaving combat..");
 						controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-						controller.sleep(250);
+						controller.sleep(340);
 					}
 					controller.setStatus("@red@Eating Food to Loot..");
 
@@ -228,7 +231,7 @@ public class K_WildyFireGiants extends IdleScript {
 		while(controller.isInCombat()) {
 			controller.setStatus("@red@Leaving combat..");
 			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
+			controller.sleep(340);
 		}
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
 			controller.itemCommand(attackPot[0]);
@@ -252,7 +255,7 @@ public class K_WildyFireGiants extends IdleScript {
 		while(controller.isInCombat()) {
 			controller.setStatus("@red@Leaving combat..");
 			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
+			controller.sleep(340);
 		}
 		if(controller.getInventoryItemCount(strPot[0]) > 0) {
 			controller.itemCommand(strPot[0]);
@@ -357,7 +360,7 @@ public class K_WildyFireGiants extends IdleScript {
 		int panicLvl = controller.getBaseStat(controller.getStatId("Hits")) - 50;
 
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < panicLvl) {
-			controller.setStatus("@red@We've taken massive damage! Running Away!.");
+			controller.setStatus("@red@We've taken massive damage! Running Away!.");  //Tested and when panic hp goToBank then Logout is working
 			controller.sleep(308);
 			GiantsToBank();
 			bank();
@@ -376,7 +379,7 @@ public class K_WildyFireGiants extends IdleScript {
 			while(controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
+				controller.sleep(340);
 			}
 			controller.setStatus("@red@Eating..");
 			
@@ -411,7 +414,6 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(340);
 		}
 		controller.walkTo(275,2953);
-		eat();
 		controller.walkTo(282,2969);  //broke hgere
 		if(controller.getObjectAtCoord(281,2969) == 57) {
 					//&& controller.currentX() < 285 && controller.currentX() > 280 && controller.currentY() < 2974 && controller.currentY() > 2965) {
@@ -421,7 +423,6 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(340);
 		}
 		controller.walkTo(277,2971);
-		eat();
 		controller.walkTo(273,2972);
 		if(controller.getObjectAtCoord(272,2972) == 57) {
 					//&& controller.currentX() < 275 && controller.currentX() > 269 && controller.currentY() < 2975 && controller.currentY() > 2969) {
@@ -431,21 +432,22 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(340);
 		}
 		controller.walkTo(269,2972);
-		eat();
 		controller.walkTo(269,2963);
-		controller.atObject(268,2960); 
-		controller.sleep(640);
-		while(controller.currentX() == 269 && controller.currentY() == 2963) {
-			controller.setStatus("@gre@Going up Stairs..");  //bot breaks here!!!!
-			controller.walkTo(269,2963);
-			controller.atObject(268,2960);  //gate wont break if someone else opens it
-			controller.sleep(340);
+		controller.setStatus("@gre@Trying Stairs.."); 
+		controller.atObject(268,2960);   //try stairs once
+		controller.sleep(1280);
+		if(controller.currentX() == 269 && controller.currentY() == 2963) {
+			controller.setStatus("@gre@Going up Stairs..");   //bot breaks here sometimes????
+			while(controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(269,2963);
+				controller.sleep(100);
+			}
+			controller.atObject(268,2960);
+			controller.sleep(1000);
 		}
-		eat();
-		controller.sleep(100);
 		controller.walkTo(268,126);
 		controller.walkTo(254,126);
-		eat();
 		controller.walkTo(232,104);
 		controller.walkTo(227,105);
 		controller.sleep(340);
@@ -456,7 +458,6 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.openDoor(227,106);
 				controller.sleep(340);
 		}
-		eat();
 		controller.walkTo(227,106);
 		controller.sleep(1000);
 		//if(controller.currentX() > 224 && controller.currentX() < 231 && controller.currentY() < 107) {
@@ -477,7 +478,6 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(300);
 			}
 		}
-		eat();
 		controller.walkTo(226,110);
 		controller.sleep(340);
 		if(!controller.isDoorOpen(226,110)) {
@@ -499,9 +499,12 @@ public class K_WildyFireGiants extends IdleScript {
 	
     public void BankToStair() {
 		controller.setStatus("@gre@Walking to Fire Giants..");
+		controller.walkTo(453, 3374);
 		controller.walkTo(450, 3370);
 		controller.walkTo(446, 3368);
 		controller.sleep(340);
+		controller.atObject(446, 3367);
+		controller.sleep(640);
 		if (controller.currentX() == 446 && controller.currentY() == 3368) {
 			controller.atObject(446, 3367);
 			controller.sleep(640);
@@ -515,7 +518,6 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.atWallObject(226, 110);
 				controller.sleep(340);
 		}
-		eat();
 		controller.walkTo(227, 109);
 		controller.sleep(340);
 		if (controller.currentY() > 108 && controller.currentY() < 112) {
@@ -526,19 +528,22 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(300);
 			}
 		}
-		eat();
 		controller.walkTo(227, 107);
-		controller.sleep(1000);
-		//if (controller.currentY() < 109 && controller.currentY() > 106) {
-			while (controller.getWallObjectIdAtCoord(227, 107) == 24) { //still breaking here
-				controller.setStatus("@gre@Cutting Outer Web..");
-				controller.walkTo(227, 107);
-				controller.atWallObject(227, 107);
-				controller.sleep(300);
-			}
-		//}
+		controller.sleep(340);
+		controller.atWallObject(227, 107);
+		controller.sleep(300);
+		while (controller.getWallObjectIdAtCoord(227, 107) == 24) { //still breaking here???
+			controller.setStatus("@gre@Cutting Outer Web..");
+			controller.walkTo(227, 107);
+			controller.atWallObject(227, 107);
+			controller.sleep(300);
+		}
+		if (controller.getWallObjectIdAtCoord(227, 107) == -1) {  //this should fix the web break!!
+			controller.setStatus("@gre@Walkin..");
+			controller.walkTo(227, 106);
+			controller.sleep(300);
+		}
 		controller.walkTo(227, 106);
-		eat();
 		controller.sleep(340);
 		if (!controller.isDoorOpen(227, 106)) { 
 				//&& controller.currentX() < 228 && controller.currentX() > 225 && controller.currentY() == 106) {
@@ -580,7 +585,6 @@ public class K_WildyFireGiants extends IdleScript {
 			}
 		//}
 		controller.walkTo(278,2970);
-		eat();
 		controller.walkTo(281,2970);
 		controller.sleep(340);
 		//if(controller.currentX() < 285 && controller.currentX() > 279 && controller.currentY() < 2974 && controller.currentY() > 2965) {
@@ -592,9 +596,7 @@ public class K_WildyFireGiants extends IdleScript {
 			}
 		//}
 		controller.walkTo(283,2969);
-		eat();
 		controller.walkTo(281,2962);
-		eat();
 		controller.walkTo(274,2953);
 		controller.sleep(340);
 		//if(controller.currentX() < 277 && controller.currentX() > 271 && controller.currentY() < 2958 && controller.currentY() > 2950) {

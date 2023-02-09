@@ -441,6 +441,7 @@ public class K_WildyFireGiants extends IdleScript {
 			while(controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(269,2963);
+				controller.atObject(268,2960);
 				controller.sleep(100);
 			}
 			controller.atObject(268,2960);

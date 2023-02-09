@@ -115,8 +115,10 @@ public class K_Paladins extends IdleScript {
 				    			controller.setStatus("@yel@Thieving Paladins");
 						    	controller.thieveNpc(npc.serverIndex);
 						    	controller.sleep(500);
-								
-						    }
+							} else {
+								controller.sleep(1000);
+							}
+							controller.sleep(100);
 					    }
 						for(int lootId : loot) {
 							int[] coords = controller.getNearestItemById(lootId);
@@ -124,7 +126,10 @@ public class K_Paladins extends IdleScript {
 								controller.setStatus("@yel@Looting.."); 
 					   			controller.pickupItem(coords[0], coords[1], lootId, true, true);
 					   			controller.sleep(618);
-					   		}
+							} else {
+								controller.sleep(1000);
+							}
+							controller.sleep(100);
 					   	}
 				    }
 					if(controller.getInventoryItemCount(546) == 0) {   //bank if no food-
@@ -143,6 +148,7 @@ public class K_Paladins extends IdleScript {
 						}
 					}
 					leaveCombat();
+					controller.sleep(100);
 				} 
 			}
 			

@@ -130,6 +130,10 @@ public class K_EdgeChaosDruids extends IdleScript {
 					    	controller.sleep(1000);
 					    } else {
 							controller.sleep(1000);
+							if (controller.currentX() != 218 || controller.currentY() != 3245){
+								controller.walkTo(218,3245);
+								controller.sleep(1000);
+							}
 						}
 				    }
 			    	controller.sleep(1380);
@@ -299,10 +303,17 @@ public class K_EdgeChaosDruids extends IdleScript {
 		controller.atObject(215,468);
 		controller.sleep(640);
 		controller.walkTo(217,3283);
+		controller.walkTo(211,3273);
+		if(controller.getObjectAtCoord(211,3272) == 57) {
+			controller.setStatus("@gre@Opening Giants Gate..");
+			controller.walkTo(211,3273);
+			controller.atObject(211,3272);
+			controller.sleep(340);
+		}
 		controller.walkTo(204,3272);
 		controller.walkTo(197,3266);
 		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3266) {
-			controller.atObject(196,3266);  //gate wont break if someone else opens it
+			controller.atObject(196,3266);  //"while" for gate wont break if someone else opens it
 			controller.sleep(640);
 		}
 		controller.walkTo(200,3254);

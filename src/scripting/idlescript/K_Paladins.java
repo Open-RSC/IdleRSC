@@ -17,10 +17,12 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila");
- * Start in Edge bank with Armor");
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
- * 31 Magic Required for escape tele");
+ * Paladin Tower Thiever - By Kaila
+ * Start in Ardy South Bank OR in Paladin Tower
+ * Sharks in bank REQUIRED, can be changed in script
+ * Switching to Defensive combat mode is ideal.
+ * Low Atk/Str and Higher Def is more Efficient
+ * Ensure to never wield weapons when Thieving.
  * 
  * Author - Kaila
  */
@@ -97,60 +99,55 @@ public class K_Paladins extends IdleScript {
 	}
 
 	public void scriptStart(){
-			while(controller.isRunning()) {
-						
-				eat();
-				if(controller.isInCombat()) {  
-					controller.setStatus("@red@Leaving combat..");
-					controller.walkTo(610, 1549, 0, true);
-					controller.sleep(800);
-				} //added many leaveCombat throughout to fix breaking (hopefully)
+		while(controller.isRunning()) {
 
-					if(controller.getInventoryItemCount(546) > 0 && controller.currentY() > 1547 && controller.currentY() < 1552 ) { 
-						
-						
-						if(!controller.isInCombat()) {
-						   	ORSCharacter npc = controller.getNearestNpcById(323, false);
-						   	if(npc != null) {
-				    			controller.setStatus("@yel@Thieving Paladins");
-						    	controller.thieveNpc(npc.serverIndex);
-						    	controller.sleep(500);
-							} else {
-								controller.sleep(1000);
-							}
-							controller.sleep(100);
-					    }
-						for(int lootId : loot) {
-							int[] coords = controller.getNearestItemById(lootId);
-							if(coords != null) {      //Loot
-								controller.setStatus("@yel@Looting.."); 
-					   			controller.pickupItem(coords[0], coords[1], lootId, true, true);
-					   			controller.sleep(618);
-							} else {
-								controller.sleep(1000);
-							}
-							controller.sleep(100);
-					   	}
-				    }
-					if(controller.getInventoryItemCount(546) == 0) {   //bank if no food-
-						controller.setStatus("@yel@Banking..");
-						PaladinsToBank();
-						bank();
-						BankToPaladins();
-						controller.sleep(618);
-					}
-					if(controller.getInventoryItemCount() == 30) {
-						leaveCombat();
-						controller.setStatus("@red@Eating Food to Loot..");
-						if(controller.getInventoryItemCount(546) > 0) {
-							controller.itemCommand(546);
-							controller.sleep(700);
-						}
-					}
-					leaveCombat();
-					controller.sleep(100);
-				} 
+			eat();
+			if(controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(610, 1549, 0, true);
+				controller.sleep(800);
 			}
+			if(controller.getInventoryItemCount(546) > 0 && controller.currentY() > 1547 && controller.currentY() < 1552 ) {
+
+				if(!controller.isInCombat()) {
+					controller.setStatus("@yel@Thieving Paladins");
+					ORSCharacter npc = controller.getNearestNpcById(323, false);
+					if(npc != null) {
+						controller.thieveNpc(npc.serverIndex);
+						controller.sleep(100); //this sleep time is important 
+					} else {
+						controller.sleep(100); //this sleep time is important
+					}
+				}
+				for(int lootId : loot) {
+					int[] coords = controller.getNearestItemById(lootId);
+					if(coords != null) {      //Loot
+						controller.setStatus("@yel@Looting..");
+						controller.pickupItem(coords[0], coords[1], lootId, true, true);
+						controller.sleep(618); //ignore this sleep time
+					} else {
+						controller.sleep(50); //this sleep time is important (total of all 3 sleep times should be about 200-300ms to prevent high cpu usage)
+					}
+				}
+			}
+			if(controller.getInventoryItemCount(546) == 0) {   //bank if no food-
+				controller.setStatus("@yel@Banking..");
+				PaladinsToBank();
+				bank();
+				BankToPaladins();
+				controller.sleep(618);
+			}
+			if(controller.getInventoryItemCount() == 30) {
+				leaveCombat();
+				controller.setStatus("@red@Eating Food to Loot..");
+				if(controller.getInventoryItemCount(546) > 0) {
+					controller.itemCommand(546);
+					controller.sleep(700);
+				}
+			}
+		}
+	}
+
 			
 			
 
@@ -214,7 +211,7 @@ public class K_Paladins extends IdleScript {
 		
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(2000);
+		controller.sleep(640); //lower?
 		
 		if(controller.isInBank()){
 		

@@ -88,6 +88,10 @@ public class K_FastBowFletcher extends IdleScript {
 				}
 				controller.sleep(100);
 			}
+			if (controller.getInventoryItemCount(13) < 1) {
+				controller.withdrawItem(13, 1);
+				controller.sleep(320);
+			}
 			if(controller.getInventoryItemCount() < 30) {
 				controller.withdrawItem(logId, 29);
 				controller.sleep(650);

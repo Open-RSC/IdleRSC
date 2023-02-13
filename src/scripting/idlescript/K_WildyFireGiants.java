@@ -127,29 +127,29 @@ public class K_WildyFireGiants extends IdleScript {
 	}
 
 	public void scriptStart() {
-			while(controller.isRunning()) {
-					
-				buryBones();
-				eat();
-						
-				if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
-					controller.dropItem(controller.getInventoryItemSlotIndex(465));
-				}
-				if(controller.getInventoryItemCount(546) > 0) {
-					if(controller.getInventoryItemCount() < 30) {
-			 		boolean lootPickedUp = false; 
-				   	for(int lootId : loot) {
-				   		int[] coords = controller.getNearestItemById(lootId);
-		        		if(coords != null && this.isWithinLootzone(coords[0], coords[1])) {
+		while(controller.isRunning()) {
+
+			buryBones();
+			eat();
+
+			if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
+				controller.dropItem(controller.getInventoryItemSlotIndex(465));
+			}
+			if(controller.getInventoryItemCount(546) > 0) {
+				if(controller.getInventoryItemCount() < 30) {
+					boolean lootPickedUp = false;
+					for(int lootId : loot) {
+						int[] coords = controller.getNearestItemById(lootId);
+						if(coords != null && this.isWithinLootzone(coords[0], coords[1])) {
 							controller.setStatus("@yel@Looting..");
 							controller.walkTo(coords[0], coords[1]);
-				   			controller.pickupItem(coords[0], coords[1], lootId, true, true);
-				   			controller.sleep(618);
-				   		}
-				   	}
-				   	if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
-				  		continue;
-				   	
+							controller.pickupItem(coords[0], coords[1], lootId, true, true);
+							controller.sleep(618);
+						}
+					}
+					if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
+						continue;
+
 					if(controller.getInventoryItemCount(795) > 0 || controller.getInventoryItemCount(1277) > 0) {  //bank if d med, or left half in inv
 						controller.setStatus("@yel@DANK drop acquired, Banking..");
 						GiantsToBank();
@@ -158,28 +158,28 @@ public class K_WildyFireGiants extends IdleScript {
 						stairToGiants();
 						controller.sleep(618);
 					}
-				   	if(controller.getCurrentStat(controller.getStatId("Attack")) == controller.getBaseStat(controller.getStatId("Attack"))) {
-				   		if(controller.getInventoryItemCount(attackPot[0]) > 0 || controller.getInventoryItemCount(attackPot[1]) > 0 || controller.getInventoryItemCount(attackPot[2]) > 0 ) {
-				   		attackBoost();
+					if(controller.getCurrentStat(controller.getStatId("Attack")) == controller.getBaseStat(controller.getStatId("Attack"))) {
+						if(controller.getInventoryItemCount(attackPot[0]) > 0 || controller.getInventoryItemCount(attackPot[1]) > 0 || controller.getInventoryItemCount(attackPot[2]) > 0 ) {
+							attackBoost();
 						}
-				   	}
-				   	if(controller.getCurrentStat(controller.getStatId("Strength")) == controller.getBaseStat(controller.getStatId("Strength"))) {
+					}
+					if(controller.getCurrentStat(controller.getStatId("Strength")) == controller.getBaseStat(controller.getStatId("Strength"))) {
 						if(controller.getInventoryItemCount(strPot[0]) > 0 || controller.getInventoryItemCount(strPot[1]) > 0 || controller.getInventoryItemCount(strPot[2]) > 0 ) {
-				   		strengthBoost();
+							strengthBoost();
 						}
-				   	}
-				   	if(!controller.isInCombat()) {
-		    			controller.setStatus("@yel@Attacking Giants");
-				    	controller.sleepHandler(98, true);
-					   	ORSCharacter npc = controller.getNearestNpcById(344, false);
-					   	if(npc != null) {
+					}
+					if(!controller.isInCombat()) {
+						controller.setStatus("@yel@Attacking Giants");
+						controller.sleepHandler(98, true);
+						ORSCharacter npc = controller.getNearestNpcById(344, false);
+						if(npc != null) {
 							controller.walktoNPC(npc.serverIndex, 1);
 							controller.attackNpc(npc.serverIndex);
 							controller.sleep(1000);
 						} else {
 							controller.sleep(1000);
 						}
-				    }
+					}
 					controller.sleep(340);
 				}
 				if(controller.getInventoryItemCount() == 30) {
@@ -189,28 +189,30 @@ public class K_WildyFireGiants extends IdleScript {
 						controller.sleep(340);
 					}
 					controller.setStatus("@red@Eating Food to Loot..");
-
+					buryBones();
 					for(int id : controller.getFoodIds()) {
-						if(controller.getInventoryItemCount(id) > 0) {
+						if(controller.getInventoryItemCount(id) > 0 && controller.getInventoryItemCount() == 30) {
 							controller.itemCommand(id);
 							controller.sleep(700);
 						}
-					}	
-				} 
-				}
-				
-				if(controller.getInventoryItemCount(546) == 0 || controller.getInventoryItemCount() == 30) {
-					controller.setStatus("@yel@Banking..");
-					GiantsToBank();
-					bank();
-					BankToStair();
-					stairToGiants();
-					controller.sleep(618);
 					}
-				
 				}
 			}
-	
+			if(controller.getInventoryItemCount(546) == 0 || controller.getInventoryItemCount() == 30) {
+				controller.setStatus("@yel@Banking..");
+				GiantsToBank();
+				bank();
+				BankToStair();
+				stairToGiants();
+				controller.sleep(618);
+			}
+		}
+	}
+
+
+
+
+
 					
     public void buryBones() {
     	if(!controller.isInCombat()) {
@@ -438,10 +440,10 @@ public class K_WildyFireGiants extends IdleScript {
 		controller.sleep(1280);
 		if(controller.currentX() == 269 && controller.currentY() == 2963) {
 			controller.setStatus("@gre@Going up Stairs..");   //bot breaks here sometimes????
-			while(controller.isInCombat()) {
+
+			while(controller.isInCombat()) {  //stuck in while loop!!!
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(269,2963);
-				controller.atObject(268,2960);
 				controller.sleep(100);
 			}
 			controller.atObject(268,2960);

@@ -199,6 +199,14 @@ public class K_RedSpiderEggz extends IdleScript {
 		}
 		controller.walkTo(197,3266);
 		controller.walkTo(204,3272);
+		controller.walkTo(210,3273);
+		if(controller.getObjectAtCoord(211,3272) == 57) {
+			controller.setStatus("@gre@Opening Edge Gate..");
+			controller.walkTo(210,3273);
+			controller.atObject(211,3272);
+			controller.sleep(340);
+		}
+		controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(217,3283);
 		controller.walkTo(215,3294);
 		controller.walkTo(215,3299);
@@ -224,11 +232,12 @@ public class K_RedSpiderEggz extends IdleScript {
 		controller.walkTo(217,3283);
 		controller.walkTo(211,3273);
 		if(controller.getObjectAtCoord(211,3272) == 57) {
-			controller.setStatus("@gre@Opening Giants Gate..");
+			controller.setStatus("@gre@Opening Edge Gate..");
 			controller.walkTo(211,3273);
 			controller.atObject(211,3272);
 			controller.sleep(340);
 		}
+		controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(204,3272);
 		controller.walkTo(197,3266);
 		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3266) {

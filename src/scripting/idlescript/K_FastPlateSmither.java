@@ -113,6 +113,10 @@ public void scriptStart() {
 				}
 				controller.sleep(100);
 			}
+			if (controller.getInventoryItemCount(168) < 1) {
+				controller.withdrawItem(168, 1);
+				controller.sleep(320);
+			}
 			if (controller.getInventoryItemCount(barId) < 25) {
 				controller.withdrawItem(barId, 25);
 				controller.sleep(320);

@@ -9,14 +9,14 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
+//import javax.swing.JCheckBox;
+//import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
+//import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Wildy Fire Giant Killer - By Kaila");

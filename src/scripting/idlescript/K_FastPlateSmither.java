@@ -54,6 +54,7 @@ public void scriptStart() {
 			controller.walkTo(148,512);
 		}
 		if(controller.getInventoryItemCount(barId) > 4) {
+			controller.sleepHandler(98, true);
 			controller.setStatus("@gre@Smithing..");
 			controller.useItemIdOnObject(148, 513, barId);
 			controller.sleep(1000);
@@ -65,7 +66,7 @@ public void scriptStart() {
 			controller.sleep(650);
 			controller.optionAnswer(3);
 			controller.sleep(650);
-			while(controller.isBatching()) controller.sleep(1000);
+			while(controller.isBatching()) controller.sleep(640);
 		}
 		controller.sleep(320);
 	}
@@ -90,8 +91,9 @@ public void scriptStart() {
 
 		controller.setStatus("@gre@Banking..");
 		controller.openBank();
+		controller.sleep(640);
 		
-		while(controller.isInBank() == true) {
+		while(controller.isInBank()) {
 			
 			totalPlates = totalPlates + 5;
 			totalBars = totalBars + 25;
@@ -105,9 +107,9 @@ public void scriptStart() {
 					return;
 				}
 			}
-			if(controller.getInventoryItemCount() >  0) {
+			if(controller.getInventoryItemCount() >  1) {
 				for (int itemId : controller.getInventoryItemIds()) {
-					if (itemId != 168 && itemId != barId) {
+					if (itemId != 168 && itemId != 1263 && itemId != barId) {
 						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 					}
 				}

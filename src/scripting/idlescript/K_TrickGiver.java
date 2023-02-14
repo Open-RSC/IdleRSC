@@ -64,23 +64,23 @@ public class K_TrickGiver extends IdleScript {
 	
 	public void bank() {
 
-		
+		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(1280);
-		
-		while (controller.isInBank()) {
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			if(controller.getInventoryItemCount() >  0) {
 				for (int itemId : controller.getInventoryItemIds()) {
-				controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				}
 				controller.sleep(1280);
 			}
 			if (controller.getInventoryItemCount(1330) < 23) {
 				controller.withdrawItem(1330, 23 - controller.getInventoryItemCount(1330));
 				controller.sleep(1280);
-				controller.closeBank();
-				controller.sleep(1280);
 			}
+			controller.closeBank();
+			controller.sleep(640);
 		}
 	}
 }

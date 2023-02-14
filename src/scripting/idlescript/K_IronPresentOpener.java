@@ -49,23 +49,27 @@ public class K_IronPresentOpener extends IdleScript {
 	
 	
 	public void bank() {
-		controller.setStatus("@gre@Banking..");
-		
+
+		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank() && controller.getInventoryItemCount() >  0) {
-			for (int itemId : controller.getInventoryItemIds()) {
-			if (itemId != 980) {
-			controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-			controller.sleep(100);
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
+
+			if(controller.getInventoryItemCount() > 0) {
+				for (int itemId : controller.getInventoryItemIds()) {
+					if (itemId != 980) {
+						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+						controller.sleep(100);
+					}
 				}
 			}
+			if(controller.getInventoryItemCount(980) < 29) {
+				controller.withdrawItem(980, 29 - controller.getInventoryItemCount(980));
+				controller.sleep(650);
+			}
+			controller.closeBank();
+			controller.sleep(640);
 		}
-		while(controller.isInBank() && controller.getInventoryItemCount(980) < 29) {
-			controller.withdrawItem(980, 29 - controller.getInventoryItemCount(980));
-			controller.sleep(650);
-		}
-		controller.closeBank();
-		controller.sleep(650);
 	}
 }

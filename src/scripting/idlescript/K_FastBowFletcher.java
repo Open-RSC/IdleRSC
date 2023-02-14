@@ -63,11 +63,12 @@ public class K_FastBowFletcher extends IdleScript {
 	
 
 	public void bank() {
-		
-		controller.setStatus("@gre@Banking..");
+
+		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank()) {
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalBows = totalBows + 29;
 			

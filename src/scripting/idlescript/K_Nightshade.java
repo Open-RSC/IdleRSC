@@ -91,11 +91,12 @@ public class K_Nightshade extends IdleScript {
 					
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if(controller.isInBank()){
 			
 			totalShade = totalShade + controller.getInventoryItemCount(1086);
 			

@@ -114,12 +114,12 @@ public class K_BattlefieldTrainer extends IdleScript {
 	
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(1280);
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			if (controller.getInventoryItemCount() > 1) {
 				for (int itemId : controller.getInventoryItemIds()) {

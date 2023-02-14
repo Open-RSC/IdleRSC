@@ -134,11 +134,12 @@ public class K_SkelliCoal extends IdleScript {
 		
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalCoal = totalCoal + controller.getInventoryItemCount(155);
 			totalSap = totalSap + controller.getInventoryItemCount(160);

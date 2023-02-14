@@ -93,7 +93,7 @@ public void scriptStart() {
 		controller.openBank();
 		controller.sleep(640);
 		
-		while(controller.isInBank()) {
+		if(controller.isInBank()) {
 			
 			totalPlates = totalPlates + 5;
 			totalBars = totalBars + 25;

@@ -281,10 +281,9 @@ public class K_WildyFireGiants extends IdleScript {
 		
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		//controller.npcCommand2(792);   //need to fix to work with colodian option2 on npc?
-		controller.sleep(2000);
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if(controller.isInBank()){
 
 			totalBstaff = totalBstaff + controller.getInventoryItemCount(615);
 			totalRscim = totalRscim + controller.getInventoryItemCount(398);

@@ -167,13 +167,19 @@ public void goToBank2() {
 }
 	
 public void bank() {
-	controller.setStatus("@blu@Banking..");
+
+	controller.setStatus("@yel@Banking..");
 	controller.openBank();
-	totalLog = totalLog + controller.getInventoryItemCount(636);
-	logInBank = controller.getBankItemCount(636);
-	while(controller.isInBank() && controller.getInventoryItemCount(636) >  0) {
-		controller.depositItem(636, controller.getInventoryItemCount(636));
-		controller.sleep(1380);
+	controller.sleep(640);
+
+	if (controller.isInBank()) {
+
+		totalLog = totalLog + controller.getInventoryItemCount(636);
+		logInBank = controller.getBankItemCount(636);
+		if (controller.getInventoryItemCount(636) > 0) {
+			controller.depositItem(636, controller.getInventoryItemCount(636));
+			controller.sleep(1380);
+		}
 		controller.closeBank();
 		controller.sleep(640);
 	}

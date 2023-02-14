@@ -40,9 +40,15 @@ public class K_Paladins extends IdleScript {
     int totalScim = 0;
     int coinsInBank = 0;
     int chaosInBank = 0;
-    int sharksInBank = 0;
+    int foodInBank = 0;
     int totalTrips = 0;
-    
+	int invCoins = 0;
+	int invChaos = 0;
+	int startCoins;
+	int startChaos;
+	int foodId = -1;
+
+	int[] foodIds = { 546, 370, 367, 373 }; //cooked shark, swordfish, tuna, lobster
 	int[] loot = {  438, 	 //Grimy ranarr
 					427,    //black scim
 					439,  	 //Grimy irit
@@ -64,8 +70,7 @@ public class K_Paladins extends IdleScript {
 					1277, 	 //shield (left) half
 					1092 	 //rune spear
 					};
-	
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
@@ -105,9 +110,11 @@ public class K_Paladins extends IdleScript {
 			if(controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(610, 1549, 0, true);
+				invCoins = controller.getInventoryItemCount(10);
+				invChaos = controller.getInventoryItemCount(41);
 				controller.sleep(800);
 			}
-			if(controller.getInventoryItemCount(546) > 0 && controller.currentY() > 1547 && controller.currentY() < 1552 ) {
+			if(controller.getInventoryItemCount(foodId) > 0 && controller.currentY() > 1547 && controller.currentY() < 1552 ) {
 
 				if(!controller.isInCombat()) {
 					controller.setStatus("@yel@Thieving Paladins");
@@ -116,6 +123,8 @@ public class K_Paladins extends IdleScript {
 						controller.thieveNpc(npc.serverIndex);
 						controller.sleep(100); //this sleep time is important 
 					} else {
+						invCoins = controller.getInventoryItemCount(10);
+						invChaos = controller.getInventoryItemCount(41);
 						controller.sleep(100); //this sleep time is important
 					}
 				}
@@ -130,7 +139,7 @@ public class K_Paladins extends IdleScript {
 					}
 				}
 			}
-			if(controller.getInventoryItemCount(546) == 0) {   //bank if no food-
+			if(controller.getInventoryItemCount(foodId) == 0) {   //bank if no food-
 				controller.setStatus("@yel@Banking..");
 				PaladinsToBank();
 				bank();
@@ -140,8 +149,8 @@ public class K_Paladins extends IdleScript {
 			if(controller.getInventoryItemCount() == 30) {
 				leaveCombat();
 				controller.setStatus("@red@Eating Food to Loot..");
-				if(controller.getInventoryItemCount(546) > 0) {
-					controller.itemCommand(546);
+				if(controller.getInventoryItemCount(foodId) > 0) {
+					controller.itemCommand(foodId);
 					controller.sleep(700);
 				}
 			}
@@ -223,19 +232,29 @@ public class K_Paladins extends IdleScript {
 			totalScim = totalScim + controller.getInventoryItemCount(427);
 			coinsInBank = (controller.getBankItemCount(10)/1000000);
 			chaosInBank = controller.getBankItemCount(41);
-			sharksInBank = controller.getBankItemCount(546);
+			foodInBank = controller.getBankItemCount(foodId);
 			
 			for (int itemId : controller.getInventoryItemIds()) {                                                            //change 546(shark) to desired food id
 				controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				controller.sleep(320);
 			}
-			if(controller.getInventoryItemCount(546) < 27) {  //withdraw 27 shark if needed        //change 546(shark) to desired food id
-				controller.withdrawItem(546, 27 - controller.getInventoryItemCount(546));          //change 546(shark) to desired food id
+			if(controller.getInventoryItemCount(foodId) < 27) {  //withdraw 27 shark if needed        //change 546(shark) to desired food id
+				controller.withdrawItem(foodId, 27 - controller.getInventoryItemCount(foodId));          //change 546(shark) to desired food id
 				controller.sleep(320);
 			}
-			
+			if(controller.getBankItemCount(foodId) == 0) {
+				controller.setStatus("@red@NO Food in the bank, Logging Out!.");
+				controller.setAutoLogin(false);
+				controller.logout();
+				if(!controller.isLoggedIn()) {
+					controller.stop();
+					return;
+				}
+			}
 			controller.closeBank();
 			controller.sleep(320);
+			invCoins = controller.getInventoryItemCount(10);
+			invChaos = controller.getInventoryItemCount(41);
 			
 		}
 	}
@@ -373,18 +392,25 @@ public class K_Paladins extends IdleScript {
 	public void setupGUI() {
 		JLabel header = new JLabel("Paladin Thiever - By Kaila");
 		JLabel label1 = new JLabel("Start in Ardy South Bank OR in Paladin Tower");
-		JLabel label2 = new JLabel("Sharks in bank REQUIRED, can be changed in script");
+		JLabel label2 = new JLabel("Sharks/Swords/Tuna/Lobs in bank REQUIRED");
 		JLabel label3 = new JLabel("Switching to Defensive combat mode is ideal.");
 		JLabel label4 = new JLabel("Low Atk/Str and Higher Def is more Efficient");
 		JLabel label5 = new JLabel("Ensure to never wield weapons when Thieving.");
+		JLabel foodLabel = new JLabel("Type of Food:");
+		JComboBox<String> foodField = new JComboBox<String>( new String[] { "Sharks", "Swordfish", "Tuna", "Lobsters" });
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				foodId = foodIds[foodField.getSelectedIndex()];
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				startTime = System.currentTimeMillis();
+				startCoins = controller.getInventoryItemCount(10);
+				startChaos = controller.getInventoryItemCount(41);
+				invCoins = controller.getInventoryItemCount(10);
+				invChaos = controller.getInventoryItemCount(41);
 				scriptStarted = true;
 			}
 		});
@@ -399,6 +425,8 @@ public class K_Paladins extends IdleScript {
 		scriptFrame.add(label3);
 		scriptFrame.add(label4);
 		scriptFrame.add(label5);
+		scriptFrame.add(foodLabel);
+		scriptFrame.add(foodField);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);
@@ -428,24 +456,24 @@ public class K_Paladins extends IdleScript {
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
-	    		CoinSuccessPerHr = (int)(totalCoins * scale);
-	    		ChaosSuccessPerHr = (int)(totalChaos * scale);
+	    		CoinSuccessPerHr = (int)((totalCoins + invCoins - startCoins) * scale);
+	    		ChaosSuccessPerHr = (int)((totalChaos + invChaos - startChaos) * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
 	    		
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
 			controller.drawString("@red@Paladins Thiever @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-			controller.drawString("@whi@Coins: @gre@" + String.valueOf(this.totalCoins) + "@yel@ (@whi@" + String.format("%,d", CoinSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
-			controller.drawString("@whi@Chaos: @gre@" + String.valueOf(this.totalChaos) + "@yel@ (@whi@" + String.format("%,d", ChaosSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);
+			controller.drawString("@whi@Coins: @gre@" + String.valueOf(this.totalCoins + this.invCoins - this.startCoins) + "@yel@ (@whi@" + String.format("%,d", CoinSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
+			controller.drawString("@whi@Chaos: @gre@" + String.valueOf(this.totalChaos + this.invChaos - this.startChaos) + "@yel@ (@whi@" + String.format("%,d", ChaosSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);
 			controller.drawString("@whi@Raw Shark: @gre@" + String.valueOf(this.totalShark), 350, 90, 0xFFFFFF, 1);
 			controller.drawString("@whi@Adamantite Ore: @gre@" + String.valueOf(this.totalAda), 350, 104, 0xFFFFFF, 1);
 			controller.drawString("@whi@Uncut Sapphire: @gre@" + String.valueOf(this.totalSap), 350, 118, 0xFFFFFF, 1);
 			controller.drawString("@whi@Black Scimitar: @gre@" + String.valueOf(this.totalScim), 350, 132, 0xFFFFFF, 1);
 			controller.drawString("@whi@Items In Bank:", 330, 146, 0xFFFFFF, 1);
-			controller.drawString("@whi@(1M) Coins: @yel@" + String.valueOf(this.coinsInBank), 350, 160, 0xFFFFFF, 1);
-			controller.drawString("@whi@Chaos: @yel@" + String.valueOf(this.chaosInBank), 350, 174, 0xFFFFFF, 1);
-			controller.drawString("@whi@Cooked Sharks: @yel@" + String.valueOf(this.sharksInBank), 350, 188, 0xFFFFFF, 1);
+			controller.drawString("@whi@(1M) Coins: @gre@" + String.valueOf(this.coinsInBank), 350, 160, 0xFFFFFF, 1);
+			controller.drawString("@whi@Chaos: @gre@" + String.valueOf(this.chaosInBank), 350, 174, 0xFFFFFF, 1);
+			controller.drawString("@whi@Food in Bank: @gre@" + String.valueOf(this.foodInBank), 350, 188, 0xFFFFFF, 1);
 			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 202, 0xFFFFFF, 1);
 			controller.drawString("@whi@Runtime: " + runTime, 350, 216, 0xFFFFFF, 1);
 		}

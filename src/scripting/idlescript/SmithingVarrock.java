@@ -52,6 +52,8 @@ public class SmithingVarrock extends IdleScript {
 					controller.setStatus("@gre@Banking..");
 					controller.walkTo(150,507);
 					banking();
+					controller.walkTo(150,507);
+					controller.walkTo(149,512);
 					controller.walkTo(148,512);
 			}
 			if (controller.getInventoryItemCount(barId) > 4) {
@@ -93,7 +95,7 @@ public class SmithingVarrock extends IdleScript {
 		controller.openBank();
 		controller.sleep(640);
 
-		while(controller.isInBank()) {
+		if(controller.isInBank()) {
 
 			if(controller.getBankItemCount(barId) < 30) {    //stops making when 30 in bank to not mess up alignments/organization of bank!!!
 				controller.setStatus("@red@NO Bars in the bank, Logging Out!.");
@@ -136,6 +138,9 @@ public class SmithingVarrock extends IdleScript {
 
 	public void setupGUI() {
 		JLabel header = new JLabel("Smithing");
+		JLabel hammerLabel = new JLabel("Start with Hammer! & Sleeping Bag if on Uranium ");
+		JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
+		JLabel batchLabel2 = new JLabel("This ensures All bars are Smithed per 1 Menu Cycle.");
 		JLabel barLabel = new JLabel("Bar Type:");
 		JComboBox<String> barField = new JComboBox<String>(
 				new String[] { "Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite" });
@@ -178,7 +183,7 @@ public class SmithingVarrock extends IdleScript {
 					scriptFrame.setVisible(true);
 				}
 				if (ans1Field.getSelectedIndex() == 1) {
-					ans2Label.setText("Armour Type");
+					ans2Label.setText("Armour Type, select to update options below");
 					ans2Field.setModel(new JComboBox<>(new String[] { "Helmet", "Shield", "Armour" }).getModel());
 					scriptFrame.setVisible(false);
 					scriptFrame.setVisible(true);
@@ -285,6 +290,9 @@ public class SmithingVarrock extends IdleScript {
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		scriptFrame.add(header);
+		scriptFrame.add(hammerLabel);
+		scriptFrame.add(batchLabel);
+		scriptFrame.add(batchLabel2);
 		scriptFrame.add(barLabel);
 		scriptFrame.add(barField);
 		scriptFrame.add(ans1Label);

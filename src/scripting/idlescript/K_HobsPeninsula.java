@@ -211,12 +211,12 @@ public class K_HobsPeninsula extends IdleScript {
 	
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
 		controller.sleep(640);
-		
-		while(controller.isInBank()){
+
+		if (controller.isInBank()) {
 			
 			totalGuam = totalGuam + controller.getInventoryItemCount(165);
 			totalMar = totalMar + controller.getInventoryItemCount(435);

@@ -255,14 +255,13 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		return;
 	}
 	
-	public void bank() {   
-		
+	public void bank() {
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		//controller.npcCommand2(792);   //need to fix to work with colodian option2 on npc?
-		controller.sleep(500);
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalDbones = totalDbones + controller.getInventoryItemCount(814);
 			totalRdagger = totalRdagger + controller.getInventoryItemCount(396);

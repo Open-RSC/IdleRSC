@@ -87,11 +87,12 @@ public class K_RedSpiderEggz extends IdleScript {
 					
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalEggz = totalEggz + controller.getInventoryItemCount(219);
 			

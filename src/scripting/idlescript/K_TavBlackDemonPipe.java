@@ -220,14 +220,13 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	
 
 	
-	public void bank() {   
-		
+	public void bank() {
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		//controller.npcCommand2(792);   //need to fix to work with colodian option2 on npc?
-		controller.sleep(2000);
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalRunestuff = totalRunestuff 
 					+ controller.getInventoryItemCount(404) //kite

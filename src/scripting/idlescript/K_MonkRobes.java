@@ -104,11 +104,12 @@ public class K_MonkRobes extends IdleScript {
 					
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if(controller.isInBank()){
 			
 			totalTopz = totalTopz + controller.getInventoryItemCount(388);
 			totalBotz = totalBotz + controller.getInventoryItemCount(389);

@@ -83,7 +83,7 @@ public class GnomeFlaxx0r extends IdleScript {
                 controller.openBank();
         		controller.sleep(1000);
         		
-        		while(controller.isInBank()) {  //should fix bank freezing
+        		if(controller.isInBank()) {  
         			if(controller.getInventoryItemCount(675) > 0) {  //changed to if
         				controller.depositItem(675, 30);  //just bank all (untested)
         				controller.sleep(1280); //increased

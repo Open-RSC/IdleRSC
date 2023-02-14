@@ -58,10 +58,11 @@ public void scriptStart() {
 
 public void bank() {
 
-	
+	controller.setStatus("@yel@Banking..");
 	controller.openBank();
-	
-	while(controller.isInBank()) {
+	controller.sleep(640);
+
+	if (controller.isInBank()) {
 		if(controller.getInventoryItemCount(boneId) < 30) {
 			controller.withdrawItem(boneId, 30);
 		}	

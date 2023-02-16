@@ -83,7 +83,7 @@ public class MineGoldCraftingGuild extends IdleScript {
 								controller.getNearestObjectById(objId)[1]);
 						controller.sleep(640);
 						while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-							controller.sleep(10);
+							controller.sleep(100);
 						}
 					}
 				}
@@ -103,9 +103,11 @@ public class MineGoldCraftingGuild extends IdleScript {
 						while (controller.isBatching() && controller.getInventoryItemCount() < 30
 								&& controller.getNearestObjectById(112) == null
 								&& controller.getNearestObjectById(113) == null) {
-							controller.sleep(10);
+							controller.sleep(340);
 						}
 					}
+				} else {
+					controller.sleep(340);  //should fix high cpu when all rocks depleted
 				}
 			}
 		}
@@ -165,6 +167,7 @@ public class MineGoldCraftingGuild extends IdleScript {
 				controller.sleep(430);
 			}
 		}
+		controller.sleep(640);
 	}
 
 	public static void centerWindow(Window frame) {

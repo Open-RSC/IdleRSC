@@ -24,12 +24,6 @@ public class DamWildyAgility extends IdleScript {
 			rockNW = { 294, 98 }, rockSE = { 288, 108 }, logNW = { 298, 105 }, logSE = { 295, 112 },
 			vineNW = { 310, 111 }, vineSE = { 301, 117 }, downNW = {303, 2931}, downSE = {288, 2947};
 	int objectId;
-
-	int bonesInBankNew = 0, bonesInBankOld = 0, bonesPicked;
-	int itemID;
-	int[] toBank;
-	int[] toSpot;
-
 	long startTime;
 
 	JFrame scriptFrame = null;
@@ -171,7 +165,9 @@ public class DamWildyAgility extends IdleScript {
 	}
 
 	public void setupGUI() {
-		JLabel headerLabel = new JLabel("Start in varrock east bank");
+		JLabel headerLabel = new JLabel("@cya@DamWildAgility v1.0 - By Damrau");
+		JLabel Label1 = new JLabel("Start at Wilderness Agility Course!");
+		JLabel Label2 = new JLabel("Bring armor, and cooked fish for food!");
 		JComboBox<String> FishField = new JComboBox<String>();
 
 		JButton startScriptButton = new JButton("Start");
@@ -221,9 +217,6 @@ public class DamWildyAgility extends IdleScript {
 		if (started) {
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 			if (controller != null) {
-				///controller.setShowCoords(false);
-				//controller.setShowStatus(false);
-				//controller.setShowXp(false);
 				controller.drawString("@cya@DamWildAgility v1.0 - By Damrau", 7, 25, 0xFFFFFF, 1);
 				controller.drawString("@cya@Runtime: " + runTime, 7, 25 + 14, 0xFFFFFF, 1);
 

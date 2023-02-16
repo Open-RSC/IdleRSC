@@ -234,12 +234,14 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 					+ controller.getInventoryItemCount(158)
 					+ controller.getInventoryItemCount(157);
 
-			if (controller.getInventoryItemCount() > 1) {
+			if (controller.getInventoryItemCount() > 2) {
 				for (int itemId : controller.getInventoryItemIds()) {
-					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+					if (itemId != 476 && itemId != 475 && itemId != 224 && itemId != 223) {  //dont deposit partial potions!
+						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+					}
 				}
-				controller.sleep(640);
 			}
+			controller.sleep(640);
 			if (potUp == true) {
 				if (controller.getInventoryItemCount(attackPot[0]) < 1 && controller.getInventoryItemCount(attackPot[1]) < 1 && controller.getInventoryItemCount(attackPot[2]) < 1) {  //withdraw 10 shark if needed
 					controller.withdrawItem(attackPot[2], 1);

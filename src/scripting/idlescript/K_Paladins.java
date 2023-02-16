@@ -49,26 +49,36 @@ public class K_Paladins extends IdleScript {
 	int foodId = -1;
 
 	int[] foodIds = { 546, 370, 367, 373 }; //cooked shark, swordfish, tuna, lobster
-	int[] loot = {  438, 	 //Grimy ranarr
-					427,    //black scim
+	int[] loot = {  10,		//coins
+					41,		//chaos runes
+
+					526, 	 //tooth half
+					527, 	 //loop half
+					1277, 	 //shield (left) half
+					1092, 	 //rune spear
+					160, 	 //saph
+					159, 	 //emerald
+					158, 	 //ruby
+					157,	 //diamond
+
+					438, 	 //Grimy ranarr
 					439,  	 //Grimy irit
 					440,  	 //Grimy ava
 					441,	 //Grimy kwu
 					442, 	 //Grimy cada
 					443, 	 //Grimy dwu
+
 					619, 	//blood rune
-					32,   //water rune
-					170,  //iron bar
-					171,   //steel bar
-					173,   //mithril bar
-					160, 	 //saph
-					159, 	 //emerald
-					158, 	 //ruby
-					157,	 //diamond
-					526, 	 //tooth half
-					527, 	 //loop half
-					1277, 	 //shield (left) half
-					1092 	 //rune spear
+					32,		//water rune
+					170,    //iron bar
+					171,    //steel bar
+					173,    //mithril bar
+
+					400,	//rune chain
+					402,	//rune legs
+					404,	//rune kite
+					112,	//rune helm
+					315,	//defense amulet
 					};
 
 	long startTime;
@@ -471,7 +481,7 @@ public class K_Paladins extends IdleScript {
 			controller.drawString("@whi@Uncut Sapphire: @gre@" + String.valueOf(this.totalSap), 350, 118, 0xFFFFFF, 1);
 			controller.drawString("@whi@Black Scimitar: @gre@" + String.valueOf(this.totalScim), 350, 132, 0xFFFFFF, 1);
 			controller.drawString("@whi@Items In Bank:", 330, 146, 0xFFFFFF, 1);
-			controller.drawString("@whi@(1M) Coins: @gre@" + String.valueOf(this.coinsInBank), 350, 160, 0xFFFFFF, 1);
+			controller.drawString("@whi@Coins: @gre@" + String.valueOf(this.coinsInBank) + " @gre@Million", 350, 160, 0xFFFFFF, 1);
 			controller.drawString("@whi@Chaos: @gre@" + String.valueOf(this.chaosInBank), 350, 174, 0xFFFFFF, 1);
 			controller.drawString("@whi@Food in Bank: @gre@" + String.valueOf(this.foodInBank), 350, 188, 0xFFFFFF, 1);
 			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 202, 0xFFFFFF, 1);

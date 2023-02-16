@@ -240,6 +240,7 @@ public class K_RedSpiderEggz extends IdleScript {
 		}
 		controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(204,3272);
+		controller.walkTo(199,3272);
 		controller.walkTo(197,3266);
 		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3266) {
 			controller.atObject(196,3266);  //"while" for gate wont break if someone else opens it

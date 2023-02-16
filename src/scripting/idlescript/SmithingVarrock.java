@@ -93,7 +93,7 @@ public class SmithingVarrock extends IdleScript {
 	public void banking() {
 		controller.setStatus("@red@Banking");
 		controller.openBank();
-		controller.sleep(640);
+		controller.sleep(1000);
 
 		if(controller.isInBank()) {
 

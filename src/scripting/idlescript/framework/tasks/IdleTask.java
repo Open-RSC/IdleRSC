@@ -12,6 +12,11 @@ public abstract class IdleTask extends Task {
 
     @Override
     protected final void execute() {
+        if (botController.playerApi.isSleeping()) {
+            botController.debug("Player is sleeping, skipping task");
+            return;
+        }
+
         if (botController.playerApi.getFatigue() > FATIGUE_THRESHOLD) {
             sleep.execute();
         }

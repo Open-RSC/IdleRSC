@@ -84,7 +84,7 @@ public class BotController {
 
         public void sleep() {
             controller.setStatus("@red@Sleeping..");
-            controller.sleepHandler(0, true);
+            controller.sleepHandler(1, true);
         }
 
         public boolean isFatigueZero() {

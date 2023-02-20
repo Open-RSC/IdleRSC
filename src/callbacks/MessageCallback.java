@@ -56,6 +56,8 @@ public class MessageCallback {
             if (Main.getCurrentRunningScript() instanceof IdleScript) {
             	if (type == MessageType.GAME) {
                     ((IdleScript) Main.getCurrentRunningScript()).serverMessageInterrupt(message);
+                } else if (type == MessageType.PRIVATE_RECIEVE) {
+                    ((IdleScript) Main.getCurrentRunningScript()).privateMessageReceivedInterrupt(sender, message);
                 } else if (type == MessageType.CHAT) {
                     ((IdleScript) Main.getCurrentRunningScript()).chatMessageInterrupt(sender + ": " + message);
                 } else if (type == MessageType.QUEST) {

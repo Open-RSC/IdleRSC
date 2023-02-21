@@ -1,27 +1,7 @@
 package scripting.idlescript;
 
 import controller.BotController;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
+import controller.BotLogLevel;
 import models.entities.ItemId;
 import models.entities.MapPoint;
 import models.entities.MapPoint.BankPoint;
@@ -36,11 +16,31 @@ import scripting.idlescript.framework.tasks.inventory.DropItems;
 import scripting.idlescript.framework.tasks.pathing.PathWalkTo;
 import scripting.idlescript.framework.tasks.skilling.MineOre;
 
-import static controller.BotController.setLogging;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
-import static jdk.jfr.internal.LogLevel.DEBUG;
 import static models.entities.MapPoint.distance;
 import static models.entities.Rock.EMPTY;
 import static scripting.ControllerProvider.getBotController;
@@ -103,7 +103,7 @@ public class AIOMiner extends IdleScript {
     @Override
     public int start(String[] parameters) {
         setBotController(new BotController(controller));
-        setLogging(DEBUG);
+        BotController.setLogging(BotLogLevel.DEBUG);
 
         if (!guiSetup) {
             setupGUI();

@@ -1,11 +1,6 @@
 package controller;
 
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import jdk.jfr.internal.LogLevel;
 import models.entities.GroundItem;
 import models.entities.Interactable;
 import models.entities.ItemId;
@@ -14,6 +9,11 @@ import models.entities.MapPoint;
 import models.entities.MapPoint.BankPoint;
 import models.entities.Npc;
 import models.entities.ObjectIds;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static models.entities.MapPoint.distance;
 
@@ -233,7 +233,7 @@ public class BotController {
 
     }
 
-    public static void setLogging(LogLevel logLevel) {
+    public static void setLogging(BotLogLevel logLevel) {
         BotLogger.setLogLevel(logLevel);
     }
 

@@ -5,14 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import jdk.jfr.internal.LogLevel;
 
-import static jdk.jfr.internal.LogLevel.DEBUG;
-import static jdk.jfr.internal.LogLevel.INFO;
-import static jdk.jfr.internal.LogLevel.WARN;
+import static controller.BotLogLevel.DEBUG;
+import static controller.BotLogLevel.INFO;
+import static controller.BotLogLevel.WARN;
+
 
 public class BotLogger {
-    private static LogLevel logLevel = INFO;
+    private static BotLogLevel botLogLevel = INFO;
     private static final int MAX_LOG_SIZE = 100;
     private static final List<String> logs = new ArrayList<>();
 
@@ -21,7 +21,7 @@ public class BotLogger {
     }
 
     public static void debug(String message) {
-        if (logLevel != DEBUG) {
+        if (botLogLevel != DEBUG) {
             return;
         }
 
@@ -33,7 +33,7 @@ public class BotLogger {
         log(message, WARN);
     }
 
-    private static void log(String message, LogLevel level) {
+    private static void log(String message, BotLogLevel level) {
         addLog(message);
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         String className = stackTrace[stackTrace.length > 3 ? 4 : stackTrace.length].getClassName();
@@ -55,8 +55,8 @@ public class BotLogger {
         return logs;
     }
 
-    public static void setLogLevel(LogLevel logLevel) {
-        BotLogger.logLevel = logLevel;
+    public static void setLogLevel(BotLogLevel botLogLevel) {
+        BotLogger.botLogLevel = botLogLevel;
     }
 
 }

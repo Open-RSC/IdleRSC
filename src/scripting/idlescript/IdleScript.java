@@ -22,6 +22,15 @@ public abstract class IdleScript {
 	}
 	
 	/**
+	 * Called by {@link callbacks.MessageCallback} every time a new private message is received on the screen. <b>Override this in your script to process these messages.</b>
+	 * @param sender -- variable containing the sender. 
+	 * @param message -- variable containing the message. 
+	 */
+	public void privateMessageReceivedInterrupt(String sender, String message) { 
+		
+	}
+	
+	/**
 	 * Called by {@link callbacks.MessageCallback} every time a new chat message is drawn on the screen. <b>Override this in your script to process these messages.</b>
 	 * @param message -- variable containing the message. 
 	 */

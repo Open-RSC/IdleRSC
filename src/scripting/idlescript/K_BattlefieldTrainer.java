@@ -18,7 +18,7 @@ import orsc.ORSCharacter;
 import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
- * Edge Druid Killer - By Kaila");
+ * Battlefield Trainer - By Kaila");
  * Start in Edge bank with Armor");
  * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
  * 31 Magic Required for escape tele");
@@ -57,9 +57,8 @@ public class K_BattlefieldTrainer extends IdleScript {
 		}
 		if (scriptStarted) {
 			controller.displayMessage("@red@Battlefield Trainer - By Kaila");
-			controller.displayMessage("@red@Start in Edge bank with Armor");
-			controller.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-			controller.displayMessage("@red@31 Magic Required for escape tele");
+			controller.displayMessage("@red@Start in Ardy or at Battlefield");
+			controller.displayMessage("@red@Sharks in Bank REQUIRED");
 			if(controller.isInBank() == true) {
 				controller.closeBank();
 			}
@@ -85,14 +84,14 @@ public class K_BattlefieldTrainer extends IdleScript {
 		    			controller.setStatus("@yel@Attacking Trooper");
 					   	ORSCharacter npc = controller.getNearestNpcById(407, false);
 					   	if(npc != null) {
-					    	controller.walktoNPC(npc.serverIndex,1);
+					    	//controller.walktoNPC(npc.serverIndex,1);
 					    	controller.attackNpc(npc.serverIndex);
-					    	controller.sleep(1000);
+					    	controller.sleep(600);
 					    } else {
-							controller.sleep(1000);
+							controller.sleep(600);
 						}
 				    }
-			    	controller.sleep(1380);
+			    	controller.sleep(380);
 				} else if(controller.getInventoryItemCount(546) == 0) {
 					controller.setStatus("@yel@Banking..");
 					DruidToBank();
@@ -114,12 +113,12 @@ public class K_BattlefieldTrainer extends IdleScript {
 	
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(1280);
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			if (controller.getInventoryItemCount() > 1) {
 				for (int itemId : controller.getInventoryItemIds()) {
@@ -240,9 +239,10 @@ public class K_BattlefieldTrainer extends IdleScript {
 		frame.setLocation(x, y);
 	}
 	public void setupGUI() {
+
 		JLabel header = new JLabel("Battlefield Trainer - By Kaila");
-		JLabel label1 = new JLabel("Start in Edge bank with Gear ON");
-		JLabel label2 = new JLabel("Sharks in bank REQUIRED");
+		JLabel label1 = new JLabel("Start in Ardy or at Battlefield");
+		JLabel label2 = new JLabel("Sharks in Bank REQUIRED");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {

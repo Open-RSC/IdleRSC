@@ -126,6 +126,15 @@ public class K_NatureCrafter extends IdleScript {
 	public void bank() {
 		
 		controller.setStatus("@yel@Buying Runes..");
+		if(controller.getInventoryItemCount(10) == 0 || controller.getInventoryItemCount(1299) == 0) {
+			controller.setStatus("@red@NO Coins or Ess in Inventory, Logging Out!.");
+			controller.setAutoLogin(false);
+			controller.logout();
+			if(!controller.isLoggedIn()) {
+				controller.stop();
+				return;
+			}
+		}
 		if(!controller.isInShop() && controller.getInventoryItemCount() != 30) {
 			ORSCharacter npc = controller.getNearestNpcById(522, false);
 		   	if(npc != null && controller.getInventoryItemCount() != 30 && controller.currentY() < 760) {

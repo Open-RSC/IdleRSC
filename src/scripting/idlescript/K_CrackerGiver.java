@@ -64,11 +64,12 @@ public class K_CrackerGiver extends IdleScript {
 	
 	public void bank() {
 
-		
+
+		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(1280);
-		
-		while (controller.isInBank()) {
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			if(controller.getInventoryItemCount() >  0) {
 				for (int itemId : controller.getInventoryItemIds()) {
 				controller.depositItem(itemId, controller.getInventoryItemCount(itemId));

@@ -48,7 +48,7 @@ public class K_PresentGiver extends IdleScript {
 				bank();
 			}
 			if(controller.getInventoryItemCount(980) > 1) {
-				controller.useItemOnPlayer(1,controller.getPlayerServerIndexByName("kailashu"));  //replace the player name
+				controller.useItemOnPlayer(1,controller.getPlayerServerIndexByName("username"));  //replace the player name
 				controller.sleep(640);
 			}
 		}
@@ -59,17 +59,19 @@ public class K_PresentGiver extends IdleScript {
 	
 	public void bank() {
 
-		
+		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(1280);
-		
-		while(controller.isInBank() && controller.getInventoryItemCount(980) < 2) {
-			controller.withdrawItem(980, 30);
-			controller.sleep(1280);
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
+			if (controller.getInventoryItemCount(980) < 2) {
+				controller.withdrawItem(980, 30);
+				controller.sleep(1280);
+
+			}
 			controller.closeBank();
 			controller.setStatus("@gre@Opening.");
-			controller.sleep(1280);
+			controller.sleep(1000);
 		}
 	}
-
 }

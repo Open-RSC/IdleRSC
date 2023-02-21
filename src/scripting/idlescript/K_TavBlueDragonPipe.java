@@ -9,14 +9,14 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
+//import javax.swing.JCheckBox;
+//import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
+//import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Wildy Fire Giant Killer - By Kaila");
@@ -255,14 +255,13 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		return;
 	}
 	
-	public void bank() {   
-		
+	public void bank() {
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		//controller.npcCommand2(792);   //need to fix to work with colodian option2 on npc?
-		controller.sleep(500);
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalDbones = totalDbones + controller.getInventoryItemCount(814);
 			totalRdagger = totalRdagger + controller.getInventoryItemCount(396);
@@ -398,15 +397,16 @@ public class K_TavBlueDragonPipe extends IdleScript {
 	
     public void BankToDragons() {	
     	controller.setStatus("@gre@Walking to Blue Dragons..");
-		controller.walkTo(327,552);
-		controller.walkTo(324,548);
-		controller.walkTo(324,541);
-		controller.walkTo(324,530); 
-		controller.walkTo(317,523);
-		controller.walkTo(317,515);
-		controller.walkTo(327,505);
-		controller.walkTo(337,495);
-		controller.walkTo(341,488);
+		controller.walkTo(327, 552);
+		controller.walkTo(324, 549);
+		controller.walkTo(324, 539);
+		controller.walkTo(324, 530);
+		controller.walkTo(317, 523);
+		controller.walkTo(317, 516);
+		controller.walkTo(327, 506);
+		controller.walkTo(337, 496);
+		controller.walkTo(337, 492);
+		controller.walkTo(341, 488);
 		while(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
 			controller.atObject(341,487);   //gate wont break if someone else opens it
 			controller.sleep(640);

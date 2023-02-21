@@ -41,11 +41,11 @@ public final class S_Miner extends Script
 	private static final int CHISEL = 167;
 	private static final int CRUSHED_GEM = 915;
 	private static final int GNOME_BALL = 981;
-	private static final int SKILL_MINING = 14;
+//	private static final int SKILL_MINING = 14;
 
-	private static final int[] pickaxes = {
-		1262, 1261, 1260, 1259, 1258, 156
-	};
+//	private static final int[] pickaxes = {
+//		1262, 1261, 1260, 1259, 1258, 156
+//	};
 
 	private static final int[] bank_ids = {
 		149, 383, 152, 155, 202, 150, 151, 153, 154, 409,
@@ -693,6 +693,9 @@ public final class S_Miner extends Script
 			frame.add(new Label(
 			    "Gems will be cut if there is a chisel in your inventory."
 			));
+			frame.add(new Label(
+					"Start with pickaxe (all servers) and Sleeping bag (uranium only)."
+			));
 			frame.add(button_panel);
 			frame.setResizable(false);
 			frame.pack();
@@ -754,26 +757,26 @@ public final class S_Miner extends Script
 						return random(1000, 1500);
 					}
 				}
-				if (getInventoryIndex(pickaxes) == -1) {
-					len = pickaxes.length;
-					for (int i = 0; i < len; ++i) {
-						if (bankCount(pickaxes[i]) <= 0) {
-							continue;
-						}
-						System.out.println("Withdrawing pickaxe");
-						withdraw(pickaxes[i], 1);
-						return random(1700, 3200);
-					}
-					return _end("Error: no pickaxe!");
-				}
-				if (!hasInventoryItem(SLEEPING_BAG)) {
-					if (bankCount(SLEEPING_BAG) <= 0) {
-						return _end("Error: no sleeping bag!");
-					}
-					System.out.println("Withdrawing sleeping bag");
-					withdraw(SLEEPING_BAG, 1);
-					return random(1700, 3200);
-				}
+				//if (getInventoryIndex(pickaxes) == -1) {
+				//	len = pickaxes.length;
+				//	for (int i = 0; i < len; ++i) {
+				//		if (bankCount(pickaxes[i]) <= 0) {
+				//			continue;
+				//		}
+				//		System.out.println("Withdrawing pickaxe");
+				//		withdraw(pickaxes[i], 1);
+				//		return random(1700, 3200);
+				//	}
+				//	return _end("Error: no pickaxe!");
+				//}
+				//if (!hasInventoryItem(SLEEPING_BAG)) {
+				//	if (bankCount(SLEEPING_BAG) <= 0) {
+				//		return _end("Error: no sleeping bag!");
+				//	}
+				//	System.out.println("Withdrawing sleeping bag");
+				//	withdraw(SLEEPING_BAG, 1);
+				//	return random(1700, 3200);
+				//}
 				Arrays.fill(has_banked, false);
 				closeBank();
 				impl.bankClosed();
@@ -801,10 +804,10 @@ public final class S_Miner extends Script
 			if (ret != -1) {
 				return ret;
 			}
-		} else { // powermining
-			if (getInventoryIndex(pickaxes) == -1) {
-				return _end("Error: no pickaxe!");
-			}
+		//} else { // powermining
+			//if (getInventoryIndex(pickaxes) == -1) {
+			//	return _end("Error: no pickaxe!");
+			//}
 		}
 		return mine_rocks();
 	}
@@ -852,12 +855,12 @@ public final class S_Miner extends Script
 				int bag = getInventoryIndex(SLEEPING_BAG);
 				if (bag != -1) {
 					useItem(bag);
-				} else {
-					if (!cb_bank.getState()) {
-						return _end("Error: no sleeping bag!");
-					} else {
-						impl.setRocksToBank();
-					}
+				//} else {
+				//	if (!cb_bank.getState()) {
+				//		return _end("Error: no sleeping bag!");
+				//	} else {
+				//		impl.setRocksToBank();
+				//	}
 				}
 				sleep_time = -1L;
 				return random(1500, 2500);
@@ -1002,12 +1005,12 @@ public final class S_Miner extends Script
 		if (getInventoryCount() == MAX_INV_SIZE) {
 			return true;
 		}
-		if (getInventoryIndex(pickaxes) == -1) {
-			return true;
-		}
-		if (getInventoryIndex(SLEEPING_BAG) == -1) {
-			return true;
-		}
+		//if (getInventoryIndex(pickaxes) == -1) {
+		//	return true;
+		//}
+		//if (getInventoryIndex(SLEEPING_BAG) == -1) {
+		//	return true;
+		//}
 		return false;
 	}
 

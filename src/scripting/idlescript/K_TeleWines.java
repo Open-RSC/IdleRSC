@@ -89,11 +89,12 @@ public class K_TeleWines extends IdleScript {
 					
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalWinez = totalWinez + controller.getInventoryItemCount(501);
 			

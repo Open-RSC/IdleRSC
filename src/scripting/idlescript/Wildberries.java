@@ -148,25 +148,27 @@ public class Wildberries extends IdleScript {
 		controller.setStatus("@red@Banking..");
 		
 		controller.openBank();
-		
+		controller.sleep(640);
 		berriesPicked += controller.getInventoryItemCount(471);
-		
-		while(controller.isInBank() && controller.getInventoryItemCount(471) >  0) {
-			controller.depositItem(471, controller.getInventoryItemCount(471));
-			controller.sleep(100);
+
+		if (controller.isInBank()) {
+			if (controller.getInventoryItemCount(471) > 0) {
+				controller.depositItem(471, controller.getInventoryItemCount(471));
+				controller.sleep(100);
+			}
+
+			if (controller.getInventoryItemCount(546) < 5) {
+				controller.withdrawItem(546, 5);
+				controller.sleep(2000);
+			}
+
+			if (controller.getInventoryItemCount(420) < 1) {
+				controller.withdrawItem(420, 1);
+				controller.sleep(2000);
+			}
 		}
-		
-		while(controller.isInBank() && controller.getInventoryItemCount(546) < 5) {
-			controller.withdrawItem(546, 5);
-			controller.sleep(2000);
-		}
-		
-		while(controller.isInBank() && controller.getInventoryItemCount(420) < 1) {
-			controller.withdrawItem(420, 1);
-			controller.sleep(2000);
-		}
-		
-		
+		controller.closeBank();
+		controller.sleep(640);
 		berriesBanked = controller.getBankItemCount(471);
 	}
 	

@@ -58,26 +58,29 @@ public class K_WineDrinker extends IdleScript {
 	
 	public void bank() {
 
-		
+		controller.setStatus("@yel@Banking..");
 		controller.openBank();
 		controller.sleep(640);
-		
-		while(controller.isInBank() && controller.getInventoryItemCount(140) >  0) {
-			controller.depositItem(140, controller.getInventoryItemCount(140));
-			controller.sleep(100);
-		}
-		
-		while(controller.isInBank() && controller.getInventoryItemCount(246) >  0) {
-			controller.depositItem(246, controller.getInventoryItemCount(246));
-			controller.sleep(100);
-		}
-		
-		while(controller.isInBank() && controller.getInventoryItemCount(142) < 30) {
-			controller.withdrawItem(142, 30 - controller.getInventoryItemCount());
-			controller.sleep(650);
+
+		if (controller.isInBank()) {
+
+
+			if (controller.getInventoryItemCount(140) > 0) {
+				controller.depositItem(140, controller.getInventoryItemCount(140));
+				controller.sleep(100);
+			}
+
+			if (controller.getInventoryItemCount(246) > 0) {
+				controller.depositItem(246, controller.getInventoryItemCount(246));
+				controller.sleep(100);
+			}
+
+			if (controller.getInventoryItemCount(142) < 30) {
+				controller.withdrawItem(142, 30 - controller.getInventoryItemCount());
+				controller.sleep(650);
+			}
 			controller.closeBank();
 			controller.sleep(650);
 		}
 	}
-
 }

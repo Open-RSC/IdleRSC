@@ -9,6 +9,9 @@ IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has it's
 3. **Optional**: if playing on a different server which allows botting, modify Cache/ip.txt and Cache/port.txt if needed.
 4. Run .bat/.sh file!
 
+## Rules:
+User will NOT use this client to bot on non-botting servers. The only allowed openRSC botting servers are Coleslaw and Uranium. Use of this client to bot on Cabbage or Preservation will result in a BAN of the accounts. 
+
 ## Sleeping:
 IdleRSC uses a sleeper server which is provided free of charge. However, if you would like, you can run the FOCR sleeper locally with --localOCR on the command line. Get the latest copy of FOCR here: [FOCR Resurrection](https://gitlab.com/idlersc/focr-resurrection). 
 
@@ -25,10 +28,18 @@ Developers of IdleRSC are not responsible for ruined, banned, hacked accounts, o
 2. Run `gradle build`
 
 ### Windows:
-#### Native Scripts and SBot:
-1. Open up the Eclipse project
+#### Native Scripts and SBot: (Eclipse Method) 
+1. Open up the project in Eclipse 
 2. Add a new script to the `scripting` package.
-3. Your class file will be spit out into bin/scripting/ if successfully compiled.		
+3. Your class file will be spit out into bin/scripting/ if successfully compiled.
+4. Compile Jar with (compile_windows.bat) or (compile_linux.sh)
+5. Run client with (run_windows.bat) or (run_linux.sh)	
+###Native Scripts and SBot: (IntelliJ Gradle Method)	
+1. Open up the project in IntelliJ
+2. Save all script changes
+3. Build project Class files with Gradle "Build Project"
+4. Compile Jar with (compile_windows.bat) or (compile_linux.sh)
+5. run client with (run_windows.bat) or (run_linux.sh)	
 #### APOS/SBot:
 Easy Method: (NOT PREFERRED IF YOU ARE WANTING TO DEVELOP SCRIPTS) 
 WARNING: This will delete your JAR file!!!
@@ -55,13 +66,19 @@ public alch(mudclient rs)
 	super(rs);
 }
 ```
-4. Compile using Eclipse (preferred) or the included compilation script.
+4. Compile using Eclipse or IntelliJ Gradle (preferred) or the included compilation script (compile_windows.bat)
 	
-## Compiling IdleRSC:
-1. Clone the repository
-2. Open the project in Eclipse or IntelliJ
+## Compiling IdleRSC Jar:
+1. Clone the repository from https://gitlab.com/open-runescape-classic/idlersc
+2. Open the project in Eclipse or IntelliJ, set up eclipse or gradle(preferred) compiler.
 3. If client JAR is out of date, run patcher utility from https://gitlab.com/idlersc/idlersc_patcher (follow README in that project).
-4. Test a compilation, then code away! If you have problems, you can create a new issue or ask for help in the OpenRSC Discord.
+	- Only typically necessary when a server-side update adds sprites/textures/etc.
+4. Test the compile process: 
+	a. Save all script changes
+	b. "Build" project Class files with Gradle Build or Eclipse
+	c. Compile Jar with (compile_windows.bat) or (compile_linux.sh)
+	d. run client with (run_windows.bat) or (run_linux.sh)
+If you have problems, you can create a new issue or ask for help in the OpenRSC Discord.
 	
 ## Configuring Stake Switcher
 Inside your run_windows.bat or run_linux.sh, add the following lines. Restart the bot. Press F5, F6, F7, F8 to validate.
@@ -81,12 +98,12 @@ Inside your run_windows.bat or run_linux.sh, add the following lines. Restart th
 ## Discussion: 
 Please join the <a href="https://discord.gg/CutQxDZ8Np">OpenRSC Discord</a> and post in the #botting-client-development channel. Other channels are not tied to botting, so please do not discuss botting in those channels.
 
-New Discord Username: DvorakKeys#3329
-
 ## Donations:
-IdleRSC is provided for free under GPLv3, due to passion for RSC botting. If you wish, you may donate via Monero to the following address: 83XpZtrvQTdK6aW5fp3DgtBmtemqpQYf97nPtqf7yPs9VtFa4p71NYyfCmcCe2D7kcEDUvtyc58Bi7xhp772v1ah8dax4CV
+IdleRSC is provided for free under GPLv3, due to passion for RSC botting.
 
 ## About:
-This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure. After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released.
+This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure. After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released. 
+
+The original owner is no longer part of this fork of the project. However all credit for writing the original client goes to DvorakKeys. Additional credit goes to various developers including but not limited to: Kaila, Searos, and Damrau
 
 The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after APOS, STS, SBot, and AutoRune!

@@ -114,12 +114,12 @@ public class K_BlackUnicorns extends IdleScript {
 	
 
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(1380);
-		
-		if(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalUni = totalUni + controller.getInventoryItemCount(466);
 			

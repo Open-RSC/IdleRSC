@@ -85,15 +85,20 @@ public class K_SkelliCoal extends IdleScript {
 				while(controller.isInCombat()) {
 					controller.setStatus("@red@Leaving combat..");
 					controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-					controller.sleep(250);
+					controller.sleep(400);
 				}
 					
 				if (rockEmpty() || !controller.isBatching()) {
 					isMining = "none";
 					currentOre[0] = 0;
 					currentOre[1] = 0;
+					controller.sleep(640);
+				} else if(controller.isBatching() && controller.getInventoryItemCount() < 30) {
+					controller.sleep(1000);
 				}
-				
+
+
+
 				controller.setStatus("@yel@Mining..");
 				
 				if (!controller.isBatching() && isMining == "none" && rockEmpty()) {
@@ -101,6 +106,8 @@ public class K_SkelliCoal extends IdleScript {
 						mine("coal");
 					}
 					controller.sleep(1280);
+				} else if(controller.isBatching() && controller.getInventoryItemCount() < 30) {
+					controller.sleep(1000);
 				}
 			}
 
@@ -134,11 +141,12 @@ public class K_SkelliCoal extends IdleScript {
 		
 	
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		
-		while(controller.isInBank()){
+		controller.sleep(640);
+
+		if (controller.isInBank()) {
 			
 			totalCoal = totalCoal + controller.getInventoryItemCount(155);
 			totalSap = totalSap + controller.getInventoryItemCount(160);

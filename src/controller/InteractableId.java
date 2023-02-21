@@ -27,4 +27,11 @@ public class InteractableId {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return "InteractableId{" +
+                "id=" + id +
+                '}';
+    }
+
 }

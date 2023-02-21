@@ -11,8 +11,8 @@ import scripting.idlescript.framework.tasks.Idle;
 import scripting.idlescript.framework.tasks.IdleTaskNode;
 import scripting.idlescript.framework.tasks.IdleTaskRootNode;
 import scripting.idlescript.framework.tasks.IdleTaskTree;
+import scripting.idlescript.framework.tasks.TreeNode;
 import scripting.idlescript.framework.tasks.banking.BankItems;
-import scripting.idlescript.framework.tasks.inventory.DropItems;
 import scripting.idlescript.framework.tasks.pathing.PathWalkTo;
 import scripting.idlescript.framework.tasks.skilling.MineOre;
 
@@ -121,7 +121,7 @@ public class AIOMiner extends IdleScript {
     public void run() {
         MapPoint camp = scriptOptions.miningCampPoint;
 
-        List<ItemId> itemsToDropOrBank = stream(ItemId.values())
+        List<ItemId> itemsToBank = stream(ItemId.values())
                 .filter(item -> !item.name().toLowerCase().contains("pickaxe"))
                 .filter(item -> !item.name().toLowerCase().contains("sleeping_bag"))
                 .collect(toList());
@@ -148,21 +148,24 @@ public class AIOMiner extends IdleScript {
         //                                /                  \
         //                            mine ore              idle
 
-        new IdleTaskTree(new IdleTaskRootNode(isInventoryFull)
-                .onTrue(scriptOptions.disableBanking ?
-                        new IdleTaskNode(new DropItems(itemsToDropOrBank)) :
-                        new IdleTaskRootNode(isAtBank)
-                                .onTrue(new IdleTaskNode(new BankItems(itemsToDropOrBank)))
-                                .onFalse(new IdleTaskNode(new PathWalkTo(scriptOptions.bankPoint.getMapPoint()))))
-                .onFalse(
-                        new IdleTaskRootNode(isAtCamp)
-                                .onTrue(new IdleTaskRootNode(isRocksPresent)
-                                        .onTrue(new IdleTaskNode(new MineOre(scriptOptions.rocksToMine)))
-                                        .onFalse(new IdleTaskNode(new Idle()))
-                                )
-                                .onFalse(new IdleTaskNode(new PathWalkTo(camp)))
-                )
-        ).runTasks();
+
+        TreeNode oreMining = new IdleTaskRootNode(isAtCamp)
+                .onTrue(new IdleTaskRootNode(isRocksPresent)
+                        .onTrue(new IdleTaskNode(new MineOre(scriptOptions.rocksToMine)))
+                        .onFalse(new IdleTaskNode(new Idle())))
+                .onFalse(new IdleTaskNode(new PathWalkTo(camp)));
+
+        new IdleTaskTree(
+                new IdleTaskRootNode(isInventoryFull)
+                        .onTrue(scriptOptions.disableBanking ?
+                                oreMining :
+                                new IdleTaskRootNode(isAtBank)
+                                        .onTrue(new IdleTaskNode(new BankItems(itemsToBank)))
+                                        .onFalse(new IdleTaskNode(
+                                                new PathWalkTo(scriptOptions.bankPoint.getMapPoint()))))
+                        .onFalse(oreMining)
+        )
+                .runTasks();
     }
 
     private static void centerWindow(Window frame) {
@@ -178,8 +181,7 @@ public class AIOMiner extends IdleScript {
         scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         scriptFrame.add(new JLabel("Start with any pickaxe and a sleeping bag!"));
 
-        JCheckBox disableBankCheckBox = new JCheckBox(
-                "Don't use banking, will drop EVERYTHING besides pickaxe and sleeping bag!");
+        JCheckBox disableBankCheckBox = new JCheckBox("Don't bank!");
         JComboBox<String> bankOptions = createBankOptions(disableBankCheckBox);
         scriptFrame.add(disableBankCheckBox);
 

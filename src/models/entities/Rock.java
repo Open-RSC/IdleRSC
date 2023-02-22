@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum Rock implements ObjectIds {
+    // Please order the rocks ascending by mining level, then rocks can be sorted by ordinal
     EMPTY(createSet(98)),
     COPPER(createSet(100, 101)),
     TIN(createSet(104, 105)),
@@ -29,7 +30,7 @@ public enum Rock implements ObjectIds {
 
     @Override
     public String toString() {
-        return "Rock{" +
+        return "Rock " + this.name() + "{" +
                 "ids=" + ids +
                 '}';
     }

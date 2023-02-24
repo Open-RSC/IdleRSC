@@ -41,6 +41,8 @@ import java.util.function.Predicate;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static models.entities.MapPoint.BankPoint.DRAYNOR;
+import static models.entities.MapPoint.MiningCampPoint.LUMBRIDGE_SWAMP;
 import static models.entities.MapPoint.distance;
 import static models.entities.Rock.EMPTY;
 import static scripting.ControllerProvider.getBotController;
@@ -321,6 +323,10 @@ public class AIOMiner extends IdleScript {
 
     private static Optional<BankPoint> findBank(MapPoint mapPoint) {
         getBotController().debug("Finding bank for " + mapPoint);
+
+        if (LUMBRIDGE_SWAMP.getMapPoint().equals(mapPoint))
+            return Optional.of(DRAYNOR);
+
         return stream(BankPoint.values())
                 .reduce((b1, b2) -> distance(b1.getMapPoint(), mapPoint)
                         > distance(b2.getMapPoint(), mapPoint) ? b2 : b1);

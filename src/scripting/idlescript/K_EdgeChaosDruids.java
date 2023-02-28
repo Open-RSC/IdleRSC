@@ -173,7 +173,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(640);
+		controller.sleep(1200);
 
 		if (controller.isInBank()) {
 			
@@ -199,33 +199,34 @@ public class K_EdgeChaosDruids extends IdleScript {
 					+ controller.getInventoryItemCount(158)
 					+ controller.getInventoryItemCount(157);
 			
-			if (controller.getInventoryItemCount() > 1) {
-				for (int itemId : controller.getInventoryItemIds()) {
-					if (itemId != 546) {
-						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-					}
+
+			for (int itemId : controller.getInventoryItemIds()) {
+				if (itemId != 546) {
+					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				}
-				controller.sleep(640);   
 			}
+
+			controller.sleep(1400);   //Important, leave in
+
 			if(controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
 				controller.withdrawItem(33, 3);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
 				controller.withdrawItem(34, 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
 				controller.withdrawItem(42, 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(546) > 1) {  //deposit extra shark
 				controller.depositItem(546, controller.getInventoryItemCount(546) - 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(546) < 1) {  //withdraw 1 shark
 				controller.withdrawItem(546, 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getBankItemCount(546) == 0) {
 				controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
@@ -237,7 +238,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 				}
 			}
 			controller.closeBank();
-			controller.sleep(640);
+			controller.sleep(1000);
 		}
 	}
 	
@@ -296,6 +297,8 @@ public class K_EdgeChaosDruids extends IdleScript {
 		controller.walkTo(210,3254);
 		controller.walkTo(200,3254);
 		controller.walkTo(196,3265);
+		controller.atObject(196,3266);   //gate wont break if someone else opens it
+		controller.sleep(640);
 		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3265) {
 			controller.atObject(196,3266);   //gate wont break if someone else opens it
 			controller.sleep(640);

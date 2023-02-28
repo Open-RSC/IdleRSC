@@ -105,15 +105,15 @@ public class K_RedSpiderEggz extends IdleScript {
 			
 			if(controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
 				controller.withdrawItem(33, 3);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
 				controller.withdrawItem(34, 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
 				controller.withdrawItem(42, 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(546) > 1) {  //deposit extra shark
 				controller.depositItem(546, controller.getInventoryItemCount(546) - 1);

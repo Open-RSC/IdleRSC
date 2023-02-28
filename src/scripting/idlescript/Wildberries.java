@@ -76,47 +76,80 @@ public class Wildberries extends IdleScript {
 		controller.displayMessage("@red@Start in Varrock East bank! You need antidragon shields in the bank!");
 		
 		while(controller.isRunning()) {
-			
-			if(!controller.isEquipped(controller.getInventoryItemSlotIndex(420))) {
+
+			if (controller.currentY() > 509) {
+
+				bank();
+				eat();
+				eat();
+				eat();
+
+				if (controller.getInventoryItemCount(546) < 3) {
+					bank();
+					eat();
+					eat();
+				}
+			}
+
+			if(!controller.isItemIdEquipped(420)) {
 				controller.equipItem(controller.getInventoryItemSlotIndex(420));
 				controller.sleep(618);
 			}
-			
-			if(controller.getInventoryItemCount(471) == 0) {
-				
-				bank();
-				
+
+			if(controller.getInventoryItemCount(471) == 0 && controller.currentY() > 250) {
+
+				controller.setStatus("@red@Walking to Berries..");
 				controller.walkPath(varrockToGate);
 				while(controller.currentX() != 140 || controller.currentY() != 181) {
 					controller.atObject(140, 180);
 					controller.sleep(618);
 				}
 				controller.walkPath(gateToBerries);
+
+				//controller.setStatus("@red@Picking Berries..");
+				//if(controller.getGroundItemAmount(471, 137, 213) > 0) {
+				//	controller.pickupItem(137, 213, 471, true, false);
+				//	controller.sleep(618);
+				//}
+
+				//while(controller.getInventoryItemCount(471) == 0) {
+				//	controller.pickupItem(137, 213, 471, true, false);
+				//	controller.sleep(618);
+				//}
 				
-				if(controller.getGroundItemAmount(471, 137, 213) > 0) {
-					controller.pickupItem(137, 213, 471, true, false);
-					controller.sleep(618);
-				}
-				
-				while(controller.getInventoryItemCount(471) == 0) {
-					controller.pickupItem(137, 213, 471, true, false);
-					controller.sleep(618);
-				}
-				
-			} else if(controller.getInventoryItemCount(471) > 0 && controller.getInventoryItemCount() != 30) {
-				if(controller.getGroundItemAmount(471, 137, 213) > 0) {
-					controller.pickupItem(137, 213, 471, true, false);
-					controller.sleep(618);
-				}
-				
-				if(controller.isInCombat()) {
-					controller.walkTo(137, 213);
-					controller.sleep(333);
-				}
-				
+			}
+			if(controller.getInventoryItemCount() != 30 && controller.currentY() < 250) {  //whjile not full inv, grab berries //controller.getInventoryItemCount(471) > 0 &&
+
+				controller.setStatus("@red@Picking Berries..");
 				eat();
-				
-			} else {
+
+				if(controller.isInCombat()) {
+					controller.setStatus("@red@In Combat, escaping..");
+					controller.walkTo(136, 207);
+					controller.sleep(600);
+					controller.walkTo(137, 212);
+					controller.walkTo(137, 213);
+					eat();
+				}
+				if(controller.getGroundItemAmount(471, 137, 213) > 0) {
+					controller.walkTo(134, 213);
+					controller.walkTo(137, 213);
+					controller.pickupItem(137, 213, 471, true, false);
+					controller.sleep(618);
+					eat();
+				}
+				if(controller.getGroundItemAmount(471, 131, 205) > 0) {
+					controller.walkTo(134, 213);
+					controller.walkTo(131, 210);
+					controller.walkTo(131, 205);
+					controller.pickupItem(131, 205, 471, true, false);
+					controller.sleep(618);
+					controller.walkTo(131, 210);
+					eat();
+				}
+			}
+			if(controller.getInventoryItemCount() == 30 || controller.getInventoryItemCount(546) == 0) { //no sharks or full inv then bank
+				controller.setStatus("@red@Walking to Bank..");
 				controller.walkPathReverse(gateToBerries);
 				while(controller.currentX() != 140 || controller.currentY() != 180) {
 					controller.atObject(140, 180);
@@ -149,27 +182,31 @@ public class Wildberries extends IdleScript {
 		
 		controller.openBank();
 		controller.sleep(640);
-		berriesPicked += controller.getInventoryItemCount(471);
+		berriesPicked = berriesPicked + controller.getInventoryItemCount(471);
 
 		if (controller.isInBank()) {
-			if (controller.getInventoryItemCount(471) > 0) {
-				controller.depositItem(471, controller.getInventoryItemCount(471));
-				controller.sleep(100);
+			//if (controller.getInventoryItemCount(471) > 0) {
+			//	controller.depositItem(471, controller.getInventoryItemCount(471));
+			//	controller.sleep(840);
+			//}
+			for (int itemId : controller.getInventoryItemIds()) {
+					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+			}
+			controller.sleep(1000);   //Important, leave in
+
+			if (controller.getInventoryItemCount(546) < 3) {
+				controller.withdrawItem(546, 3 - controller.getInventoryItemCount(546));
+				controller.sleep(840);
 			}
 
-			if (controller.getInventoryItemCount(546) < 5) {
-				controller.withdrawItem(546, 5);
-				controller.sleep(2000);
-			}
-
-			if (controller.getInventoryItemCount(420) < 1) {
+			if (!controller.isItemIdEquipped(420)) {
 				controller.withdrawItem(420, 1);
-				controller.sleep(2000);
+				controller.sleep(840);
 			}
 		}
+		berriesBanked = controller.getBankItemCount(471);
 		controller.closeBank();
 		controller.sleep(640);
-		berriesBanked = controller.getBankItemCount(471);
 	}
 	
     @Override

@@ -18,20 +18,18 @@ import orsc.ORSCharacter;
 import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
- * Tav black demons - By Kaila
- * Start in Fally west bank with gear
- * Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED. super atk, super str pots suggested.
- * 37 Magic Required for  tele, 37 prayer for paralize monster, 70 agility for shortcut.
- * anti dragon shield required. rune squareshield recomended.
- *
+ * Wildy Fire Giant Killer - By Kaila");
+ * Start in Edge bank with Armor");
+ * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
+ * 31 Magic Required for escape tele");
+ * 
  * Author - Kaila
  */
-public class K_TavBlackDemonPipe extends IdleScript {	
+public class K_TavBlackDragonPipe extends IdleScript {	
 	
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
-	boolean d2hWield = false;
 	
 	int totalDbones = 0;
     int totalRdagger = 0;
@@ -44,6 +42,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
     int totalLoop = 0;
     int totalTooth = 0;
     int totalLeft = 0;
+    int totalRlong = 0;
     int totalSpear = 0;  
     int totalHerb = 0;
     int bankDbones = 0;
@@ -52,7 +51,6 @@ public class K_TavBlackDemonPipe extends IdleScript {
     int totalMed = 0;
     int totalDstone = 0;
     int totalRbar = 0;
-    int totalRunestuff = 0;
     int totalTrips = 0;
     int totalDeath = 0;
     int totalRchain = 0;
@@ -63,61 +61,65 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
    	int[] attackPot = {488,487,486};
    	int[] strPot = {494,493,492};
-	int[] loot = { 400,   //rune chain
-				   399,   // rune med
-					31, 	 //fire rune
-					42, 	 // law rune
-					41, //chaos rune
-					619, //blood rune
-					33, //air rune
-					40,	 	 // nature rune
-					38, //Death Rune
-					438, 	 //Grimy ranarr
-					439,  	 //Grimy irit
-					440,  	 //Grimy ava
-					441,	 //Grimy kwu
-					442, 	 //Grimy cada
-					443, 	 //Grimy dwu
-					174,     //Addy bar
-					160, 	 //saph
-					159, 	 //emerald
-					158, 	 //ruby
-					157,	 //diamond
-					404, 	 //rune kite
-					403,	 //rune square
-					542,	 //uncut dstone
-					523,  	//cut dstone
-					795,  	//D med
-					405,  	//rune axe
-					408,  	//rune bar
-					81, 	//rune 2h
-					93, 	//rune battle axe
-					520, 	//silver cert
-					518, 	//coal cert
-					526, 	 //tooth half
-					527, 	 //loop half
-					1277, 	 //shield (left) half
-					1092, 	 //rune spear
-					795  	//D med
-					};
+   	int[] antiPot = {571,570,569};
+	int[] loot = {  
+			814,     //D Bones
+			75,     //rune long
+			120, 	//addy plate body
 
-    public boolean isWithinWander(int x, int y) { 
-    	return controller.distance(390, 3371, x, y) <= 10;
-    }
+			619,			//blood rune
+			
+			438, 	 //Grimy ranarr
+			439,  	 //Grimy irit
+			440,  	 //Grimy ava
+			441,	 //Grimy kwu
+			442, 	 //Grimy cada
+			443, 	 //Grimy dwu
+			
+			405,  	//rune axe
+			81, 	//rune 2h
+			93, 	//rune battle axe
+			
+			31, 	 //fire rune
+			33,      // air rune
+			38,      //Death Rune
+			619,     //blood rune
+			40,	 	 // nature rune
+			42, 	 // law rune
+			
+			11,      //bronze arrows
+			
+			408,  	//rune bar
+			520, 	//silver cert
+			518, 	//coal cert
+
+			159, 	 //emerald
+			158, 	 //ruby
+			157,	 //diamond
+			523,     //dragonstone!
+			
+			526, 	 //tooth half
+			527, 	 //loop half
+			1092, 	 //rune spear
+			1277, 	 //shield (left) half
+			795,  	//D med
+			};
+
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-
-
-
-
-	//STARTing script
+	
+    public boolean isWithinWander(int x, int y) { 
+    	return controller.distance(408,3337, x, y) <= 22;
+    }
+	
 	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
 		}
 		if (scriptStarted) {
-			controller.displayMessage("@red@Taverley Black Demons - By Kaila");
+			controller.displayMessage("@red@Tavelry Black Dragons - By Kaila");
 			controller.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
 			controller.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
 			controller.displayMessage("@red@70 Agility required, for the shortcut!");
@@ -126,7 +128,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			}
 			if(controller.currentY() < 2800) {
 				bank();
-				BankToDemons();  
+				BankToDragons();  
 				controller.sleep(1380);
 			}
 			scriptStart();
@@ -142,116 +144,117 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
 
 
-	//Main Script section
+
+
+
+
+
+
+
 	public void scriptStart() {
-			while(controller.isRunning()) {
+		while(controller.isRunning()) {
 
-				foodPotCheck();
-				eat();
-				drink();
-				pray();
+			ppotCheck();
+			drink();
+			pray();
+			foodCheck();
+			eat();
 
-				
+			if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
+				controller.dropItem(controller.getInventoryItemSlotIndex(465));
+			}
 
+			if(controller.getInventoryItemCount() < 30) {
 
-				if(controller.getInventoryItemCount() < 30) {
-					foodPotCheck();
-			 		boolean lootPickedUp = false; 
-				   	for(int lootId : loot) {
-				   		int[] coords = controller.getNearestItemById(lootId);
-		        		if(coords != null && this.isWithinWander(coords[0], coords[1])) {
-							controller.setStatus("@yel@Looting..");
-							controller.walkTo(coords[0], coords[1]);
-				   			controller.pickupItem(coords[0], coords[1], lootId, true, true);
-				   			controller.sleep(618);
-				   		}
-				   	}
-				   	if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
-				  		continue;
-
-				   	if(controller.getCurrentStat(controller.getStatId("Attack")) == controller.getBaseStat(controller.getStatId("Attack"))) {
-				   		if(controller.getInventoryItemCount(attackPot[0]) > 0 || controller.getInventoryItemCount(attackPot[1]) > 0 || controller.getInventoryItemCount(attackPot[2]) > 0 ) {
-				   		attackBoost();
-						}
-				   	}
-				   	if(controller.getCurrentStat(controller.getStatId("Strength")) == controller.getBaseStat(controller.getStatId("Strength"))) {
-						if(controller.getInventoryItemCount(strPot[0]) > 0 || controller.getInventoryItemCount(strPot[1]) > 0 || controller.getInventoryItemCount(strPot[2]) > 0 ) {
-				   		strengthBoost();
-						}
-				   	}
-				   	
-				   	if(!controller.isInCombat()) {
-		    			controller.setStatus("@yel@Attacking Demons");
-				    	controller.sleepHandler(98, true);
-					   	ORSCharacter npc = controller.getNearestNpcById(290, false);
-					   	if(npc != null) {
-					    	controller.attackNpc(npc.serverIndex);
-					    	controller.sleep(1000);
-					    } else {
-							controller.sleep(1000);
-					    }
-				    }
-			    	controller.sleep(1380);
-			    	
-			    	
+				boolean lootPickedUp = false;
+				for(int lootId : loot) {
+					int[] coords = controller.getNearestItemById(lootId);
+					if(coords != null && this.isWithinWander(coords[0], coords[1])) {
+						controller.setStatus("@yel@Looting..");
+						controller.walkTo(coords[0], coords[1]);
+						controller.pickupItem(coords[0], coords[1], lootId, true, true);
+						controller.sleep(618);
+					}
 				}
-				if(controller.getInventoryItemCount() == 30) {
+				if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
+					continue;
 
-					foodPotCheck();
+				if(controller.getCurrentStat(controller.getStatId("Attack")) == controller.getBaseStat(controller.getStatId("Attack"))) {
+					if(controller.getInventoryItemCount(attackPot[0]) > 0 || controller.getInventoryItemCount(attackPot[1]) > 0 || controller.getInventoryItemCount(attackPot[2]) > 0 ) {
+						attackBoost();
+					}
+				}
+				if(controller.getCurrentStat(controller.getStatId("Strength")) == controller.getBaseStat(controller.getStatId("Strength"))) {
+					if(controller.getInventoryItemCount(strPot[0]) > 0 || controller.getInventoryItemCount(strPot[1]) > 0 || controller.getInventoryItemCount(strPot[2]) > 0 ) {
+						strengthBoost();
+					}
+				}
 
-					while(controller.isInCombat()) {
-						controller.setStatus("@red@Leaving combat..");
-						controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				if(!controller.isInCombat()) {
+					controller.setStatus("@yel@Attacking Dragons");
+					ORSCharacter npc = controller.getNearestNpcById(291, false);
+					if(npc != null) {
+						controller.attackNpc(npc.serverIndex);
+						eat();
+						controller.sleep(100);
+						eat();
+					} else {
+						controller.walkTo(408,3336);
 						controller.sleep(340);
 					}
-					if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
-						controller.setStatus("@red@Dropping Vial to Loot..");
-						controller.dropItem(controller.getInventoryItemSlotIndex(465));
-						controller.sleep(340);
-					}
-					for(int id : controller.getFoodIds()) {
-						if(controller.getInventoryItemCount(id) > 0 && controller.getInventoryItemCount() == 30) {
-							controller.setStatus("@red@Eating Food to Loot..");
-							controller.itemCommand(id);
-							controller.sleep(700);
-						}
+				}
+				controller.sleep(800);
+			}
+			if(controller.getInventoryItemCount() == 30) {
+				ppotCheck();
+				while(controller.isInCombat()) {
+					controller.setStatus("@red@Leaving combat..");
+					controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+					controller.sleep(250);
+				}
+				if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
+					controller.setStatus("@red@Dropping Vial to Loot..");
+					controller.dropItem(controller.getInventoryItemSlotIndex(465));
+					controller.sleep(340);
+				}
+				for(int id : controller.getFoodIds()) {
+					if(controller.getInventoryItemCount(id) > 0 && controller.getInventoryItemCount() == 30) {
+						controller.setStatus("@red@Eating Food to Loot..");
+						controller.itemCommand(id);
+						controller.sleep(700);
 					}
 				}
 			}
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//actionable public voids (eat, bank, etc)
+	}
 	
-	public void bank() {
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void bank() {   
+		
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
 		controller.sleep(1200);
-
-		if (controller.isInBank()) {
+		
+		while(controller.isInBank()){
 			
-			totalRunestuff = totalRunestuff 
-					+ controller.getInventoryItemCount(404) //kite
-					+ controller.getInventoryItemCount(403) //sq
-					+ controller.getInventoryItemCount(405) //axe
-					+ controller.getInventoryItemCount(81) //2h
-					+ controller.getInventoryItemCount(93); //bAxe
+			totalDbones = totalDbones + controller.getInventoryItemCount(814);
 			totalGems = totalGems 
 					+ controller.getInventoryItemCount(160) 
 					+ controller.getInventoryItemCount(159)
@@ -267,31 +270,24 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			totalFire = totalFire + controller.getInventoryItemCount(31);
 			totalLaw = totalLaw + controller.getInventoryItemCount(42);
 			totalNat = totalNat + controller.getInventoryItemCount(40);
-			totalChaos = totalChaos + controller.getInventoryItemCount(41);
 			totalDeath = totalDeath + controller.getInventoryItemCount(38);
 			totalBlood = totalBlood + controller.getInventoryItemCount(619);
-			totalRbar = totalRbar + controller.getInventoryItemCount(408);
 			totalLoop = totalLoop + controller.getInventoryItemCount(527);
 			totalTooth = totalTooth + controller.getInventoryItemCount(526);
 			totalDstone = totalDstone + controller.getInventoryItemCount(523);
 			totalLeft = totalLeft + controller.getInventoryItemCount(1277);
-			totalSpear = totalSpear + controller.getInventoryItemCount(1092);
-			totalRchain = totalMed + controller.getInventoryItemCount(400);
-			totalRmed = totalMed + controller.getInventoryItemCount(399);
 			totalMed = totalMed + controller.getInventoryItemCount(795);
-			
+			totalSpear = totalSpear + controller.getInventoryItemCount(1092);
+			totalAddy = totalAddy + controller.getInventoryItemCount(120);
+			totalRlong = totalRlong + controller.getInventoryItemCount(75);
 			//ppotCount() = (controller.getInventoryItemCount(483) + controller.getInventoryItemCount(483) +controller.getInventoryItemCount(483));
 			for (int itemId : controller.getInventoryItemIds()) {
-				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 546 && itemId != 420 && itemId != 485 && itemId != 484 && itemId != 483 && itemId != 1346 ) {
+				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 546 && itemId != 420 && itemId != 485 && itemId != 484 && itemId != 483 && itemId != 571 && itemId != 570 && itemId != 569 ) {
 					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				}
 			}
 			controller.sleep(1400);      //Important, leave in
 			
-			if(controller.getInventoryItemCount(420) < 1) {  //antidragon shield
-				controller.withdrawItem(420, 1);
-				controller.sleep(640);
-			}
 			if(controller.getInventoryItemCount(33) < 18) {  //6 air
 				controller.withdrawItem(33, 18 - controller.getInventoryItemCount(33));
 				controller.sleep(1000);
@@ -309,17 +305,34 @@ public class K_TavBlackDemonPipe extends IdleScript {
 				controller.withdrawItem(attackPot[2], 1);
 				controller.sleep(640);
 			}
+			if(controller.getInventoryItemCount(antiPot[0]) < 1 && controller.getInventoryItemCount(antiPot[1]) < 1 && controller.getInventoryItemCount(antiPot[2]) < 1 ) {  //withdraw 10 shark if needed
+				if(controller.getBankItemCount(antiPot[0]) > 0) {
+					controller.withdrawItem(antiPot[0], 1);
+					controller.sleep(640);
+				}
+			}
 			if(controller.getInventoryItemCount(strPot[0]) < 1 && controller.getInventoryItemCount(strPot[1]) < 1 && controller.getInventoryItemCount(strPot[2]) < 1 ) {  //withdraw 10 shark if needed
 				controller.withdrawItem(strPot[2], 1);
 				controller.sleep(640);
 			}
-
-			if(controller.getInventoryItemCount(483) < 17) {  //withdraw 17 ppot
-				controller.withdrawItem(483, 17 - (controller.getInventoryItemCount(483) + controller.getInventoryItemCount(484) + controller.getInventoryItemCount(485)));  //minus ppot count
+			if(controller.getInventoryItemCount(antiPot[0]) < 1 && controller.getInventoryItemCount(antiPot[1]) < 1 && controller.getInventoryItemCount(antiPot[2]) < 1 ) {
+				if(controller.getBankItemCount(antiPot[1]) > 0) {
+					controller.withdrawItem(antiPot[1], 1);
+					controller.sleep(640);
+				}
+			}
+			if(controller.getInventoryItemCount(483) < 6) {  //withdraw 5 ppot
+				controller.withdrawItem(483, 6 - (controller.getInventoryItemCount(483) + controller.getInventoryItemCount(484) + controller.getInventoryItemCount(485)));  //minus ppot count
 				controller.sleep(640);
 			}
-			if(controller.getInventoryItemCount(546) < 2) {  //withdraw 2 shark
-				controller.withdrawItem(546, 2 - controller.getInventoryItemCount(546));
+			if(controller.getInventoryItemCount(antiPot[0]) < 1 && controller.getInventoryItemCount(antiPot[1]) < 1 && controller.getInventoryItemCount(antiPot[2]) < 1 ) {
+				if(controller.getBankItemCount(antiPot[2]) > 0) {
+					controller.withdrawItem(antiPot[2], 1);
+					controller.sleep(640);
+				}
+			}
+			if(controller.getInventoryItemCount(546) < 4) {  //withdraw 2 shark
+				controller.withdrawItem(546, 4 - controller.getInventoryItemCount(546));
 				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(33) < 18) {  //6 air
@@ -343,6 +356,13 @@ public class K_TavBlackDemonPipe extends IdleScript {
 					controller.stop();
 					return;
 				}
+			}
+			if(!controller.isItemIdEquipped(420)) {
+				controller.setStatus("@red@Not Wielding Dragonfire Shield!.");
+				controller.withdrawItem(420, 1);
+				controller.closeBank();
+				controller.equipItem(controller.getInventoryItemSlotIndex(420));
+				controller.sleep(1320);
 			}
 			controller.closeBank();
 			controller.sleep(1000);
@@ -381,6 +401,11 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			controller.sleep(1000);
 		}
 	}
+	
+	
+	
+	
+	
 
 
 
@@ -394,7 +419,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
 
 
-
+	
 	public void pray() {
 		if(!controller.isPrayerOn(controller.getPrayerId("Paralyze Monster")) && controller.currentY() > 3000);
 			controller.enablePrayer(controller.getPrayerId("Paralyze Monster"));
@@ -405,10 +430,10 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	   			drinkPot();
 			} else {
 				controller.sleep(308);
-				demonEscape();
-				DemonsToBank();
+				dragonEscape();
+				DragonsToBank();
 				bank();
-				BankToDemons();
+				BankToDragons();
 			}
 	   	}
 	}
@@ -417,8 +442,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
 		
 		
-		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			foodPotCheck();
+		while(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+			
 			while(controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
@@ -439,10 +464,10 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			if(!ate) {  //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
 				controller.setStatus("@red@We've ran out of Food! Running Away!.");
 				controller.sleep(308);
-				demonEscape();
-				DemonsToBank();
+				dragonEscape();
+				DragonsToBank();
 				bank();
-				BankToDemons();
+				BankToDragons();
 			}
 		}
 	}
@@ -451,33 +476,13 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//PATHING public voids
-
-	public void demonEscape() {
-		controller.setStatus("We've ran out of Food! @gre@Going to safe zone.");
-		controller.walkTo(382,3372);
-		controller.walkTo(375,3372);
-		controller.sleep(640);
-		if (controller.currentX() > 376) {
-			controller.walkTo(375,3372);
-			controller.sleep(640);
-		}
+	public void dragonEscape() {
+		controller.setStatus("We've ran out of Food/PPots! @gre@Going to safe zone.");
+		controller.walkTo(408, 3340);
+		controller.walkTo(408, 3348);
+		controller.sleep(1000);
 	}
-	public void DemonsToBank() {
+	public void DragonsToBank() {
 		controller.setStatus("@gre@Going to Bank. Casting 1st teleport.");
 		controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
 		controller.sleep(1000);
@@ -519,8 +524,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.sleep(308);
     	controller.setStatus("@gre@Done Walking..");
 	}
-    public void BankToDemons() {	
-    	controller.setStatus("@gre@Walking to Black Demons..");
+	public void BankToDragons() {
+		controller.setStatus("@gre@Walking to Black Dragons..");
 		controller.walkTo(327, 552);
 		controller.walkTo(324, 549);
 		controller.walkTo(324, 539);
@@ -559,18 +564,28 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.sleep(640);
 		controller.walkTo(372,3364);
 		controller.walkTo(377,3369);
-		if (d2hWield == true) {
-			controller.equipItem(controller.getInventoryItemSlotIndex(1346));
-		}
+		controller.equipItem(controller.getInventoryItemSlotIndex(404));
 		controller.enablePrayer(controller.getPrayerId("Paralyze Monster"));
 		controller.sleep(320);
 		controller.walkTo(380,3372);
-    	controller.setStatus("@gre@Done Walking..");
-		foodPotCheck();
 		eat();
+		ppotCheck();
 		drink();
 		pray();
-    	
+		controller.walkTo(386,3371);
+		controller.walkTo(388,3360);
+		controller.walkTo(397,3347);
+		controller.walkTo(397,3343);
+		controller.walkTo(403,3346);
+		controller.walkTo(408,3344);
+		antiBoost();
+		controller.walkTo(409,3338);
+		eat();
+		ppotCheck();
+		drink();
+		pray();
+		controller.setStatus("@gre@Done Walking..");
+
 	}
 
 
@@ -585,15 +600,33 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
 
 
-	//BOOST public voids
 
-	public void foodPotCheck() {
-		if(controller.getInventoryItemCount(483) == 0 || controller.getInventoryItemCount(546) == 0) {
-			controller.setStatus("@yel@No Ppots/food, Banking..");
-			demonEscape();
-			DemonsToBank();
+
+
+
+
+
+
+
+
+
+	public void ppotCheck() {
+		if(controller.getInventoryItemCount(483) == 0) {
+			controller.setStatus("@yel@No Ppots, Banking..");
+			dragonEscape();
+			DragonsToBank();
 			bank();
-			BankToDemons();
+			BankToDragons();
+			controller.sleep(618);
+		}
+	}
+	public void foodCheck() {
+		if(controller.getInventoryItemCount(546) == 0) {
+			controller.setStatus("@yel@No food, Banking..");
+			dragonEscape();
+			DragonsToBank();
+			bank();
+			BankToDragons();
 			controller.sleep(618);
 		}
 	}
@@ -620,6 +653,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		}
 		return;
 	}
+
 	public void strengthBoost() {
 		while(controller.isInCombat()) {
 			controller.setStatus("@red@Leaving combat..");
@@ -645,7 +679,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	}
 	
 	public void drinkPot() {
-		foodPotCheck();
+		ppotCheck();
 		while(controller.isInCombat()) {
 			controller.setStatus("@red@Leaving combat..");
 			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
@@ -669,10 +703,29 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		return;
 	}
 	
-	
-	
-	
-	
+	public void antiBoost() {
+		//	while(controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(250);
+		//	}
+			if(controller.getInventoryItemCount(antiPot[0]) > 0) {
+				controller.itemCommand(antiPot[0]);
+				controller.sleep(320);
+				return;
+			}
+			if(controller.getInventoryItemCount(antiPot[1]) > 0) {
+				controller.itemCommand(antiPot[1]);
+				controller.sleep(320);
+				return;
+			}
+			if(controller.getInventoryItemCount(antiPot[2]) > 0) {
+				controller.itemCommand(antiPot[2]);
+				controller.sleep(320);
+				return;
+			}
+			return;
+		}
 	
 	
 	
@@ -696,25 +749,18 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 		frame.setLocation(x, y);
 	}
-	public void setValuesFromGUI(JCheckBox d2hCheckbox) {
-		if(d2hCheckbox.isSelected()) {
-			d2hWield = true;
-		}
-	}
 	public void setupGUI() {
-		JLabel header = new JLabel("Taverley Black Demon (Pipe) - By Kaila");
+		JLabel header = new JLabel("Tavelry Black Dragons (Pipe) - By Kaila");
 		JLabel label1 = new JLabel("Start in Fally west with gear on, or in Demon room!");
 		JLabel label2 = new JLabel("Sharks, Law, Water, Air IN BANK required");
 		JLabel label3 = new JLabel("70 Agility required, for the shortcut!");
 		JLabel label4 = new JLabel("Bot will attempt to wield dragonfire shield");
 		JLabel label5 = new JLabel("When walking through Blue Dragon Room");
-		JCheckBox d2hCheckbox = new JCheckBox("Check This if using D2H");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setValuesFromGUI(d2hCheckbox);
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				startTime = System.currentTimeMillis();
@@ -732,7 +778,6 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		scriptFrame.add(label3);
 		scriptFrame.add(label4);
 		scriptFrame.add(label5);
-		scriptFrame.add(d2hCheckbox);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);
@@ -754,58 +799,49 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	public void paintInterrupt() {
 		if (controller != null) {
 			String runTime = msToString(System.currentTimeMillis() - startTime);
-    		int RuneSuccessPerHr = 0;
+    		int DbonesSuccessPerHr = 0;
+    		int RdaggerSuccessPerHr = 0;
     		int GemsSuccessPerHr = 0;
     		int FireSuccessPerHr = 0;
     		int LawSuccessPerHr = 0;
-    		int NatSuccessPerHr = 0;
-    		int ChaosSuccessPerHr = 0;
-    		int DeathSuccessPerHr = 0;
-    		int BloodSuccessPerHr = 0;
-    		int RbarSuccessPerHr = 0;
-    		int RchainSuccessPerHr = 0;
-    		int RmedSuccessPerHr = 0;
+    		int AddySuccessPerHr = 0;
     	    int HerbSuccessPerHr = 0;
-    	    int TripSuccessPerHr = 0;
-    	    
+    	    int DeathSuccessPerHr = 0;
+    	    int BloodSuccessPerHr = 0;
+    		int TripSuccessPerHr = 0;
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
-	    		RuneSuccessPerHr = (int)(totalRunestuff * scale);
+	    		DbonesSuccessPerHr = (int)(totalDbones * scale);
+	    		RdaggerSuccessPerHr = (int)(totalRlong * scale);
 	    		GemsSuccessPerHr = (int)(totalGems * scale);
 	    		FireSuccessPerHr = (int)(totalFire * scale);
 	    		LawSuccessPerHr = (int)(totalLaw * scale);
-	    		NatSuccessPerHr = (int)(totalNat * scale);
-	    		ChaosSuccessPerHr = (int)(totalChaos * scale);
+	    		AddySuccessPerHr = (int)(totalAddy * scale);
+	    		HerbSuccessPerHr = (int)(totalHerb * scale);
 	    		DeathSuccessPerHr = (int)(totalDeath * scale);
 	    		BloodSuccessPerHr = (int)(totalBlood * scale);
-	    		RbarSuccessPerHr = (int)(totalRbar * scale);
-	    		RchainSuccessPerHr = (int)(totalRchain * scale);
-	    		RmedSuccessPerHr = (int)(totalRmed * scale);
-	    		HerbSuccessPerHr = (int)(totalHerb * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
-			controller.drawString("@red@Tavelry Black Demons @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-			controller.drawString("@whi@Laws: @gre@" + String.valueOf(this.totalLaw) + "@yel@ (@whi@" + String.format("%,d", LawSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
-			controller.drawString("@whi@Natures: @gre@" + String.valueOf(this.totalNat) + "@yel@ (@whi@" + String.format("%,d", NatSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);
-			controller.drawString("@whi@Fires: @gre@" + String.valueOf(this.totalFire) + "@yel@ (@whi@" + String.format("%,d", FireSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 90, 0xFFFFFF, 1);
-			controller.drawString("@whi@Chaos: @gre@" + String.valueOf(this.totalChaos) + "@yel@ (@whi@" + String.format("%,d", ChaosSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 104, 0xFFFFFF, 1);
-			controller.drawString("@whi@Deaths: @gre@" + String.valueOf(this.totalDeath) + "@yel@ (@whi@" + String.format("%,d", DeathSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 118, 0xFFFFFF, 1);
-			controller.drawString("@whi@Bloods: @gre@" + String.valueOf(this.totalBlood) + "@yel@ (@whi@" + String.format("%,d", BloodSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 132, 0xFFFFFF, 1);
-			controller.drawString("@whi@Rune Chain: @gre@" + String.valueOf(this.totalRchain) + "@yel@ (@whi@" + String.format("%,d", RchainSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 146, 0xFFFFFF, 1);
-			controller.drawString("@whi@Rune Med: @gre@" + String.valueOf(this.totalRmed) + "@yel@ (@whi@" + String.format("%,d", RmedSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 160, 0xFFFFFF, 1);
-			controller.drawString("@whi@Rune Bars: @gre@" + String.valueOf(this.totalRbar) + "@yel@ (@whi@" + String.format("%,d", RbarSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 174, 0xFFFFFF, 1);
-			controller.drawString("@whi@Total Herbs: @gre@" + String.valueOf(this.totalHerb) + "@yel@ (@whi@" + String.format("%,d", HerbSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 188, 0xFFFFFF, 1);
-			controller.drawString("@whi@Total Gems: @gre@" + String.valueOf(this.totalGems) + "@yel@ (@whi@" + String.format("%,d", GemsSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 202, 0xFFFFFF, 1);
-			controller.drawString("@whi@Total Rune Items: @gre@" + String.valueOf(this.totalRunestuff) + "@yel@ (@whi@" + String.format("%,d", RuneSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 216, 0xFFFFFF, 1);
-			controller.drawString("@whi@Tooth: @gre@" + String.valueOf(this.totalTooth) + "@yel@ / @whi@Loop: @gre@" + String.valueOf(this.totalLoop), 350, 230, 0xFFFFFF, 1);
-			controller.drawString("@whi@Dstone: @gre@" + String.valueOf(this.totalDstone) + "@yel@ / @whi@Rune Spear: @gre@" + String.valueOf(this.totalSpear), 350, 244, 0xFFFFFF, 1);
-			controller.drawString("@whi@D Med: @gre@" + String.valueOf(this.totalMed) + "@yel@ / @whi@Left Half: @gre@" + String.valueOf(this.totalLeft), 350, 258, 0xFFFFFF, 1);
-			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 272, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 350, 286, 0xFFFFFF, 1);
-		}  //add air runes, 
+			controller.drawString("@red@Tav Black Dragons @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
+			controller.drawString("@whi@Total D.Bones: @gre@" + String.valueOf(this.bankDbones), 350, 62, 0xFFFFFF, 1); 
+			controller.drawString("@whi@Banked D.Bones: @gre@" + String.valueOf(this.totalDbones) + "@yel@ (@whi@" + String.format("%,d", DbonesSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);  //fix y cords
+			controller.drawString("@whi@Rune Longs: @gre@" + String.valueOf(this.totalRlong) + "@yel@ (@whi@" + String.format("%,d", RdaggerSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 90, 0xFFFFFF, 1);
+			controller.drawString("@whi@Addy Plate Body: @gre@" + String.valueOf(this.totalAddy) + "@yel@ (@whi@" + String.format("%,d", AddySuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 104, 0xFFFFFF, 1);
+			controller.drawString("@whi@Fires: @gre@" + String.valueOf(this.totalFire) + "@yel@ (@whi@" + String.format("%,d", FireSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 118, 0xFFFFFF, 1);
+			controller.drawString("@whi@Laws: @gre@" + String.valueOf(this.totalLaw) + "@yel@ (@whi@" + String.format("%,d", LawSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 132, 0xFFFFFF, 1);
+			controller.drawString("@whi@Deaths: @gre@" + String.valueOf(this.totalDeath) + "@yel@ (@whi@" + String.format("%,d", DeathSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 146, 0xFFFFFF, 1);
+			controller.drawString("@whi@Bloods: @gre@" + String.valueOf(this.totalBlood) + "@yel@ (@whi@" + String.format("%,d", BloodSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 160, 0xFFFFFF, 1);
+			controller.drawString("@whi@Total Herbs: @gre@" + String.valueOf(this.totalHerb) + "@yel@ (@whi@" + String.format("%,d", HerbSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 174, 0xFFFFFF, 1);
+			controller.drawString("@whi@Total Gems: @gre@" + String.valueOf(this.totalGems) + "@yel@ (@whi@" + String.format("%,d", GemsSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 188, 0xFFFFFF, 1);
+			controller.drawString("@whi@Tooth: @gre@" + String.valueOf(this.totalTooth) + "@yel@ / @whi@Loop: @gre@" + String.valueOf(this.totalLoop), 350, 202, 0xFFFFFF, 1);
+			controller.drawString("@whi@Dstone: @gre@" + String.valueOf(this.totalDstone) + "@yel@ / @whi@Rune Spear: @gre@" + String.valueOf(this.totalSpear), 350, 216, 0xFFFFFF, 1);
+			controller.drawString("@whi@D Med: @gre@" + String.valueOf(this.totalMed) + "@yel@ / @whi@Left Half: @gre@" + String.valueOf(this.totalLeft), 350, 230, 0xFFFFFF, 1);
+			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 244, 0xFFFFFF, 1);
+			controller.drawString("@whi@Runtime: " + runTime, 350, 258, 0xFFFFFF, 1);
+		}
 	}
 }
+

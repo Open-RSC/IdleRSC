@@ -94,9 +94,9 @@ public class K_HobsPeninsula extends IdleScript {
 
 			11, 	 //bronze arrow
 			1026,    //unholy mould
-			10, 	 //coins
-			413,	 //Big bones
-			20       //bones
+			10//, 	 //coins
+			//413,	 //Big bones
+			//20       //bones
 
 			};
 

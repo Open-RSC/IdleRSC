@@ -59,16 +59,18 @@ public void scriptStart() {
 			controller.useItemIdOnObject(148, 513, barId);
 			controller.sleep(1000);
 			controller.optionAnswer(1);
-			controller.sleep(650);
+			controller.sleep(500);
 			controller.optionAnswer(2);
-			controller.sleep(650);
+			controller.sleep(500);
 			controller.optionAnswer(2);
-			controller.sleep(650);
-			controller.optionAnswer(3);
-			controller.sleep(650);
-			while(controller.isBatching()) controller.sleep(640);
+			controller.sleep(500);
+			if (!controller.isAuthentic()) {
+				controller.optionAnswer(3);
+				controller.sleep(1000); //was 650
+				while (controller.isBatching()) controller.sleep(200);
+			}
 		}
-		controller.sleep(320);
+		//controller.sleep(320);
 	}
 }
 	
@@ -91,7 +93,7 @@ public void scriptStart() {
 
 		controller.setStatus("@gre@Banking..");
 		controller.openBank();
-		controller.sleep(640);
+		controller.sleep(600);
 		
 		if(controller.isInBank()) {
 			
@@ -117,16 +119,16 @@ public void scriptStart() {
 			}
 			if (controller.getInventoryItemCount(168) < 1) {
 				controller.withdrawItem(168, 1);
-				controller.sleep(320);
+				controller.sleep(100);
 			}
 			if (controller.getInventoryItemCount(barId) < 25) {
 				controller.withdrawItem(barId, 25);
-				controller.sleep(320);
+				controller.sleep(100);
 			}
 			
 			barsInBank = controller.getBankItemCount(barId);
 			controller.closeBank();
-			
+			controller.sleep(200);
 		}
 	}	
 	

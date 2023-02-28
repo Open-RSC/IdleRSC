@@ -58,27 +58,22 @@ public class SmithingVarrock extends IdleScript {
 			}
 			if (controller.getInventoryItemCount(barId) > 4) {
 				controller.sleepHandler(98, true);
-				controller.setStatus("@gre@Smithing");
+				controller.setStatus("@gre@Smithing..");
 				controller.useItemIdOnObject(148, 513, barId);
-				controller.sleep(1280); //increased sleep time to fix menuing bug
-				while (controller.isInOptionMenu()) { //changed from if to while to fix menuing bug
-					controller.optionAnswer(ans1);
-					controller.sleep(750);
-					controller.optionAnswer(ans2);
-					controller.sleep(750);
-					controller.optionAnswer(ans3);
-					controller.sleep(750);
-					if (controller.isInOptionMenu()) {
-						controller.optionAnswer(ans4);
-						controller.sleep(750);
-					}
-				}
-				controller.sleep(640);
-				while (controller.isBatching()) {
-					controller.sleep(640);
+				controller.sleep(1000); //increased sleep time to fix menuing bug
+				controller.optionAnswer(ans1);
+				controller.sleep(600);
+				controller.optionAnswer(ans2);
+				controller.sleep(600);
+				controller.optionAnswer(ans3);
+				controller.sleep(600);
+				if (!controller.isAuthentic()) {
+					controller.optionAnswer(ans4);
+					controller.sleep(1000);
+					while(controller.isBatching()) controller.sleep(1000);
 				}
 			}
-			controller.sleep(320);
+			//controller.sleep(320);
 		}
 		scriptStarted = false;
 		guiSetup = false;
@@ -125,7 +120,7 @@ public class SmithingVarrock extends IdleScript {
 			}
 			barsLeft = controller.getBankItemCount(barId);
 			controller.closeBank();
-			//controller.sleep(1280);
+			controller.sleep(200);
 		}
 	}
 

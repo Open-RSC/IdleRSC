@@ -18,7 +18,7 @@ public class MineOre extends IdleTask {
 
     @Override
     public int tickDelay() {
-        return 3;
+        return 1;
     }
 
     @Override

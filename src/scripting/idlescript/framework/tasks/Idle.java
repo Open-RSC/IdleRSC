@@ -6,12 +6,12 @@ import java.util.Random;
 
 public class Idle extends IdleTask {
     private static MapPoint lastLocation = null;
-    private static int identicalLocationCount = 0;
-    private static final int TRACKED_LOCATIONS_LIMIT = 200;
+    private static int identicalLocationCounter = 0;
+    private static final int TRACKED_LOCATIONS_LIMIT = 300;
 
     @Override
     public int tickDelay() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -19,14 +19,14 @@ public class Idle extends IdleTask {
         MapPoint currentLocation = botController.playerApi.getCurrentLocation();
         if (!currentLocation.equals(lastLocation)) {
             lastLocation = currentLocation;
-            identicalLocationCount = 0;
+            identicalLocationCounter = 0;
         } else {
-            identicalLocationCount++;
+            identicalLocationCounter++;
         }
 
-        botController.debug("Identical location count: " + identicalLocationCount);
+        botController.debug("Identical location count: " + identicalLocationCounter);
 
-        if (identicalLocationCount > TRACKED_LOCATIONS_LIMIT - 1) {
+        if (identicalLocationCounter >= TRACKED_LOCATIONS_LIMIT) {
             handleAssumedStuckPosition(currentLocation);
             return;
         }
@@ -43,7 +43,7 @@ public class Idle extends IdleTask {
                         currentLocation.getX() + getRandomDeviation(),
                         currentLocation.getY() + getRandomDeviation()));
 
-        identicalLocationCount = 0;
+        identicalLocationCounter = 0;
     }
 
     private static int getRandomDeviation() {

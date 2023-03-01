@@ -79,6 +79,7 @@ public class MapPoint {
 
     public enum MiningCampPoint {
         AL_KHARID(new MapPoint(71, 588)),
+        LUMBRIDGE_SWAMP(new MapPoint(112, 699)),
         BARBARIAN_VILLAGE(new MapPoint(225, 503)),
         RIMMINGTON(new MapPoint(313, 640)),
         CRAFTING_GUILD(new MapPoint(338, 609)),

@@ -6,13 +6,15 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
+import javax.swing.*;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
+//import javax.swing.JCheckBox;
+//import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
+import javax.swing.JTextField;
 import orsc.ORSCharacter;
 import scripting.idlescript.AIOCooker.FoodObject;
 
@@ -21,7 +23,10 @@ import scripting.idlescript.AIOCooker.FoodObject;
  *  
  * @author Dvorak
  */
-public class Wildberries extends IdleScript {	
+public class Wildberries extends IdleScript {
+	JFrame scriptFrame = null;
+	boolean guiSetup = false;
+	boolean scriptStarted = false;
 	int[] gateToBerries = new int[] {
 			140, 181, 
 			142, 191, 
@@ -69,27 +74,49 @@ public class Wildberries extends IdleScript {
 	
 	int berriesPicked = 0;
 	int berriesBanked = 0;
+	int sharksInBank = 0;
+	int foodWithdrawAmount = 3;
+	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	
 	public int start(String parameters[]) {
-		controller.displayMessage("@red@Wildberries by Dvorak. Let's party like it's 2004!");
-		controller.displayMessage("@red@Start in Varrock East bank! You need antidragon shields in the bank!");
-		
-		while(controller.isRunning()) {
+		if (scriptStarted) {
+			controller.displayMessage("@red@Wildberries by Dvorak. Rewritten by Kaila");
+			controller.displayMessage("@red@Start in Varrock East bank! You need antidragon shields in the bank!");
 
+			if (controller.isInBank() == true) {
+				controller.closeBank();
+			}
 			if (controller.currentY() > 509) {
-
 				bank();
 				eat();
 				eat();
 				eat();
+				controller.sleep(618);
+			}
 
-				if (controller.getInventoryItemCount(546) < 3) {
-					bank();
-					eat();
-					eat();
+			scriptStart();
+		} else {
+			if (parameters[0].equals("")) {
+				if (!guiSetup) {
+					setupGUI();
+					guiSetup = true;
+				}
+			} else {
+				try {
+					foodWithdrawAmount = Integer.parseInt(parameters[0]);
+				} catch (Exception e) {
+					System.out.println("Could not parse parameters!");
+					controller.displayMessage("@red@Could not parse parameters!");
+					controller.stop();
 				}
 			}
+		}
+		return 1000; //start() must return a int value now.
+	}
+
+	public void scriptStart() {
+		while(controller.isRunning()) {
 
 			if(!controller.isItemIdEquipped(420)) {
 				controller.equipItem(controller.getInventoryItemSlotIndex(420));
@@ -105,18 +132,6 @@ public class Wildberries extends IdleScript {
 					controller.sleep(618);
 				}
 				controller.walkPath(gateToBerries);
-
-				//controller.setStatus("@red@Picking Berries..");
-				//if(controller.getGroundItemAmount(471, 137, 213) > 0) {
-				//	controller.pickupItem(137, 213, 471, true, false);
-				//	controller.sleep(618);
-				//}
-
-				//while(controller.getInventoryItemCount(471) == 0) {
-				//	controller.pickupItem(137, 213, 471, true, false);
-				//	controller.sleep(618);
-				//}
-				
 			}
 			if(controller.getInventoryItemCount() != 30 && controller.currentY() < 250) {  //whjile not full inv, grab berries //controller.getInventoryItemCount(471) > 0 &&
 
@@ -157,10 +172,17 @@ public class Wildberries extends IdleScript {
 				}
 				controller.walkPathReverse(varrockToGate);
 				bank();
+				eat();
+				eat();
+				eat();
+				controller.sleep(618);
+				if (controller.getInventoryItemCount(546) < foodWithdrawAmount) {
+					bank();
+					eat();
+					eat();
+				}
 			}
 		}
-		
-		return 1000; //start() must return a int value now. 
 	}
 	
 	public void eat() {
@@ -185,34 +207,114 @@ public class Wildberries extends IdleScript {
 		berriesPicked = berriesPicked + controller.getInventoryItemCount(471);
 
 		if (controller.isInBank()) {
-			//if (controller.getInventoryItemCount(471) > 0) {
-			//	controller.depositItem(471, controller.getInventoryItemCount(471));
-			//	controller.sleep(840);
-			//}
+
 			for (int itemId : controller.getInventoryItemIds()) {
+				if (itemId != 420 && itemId != 400 && itemId != 402 && itemId != 795 && itemId != 546) {
 					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+				}
 			}
 			controller.sleep(1000);   //Important, leave in
 
-			if (controller.getInventoryItemCount(546) < 3) {
-				controller.withdrawItem(546, 3 - controller.getInventoryItemCount(546));
+			if (controller.getInventoryItemCount(546) > foodWithdrawAmount) {
+				controller.depositItem(546, controller.getInventoryItemCount(546) - foodWithdrawAmount);
 				controller.sleep(840);
 			}
-
+			if (controller.getInventoryItemCount(546) < foodWithdrawAmount) {
+				controller.withdrawItem(546, foodWithdrawAmount - controller.getInventoryItemCount(546));
+				controller.sleep(840);
+			}
 			if (!controller.isItemIdEquipped(420)) {
 				controller.withdrawItem(420, 1);
 				controller.sleep(840);
 			}
+			if(controller.getBankItemCount(546) == 0) {
+				controller.setStatus("@red@NO Sharks in the bank, Logging Out!.");
+				controller.setAutoLogin(false);
+				controller.sleep(5000);
+				controller.logout();
+				if(!controller.isLoggedIn()) {
+					controller.stop();
+					return;
+				}
+			}
 		}
 		berriesBanked = controller.getBankItemCount(471);
+		sharksInBank = controller.getBankItemCount(546);
 		controller.closeBank();
 		controller.sleep(640);
 	}
-	
+
+
+
+
+
+
+
+
+
+
+
+	public static void centerWindow(Window frame) {
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+		frame.setLocation(x, y);
+	}
+	public void setupGUI() {
+		JLabel header = new JLabel("Wildberries by Dvorak");
+		JLabel label1 = new JLabel("Rewritten and expanded by Kaila");
+		JLabel label2 = new JLabel("Start in Varrock East bank or at RDI white berries");
+		JLabel label3 = new JLabel("You need antidragon shields & sharks in the bank");
+		JLabel label4 = new JLabel("If Red Dragons are being botted, bring less food");
+		JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+		JTextField foodWithdrawAmountField = new JTextField(String.valueOf(3));
+		JButton startScriptButton = new JButton("Start");
+
+		startScriptButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!foodWithdrawAmountField.getText().equals(""))
+					foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+
+				scriptFrame.setVisible(false);
+				scriptFrame.dispose();
+				startTime = System.currentTimeMillis();
+				scriptStarted = true;
+			}
+		});
+
+		scriptFrame = new JFrame("Script Options");
+
+		scriptFrame.setLayout(new GridLayout(0, 1));
+		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		scriptFrame.add(header);
+		scriptFrame.add(label1);
+		scriptFrame.add(label2);
+		scriptFrame.add(label3);
+		scriptFrame.add(label4);
+		scriptFrame.add(foodWithdrawAmountLabel);
+		scriptFrame.add(foodWithdrawAmountField);
+		scriptFrame.add(startScriptButton);
+		centerWindow(scriptFrame);
+		scriptFrame.setVisible(true);
+		scriptFrame.pack();
+		scriptFrame.requestFocus();
+
+	}
+	public static String msToString(long milliseconds) {
+		long sec = milliseconds / 1000;
+		long min = sec / 60;
+		long hour = min / 60;
+		sec %= 60;
+		min %= 60;
+		DecimalFormat twoDigits = new DecimalFormat("00");
+
+		return new String(twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
+	}
     @Override
     public void paintInterrupt() {
         if(controller != null) {
-        			
+			String runTime = msToString(System.currentTimeMillis() - startTime);
         	int berriesPerHr = 0;
         	try {
         		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
@@ -222,10 +324,12 @@ public class Wildberries extends IdleScript {
         		//divide by zero
         	}
         	
-            controller.drawBoxAlpha(7, 7, 160, 21+14+14, 0xFF0000, 48);
-            controller.drawString("@red@Wildberries @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
-            controller.drawString("@red@Berries picked: @whi@" + String.format("%,d", berriesPicked) + " @red@(@whi@" + String.format("%,d", berriesPerHr) + "@red@/@whi@hr@red@)", 10, 21+14, 0xFFFFFF, 1);
-            controller.drawString("@red@Berries in bank: @whi@" + String.format("%,d", berriesBanked), 10, 21+14+14, 0xFFFFFF, 1);
+            //controller.drawBoxAlpha(7, 7, 160, 21+14+14, 0xFF0000, 48);
+            controller.drawString("@red@Wildberries @gre@by Dvorak & Kaila", 10, 21, 0xFFFFFF, 1);
+            controller.drawString("@whi@Berries picked: @gre@" + String.format("%,d", berriesPicked) + " @yel@(@whi@" + String.format("%,d", berriesPerHr) + "@yel@/@whi@hr@yel@)", 10, 21+14, 0xFFFFFF, 1);
+            controller.drawString("@whi@Berries in bank: @gre@" + String.format("%,d", berriesBanked), 10, 21+14+14, 0xFFFFFF, 1);
+			controller.drawString("@whi@Sharks in bank: @gre@" + String.format("%,d", sharksInBank), 10, 21+14+14+14, 0xFFFFFF, 1);
+			controller.drawString("@whi@Runtime: " + runTime, 10, 21+14+14+14+14, 0xFFFFFF, 1);
         }
     }
 

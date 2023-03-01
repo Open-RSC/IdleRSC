@@ -8,12 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-import javax.swing.JButton;
+import javax.swing.*;
 //import javax.swing.JCheckBox;
 //import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
 import scripting.idlescript.AIOCooker.FoodObject;
@@ -30,6 +27,8 @@ public class K_EdgeChaosDruids extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
+	boolean teleportOut = false;
+	boolean returnEscape = true;
 	int totalGuam = 0;
 	int totalMar = 0;
 	int totalTar = 0;
@@ -208,28 +207,30 @@ public class K_EdgeChaosDruids extends IdleScript {
 
 			controller.sleep(1400);   //Important, leave in
 
-			if(controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
-				controller.withdrawItem(33, 3);
+			if (teleportOut == true) {
+				if (controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
+					controller.withdrawItem(33, 3);
+					controller.sleep(640);
+				}
+				if (controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
+					controller.withdrawItem(34, 1);
+					controller.sleep(640);
+				}
+				if (controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
+					controller.withdrawItem(42, 1);
+					controller.sleep(640);
+				}
+			}
+			if(controller.getInventoryItemCount(546) > foodWithdrawAmount) {  //deposit extra shark
+				controller.depositItem(546, controller.getInventoryItemCount(546) - foodWithdrawAmount);
 				controller.sleep(640);
 			}
-			if(controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
-				controller.withdrawItem(34, 1);
-				controller.sleep(640);
-			}
-			if(controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
-				controller.withdrawItem(42, 1);
-				controller.sleep(640);
-			}
-			if(controller.getInventoryItemCount(546) > 1) {  //deposit extra shark
-				controller.depositItem(546, controller.getInventoryItemCount(546) - 1);
-				controller.sleep(640);
-			}
-			if(controller.getInventoryItemCount(546) < 1) {  //withdraw 1 shark
-				controller.withdrawItem(546, 1);
+			if(controller.getInventoryItemCount(546) < foodWithdrawAmount) {  //withdraw 1 shark
+				controller.withdrawItem(546, foodWithdrawAmount - controller.getInventoryItemCount(546));
 				controller.sleep(640);
 			}
 			if(controller.getBankItemCount(546) == 0) {
-				controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
+				controller.setStatus("@red@NO Sharks in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
 				controller.logout();
 				if(!controller.isLoggedIn()) {
@@ -244,53 +245,69 @@ public class K_EdgeChaosDruids extends IdleScript {
 	
 	public void eat() {
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
-		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+
+
+		if (controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
-			for(int id : controller.getFoodIds()) {
-				if(controller.getInventoryItemCount(id) > 0) {
+
+			for (int id : controller.getFoodIds()) {
+				if (controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
 					controller.sleep(700);
 					ate = true;
 					break;
 				}
 			}
-			if(!ate) { //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
-				controller.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-	    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-	    		controller.sleep(308);
-		    		if(controller.currentY() > 3000) {
-		    			controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-		    			controller.sleep(308);
-		    		}
-		    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-		    		controller.sleep(308);
-		    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-		    		controller.sleep(308);
-					controller.walkTo(120,644);
-					controller.atObject(119,642);
-					controller.walkTo(217,447);
+			if (!ate) { //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
+				controller.setStatus("@red@We've ran out of Food! Running Away!.");
+				if (teleportOut == false
+						|| controller.getInventoryItemCount(42) < 1
+						|| controller.getInventoryItemCount(33) < 3
+						|| controller.getInventoryItemCount(34) < 1) { //or no earths/airs/laws
+					DruidToBank();
+					bank();
+				}
+				if (teleportOut == true) {
+					controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
+					controller.sleep(308);
+					if (controller.currentY() > 3000) {
+						controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
+						controller.sleep(308);
+					}
+					if (controller.currentY() > 3000) {
+						controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(2)"));
+						controller.sleep(800);
+					}
+					if (controller.currentY() > 3000) {
+						controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(3)"));
+						controller.sleep(800);
+					}
+					controller.walkTo(120, 644);
+					controller.atObject(119, 642);
+					controller.walkTo(217, 447);
+				}
+				if (returnEscape == false) {
 					controller.setAutoLogin(false);
 					controller.logout();
 					controller.sleep(1000);
-				
-					if(!controller.isLoggedIn()) {
+
+					if (!controller.isLoggedIn()) {
 						controller.stop();
 						return;
 					}
 				}
+				if (returnEscape == true) {
+					bank();
+					BankToDruid();
+					controller.sleep(618);
+				}
 			}
 		}
+	}
 	
 	public void DruidToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
@@ -353,13 +370,65 @@ public class K_EdgeChaosDruids extends IdleScript {
 		controller.walkTo(210,3254);
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
+	public void leaveCombat() {
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+	}
 	
     
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+	public void setValuesFromGUI(JCheckBox potUpCheckbox, JCheckBox escapeCheckbox) {
+		if (potUpCheckbox.isSelected()) {
+			teleportOut = true;
+		} else {
+			teleportOut = false;
+		}
+		if (escapeCheckbox.isSelected()) {
+			returnEscape = true;
+		} else {
+			returnEscape = false;
+		}
+	}
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -370,7 +439,13 @@ public class K_EdgeChaosDruids extends IdleScript {
 		JLabel header = new JLabel("Edge Druid Killer - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Gear");
 		JLabel label2 = new JLabel("Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-		JLabel label3 = new JLabel("31 Magic Required for escape tele");
+		JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
+		JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
+		JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
+		JLabel label5 = new JLabel("Selected, bot teleports, then walks to edge");
+		JCheckBox escapeCheckbox = new JCheckBox("Return to Druids after Escaping?", true);
+		JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
+		JLabel label7 = new JLabel("Selected, bot will grab more food and return");
 		JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
 		JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
 		JButton startScriptButton = new JButton("Start");
@@ -380,7 +455,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 			public void actionPerformed(ActionEvent e) {
 				if(!foodWithdrawAmountField.getText().equals(""))
 					foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-
+				setValuesFromGUI(teleportCheckbox, escapeCheckbox);
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				startTime = System.currentTimeMillis();
@@ -395,7 +470,13 @@ public class K_EdgeChaosDruids extends IdleScript {
 		scriptFrame.add(header);
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
+		scriptFrame.add(teleportCheckbox);
 		scriptFrame.add(label3);
+		scriptFrame.add(label4);
+		scriptFrame.add(label5);
+		scriptFrame.add(escapeCheckbox);
+		scriptFrame.add(label6);
+		scriptFrame.add(label7);
 		scriptFrame.add(foodWithdrawAmountLabel);
 		scriptFrame.add(foodWithdrawAmountField);
 		scriptFrame.add(startScriptButton);

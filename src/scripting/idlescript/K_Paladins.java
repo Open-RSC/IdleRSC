@@ -23,6 +23,8 @@ import orsc.ORSCharacter;
  * Switching to Defensive combat mode is ideal.
  * Low Atk/Str and Higher Def is more Efficient
  * Ensure to never wield weapons when Thieving.
+ *
+ * ~300k per hr+ xp per hr possible!
  * 
  * Author - Kaila
  */
@@ -131,11 +133,11 @@ public class K_Paladins extends IdleScript {
 					ORSCharacter npc = controller.getNearestNpcById(323, false);
 					if(npc != null) {
 						controller.thieveNpc(npc.serverIndex);
-						controller.sleep(100); //this sleep time is important 
+						controller.sleep(10); //this sleep time is important
 					} else {
 						invCoins = controller.getInventoryItemCount(10);
 						invChaos = controller.getInventoryItemCount(41);
-						controller.sleep(100); //this sleep time is important
+						controller.sleep(10); //this sleep time is important
 					}
 				}
 				for(int lootId : loot) {
@@ -145,7 +147,7 @@ public class K_Paladins extends IdleScript {
 						controller.pickupItem(coords[0], coords[1], lootId, true, true);
 						controller.sleep(618); //ignore this sleep time
 					} else {
-						controller.sleep(50); //this sleep time is important (total of all 3 sleep times should be about 200-300ms to prevent high cpu usage)
+						controller.sleep(5); //this sleep time is important (total of all 3 sleep times should be about 200-300ms to prevent high cpu usage)
 					}
 				}
 			}
@@ -230,7 +232,7 @@ public class K_Paladins extends IdleScript {
 		
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(640); //lower?
+		controller.sleep(1240); //lower?
 		
 		if(controller.isInBank()){
 		
@@ -246,11 +248,13 @@ public class K_Paladins extends IdleScript {
 			
 			for (int itemId : controller.getInventoryItemIds()) {                                                            //change 546(shark) to desired food id
 				controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-				controller.sleep(320);
+				controller.sleep(640);
 			}
+			controller.sleep(1280);   //Important, leave in
+
 			if(controller.getInventoryItemCount(foodId) < 27) {  //withdraw 27 shark if needed        //change 546(shark) to desired food id
 				controller.withdrawItem(foodId, 27 - controller.getInventoryItemCount(foodId));          //change 546(shark) to desired food id
-				controller.sleep(320);
+				controller.sleep(640);
 			}
 			if(controller.getBankItemCount(foodId) == 0) {
 				controller.setStatus("@red@NO Food in the bank, Logging Out!.");
@@ -262,10 +266,9 @@ public class K_Paladins extends IdleScript {
 				}
 			}
 			controller.closeBank();
-			controller.sleep(320);
+			controller.sleep(1320);
 			invCoins = controller.getInventoryItemCount(10);
 			invChaos = controller.getInventoryItemCount(41);
-			
 		}
 	}
 

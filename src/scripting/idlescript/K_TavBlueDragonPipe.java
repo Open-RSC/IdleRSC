@@ -186,11 +186,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 						controller.sleep(800);
 					}
 					if(controller.getInventoryItemCount() == 30) {
-						while(controller.isInCombat()) {
-							controller.setStatus("@red@Leaving combat..");
-							controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-							controller.sleep(250);
-						}
+						leaveCombat();
 						if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
 							controller.setStatus("@red@Dropping Vial to Loot..");
 							controller.dropItem(controller.getInventoryItemSlotIndex(465));
@@ -312,6 +308,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 			if(controller.getBankItemCount(546) == 0 || controller.getBankItemCount(33) == 0 || controller.getBankItemCount(42) == 0 || controller.getBankItemCount(32) == 0) {
 				controller.setStatus("@red@NO Sharks/Laws/Airs/DF shield in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
+				controller.sleep(5000);
 				controller.logout();
 				if(!controller.isLoggedIn()) {
 					controller.stop();
@@ -351,7 +348,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		}
 	}
 	public void waterCheck() {
-		if(controller.getInventoryItemCount(32) < 6) {  //2 water
+		if(controller.getInventoryItemCount(32) < 6) {  //water
 			controller.openBank();
 			controller.sleep(1200);
 			controller.withdrawItem(32, 6 - controller.getInventoryItemCount(32));
@@ -361,7 +358,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		}
 	}
 	public void airCheck() {
-		if(controller.getInventoryItemCount(33) < 18) {  //6 air
+		if(controller.getInventoryItemCount(33) < 18) {  //air
 			controller.openBank();
 			controller.sleep(1200);
 			controller.withdrawItem(33, 18 - controller.getInventoryItemCount(33));
@@ -394,11 +391,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 
 			boolean ate = false;
@@ -486,7 +479,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 	}
 
     public void BankToDragons() {
-    	controller.setStatus("@gre@Walking to Blue Dragons..");
+    	controller.setStatus("@gre@Walking to Tav Gate..");
 		controller.walkTo(327, 552);
 		controller.walkTo(324, 549);
 		controller.walkTo(324, 539);
@@ -497,10 +490,8 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		controller.walkTo(337, 496);
 		controller.walkTo(337, 492);
 		controller.walkTo(341, 488);
-		while(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(1000);
-		}
+		tavGateEastToWest();
+		controller.setStatus("@gre@Walking to Tav Dungeon Ladder..");
 		controller.walkTo(342,493);
 		controller.walkTo(350,501);
 		controller.walkTo(355,506);
@@ -534,11 +525,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 	//BOOST public voids
 
 	public void attackBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
 			controller.itemCommand(attackPot[0]);
 			controller.sleep(320);
@@ -558,11 +545,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 	}
 
 	public void strengthBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(strPot[0]) > 0) {
 			controller.itemCommand(strPot[0]);
 			controller.sleep(320);
@@ -580,9 +563,88 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		}
 		return;
 	}
-
-
-
+	public void leaveCombat() {
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (1)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (2)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (3)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (4)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (5)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (6)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (7)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (8)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+	}
+	public void tavGateEastToWest() {
+		controller.setStatus("@red@Trying Gate (1)..");
+		controller.atObject(341,487);   //gate wont break if someone else opens it
+		controller.sleep(1000);
+		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+			controller.setStatus("@red@Trying Gate (2)..");
+			controller.atObject(341,487);   //gate wont break if someone else opens it
+			controller.sleep(800);
+		}
+		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+			controller.setStatus("@red@Trying Gate (3)..");
+			controller.atObject(341,487);   //gate wont break if someone else opens it
+			controller.sleep(600);
+		}
+		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+			controller.setStatus("@red@Trying Gate (4)..");
+			controller.atObject(341,487);   //gate wont break if someone else opens it
+			controller.sleep(1000);
+		}
+		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+			controller.setStatus("@red@Trying Gate (5)..");
+			controller.atObject(341,487);   //gate wont break if someone else opens it
+			controller.sleep(900);
+		}
+		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+			controller.setStatus("@red@Trying Gate (6)..");
+			controller.atObject(341,487);   //gate wont break if someone else opens it
+			controller.sleep(500);
+		}
+		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+			controller.setStatus("@red@Trying Gate (7)..");
+			controller.atObject(341,487);   //gate wont break if someone else opens it
+			controller.sleep(400);
+		}
+		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+			controller.setStatus("@red@Trying Gate (8)..");
+			controller.atObject(341,487);   //gate wont break if someone else opens it
+			controller.sleep(900);
+		}
+	}
 
 
 
@@ -638,6 +700,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		scriptFrame.add(foodWithdrawAmountLabel);
 		scriptFrame.add(foodWithdrawAmountField);
 		scriptFrame.add(startScriptButton);
+
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);
 		scriptFrame.pack();

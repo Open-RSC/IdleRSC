@@ -13,16 +13,9 @@ sourceSets {
     }
 }
 
-// Where to find patched_client.jar
-repositories {
-    flatDir {
-        dirs './'
-    }
-}
-
-// The patched_client dependency
+// Ensure gradle is aware of the patched_client.jar dependency
 dependencies {
-    implementation name: 'patched_client'
+    implementation files('patched_client.jar')
 }
 
 jar {

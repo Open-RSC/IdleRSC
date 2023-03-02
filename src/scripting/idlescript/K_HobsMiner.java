@@ -456,49 +456,6 @@ public class K_HobsMiner extends IdleScript {
 		
     	controller.setStatus("@gre@Done Walking..");
 	}
-
-	public void leaveCombat() {
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (1)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (2)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (3)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (4)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (5)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (6)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (7)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (8)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-	}
 	public void lawCheck() {
 		if(controller.getInventoryItemCount(42) < 1) {  //law
 			controller.openBank();
@@ -529,7 +486,19 @@ public class K_HobsMiner extends IdleScript {
 			controller.sleep(1000);
 		}
 	}
-
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 
 
 

@@ -289,12 +289,8 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		
 		
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -317,11 +313,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 			}
 		}
 	public void attackBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
 			controller.itemCommand(attackPot[0]);
 			controller.sleep(320);
@@ -335,17 +327,11 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		if(controller.getInventoryItemCount(attackPot[2]) > 0) {
 			controller.itemCommand(attackPot[2]);
 			controller.sleep(320);
-			return;
 		}
-		return;
 	}
 
 	public void strengthBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(strPot[0]) > 0) {
 			controller.itemCommand(strPot[0]);
 			controller.sleep(320);
@@ -359,9 +345,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		if(controller.getInventoryItemCount(strPot[2]) > 0) {
 			controller.itemCommand(strPot[2]);
 			controller.sleep(320);
-			return;
 		}
-		return;
 	}
 	public void IceToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
@@ -425,7 +409,19 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		controller.walkTo(280, 3521);
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	
     
 	//GUI stuff below (icky)

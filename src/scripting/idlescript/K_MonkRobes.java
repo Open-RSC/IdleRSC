@@ -162,7 +162,7 @@ public class K_MonkRobes extends IdleScript {
 	
     public void BankToGrape() {
     	
-    	controller.setStatus("@gre@Walking to Grapes..");
+    	controller.setStatus("@gre@Walking to Robes..");
 		controller.walkTo(218,447);
 		controller.walkTo(220,445);
 		controller.walkTo(220,437);

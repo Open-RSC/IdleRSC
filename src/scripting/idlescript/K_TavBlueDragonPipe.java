@@ -367,23 +367,6 @@ public class K_TavBlueDragonPipe extends IdleScript {
 			controller.sleep(1000);
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void eat() {
 
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
@@ -413,13 +396,6 @@ public class K_TavBlueDragonPipe extends IdleScript {
 			}
 		}
 	}
-
-
-
-
-
-
-
 
 
 
@@ -564,85 +540,29 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		return;
 	}
 	public void leaveCombat() {
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (1)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (2)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (3)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (4)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (5)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (6)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (7)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (8)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
 		}
 	}
 	public void tavGateEastToWest() {
-		controller.setStatus("@red@Trying Gate (1)..");
-		controller.atObject(341,487);   //gate wont break if someone else opens it
-		controller.sleep(1000);
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (2)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(800);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (3)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(600);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (4)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(1000);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (5)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(900);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (6)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(500);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (7)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(400);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (8)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(900);
+		for (int i = 1; i <= 15; i++) {
+			if (controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+				controller.setStatus("@red@Crossing Tav Gate..");
+				controller.atObject(341, 487);   //gate wont break if someone else opens it
+				controller.sleep(800);
+			} else {
+				controller.setStatus("@red@Done Crossing Tav Gate..");
+				break;
+			}
+			controller.sleep(10);
 		}
 	}
 

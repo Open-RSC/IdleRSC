@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 
 import javax.swing.*;
 import javax.swing.JCheckBox;
-//import javax.swing.JComboBox;
+import javax.swing.JComboBox;
 
 import orsc.ORSCharacter;
 
@@ -296,12 +296,8 @@ public class K_HobsPeninsula extends IdleScript {
 		
 		
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -324,11 +320,7 @@ public class K_HobsPeninsula extends IdleScript {
 			}
 		}
 	public void attackBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
 			controller.itemCommand(attackPot[0]);
 			controller.sleep(320);
@@ -348,11 +340,7 @@ public class K_HobsPeninsula extends IdleScript {
 	}
 
 	public void strengthBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(strPot[0]) > 0) {
 			controller.itemCommand(strPot[0]);
 			controller.sleep(320);
@@ -407,7 +395,19 @@ public class K_HobsPeninsula extends IdleScript {
 		controller.walkTo(361,614);
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat (n)..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	
     
 	//GUI stuff below (icky)

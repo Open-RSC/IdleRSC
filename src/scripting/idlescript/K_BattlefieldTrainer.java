@@ -152,11 +152,7 @@ public class K_BattlefieldTrainer extends IdleScript {
 		
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -225,7 +221,19 @@ public class K_BattlefieldTrainer extends IdleScript {
 
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	
     
 	//GUI stuff below (icky)

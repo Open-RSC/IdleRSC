@@ -474,48 +474,6 @@ public class K_TavBlackDragonPipe extends IdleScript {
 		controller.walkTo(408, 3348);
 		controller.sleep(1000);
 	}
-	public void DragonsToBank() {
-		controller.setStatus("@gre@Going to Bank. Casting 1st teleport.");
-		controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-		controller.sleep(1000);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 2rd teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 3rd teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 4th teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 5th teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 6th teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		totalTrips = totalTrips + 1;
-		if(controller.isPrayerOn(controller.getPrayerId("Paralyze Monster"))); {  // && controller.currentY() < 3000
-			controller.disablePrayer(controller.getPrayerId("Paralyze Monster"));
-		}
-		controller.sleep(308);
-		controller.walkTo(327,552);
-		controller.sleep(308);
-    	controller.setStatus("@gre@Done Walking..");
-	}
 	public void BankToDragons() {
 		controller.setStatus("@gre@Walking to Black Dragons..");
 		controller.walkTo(327, 552);
@@ -577,29 +535,6 @@ public class K_TavBlackDragonPipe extends IdleScript {
 		controller.setStatus("@gre@Done Walking..");
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void ppotCheck() {
 		if(controller.getInventoryItemCount(483) == 0) {
 			controller.setStatus("@yel@No Ppots, Banking..");
@@ -635,9 +570,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 		if(controller.getInventoryItemCount(attackPot[2]) > 0) {
 			controller.itemCommand(attackPot[2]);
 			controller.sleep(320);
-			return;
 		}
-		return;
 	}
 
 	public void strengthBoost() {
@@ -655,9 +588,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 		if(controller.getInventoryItemCount(strPot[2]) > 0) {
 			controller.itemCommand(strPot[2]);
 			controller.sleep(320);
-			return;
 		}
-		return;
 	}
 	
 	public void drinkPot() {
@@ -676,110 +607,70 @@ public class K_TavBlackDragonPipe extends IdleScript {
 		if(controller.getInventoryItemCount(483) > 0) {
 			controller.itemCommand(483);
 			controller.sleep(320);
-			return;
 		}
-		return;
 	}
 	
 	public void antiBoost() {
-			leaveCombat();
-			if(controller.getInventoryItemCount(antiPot[0]) > 0) {
-				controller.itemCommand(antiPot[0]);
-				controller.sleep(320);
-				return;
-			}
-			if(controller.getInventoryItemCount(antiPot[1]) > 0) {
-				controller.itemCommand(antiPot[1]);
-				controller.sleep(320);
-				return;
-			}
-			if(controller.getInventoryItemCount(antiPot[2]) > 0) {
-				controller.itemCommand(antiPot[2]);
-				controller.sleep(320);
-				return;
-			}
+		leaveCombat();
+		if(controller.getInventoryItemCount(antiPot[0]) > 0) {
+			controller.itemCommand(antiPot[0]);
+			controller.sleep(320);
 			return;
 		}
+		if(controller.getInventoryItemCount(antiPot[1]) > 0) {
+			controller.itemCommand(antiPot[1]);
+			controller.sleep(320);
+			return;
+		}
+		if(controller.getInventoryItemCount(antiPot[2]) > 0) {
+			controller.itemCommand(antiPot[2]);
+			controller.sleep(320);
+		}
+	}
+	public void DragonsToBank() {
+		controller.setStatus("@gre@Going to Bank. Casting 1st teleport.");
+		controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
+		controller.sleep(1000);
+		for (int i = 1; i <= 15; i++) {
+			if (controller.currentY() > 3000) {
+				controller.setStatus("@gre@Teleport unsuccessful, Casting teleports.");
+				controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
+				controller.sleep(1000);
+			} else {
+				controller.setStatus("@red@Done Teleporting..");
+				break;
+			}
+			controller.sleep(10);
+		}
+		controller.sleep(308);
+		controller.walkTo(327,552);
+		controller.sleep(308);
+		controller.setStatus("@gre@Done Walking..");
+	}
 	public void leaveCombat() {
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (1)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (2)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (3)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (4)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (5)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (6)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (7)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (8)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
 		}
 	}
 	public void tavGateEastToWest() {
-		controller.setStatus("@red@Trying Gate (1)..");
-		controller.atObject(341,487);   //gate wont break if someone else opens it
-		controller.sleep(1000);
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (2)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(800);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (3)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(600);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (4)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(1000);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (5)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(900);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (6)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(500);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (7)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(400);
-		}
-		if(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.setStatus("@red@Trying Gate (8)..");
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(900);
+		for (int i = 1; i <= 15; i++) {
+			if (controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+				controller.setStatus("@red@Crossing Tav Gate..");
+				controller.atObject(341, 487);   //gate wont break if someone else opens it
+				controller.sleep(800);
+			} else {
+				controller.setStatus("@red@Done Crossing Tav Gate..");
+				break;
+			}
+			controller.sleep(10);
 		}
 	}
 	

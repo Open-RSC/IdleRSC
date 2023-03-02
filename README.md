@@ -103,6 +103,7 @@ IdleRSC is provided for free under GPLv3, due to passion for RSC botting.
 ## About:
 This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure. After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released.
 
-The original owner is no longer part of this fork of the project. However all credit for writing the original client goes to DvorakKeys. Additional credit goes to various developers including but not limited to: Kaila, Searos, and Damrau
+The original owner is no longer part of this fork of the project. However all credit for writing the original client goes to DvorakKeys. 
+Additional credit goes to various developers including but not limited to:  Damrau, Kaila, Kkoemets, and Searos 
 
 The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after APOS, STS, SBot, and AutoRune!

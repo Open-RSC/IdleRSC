@@ -212,10 +212,10 @@ public class K_RedSpiderEggz extends IdleScript {
 		controller.walkTo(197,3244);
 		controller.walkTo(197,3255);
 		controller.walkTo(196,3265);
-		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3265) {
-			controller.atObject(196,3266);   //gate wont break if someone else opens it
-			controller.sleep(640);
-		}
+		controller.setStatus("@gre@Opening Wildy Gate North to South(1)..");
+		controller.atObject(196,3266);
+		controller.sleep(640);
+		openGateNorthToSouth();
 		controller.walkTo(197,3266);
 		controller.walkTo(204,3272);
 		controller.walkTo(210,3273);
@@ -232,9 +232,7 @@ public class K_RedSpiderEggz extends IdleScript {
 		controller.atObject(215,3300);
 		controller.sleep(640);
 		controller.walkTo(217,458);
-		//add
-		controller.walkTo(221,447);  //error here
-		//add?
+		controller.walkTo(221,447);
 		controller.walkTo(217,448);
 		controller.sleep(640);
 		totalTrips = totalTrips + 1;
@@ -260,57 +258,76 @@ public class K_RedSpiderEggz extends IdleScript {
 		controller.walkTo(204,3272);
 		controller.walkTo(199,3272);
 		controller.walkTo(197,3266);
-		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3266) {
-			controller.atObject(196,3266);  //"while" for gate wont break if someone else opens it
-			controller.sleep(640);
-		}
+		controller.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
+		controller.atObject(196,3266);
+		controller.sleep(640);
+		openGateSouthToNorth();
 		controller.walkTo(197,3244);
 		controller.walkTo(208,3240);
     	controller.setStatus("@gre@Done Walking..");
 	}
 	public void leaveCombat() {
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat (n)..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
 		}
 	}
-	
+	public void openGateNorthToSouth() {
+		for (int i = 1; i <= 25; i++) {
+			if(controller.currentY() == 3265) {
+				controller.setStatus("@gre@Opening Wildy Gate..");
+				controller.atObject(196,3266);
+				controller.sleep(640);
+			} else {
+				controller.setStatus("@red@Done Opening Wildy Gate..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+	public void openGateSouthToNorth() {
+		for (int i = 1; i <= 25; i++) {
+			if(controller.currentY() == 3266) {
+				controller.setStatus("@gre@Opening Wildy Gate..");
+				controller.atObject(196,3266);
+				controller.sleep(640);
+			} else {
+				controller.setStatus("@red@Done Opening Wildy Gate..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//GUI stuff below (icky)
 
 

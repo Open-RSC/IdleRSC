@@ -1,8 +1,25 @@
 # gradle
-.gradle/
-gradle/
-gradlew
-gradlew.bat
+.gradle
+**/build/
+!src/**/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties
+
+# Cache of project
+.gradletasknamecache
+
+# Eclipse Gradle plugin generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
 
 # IDE
 .idea/
@@ -14,5 +31,8 @@ build/
 
 # User chosen cache
 Cache/
+
+# User screenshots
+Screenshots/
 
 #please do not add bin/ to the gitignore for the time being since we are currently combining source and binary releases

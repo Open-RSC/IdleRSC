@@ -1,2 +1,3 @@
-#!/bin/sh
-java -cp "IdleRSC.jar:patched_client.jar" bot.Main --username "username" --password "password"
+#!/usr/bin/env bash
+
+java -jar IdleRSC.jar --username "username" --password "password"

@@ -1,6 +1,7 @@
 // Used for building a runnable jar
 plugins {
     id 'java'
+    id 'base'
 }
 
 // Where the code is
@@ -29,29 +30,35 @@ jar {
     manifest {
         attributes 'Main-Class': 'bot.Main'
     }
-    // Name of the .jar
-    baseName = "IdleRSC"
 
     // Include all the source files
     from {
-        //configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } //removed to support newer versions of gradle
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
 }
 
-// Moves the compiled jar at build/libs/IdleRSC.jar to the root folder
-task copyJar(type: Copy) {
-    from "./build/libs"
-    into "./"
+// Moves the compiled jar to the root folder
+base {
+    archivesName = "IdleRSC"
+    libsDirectory = getProjectDir()
+}
+
+// Needed as Main uses the class files within scripting to populate the
+// script table
+tasks.register("copyScriptClasses", Copy) {
+    from "./build/classes/java/main/scripting"
+    into "./bin/scripting"
+    dependsOn jar
 }
 
 // Deletes the build directory
-task cleanBuildDir(type: Delete) {
+tasks.register("cleanBuildDir", Delete) {
     delete 'build'
+    dependsOn copyScriptClasses
 }
 
-// cleanBuildJar depends on copyJar running first
-cleanBuildDir.dependsOn(copyJar)
-
-// "gradle build" depends on cleanBuildJar running first
+// Ensure all tasks are completed when running build by making build require
+// the last task in a dependency chain
 build.dependsOn(cleanBuildDir)

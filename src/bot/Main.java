@@ -5,6 +5,7 @@ import callbacks.DrawCallback;
 import controller.Controller;
 import listeners.LoginListener;
 import listeners.WindowListener;
+import org.reflections.Reflections;
 import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
@@ -24,14 +25,16 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Comparator;
-
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -41,6 +44,12 @@ import java.util.Comparator;
  */
 public class Main {
     public static Config config;
+    private static final Reflections reflections = new Reflections();
+    private static final Map<String, List<Class<?>>> scripts = Stream.of(
+            new SimpleEntry<>("Native", reflections.getSubTypesOf(IdleScript.class)),
+            new SimpleEntry<>("APOS", reflections.getSubTypesOf(compatibility.apos.Script.class)),
+            new SimpleEntry<>("SBot", reflections.getSubTypesOf(compatibility.sbot.Script.class))
+    ).collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
 
     private static boolean isRunning = false; // this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
@@ -63,11 +72,6 @@ public class Main {
     private static Object currentRunningScript = null; //the object instance of the current running script.
 
     private static boolean shouldFilter = true;
-
-    private final static String nativeScriptPath = "bin/scripting/idlescript";
-    private final static String sbotScriptPath = "bin/scripting/sbot";
-    private final static String aposScriptPath = "bin/scripting/apos";
-
     private static boolean aposInitCalled = false;
 
     /**
@@ -510,46 +514,35 @@ public class Main {
      */
     private static boolean loadAndRunScript(String scriptName) {
         try {
-			File scriptFile = new File(nativeScriptPath);
+            currentRunningScript =
+                    scripts.values()
+                            .stream()
+                            .flatMap(List::stream)
+                            .filter(c -> c.getSimpleName().equalsIgnoreCase(scriptName))
+                            .findFirst()
+                            .map(clazz -> {
+                                try {
+                                    return clazz.getSuperclass().equals(compatibility.apos.Script.class) ?
+                                            clazz.getDeclaredConstructor(String.class).newInstance("") :
+                                            clazz.newInstance();
+                                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                                         InvocationTargetException e) {
+                                    e.printStackTrace();
+                                    return null;
+                                }
+                            })
+                            .orElse(null);
 
-			URL url = scriptFile.toURI().toURL();
-			URL[] urls = new URL[] {url};
+            if (currentRunningScript == null) {
+                return false;
+            }
 
-			try {
-				ClassLoader cl = new URLClassLoader(urls);
-				Class clazz = cl.loadClass("scripting.idlescript." + scriptName);
-				currentRunningScript = (IdleScript) clazz.newInstance();
-			}
-			catch(Exception e) {
-				try {
-					scriptFile = new File(sbotScriptPath);
-					url = scriptFile.toURI().toURL();
-					urls = new URL[] {url};
-					ClassLoader cl = new URLClassLoader(urls);
-					Class clazz = cl.loadClass("scripting.sbot." + scriptName);
-					currentRunningScript = (compatibility.sbot.Script) clazz.newInstance();
-				}
-				catch(Exception _e) {
-					scriptFile = new File(aposScriptPath);
-					url = scriptFile.toURI().toURL();
-					urls = new URL[] {url};
-					ClassLoader cl = new URLClassLoader(urls);
-					Class clazz = cl.loadClass("scripting.apos." + scriptName);
-
-
-					//currentRunningScript = (compatibility.apos.Script) clazz.newInstance();
-					compatibility.apos.Script.setController(controller);
-					currentRunningScript = (compatibility.apos.Script) clazz.getDeclaredConstructor(String.class).newInstance("");
-				}
-			}
-
-			Main.config.setScriptName(scriptName);
-
-			return true;
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+            Main.config.setScriptName(scriptName);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -561,53 +554,11 @@ public class Main {
         String[] columnNames = {"Name", "Type"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        File[] nativeScripts = new File(nativeScriptPath).listFiles();
-        File[] sbotScripts = new File(sbotScriptPath).listFiles();
-        File[] aposScripts = new File(aposScriptPath).listFiles();
-
-        // Create Comparator object to use in sorting the list
-        Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
-
-        // Sort each list of scripts
-        Arrays.sort(nativeScripts, fileComparator);
-        Arrays.sort(aposScripts, fileComparator);
-        Arrays.sort(sbotScripts, fileComparator);
-
-        for (final File file : nativeScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
-                String scriptName = file.getName().replace(".class", "");
-
-                // Create row with script name and
-                String[] row = {scriptName, "Native"};
-
-                // Add row to the table model
-                tableModel.addRow(row);
-            }
-        }
-
-        for (final File file : aposScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
-                String scriptName = file.getName().replace(".class", "");
-
-                // Create row with script name and
-                String[] row = {scriptName, "APOS"};
-
-                // Add row to the table model
-                tableModel.addRow(row);
-            }
-        }
-
-        for (final File file : sbotScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
-                String scriptName = file.getName().replace(".class", "");
-
-                // Create row with script name and
-                String[] row = {scriptName, "SBot"};
-
-                // Add row to the table model
-                tableModel.addRow(row);
-            }
-        }
+        scripts.forEach((type, classes) ->
+                classes
+                        .stream().sorted(Comparator.comparing(Class::getSimpleName))
+                        .forEach(clazz ->
+                                tableModel.addRow(new String[]{clazz.getSimpleName(), type})));
 
         // Setup table
         final JTable scriptTable = new JTable(tableModel) {
@@ -849,9 +800,5 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Stop the current script first.");
         }
     }
-//
-//    public static boolean wasAposInitCalled() {
-//    	return aposInitCalled;
-//    }
 
 }

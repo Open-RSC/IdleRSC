@@ -13,9 +13,14 @@ sourceSets {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 // Ensure gradle is aware of the patched_client.jar dependency
 dependencies {
     implementation files('patched_client.jar')
+    implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
 }
 
 jar {
@@ -38,18 +43,9 @@ base {
     libsDirectory = getProjectDir()
 }
 
-// Needed as Main uses the class files within scripting to populate the
-// script table
-tasks.register("copyScriptClasses", Copy) {
-    from "./build/classes/java/main/scripting"
-    into "./bin/scripting"
-    dependsOn jar
-}
-
 // Deletes the build directory
 tasks.register("cleanBuildDir", Delete) {
     delete 'build'
-    dependsOn copyScriptClasses
 }
 
 // Ensure all tasks are completed when running build by making build require

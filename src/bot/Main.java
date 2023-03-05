@@ -6,6 +6,8 @@ import controller.Controller;
 import listeners.LoginListener;
 import listeners.WindowListener;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
@@ -36,6 +38,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.reflections.scanners.Scanners.Resources;
+import static org.reflections.scanners.Scanners.SubTypes;
+import static org.reflections.util.ClasspathHelper.forJavaClassPath;
+
 
 /**
  * This is the starting class of the entire IdleRSC project.
@@ -44,7 +50,10 @@ import java.util.stream.Stream;
  */
 public class Main {
     public static Config config;
-    private static final Reflections reflections = new Reflections();
+    private static final Reflections reflections = new Reflections(new ConfigurationBuilder()
+            .setScanners(SubTypes, Resources)
+            .addUrls(forJavaClassPath())
+            .filterInputsBy(new FilterBuilder()));
     private static final Map<String, List<Class<?>>> scripts = Stream.of(
             new SimpleEntry<>("Native", reflections.getSubTypesOf(IdleScript.class)),
             new SimpleEntry<>("APOS", reflections.getSubTypesOf(compatibility.apos.Script.class)),

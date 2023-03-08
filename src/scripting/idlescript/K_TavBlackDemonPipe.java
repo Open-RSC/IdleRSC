@@ -102,13 +102,15 @@ public class K_TavBlackDemonPipe extends IdleScript {
 					};
 
     public boolean isWithinWander(int x, int y) { 
-    	return controller.distance(390, 3371, x, y) <= 8;
+    	return controller.distance(390, 3371, x, y) <= 10;
     }
-	
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-	
+
+
+
+
+	//STARTing script
 	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
@@ -132,22 +134,28 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		return 1000; //start() must return a int value now. 
 	}
 
+
+
+
+
+
+
+
+
+	//Main Script section
 	public void scriptStart() {
 			while(controller.isRunning()) {
 
+				foodPotCheck();
 				eat();
-				ppotCheck();
 				drink();
 				pray();
 
 				
-				if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
-					controller.dropItem(controller.getInventoryItemSlotIndex(465));
-				}		
+
 
 				if(controller.getInventoryItemCount() < 30) {
-					ppotCheck();
-					foodCheck();
+					foodPotCheck();
 			 		boolean lootPickedUp = false; 
 				   	for(int lootId : loot) {
 				   		int[] coords = controller.getNearestItemById(lootId);
@@ -186,45 +194,51 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			    	controller.sleep(1380);
 			    	
 			    	
-			} else if(controller.getInventoryItemCount() == 30) {
-				ppotCheck();
-				foodCheck();
-				while(controller.isInCombat()) {
-					controller.setStatus("@red@Leaving combat..");
-					controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-					controller.sleep(250);
 				}
-				
-				controller.setStatus("@red@Eating Food to Loot..");
-				
-				boolean ate = false;
-				
-				for(int id : controller.getFoodIds()) {
-					if(controller.getInventoryItemCount(id) > 0) {
-						controller.itemCommand(id);
-						controller.sleep(700);
-						ate = true;
-						break;
+				if(controller.getInventoryItemCount() == 30) {
+
+					foodPotCheck();
+
+					leaveCombat();
+					if(controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
+						controller.setStatus("@red@Dropping Vial to Loot..");
+						controller.dropItem(controller.getInventoryItemSlotIndex(465));
+						controller.sleep(340);
 					}
-				}
-				if(!ate) {
-					controller.setStatus("@yel@No food, Banking..");
-					DemonsToBank();
-					bank();
-					BankToDemons();
-					controller.sleep(618);
-					}	
+					for(int id : controller.getFoodIds()) {
+						if(controller.getInventoryItemCount(id) > 0 && controller.getInventoryItemCount() == 30) {
+							controller.setStatus("@red@Eating Food to Loot..");
+							controller.itemCommand(id);
+							controller.sleep(700);
+						}
+					}
 				}
 			}
 		}
-	
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//actionable public voids (eat, bank, etc)
 	
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(640);
+		controller.sleep(1200);
 
 		if (controller.isInBank()) {
 			
@@ -264,44 +278,57 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			
 			//ppotCount() = (controller.getInventoryItemCount(483) + controller.getInventoryItemCount(483) +controller.getInventoryItemCount(483));
 			for (int itemId : controller.getInventoryItemIds()) {
-				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 546 && itemId != 420 && itemId != 485 && itemId != 484 && itemId != 483 && itemId != 1346 ) {
+				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 420 && itemId != 485 && itemId != 484 && itemId != 483 && itemId != 1346 ) {
 					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				}
 			}
-			controller.sleep(1280);   // increased sleep here to prevent double banking
+			controller.sleep(1400);      //Important, leave in
 			
 			if(controller.getInventoryItemCount(420) < 1) {  //antidragon shield
 				controller.withdrawItem(420, 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
-			if(controller.getInventoryItemCount(33) < 3) {  //3 air
-				controller.withdrawItem(33, 3 - controller.getInventoryItemCount(33));
-				controller.sleep(340);
+			if(controller.getInventoryItemCount(33) < 18) {  //6 air
+				controller.withdrawItem(33, 18 - controller.getInventoryItemCount(33));
+				controller.sleep(1000);
 			}
-			if(controller.getInventoryItemCount(42) < 1) {  //1 law
-				controller.withdrawItem(42, 1);
-				controller.sleep(340);
+			if(controller.getInventoryItemCount(42) < 6) {  //2 law
+				controller.withdrawItem(42, 6 - controller.getInventoryItemCount(42));
+				controller.sleep(1000);
 			}
-			if(controller.getInventoryItemCount(32) < 1) {  //1 water
-				controller.withdrawItem(32, 1);
-				controller.sleep(340);
+			if(controller.getInventoryItemCount(32) < 6) {  //2 water
+				controller.withdrawItem(32, 6 - controller.getInventoryItemCount(32));
+				controller.sleep(1000);
 			}
+			controller.sleep(640);  //leave in
 			if(controller.getInventoryItemCount(attackPot[0]) < 1 && controller.getInventoryItemCount(attackPot[1]) < 1 && controller.getInventoryItemCount(attackPot[2]) < 1 ) {  //withdraw 10 shark if needed
 				controller.withdrawItem(attackPot[2], 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(strPot[0]) < 1 && controller.getInventoryItemCount(strPot[1]) < 1 && controller.getInventoryItemCount(strPot[2]) < 1 ) {  //withdraw 10 shark if needed
 				controller.withdrawItem(strPot[2], 1);
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 
 			if(controller.getInventoryItemCount(483) < 17) {  //withdraw 17 ppot
 				controller.withdrawItem(483, 17 - (controller.getInventoryItemCount(483) + controller.getInventoryItemCount(484) + controller.getInventoryItemCount(485)));  //minus ppot count
-				controller.sleep(340);
+				controller.sleep(640);
 			}
 			if(controller.getInventoryItemCount(546) < 2) {  //withdraw 2 shark
 				controller.withdrawItem(546, 2 - controller.getInventoryItemCount(546));
-				controller.sleep(340);
+				controller.sleep(640);
+			}
+			if(controller.getInventoryItemCount(33) < 18) {  //6 air
+				controller.withdrawItem(33, 18 - controller.getInventoryItemCount(33));
+				controller.sleep(1000);
+			}
+			if(controller.getInventoryItemCount(42) < 6) {  //2 law
+				controller.withdrawItem(42, 6 - controller.getInventoryItemCount(42));
+				controller.sleep(1000);
+			}
+			if(controller.getInventoryItemCount(32) < 6) {  //2 water
+				controller.withdrawItem(32, 6 - controller.getInventoryItemCount(32));
+				controller.sleep(1000);
 			}
 			bankDbones = controller.getBankItemCount(814);
 			if(controller.getBankItemCount(546) == 0 || controller.getBankItemCount(33) == 0 || controller.getBankItemCount(42) == 0 || controller.getBankItemCount(32) == 0) {
@@ -314,16 +341,56 @@ public class K_TavBlackDemonPipe extends IdleScript {
 				}
 			}
 			controller.closeBank();
-			controller.sleep(640);
+			controller.sleep(1000);
+		}
+		airCheck();
+		waterCheck();
+		lawCheck();
+	}
+	public void lawCheck() {
+		if(controller.getInventoryItemCount(42) < 6) {  //law
+			controller.openBank();
+			controller.sleep(1200);
+			controller.withdrawItem(42, 6 - controller.getInventoryItemCount(42));
+			controller.sleep(1000);
+			controller.closeBank();
+			controller.sleep(1000);
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
+	public void waterCheck() {
+		if(controller.getInventoryItemCount(32) < 6) {  //2 water
+			controller.openBank();
+			controller.sleep(1200);
+			controller.withdrawItem(32, 6 - controller.getInventoryItemCount(32));
+			controller.sleep(1000);
+			controller.closeBank();
+			controller.sleep(1000);
+		}
+	}
+	public void airCheck() {
+		if(controller.getInventoryItemCount(33) < 18) {  //6 air
+			controller.openBank();
+			controller.sleep(1200);
+			controller.withdrawItem(33, 18 - controller.getInventoryItemCount(33));
+			controller.sleep(1000);
+			controller.closeBank();
+			controller.sleep(1000);
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public void pray() {
 		if(!controller.isPrayerOn(controller.getPrayerId("Paralyze Monster")) && controller.currentY() > 3000);
 			controller.enablePrayer(controller.getPrayerId("Paralyze Monster"));
@@ -334,6 +401,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	   			drinkPot();
 			} else {
 				controller.sleep(308);
+				demonEscape();
 				DemonsToBank();
 				bank();
 				BankToDemons();
@@ -346,12 +414,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		
 		
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+			foodPotCheck();
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -367,36 +431,56 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			if(!ate) {  //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
 				controller.setStatus("@red@We've ran out of Food! Running Away!.");
 				controller.sleep(308);
+				demonEscape();
 				DemonsToBank();
 				bank();
 				BankToDemons();
 			}
 		}
 	}
-	public void ppotCheck() {
-		if(controller.getInventoryItemCount(483) == 0) {
-			controller.setStatus("@yel@No Ppots, Banking..");
-			DemonsToBank();
-			bank();
-			BankToDemons();
-			controller.sleep(618);
-		}
-	}
-	public void foodCheck() {
-		if(controller.getInventoryItemCount(546) == 0) {
-			controller.setStatus("@yel@No food, Banking..");
-			DemonsToBank();
-			bank();
-			BankToDemons();
-			controller.sleep(618);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//PATHING public voids
+
+	public void demonEscape() {
+		controller.setStatus("We've ran out of Food! @gre@Going to safe zone.");
+		controller.walkTo(382,3372);
+		controller.walkTo(375,3372);
+		controller.sleep(640);
+		if (controller.currentX() > 376) {
+			controller.walkTo(375,3372);
+			controller.sleep(640);
 		}
 	}
 	public void DemonsToBank() {
-    	controller.setStatus("@gre@Walking to Bank..");
-    	while(controller.currentY() > 3000) {
+		controller.setStatus("@gre@Going to Bank. Casting 1st teleport.");
 		controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-		controller.sleep(308);
-    	}
+		controller.sleep(1000);
+		for (int i = 1; i <= 20; i++) {
+			if (controller.currentY() > 3000) {
+				controller.setStatus("@gre@Teleport unsuccessful, Casting nth teleport.");
+				controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
+				controller.sleep(1000);
+			}
+			controller.sleep(10);
+		}
 		totalTrips = totalTrips + 1;
 		if(controller.isPrayerOn(controller.getPrayerId("Paralyze Monster"))); {  // && controller.currentY() < 3000
 			controller.disablePrayer(controller.getPrayerId("Paralyze Monster"));
@@ -405,8 +489,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.walkTo(327,552);
 		controller.sleep(308);
     	controller.setStatus("@gre@Done Walking..");
-	}  
-	
+	}
     public void BankToDemons() {	
     	controller.setStatus("@gre@Walking to Black Demons..");
 		controller.walkTo(327, 552);
@@ -419,10 +502,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.walkTo(337, 496);
 		controller.walkTo(337, 492);
 		controller.walkTo(341, 488);
-		while(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-			controller.atObject(341,487);   //gate wont break if someone else opens it
-			controller.sleep(640);
-		}
+		tavGateEastToWest();
+		controller.setStatus("@gre@Walking to Tav Dungeon Ladder..");
 		controller.walkTo(342,493);
 		controller.walkTo(352,503);
 		controller.walkTo(362,513);
@@ -454,18 +535,39 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.sleep(320);
 		controller.walkTo(380,3372);
     	controller.setStatus("@gre@Done Walking..");
+		foodPotCheck();
 		eat();
-		ppotCheck();
 		drink();
 		pray();
     	
 	}
-	public void attackBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//BOOST public voids
+
+	public void foodPotCheck() {
+		if(controller.getInventoryItemCount(483) == 0 || controller.getInventoryItemCount(546) == 0) {
+			controller.setStatus("@yel@No Ppots/food, Banking..");
+			demonEscape();
+			DemonsToBank();
+			bank();
+			BankToDemons();
+			controller.sleep(618);
 		}
+	}
+	public void attackBoost() {
+		leaveCombat();
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
 			controller.itemCommand(attackPot[0]);
 			controller.sleep(320);
@@ -483,13 +585,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		}
 		return;
 	}
-
 	public void strengthBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(strPot[0]) > 0) {
 			controller.itemCommand(strPot[0]);
 			controller.sleep(320);
@@ -509,12 +606,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	}
 	
 	public void drinkPot() {
-		ppotCheck();
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(250);
-		}
+		foodPotCheck();
+		leaveCombat();
 		if(controller.getInventoryItemCount(485) > 0) {
 			controller.itemCommand(485);
 			controller.sleep(320);
@@ -532,7 +625,32 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		}
 		return;
 	}
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+	public void tavGateEastToWest() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+				controller.setStatus("@red@Crossing Tav Gate..");
+				controller.atObject(341, 487);   //gate wont break if someone else opens it
+				controller.sleep(800);
+			} else {
+				controller.setStatus("@red@Done Crossing Tav Gate..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	
 	
 	

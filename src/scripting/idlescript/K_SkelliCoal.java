@@ -82,11 +82,7 @@ public class K_SkelliCoal extends IdleScript {
 				
 			//	eat();
 				
-				while(controller.isInCombat()) {
-					controller.setStatus("@red@Leaving combat..");
-					controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-					controller.sleep(400);
-				}
+				leaveCombat();
 					
 				if (rockEmpty() || !controller.isBatching()) {
 					isMining = "none";
@@ -177,11 +173,7 @@ public class K_SkelliCoal extends IdleScript {
 		
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+			leaveCombat();
 			
 		controller.setStatus("@red@Eating..");
 		
@@ -261,6 +253,20 @@ public class K_SkelliCoal extends IdleScript {
 		controller.walkTo(269,380);
     	controller.setStatus("@gre@Done Walking..");
 	}
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+
 
     
     

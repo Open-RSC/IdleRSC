@@ -169,12 +169,8 @@ public class K_BlackUnicorns extends IdleScript {
 		
 		
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -189,15 +185,9 @@ public class K_BlackUnicorns extends IdleScript {
 			}
 			if(!ate) { //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
 				controller.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-    				while(controller.currentY() < 314) {
-	    				controller.setStatus("@red@Going to 19 Wildy.");
-    					controller.walkTo(119, 314);
-    				}
+					goToTwenty();
     				controller.setStatus("@red@Teleporting Now!.");
-    		    	while(controller.currentY() < 427) {
-    		    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-    		    		controller.sleep(308);
-    				}
+					teleportOut();
 					controller.walkTo(120,644);
 					controller.atObject(119,642);
 					controller.walkTo(217,447);
@@ -222,7 +212,7 @@ public class K_BlackUnicorns extends IdleScript {
 				}
 			}
 		}
-	
+
 	public void UniToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(121,311);
@@ -263,7 +253,51 @@ public class K_BlackUnicorns extends IdleScript {
     	controller.setStatus("@gre@Done Walking..");
 		controller.sleep(640);
 	}
-	
+	public void goToTwenty() {
+		controller.setStatus("@red@Going to 19 Wildy (1).");
+		controller.walkTo(119, 314);
+		controller.sleep(400);
+		for (int i = 1; i <= 8; i++) {
+			if(controller.currentY() < 314) {
+				controller.setStatus("@red@Going to 19 Wildy (n).");
+				controller.walkTo(119, 314);
+				controller.sleep(400);
+			}
+			controller.sleep(10);
+		}
+	}
+	public void leaveCombat() {
+		controller.setStatus("@red@Leaving combat..");
+		controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+		controller.sleep(600);
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@gre@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+	public void teleportOut() {
+		controller.setStatus("@gre@Going to Bank. Casting teleport.");
+		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
+		controller.sleep(1000);
+		for (int i = 1; i <= 10; i++) {
+			if(controller.currentY() < 420) {
+				controller.setStatus("@gre@Going to Bank. Casting teleport.");
+				controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
+				controller.sleep(1000);
+			} else {
+				controller.setStatus("@gre@Done teleporting..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	//GUI stuff below (icky)
 	
 	

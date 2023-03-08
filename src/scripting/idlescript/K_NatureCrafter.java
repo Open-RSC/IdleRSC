@@ -99,11 +99,7 @@ public class K_NatureCrafter extends IdleScript {
 	
 				if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 					
-					while(controller.isInCombat()) {
-						controller.setStatus("@red@Leaving combat..");
-						controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-						controller.sleep(250);
-					}
+					leaveCombat();
 					controller.setStatus("@red@We've ran out of Food! Running Away/Logging Out.");
 					controller.sleep(308);
     				controller.setAutoLogin(false);
@@ -114,11 +110,7 @@ public class K_NatureCrafter extends IdleScript {
     				controller.stop();
     				controller.logout();	
 				}
-				while(controller.isInCombat()) {
-					controller.setStatus("@red@Leaving combat..");
-					controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-					controller.sleep(250);
-				}
+				leaveCombat();
 			}
 		}
 					
@@ -263,7 +255,19 @@ public class K_NatureCrafter extends IdleScript {
 			controller.walkTo(787,23);
 		}
 	}
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	
 	//GUI stuff below (icky)
 	

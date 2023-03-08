@@ -29,6 +29,8 @@ public class K_RedSpiderEggz extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
+	boolean teleportOut = false;
+	boolean returnEscape = true;
 	int eggzInBank = 0;
 	int totalEggz = 0;
     int totalTrips = 0;
@@ -64,8 +66,9 @@ public class K_RedSpiderEggz extends IdleScript {
 		
 		public void scriptStart() {
 			while(controller.isRunning()) {
-							
+
 				eat();
+				leaveCombat();
 				controller.setStatus("@yel@Picking Eggs..");
 				
 				if(controller.getInventoryItemCount() > 29 || controller.getInventoryItemCount(546) == 0) {
@@ -90,31 +93,20 @@ public class K_RedSpiderEggz extends IdleScript {
 
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
-		controller.sleep(640);
+		controller.sleep(1200);
 
 		if (controller.isInBank()) {
-			
+
 			totalEggz = totalEggz + controller.getInventoryItemCount(219);
-			
-			if(controller.getInventoryItemCount(219) >  0) {  //deposit the eggs
-				controller.depositItem(219, controller.getInventoryItemCount(219));
-				controller.sleep(1380);
+
+			for (int itemId : controller.getInventoryItemIds()) {
+				if (itemId != 546) {
+					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+				}
 			}
-			
+			controller.sleep(1280);
 			eggzInBank = controller.getBankItemCount(219);
-			
-			if(controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
-				controller.withdrawItem(33, 3);
-				controller.sleep(340);
-			}
-			if(controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
-				controller.withdrawItem(34, 1);
-				controller.sleep(340);
-			}
-			if(controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
-				controller.withdrawItem(42, 1);
-				controller.sleep(340);
-			}
+
 			if(controller.getInventoryItemCount(546) > 1) {  //deposit extra shark
 				controller.depositItem(546, controller.getInventoryItemCount(546) - 1);
 				controller.sleep(340);
@@ -123,8 +115,22 @@ public class K_RedSpiderEggz extends IdleScript {
 				controller.withdrawItem(546, 1);
 				controller.sleep(340);
 			}
-			if(controller.getBankItemCount(546) == 0 || controller.getBankItemCount(33) == 0 || controller.getBankItemCount(34) == 0 || controller.getBankItemCount(42) == 0) {
-				controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
+			if (teleportOut == true) {
+				if (controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
+					controller.withdrawItem(33, 3);
+					controller.sleep(640);
+				}
+				if (controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
+					controller.withdrawItem(34, 1);
+					controller.sleep(640);
+				}
+				if (controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
+					controller.withdrawItem(42, 1);
+					controller.sleep(640);
+				}
+			}
+			if(controller.getBankItemCount(546) == 0) {
+				controller.setStatus("@red@NO Sharks in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
 				controller.logout();
 				if(!controller.isLoggedIn()) {
@@ -144,11 +150,7 @@ public class K_RedSpiderEggz extends IdleScript {
 		
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(201,3240, 0, true);
-				controller.sleep(250);
-			}
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -162,28 +164,44 @@ public class K_RedSpiderEggz extends IdleScript {
 				}
 			}
 			if(!ate) {  //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
-				controller.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-				controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-				controller.sleep(500);
-				if(controller.currentY() > 3000) {
-					controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-					controller.sleep(500);
+				controller.setStatus("@red@We've ran out of Food! Running Away!.");
+				if (teleportOut == false
+						|| controller.getInventoryItemCount(42) < 1
+						|| controller.getInventoryItemCount(33) < 3
+						|| controller.getInventoryItemCount(34) < 1) { //or no earths/airs/laws
+					EggToBank();
+					bank();
 				}
-		    	if(controller.currentY() > 3000) {
-		    		controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport"));
-		    		controller.sleep(500);
+				if (teleportOut == true) {
+					controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(1)"));
+					controller.sleep(800);
+					if (controller.currentY() > 3000) {
+						controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(2)"));
+						controller.sleep(800);
+					}
+					if (controller.currentY() > 3000) {
+						controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(3)"));
+						controller.sleep(800);
+					}
+					controller.walkTo(120, 644);
+					controller.atObject(119, 642);
+					controller.walkTo(217, 447);
 				}
-				controller.walkTo(120,644);
-				controller.atObject(119,642);
-				controller.walkTo(217,447);
-				controller.setAutoLogin(false);
-				controller.logout();
-				controller.sleep(1000);
-			
-				if(!controller.isLoggedIn()) {
-					controller.stop();
+				if (returnEscape == false) {
+					controller.setAutoLogin(false);
 					controller.logout();
-					return;
+					controller.sleep(1000);
+
+					if (!controller.isLoggedIn()) {
+						controller.stop();
+						controller.logout();
+						return;
+					}
+				}
+				if (returnEscape == true) {
+					bank();
+					BankToEgg();
+					controller.sleep(618);
 				}
 			}
 		}
@@ -194,10 +212,10 @@ public class K_RedSpiderEggz extends IdleScript {
 		controller.walkTo(197,3244);
 		controller.walkTo(197,3255);
 		controller.walkTo(196,3265);
-		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3265) {
-			controller.atObject(196,3266);   //gate wont break if someone else opens it
-			controller.sleep(640);
-		}
+		controller.setStatus("@gre@Opening Wildy Gate North to South(1)..");
+		controller.atObject(196,3266);
+		controller.sleep(640);
+		openGateNorthToSouth();
 		controller.walkTo(197,3266);
 		controller.walkTo(204,3272);
 		controller.walkTo(210,3273);
@@ -214,9 +232,7 @@ public class K_RedSpiderEggz extends IdleScript {
 		controller.atObject(215,3300);
 		controller.sleep(640);
 		controller.walkTo(217,458);
-		//add
-		controller.walkTo(221,447);  //error here
-		//add?
+		controller.walkTo(221,447);
 		controller.walkTo(217,448);
 		controller.sleep(640);
 		totalTrips = totalTrips + 1;
@@ -242,20 +258,91 @@ public class K_RedSpiderEggz extends IdleScript {
 		controller.walkTo(204,3272);
 		controller.walkTo(199,3272);
 		controller.walkTo(197,3266);
-		while(controller.currentX() > 195 && controller.currentX() < 198 && controller.currentY() == 3266) {
-			controller.atObject(196,3266);  //"while" for gate wont break if someone else opens it
-			controller.sleep(640);
-		}
+		controller.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
+		controller.atObject(196,3266);
+		controller.sleep(640);
+		openGateSouthToNorth();
 		controller.walkTo(197,3244);
 		controller.walkTo(208,3240);
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat (n)..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+	public void openGateNorthToSouth() {
+		for (int i = 1; i <= 25; i++) {
+			if(controller.currentY() == 3265) {
+				controller.setStatus("@gre@Opening Wildy Gate..");
+				controller.atObject(196,3266);
+				controller.sleep(640);
+			} else {
+				controller.setStatus("@red@Done Opening Wildy Gate..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+	public void openGateSouthToNorth() {
+		for (int i = 1; i <= 25; i++) {
+			if(controller.currentY() == 3266) {
+				controller.setStatus("@gre@Opening Wildy Gate..");
+				controller.atObject(196,3266);
+				controller.sleep(640);
+			} else {
+				controller.setStatus("@red@Done Opening Wildy Gate..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+	public void setValuesFromGUI(JCheckBox potUpCheckbox, JCheckBox escapeCheckbox) {
+		if (potUpCheckbox.isSelected()) {
+			teleportOut = true;
+		} else {
+			teleportOut = false;
+		}
+		if (escapeCheckbox.isSelected()) {
+			returnEscape = true;
+		} else {
+			returnEscape = false;
+		}
+	}
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -265,13 +352,20 @@ public class K_RedSpiderEggz extends IdleScript {
 	public void setupGUI() {
 		JLabel header = new JLabel("Red Spider Egg Picker - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Armor");
-		JLabel label2 = new JLabel("Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-		JLabel label3 = new JLabel("31 Magic Required for Escape Tele");
+		JLabel label2 = new JLabel("Sharks in bank REQUIRED");
+		JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
+		JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
+		JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
+		JLabel label5 = new JLabel("Selected, bot teleports, then walks to edge");
+		JCheckBox escapeCheckbox = new JCheckBox("Return to Eggz after Escaping?", true);
+		JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
+		JLabel label7 = new JLabel("Selected, bot will grab more food and return");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				setValuesFromGUI(teleportCheckbox, escapeCheckbox);
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				startTime = System.currentTimeMillis();
@@ -286,7 +380,13 @@ public class K_RedSpiderEggz extends IdleScript {
 		scriptFrame.add(header);
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
+		scriptFrame.add(teleportCheckbox);
 		scriptFrame.add(label3);
+		scriptFrame.add(label4);
+		scriptFrame.add(label5);
+		scriptFrame.add(escapeCheckbox);
+		scriptFrame.add(label6);
+		scriptFrame.add(label7);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);

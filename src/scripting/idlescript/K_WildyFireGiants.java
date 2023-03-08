@@ -54,42 +54,64 @@ public class K_WildyFireGiants extends IdleScript {
 	int[] bones = {20, 413, 604, 814};
    	int[] attackPot = {488,487,486};
    	int[] strPot = {494,493,492};
-	int[] loot = {  //413,   // big bones //un-comment this to loot and bury dbones, it will reduce Kills per Hr significantly b/c of Shadow Spiders
-					438, 	 //Grimy ranarr
-					439,  	 //Grimy irit
-					440,  	 //Grimy ava
-					441,	 //Grimy kwu
-					442, 	 //Grimy cada
-					443, 	 //Grimy dwu
-					40,	 	 // nature rune
-					42, 	 // law rune
-					160, 	 //saph
-					159, 	 //emerald
-					158, 	 //ruby
-					157,	 //diamond
-					526, 	 //tooth half
-					527, 	 //loop half
-					1277, 	 //shield (left) half
-					1092, 	 //rune spear
-					404, 	 //rune kite
-					403,	 //rune square
-					542,	 //uncut dstone
-					523,  	//cut dstone
-					795,  	//D med
-					405,  	//rune axe
-					408,  	//rune bar
-					81, 	//rune 2h
-					93, 	//rune battle axe
-					38, 	//death rune
-					520, 	//silver cert
-					518, 	//coal cert
-					398, 	//rune scimmy
-					615, 	//fire bstaff
-					619, 	//blood rune
-					41, 	//chaos rune
-					31, 	//fire rune
-					373 	//lobster (will get eaten)
-				};
+	int[] loot = {
+			//413,   // big bones //un-comment this to loot and bury dbones, it will reduce Kills per Hr significantly b/c of Shadow Spiders
+			1346,   //d2h
+			795,  	//D med
+			522,	//dragonstone ammy
+			1318,	//ring of wealth
+			402,	//rune leg
+			1374,	//atk cape
+			1318,	//ring of wealth
+			402,	//rune leg
+			400,	//rune chain
+			399,	//rune med
+			403,	//rune sq
+			404,	//rune kite
+			112,	//rune full helm
+			522,	//dragonstone ammy
+
+			542,	 //uncut dstone
+			523,  	//cut dstone
+			795,  	//D med
+			526, 	 //tooth half
+			527, 	 //loop half
+			1277, 	 //shield (left) half
+			1092, 	 //rune spear
+			160, 	 //saph
+			159, 	 //emerald
+			158, 	 //ruby
+			157,	 //diamond
+
+			438, 	 //Grimy ranarr
+			439,  	 //Grimy irit
+			440,  	 //Grimy ava
+			441,	 //Grimy kwu
+			442, 	 //Grimy cada
+			443, 	 //Grimy dwu
+
+			40,	 	 // nature rune
+			42, 	 // law rune
+			38, 	//death rune
+			619, 	//blood rune
+			41, 	//chaos rune
+			31, 	//fire rune
+
+			404, 	 //rune kite
+			403,	 //rune square
+			126, 	 //mithril sq
+			405,  	//rune axe
+			408,  	//rune bar
+			81, 	//rune 2h
+			93, 	//rune battle axe
+			398, 	//rune scimmy
+			615, 	//fire bstaff
+
+			520, 	//silver cert
+			518, 	//coal cert
+			373 	//lobster (will get eaten)
+	};
+
 	
     public boolean isWithinLootzone(int x, int y) { 
     	return controller.distance(269, 2949, x, y) <= 10;
@@ -150,14 +172,6 @@ public class K_WildyFireGiants extends IdleScript {
 					if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
 						continue;
 
-					if(controller.getInventoryItemCount(795) > 0 || controller.getInventoryItemCount(1277) > 0) {  //bank if d med, or left half in inv
-						controller.setStatus("@yel@DANK drop acquired, Banking..");
-						GiantsToBank();
-						bank();
-						BankToStair();
-						stairToGiants();
-						controller.sleep(618);
-					}
 					if(controller.getCurrentStat(controller.getStatId("Attack")) == controller.getBaseStat(controller.getStatId("Attack"))) {
 						if(controller.getInventoryItemCount(attackPot[0]) > 0 || controller.getInventoryItemCount(attackPot[1]) > 0 || controller.getInventoryItemCount(attackPot[2]) > 0 ) {
 							attackBoost();
@@ -183,22 +197,22 @@ public class K_WildyFireGiants extends IdleScript {
 					controller.sleep(340);
 				}
 				if(controller.getInventoryItemCount() == 30) {
-					while(controller.isInCombat()) {
-						controller.setStatus("@red@Leaving combat..");
-						controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-						controller.sleep(340);
+					leaveCombat();
+					if(controller.getInventoryItemCount(413) > 0 && controller.getInventoryItemCount() == 30) {   //added to bury bones, before eat food!
+						controller.setStatus("@red@Burying Bones to Loot..");
+						buryBones();
 					}
-					controller.setStatus("@red@Eating Food to Loot..");
-					buryBones();
 					for(int id : controller.getFoodIds()) {
-						if(controller.getInventoryItemCount(id) > 0 && controller.getInventoryItemCount() == 30) {
+						if(controller.getInventoryItemCount(id) > 0 && controller.getInventoryItemCount() == 30)
+							controller.setStatus("@red@Eating Food to Loot..");{
 							controller.itemCommand(id);
 							controller.sleep(700);
 						}
 					}
 				}
 			}
-			if(controller.getInventoryItemCount(546) == 0 || controller.getInventoryItemCount() == 30) {
+			if(controller.getInventoryItemCount(546) == 0 || controller.getInventoryItemCount(795) > 0
+					|| controller.getInventoryItemCount(1277) > 0) { //bank if d med, or left half in inv
 				controller.setStatus("@yel@Banking..");
 				GiantsToBank();
 				bank();
@@ -230,11 +244,7 @@ public class K_WildyFireGiants extends IdleScript {
 
 	
 	public void attackBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(340);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
 			controller.itemCommand(attackPot[0]);
 			controller.sleep(320);
@@ -254,11 +264,7 @@ public class K_WildyFireGiants extends IdleScript {
 	}
 
 	public void strengthBoost() {
-		while(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-			controller.sleep(340);
-		}
+		leaveCombat();
 		if(controller.getInventoryItemCount(strPot[0]) > 0) {
 			controller.itemCommand(strPot[0]);
 			controller.sleep(320);
@@ -317,30 +323,31 @@ public class K_WildyFireGiants extends IdleScript {
 			totalLeft = totalLeft + controller.getInventoryItemCount(1277);
 			totalSpear = totalSpear + controller.getInventoryItemCount(1092);
 			totalMed = totalMed + controller.getInventoryItemCount(795);
-			
-			
-		//	if (controller.getInventoryItemCount() > 1) {
-				for (int itemId : controller.getInventoryItemIds()) {
-					if (itemId != 546 && itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494) {
-						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-					}
+
+
+
+			for (int itemId : controller.getInventoryItemIds()) {
+				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494) { //keep partial pots
+					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
 				}
-				controller.sleep(1280);   // increased sleep here to prevent double banking
-			//}
-			if(controller.getInventoryItemCount(attackPot[0]) < 1 && controller.getInventoryItemCount(attackPot[1]) < 1 && controller.getInventoryItemCount(attackPot[2]) < 1 ) {  //withdraw 10 shark if needed
+			}
+			controller.sleep(1280);   // keep, important
+
+			if(controller.getInventoryItemCount(attackPot[0]) < 1 && controller.getInventoryItemCount(attackPot[1]) < 1 && controller.getInventoryItemCount(attackPot[2]) < 1 ) {
 				controller.withdrawItem(attackPot[2], 1);
 				controller.sleep(340);
 			}
-			if(controller.getInventoryItemCount(strPot[0]) < 1 && controller.getInventoryItemCount(strPot[1]) < 1 && controller.getInventoryItemCount(strPot[2]) < 1 ) {  //withdraw 10 shark if needed
+			if(controller.getInventoryItemCount(strPot[0]) < 1 && controller.getInventoryItemCount(strPot[1]) < 1 && controller.getInventoryItemCount(strPot[2]) < 1 ) {
 				controller.withdrawItem(strPot[2], 1);
 				controller.sleep(340);
 			}
-			if(controller.getInventoryItemCount(546) < 27) {  //withdraw 10 shark if needed
+			if(controller.getInventoryItemCount(546) < 27) {  //withdraw shark //was 27
 				controller.withdrawItem(546, 27 - controller.getInventoryItemCount(546));
 				controller.sleep(340);
 			}
 			if(controller.getBankItemCount(546) == 0) {
-				controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
+				controller.setStatus("@red@NO Sharks in the bank, Logging Out!.");
+				controller.sleep(5000);
 				controller.setAutoLogin(false);
 				controller.logout();
 				if(!controller.isLoggedIn()) {
@@ -376,12 +383,8 @@ public class K_WildyFireGiants extends IdleScript {
 			}
 		}
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(340);
-			}
+
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -408,88 +411,81 @@ public class K_WildyFireGiants extends IdleScript {
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(273,2953);
 		if(controller.getObjectAtCoord(274,2952) == 57) {
-					//&& controller.currentX() < 275 && controller.currentX() > 271 && controller.currentY() < 2958 && controller.currentY() > 2950) {
-				controller.setStatus("@gre@Opening Fire Giant Gate..");
-				controller.walkTo(273,2953);
-				controller.atObject(274,2952);
-				controller.sleep(340);
+			controller.setStatus("@gre@Opening Fire Giant Gate..");
+			controller.walkTo(273,2953);
+			controller.atObject(274,2952);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
 		}
 		controller.walkTo(275,2953);
 		controller.walkTo(282,2969);  //broke hgere
 		if(controller.getObjectAtCoord(281,2969) == 57) {
-					//&& controller.currentX() < 285 && controller.currentX() > 280 && controller.currentY() < 2974 && controller.currentY() > 2965) {
-				controller.setStatus("@gre@Opening Chaos Dwarf Gate..");
-				controller.walkTo(282,2969);
-				controller.atObject(281,2969);
-				controller.sleep(340);
+			controller.setStatus("@gre@Opening Chaos Dwarf Gate..");
+			controller.walkTo(282,2969);
+			controller.atObject(281,2969);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
 		}
 		controller.walkTo(277,2971);
 		controller.walkTo(273,2972);
 		if(controller.getObjectAtCoord(272,2972) == 57) {
-					//&& controller.currentX() < 275 && controller.currentX() > 269 && controller.currentY() < 2975 && controller.currentY() > 2969) {
-				controller.setStatus("@gre@Opening Giants Gate..");
-				controller.walkTo(273,2972);
-				controller.atObject(272,2972);
-				controller.sleep(340);
+			controller.setStatus("@gre@Opening Giants Gate..");
+			controller.walkTo(273,2972);
+			controller.atObject(272,2972);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
 		}
 		controller.walkTo(269,2972);
 		controller.walkTo(269,2963);
-		controller.setStatus("@gre@Trying Stairs.."); 
+		controller.setStatus("@gre@Trying Stairs (1)..");
 		controller.atObject(268,2960);   //try stairs once
 		controller.sleep(1280);
-		if(controller.currentX() == 269 && controller.currentY() == 2963) {
-			controller.setStatus("@gre@Going up Stairs..");   //bot breaks here sometimes????
-
-			while(controller.isInCombat()) {  //stuck in while loop!!!
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(269,2963);
-				controller.sleep(100);
-			}
-			controller.atObject(268,2960);
-			controller.sleep(1000);
+		goUpStairs();
+		if (controller.currentY() > 1000) {
+			goUpStairs();
 		}
+		if (controller.currentY() > 1000) {
+			goUpStairs();
+		}
+		controller.setStatus("@gre@Walkin..");
 		controller.walkTo(268,126);
 		controller.walkTo(254,126);
 		controller.walkTo(232,104);
 		controller.walkTo(227,105);
 		controller.sleep(340);
 		if(!controller.isDoorOpen(227,106)) {
-					//&& controller.currentX() < 230 && controller.currentX() > 225 && controller.currentY() < 106 && controller.currentY() > 103) {
-				controller.setStatus("@gre@Opening Mage Bank Outer Door..");
-				controller.walkTo(227,105);
-				controller.openDoor(227,106);
-				controller.sleep(340);
+			controller.setStatus("@gre@Opening Mage Bank Outer Door..");
+			controller.walkTo(227,105);
+			controller.openDoor(227,106);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
 		}
 		controller.walkTo(227,106);
 		controller.sleep(1000);
-		//if(controller.currentX() > 224 && controller.currentX() < 231 && controller.currentY() < 107) {
-			while(controller.getWallObjectIdAtCoord(227, 107) == 24) {
-				controller.setStatus("@gre@Cutting Outer Web..");
-				controller.walkTo(227,106);
-				controller.atWallObject(227,107);
-				controller.sleep(300);
-			}
-		//}
+		controller.setStatus("@gre@Cutting Outer Web..");
+		outerWebIn();
+		if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+			outerWebIn();
+		}
+		controller.setStatus("@gre@Walkin..");
 		controller.walkTo(227,108);
 		controller.sleep(340);
-		if(controller.currentX() == 227 && controller.currentY() > 106 && controller.currentY() < 112){
-			while(controller.getWallObjectIdAtCoord(227, 109) == 24) {
-				controller.setStatus("@gre@Cutting Inner Web..");
-				controller.walkTo(227, 108);
-				controller.atWallObject(227, 109);
-				controller.sleep(300);
-			}
+		controller.setStatus("@gre@Cutting Inner Web..");
+		innerWebIn();
+		if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
+			innerWebIn();
 		}
+		controller.setStatus("@gre@Walkin..");
+		controller.walkTo(227,110);
 		controller.walkTo(226,110);
 		controller.sleep(340);
 		if(!controller.isDoorOpen(226,110)) {
-				//&& controller.currentX() < 229 && controller.currentX() > 224 && controller.currentY() < 112 && controller.currentY() > 109) {
-				controller.setStatus("@gre@Opening Mage Bank Inner Door..");
-				controller.walkTo(226,110);
-				controller.openDoor(226,110);
-				controller.sleep(340);
+			controller.setStatus("@gre@Opening Mage Bank Inner Door..");
+			controller.walkTo(226,110);
+			controller.openDoor(226,110);
+			controller.sleep(340);
 		}
-		controller.walkTo(227,107);
+		controller.walkTo(224,110);
 		controller.sleep(320);
 		controller.atObject(223,110);
 		controller.sleep(320);
@@ -497,8 +493,16 @@ public class K_WildyFireGiants extends IdleScript {
 		controller.walkTo(451,3371);
 		controller.walkTo(453,3376);
     	controller.setStatus("@gre@Done Walking..");
-	}  //107 and 109 y cord of web=
-	
+	}
+
+
+
+
+
+
+
+
+
     public void BankToStair() {
 		controller.setStatus("@gre@Walking to Fire Giants..");
 		controller.walkTo(453, 3374);
@@ -511,48 +515,42 @@ public class K_WildyFireGiants extends IdleScript {
 			controller.atObject(446, 3367);
 			controller.sleep(640);
 		}
-		controller.walkTo(225, 110);  //error code for this line, need more sleep?
+		controller.walkTo(225, 110);
 		controller.sleep(340);
 		if (!controller.isDoorOpen(226, 110)) {
-					//&& controller.currentX() < 227 && controller.currentX() > 224 && controller.currentY() == 110) {
-				controller.setStatus("@gre@Opening Mage Bank Inner Door..");
-				controller.walkTo(225, 110);
-				controller.atWallObject(226, 110);
-				controller.sleep(340);
+			controller.setStatus("@gre@Opening Mage Bank Inner Door..");
+			controller.walkTo(225, 110);
+			controller.atWallObject(226, 110);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
 		}
 		controller.walkTo(227, 109);
 		controller.sleep(340);
-		if (controller.currentY() > 108 && controller.currentY() < 112) {
-			while (controller.getWallObjectIdAtCoord(227, 109) == 24) {
-				controller.setStatus("@gre@Cutting Inner Web..");
-				controller.walkTo(227, 109);
-				controller.atWallObject(227, 109);
-				controller.sleep(300);
-			}
+		controller.setStatus("@gre@Cutting Inner Web..");
+		innerWebOut();
+		if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
+			innerWebOut();
 		}
+		controller.setStatus("@gre@Walkin..");
 		controller.walkTo(227, 107);
 		controller.sleep(340);
-		controller.atWallObject(227, 107);
-		controller.sleep(300);
-		while (controller.getWallObjectIdAtCoord(227, 107) == 24) { //still breaking here???
-			controller.setStatus("@gre@Cutting Outer Web..");
-			controller.walkTo(227, 107);
-			controller.atWallObject(227, 107);
-			controller.sleep(300);
+		controller.setStatus("@gre@Cutting Outer Web..");
+		outerWebOut();
+		if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+			outerWebOut();
 		}
-		if (controller.getWallObjectIdAtCoord(227, 107) == -1) {  //this should fix the web break!!
-			controller.setStatus("@gre@Walkin..");
-			controller.walkTo(227, 106);
-			controller.sleep(300);
+		if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+			outerWebOut();
 		}
+		controller.setStatus("@gre@Walkin..");
 		controller.walkTo(227, 106);
 		controller.sleep(340);
-		if (!controller.isDoorOpen(227, 106)) { 
-				//&& controller.currentX() < 228 && controller.currentX() > 225 && controller.currentY() == 106) {
-				controller.setStatus("@gre@Opening Mage Bank Outer Door..");
-				controller.walkTo(227, 106);
-				controller.openDoor(227, 106);
-				controller.sleep(340);
+		if (!controller.isDoorOpen(227, 106)) {
+			controller.setStatus("@gre@Opening Mage Bank Outer Door..");
+			controller.walkTo(227, 106);
+			controller.openDoor(227, 106);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
 		}
 		controller.walkTo(227, 105);
 		controller.walkTo(232, 104);
@@ -560,61 +558,143 @@ public class K_WildyFireGiants extends IdleScript {
 		controller.walkTo(268, 127);
 		controller.sleep(340);
 	}
-	public void stairToGiants() {
 
+
+	public void stairToGiants() {
 		controller.walkTo(268,127);
-	    controller.atObject(268,128);
+		controller.setStatus("@gre@Going down stairs..");
+		controller.walkTo(268,127);
+		controller.atObject(268,128);
+		controller.sleep(600);
+		controller.setStatus("@gre@Walkin..");
+		controller.walkTo(272,2972);
 		controller.sleep(340);
-		if(controller.currentX() < 270 && controller.currentX() > 265 && controller.currentY() < 130 && controller.currentY() > 125) {
-				controller.setStatus("@gre@Going down stairs..");
-				controller.walkTo(268,127);
-			    controller.atObject(268,128);
-				controller.sleep(600);
-		}
-		controller.walkTo(272,2972);   //error code this line
-		controller.sleep(340);
-		if(controller.currentX() > 265 && controller.currentX() < 270 && controller.currentY() > 2958 && controller.currentY() < 2967) {
-			controller.setStatus("@gre@Walking..");
-			controller.walkTo(272,2972);   //error code this line
+		if(controller.getObjectAtCoord(272,2972) == 57) {
+			controller.setStatus("@gre@Opening Giants Gate..");
+			controller.walkTo(272,2972);
+			controller.atObject(272,2972);
 			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
 		}
-		//if(controller.currentX() == 272 && controller.currentY() < 2975 && controller.currentY() > 2970) {
-			if(controller.getObjectAtCoord(272,2972) == 57) {
-				controller.setStatus("@gre@Opening Giants Gate..");
-				controller.walkTo(272,2972);
-				controller.atObject(272,2972);
-				controller.sleep(340);
-			}
-		//}
 		controller.walkTo(278,2970);
 		controller.walkTo(281,2970);
 		controller.sleep(340);
-		//if(controller.currentX() < 285 && controller.currentX() > 279 && controller.currentY() < 2974 && controller.currentY() > 2965) {
-			if(controller.getObjectAtCoord(281,2969) == 57) {
-				controller.setStatus("@gre@Opening Chaos Dwarf Gate..");
-				controller.walkTo(281,2970);
-				controller.atObject(281,2969);
-				controller.sleep(340);
-			}
-		//}
+		if(controller.getObjectAtCoord(281,2969) == 57) {
+			controller.setStatus("@gre@Opening Chaos Dwarf Gate..");
+			controller.walkTo(281,2970);
+			controller.atObject(281,2969);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
+		}
 		controller.walkTo(283,2969);
 		controller.walkTo(281,2962);
 		controller.walkTo(274,2953);
 		controller.sleep(340);
-		//if(controller.currentX() < 277 && controller.currentX() > 271 && controller.currentY() < 2958 && controller.currentY() > 2950) {
-			if(controller.getObjectAtCoord(274,2952) == 57) {
-				controller.setStatus("@gre@Opening Fire Giant Gate..");
-				controller.walkTo(274,2953);
-				controller.atObject(274,2952);
-				controller.sleep(340);
-			}
-		//}
+		if(controller.getObjectAtCoord(274,2952) == 57) {
+			controller.setStatus("@gre@Opening Fire Giant Gate..");
+			controller.walkTo(274,2953);
+			controller.atObject(274,2952);
+			controller.sleep(340);
+			controller.setStatus("@gre@Walkin..");
+		}
 		controller.walkTo(272,2953);
     	controller.setStatus("@gre@Done Walking..");
 	}
 
-	
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(500);
+		}
+	}
+	public void goUpStairs() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.currentY() > 1000) {
+				controller.setStatus("@gre@Going up Stairs..");
+				controller.walkTo(269,2963);
+				controller.atObject(268, 2960);
+				controller.sleep(800);
+			} else {
+				controller.setStatus("@gre@Done Going up Stairs..");
+				controller.walkTo(268,126);
+				controller.sleep(300);
+				break;
+			}
+			controller.sleep(500);
+		}
+	}
+	public void innerWebIn() {
+		for (int i = 1; i <= 40; i++) {
+			if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
+				controller.setStatus("@gre@Cutting Inner Web..");
+				controller.atWallObject(227, 109);
+				controller.sleep(1000);
+			} else {
+				controller.setStatus("@gre@Done Cutting Inner Web..");
+				controller.walkTo(227, 109);
+				controller.sleep(340);
+				break;
+			}
+			controller.sleep(500);
+		}
+	}
+	public void outerWebIn() {
+		for (int i = 1; i <= 40; i++) {
+			if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+				controller.setStatus("@gre@Cutting Outer Web..");
+				controller.atWallObject(227, 107);
+				controller.sleep(1000);
+			} else {
+				controller.setStatus("@gre@Done Cutting Outer Web..");
+				controller.walkTo(227, 107);
+				controller.sleep(340);
+				break;
+			}
+			controller.sleep(500);
+		}
+	}
+	public void innerWebOut() {
+		for (int i = 1; i <= 40; i++) {
+			if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
+				controller.setStatus("@gre@Cutting Inner Web..");
+				controller.atWallObject(227, 109);
+				controller.sleep(1000);
+			} else {
+				controller.setStatus("@gre@Done Cutting Inner Web..");
+				controller.walkTo(227, 107);
+				controller.sleep(340);
+				break;
+			}
+			controller.sleep(500);
+		}
+	}
+	public void outerWebOut() {
+		for (int i = 1; i <= 30; i++) {
+			if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+				controller.setStatus("@gre@Cutting Outer Web..");
+				controller.atWallObject(227, 107);
+				controller.sleep(1000);
+			} else {
+				controller.setStatus("@gre@Done Cutting Outer Web..");
+				try {
+					controller.walkTo(227, 106);
+					controller.sleep(340);
+				} catch(Exception e) {
+					controller.setStatus("@Red@Something went wrong..");
+					System.out.println("Something went wrong.");
+				}
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	
 	
 

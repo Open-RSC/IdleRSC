@@ -70,7 +70,7 @@ public class TaverlyBuyer extends IdleScript {
 				
 				if(npc != null) {
 					
-					while(!controller.isInShop()) {
+					if(!controller.isInShop()) {
 						if(controller.isAuthentic()) {
 							controller.talkToNpc(npc.serverIndex);
 							controller.sleep(2000);
@@ -82,14 +82,18 @@ public class TaverlyBuyer extends IdleScript {
 						}
 					}
 					
-					while(controller.getInventoryItemCount() < 30) {
+					if(controller.getInventoryItemCount() < 30) {
 						if(option == 0) {
 							if(controller.isInShop() && controller.getShopItemCount(465) > 0) { 
 								controller.shopBuy(465, controller.getShopItemCount(465));
+							} else {
+								controller.sleep(250);
 							}
 						} else if(option == 1) {
 							if(controller.isInShop() && controller.getShopItemCount(270) > 0) { 
 								controller.shopBuy(270, controller.getShopItemCount(270));
+							} else {
+								controller.sleep(250);
 							}
 						} else if(option == 2) {
 							if(controller.isInShop() && controller.getShopItemCount(270) > 0) {
@@ -97,6 +101,8 @@ public class TaverlyBuyer extends IdleScript {
 							}
 							if(controller.isInShop() && controller.getShopItemCount(465) > 0) {
 								controller.shopBuy(465, controller.getShopItemCount(465));
+								controller.sleep(250);
+							} else {
 								controller.sleep(250);
 							}
 						} else {
@@ -106,6 +112,8 @@ public class TaverlyBuyer extends IdleScript {
 							}
 							if(controller.isInShop() && controller.getShopItemCount(270) > 0) { 
 								controller.shopBuy(270, controller.getShopItemCount(270));
+							} else {
+								controller.sleep(250);
 							}
 						}
 					}
@@ -142,6 +150,7 @@ public class TaverlyBuyer extends IdleScript {
 		controller.walkTo(347, 497);
 		controller.walkTo(342, 492);
 		controller.walkTo(342, 488);
+		controller.sleep(340);
 
 		//Open Tav gate, "while" gate wont break if someone else opens it
 		while(controller.currentX() == 342 && controller.currentY() < 490 && controller.currentY() > 485) {
@@ -167,7 +176,7 @@ public class TaverlyBuyer extends IdleScript {
 		}
 
 		controller.walkTo(328, 553);
-		controller.sleep(640);
+		controller.sleep(340);
 		controller.setStatus("@red@Done Walking..");
 	}
 	
@@ -229,6 +238,7 @@ public class TaverlyBuyer extends IdleScript {
 		controller.walkTo(337, 496);
 		controller.walkTo(337, 492);
 		controller.walkTo(341, 488);
+		controller.sleep(340);
 
 		//Open Tav gate, "while" gate wont break if someone else opens it
 		while(controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
@@ -250,7 +260,7 @@ public class TaverlyBuyer extends IdleScript {
 			controller.atObject(371, 506);
 			controller.sleep(1000);
 		}
-		controller.sleep(640);
+		controller.sleep(340);
 		controller.setStatus("@red@Done Walking..");
 	}
     

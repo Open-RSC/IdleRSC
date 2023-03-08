@@ -146,16 +146,17 @@ public class AIOThiever extends IdleScript {
 			if(controller.getFightMode() != this.fightMode)
 				controller.setFightMode(this.fightMode);
 			
-			for(int doorId : doorObjectIds) {
-				int[] doorCoords = controller.getNearestObjectById(doorId);
-				
-				if(doorCoords != null){
-					controller.setStatus("@red@AIOThiever: Opening door...");
-					controller.atObject(doorCoords[0], doorCoords[1]);
-					controller.sleep(5000);
-				}
-				
-			}
+			//for(int doorId : doorObjectIds) {
+			//	int[] doorCoords = controller.getNearestObjectById(doorId);
+			//
+			//	if(doorCoords != null){
+			//		controller.setStatus("@red@AIOThiever: Opening door...");
+			///		controller.atObject(doorCoords[0], doorCoords[1]);
+			//		controller.sleep(5000);
+			///	} else {
+			//		controller.sleep(200);
+			//	}
+			//}
 			
 			if(controller.getInventoryItemCount(140) > 0) { //drop jugs from heroes
 				controller.setStatus("@red@Dropping empty jugs..");
@@ -173,8 +174,10 @@ public class AIOThiever extends IdleScript {
 					if(npc != null && npc.serverIndex > 0) {
 						controller.setStatus("@red@Stealing..");
 						controller.npcCommand1(npc.serverIndex);
+						controller.sleep(5);
 					} else {
 						controller.setStatus("@red@Waiting for NPC to become available..");
+						controller.sleep(200);
 					}
 				}
 				
@@ -230,22 +233,20 @@ public class AIOThiever extends IdleScript {
 								controller.atObject2(coords[0], coords[1]);
 							} else {
 								controller.atObject(coords[0], coords[1]);
-								controller.sleep(618);
+								controller.sleep(200);
 							}
 						} else {
 							controller.setStatus("@red@Waiting for respawn..");
+							controller.sleep(800);
 						}
 					}
 				}
 			} else {
 				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				
+				leaveCombat();
 				controller.sleep(400);				
 			}
-			
 			controller.sleep(250);
-			
 		}
 	}
 
@@ -253,11 +254,7 @@ public class AIOThiever extends IdleScript {
 		if(controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
 			
 			
-			while(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(250);
-			}
+			leaveCombat();
 			controller.setStatus("@red@Eating..");
 			
 			boolean ate = false;
@@ -273,10 +270,7 @@ public class AIOThiever extends IdleScript {
 			
 			while(!doBank && !ate) {
 				controller.setStatus("@red@Logging out..");
-				while(controller.isInCombat()) {
-					controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-					controller.sleep(250);
-				}
+				leaveCombat();
 				controller.setAutoLogin(false);
 				controller.logout();
 				controller.sleep(1000);
@@ -289,7 +283,70 @@ public class AIOThiever extends IdleScript {
 			}
 		}
 	}
-	
+	public void leaveCombat() {
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (1)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (2)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (3)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (4)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (5)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (6)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (7)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (8)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (9)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (10)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+		if(controller.isInCombat()) {
+			controller.setStatus("@red@Leaving combat (11)..");
+			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
+			controller.sleep(800);
+		}
+	}
+
+
+
+
+
+
+
 	public int countFood() {
 		int result = 0;
 		for(int id : controller.getFoodIds()) {

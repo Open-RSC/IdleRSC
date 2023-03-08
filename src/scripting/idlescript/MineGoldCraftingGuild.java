@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 /**
  * MineGoldCraftinGuild by Searos
  * @author Searos
+ * bugfixes by kaila
  */
 public class MineGoldCraftingGuild extends IdleScript {
 	JCheckBox silver2 = new JCheckBox("Mine Silver", true);
@@ -73,12 +74,12 @@ public class MineGoldCraftingGuild extends IdleScript {
 
 	public void scriptStart() {
 		
-		while (controller.getNearestObjectById(112) != null && controller.getInventoryItemCount() < 30
+		if (controller.getNearestObjectById(112) != null && controller.getInventoryItemCount() < 30
 				|| controller.getNearestObjectById(113) != null && controller.getInventoryItemCount() < 30) {
 			controller.setStatus("Mining Gold");
 			for (int objId : gold) {
 				if (objId != 0) {
-					while (controller.getInventoryItemCount() < 30 && controller.getNearestObjectById(objId) != null) {
+					if (controller.getInventoryItemCount() < 30 && controller.getNearestObjectById(objId) != null) {
 						controller.atObject(controller.getNearestObjectById(objId)[0],
 								controller.getNearestObjectById(objId)[1]);
 						controller.sleep(640);
@@ -88,13 +89,15 @@ public class MineGoldCraftingGuild extends IdleScript {
 					}
 				}
 			}
+		} else {
+			controller.sleep(340);  //should fix high cpu when all rocks depleted
 		}
-		while (controller.getNearestObjectById(112) == null && controller.getNearestObjectById(113) == null
+		if (controller.getNearestObjectById(112) == null && controller.getNearestObjectById(113) == null
 				&& controller.getInventoryItemCount() < 30 && silver2.isSelected()) {
 			controller.setStatus("Mining Silver");
 			for (int objId : silver) {
 				if (objId != 0) {
-					while (controller.getInventoryItemCount() < 30 && controller.getNearestObjectById(objId) != null
+					if (controller.getInventoryItemCount() < 30 && controller.getNearestObjectById(objId) != null
 							&& controller.getNearestObjectById(112) == null
 							&& controller.getNearestObjectById(113) == null) {
 						controller.atObject(controller.getNearestObjectById(objId)[0],
@@ -106,27 +109,33 @@ public class MineGoldCraftingGuild extends IdleScript {
 							controller.sleep(340);
 						}
 					}
-				} else {
-					controller.sleep(340);  //should fix high cpu when all rocks depleted
 				}
 			}
+		} else {
+			controller.sleep(340);  //should fix high cpu when all rocks depleted
 		}
 		if (!controller.isAuthentic() && controller.getInventoryItemCount() == 30) {
 			controller.setStatus("Banking");
 			if (controller.getInventoryItemCount() == 30 && controller.getNearestObjectById(942) != null) {
-				while (!controller.isInBank()) {
+				if (!controller.isInBank()) {
 					controller.atObject(controller.getNearestObjectById(942)[0],
 							controller.getNearestObjectById(942)[1]);
 					controller.sleep(640);
 				}
-				while (controller.isInBank() && controller.getInventoryItemCount() > 1) {
-					for (int itemId : controller.getInventoryItemIds()) {
-						if (itemId != 0) {
-							controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+				if (controller.isInBank()) {
+
+					if (controller.getInventoryItemCount() > 1) {
+						for (int itemId : controller.getInventoryItemIds()) {
+							if (itemId != 0) {
+								controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+							}
 						}
+
 					}
 					bankedSilver = controller.getBankItemCount(383);
 					bankedGold = controller.getBankItemCount(152);
+					controller.closeBank();
+					controller.sleep(640);
 				}
 			}
 		}

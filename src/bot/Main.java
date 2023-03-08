@@ -2,11 +2,12 @@ package bot;
 
 import bot.debugger.Debugger;
 import callbacks.DrawCallback;
-
-import java.awt.*;
-
-import compatibility.sbot.Script;
 import controller.Controller;
+import listeners.LoginListener;
+import listeners.WindowListener;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
@@ -17,6 +18,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -25,17 +27,20 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import listeners.LoginListener;
-import listeners.WindowListener;
-
+import static org.reflections.scanners.Scanners.Resources;
+import static org.reflections.scanners.Scanners.SubTypes;
+import static org.reflections.util.ClasspathHelper.forJavaClassPath;
 
 
 /**
@@ -45,6 +50,15 @@ import listeners.WindowListener;
  */
 public class Main {
     public static Config config;
+    private static final Reflections reflections = new Reflections(new ConfigurationBuilder()
+            .setScanners(SubTypes, Resources)
+            .addUrls(forJavaClassPath())
+            .filterInputsBy(new FilterBuilder()));
+    private static final Map<String, List<Class<?>>> scripts = Stream.of(
+            new SimpleEntry<>("Native", reflections.getSubTypesOf(IdleScript.class)),
+            new SimpleEntry<>("APOS", reflections.getSubTypesOf(compatibility.apos.Script.class)),
+            new SimpleEntry<>("SBot", reflections.getSubTypesOf(compatibility.sbot.Script.class))
+    ).collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
 
     private static boolean isRunning = false; // this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
@@ -67,11 +81,6 @@ public class Main {
     private static Object currentRunningScript = null; //the object instance of the current running script.
 
     private static boolean shouldFilter = true;
-
-    private final static String nativeScriptPath = "bin/scripting/idlescript";
-    private final static String sbotScriptPath = "bin/scripting/sbot";
-    private final static String aposScriptPath = "bin/scripting/apos";
-    
     private static boolean aposInitCalled = false;
 
     /**
@@ -93,7 +102,7 @@ public class Main {
 
     /**
      * Returns whether or not a script is running.
-     * 
+     *
      * @return boolean with whether or not a script is running.
      */
     public static boolean isRunning() {
@@ -102,7 +111,7 @@ public class Main {
 
     /**
      * Returns whether or not auto-login is enabled.
-     * 
+     *
      * @return boolean with whether or not autologin is enabled.
      */
     public static boolean isAutoLogin() {
@@ -111,7 +120,7 @@ public class Main {
 
     /**
      * Returns whether or not debug is enabled.
-     * 
+     *
      * @return boolean with whether or not debug is enabled.
      */
     public static boolean isDebug() {
@@ -159,12 +168,12 @@ public class Main {
     public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
     	handleCache();
     	config = new Config(args);
-    	
+
         Reflector reflector = new Reflector(); //start up our reflector helper
         OpenRSC client = reflector.createClient(); //start up our client jar
-        
 
-        mudclient mud = reflector.getMud(client); //grab the mud from the client 
+
+        mudclient mud = reflector.getMud(client); //grab the mud from the client
         controller = new Controller(reflector, client, mud); //start up our controller
         debugger = new Debugger(reflector, client, mud, controller);
         debuggerThread = new Thread(debugger);
@@ -243,15 +252,15 @@ public class Main {
                         controller.displayMessage("@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
                         controller.displayMessage("@red@IdleRSC: If you still experience problems after modifying script please report.", 3);
                         ((compatibility.sbot.Script) currentRunningScript).setController(controller);
-                        
+
                         String sbotScriptName = config.getScriptName();
                         ((compatibility.sbot.Script) currentRunningScript).start(sbotScriptName, config.getScriptArguments());
-                        
+
                         Thread.sleep(618); //wait 1 tick before performing next action
                     } else if(currentRunningScript instanceof compatibility.apos.Script) {
-                    	if(!controller.isSleeping()) { 
+                    	if(!controller.isSleeping()) {
                     		String params = "";
-                    		
+
                     		if(config.getScriptArguments() != null) {
                     			for(int i = 0; i < config.getScriptArguments().length; i++) {
                     				String arg = config.getScriptArguments()[i];
@@ -262,13 +271,13 @@ public class Main {
                     				}
                     			}
                     		}
-	                    	
+
 	                    	if(!aposInitCalled) {
 	                    		((compatibility.apos.Script) currentRunningScript).setController(controller);
 	                    		((compatibility.apos.Script) currentRunningScript).init(params);
 	                    		aposInitCalled = true;
 	                    	}
-	                    	
+
 	                    	int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main() + 1;
 	                    	Thread.sleep(sleepAmount);
                     	} else {
@@ -374,7 +383,7 @@ public class Main {
                 showLoadScript();
             }
         });
-        
+
         pathwalkerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -404,7 +413,7 @@ public class Main {
                 botFrame.setVisible(false);
             }
         });
-        
+
         resetXpButton.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
@@ -443,11 +452,11 @@ public class Main {
         botFrame.add(hideButton);
         hideButton.setMaximumSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);
-        
+
         resetXpButton.setPreferredSize(buttonSize);
         resetXpButton.setMaximumSize(buttonSize);
         botFrame.add(resetXpButton);
-        
+
 
         // abcd
         autoLoginCheckbox.setSelected(true);
@@ -514,46 +523,35 @@ public class Main {
      */
     private static boolean loadAndRunScript(String scriptName) {
         try {
-			File scriptFile = new File(nativeScriptPath);
+            currentRunningScript =
+                    scripts.values()
+                            .stream()
+                            .flatMap(List::stream)
+                            .filter(c -> c.getSimpleName().equalsIgnoreCase(scriptName))
+                            .findFirst()
+                            .map(clazz -> {
+                                try {
+                                    return clazz.getSuperclass().equals(compatibility.apos.Script.class) ?
+                                            clazz.getDeclaredConstructor(String.class).newInstance("") :
+                                            clazz.newInstance();
+                                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                                         InvocationTargetException e) {
+                                    e.printStackTrace();
+                                    return null;
+                                }
+                            })
+                            .orElse(null);
 
-			URL url = scriptFile.toURI().toURL();
-			URL[] urls = new URL[] {url};
+            if (currentRunningScript == null) {
+                return false;
+            }
 
-			try {
-				ClassLoader cl = new URLClassLoader(urls);
-				Class clazz = cl.loadClass("scripting.idlescript." + scriptName);
-				currentRunningScript = (IdleScript) clazz.newInstance();
-			}
-			catch(Exception e) {
-				try {
-					scriptFile = new File(sbotScriptPath);
-					url = scriptFile.toURI().toURL();
-					urls = new URL[] {url};
-					ClassLoader cl = new URLClassLoader(urls);
-					Class clazz = cl.loadClass("scripting.sbot." + scriptName);
-					currentRunningScript = (compatibility.sbot.Script) clazz.newInstance();
-				}
-				catch(Exception _e) {
-					scriptFile = new File(aposScriptPath);
-					url = scriptFile.toURI().toURL();
-					urls = new URL[] {url};
-					ClassLoader cl = new URLClassLoader(urls);
-					Class clazz = cl.loadClass("scripting.apos." + scriptName);
-					
-
-					//currentRunningScript = (compatibility.apos.Script) clazz.newInstance();
-					compatibility.apos.Script.setController(controller);
-					currentRunningScript = (compatibility.apos.Script) clazz.getDeclaredConstructor(String.class).newInstance("");
-				}
-			}
-
-			Main.config.setScriptName(scriptName);
-			
-			return true;
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+            Main.config.setScriptName(scriptName);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -565,53 +563,11 @@ public class Main {
         String[] columnNames = {"Name", "Type"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        File[] nativeScripts = new File(nativeScriptPath).listFiles();
-        File[] sbotScripts = new File(sbotScriptPath).listFiles();
-        File[] aposScripts = new File(aposScriptPath).listFiles();
-
-        // Create Comparator object to use in sorting the list
-        Comparator fileComparator = (Comparator<File>) (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName());
-
-        // Sort each list of scripts
-        Arrays.sort(nativeScripts, fileComparator);
-        Arrays.sort(aposScripts, fileComparator);
-        Arrays.sort(sbotScripts, fileComparator);
-
-        for (final File file : nativeScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
-                String scriptName = file.getName().replace(".class", "");
-
-                // Create row with script name and
-                String[] row = {scriptName, "Native"};
-
-                // Add row to the table model
-                tableModel.addRow(row);
-            }
-        }
-        
-        for (final File file : aposScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
-                String scriptName = file.getName().replace(".class", "");
-
-                // Create row with script name and
-                String[] row = {scriptName, "APOS"};
-
-                // Add row to the table model
-                tableModel.addRow(row);
-            }
-        }
-        
-        for (final File file : sbotScripts) {
-            if (file.getName().endsWith(".class") && !file.getName().contains("$") && !file.getName().contains("package-info")) {
-                String scriptName = file.getName().replace(".class", "");
-
-                // Create row with script name and
-                String[] row = {scriptName, "SBot"};
-
-                // Add row to the table model
-                tableModel.addRow(row);
-            }
-        }
+        scripts.forEach((type, classes) ->
+                classes
+                        .stream().sorted(Comparator.comparing(Class::getSimpleName))
+                        .forEach(clazz ->
+                                tableModel.addRow(new String[]{clazz.getSimpleName(), type})));
 
         // Setup table
         final JTable scriptTable = new JTable(tableModel) {
@@ -758,40 +714,40 @@ public class Main {
     }
 
     /**
-     * Returns the global Controller instance. 
+     * Returns the global Controller instance.
      * @return Controller
      */
     public static Controller getController() { return controller; }
-    
+
     /**
      * Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder.
      */
     private static void handleCache() {
     	//Does the directory exist?
     	File cacheDirectory = new File("Cache/");
-    	
+
     	if(cacheDirectory.exists())
     		return;
-    	
+
     	JFrame cacheFrame = new JFrame("Cache Setup");
     	JLabel cacheLabel = new JLabel("First setup: you must select either Uranium or Coleslaw.");
     	JButton uraniumButton = new JButton("Uranium (2018 RSC)");
     	JButton coleslawButton = new JButton("Coleslaw (modified RSC, new content)");
-    	
+
     	uraniumButton.addActionListener(new ActionListener() {
     		@Override
-    		public void actionPerformed(ActionEvent e) { 
+    		public void actionPerformed(ActionEvent e) {
     			copyDirectory("UraniumCache", "Cache");
     		}
     	});
-    	
+
     	coleslawButton.addActionListener(new ActionListener() {
     		@Override
-    		public void actionPerformed(ActionEvent e) { 
+    		public void actionPerformed(ActionEvent e) {
     			copyDirectory("ColeslawCache", "Cache");
     		}
     	});
-    	
+
     	cacheFrame.setLayout(new GridLayout(0, 1));
     	cacheFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	cacheFrame.add(cacheLabel);
@@ -800,20 +756,20 @@ public class Main {
     	centerWindow(cacheFrame);
     	cacheFrame.setVisible(true);
     	cacheFrame.pack();
-		
 
-    	
+
+
     	while(cacheDirectory.exists() == false) {
-    		
+
     		try {
     			Thread.sleep(100);
     		} catch (InterruptedException e) {
     			e.printStackTrace();
     		}
-    		
+
     		cacheDirectory = new File("Cache/");
     	}
-    	
+
     	cacheFrame.setVisible(false);
     	cacheFrame.dispose();
     }
@@ -853,9 +809,5 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Stop the current script first.");
         }
     }
-//    
-//    public static boolean wasAposInitCalled() {
-//    	return aposInitCalled;
-//    }
 
 }

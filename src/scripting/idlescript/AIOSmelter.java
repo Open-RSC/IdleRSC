@@ -373,7 +373,7 @@ public class AIOSmelter extends IdleScript {
 
 	public void scriptStart() {
 		if (isEnoughOre()) {
-			while (controller.getNearestObjectById(118) == null) {
+			if (controller.getNearestObjectById(118) == null) {
 				controller.setStatus("Walking to furnace..");
 				if (destinationId == 0) {
 					controller.walkTo(318, 551, 0, true);
@@ -403,19 +403,21 @@ public class AIOSmelter extends IdleScript {
 				oreId = 172;
 				mouldAnswer = 0;
 			}
-
-			if(controller.getInventoryItemCount(164) > 0)
-				gemAnswer = 1;
-			if(controller.getInventoryItemCount(163) > 0)
-				gemAnswer = 2;
-			if(controller.getInventoryItemCount(162) > 0)
-				gemAnswer = 3;
-			if(controller.getInventoryItemCount(161) > 0)
-				gemAnswer = 4;
-			if(controller.getInventoryItemCount(523) > 0) 
-				gemAnswer = 5;
-			
-			while (controller.getInventoryItemCount(oreId) > 0 && controller.getNearestObjectById(118) != null) {
+			if(!controller.isAuthentic()) {
+					gemAnswer = 0;
+			} else {
+				if (controller.getInventoryItemCount(164) > 0)
+					gemAnswer = 1;
+				if (controller.getInventoryItemCount(163) > 0)
+					gemAnswer = 2;
+				if (controller.getInventoryItemCount(162) > 0)
+					gemAnswer = 3;
+				if (controller.getInventoryItemCount(161) > 0)
+					gemAnswer = 4;
+				if (controller.getInventoryItemCount(523) > 0)
+					gemAnswer = 5;
+			}
+			if (controller.getInventoryItemCount(oreId) > 0 && controller.getNearestObjectById(118) != null) {
 
 				while (controller.isBatching())
 					controller.sleep(340);
@@ -438,7 +440,12 @@ public class AIOSmelter extends IdleScript {
 					controller.optionAnswer(mouldAnswer);
 					controller.sleep(800);
 					controller.optionAnswer(gemAnswer);
-					controller.sleep(250);
+					controller.sleep(600);
+					if(!controller.isAuthentic()) {
+						while (controller.isBatching()) {
+							controller.sleep(600);
+						}
+					}
 				} else {
 					controller.sleep(618);
 				}

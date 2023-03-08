@@ -72,7 +72,7 @@ public class K_Paladins extends IdleScript {
 
 					619, 	//blood rune
 					32,		//water rune
-					170,    //iron bar
+					//170,    //iron bar
 					171,    //steel bar
 					173,    //mithril bar
 

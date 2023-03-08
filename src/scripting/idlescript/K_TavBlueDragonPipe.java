@@ -397,62 +397,8 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		}
 	}
 
-
-
-
-
-
-
-
-
-
 	//PATHING public voids
-	public void pipeEscape() {
-		controller.setStatus("We've ran out of Food! @gre@Going through Pipe.");
-		controller.walkTo(372,3352);
-		controller.atObject(373,3352);
-		controller.sleep(1000);
-	}
-	public void DragonsToBank() {
 
-		controller.setStatus("@gre@Going to Bank. Casting 1st teleport.");
-		controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-		controller.sleep(1000);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 2rd teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 3rd teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 4th teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 5th teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		controller.sleep(300);
-		if(controller.currentY() > 3000) {
-			controller.setStatus("@gre@Teleport unsuccessful, Casting 6th teleport.");
-			controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-			controller.sleep(1000);
-		}
-		totalTrips = totalTrips + 1;
-		controller.sleep(308);
-		controller.walkTo(327,552);
-		controller.sleep(308);
-		controller.setStatus("@gre@Done Walking..");
-	}
 
     public void BankToDragons() {
     	controller.setStatus("@gre@Walking to Tav Gate..");
@@ -486,7 +432,55 @@ public class K_TavBlueDragonPipe extends IdleScript {
     	controller.setStatus("@gre@Done Walking..");
 
 	}
-
+	public void pipeEscape() {
+		controller.setStatus("We've ran out of Food! @gre@Going through Pipe.");
+		controller.walkTo(372,3352);
+		controller.atObject(373,3352);
+		controller.sleep(1000);
+	}
+	public void DragonsToBank() {
+		for (int i = 1; i <= 12; i++) {
+			if (controller.currentY() > 3000) {
+				controller.setStatus("@gre@Teleport unsuccessful, Casting teleports.");
+				controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
+				controller.sleep(1000);
+			} else {
+				controller.setStatus("@gre@Done Teleporting.");
+				break;
+			}
+		}
+		totalTrips = totalTrips + 1;
+		controller.sleep(308);
+		controller.walkTo(327,552);
+		controller.sleep(308);
+		controller.setStatus("@gre@Done Walking..");
+	}
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+	public void tavGateEastToWest() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
+				controller.setStatus("@red@Crossing Tav Gate..");
+				controller.atObject(341, 487);   //gate wont break if someone else opens it
+				controller.sleep(800);
+			} else {
+				controller.setStatus("@red@Done Crossing Tav Gate..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 
 
 
@@ -515,9 +509,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		if(controller.getInventoryItemCount(attackPot[2]) > 0) {
 			controller.itemCommand(attackPot[2]);
 			controller.sleep(320);
-			return;
 		}
-		return;
 	}
 
 	public void strengthBoost() {
@@ -535,36 +527,9 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		if(controller.getInventoryItemCount(strPot[2]) > 0) {
 			controller.itemCommand(strPot[2]);
 			controller.sleep(320);
-			return;
-		}
-		return;
-	}
-	public void leaveCombat() {
-		for (int i = 1; i <= 15; i++) {
-			if (controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(600);
-			} else {
-				controller.setStatus("@red@Done Leaving combat..");
-				break;
-			}
-			controller.sleep(10);
 		}
 	}
-	public void tavGateEastToWest() {
-		for (int i = 1; i <= 15; i++) {
-			if (controller.currentX() == 341 && controller.currentY() < 489 && controller.currentY() > 486) {
-				controller.setStatus("@red@Crossing Tav Gate..");
-				controller.atObject(341, 487);   //gate wont break if someone else opens it
-				controller.sleep(800);
-			} else {
-				controller.setStatus("@red@Done Crossing Tav Gate..");
-				break;
-			}
-			controller.sleep(10);
-		}
-	}
+
 
 
 

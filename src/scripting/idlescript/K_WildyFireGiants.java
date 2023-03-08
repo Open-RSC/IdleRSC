@@ -611,7 +611,7 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.setStatus("@red@Done Leaving combat..");
 				break;
 			}
-			controller.sleep(10);
+			controller.sleep(500);
 		}
 	}
 	public void goUpStairs() {
@@ -627,7 +627,7 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(300);
 				break;
 			}
-			controller.sleep(10);
+			controller.sleep(500);
 		}
 	}
 	public void innerWebIn() {
@@ -642,7 +642,7 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(340);
 				break;
 			}
-			controller.sleep(10);
+			controller.sleep(500);
 		}
 	}
 	public void outerWebIn() {
@@ -657,7 +657,7 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(340);
 				break;
 			}
-			controller.sleep(10);
+			controller.sleep(500);
 		}
 	}
 	public void innerWebOut() {
@@ -672,19 +672,24 @@ public class K_WildyFireGiants extends IdleScript {
 				controller.sleep(340);
 				break;
 			}
-			controller.sleep(10);
+			controller.sleep(500);
 		}
 	}
 	public void outerWebOut() {
-		for (int i = 1; i <= 40; i++) {
+		for (int i = 1; i <= 30; i++) {
 			if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
 				controller.setStatus("@gre@Cutting Outer Web..");
 				controller.atWallObject(227, 107);
 				controller.sleep(1000);
 			} else {
 				controller.setStatus("@gre@Done Cutting Outer Web..");
-				controller.walkTo(227, 106);
-				controller.sleep(340);
+				try {
+					controller.walkTo(227, 106);
+					controller.sleep(340);
+				} catch(Exception e) {
+					controller.setStatus("@Red@Something went wrong..");
+					System.out.println("Something went wrong.");
+				}
 				break;
 			}
 			controller.sleep(10);

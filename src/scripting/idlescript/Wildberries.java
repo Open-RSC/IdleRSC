@@ -118,6 +118,9 @@ public class Wildberries extends IdleScript {
 	public void scriptStart() {
 		while(controller.isRunning()) {
 
+			//leaveCombat();
+			eat();
+
 			if(!controller.isItemIdEquipped(420)) {
 				controller.equipItem(controller.getInventoryItemSlotIndex(420));
 				controller.sleep(618);
@@ -127,16 +130,12 @@ public class Wildberries extends IdleScript {
 
 				controller.setStatus("@red@Walking to Berries..");
 				controller.walkPath(varrockToGate);
-				while(controller.currentX() != 140 || controller.currentY() != 181) {
-					controller.atObject(140, 180);
-					controller.sleep(618);
-				}
+				gateCheckNorthToSouth();
 				controller.walkPath(gateToBerries);
 			}
 			if(controller.getInventoryItemCount() != 30 && controller.currentY() < 250) {  //whjile not full inv, grab berries //controller.getInventoryItemCount(471) > 0 &&
 
 				controller.setStatus("@red@Picking Berries..");
-				eat();
 
 				if(controller.isInCombat()) {
 					controller.setStatus("@red@In Combat, escaping..");
@@ -166,10 +165,7 @@ public class Wildberries extends IdleScript {
 			if(controller.getInventoryItemCount() == 30 || controller.getInventoryItemCount(546) == 0) { //no sharks or full inv then bank
 				controller.setStatus("@red@Walking to Bank..");
 				controller.walkPathReverse(gateToBerries);
-				while(controller.currentX() != 140 || controller.currentY() != 180) {
-					controller.atObject(140, 180);
-					controller.sleep(618);
-				}
+				gateCheckSouthToNorth();
 				controller.walkPathReverse(varrockToGate);
 				bank();
 				eat();
@@ -184,11 +180,38 @@ public class Wildberries extends IdleScript {
 			}
 		}
 	}
-	
+	public void gateCheckSouthToNorth() {
+		for (int i = 1; i <= 15; i++) {
+			if(controller.currentX() > 139 && controller.currentX() < 142 && controller.currentY() == 181) {
+				controller.setStatus("@gre@Opening Dragon Gate South to North..");
+				controller.atObject(140,180);
+				controller.sleep(900);
+			} else {
+				controller.setStatus("@red@Done Opening Dragon Gate South to North..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+	public void gateCheckNorthToSouth() {
+		for (int i = 1; i <= 15; i++) {
+			if(controller.currentX() > 139 && controller.currentX() < 142 && controller.currentY() == 180) {
+				controller.setStatus("@gre@Opening Dragon Gate North to South..");
+				controller.atObject(140,180);
+				controller.sleep(900);
+			} else {
+				controller.setStatus("@red@Done Opening Dragon Gate North to South..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
+
+
 	public void eat() {
 		if(controller.getCurrentStat(controller.getStatId("Hits")) <= (controller.getBaseStat(controller.getStatId("Hits")) - 20) ) {
 			controller.setStatus("@red@Eating..");
-			
+			leaveCombat();
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -198,7 +221,19 @@ public class Wildberries extends IdleScript {
 			}
 		}
 	}
-	
+	public void leaveCombat() {
+		for (int i = 1; i <= 15; i++) {
+			if (controller.isInCombat()) {
+				controller.setStatus("@red@Leaving combat..");
+				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+				controller.sleep(600);
+			} else {
+				controller.setStatus("@red@Done Leaving combat..");
+				break;
+			}
+			controller.sleep(10);
+		}
+	}
 	public void bank() {
 		controller.setStatus("@red@Banking..");
 		

@@ -1,4 +1,4 @@
-# Use OpenJDK8 provided by Eclipse Temurin since the main jdk images have been
+# Use OpenJDK 8 provided by Eclipse Temurin since the main jdk images have been
 # deprecated for a while now. Let's also use Ubuntu Jammy (22.04), which is the
 # most recent LTS release.
 # Upstream reference: https://github.com/adoptium/containers
@@ -11,6 +11,10 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
+# Invalidate cache if the gradle-wrapper.properties file changes.
+# All wrapper binaries, dependency caches & release changelog notifications
+# (that bit of text that appears when the wrapper is updated) are cached
+# for use in later invocations of the CI.
 cache:
   key:
     files:
@@ -20,6 +24,9 @@ cache:
     - .gradle/caches
     - .gradle/notifications
 
+# Install dependencies (so far, just git), explicitly state to gradle wrapper
+# that we want the cache to be enabled, build a release zip, then upload the
+# zip artifact to Gitlab CI for end-users to download.
 build:
   stage: build
   script: 

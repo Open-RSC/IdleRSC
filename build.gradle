@@ -39,8 +39,14 @@ jar {
 
 // Moves the compiled jar to the root folder
 base {
-    archivesName = "IdleRSC"
     libsDirectory = getProjectDir()
+}
+
+// ensure builds are reproducible
+// ref: https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
 }
 
 // Deletes the build directory
@@ -51,3 +57,68 @@ tasks.register("cleanBuildDir", Delete) {
 // Ensure all tasks are completed when running build by making build require
 // the last task in a dependency chain
 build.dependsOn(cleanBuildDir)
+
+// obtain current commit hash
+ext.commitHash = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            executable('git')
+            args(
+                'rev-parse',
+                '--short',
+                'HEAD'
+            )
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        return "dev"
+    }
+}
+
+// obtain current commit date
+ext.commitDate = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            executable('git')
+            args(
+                'show',
+                '--no-patch',
+                '--format=%cd',
+                '--date=format:%Y.%m.%d'
+            )
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        return "2001.01.04"
+    }
+}
+
+// create release zip
+tasks.register('release', Exec) {
+    dependsOn build
+
+    def releaseName = "${project.name}-${commitDate()}-${commitHash()}"
+
+    executable('git')
+    args(
+        'archive',
+        '--prefix',
+        "${releaseName}/",
+        'HEAD',
+        "${project.name}.jar",
+        'ColeslawCache',
+        'UraniumCache',
+        '--output',
+        "${releaseName}.zip"
+    )
+
+    doLast {
+        println "Archive saved to ${releaseName}.zip"
+    }
+}

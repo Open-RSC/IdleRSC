@@ -111,6 +111,7 @@ tasks.register('release', Exec) {
         '--prefix',
         "${releaseName}/",
         'HEAD',
+        '--add-file',
         "${project.name}.jar",
         'ColeslawCache',
         'UraniumCache',

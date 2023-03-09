@@ -43,6 +43,13 @@ base {
     libsDirectory = getProjectDir()
 }
 
+// ensure builds are reproducible
+// ref: https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
 // Deletes the build directory
 tasks.register("cleanBuildDir", Delete) {
     delete 'build'

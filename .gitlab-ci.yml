@@ -1,0 +1,32 @@
+# Use OpenJDK8 provided by Eclipse Temurin since the main jdk images have been
+# deprecated for a while now. Let's also use Ubuntu Jammy (22.04), which is the
+# most recent LTS release.
+# Upstream reference: https://github.com/adoptium/containers
+default:
+  image: eclipse-temurin:8-jdk-jammy
+
+stages:
+  - build
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+cache:
+  key:
+    files:
+      - gradle/wrapper/gradle-wrapper.properties
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+    - .gradle/notifications
+
+build:
+  stage: build
+  script: 
+    - apt-get update -q -y
+    - apt-get install -y git
+    - ./gradlew --build-cache release
+  artifacts:
+    paths:
+      - ./*.zip
+    expire_in: 1 week

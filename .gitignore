@@ -28,6 +28,7 @@ IdleRSC.iml
 # output
 classes/
 build/
+IdleRSC.jar
 
 # User chosen cache
 Cache/

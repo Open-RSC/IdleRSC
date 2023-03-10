@@ -11,6 +11,11 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
+# git rev-list --count does not work correctly with the default settings.
+variables:
+  GIT_STRATEGY: clone
+  GIT_DEPTH: 0
+
 # Invalidate cache if the gradle-wrapper.properties file changes.
 # All wrapper binaries, dependency caches & release changelog notifications
 # (that bit of text that appears when the wrapper is updated) are cached

@@ -99,11 +99,31 @@ ext.commitDate = { ->
     }
 }
 
+// obtain current commit count
+ext.commitCount = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            executable('git')
+            args(
+                'rev-list',
+                '--count',
+                'HEAD'
+            )
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        return "1"
+    }
+}
+
 // create release zip
 tasks.register('release', Exec) {
     dependsOn build
 
-    def releaseName = "${project.name}-${commitDate()}-${commitHash()}"
+    def releaseName = "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}"
 
     executable('git')
     args(

@@ -135,6 +135,9 @@ tasks.register('release', Exec) {
         "${project.name}.jar",
         'ColeslawCache',
         'UraniumCache',
+        'run_linux.sh',
+        'run_windows.bat',
+        'README.md',
         '--output',
         "${releaseName}.zip"
     )

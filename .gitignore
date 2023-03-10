@@ -28,6 +28,8 @@ IdleRSC.iml
 # output
 classes/
 build/
+IdleRSC.jar
+Map/path.png
 
 # User chosen cache
 Cache/

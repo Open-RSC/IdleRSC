@@ -15,17 +15,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Battlefield Trainer - By Kaila");
  * Start in Edge bank with Armor");
  * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
  * 31 Magic Required for escape tele");
- * 
+ *
  * Author - Kaila
  */
-public class K_BattlefieldTrainer extends IdleScript {	
+public class K_BattlefieldTrainer extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -46,10 +45,10 @@ public class K_BattlefieldTrainer extends IdleScript {
     int totalLeft = 0;
     int totalSpear = 0;
     int totalTrips = 0;
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+
 	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
@@ -64,23 +63,23 @@ public class K_BattlefieldTrainer extends IdleScript {
 			}
 			if(controller.currentX() < 600) {
 				bank();
-				BankToDruid();  
+				BankToDruid();
 				controller.sleep(1380);
 			}
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
 
 	public void scriptStart() {
 			while(controller.isRunning()) {
-						
+
 				eat();
-						
+
 				if(controller.getInventoryItemCount(546) > 0) {
-				    		
+
 				   	if(!controller.isInCombat()) {
-				   		
+
 		    			controller.setStatus("@yel@Attacking Trooper");
 					   	ORSCharacter npc = controller.getNearestNpcById(407, false);
 					   	if(npc != null) {
@@ -101,17 +100,17 @@ public class K_BattlefieldTrainer extends IdleScript {
 				}
 			}
 	}
-					
-		
 
-	
 
-	
-	
-	
 
-	
-	
+
+
+
+
+
+
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -119,7 +118,7 @@ public class K_BattlefieldTrainer extends IdleScript {
 		controller.sleep(640);
 
 		if (controller.isInBank()) {
-			
+
 			if (controller.getInventoryItemCount() > 1) {
 				for (int itemId : controller.getInventoryItemIds()) {
 					if (itemId != 546) {
@@ -145,18 +144,18 @@ public class K_BattlefieldTrainer extends IdleScript {
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void eat() {
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
+
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
+
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -173,10 +172,10 @@ public class K_BattlefieldTrainer extends IdleScript {
 				}
 			}
 		}
-	
+
 	public void DruidToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
-    	
+
 		controller.walkTo(649,639);
 		controller.walkTo(644,639);
 		controller.walkTo(636,638);
@@ -193,14 +192,14 @@ public class K_BattlefieldTrainer extends IdleScript {
 		controller.walkTo(563,621);
 		controller.walkTo(550,620);
 		controller.walkTo(550,613);
-    	
+
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
-    public void BankToDruid() {	
+
+    public void BankToDruid() {
     	controller.setStatus("@gre@Walking to Druids..");
-    	
+
 		controller.walkTo(550,613);
 		controller.walkTo(550,620);
 		controller.walkTo(563,621);
@@ -234,12 +233,12 @@ public class K_BattlefieldTrainer extends IdleScript {
 			controller.sleep(10);
 		}
 	}
-	
-    
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -262,7 +261,7 @@ public class K_BattlefieldTrainer extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -290,20 +289,20 @@ public class K_BattlefieldTrainer extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
     		int TripSuccessPerHr = 0;
-    		
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
-	    		
+
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
-	    	
+
 			controller.drawString("@red@Battlefield Trainer @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
 			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Runtime: " + runTime, 350, 76, 0xFFFFFF, 1);

@@ -15,7 +15,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Tav black demons - By Kaila
@@ -26,13 +25,13 @@ import scripting.idlescript.AIOCooker.FoodObject;
  *
  * Author - Kaila
  */
-public class K_TavBlackDemonPipe extends IdleScript {	
-	
+public class K_TavBlackDemonPipe extends IdleScript {
+
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	boolean d2hWield = false;
-	
+
 	int totalDbones = 0;
     int totalRdagger = 0;
     int totalGems = 0;
@@ -44,7 +43,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
     int totalLoop = 0;
     int totalTooth = 0;
     int totalLeft = 0;
-    int totalSpear = 0;  
+    int totalSpear = 0;
     int totalHerb = 0;
     int bankDbones = 0;
     int totalBlood = 0;
@@ -57,8 +56,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
     int totalDeath = 0;
     int totalRchain = 0;
     int totalRmed = 0;
-    
-    
+
+
    // DRAGON_BONES, 396, 93, LAW_RUNE, 40, WATER_RUNE, 31, 526, 527, 1277
 
    	int[] attackPot = {488,487,486};
@@ -101,7 +100,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 					795  	//D med
 					};
 
-    public boolean isWithinWander(int x, int y) { 
+    public boolean isWithinWander(int x, int y) {
     	return controller.distance(390, 3371, x, y) <= 10;
     }
 	long startTime;
@@ -126,12 +125,12 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			}
 			if(controller.currentY() < 2800) {
 				bank();
-				BankToDemons();  
+				BankToDemons();
 				controller.sleep(1380);
 			}
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
 
 
@@ -151,12 +150,12 @@ public class K_TavBlackDemonPipe extends IdleScript {
 				drink();
 				pray();
 
-				
+
 
 
 				if(controller.getInventoryItemCount() < 30) {
 					foodPotCheck();
-			 		boolean lootPickedUp = false; 
+			 		boolean lootPickedUp = false;
 				   	for(int lootId : loot) {
 				   		int[] coords = controller.getNearestItemById(lootId);
 		        		if(coords != null && this.isWithinWander(coords[0], coords[1])) {
@@ -179,7 +178,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 				   		strengthBoost();
 						}
 				   	}
-				   	
+
 				   	if(!controller.isInCombat()) {
 		    			controller.setStatus("@yel@Attacking Demons");
 				    	controller.sleepHandler(98, true);
@@ -192,8 +191,8 @@ public class K_TavBlackDemonPipe extends IdleScript {
 					    }
 				    }
 			    	controller.sleep(1380);
-			    	
-			    	
+
+
 				}
 				if(controller.getInventoryItemCount() == 30) {
 
@@ -233,7 +232,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
 
 	//actionable public voids (eat, bank, etc)
-	
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -241,24 +240,24 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.sleep(1200);
 
 		if (controller.isInBank()) {
-			
-			totalRunestuff = totalRunestuff 
+
+			totalRunestuff = totalRunestuff
 					+ controller.getInventoryItemCount(404) //kite
 					+ controller.getInventoryItemCount(403) //sq
 					+ controller.getInventoryItemCount(405) //axe
 					+ controller.getInventoryItemCount(81) //2h
 					+ controller.getInventoryItemCount(93); //bAxe
-			totalGems = totalGems 
-					+ controller.getInventoryItemCount(160) 
+			totalGems = totalGems
+					+ controller.getInventoryItemCount(160)
 					+ controller.getInventoryItemCount(159)
 					+ controller.getInventoryItemCount(158)
 					+ controller.getInventoryItemCount(157);
 			totalHerb = totalHerb
-					+ controller.getInventoryItemCount(438) 
-					+ controller.getInventoryItemCount(439) 
-					+ controller.getInventoryItemCount(440) 
-					+ controller.getInventoryItemCount(441) 
-					+ controller.getInventoryItemCount(442) 
+					+ controller.getInventoryItemCount(438)
+					+ controller.getInventoryItemCount(439)
+					+ controller.getInventoryItemCount(440)
+					+ controller.getInventoryItemCount(441)
+					+ controller.getInventoryItemCount(442)
 					+ controller.getInventoryItemCount(443);
 			totalFire = totalFire + controller.getInventoryItemCount(31);
 			totalLaw = totalLaw + controller.getInventoryItemCount(42);
@@ -275,7 +274,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			totalRchain = totalMed + controller.getInventoryItemCount(400);
 			totalRmed = totalMed + controller.getInventoryItemCount(399);
 			totalMed = totalMed + controller.getInventoryItemCount(795);
-			
+
 			//ppotCount() = (controller.getInventoryItemCount(483) + controller.getInventoryItemCount(483) +controller.getInventoryItemCount(483));
 			for (int itemId : controller.getInventoryItemIds()) {
 				if (itemId != 486 && itemId != 487 && itemId != 488 && itemId != 492 && itemId != 493 && itemId != 494 && itemId != 420 && itemId != 485 && itemId != 484 && itemId != 483 && itemId != 1346 ) {
@@ -283,7 +282,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 				}
 			}
 			controller.sleep(1400);      //Important, leave in
-			
+
 			if(controller.getInventoryItemCount(420) < 1) {  //antidragon shield
 				controller.withdrawItem(420, 1);
 				controller.sleep(640);
@@ -409,17 +408,17 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	   	}
 	}
 	public void eat() {
-		
+
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
+
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 			foodPotCheck();
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -490,7 +489,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		controller.sleep(308);
     	controller.setStatus("@gre@Done Walking..");
 	}
-    public void BankToDemons() {	
+    public void BankToDemons() {
     	controller.setStatus("@gre@Walking to Black Demons..");
 		controller.walkTo(327, 552);
 		controller.walkTo(324, 549);
@@ -539,7 +538,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		eat();
 		drink();
 		pray();
-    	
+
 	}
 
 
@@ -604,7 +603,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		}
 		return;
 	}
-	
+
 	public void drinkPot() {
 		foodPotCheck();
 		leaveCombat();
@@ -651,27 +650,27 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			controller.sleep(10);
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -703,7 +702,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -749,7 +748,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
     		int RmedSuccessPerHr = 0;
     	    int HerbSuccessPerHr = 0;
     	    int TripSuccessPerHr = 0;
-    	    
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
@@ -766,7 +765,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 	    		RmedSuccessPerHr = (int)(totalRmed * scale);
 	    		HerbSuccessPerHr = (int)(totalHerb * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
@@ -788,6 +787,6 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			controller.drawString("@whi@D Med: @gre@" + String.valueOf(this.totalMed) + "@yel@ / @whi@Left Half: @gre@" + String.valueOf(this.totalLeft), 350, 258, 0xFFFFFF, 1);
 			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 272, 0xFFFFFF, 1);
 			controller.drawString("@whi@Runtime: " + runTime, 350, 286, 0xFFFFFF, 1);
-		}  //add air runes, 
+		}  //add air runes,
 	}
 }

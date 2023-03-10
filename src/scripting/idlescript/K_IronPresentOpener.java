@@ -14,40 +14,39 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
-/**- 
+/**-
 *Opens Holiday event Presents on an Iron, banks loot (coleslaw)
 *only works on irons. start in any bank.
 *Author Kaila
  */
-public class K_IronPresentOpener extends IdleScript {	
+public class K_IronPresentOpener extends IdleScript {
 	int objectx = 0;
 	int objecty = 0;
-	
+
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+
 	public int start(String parameters[]) {
 		controller.displayMessage("@ran@Iron Present Opener! Let's party like it's 2004!");
 
-		
+
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount(980) < 1) {
 				bank();
 			}
 			if(controller.getInventoryItemCount(980) > 0) {
 						controller.setStatus("@Gre@Opening..");
-						
+
 						controller.itemCommand(980);
 						controller.sleep(650);
-	
+
 			}
 		}
-		
-		return 1000; //start() must return a int value now. 
+
+		return 1000; //start() must return a int value now.
 	}
-	
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");

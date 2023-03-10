@@ -15,17 +15,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * Author - Kaila
  */
-public class K_SkelliCoal extends IdleScript {	
+public class K_SkelliCoal extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -40,50 +39,60 @@ public class K_SkelliCoal extends IdleScript {
 	Integer currentOre[] = {0,0};
 	int coalIDs[] = {110,111};
 	int oreIDs[] = {155};
-	int gemIDs[] = {157,158,159,160}; 
+	int gemIDs[] = {157,158,159,160};
 	String isMining = "none";
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-		
+
+        public void startSequence() {
+            controller.displayMessage("@red@Skeleton Coal Miner- By Kaila");
+            controller.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
+            if(controller.isInBank() == true) {
+                controller.closeBank();
+            }
+            if(controller.currentY() > 400) {
+                bank();
+                eat();
+                bankToSkeli();
+                eat();
+                controller.sleep(1380);
+            }
+        }
 		public int start(String parameters[]) {
+            if (parameters.length > 0 && !parameters[0].equals("")) {
+                if (parameters[0].toLowerCase().startsWith("auto")) {
+                    controller.displayMessage("Auto-starting, Mining Skelli Coal", 0);
+                    System.out.println("Auto-starting, Mining Skelli Coal");
+                    parseVariables();
+                    startSequence();
+                    scriptStart();
+                }
+            }
 			if (!guiSetup) {
 				setupGUI();
 				guiSetup = true;
 			}
 			if (scriptStarted) {
-				controller.displayMessage("@red@Skeleton Coal Miner- By Kaila");
-				controller.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
-				controller.displayMessage("@red@Enable eat(); if low level and at 546 to bank withdraw");
-				if(controller.isInBank() == true) {
-					controller.closeBank();
-				}
-				if(controller.currentY() > 400) {
-					bank();
-					eat();
-					bankToSkeli();
-					eat();
-					controller.sleep(1380);
-				}
+                startSequence();
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
-				if (controller.getInventoryItemCount() == 30) {    //controller.getInventoryItemCount(546) == 0 || 
-					
+				if (controller.getInventoryItemCount() == 30) {    //controller.getInventoryItemCount(546) == 0 ||
+
 					goToBank();
-					
-				} else {	
-				
+
+				} else {
+
 			//	eat();
-				
+
 				leaveCombat();
-					
+
 				if (rockEmpty() || !controller.isBatching()) {
 					isMining = "none";
 					currentOre[0] = 0;
@@ -96,7 +105,7 @@ public class K_SkelliCoal extends IdleScript {
 
 
 				controller.setStatus("@yel@Mining..");
-				
+
 				if (!controller.isBatching() && isMining == "none" && rockEmpty()) {
 					if (coalAvailable()) {
 						mine("coal");
@@ -111,12 +120,12 @@ public class K_SkelliCoal extends IdleScript {
 		}
 	}
 
-		
+
 		public void mine(String i) {
 		 if (i == "coal") {
 				int oreCoords[] = controller.getNearestObjectByIds(coalIDs);
 				if (oreCoords != null) {
-					isMining = "coal";	
+					isMining = "coal";
 					controller.atObject(oreCoords[0], oreCoords[1]);
 					currentOre[0] = oreCoords[0];
 					currentOre[1] = oreCoords[1];
@@ -134,8 +143,8 @@ public class K_SkelliCoal extends IdleScript {
 				return true;
 			}
 		}
-		
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -143,13 +152,13 @@ public class K_SkelliCoal extends IdleScript {
 		controller.sleep(640);
 
 		if (controller.isInBank()) {
-			
+
 			totalCoal = totalCoal + controller.getInventoryItemCount(155);
 			totalSap = totalSap + controller.getInventoryItemCount(160);
 			totalEme = totalEme + controller.getInventoryItemCount(159);
 			totalRub = totalRub + controller.getInventoryItemCount(158);
 			totalDia = totalDia + controller.getInventoryItemCount(157);
-			
+
 			if (controller.getInventoryItemCount() > 0) {
 				for (int itemId : controller.getInventoryItemIds()) {
 					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
@@ -161,24 +170,24 @@ public class K_SkelliCoal extends IdleScript {
 				controller.sleep(340);
 			}
 			coalInBank = controller.getBankItemCount(155);
-			
+
 			controller.closeBank();
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void eat() {
-		
+
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
+
 			leaveCombat();
-			
+
 		controller.setStatus("@red@Eating..");
-		
+
 		boolean ate = false;
-		
+
 		for(int id : controller.getFoodIds()) {
 			if(controller.getInventoryItemCount(id) > 0) {
 				controller.itemCommand(id);
@@ -199,7 +208,7 @@ public class K_SkelliCoal extends IdleScript {
 			controller.setAutoLogin(false);
 			controller.logout();
 			controller.sleep(1000);
-		
+
 			if(!controller.isLoggedIn()) {
 				controller.stop();
 				controller.logout();
@@ -208,18 +217,18 @@ public class K_SkelliCoal extends IdleScript {
 		}
 	}
 }
-	
+
 	public void goToBank() {
 		isMining = "none";
 		currentOre[0] = 0;
-		currentOre[1] = 0;	
+		currentOre[1] = 0;
 		controller.setStatus("@yel@Banking..");
 		SkeliToBank();
 		bank();
 		bankToSkeli();
 		controller.sleep(618);
 	}
-	
+
 	public void SkeliToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(269,380);
@@ -236,8 +245,8 @@ public class K_SkelliCoal extends IdleScript {
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking to Bank...");
 	}
-	
-    public void bankToSkeli() {	
+
+    public void bankToSkeli() {
     	controller.setStatus("@gre@Walking to Skelli "
     			+ "Mine..");
 		controller.walkTo(217,448);
@@ -268,12 +277,14 @@ public class K_SkelliCoal extends IdleScript {
 	}
 
 
-    
-    
+
+
 	//GUI stuff below (icky)
-    
-    
-	
+
+
+    public void parseVariables(){
+        startTime = System.currentTimeMillis();
+    }
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -290,11 +301,11 @@ public class K_SkelliCoal extends IdleScript {
 			public void actionPerformed(ActionEvent e) {
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
+                parseVariables();
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -321,7 +332,7 @@ public class K_SkelliCoal extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int coalSuccessPerHr = 0;
 	    	int sapSuccessPerHr = 0;
@@ -329,7 +340,7 @@ public class K_SkelliCoal extends IdleScript {
 	    	int rubSuccessPerHr = 0;
 	    	int diaSuccessPerHr = 0;
     		int TripSuccessPerHr = 0;
-    		
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
@@ -339,7 +350,7 @@ public class K_SkelliCoal extends IdleScript {
 	    		rubSuccessPerHr = (int)(totalRub * scale);
 	    		diaSuccessPerHr = (int)(totalDia * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

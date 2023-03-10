@@ -15,61 +15,75 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Black Unicorn Killer - By Kaila
  * Start in Edge bank with Armor
  * Sharks/Laws/Airs/Earths IN BANK REQUIRED
  * 31 Magic Required for escape tele
- * 
+ *
  * Author - Kaila
  */
-public class K_BlackUnicorns extends IdleScript {	
+public class K_BlackUnicorns extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
+    boolean teleportOut = false;
 	int uniInBank = 0;
 	int totalUni = 0;
     int totalTrips = 0;
-    
+
 	int[] loot = { 466, 381 };
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+    boolean returnEscape = true;
+    public void startSequence() {
+        controller.displayMessage("@red@Black Unicorn Killer - By Kaila");
+        controller.displayMessage("@red@Start in Edge bank with Armor");
+        controller.displayMessage("@red@Sharks IN BANK REQUIRED");
+        controller.displayMessage("@red@31 Magic Required for escape tele");
+//			bank();
+        if(controller.isInBank() == true) {
+            controller.closeBank();
+        }
+        if(controller.currentY() > 340) {
+            bank();
+            eat();
+            BankToUni();
+            controller.sleep(1380);
+        }
+    }
 	public int start(String parameters[]) {
+        if (parameters.length > 0 && !parameters[0].equals("")) {
+            if (parameters[0].toLowerCase().startsWith("auto")) {
+                controller.displayMessage("Auto-starting, teleport false, return escape true", 0);
+                System.out.println("Auto-starting, teleport false, return escape true");
+                teleportOut = false;
+                returnEscape = true;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+        }
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
 		}
 		if (scriptStarted) {
-			controller.displayMessage("@red@Black Unicorn Killer - By Kaila");
-			controller.displayMessage("@red@Start in Edge bank with Armor");
-			controller.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-			controller.displayMessage("@red@31 Magic Required for escape tele");
-//			bank();
-			if(controller.isInBank() == true) {
-				controller.closeBank();
-			}
-			if(controller.currentY() > 340) {
-				bank();
-				eat();
-				BankToUni();
-				controller.sleep(1380);
-			}
+            startSequence();
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
 
 	public void scriptStart() {
 		while(controller.isRunning()) {
-						
+
 				eat();
-							
+
 				if(controller.getInventoryItemCount() < 30) {
-					
+
 			   		boolean lootPickedUp = false;
 		    		for(int lootId : loot) {
 		    			int[] coords = controller.getNearestItemById(lootId);
@@ -82,7 +96,7 @@ public class K_BlackUnicorns extends IdleScript {
 		    		}
 		    		if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
 		    			continue;
-		    		
+
 		    		if(!controller.isInCombat()) {
     					controller.setStatus("@yel@Attacking..");
 		    			controller.sleepHandler(296, true);
@@ -97,21 +111,21 @@ public class K_BlackUnicorns extends IdleScript {
 			    		}
 		    		}
 	    			controller.sleep(1380);
-	    			
 
-			
+
+
 		} else if(controller.getInventoryItemCount() > 29) {
 				controller.setStatus("@yel@Banking..");
 				UniToBank();
 				bank();
 				BankToUni();
 				controller.sleep(618);
-								
+
 			}
 		}
-		
+
 	}
-	
+
 
 	public void bank() {
 
@@ -120,28 +134,30 @@ public class K_BlackUnicorns extends IdleScript {
 		controller.sleep(640);
 
 		if (controller.isInBank()) {
-			
+
 			totalUni = totalUni + controller.getInventoryItemCount(466);
-			
+
 			if(controller.getInventoryItemCount(466) >  0) {  //deposit the uni horns
 				controller.depositItem(466, controller.getInventoryItemCount(466));
 				controller.sleep(340);
 			}
-			
+
 			uniInBank = controller.getBankItemCount(466);
-			
-			if(controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
-				controller.withdrawItem(33, 3);
-				controller.sleep(340);
-			}
-			if(controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
-				controller.withdrawItem(34, 1);
-				controller.sleep(340);
-			}
-			if(controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
-				controller.withdrawItem(42, 1);
-				controller.sleep(340);
-			}
+
+            if (teleportOut == true) {
+                if (controller.getInventoryItemCount(33) < 3) {  //withdraw 3 air
+                    controller.withdrawItem(33, 3);
+                    controller.sleep(340);
+                }
+                if (controller.getInventoryItemCount(34) < 1) {  //withdraw 1 earth
+                    controller.withdrawItem(34, 1);
+                    controller.sleep(340);
+                }
+                if (controller.getInventoryItemCount(42) < 1) {  //withdraw 1 law
+                    controller.withdrawItem(42, 1);
+                    controller.sleep(340);
+                }
+            }
 			if(controller.getInventoryItemCount(546) > 1) {  //deposit extra shark
 				controller.depositItem(546, controller.getInventoryItemCount(546) - 1);
 				controller.sleep(340);
@@ -151,7 +167,7 @@ public class K_BlackUnicorns extends IdleScript {
 				controller.sleep(340);
 			}
 			if(controller.getBankItemCount(546) == 0) {
-				controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
+				controller.setStatus("@red@NO Sharks in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
 				controller.logout();
 				if(!controller.isLoggedIn()) {
@@ -163,56 +179,65 @@ public class K_BlackUnicorns extends IdleScript {
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void eat() {
-		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
-		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+        int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
 
-			leaveCombat();
-			controller.setStatus("@red@Eating..");
-			
-			boolean ate = false;
-			
-			for(int id : controller.getFoodIds()) {
-				if(controller.getInventoryItemCount(id) > 0) {
-					controller.itemCommand(id);
-					controller.sleep(700);
-					ate = true;
-					break;
-				}
-			}
-			if(!ate) { //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
-				controller.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-					goToTwenty();
-    				controller.setStatus("@red@Teleporting Now!.");
-					teleportOut();
-					controller.walkTo(120,644);
-					controller.atObject(119,642);
-					controller.walkTo(217,447);
-					controller.setAutoLogin(false);
-					controller.logout();
-					controller.sleep(1000);
-				
-					if(!controller.isLoggedIn()) {
-						controller.stop();
-						return;
-					}
-	    		} else if(!ate) {
-					controller.setAutoLogin(false);
-					controller.logout();
-					controller.sleep(1000);
-					
-					if(!controller.isLoggedIn()) {
-						controller.stop();
-						controller.logout();
-						return;
-					}
-				}
-			}
-		}
 
+        if (controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+
+            leaveCombat();
+            controller.setStatus("@red@Eating..");
+
+            boolean ate = false;
+
+            for (int id : controller.getFoodIds()) {
+                if (controller.getInventoryItemCount(id) > 0) {
+                    controller.itemCommand(id);
+                    controller.sleep(700);
+                    ate = true;
+                    break;
+                }
+            }
+            if (!ate) { //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
+                if (teleportOut == false
+                        || controller.getInventoryItemCount(42) < 1
+                        || controller.getInventoryItemCount(33) < 3
+                        || controller.getInventoryItemCount(34) < 1) {  //or no earths/airs/laws
+                    controller.setStatus("@yel@Banking..");
+                    UniToBank();
+                    bank();
+                    BankToUni();
+                    controller.sleep(618);
+                }
+                if (teleportOut == true) {
+                    controller.setStatus("@red@We've ran out of Food! Teleporting Away!.");
+                    goToTwenty();
+                    controller.setStatus("@red@Teleporting Now!.");
+                    teleportOut();
+                    controller.walkTo(120, 644);
+                    controller.atObject(119, 642);
+                    controller.walkTo(217, 447);
+                }
+                if (returnEscape == false) {
+                    controller.setAutoLogin(false);  //uncomment and remove bank and banktoHobs to prevent bot going back to mine after being attacked
+                    controller.logout();
+                    controller.sleep(1000);
+
+                    if (!controller.isLoggedIn()) {
+                        controller.stop();
+                        controller.logout();
+                        return;
+                    }
+                }
+                if (returnEscape == true) {
+                    bank();
+                    BankToUni();
+                    controller.sleep(618);
+                }
+            }
+        }
+    }
 	public void UniToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(121,311);
@@ -234,7 +259,7 @@ public class K_BlackUnicorns extends IdleScript {
 		controller.sleep(640);
 
 	}
-	
+
     public void BankToUni() {
     	controller.setStatus("@gre@Walking to Unicorns..");
 		controller.walkTo(220,440);
@@ -299,9 +324,23 @@ public class K_BlackUnicorns extends IdleScript {
 		}
 	}
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+    public void parseVariables() {
+        startTime = System.currentTimeMillis();
+    }
+    public void setValuesFromGUI(JCheckBox potUpCheckbox, JCheckBox escapeCheckbox) {
+        if (potUpCheckbox.isSelected()) {
+            teleportOut = true;
+        } else {
+            teleportOut = false;
+        }
+        if (escapeCheckbox.isSelected()) {
+            returnEscape = true;
+        } else {
+            returnEscape = false;
+        }
+    }
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -311,8 +350,16 @@ public class K_BlackUnicorns extends IdleScript {
 	public void setupGUI() {
 		JLabel header = new JLabel("Black Unicorn Killer - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank or Uni's with Gear");
-		JLabel label2 = new JLabel("Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-		JLabel label3 = new JLabel("31 Magic Required for Escape Tele");
+		JLabel label2 = new JLabel("Sharks IN BANK REQUIRED");
+        JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
+        JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
+        JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
+        JLabel label5 = new JLabel("Selected, bot walks to 19 wildy & teleports");
+        JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
+        JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
+        JLabel label7 = new JLabel("Selected, bot will grab more food and return");
+        JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
+        JLabel label9 = new JLabel("Defaults to Teleport Off, Return On.");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
@@ -320,11 +367,11 @@ public class K_BlackUnicorns extends IdleScript {
 			public void actionPerformed(ActionEvent e) {
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
+                parseVariables();
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -332,7 +379,15 @@ public class K_BlackUnicorns extends IdleScript {
 		scriptFrame.add(header);
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
-		scriptFrame.add(label3);
+        scriptFrame.add(teleportCheckbox);
+        scriptFrame.add(label3);
+        scriptFrame.add(label4);
+        scriptFrame.add(label5);
+        scriptFrame.add(escapeCheckbox);
+        scriptFrame.add(label6);
+        scriptFrame.add(label7);
+        scriptFrame.add(label8);
+        scriptFrame.add(label9);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);
@@ -353,17 +408,17 @@ public class K_BlackUnicorns extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int successPerHr = 0;
     		int TripSuccessPerHr = 0;
-    		
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 	    		successPerHr = (int)(totalUni * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

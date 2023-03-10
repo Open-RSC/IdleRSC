@@ -13,17 +13,16 @@ import javax.swing.*;
 //import javax.swing.JComboBox;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Edge Druid Killer - By Kaila");
  * Start in Edge bank with Armor");
  * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
  * 31 Magic Required for escape tele");
- * 
+ *
  * Author - Kaila
  */
-public class K_EdgeChaosDruids extends IdleScript {	
+public class K_EdgeChaosDruids extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -48,8 +47,8 @@ public class K_EdgeChaosDruids extends IdleScript {
 	int totalGems = 0;
     int totalTrips = 0;
 	int foodWithdrawAmount = 1;
-    
-	int[] loot = { 
+
+	int[] loot = {
 			165,     //Grimy Guam
 			435,     //Grimy mar
 			436,     //Grimy tar
@@ -75,11 +74,11 @@ public class K_EdgeChaosDruids extends IdleScript {
 			1277, 	 //shield (left) half
 			1092 	 //rune spear
 			};
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-	
+
+
 	public int start(String parameters[]) {
 
 		if (scriptStarted) {
@@ -92,7 +91,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 			}
 			if(controller.currentY() < 3000) {
 				bank();
-				BankToDruid();  
+				BankToDruid();
 				controller.sleep(1380);
 			}
 			scriptStart();
@@ -112,16 +111,16 @@ public class K_EdgeChaosDruids extends IdleScript {
 				}
 			}
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
 
 	public void scriptStart() {
 			while(controller.isRunning()) {
-						
+
 				eat();
-						
+
 				if(controller.getInventoryItemCount() < 30) {
-							
+
 			 		boolean lootPickedUp = false;
 				   	for(int lootId : loot) {
 				   		int[] coords = controller.getNearestItemById(lootId);
@@ -134,7 +133,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 				   	}
 				   	if(lootPickedUp) //we don't want to start to pickup loot then immediately attack a npc
 				  		continue;
-				    		
+
 				   	if(!controller.isInCombat()) {
 		    			controller.setStatus("@yel@Attacking Druids");
 					   	ORSCharacter npc = controller.getNearestNpcById(270, false);
@@ -160,14 +159,14 @@ public class K_EdgeChaosDruids extends IdleScript {
 				}
 			}
 	}
-					
-		
-
-	
 
 
-	
-	
+
+
+
+
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -175,7 +174,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 		controller.sleep(1200);
 
 		if (controller.isInBank()) {
-			
+
 			totalGuam = totalGuam + controller.getInventoryItemCount(165);
 			totalMar = totalMar + controller.getInventoryItemCount(435);
 			totalTar = totalTar + controller.getInventoryItemCount(436);
@@ -197,7 +196,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 					+ controller.getInventoryItemCount(159)
 					+ controller.getInventoryItemCount(158)
 					+ controller.getInventoryItemCount(157);
-			
+
 
 			for (int itemId : controller.getInventoryItemIds()) {
 				if (itemId != 546) {
@@ -242,7 +241,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 			controller.sleep(1000);
 		}
 	}
-	
+
 	public void eat() {
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
 
@@ -350,7 +349,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
 	}
-    public void BankToDruid() {	
+    public void BankToDruid() {
     	controller.setStatus("@gre@Walking to Druids..");
 		controller.walkTo(221,447);
 		controller.walkTo(217,458);
@@ -386,12 +385,10 @@ public class K_EdgeChaosDruids extends IdleScript {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
 				controller.sleep(600);
-			} else {
-				controller.setStatus("@gre@Done Leaving combat..");
-				break;
 			}
-			controller.sleep(10);
+			controller.sleep(100);
 		}
+        controller.setStatus("@gre@Done Leaving combat..");
 	}
 	public void openGateNorthToSouth() {
 		for (int i = 1; i <= 20; i++) {
@@ -399,12 +396,10 @@ public class K_EdgeChaosDruids extends IdleScript {
 				controller.setStatus("@gre@Opening Wildy Gate..");
 				controller.atObject(196,3266);
 				controller.sleep(640);
-			} else {
-				controller.setStatus("@gre@Done Opening Wildy Gate..");
-				break;
 			}
-			controller.sleep(10);
+			controller.sleep(100);
 		}
+        controller.setStatus("@gre@Done Opening Wildy Gate..");
 	}
 	public void openGateSouthToNorth() {
 		for (int i = 1; i <= 20; i++) {
@@ -412,14 +407,12 @@ public class K_EdgeChaosDruids extends IdleScript {
 				controller.setStatus("@gre@Opening Wildy Gate..");
 				controller.atObject(196,3266);
 				controller.sleep(440);
-			} else {
-				controller.setStatus("@gre@Done Opening Wildy Gate..");
-				break;
 			}
-			controller.sleep(10);
+			controller.sleep(100);
 		}
+        controller.setStatus("@gre@Done Opening Wildy Gate..");
 	}
-    
+
 	//GUI stuff below (icky)
 
 
@@ -468,7 +461,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -505,7 +498,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int guamSuccessPerHr = 0;
     		int marSuccessPerHr = 0;
@@ -521,7 +514,7 @@ public class K_EdgeChaosDruids extends IdleScript {
     		int natSuccessPerHr = 0;
 			int GemsSuccessPerHr = 0;
     		int TripSuccessPerHr = 0;
-    		
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
@@ -539,11 +532,11 @@ public class K_EdgeChaosDruids extends IdleScript {
 	    		natSuccessPerHr = (int)(totalNat * scale);
 				GemsSuccessPerHr = (int)(totalGems * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
-	    	
+
 			controller.drawString("@red@Edgeville Druids @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
 			controller.drawString("@whi@Guams: @gre@" + String.valueOf(this.totalGuam) + "@yel@ (@whi@" + String.format("%,d", guamSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Marrentills: @gre@" + String.valueOf(this.totalMar) + "@yel@ (@whi@" + String.format("%,d", marSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);

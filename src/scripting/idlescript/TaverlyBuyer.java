@@ -14,62 +14,76 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Buys vials or newts in Taverly, banks in Falador
- *  
+ *
+ *   This bot supports the autostart Parameter
+ *   autostart collects Newts then Vials
+ *
  * @author Dvorak, rewritten by Kaila
  */
-public class TaverlyBuyer extends IdleScript {	
+public class TaverlyBuyer extends IdleScript {
 	String[] options = new String[] { "Vials", "Newts", "Newts then Vials", "Vials then newts"};
 
 	int[] loot = {465, 270};
-	
+
 	int option = -1;
 	boolean scriptStarted = false;
 	boolean guiSetup = false;
-	
+
 	int vialsBought = 0;
 	int vialsBanked = 0;
 	int newtsBought = 0;
 	int newtsBanked = 0;
-	
+
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+    public void startSequence() {
+        controller.displayMessage("@red@TaverlyBuyer by Dvorak. Fixed by Kaila!");
+        controller.displayMessage("@red@Start in Taverly or Fally West with GP!");
+        controller.displayMessage("@red@This bot supports the \"autostart\" Parameter");
+        controller.displayMessage("@red@autostart collects Newts then Vials");
+        if (controller.isInBank() == true) {
+            controller.closeBank();
+        }
+        if (controller.currentY() > 545) {
+            bank();
+            walkToTaverly();
+            controller.sleep(1380);
+        }
+    }
 	public int start(String parameters[]) {
+        if (parameters.length > 0 && !parameters[0].equals("")) {
+            if (parameters[0].toLowerCase().startsWith("auto")) {
+                controller.displayMessage("Auto-starting, Newts then Vials", 0);
+                System.out.println("Auto-starting, Newts then Vials");
+                option = 2;
+                startSequence();
+                scriptStart();
+            }
+        }
 		if(!guiSetup) {
     		setupGUI();
     		guiSetup = true;
     	}
-    	
-    	if(scriptStarted) {
 
-			controller.displayMessage("@red@TaverlyBuyer by Dvorak. Fixed by Kaila!");
-			controller.displayMessage("@red@Start in Taverly or Fally West with GP!");
-			if (controller.isInBank() == true) {
-				controller.closeBank();
-			}
-			if (controller.currentY() > 545) {
-				bank();
-				walkToTaverly();
-				controller.sleep(1380);
-			}
+    	if(scriptStarted) {
+            startSequence();
     		scriptStart();
     	}
-    	
-    	return 1000; //start() must return a int value now. 
+
+    	return 1000; //start() must return a int value now.
 	}
-	
+
 	public void scriptStart() {
 
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount() < 30) {
 				controller.setStatus("@gre@Buying stuff..");
 				ORSCharacter npc = controller.getNearestNpcById(230, false);
-				
+
 				if(npc != null) {
-					
+
 					if(!controller.isInShop()) {
 						if(controller.isAuthentic()) {
 							controller.talkToNpc(npc.serverIndex);
@@ -81,21 +95,21 @@ public class TaverlyBuyer extends IdleScript {
 							controller.sleep(1000);
 						}
 					}
-					
+
 					if(controller.getInventoryItemCount() < 30) {
-						if(option == 0) {
-							if(controller.isInShop() && controller.getShopItemCount(465) > 0) { 
+						if(option == 0) {  //only vials
+							if(controller.isInShop() && controller.getShopItemCount(465) > 0) {
 								controller.shopBuy(465, controller.getShopItemCount(465));
 							} else {
 								controller.sleep(250);
 							}
-						} else if(option == 1) {
-							if(controller.isInShop() && controller.getShopItemCount(270) > 0) { 
+						} else if(option == 1) { //only newts
+							if(controller.isInShop() && controller.getShopItemCount(270) > 0) {
 								controller.shopBuy(270, controller.getShopItemCount(270));
 							} else {
 								controller.sleep(250);
 							}
-						} else if(option == 2) {
+						} else if(option == 2) { //newts then  vials
 							if(controller.isInShop() && controller.getShopItemCount(270) > 0) {
 								controller.shopBuy(270, controller.getShopItemCount(270));
 							}
@@ -105,31 +119,31 @@ public class TaverlyBuyer extends IdleScript {
 							} else {
 								controller.sleep(250);
 							}
-						} else {
-							if(controller.isInShop() && controller.getShopItemCount(465) > 0) { 
+						} else {  //vials then newts
+							if(controller.isInShop() && controller.getShopItemCount(465) > 0) {
 								controller.shopBuy(465, controller.getShopItemCount(465));
 								controller.sleep(250);
 							}
-							if(controller.isInShop() && controller.getShopItemCount(270) > 0) { 
+							if(controller.isInShop() && controller.getShopItemCount(270) > 0) {
 								controller.shopBuy(270, controller.getShopItemCount(270));
 							} else {
 								controller.sleep(250);
 							}
 						}
 					}
-					
+
 				}
-				
+
 			} else {
 				walkToBank();
 				bank();
 				walkToTaverly();
 			}
-			
+
 			controller.sleep(100);
 		}
 	}
-	
+
 	public void walkToBank() {
 
 		controller.setStatus("@gre@Walking to bank..");
@@ -179,16 +193,16 @@ public class TaverlyBuyer extends IdleScript {
 		controller.sleep(340);
 		controller.setStatus("@red@Done Walking..");
 	}
-	
+
 	public int countLoot() {
 		int count = 0;
 		for(int i = 0; i < loot.length; i++) {
 			count += controller.getInventoryItemCount(loot[i]);
 		}
-		
+
 		return count;
 	}
-	
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -216,7 +230,7 @@ public class TaverlyBuyer extends IdleScript {
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void walkToTaverly() {
 
 		controller.setStatus("@gre@Walking back to Taverly..");
@@ -263,54 +277,58 @@ public class TaverlyBuyer extends IdleScript {
 		controller.sleep(340);
 		controller.setStatus("@red@Done Walking..");
 	}
-    
+
 	public static void centerWindow(Window frame) {
 	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 	    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
 	    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 	    frame.setLocation(x, y);
 	}
-	
-    public void setupGUI() { 	
+
+    public void setupGUI() {
     	final JFrame scriptFrame = new JFrame("TaverlyBuyer by Dvorak. Fixed by Kaila");
     	JLabel headerLabel = new JLabel("Buys Newts/Vials from Taverly");
 		JLabel Label1 = new JLabel("Start in Taverly or Fally West with GP!");
+        JLabel Label2 = new JLabel("This bot supports the \"autostart\" Parameter");
+        JLabel Label3 = new JLabel("autostart collects Newts then Vials");
     	JComboBox<String> optionField = new JComboBox<String>(options);
         JButton startScriptButton = new JButton("Start");
-        
+
         startScriptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             		option = optionField.getSelectedIndex();
-            		
+
 	            	scriptFrame.setVisible(false);
 	            	scriptFrame.dispose();
 	            	scriptStarted = true;
-	            	
+
 	            	//controller.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
             	}
         });
-        
-        
-        
-    	
-    	
+
+
+
+
+
     	scriptFrame.setLayout(new GridLayout(0,1));
     	scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	scriptFrame.add(headerLabel);
 		scriptFrame.add(Label1);
+        scriptFrame.add(Label2);
+        scriptFrame.add(Label3);
     	scriptFrame.add(optionField);
     	scriptFrame.add(startScriptButton);
-    		
+
     	centerWindow(scriptFrame);
     	scriptFrame.setVisible(true);
     	scriptFrame.pack();
     }
-    
+
     @Override
     public void paintInterrupt() {
         if(controller != null) {
-        			
+
         	int vialsPerHr = 0;
         	int newtsPerHr = 0;
         	try {
@@ -321,15 +339,15 @@ public class TaverlyBuyer extends IdleScript {
         	} catch(Exception e) {
         		//divide by zero
         	}
-        	
+
         	int height = 21 + 14 + 14;
         	if(option == 2) {
         		height += 14 + 14;
         	}
-        	
+
             controller.drawBoxAlpha(7, 7, 180, height, 0xFFFFFF, 128);
             controller.drawString("@gre@TaverlyBuyer @whi@by @gre@Dvorak & Kaila", 10, 21, 0xFFFFFF, 1);
-            
+
             if(option == 0) {
 	            controller.drawString("@gre@Vials bought: @whi@" + String.format("%,d", vialsBought) + " @gre@(@whi@" + String.format("%,d", vialsPerHr) + "@gre@/@whi@hr@gre@)", 10, 21+14, 0xFFFFFF, 1);
 	            controller.drawString("@gre@Vials in bank: @whi@" + String.format("%,d", vialsBanked), 10, 21+14+14, 0xFFFFFF, 1);

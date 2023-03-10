@@ -15,68 +15,79 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Grabs Nats from edge monestary
- * 
- * 
- * 
- * 
+ *
+ *This bot supports the "autostart" parameter to automatiically start the bot without gui
+ *
+ *
  * Author - Kaila
  */
-public class K_NatureCrafter extends IdleScript {	
+public class K_NatureCrafter extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	int NatzInBank = 0;
 	int totalNatz = 0;
     int totalTrips = 0;
-    
+
     int robeId[] = {388,389};
-    
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	boolean lowLevel = false;
-		
+        public void startSequence() {
+            controller.displayMessage("@red@Nature Rune Crafter - By Kaila");
+            controller.displayMessage("@red@Start in Karamja Shop or Inside/Outside Nature Alter");
+            if(controller.isInBank() == true) {
+                controller.closeBank();
+            }
+            if(controller.isInShop() == true) {
+                controller.closeShop();
+            }
+            if(controller.currentY() < 770 && controller.currentY() > 500) {
+                bank();
+                BankToNat();
+                controller.sleep(100);
+            }
+            if(controller.currentY() > 790) {
+                controller.walkTo(392,803);
+                if(controller.currentX() == 392 && controller.currentY() == 803) {
+                    controller.atObject(392,804);
+                    controller.sleep(340);
+                }
+                controller.walkTo(787,23);
+            }
+        }
 		public int start(String parameters[]) {
+            if (parameters.length > 0 && !parameters[0].equals("")) {
+                if (parameters[0].toLowerCase().startsWith("auto")) {
+                    controller.displayMessage("Auto-starting, Crafting Nature Runes", 0);
+                    System.out.println("Auto-starting, Crafting Nature Runes");
+                    lowLevel = false;
+                    parseVariables();
+                    startSequence();
+                    scriptStart();
+                }
+            }
 			if (!guiSetup) {
 				setupGUI();
 				guiSetup = true;
 			}
 			if (scriptStarted) {
-				controller.displayMessage("@red@Nature Rune Crafter - By Kaila");
-				controller.displayMessage("@red@Start in Karamja Shop or Inside/Outside Nature Alter");
-				if(controller.isInBank() == true) {
-					controller.closeBank();
-				}
-				if(controller.isInShop() == true) {
-					controller.closeShop();
-				}
-				if(controller.currentY() < 770 && controller.currentY() > 500) {
-					bank();
-					BankToNat();
-					controller.sleep(100);
-				}
-				if(controller.currentY() > 790) {
-					controller.walkTo(392,803);
-					if(controller.currentX() == 392 && controller.currentY() == 803) {
-						controller.atObject(392,804);
-						controller.sleep(340);
-					}
-					controller.walkTo(787,23);
-				}
+                startSequence();
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
+
 		//if low hp log out for nature rc
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
-							
+
 				if(controller.currentY() < 50) {
 					controller.setStatus("@red@Crafting..");
 					controller.atObject(787,21);
@@ -93,12 +104,12 @@ public class K_NatureCrafter extends IdleScript {
 					bank();
 					BankToNat();
 					controller.sleep(618);
-				}	
+				}
 
 				int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-	
+
 				if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-					
+
 					leaveCombat();
 					controller.setStatus("@red@We've ran out of Food! Running Away/Logging Out.");
 					controller.sleep(308);
@@ -108,15 +119,15 @@ public class K_NatureCrafter extends IdleScript {
     				controller.setAutoLogin(false);
     				controller.logout();
     				controller.stop();
-    				controller.logout();	
+    				controller.logout();
 				}
 				leaveCombat();
 			}
 		}
-					
-	
+
+
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Buying Runes..");
 		if(controller.getInventoryItemCount(10) == 0 || controller.getInventoryItemCount(1299) == 0) {
 			controller.setStatus("@red@NO Coins or Ess in Inventory, Logging Out!.");
@@ -138,7 +149,7 @@ public class K_NatureCrafter extends IdleScript {
 			}
 		}
 		if(controller.isInShop() && controller.getInventoryItemCount() != 30) {
-			controller.shopSell(1299,27); 
+			controller.shopSell(1299,27);
 			controller.sleep(800);
 			controller.shopBuy(1299,27);
 			controller.sleep(340);
@@ -146,7 +157,7 @@ public class K_NatureCrafter extends IdleScript {
 			controller.sleep(340);
 		}
 	}
-	
+
 	public void NatToBank() {  //replace
     	controller.setStatus("@gre@Walking to Shop..");
 		if(lowLevel == false) {
@@ -160,10 +171,10 @@ public class K_NatureCrafter extends IdleScript {
 			controller.walkTo(398,791);
 			//controller.walkTo(555,555);
 			controller.walkTo(397,782); //fix pathing ERROR here
-			controller.walkTo(402,779); 
+			controller.walkTo(402,779);
 			controller.walkTo(409,779);
 			controller.walkTo(414,779);
-			controller.walkTo(422,782); 
+			controller.walkTo(422,782);
 			controller.walkTo(436,773);
 			controller.walkTo(456,773);
 			controller.walkTo(457,772);
@@ -198,7 +209,7 @@ public class K_NatureCrafter extends IdleScript {
 		}
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
+
     public void BankToNat() {
 		if(lowLevel == false) {
 	    	controller.setStatus("@gre@Walking to Nature Alter..");
@@ -218,7 +229,7 @@ public class K_NatureCrafter extends IdleScript {
 			controller.walkTo(396,786);
 			controller.walkTo(396,795);
 			controller.walkTo(393,800);
-			controller.walkTo(392,803); 
+			controller.walkTo(392,803);
 			if(controller.currentX() < 400 && controller.currentX() > 385 && controller.currentY() > 800 && controller.currentY() < 810) {
 				controller.atObject(392,804);
 				controller.sleep(2000);  //was 3k
@@ -268,11 +279,11 @@ public class K_NatureCrafter extends IdleScript {
 			controller.sleep(10);
 		}
 	}
-	
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -283,13 +294,17 @@ public class K_NatureCrafter extends IdleScript {
 			if(lowLevelCheckbox.isSelected()) {
 				lowLevel = true;
 			}
-}
-	
+    }
+    public void parseVariables() {
+            startTime = System.currentTimeMillis();
+    }
 	public void setupGUI() {
 		JLabel header = new JLabel("Nature Rune Crafter - By Kaila");
 		JLabel label1 = new JLabel("Start in Karamja Shop or Inside/Outside Nature Alter");
 		JLabel label2 = new JLabel("Start with Coins, Noted Ess, and Nat Talisman");
-		JLabel label3 = new JLabel("Ideally 79+ combat so tribesmen dont poison you");
+		JLabel label3 = new JLabel("Need 79+ combat so tribesmen don't poison you");
+        JLabel label4 = new JLabel("This bot supports the \"autostart\" parameter");
+        JLabel label5 = new JLabel("Will automatically start without GUI");
     	JCheckBox lowLevelCheckbox = new JCheckBox("Check This If Below 79 Combat");
 		JButton startScriptButton = new JButton("Start");
 
@@ -299,11 +314,11 @@ public class K_NatureCrafter extends IdleScript {
 				setValuesFromGUI(lowLevelCheckbox);
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
+                parseVariables();
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -312,6 +327,8 @@ public class K_NatureCrafter extends IdleScript {
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
 		scriptFrame.add(label3);
+        scriptFrame.add(label4);
+        scriptFrame.add(label5);
     	scriptFrame.add(lowLevelCheckbox);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
@@ -333,17 +350,17 @@ public class K_NatureCrafter extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int NatzSuccessPerHr = 0;
 	    	int TripSuccessPerHr = 0;
-	    	
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 	    		NatzSuccessPerHr = (int)(totalNatz * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

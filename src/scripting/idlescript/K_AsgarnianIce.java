@@ -7,12 +7,17 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.swing.*;
 import javax.swing.JCheckBox;
 //import javax.swing.JComboBox;
 
 import orsc.ORSCharacter;
+
+import static bot.Main.log;
+import static java.lang.Boolean.parseBoolean;
 
 /**
  * Ice Dungeon Ice Giant/Warrior Killer - By Kaila
@@ -48,14 +53,15 @@ public class K_AsgarnianIce extends IdleScript {
     int totalSpear = 0;
 	int totalGems = 0;
     int totalTrips = 0;
-	int foodWithdrawAmount = 6;
-
+	int foodWithdrawAmount = 0;
+    long startTime;
+    long startTimestamp = System.currentTimeMillis() / 1000L;
 	int[] bones = {20, 413, 604, 814};
 	int[] attackPot = {476,475,474};  //reg attack pot
 	int[] strPot = {224,223,222}; //reg str pot
-	int foodId = -1;
-	int[] foodIds = { 546, 370, 367, 373 }; //cooked shark, swordfish, tuna, lobster
-
+	//int foodId = -1;
+	//int[] foodIds = { 546, 370, 367, 373 }; //cooked shark, swordfish, tuna, lobster
+    FoodObject target = null;
 	int[] loot = {
 			526, 	 //tooth half
 			527, 	 //loop half
@@ -98,51 +104,121 @@ public class K_AsgarnianIce extends IdleScript {
 
 			413,	 //Big bones
 			20       //bones
-
-			};
-
-	long startTime;
-	long startTimestamp = System.currentTimeMillis() / 1000L;
-
+    };
+    ArrayList<FoodObject> objects = new ArrayList<FoodObject>() {{
+        add(new FoodObject("Chicken", 133, 132, 134)); //raw, cooked, burnt
+        add(new FoodObject("Shrimp", 349, 350, 353));
+        add(new FoodObject("Anchovies", 351, 352, 353));
+        add(new FoodObject("Sardine", 351, 355, 360));
+        add(new FoodObject("Salmon", 356, 357, 360));
+        add(new FoodObject("Trout", 358, 359, 360));
+        add(new FoodObject("Herring", 361, 362, 365));
+        add(new FoodObject("Pike", 363, 364, 365));
+        add(new FoodObject("Cod", 550, 551, 360)); //pointed
+        add(new FoodObject("Mackerel", 552, 553, 365)); //not pointed
+        add(new FoodObject("Tuna", 366, 367, 368));
+        add(new FoodObject("Lobster", 372, 373, 374));
+        add(new FoodObject("Swordfish", 369, 370, 371));
+        add(new FoodObject("Bass", 554, 555, 368));
+        add(new FoodObject("Shark", 545, 546, 547));
+        add(new FoodObject("Sea Turtle", 1192, 1193, 1248));
+        add(new FoodObject("Manta Ray", 1190, 1191, 1247));
+    }};
 	public boolean isWithinLootzone(int x, int y) {
 		return controller.distance(308, 3520, x, y) <= 15; //center of lootzone
 	}
-	
-	public int start(String parameters[]) {
+    class FoodObject {   //defines id for array
+        String name;
+        int rawId;
+        int cookedId;
+        int burntId;
 
-		if (scriptStarted) {
-			controller.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
-			controller.displayMessage("@red@Start in Fally East bank with Armor");
-			controller.displayMessage("@red@Sharks IN BANK REQUIRED");
-			if(controller.isInBank() == true) {
-				controller.closeBank();
-			}
-			if(controller.currentY() < 3000) {
-				bank();
-				BankToIce();
-				controller.sleep(1380);
-			}
-			scriptStart();
-		} else {
-			if (parameters[0].equals("")) {
-				if (!guiSetup) {
-					setupGUI();
-					guiSetup = true;
-				}
-			} else {
-				try {
-					foodWithdrawAmount = Integer.parseInt(parameters[0]);
+        public FoodObject(String _name, int _rawId, int _cookedId, int _burntId) {
+            name = _name;
+            rawId = _rawId;
+            cookedId = _cookedId;
+            burntId = _burntId;
+        }
+        public FoodObject (String name) {
+            for (FoodObject food : objects) {
+                if (food.name.equalsIgnoreCase(name)) {
+                    name = food.name;
+                    rawId = food.rawId;
+                    cookedId = food.cookedId;
+                    burntId = food.burntId;
+                }
+            }
+        }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof FoodObject) {
+                if(((FoodObject)o).name.equals(this.name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    public void startSequence() {
+        controller.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
+        controller.displayMessage("@red@Start in Fally East bank with Armor");
+        controller.displayMessage("@red@Sharks IN BANK REQUIRED");
+        if(controller.isInBank() == true) {
+            controller.closeBank();
+        }
+        if(controller.currentY() < 3000) {
+            bank();
+            BankToIce();
+            controller.sleep(1380);
+        }
+    }  //param 0 - type of food, param 1 - number of food, param 2 - potUp
 
-				} catch (Exception e) {
-					System.out.println("Could not parse parameters!");
-					controller.displayMessage("@red@Could not parse parameters!");
-					controller.stop();
-				}
-			}
-		}
-		return 1000; //start() must return a int value now. 
-	}
-
+    public int start(String parameters[]) {
+        String[] splitParams = null;
+        if(parameters != null && parameters[0].contains(",")) {
+            splitParams = parameters[0].split(",");
+        }
+        if (parameters == null) { //  || Objects.requireNonNull(splitParams).length < 3
+            if(!guiSetup) {
+                setupGUI();
+                guiSetup = true;
+            }
+            if(scriptStarted) {
+                System.out.println("Equivalent parameters: ");
+                System.out.println(target.name);
+                startSequence();
+                scriptStart();
+            }
+        } else {
+            if (parameters != null && parameters[0].toLowerCase().startsWith("auto")) {
+                controller.displayMessage("Got Autostart, using 5 Lobs, yes pots", 0);
+                System.out.println("Got Autostart, using 5 Lobs, yes pots");
+                target = new FoodObject("Lobster");
+                foodWithdrawAmount = 5;
+                potUp = true;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+            try {
+                target = new FoodObject(splitParams[0]);
+                foodWithdrawAmount = Integer.parseInt(splitParams[1]);
+                potUp = Boolean.parseBoolean(splitParams[2]);
+                startSequence();
+                scriptStart();
+            } catch (Exception e) {
+                controller.setStatus("Invalid parameters!");
+                System.out.println("Invalid parameters! Usage: ");
+                System.out.println("foodname,numberOfFood,potUp?");
+                System.out.println("example: \"shark,5,true\"");
+                controller.displayMessage("Invalid parameters! Usage: ");
+                controller.displayMessage("foodname,numberOfFood,potUp?");
+                controller.displayMessage("example: \"Shark,5,true\"");
+                controller.stop();
+            }
+        }
+        return 1000; //start() must return a int value now.
+    }
 	public void scriptStart() {
 		while (controller.isRunning()) {
 
@@ -194,7 +270,7 @@ public class K_AsgarnianIce extends IdleScript {
 				}
 				controller.sleep(320);
 			}
-			if (controller.getInventoryItemCount() > 29 || controller.getInventoryItemCount(foodId) == 0) {
+			if (controller.getInventoryItemCount() > 29 || controller.getInventoryItemCount(target.cookedId) == 0) {
 				controller.setStatus("@yel@Banking..");
 				IceToBank();
 				bank();
@@ -204,21 +280,21 @@ public class K_AsgarnianIce extends IdleScript {
 		}
 	}
 
-		
-
-	
 
 
-	
-	
+
+
+
+
+
 	public void bank() {
-		
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
 		controller.sleep(640);
-		
+
 		if(controller.isInBank()){
-			
+
 			totalGuam = totalGuam + controller.getInventoryItemCount(165);
 			totalMar = totalMar + controller.getInventoryItemCount(435);
 			totalTar = totalTar + controller.getInventoryItemCount(436);
@@ -260,11 +336,11 @@ public class K_AsgarnianIce extends IdleScript {
 					controller.sleep(340);
 				}
 			}
-			if(controller.getInventoryItemCount(foodId) < foodWithdrawAmount) {  //withdraw 20 shark
-				controller.withdrawItem(foodId, foodWithdrawAmount);
+			if(controller.getInventoryItemCount(target.cookedId) < foodWithdrawAmount) {  //withdraw 20 shark
+				controller.withdrawItem(target.cookedId, foodWithdrawAmount);
 				controller.sleep(340);
 			}
-			if(controller.getBankItemCount(foodId) == 0) {
+			if(controller.getBankItemCount(target.cookedId) == 0) {
 				controller.setStatus("@red@NO Food in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
 				controller.logout();
@@ -294,15 +370,15 @@ public class K_AsgarnianIce extends IdleScript {
 
 	public void eat() {
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
+
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -312,14 +388,15 @@ public class K_AsgarnianIce extends IdleScript {
 				}
 			}
 			if(!ate) { //only activates if hp goes to -20 again THAT trip, will bank and get new shark usually
-				controller.setStatus("@yel@Banking..");
+                // controller.setStatus("@yel@Banking..");
 				IceToBank();
 				bank();
 				BankToIce();
 				controller.sleep(618);
-				}
-			}
-		}
+            }
+        }
+    }
+
 	public void attackBoost() {
 		leaveCombat();
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
@@ -392,7 +469,7 @@ public class K_AsgarnianIce extends IdleScript {
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
+
     public void BankToIce() {
     	controller.setStatus("@gre@Walking to Ice Dungeon..");
 		controller.walkTo(287,571);
@@ -441,8 +518,8 @@ public class K_AsgarnianIce extends IdleScript {
 			controller.sleep(10);
 		}
 	}
-	
-    
+
+
 	//GUI stuff below (icky)
 
 	public void setValuesFromGUI(JCheckBox potUpCheckbox) {
@@ -452,39 +529,57 @@ public class K_AsgarnianIce extends IdleScript {
 			potUp = false;
 		}
 	}
-	
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
 		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 		frame.setLocation(x, y);
 	}
+    public void parseVariables(){
+        startTime = System.currentTimeMillis();
+    }
 	public void setupGUI() {
+
 		JLabel header = new JLabel("Ice Dungeon Ice Giant/Warrior Killer - by Kaila");
 		JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
 		JLabel label2 = new JLabel("Food in bank REQUIRED");
+        JLabel spacer = new JLabel("             ");
+        JLabel label3 = new JLabel("This bot supports the \"autostart\" Parameter");
+        JLabel label4 = new JLabel("Usage: foodname numberOfFood potUp?");
+        JLabel label5 = new JLabel("example: \"shark,5,true\"");
+        JLabel label6 = new JLabel("\"autostart\": uses lobsters,5,true");
+        JLabel spacer2 = new JLabel("             ");
 		JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
 		JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
 		JTextField foodWithdrawAmountField = new JTextField(String.valueOf(6));
 		JLabel foodLabel = new JLabel("Type of Food:");
-		JComboBox<String> foodField = new JComboBox<String>( new String[] { "Sharks", "Swordfish", "Tuna", "Lobsters" });
+        JComboBox<String> foodField = new JComboBox<String>();
 		JLabel blankLabel = new JLabel("          ");
 		JButton startScriptButton = new JButton("Start");
+
+        for(FoodObject obj : objects) {
+            foodField.addItem(obj.name);
+        }
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!foodWithdrawAmountField.getText().equals(""))
-					foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-				setValuesFromGUI(potUpCheckbox);
-				foodId = foodIds[foodField.getSelectedIndex()];
+				if(!foodWithdrawAmountField.getText().equals("")) {
+                    foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+                } else if(foodWithdrawAmountField.getText().equals("")) {
+                    foodWithdrawAmount = 1;
+                }
+                setValuesFromGUI(potUpCheckbox);
+                target = objects.get(foodField.getSelectedIndex());
+                parseVariables();
+
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -492,6 +587,12 @@ public class K_AsgarnianIce extends IdleScript {
 		scriptFrame.add(header);
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
+        scriptFrame.add(spacer);
+        scriptFrame.add(label3);
+        scriptFrame.add(label4);
+        scriptFrame.add(label5);
+        scriptFrame.add(label6);
+        scriptFrame.add(spacer2);
 		scriptFrame.add(potUpCheckbox);
 		scriptFrame.add(foodWithdrawAmountLabel);
 		scriptFrame.add(foodWithdrawAmountField);
@@ -518,7 +619,7 @@ public class K_AsgarnianIce extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int guamSuccessPerHr = 0;
     		int marSuccessPerHr = 0;
@@ -536,7 +637,7 @@ public class K_AsgarnianIce extends IdleScript {
 			int bloodSuccessPerHr = 0;
 			int GemsSuccessPerHr = 0;
     		int TripSuccessPerHr = 0;
-    		
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
@@ -556,11 +657,11 @@ public class K_AsgarnianIce extends IdleScript {
 				bloodSuccessPerHr = (int)(totalBlood * scale);
 				GemsSuccessPerHr = (int)(totalGems * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
-	    	
+
 			controller.drawString("@red@Asgarnian Ice Slayer @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
 			controller.drawString("@whi@Guams: @gre@" + String.valueOf(this.totalGuam) + "@yel@ (@whi@" + String.format("%,d", guamSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Marrentills: @gre@" + String.valueOf(this.totalMar) + "@yel@ (@whi@" + String.format("%,d", marSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);

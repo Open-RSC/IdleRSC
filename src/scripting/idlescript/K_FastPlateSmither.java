@@ -14,11 +14,28 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Start in bank with hammer 
- * Batch bars MUST be toggled on with in-game settings!
- * by Kaila
+ * Start in bank with hammer
+ * Batch bars MUST be toggled on with in-game settings! (for coleslaw)
+ *
+ *
+ * Parameters for Starting:
+ *              auto, autostart  - makes steel platebodies
+ *              bronze  - makes bronze platebodies
+ *              iron -   makes iron platebodies
+ *              steel -  makes steel platebodies
+ *              mith, mithril -   makes mithril platebodies
+ *              addy, adamantite -  makes adamantite platebodies
+ *              rune, runite -  makes runite platebodies
+ *
+ *
+ *        This bot supports the \"autostart\" parameter
+ *                  defaults to steel plates
+ *
+ *
+ * Script by Kaila
+ *
  */
-public class K_FastPlateSmither extends IdleScript {	
+public class K_FastPlateSmither extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -27,24 +44,88 @@ public class K_FastPlateSmither extends IdleScript {
 	int barsInBank = 0;
 	int totalPlates = 0;
 	int totalBars = 0;
-	
+    long craftTime;
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+
+    public void startSequence() {
+        if(controller.isInBank() == true) {
+            controller.closeBank();
+        }
+    }
 	public int start(String parameters[]) {
+        if (parameters.length > 0 && !parameters[0].equals("")) {
+            if (parameters[0].toLowerCase().startsWith("auto")) {
+                controller.displayMessage("Got param " + parameters[0] + ", Auto-starting Steel Plates", 0);
+                System.out.println("Got param" + parameters[0] + ", Auto-starting Steel Plates");
+                barId = 171;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+            if (parameters[0].toLowerCase().startsWith("bronze")) {
+                controller.displayMessage("Got param " + parameters[0] + ". Using bronze bars!", 0);
+                System.out.println("Got param" + parameters[0] + ", Using bronze bars");
+                barId = 169;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+            if (parameters[0].toLowerCase().startsWith("iron")) {
+                controller.displayMessage("Got param " + parameters[0] + ". Using iron bars!", 0);
+                System.out.println("Got param" + parameters[0] + ", Using iron bars!");
+                barId = 170;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+            if (parameters[0].toLowerCase().startsWith("steel")) {
+                controller.displayMessage("Got param " + parameters[0] + ". Using steel bars!", 0);
+                System.out.println("Got param" + parameters[0] + ", Using steel bars!");
+                barId = 171;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+            if (parameters[0].toLowerCase().startsWith("mith")
+                    || parameters[0].toLowerCase().startsWith("mithril")) {
+                controller.displayMessage("Got param " + parameters[0] + ". Using mith bars!", 0);
+                System.out.println("Got param" + parameters[0] + ", Using mithril bars!");
+                barId = 173;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+            if (parameters[0].toLowerCase().startsWith("addy")
+                    || parameters[0].toLowerCase().startsWith("adamantite")) {
+                controller.displayMessage("Got param " + parameters[0] + ". Using addy bars!", 0);
+                System.out.println("Got param" + parameters[0] + ", Using adamantite bars!");
+                barId = 174;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+            if (parameters[0].toLowerCase().startsWith("rune")
+                    || parameters[0].toLowerCase().startsWith("runite")) {
+                controller.displayMessage("Got param " + parameters[0] + ". Using rune bars!", 0);
+                System.out.println("Got param" + parameters[0] + ", Using rune bars!");
+                barId = 408;
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+        }
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
 		}
 		if (scriptStarted) {
-			if(controller.isInBank() == true) {
-				controller.closeBank();
-			}
+            startSequence();
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
-	
+
 public void scriptStart() {
 	while(controller.isRunning()) {
 		if(controller.getInventoryItemCount(barId) < 5 && !controller.isInBank()) {
@@ -73,7 +154,7 @@ public void scriptStart() {
 		//controller.sleep(320);
 	}
 }
-	
+
 
 
 
@@ -94,12 +175,12 @@ public void scriptStart() {
 		controller.setStatus("@gre@Banking..");
 		controller.openBank();
 		controller.sleep(600);
-		
+
 		if(controller.isInBank()) {
-			
+
 			totalPlates = totalPlates + 5;
 			totalBars = totalBars + 25;
-			
+
 			if(controller.getBankItemCount(barId) < 30) {    //stops making when 30 in bank to not mess up alignments/organization of bank!!!
 				controller.setStatus("@red@NO Bars in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
@@ -125,26 +206,30 @@ public void scriptStart() {
 				controller.withdrawItem(barId, 25);
 				controller.sleep(100);
 			}
-			
+
 			barsInBank = controller.getBankItemCount(barId);
 			controller.closeBank();
 			controller.sleep(200);
 		}
-	}	
-	
-	
+	}
+
+
 
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
 		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 		frame.setLocation(x, y);
 	}
-	
+    public void parseVariables() {
+        startTime = System.currentTimeMillis();
+        controller.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
+        controller.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
+    }
 	public void setupGUI() {
 		JLabel header = new JLabel("Platebody Smithing - Kaila");
 		JLabel hammerLabel = new JLabel("Start with Hammer in Inv!");
@@ -153,6 +238,9 @@ public void scriptStart() {
 		JLabel barLabel = new JLabel("Bar Type:");
 		JComboBox<String> barField = new JComboBox<String>(
 				new String[] { "Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite" });
+        JLabel paramLabel3 = new JLabel("This bot supports the \"autostart\" parameter");
+        JLabel paramLabel1 = new JLabel("Script can also be started with the Parameters:");
+        JLabel paramLabel2 = new JLabel("\"Bronze\", \"Iron\", \"Steel\", \"Mith\", \"Addy\", \"Runite\"");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
@@ -161,13 +249,11 @@ public void scriptStart() {
 				barId = barIds[barField.getSelectedIndex()];
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
-				scriptStarted = true;
-				controller.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
-				controller.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
+                parseVariables();
+                scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -178,6 +264,9 @@ public void scriptStart() {
 		scriptFrame.add(batchLabel2);
 		scriptFrame.add(barLabel);
 		scriptFrame.add(barField);
+        scriptFrame.add(paramLabel3);
+        scriptFrame.add(paramLabel1);
+        scriptFrame.add(paramLabel2);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);
@@ -195,24 +284,41 @@ public void scriptStart() {
 
 		return new String(twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
 	}
+    /**
+     * credit to chomp for toTimeToCompletion (from AA_Script) (totalBars, barsInBank, startTime)
+     */
+    public static String toTimeToCompletion(final int processed, final int remaining, final long time) {
+        if (processed == 0) {
+            return "0:00:00";
+        }
+
+        final double seconds = (System.currentTimeMillis() - time) / 1000.0;
+        final double secondsPerItem = seconds / processed;
+        final long ttl = (long) (secondsPerItem * remaining);
+        return String.format("%d:%02d:%02d", ttl / 3600, (ttl % 3600) / 60, (ttl % 60));
+    }
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			String runTime = msToString(System.currentTimeMillis() - startTime);
-        	int successPerHr = 0;
+            String runTime = msToString(System.currentTimeMillis() - startTime);
+        	int plateSuccessPerHr = 0;
+            int barSuccessPerHr = 0;
         	try {
         		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
         		float scale = (60 * 60) / timeRan;
-        		successPerHr = (int)(totalPlates * scale);
+        		plateSuccessPerHr = (int)(totalPlates * scale);
+                barSuccessPerHr = (int)(totalBars * scale);
         	} catch(Exception e) {
         		//divide by zero
         	}
-			controller.drawString("@red@Fast Plate Smither @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
+			controller.drawString("@red@Fast Plate Smither @gre@by Kaila", 340, 48, 0xFFFFFF, 1);
 			controller.drawString("@whi@Bars In bank: @yel@" + String.valueOf(this.barsInBank), 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Bars Used: @yel@" + String.valueOf(this.totalBars), 350, 76, 0xFFFFFF, 1);
-			controller.drawString("@whi@Platebodies Made: @yel@" + String.valueOf(this.totalPlates), 350, 90, 0xFFFFFF, 1);
-            controller.drawString("@whi@Platebodies Per Hr: @yel@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 350, 104, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 350, 118, 0xFFFFFF, 1);
+            controller.drawString("@whi@Bars Per Hr: @yel@" + String.format("%,d", barSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 90, 0xFFFFFF, 1);
+			controller.drawString("@whi@Platebodies Made: @yel@" + String.valueOf(this.totalPlates), 350, 104, 0xFFFFFF, 1);
+            controller.drawString("@whi@Platebodies Per Hr: @yel@" + String.format("%,d", plateSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 118, 0xFFFFFF, 1);
+			controller.drawString("@whi@Runtime: " + runTime, 350, 118+14, 0xFFFFFF, 1);
+            controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), 350, 118+28, 0xFFFFFF, 1);
 		}
 	}
 }

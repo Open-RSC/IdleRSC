@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import orsc.ORSCharacter;
-//import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Wildy Fire Giant Killer - By Kaila");

@@ -15,22 +15,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Wildy Fire Giant Killer - By Kaila");
  * Start in Edge bank with Armor");
  * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
  * 31 Magic Required for escape tele");
- * 
+ *
  * Author - Kaila
  */
-public class K_TavBlackDragonPipe extends IdleScript {	
-	
+public class K_TavBlackDragonPipe extends IdleScript {
+
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
-	
+
 	int totalDbones = 0;
     int totalRdagger = 0;
     int totalGems = 0;
@@ -43,7 +42,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
     int totalTooth = 0;
     int totalLeft = 0;
     int totalRlong = 0;
-    int totalSpear = 0;  
+    int totalSpear = 0;
     int totalHerb = 0;
     int bankDbones = 0;
     int totalBlood = 0;
@@ -55,40 +54,40 @@ public class K_TavBlackDragonPipe extends IdleScript {
     int totalDeath = 0;
     int totalRchain = 0;
     int totalRmed = 0;
-    
-    
+
+
    // DRAGON_BONES, 396, 93, LAW_RUNE, 40, WATER_RUNE, 31, 526, 527, 1277
 
    	int[] attackPot = {488,487,486};
    	int[] strPot = {494,493,492};
    	int[] antiPot = {571,570,569};
-	int[] loot = {  
+	int[] loot = {
 			814,     //D Bones
 			75,     //rune long
 			120, 	//addy plate body
 
 			619,			//blood rune
-			
+
 			438, 	 //Grimy ranarr
 			439,  	 //Grimy irit
 			440,  	 //Grimy ava
 			441,	 //Grimy kwu
 			442, 	 //Grimy cada
 			443, 	 //Grimy dwu
-			
+
 			405,  	//rune axe
 			81, 	//rune 2h
 			93, 	//rune battle axe
-			
+
 			31, 	 //fire rune
 			33,      // air rune
 			38,      //Death Rune
 			619,     //blood rune
 			40,	 	 // nature rune
 			42, 	 // law rune
-			
+
 			11,      //bronze arrows
-			
+
 			408,  	//rune bar
 			520, 	//silver cert
 			518, 	//coal cert
@@ -97,7 +96,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 			158, 	 //ruby
 			157,	 //diamond
 			523,     //dragonstone!
-			
+
 			526, 	 //tooth half
 			527, 	 //loop half
 			1092, 	 //rune spear
@@ -108,11 +107,11 @@ public class K_TavBlackDragonPipe extends IdleScript {
 
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-    public boolean isWithinWander(int x, int y) { 
+
+    public boolean isWithinWander(int x, int y) {
     	return controller.distance(408,3337, x, y) <= 22;
     }
-	
+
 	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
@@ -128,12 +127,12 @@ public class K_TavBlackDragonPipe extends IdleScript {
 			}
 			if(controller.currentY() < 2800) {
 				bank();
-				BankToDragons();  
+				BankToDragons();
 				controller.sleep(1380);
 			}
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
 
 
@@ -223,45 +222,45 @@ public class K_TavBlackDragonPipe extends IdleScript {
 			}
 		}
 	}
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public void bank() {   
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void bank() {
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
 		controller.sleep(1200);
-		
+
 		if(controller.isInBank()){
-			
+
 			totalDbones = totalDbones + controller.getInventoryItemCount(814);
-			totalGems = totalGems 
-					+ controller.getInventoryItemCount(160) 
+			totalGems = totalGems
+					+ controller.getInventoryItemCount(160)
 					+ controller.getInventoryItemCount(159)
 					+ controller.getInventoryItemCount(158)
 					+ controller.getInventoryItemCount(157);
 			totalHerb = totalHerb
-					+ controller.getInventoryItemCount(438) 
-					+ controller.getInventoryItemCount(439) 
-					+ controller.getInventoryItemCount(440) 
-					+ controller.getInventoryItemCount(441) 
-					+ controller.getInventoryItemCount(442) 
+					+ controller.getInventoryItemCount(438)
+					+ controller.getInventoryItemCount(439)
+					+ controller.getInventoryItemCount(440)
+					+ controller.getInventoryItemCount(441)
+					+ controller.getInventoryItemCount(442)
 					+ controller.getInventoryItemCount(443);
 			totalFire = totalFire + controller.getInventoryItemCount(31);
 			totalLaw = totalLaw + controller.getInventoryItemCount(42);
@@ -283,7 +282,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 				}
 			}
 			controller.sleep(1400);      //Important, leave in
-			
+
 			if(controller.getInventoryItemCount(33) < 18) {  //6 air
 				controller.withdrawItem(33, 18 - controller.getInventoryItemCount(33));
 				controller.sleep(1000);
@@ -397,11 +396,6 @@ public class K_TavBlackDragonPipe extends IdleScript {
 			controller.sleep(1000);
 		}
 	}
-	
-	
-	
-	
-	
 
 
 
@@ -415,7 +409,12 @@ public class K_TavBlackDragonPipe extends IdleScript {
 
 
 
-	
+
+
+
+
+
+
 	public void pray() {
 		if(!controller.isPrayerOn(controller.getPrayerId("Paralyze Monster")) && controller.currentY() > 3000);
 			controller.enablePrayer(controller.getPrayerId("Paralyze Monster"));
@@ -434,17 +433,17 @@ public class K_TavBlackDragonPipe extends IdleScript {
 	   	}
 	}
 	public void eat() {
-		
+
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
+
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -590,7 +589,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 			controller.sleep(320);
 		}
 	}
-	
+
 	public void drinkPot() {
 		ppotCheck();
 		leaveCombat();
@@ -609,7 +608,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 			controller.sleep(320);
 		}
 	}
-	
+
 	public void antiBoost() {
 		leaveCombat();
 		if(controller.getInventoryItemCount(antiPot[0]) > 0) {
@@ -673,22 +672,22 @@ public class K_TavBlackDragonPipe extends IdleScript {
 			controller.sleep(10);
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -713,7 +712,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -772,7 +771,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
 	    		//divide by zero
 	    	}
 			controller.drawString("@red@Tav Black Dragons @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-			controller.drawString("@whi@Total D.Bones: @gre@" + String.valueOf(this.bankDbones), 350, 62, 0xFFFFFF, 1); 
+			controller.drawString("@whi@Total D.Bones: @gre@" + String.valueOf(this.bankDbones), 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Banked D.Bones: @gre@" + String.valueOf(this.totalDbones) + "@yel@ (@whi@" + String.format("%,d", DbonesSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);  //fix y cords
 			controller.drawString("@whi@Rune Longs: @gre@" + String.valueOf(this.totalRlong) + "@yel@ (@whi@" + String.format("%,d", RdaggerSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 90, 0xFFFFFF, 1);
 			controller.drawString("@whi@Addy Plate Body: @gre@" + String.valueOf(this.totalAddy) + "@yel@ (@whi@" + String.format("%,d", AddySuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 104, 0xFFFFFF, 1);

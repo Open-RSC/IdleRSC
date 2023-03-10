@@ -15,17 +15,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  *
- * 
- * 
- * 
- * 
+ *
+ * This bot supports the "autostart" parameter to automatiically start the bot without gui
+ *
+ *
  * Author - Kaila
  */
-public class K_HobsMiner extends IdleScript {	
+public class K_HobsMiner extends IdleScript {
 	JFrame scriptFrame = null;
 
 	int coalInBank = 0;
@@ -82,7 +81,7 @@ public class K_HobsMiner extends IdleScript {
 
 	};
 	String isMining = "none";
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 
@@ -93,33 +92,51 @@ public class K_HobsMiner extends IdleScript {
 	public boolean isWithinLootzone(int x, int y) {
 		return controller.distance(225, 251, x, y) <= 30; //center of hobs mine lootzone
 	}
-		
+    public void startSequence() {
+        controller.displayMessage("@red@Hobs Miner- By Kaila");
+        controller.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
+        controller.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
+        controller.displayMessage("@red@31 Magic Required for escape tele");
+        if(controller.isInBank() == true) {
+            controller.closeBank();
+        }
+        if(controller.currentY() > 340) {
+            bank();
+            eat();
+            bankToHobs();
+            eat();
+            controller.sleep(1380);
+        }
+        if(controller.currentY() > 270 && controller.currentY() < 341) {
+            bankToHobs();
+            eat();
+            controller.sleep(1380);
+        }
+    }
 		public int start(String parameters[]) {
+            if (parameters.length > 0 && !parameters[0].equals("")) {
+                if (parameters[0].toLowerCase().startsWith("auto")) {
+                    controller.displayMessage("Auto-starting, teleport false, return escape true", 0);
+                    System.out.println("Auto-starting, teleport false, return escape true");
+                    teleportOut = false;
+                    returnEscape = true;
+                    parseVariables();
+                    startSequence();
+                    scriptStart();
+                }
+            }
 			if (!guiSetup) {
 				setupGUI();
 				guiSetup = true;
 			}
 			if (scriptStarted) {
-				controller.displayMessage("@red@Hobs Miner- By Kaila");
-				controller.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
-				controller.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-				controller.displayMessage("@red@31 Magic Required for escape tele");
-				if(controller.isInBank() == true) {
-					controller.closeBank();
-				}
-				if(controller.currentY() > 340) {
-					bank();
-					eat();
-					bankToHobs();
-					eat();
-					controller.sleep(1380);
-				}
+                startSequence();
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
 
@@ -140,12 +157,12 @@ public class K_HobsMiner extends IdleScript {
 					bankToHobs();
 				}
 				if (controller.getInventoryItemCount() == 30) {
-					
+
 					goToBank();
-					
+
 				}
 				if (controller.getInventoryItemCount() < 30) {
-				
+
 					eat();
 					leaveCombat();
 
@@ -199,7 +216,7 @@ public class K_HobsMiner extends IdleScript {
 			}
 		}
 
-		
+
 		public void mine(String i) {
 			if (i == "adamantite") {
 				int oreCoords[] = controller.getNearestObjectByIds(addyIDs);
@@ -216,11 +233,11 @@ public class K_HobsMiner extends IdleScript {
 					controller.atObject(oreCoords[0], oreCoords[1]);
 					currentOre[0] = oreCoords[0];
 					currentOre[1] = oreCoords[1];
-				}	
+				}
 			} else if (i == "coal") {
 				int oreCoords[] = controller.getNearestObjectByIds(coalIDs);
 				if (oreCoords != null) {
-					isMining = "coal";	
+					isMining = "coal";
 					controller.atObject(oreCoords[0], oreCoords[1]);
 					currentOre[0] = oreCoords[0];
 					currentOre[1] = oreCoords[1];
@@ -228,7 +245,7 @@ public class K_HobsMiner extends IdleScript {
 			}
 			controller.sleep(1920);
 		}
-		public boolean adamantiteAvailable() {		
+		public boolean adamantiteAvailable() {
 		    return controller.getNearestObjectByIds(addyIDs) != null;
 		}
 		public boolean mithrilAvailable() {
@@ -246,7 +263,7 @@ public class K_HobsMiner extends IdleScript {
 		}
 
 
-	
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -254,7 +271,7 @@ public class K_HobsMiner extends IdleScript {
 		controller.sleep(1200);
 
 		if (controller.isInBank()) {
-			
+
 			totalCoal = totalCoal + controller.getInventoryItemCount(155);
 			totalMith = totalMith + controller.getInventoryItemCount(153);
 			totalAddy = totalAddy + controller.getInventoryItemCount(154);
@@ -270,7 +287,7 @@ public class K_HobsMiner extends IdleScript {
 			}
 			controller.sleep(1280);   // increased sleep here to prevent double banking
 
-			
+
 			coalInBank = controller.getBankItemCount(155);
 			mithInBank = controller.getBankItemCount(153);
 			addyInBank = controller.getBankItemCount(154);
@@ -318,14 +335,14 @@ public class K_HobsMiner extends IdleScript {
 	}
 
 	public void eat() {
-		
+
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 
 			leaveCombat();
 			controller.sleep(200);
-			
+
 			controller.setStatus("@red@Eating..");
 
 			boolean ate = false;
@@ -393,11 +410,11 @@ public class K_HobsMiner extends IdleScript {
 			}
 		}
 	}
-	
+
 	public void goToBank() {
 		isMining = "none";
 		currentOre[0] = 0;
-		currentOre[1] = 0;	
+		currentOre[1] = 0;
 		controller.setStatus("@yel@Banking..");
 		hobsToTwenty();
 		twentyToBank();
@@ -405,7 +422,7 @@ public class K_HobsMiner extends IdleScript {
 		bankToHobs();
 		controller.sleep(618);
 	}
-	
+
 	public void hobsToTwenty() {
     	controller.setStatus("@gre@Walking to 19 wildy..");
 		controller.walkTo(221,262);
@@ -415,8 +432,8 @@ public class K_HobsMiner extends IdleScript {
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking to 19..");
 	}
-	
-    public void twentyToBank() {	
+
+    public void twentyToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
 		eat();
 		controller.walkTo(221,321);
@@ -429,11 +446,11 @@ public class K_HobsMiner extends IdleScript {
 		controller.walkTo(220,425);
 		controller.walkTo(220,445);
 		controller.walkTo(217,448);
-    	
-    	
+
+
     	controller.setStatus("@gre@Done Walking..");
 	}
-    public void bankToHobs() {	
+    public void bankToHobs() {
     	controller.setStatus("@gre@Walking to Hobs Mine..");
 		controller.walkTo(218,447);
 		controller.walkTo(220,443);
@@ -453,7 +470,7 @@ public class K_HobsMiner extends IdleScript {
 		controller.walkTo(221,301);
 		controller.walkTo(221,283);
 		controller.walkTo(221,262);
-		
+
     	controller.setStatus("@gre@Done Walking..");
 	}
 	public void lawCheck() {
@@ -506,7 +523,9 @@ public class K_HobsMiner extends IdleScript {
 
 	//GUI stuff below (icky)
 
-
+    public void parseVariables() {
+        startTime = System.currentTimeMillis();
+    }
 	public void setValuesFromGUI(JCheckBox potUpCheckbox, JCheckBox escapeCheckbox) {
 		if (potUpCheckbox.isSelected()) {
 			teleportOut = true;
@@ -536,6 +555,8 @@ public class K_HobsMiner extends IdleScript {
 		JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
 		JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
 		JLabel label7 = new JLabel("Selected, bot will grab more food and return");
+        JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
+        JLabel label9 = new JLabel("Defaults to Teleport Off, Return On.");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
@@ -544,11 +565,11 @@ public class K_HobsMiner extends IdleScript {
 				setValuesFromGUI(teleportCheckbox, escapeCheckbox);
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
+                parseVariables();
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -563,6 +584,8 @@ public class K_HobsMiner extends IdleScript {
 		scriptFrame.add(escapeCheckbox);
 		scriptFrame.add(label6);
 		scriptFrame.add(label7);
+        scriptFrame.add(label8);
+        scriptFrame.add(label9);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);
@@ -583,7 +606,7 @@ public class K_HobsMiner extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int coalSuccessPerHr = 0;
 	    	int mithSuccessPerHr = 0;
@@ -593,7 +616,7 @@ public class K_HobsMiner extends IdleScript {
 	    	int rubSuccessPerHr = 0;
 	    	int diaSuccessPerHr = 0;
     		int TripSuccessPerHr = 0;
-    		
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
@@ -605,7 +628,7 @@ public class K_HobsMiner extends IdleScript {
 	    		rubSuccessPerHr = (int)(totalRub * scale);
 	    		diaSuccessPerHr = (int)(totalDia * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

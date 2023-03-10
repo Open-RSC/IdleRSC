@@ -15,10 +15,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
- * Grabs presents from under varrock trees - 
+ * Grabs presents from under varrock trees -
  *  based off vial crafter by dvorak
  * automatically banks at full inv, at the end of a batch cycle
  * Start near the trees
@@ -28,44 +27,54 @@ import scripting.idlescript.AIOCooker.FoodObject;
  *  @author Dvorak
  * Heavily edited by Kailash
  */
-public class K_SeersMagicTree extends IdleScript {	
+public class K_SeersMagicTree extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	int logInBank = 0;
 	int totalLog = 0;
 	int totalTrips = 0;
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+    public void startSequence(){
+        controller.displayMessage("@red@SeersMagicTree, start with a rune axe in inv/equipment");
+        if(controller.isInBank() == true) {
+            controller.closeBank();
+        }
+        if(controller.currentY() < 458) {
+            bank();
+            controller.walkTo(500,454);
+            controller.walkTo(503,457);
+            controller.walkTo(503,460);
+            controller.walkTo(506,463);
+            controller.walkTo(506,472);
+            controller.walkTo(506,478);
+            controller.walkTo(516,488);
+            controller.sleep(1380);
+        }
+    }
 	public int start(String parameters[]) {
+        if (parameters.length > 0 && !parameters[0].equals("")) {
+            if (parameters[0].toLowerCase().startsWith("auto")) {
+                controller.displayMessage("Got Autostart, Cutting Magics", 0);
+                System.out.println("Got Autostart, Cutting Magics");
+                parseVariables();
+                startSequence();
+                scriptStart();
+            }
+        }
 		if (!guiSetup) {
 			setupGUI();
 			guiSetup = true;
 		}
 		if (scriptStarted) {
-			controller.displayMessage("@red@SeersMagicTree, start with a rune axe in inv/equipment");
-//			bank();
-			if(controller.isInBank() == true) {
-				controller.closeBank();
-			}
-			if(controller.currentY() < 458) {
-				bank();
-				controller.walkTo(500,454);
-				controller.walkTo(503,457);
-				controller.walkTo(503,460);
-				controller.walkTo(506,463);
-				controller.walkTo(506,472);
-				controller.walkTo(506,478);
-				controller.walkTo(516,488);
-				controller.sleep(1380);
-			}
+            startSequence();
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
-	
+
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount() < 30) {
@@ -123,10 +132,10 @@ public class K_SeersMagicTree extends IdleScript {
 				goToBank();
 			}
 		}
-	//	return 1000; //start() must return a int value now. 
+	//	return 1000; //start() must return a int value now.
 	}
-	
-	
+
+
 public void goToBank() {
 	controller.walkTo(516,488);
 	controller.walkTo(506,478);
@@ -165,7 +174,7 @@ public void goToBank2() {
 	controller.walkTo(506,478);
 	controller.walkTo(516,488);
 }
-	
+
 public void bank() {
 
 	controller.setStatus("@yel@Banking..");
@@ -185,9 +194,11 @@ public void bank() {
 	}
 }
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+	public void parseVariables() {
+        startTime = System.currentTimeMillis();
+    }
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -205,11 +216,11 @@ public void bank() {
 			public void actionPerformed(ActionEvent e) {
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
+                parseVariables();
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -253,7 +264,7 @@ public void bank() {
 			controller.drawString("@whi@Logs Cut: @yel@" + String.valueOf(this.totalLog) + "@red@(@yel@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 350, 76, 0xFFFFFF, 1);
 			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", tripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 146, 0xFFFFFF, 1);
 			controller.drawString("@whi@Runtime: " + runTime, 350, 90, 0xFFFFFF, 1);
-			
+
 		}
 	}
 }

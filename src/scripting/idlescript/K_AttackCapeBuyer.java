@@ -15,14 +15,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Buys attack capes from rovin and banks
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * Author - Kaila
  */
 public class K_AttackCapeBuyer extends IdleScript {
@@ -35,13 +34,13 @@ public class K_AttackCapeBuyer extends IdleScript {
     int totalTrips = 0;
     int TopzInBank = 0;
     int BotzInBank = 0;
-    
+
     int robeId[] = {388,389};
-    
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-		
+
+
 		public int start(String parameters[]) {
 			if (!guiSetup) {
 				setupGUI();
@@ -61,13 +60,13 @@ public class K_AttackCapeBuyer extends IdleScript {
 				}
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
-							
+
 				if(controller.getInventoryItemCount() == 30) {
 					controller.setStatus("@red@Banking..");
 					GrapeToBank();
@@ -96,8 +95,8 @@ public class K_AttackCapeBuyer extends IdleScript {
 
 			}
 		}
-					
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -105,23 +104,23 @@ public class K_AttackCapeBuyer extends IdleScript {
 		controller.sleep(640);
 
 		if(controller.isInBank()){
-			
+
 			totalTopz = totalTopz + controller.getInventoryItemCount(1374);
-			
+
 			if(controller.getInventoryItemCount(1374) >  0) {  //robe top
 				controller.depositItem(1374,controller.getInventoryItemCount(1374));
 				controller.sleep(1380);
 			}
-			
+
 			TopzInBank = controller.getBankItemCount(1374);
-			
+
 			controller.closeBank();
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void GrapeToBank() {  //replace
-		
+
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(141,1398);
 		controller.sleep(340);
@@ -137,11 +136,11 @@ public class K_AttackCapeBuyer extends IdleScript {
 		controller.walkTo(150,507);
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
-    	
+
 	}
-	
+
     public void BankToGrape() {
-    	
+
     	controller.setStatus("@gre@Walking to Rovin..");
 		controller.walkTo(150,507);
 		controller.walkTo(137,507);
@@ -156,14 +155,14 @@ public class K_AttackCapeBuyer extends IdleScript {
 		controller.sleep(800);
     	//next to rovin now)
     	controller.setStatus("@gre@Done Walking..");
-    	
+
 	}
-	
-	
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -186,7 +185,7 @@ public class K_AttackCapeBuyer extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -215,17 +214,17 @@ public class K_AttackCapeBuyer extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int TopzSuccessPerHr = 0;
 	    	int TripSuccessPerHr = 0;
-	    	
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 	    		TopzSuccessPerHr = (int)(totalTopz * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

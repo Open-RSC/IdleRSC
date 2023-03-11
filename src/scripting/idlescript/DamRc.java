@@ -23,7 +23,7 @@ import orsc.ORSCharacter;
  * Added artisan crowns AND cosmic runecrafting - Kaila
  *
  * @author Damrau
- * @version 1.1 Conditional sleeps to help with locking up & cut down on total
+ * @version 1.1 Conditional sleeps to help with locking up and cut down on total
  *          amount of packets sent
  */
 public class DamRc extends IdleScript {

@@ -241,9 +241,9 @@ public abstract class Script
 	/**
 	 * The current status index of the trade.
 	 * 
-	 * 0 => no trade
-	 * 1 => 1st trade window
-	 * 2 => 2nd trade window
+	 * 0: no trade
+	 * 1: 1st trade window
+	 * 2: 2nd trade window
 	 * 
 	 * @return
 	 */

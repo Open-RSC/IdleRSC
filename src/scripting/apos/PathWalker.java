@@ -254,6 +254,7 @@ public class PathWalker extends Script
             new Location("Lumber Yard", 82, 436, false),
             new Location("Lumbridge", 128, 640, false),
             new Location("Lumbridge Windmill", 175, 608, false),
+            new Location("Makeover Mage", 366, 579, false),
             new Location("Port Khazard", 553, 702, false),
             new Location("Port Sarim", 270, 625, false),
             new Location("Rimmington", 320, 653, false),

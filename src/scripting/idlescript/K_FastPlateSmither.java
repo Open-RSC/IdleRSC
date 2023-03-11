@@ -311,12 +311,12 @@ public void scriptStart() {
         	} catch(Exception e) {
         		//divide by zero
         	}
-			controller.drawString("@red@Fast Plate Smither @gre@by Kaila", 340, 48, 0xFFFFFF, 1);
-			controller.drawString("@whi@Bars In bank: @yel@" + String.valueOf(this.barsInBank), 350, 62, 0xFFFFFF, 1);
-			controller.drawString("@whi@Bars Used: @yel@" + String.valueOf(this.totalBars), 350, 76, 0xFFFFFF, 1);
-            controller.drawString("@whi@Bars Per Hr: @yel@" + String.format("%,d", barSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 90, 0xFFFFFF, 1);
-			controller.drawString("@whi@Platebodies Made: @yel@" + String.valueOf(this.totalPlates), 350, 104, 0xFFFFFF, 1);
-            controller.drawString("@whi@Platebodies Per Hr: @yel@" + String.format("%,d", plateSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 118, 0xFFFFFF, 1);
+			controller.drawString("@red@Fast Plate Smither @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
+			controller.drawString("@whi@Bars In bank: @gre@" + this.barsInBank, 350, 62, 0xFFFFFF, 1);
+			controller.drawString("@whi@Bars Used: @gre@" + this.totalBars, 350, 76, 0xFFFFFF, 1);
+            controller.drawString("@whi@Bars Per Hr: @gre@" + String.format("%,d", barSuccessPerHr) + "@yel@/@whi@hr", 350, 90, 0xFFFFFF, 1);
+			controller.drawString("@whi@Platebodies Made: @gre@" + this.totalPlates, 350, 104, 0xFFFFFF, 1);
+            controller.drawString("@whi@Platebodies Per Hr: @gre@" + String.format("%,d", plateSuccessPerHr) + "@yel@/@whi@hr", 350, 118, 0xFFFFFF, 1);
 			controller.drawString("@whi@Runtime: " + runTime, 350, 118+14, 0xFFFFFF, 1);
             controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), 350, 118+28, 0xFFFFFF, 1);
 		}

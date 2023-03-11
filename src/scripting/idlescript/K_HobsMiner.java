@@ -508,10 +508,7 @@ public class K_HobsMiner extends IdleScript {
 			if (controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(600);
-			} else {
-				controller.setStatus("@red@Done Leaving combat..");
-				break;
+				controller.sleep(400);
 			}
 			controller.sleep(10);
 		}

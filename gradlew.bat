@@ -84,9 +84,13 @@ rem the _cmd.exe /c_ return code!
 set EXIT_CODE=%ERRORLEVEL%
 if %EXIT_CODE% equ 0 set EXIT_CODE=1
 if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%
+echo [91m COMPILE ERROR, CLOSING! [0m
+TIMEOUT /t 30
 exit /b %EXIT_CODE%
 
 :mainEnd
 if "%OS%"=="Windows_NT" endlocal
 
 :omega
+
+TIMEOUT /t 3

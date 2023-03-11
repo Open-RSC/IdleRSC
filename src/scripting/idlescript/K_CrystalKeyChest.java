@@ -15,14 +15,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Buys attack capes from rovin and banks
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * Author - Kaila
  */
 public class K_CrystalKeyChest extends IdleScript {
@@ -37,8 +36,8 @@ public class K_CrystalKeyChest extends IdleScript {
 	int loot[] = {542,408,526,527};
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-		
+
+
 		public int start(String parameters[]) {
 			if (!guiSetup) {
 				setupGUI();
@@ -57,10 +56,10 @@ public class K_CrystalKeyChest extends IdleScript {
 				}
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
 
@@ -132,8 +131,8 @@ public class K_CrystalKeyChest extends IdleScript {
 
 			}
 		}
-					
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -141,7 +140,7 @@ public class K_CrystalKeyChest extends IdleScript {
 		controller.sleep(640);
 
 		if(controller.isInBank()){
-			
+
 			totalDragonstones = totalDragonstones + controller.getInventoryItemCount(542);
 
 			for (int itemId : controller.getInventoryItemIds()) {
@@ -156,14 +155,14 @@ public class K_CrystalKeyChest extends IdleScript {
 
 			KeysInBank = controller.getBankItemCount(525);
 			DragonstonesInBank = controller.getBankItemCount(542);
-			
+
 			controller.closeBank();
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void GrapeToBank() {  //replace
-		
+
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(371,495);
 		controller.walkTo(375,498);
@@ -181,11 +180,11 @@ public class K_CrystalKeyChest extends IdleScript {
 		controller.walkTo(439,497);
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
-    	
+
 	}
-	
+
     public void BankToGrape() {
-    	
+
     	controller.setStatus("@gre@Walking to Crystal Chest..");
 		controller.walkTo(439,497);
 		controller.walkTo(429,497);
@@ -203,12 +202,12 @@ public class K_CrystalKeyChest extends IdleScript {
 		controller.walkTo(367,496);
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
-	
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -231,7 +230,7 @@ public class K_CrystalKeyChest extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -260,17 +259,17 @@ public class K_CrystalKeyChest extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int DragonstoneSuccessPerHr = 0;
 	    	int TripSuccessPerHr = 0;
-	    	
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 				DragonstoneSuccessPerHr = (int)(totalDragonstones * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

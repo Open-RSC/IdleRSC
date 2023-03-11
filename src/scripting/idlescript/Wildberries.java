@@ -16,11 +16,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Picks whiteberries in wilderness. Needs antidragon shields.
- *  
+ *
  * @author Dvorak
  */
 public class Wildberries extends IdleScript {
@@ -28,12 +27,12 @@ public class Wildberries extends IdleScript {
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	int[] gateToBerries = new int[] {
-			140, 181, 
-			142, 191, 
-			141, 207, 
+			140, 181,
+			142, 191,
+			141, 207,
 			137, 213
 	};
-	
+
 	int[] varrockToGate = new int[] {
 			103, 509,
 			109, 498,
@@ -42,43 +41,43 @@ public class Wildberries extends IdleScript {
 			110, 455,
 			110, 441,
 			110, 427,
-			110, 415, 
-			110, 400, 
+			110, 415,
+			110, 400,
 			110, 385,
-			104, 380, 
+			104, 380,
 			97, 372,
-			91, 361, 
+			91, 361,
 			84, 352,
 			76, 342,
-			76, 334, 
+			76, 334,
 			82, 325,
-			84, 313, 
-			84, 302, 
-			78, 294, 
-			78, 284, 
-			79, 267, 
-			80, 255, 
-			80, 241, 
+			84, 313,
+			84, 302,
+			78, 294,
+			78, 284,
+			79, 267,
+			80, 255,
+			80, 241,
 			80, 230,
-			80, 220, 
-			80, 210, 
-			80, 200, 
-			80, 193, 
-			88, 183, 
-			101, 175, 
-			111, 176, 
-			122, 179, 
-			136, 179, 
+			80, 220,
+			80, 210,
+			80, 200,
+			80, 193,
+			88, 183,
+			101, 175,
+			111, 176,
+			122, 179,
+			136, 179,
 			140, 180
 	};
-	
+
 	int berriesPicked = 0;
 	int berriesBanked = 0;
 	int sharksInBank = 0;
 	int foodWithdrawAmount = 3;
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+
 	public int start(String parameters[]) {
 		if (scriptStarted) {
 			controller.displayMessage("@red@Wildberries by Dvorak. Rewritten by Kaila");
@@ -236,7 +235,7 @@ public class Wildberries extends IdleScript {
 	}
 	public void bank() {
 		controller.setStatus("@red@Banking..");
-		
+
 		controller.openBank();
 		controller.sleep(640);
 		berriesPicked = berriesPicked + controller.getInventoryItemCount(471);
@@ -358,7 +357,7 @@ public class Wildberries extends IdleScript {
         	} catch(Exception e) {
         		//divide by zero
         	}
-        	
+
             //controller.drawBoxAlpha(7, 7, 160, 21+14+14, 0xFF0000, 48);
             controller.drawString("@red@Wildberries @gre@by Dvorak & Kaila", 10, 21, 0xFFFFFF, 1);
             controller.drawString("@whi@Berries picked: @gre@" + String.format("%,d", berriesPicked) + " @yel@(@whi@" + String.format("%,d", berriesPerHr) + "@yel@/@whi@hr@yel@)", 10, 21+14, 0xFFFFFF, 1);

@@ -15,22 +15,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Wildy Fire Giant Killer - By Kaila");
  * Start in Edge bank with Armor");
  * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
  * 31 Magic Required for escape tele");
- * 
+ *
  * Author - Kaila
  */
-public class K_WildyFireGiants extends IdleScript {	
-	
+public class K_WildyFireGiants extends IdleScript {
+
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
-	
+
 	int totalBstaff = 0;
     int totalRscim = 0;
     int totalRunestuff = 0;
@@ -50,7 +49,7 @@ public class K_WildyFireGiants extends IdleScript {
     int totalMed = 0;
     int totalHerb = 0;
     int totalTrips = 0;
-    
+
 	int[] bones = {20, 413, 604, 814};
    	int[] attackPot = {488,487,486};
    	int[] strPot = {494,493,492};
@@ -112,15 +111,15 @@ public class K_WildyFireGiants extends IdleScript {
 			373 	//lobster (will get eaten)
 	};
 
-	
-    public boolean isWithinLootzone(int x, int y) { 
+
+    public boolean isWithinLootzone(int x, int y) {
     	return controller.distance(269, 2949, x, y) <= 10;
     }
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-	
+
+
 	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
@@ -145,7 +144,7 @@ public class K_WildyFireGiants extends IdleScript {
 			}
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
 
 	public void scriptStart() {
@@ -196,15 +195,14 @@ public class K_WildyFireGiants extends IdleScript {
 					}
 					controller.sleep(340);
 				}
-				if(controller.getInventoryItemCount() == 30) {
-					leaveCombat();
-					if(controller.getInventoryItemCount(413) > 0 && controller.getInventoryItemCount() == 30) {   //added to bury bones, before eat food!
-						controller.setStatus("@red@Burying Bones to Loot..");
-						buryBones();
-					}
+				if(controller.getInventoryItemCount() == 30 && !controller.isInCombat()) {
+					//if(controller.getInventoryItemCount(413) > 0 && controller.getInventoryItemCount() == 30) {   //added to bury bones, before eat food!
+					//	controller.setStatus("@red@Burying Bones to Loot..");
+					//	buryBones();
+					//}
 					for(int id : controller.getFoodIds()) {
-						if(controller.getInventoryItemCount(id) > 0 && controller.getInventoryItemCount() == 30)
-							controller.setStatus("@red@Eating Food to Loot..");{
+						if(controller.getInventoryItemCount(id) > 0)
+							controller.setStatus("@red@Eating 1 Food to Loot..");{
 							controller.itemCommand(id);
 							controller.sleep(700);
 						}
@@ -227,14 +225,14 @@ public class K_WildyFireGiants extends IdleScript {
 
 
 
-					
+
     public void buryBones() {
     	if(!controller.isInCombat()) {
 			for(int id : bones) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.setStatus("@red@Burying bones..");
 					controller.itemCommand(id);
-					
+
 					controller.sleep(618);
 					buryBones();
 				}
@@ -242,7 +240,7 @@ public class K_WildyFireGiants extends IdleScript {
     	}
     }
 
-	
+
 	public void attackBoost() {
 		leaveCombat();
 		if(controller.getInventoryItemCount(attackPot[0]) > 0) {
@@ -282,9 +280,9 @@ public class K_WildyFireGiants extends IdleScript {
 		}
 		return;
 	}
-	
-	public void bank() {   
-		
+
+	public void bank() {
+
 		controller.setStatus("@yel@Banking..");
 		controller.openBank();
 		controller.sleep(640);
@@ -293,24 +291,24 @@ public class K_WildyFireGiants extends IdleScript {
 
 			totalBstaff = totalBstaff + controller.getInventoryItemCount(615);
 			totalRscim = totalRscim + controller.getInventoryItemCount(398);
-			totalRunestuff = totalRunestuff 
+			totalRunestuff = totalRunestuff
 					+ controller.getInventoryItemCount(404) //kite
 					+ controller.getInventoryItemCount(403) //sq
 					+ controller.getInventoryItemCount(405) //axe
 					+ controller.getInventoryItemCount(81) //2h
 					+ controller.getInventoryItemCount(93) //bAxe
 					+ controller.getInventoryItemCount(408); //r bar
-			totalGems = totalGems 
-					+ controller.getInventoryItemCount(160) 
+			totalGems = totalGems
+					+ controller.getInventoryItemCount(160)
 					+ controller.getInventoryItemCount(159)
 					+ controller.getInventoryItemCount(158)
 					+ controller.getInventoryItemCount(157);
 			totalHerb = totalHerb
-					+ controller.getInventoryItemCount(438) 
-					+ controller.getInventoryItemCount(439) 
-					+ controller.getInventoryItemCount(440) 
-					+ controller.getInventoryItemCount(441) 
-					+ controller.getInventoryItemCount(442) 
+					+ controller.getInventoryItemCount(438)
+					+ controller.getInventoryItemCount(439)
+					+ controller.getInventoryItemCount(440)
+					+ controller.getInventoryItemCount(441)
+					+ controller.getInventoryItemCount(442)
 					+ controller.getInventoryItemCount(443);
 			totalFire = totalFire + controller.getInventoryItemCount(31);
 			totalLaw = totalLaw + controller.getInventoryItemCount(42);
@@ -361,9 +359,9 @@ public class K_WildyFireGiants extends IdleScript {
 		}
 
 	}
-	
+
 	public void eat() {
-		
+
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
 		int panicLvl = controller.getBaseStat(controller.getStatId("Hits")) - 50;
 
@@ -386,9 +384,9 @@ public class K_WildyFireGiants extends IdleScript {
 
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -602,14 +600,11 @@ public class K_WildyFireGiants extends IdleScript {
 	}
 
 	public void leaveCombat() {
-		for (int i = 1; i <= 15; i++) {
+		for (int i = 1; i <= 6; i++) {
 			if (controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
 				controller.sleep(600);
-			} else {
-				controller.setStatus("@red@Done Leaving combat..");
-				break;
 			}
 			controller.sleep(500);
 		}
@@ -695,22 +690,22 @@ public class K_WildyFireGiants extends IdleScript {
 			controller.sleep(10);
 		}
 	}
-	
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -732,7 +727,7 @@ public class K_WildyFireGiants extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -772,7 +767,7 @@ public class K_WildyFireGiants extends IdleScript {
     		int BloodSuccessPerHr = 0;
     	    int HerbSuccessPerHr = 0;
     	    int TripSuccessPerHr = 0;
-    	    
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;

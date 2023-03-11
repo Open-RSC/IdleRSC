@@ -15,53 +15,63 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Grabs Grapes from edge monestary
- * 
- * 
- * 
- * 
+ *
+ *  This bot supports the "autostart" parameter to automatiically start the bot without gui
+ *
+ *
  * Author - Kaila
  */
-public class K_GrapeHarvester extends IdleScript {	
+public class K_GrapeHarvester extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	int GrapezInBank = 0;
 	int totalGrapez = 0;
     int totalTrips = 0;
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-		
+
+    public void startSequence() {
+        controller.displayMessage("@red@Grape Harvester - By Kaila");
+        controller.displayMessage("@red@Start in Edge Bank or near Grapes");
+        if(controller.isInBank() == true) {
+            controller.closeBank();
+        }
+        if(controller.currentX() < 240) {
+            bank();
+            BankToGrape();
+            controller.sleep(1380);
+        }
+    }
 		public int start(String parameters[]) {
+            if (parameters.length > 0 && !parameters[0].equals("")) {
+                if (parameters[0].toLowerCase().startsWith("auto")) {
+                    controller.displayMessage("Auto-starting, Picking Grapes", 0);
+                    System.out.println("Auto-starting, Picking Grapes");
+                    parseVariables();
+                    startSequence();
+                    scriptStart();
+                }
+            }
 			if (!guiSetup) {
 				setupGUI();
 				guiSetup = true;
 			}
 			if (scriptStarted) {
-				controller.displayMessage("@red@Grape Harvester - By Kaila");
-				controller.displayMessage("@red@Start in Edge Bank or near Grapes");
-				if(controller.isInBank() == true) {
-					controller.closeBank();
-				}
-				if(controller.currentX() < 240) {
-					bank();
-					BankToGrape();
-					controller.sleep(1380);
-				}
+                startSequence();
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
-							
+
 				if(controller.getInventoryItemCount() == 30) {
 					controller.setStatus("@red@Banking..");
 					GrapeToBank();
@@ -69,14 +79,14 @@ public class K_GrapeHarvester extends IdleScript {
 					BankToGrape();
 					controller.sleep(618);
 				}
-				
+
 				controller.setStatus("@yel@Picking Grapes..");
 				int[] coords = controller.getNearestObjectById(1283);
 				if(coords != null) {
 					controller.setStatus("@yel@Harvesting...");
 					controller.atObject(coords[0], coords[1]);
 					controller.sleep(1000);
-					
+
 					while(controller.isBatching() && controller.getInventoryItemCount() < 30) {
 						controller.sleep(1000);
 					}
@@ -87,8 +97,8 @@ public class K_GrapeHarvester extends IdleScript {
 				controller.sleep(100);
 			}
 		}
-					
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -96,9 +106,9 @@ public class K_GrapeHarvester extends IdleScript {
 		controller.sleep(640);
 
 		if (controller.isInBank()) {
-			
+
 			totalGrapez = totalGrapez + controller.getInventoryItemCount(143);
-			
+
 			if(controller.getInventoryItemCount(143) >  0) {  //deposit the Grapes
 				controller.depositItem(143,controller.getInventoryItemCount(143));
 				controller.sleep(1380);
@@ -114,15 +124,15 @@ public class K_GrapeHarvester extends IdleScript {
 
 			}
 
-			
+
 			GrapezInBank = controller.getBankItemCount(143);
 			controller.closeBank();
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void GrapeToBank() {  //replace
-		
+
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(251,454);
 		controller.walkTo(254,454);
@@ -140,11 +150,11 @@ public class K_GrapeHarvester extends IdleScript {
 		controller.walkTo(218,447);
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
-    	
+
 	}
-	
+
     public void BankToGrape() {
-    	
+
     	controller.setStatus("@gre@Walking to Grapes..");
 		controller.walkTo(218,447);
 		controller.walkTo(220,445);
@@ -162,14 +172,16 @@ public class K_GrapeHarvester extends IdleScript {
 		controller.walkTo(251,454);
     	//next to Grape now)
     	controller.setStatus("@gre@Done Walking..");
-    	
+
 	}
-	
-	
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+public void parseVariables() {
+    startTime = System.currentTimeMillis();
+}
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -181,6 +193,7 @@ public class K_GrapeHarvester extends IdleScript {
 		JLabel label1 = new JLabel("Harvests Grapes near Edge Monastery");
 		JLabel label2 = new JLabel("*Start in Edge Bank with Herb Clippers");
 		JLabel label3 = new JLabel("*Recommend Armor against lvl 21 Scorpions");
+        JLabel label4 = new JLabel("This bot supports the \"autostart\" parameter");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
@@ -188,11 +201,11 @@ public class K_GrapeHarvester extends IdleScript {
 			public void actionPerformed(ActionEvent e) {
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
-				startTime = System.currentTimeMillis();
+                parseVariables();
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -201,6 +214,7 @@ public class K_GrapeHarvester extends IdleScript {
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
 		scriptFrame.add(label3);
+        scriptFrame.add(label4);
 		scriptFrame.add(startScriptButton);
 		centerWindow(scriptFrame);
 		scriptFrame.setVisible(true);
@@ -221,17 +235,17 @@ public class K_GrapeHarvester extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int successPerHr = 0;
 	    	int TripSuccessPerHr = 0;
-	    	
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 	    		successPerHr = (int)(totalGrapez * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

@@ -15,17 +15,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Grabs Grapes from edge monestary
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * Author - Kaila
  */
-public class K_MonkRobes extends IdleScript {	
+public class K_MonkRobes extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -35,13 +34,13 @@ public class K_MonkRobes extends IdleScript {
     int totalTrips = 0;
     int TopzInBank = 0;
     int BotzInBank = 0;
-    
+
     int robeId[] = {388,389};
-    
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-		
+
+
 		public int start(String parameters[]) {
 			if (!guiSetup) {
 				setupGUI();
@@ -68,13 +67,13 @@ public class K_MonkRobes extends IdleScript {
 				}
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
-							
+
 				if(controller.getInventoryItemCount() == 30) {
 					controller.setStatus("@red@Banking..");
 					GrapeToBank();
@@ -82,7 +81,7 @@ public class K_MonkRobes extends IdleScript {
 					BankToGrape();
 					controller.sleep(618);
 				}
-				
+
 
 			   		int[] coords = controller.getNearestItemById(388);  //always pick up tops
 	        		if(coords != null) {
@@ -101,8 +100,8 @@ public class K_MonkRobes extends IdleScript {
 	        		}
 			}
 		}
-					
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -110,10 +109,10 @@ public class K_MonkRobes extends IdleScript {
 		controller.sleep(640);
 
 		if(controller.isInBank()){
-			
+
 			totalTopz = totalTopz + controller.getInventoryItemCount(388);
 			totalBotz = totalBotz + controller.getInventoryItemCount(389);
-			
+
 			if(controller.getInventoryItemCount(388) >  0) {  //robe top
 				controller.depositItem(388,controller.getInventoryItemCount(388));
 				controller.sleep(1380);
@@ -122,17 +121,17 @@ public class K_MonkRobes extends IdleScript {
 				controller.depositItem(389,controller.getInventoryItemCount(389));
 				controller.sleep(1380);
 			}
-			
+
 			TopzInBank = controller.getBankItemCount(388);
 			BotzInBank = controller.getBankItemCount(389);
-			
+
 			controller.closeBank();
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void GrapeToBank() {  //replace
-		
+
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(260,1405);
 		controller.walkTo(260,1411);
@@ -157,11 +156,11 @@ public class K_MonkRobes extends IdleScript {
 		controller.walkTo(218,447);
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
-    	
+
 	}
-	
+
     public void BankToGrape() {
-    	
+
     	controller.setStatus("@gre@Walking to Robes..");
 		controller.walkTo(218,447);
 		controller.walkTo(220,445);
@@ -191,14 +190,14 @@ public class K_MonkRobes extends IdleScript {
 		controller.walkTo(264,1403);
     	//next to robes now)
     	controller.setStatus("@gre@Done Walking..");
-    	
+
 	}
-	
-	
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -223,7 +222,7 @@ public class K_MonkRobes extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -254,19 +253,19 @@ public class K_MonkRobes extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int TopzSuccessPerHr = 0;
 	    	int BotzSuccessPerHr = 0;
 	    	int TripSuccessPerHr = 0;
-	    	
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 	    		TopzSuccessPerHr = (int)(totalTopz * scale);
 	    		BotzSuccessPerHr = (int)(totalTopz * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

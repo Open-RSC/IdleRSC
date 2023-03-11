@@ -14,28 +14,27 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
-/**- 
+/**-
 *Easy AF Wine drinker
 *Start in VARROCK EAST BANK ONLY
 *Drinks wines from the bank, stores the jugs and any half wine you might get
 *About 7k+ wines processed per hour!
 *Author Kaila
  */
-public class K_WineDrinker extends IdleScript {	
+public class K_WineDrinker extends IdleScript {
 	int vialsFilled = 0;
 	int fullVials = 0;
 	int emptyVials = 0;
 	int objectx = 0;
 	int objecty = 0;
-	
+
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+
 	public int start(String parameters[]) {
 		controller.displayMessage("@red@Wine Drinker, Start in Varrock East!!!");
 
-		
+
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount(142) < 1) {
 				controller.setStatus("@gre@Banking..");
@@ -48,14 +47,14 @@ public class K_WineDrinker extends IdleScript {
 						controller.setStatus("@gre@Drinking..");
 						controller.itemCommand(142);
 						controller.sleep(100);
-	
+
 			}
 		}
-		
-		return 1000; //start() must return a int value now. 
+
+		return 1000; //start() must return a int value now.
 	}
-	
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");

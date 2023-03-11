@@ -15,17 +15,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * Author - Kaila
  */
-public class K_RedSpiderEggz extends IdleScript {	
+public class K_RedSpiderEggz extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -34,11 +33,11 @@ public class K_RedSpiderEggz extends IdleScript {
 	int eggzInBank = 0;
 	int totalEggz = 0;
     int totalTrips = 0;
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-		
+
+
 		public int start(String parameters[]) {
 			if (!guiSetup) {
 				setupGUI();
@@ -60,17 +59,17 @@ public class K_RedSpiderEggz extends IdleScript {
 				}
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
 
 				eat();
 				leaveCombat();
 				controller.setStatus("@yel@Picking Eggs..");
-				
+
 				if(controller.getInventoryItemCount() > 29 || controller.getInventoryItemCount(546) == 0) {
 					controller.setStatus("@red@Banking..");
 					EggToBank();
@@ -87,8 +86,8 @@ public class K_RedSpiderEggz extends IdleScript {
 				}
 			}
 		}
-					
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -142,19 +141,19 @@ public class K_RedSpiderEggz extends IdleScript {
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void eat() {
-		
+
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
+
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-			
+
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -206,7 +205,7 @@ public class K_RedSpiderEggz extends IdleScript {
 			}
 		}
 	}
-	
+
 	public void EggToBank() {
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(197,3244);
@@ -238,8 +237,8 @@ public class K_RedSpiderEggz extends IdleScript {
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
-    public void BankToEgg() {	
+
+    public void BankToEgg() {
     	controller.setStatus("@gre@Walking to Eggs..");
 		controller.walkTo(221,447);
 		controller.walkTo(217,458);
@@ -372,7 +371,7 @@ public class K_RedSpiderEggz extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -407,17 +406,17 @@ public class K_RedSpiderEggz extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int successPerHr = 0;
 	    	int TripSuccessPerHr = 0;
-	    	
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 	    		successPerHr = (int)(totalEggz * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

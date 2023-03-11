@@ -14,11 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
-/**- 
+/**-
 *Tested on christmas crackers and christmas holiday presents!
- * Should work in any bank, tested in varrock west 
+ * Should work in any bank, tested in varrock west
 *requires 2 accounts
 *This bot is the present "taker", it will bank when you have 29 items
 *
@@ -31,15 +30,15 @@ import scripting.idlescript.AIOCooker.FoodObject;
 *WARNING: while within 1 tile of the giver, you will continue to recieve presents
 *WARNING: regardless of how full your inventory is. items WILL drop to the floor
 *Walk 1 tile away to stop the trades temporarily, and/or bank items
- * 
+ *
  * Heavily edited by Kailash
  */
-public class K_GiftTaker extends IdleScript {	
+public class K_GiftTaker extends IdleScript {
 	int objectx = 0;
 	int objecty = 0;
-	
+
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+
 	public int start(String parameters[]) {
 		controller.displayMessage("@red@present TAKER! Let's party like it's 2004!");
 		controller.setStatus("@gre@Running..");
@@ -56,11 +55,11 @@ public class K_GiftTaker extends IdleScript {
 					controller.sleep(1280);
 					for (int itemId : controller.getInventoryItemIds()) {
 					controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-	
+
 					}
 					controller.sleep(1280);
 				}
 			}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
-} 
+}

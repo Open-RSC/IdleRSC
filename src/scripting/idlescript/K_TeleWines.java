@@ -15,28 +15,27 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOCooker.FoodObject;
 
 /**
  * Grabs red spider Wines in edge dungeon, recommend very high stats ~90+
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * Author - Kaila
  */
-public class K_TeleWines extends IdleScript {	
+public class K_TeleWines extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
 	int WinezInBank = 0;
 	int totalWinez = 0;
     int totalTrips = 0;
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
-		
+
+
 		public int start(String parameters[]) {
 			if (!guiSetup) {
 				setupGUI();
@@ -56,13 +55,13 @@ public class K_TeleWines extends IdleScript {
 				}
 				scriptStart();
 			}
-			return 1000; //start() must return a int value now. 
+			return 1000; //start() must return a int value now.
 		}
-		
-		
+
+
 		public void scriptStart() {
 			while(controller.isRunning()) {
-							
+
 				if(controller.getInventoryItemCount() == 30) {
 					controller.setStatus("@red@Banking..");
 					WineToBank();
@@ -70,10 +69,10 @@ public class K_TeleWines extends IdleScript {
 					BankToWine();
 					controller.sleep(618);
 				}
-				
+
 				controller.setStatus("@yel@Picking Wines..");
 				int[] coords = controller.getNearestItemById(501);
-				 
+
 				if(coords != null) {
 					controller.castSpellOnGroundItem(controller.getSpellIdFromName("Telekinetic grab"), 501, 333, 434);
 					controller.sleep(1500);
@@ -83,11 +82,11 @@ public class K_TeleWines extends IdleScript {
 					controller.sleep(100);
 				} else {
 					controller.sleep(1500);
-				}				
+				}
 			}
 		}
-					
-	
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -95,16 +94,16 @@ public class K_TeleWines extends IdleScript {
 		controller.sleep(640);
 
 		if (controller.isInBank()) {
-			
+
 			totalWinez = totalWinez + controller.getInventoryItemCount(501);
-			
+
 			if(controller.getInventoryItemCount(501) >  0) {  //deposit the Wines
 				controller.depositItem(501,controller.getInventoryItemCount(501));
 				controller.sleep(1380);
 			}
-			
+
 			WinezInBank = controller.getBankItemCount(501);
-			
+
 
 			if(controller.getInventoryItemCount(42) < 30) {  //withdraw 30 law
 				controller.withdrawItem(42, 30 - controller.getInventoryItemCount(42));
@@ -143,7 +142,7 @@ public class K_TeleWines extends IdleScript {
 			controller.sleep(640);
 		}
 	}
-	
+
 	public void WineToBank() {  //replace
     	controller.setStatus("@gre@Walking to Bank..");
 		controller.walkTo(332,434);
@@ -167,8 +166,8 @@ public class K_TeleWines extends IdleScript {
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
-    public void BankToWine() {	
+
+    public void BankToWine() {
     	controller.setStatus("@gre@Walking to Wines..");
 		controller.walkTo(327,552);
 		controller.walkTo(324,549);
@@ -191,12 +190,12 @@ public class K_TeleWines extends IdleScript {
     	//next to wine now)
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
-	
+
+
 	//GUI stuff below (icky)
-	
-	
-	
+
+
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -219,7 +218,7 @@ public class K_TeleWines extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -248,17 +247,17 @@ public class K_TeleWines extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int successPerHr = 0;
 	    	int TripSuccessPerHr = 0;
-	    	
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
 	    		successPerHr = (int)(totalWinez * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}

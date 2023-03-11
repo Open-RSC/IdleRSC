@@ -1031,9 +1031,9 @@ public abstract class Script implements IScript {
 	 * @param start_y
 	 *			the center Y of the circle area.
 	 * @param latitude
-	 *			the distance east & west of center X's area.
+	 *			the distance east and west of center X's area.
 	 * @param longitude
-	 *			the distance north & south of center Y's area.
+	 *			the distance north and south of center Y's area.
 	 * @return always an integer array of size 3. If no NPC can be found, the
 	 *		 array will contain -1, -1, -1. If an NPC was found, the array
 	 *		 will contain the NPC's local index, X, Y.

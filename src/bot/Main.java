@@ -131,7 +131,6 @@ public class Main {
      * A function for controlling whether or not scripts are running.
      *
      * @param b
-     * @return void
      */
     public static void setRunning(boolean b) {
         isRunning = b;
@@ -147,7 +146,6 @@ public class Main {
      * A function for controlling the autologin functionality.
      *
      * @param b
-     * @return void
      */
     public static void setAutoLogin(boolean b) {
         autoLoginCheckbox.setSelected(b);

@@ -241,9 +241,9 @@ public abstract class Script
 	/**
 	 * The current status index of the trade.
 	 * 
-	 * 0 => no trade
-	 * 1 => 1st trade window
-	 * 2 => 2nd trade window
+	 * 0: no trade
+	 * 1: 1st trade window
+	 * 2: 2nd trade window
 	 * 
 	 * @return
 	 */
@@ -450,8 +450,7 @@ public abstract class Script
 	}
 	/**
 	 * Performs the 1st command action available on the object at the specified tile.
-	 * @param x
-	 * @param y
+	 * @param coords
 	 */
 	public void AtObject(int coords[])
 	{
@@ -473,8 +472,7 @@ public abstract class Script
 	}
 	/**
 	 * Performs the 2nd command action available on the object at the specified tile.
-	 * @param x
-	 * @param y
+	 * @param coords
 	 */
 	public void AtObject2(int coords[])
 	{
@@ -492,7 +490,7 @@ public abstract class Script
 		controller.walkTo(x, y, 0, false);
 	}
 	/**
-	 * Some hacky SBot method for walking to a tile involving {@link compatability.sbot.Script.wait} -- not recommended for use.
+	 * Some hacky SBot method for walking to a tile involving {@link Wait} -- not recommended for use.
 	 * @param x
 	 * @param y
 	 * @param step
@@ -1436,8 +1434,6 @@ public abstract class Script
 	}
     /**
      * Not used, but remains for compatability. 
-     * 
-     * @return
      */
 	public void ResetLastChatMessage()
 	{
@@ -1454,8 +1450,6 @@ public abstract class Script
 	}
     /**
      * Not used, but remains for compatability. 
-     * 
-     * @return
      */
 	public void ResetLastNPCMessage()
 	{
@@ -1472,8 +1466,6 @@ public abstract class Script
 	}
     /**
      * Not used, but remains for compatability. 
-     * 
-     * @return
      */
 	public void ResetLastServerMessage()
 	{
@@ -1539,8 +1531,6 @@ public abstract class Script
 	}
     /**
      * Not used, but remains for compatability. 
-     * 
-     * @return
      */
 	public void CheckFighters(boolean check)
 	{
@@ -1549,8 +1539,6 @@ public abstract class Script
 	}
     /**
      * Not used, but remains for compatability. 
-     * 
-     * @return
      */
 	public void SleepWord()
 	{
@@ -1633,8 +1621,6 @@ public abstract class Script
 	}
     /**
      * Not used, but remains for compatability. 
-     * 
-     * @return
      */
 	public void SetWorld(int world)
 	{

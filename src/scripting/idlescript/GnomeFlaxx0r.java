@@ -5,7 +5,7 @@ package scripting.idlescript;
  * 
  * @author Dvorak
  * 
- * bugfixes & rewrite by Kaila
+ * bugfixes and rewrite by Kaila
  */
 public class GnomeFlaxx0r extends IdleScript {
 	boolean spin = false;

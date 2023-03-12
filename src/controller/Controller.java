@@ -219,7 +219,7 @@ public class Controller {
 	/**
 	 * Retrieve a list of items on the ground near the player. Duplicate items on the same tile will be added to the list once, with the actual amount available from the getAmount() method.
 	 *
-	 * @return List<GroundItemDef> -- guaranteed to not be null.
+	 * @return guaranteed to not be null. 
 	 */
 	public List<GroundItemDef> getGroundItemsStacked() {
 		int[] groundItemIDs = this.getGroundItems();
@@ -377,8 +377,8 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of nearby players.
-	 *
-	 * @return List<ORSCharacter> -- guaranteed to not be null.
+	 * 
+	 * @return guaranteed to not be null.
 	 */
 	public List<ORSCharacter> getPlayers() {
 
@@ -710,9 +710,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of nearby objects.
-	 *
-	 * @return List<GameObjectDef> -- guaranteed to not be null.
+	 * Retrieves a list of nearby objects. 
+	 * 
+	 * @return guaranteed to not be null. 
 	 */
 	public List<GameObjectDef> getObjects() {
 		int[] gameObjectInstanceIDs = getObjectsIds();
@@ -766,9 +766,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of NPCs nearby.
-	 *
-	 * @return List<ORSCharacter> -- guaranteed to not be null.
+	 * Retrieves a list of NPCs nearby. 
+	 * 
+	 * @return guaranteed to not be null. 
 	 */
 	public List<ORSCharacter> getNpcs() {
 		List<ORSCharacter> _list = new ArrayList();
@@ -793,9 +793,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of wall objects nearby.
-	 *
-	 * @return List<DoorDef> -- guaranteed to not be null.
+	 * Retrieves a list of wall objects nearby. 
+	 * 
+	 * @return guaranteed to not be null. 
 	 */
 	public List<DoorDef> getWallObjects() {
 		List<Integer> _list = new ArrayList();
@@ -1795,8 +1795,8 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of all the items inside the bank.
-	 *
-	 * @return List<Item> -- guaranteed to not be null.
+	 * 
+	 * @return guaranteed to not be null.
 	 */
 	public List<Item> getBankItems() {
 		List<Item> bankItems = new ArrayList();
@@ -2677,9 +2677,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of all the shop items in the shop.
-	 *
-	 * @return List<Item> -- guaranteed to not be null.
+	 * Retrieves a list of all the shop items in the shop. 
+	 * 
+	 * @return shopItems guaranteed to not be null.
 	 */
 	public List<Item> getShopItems() {
 		List<Item> shopItems = new ArrayList();
@@ -2791,8 +2791,8 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of all the skills.
-	 *
-	 * @return List<SkillDef> -- guaranteed to not be null.
+	 * 
+	 * @return _list guaranteed to not be null. 
 	 */
 	public List<SkillDef> getSkills() {
 		String[] skillNames = this.getSkillNamesLong();
@@ -3161,8 +3161,8 @@ public class Controller {
 
 	/**
 	 * Retrieves items which the player is offering in the trade.
-	 *
-	 * @return List<Item> -- guaranteed to not be null.
+	 * 
+	 * @return localTradeItems guaranteed to not be null.
 	 */
 	public List<Item> getLocalTradeItems() {
 		List<Item> localTradeItems = new ArrayList();
@@ -3198,9 +3198,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves  a list of items which your trade recipient is offering.
-	 *
-	 * @return List<Item> -- guaranteed to not be null.
+	 * Retrieves  a list of items which your trade recipient is offering. 
+	 * 
+	 * @return recipientTradeItems guaranteed to not be null.
 	 */
 	public List<Item> getRecipientTradeItems() {
 		List<Item> recipientTradeItems = new ArrayList();
@@ -3302,8 +3302,8 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of all items in the inventory.
-	 *
-	 * @return List<Item> -- guaranteed to not be null.
+	 * 
+	 * @return _list guaranteed to not be null.
 	 */
 	public List<Item> getInventoryItems() {
 		List<Item> _list = new ArrayList();
@@ -3356,9 +3356,9 @@ public class Controller {
     }
 
     /**
-     * Retrieves a list of users on the friends list.
-     *
-     * @return List<String> -- guaranteed to never be null.
+     * Retrieves a list of users on the friends list. 
+     * 
+     * @return friendsList guaranteed to never be null.
      */
 	public List<String> getFriendList() {
 		List<String> friendList = new ArrayList();
@@ -3376,8 +3376,8 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of users on the ignore list.
-	 *
-	 * @return List<String> -- guaranteed to never be null.
+	 * 
+	 * @return ignoreList guaranteed to never be null.
 	 */
 	public List<String> getIgnoreList() {
 		List<String> ignoreList = new ArrayList();
@@ -4066,8 +4066,8 @@ public class Controller {
 
 	/**
 	 * Retrieves the examine text of the specified wall object id.
-	 *
-	 * @param npcId
+	 * 
+	 * @param objId
 	 * @return String -- guaranteed to not be null
 	 */
 	public String getWallObjectExamineText(int objId) {
@@ -4080,8 +4080,8 @@ public class Controller {
 
 	/**
 	 * Retrieves the examine text of the specified wall object id.
-	 *
-	 * @param npcId
+	 * 
+	 * @param objId
 	 * @return String -- guaranteed to not be null
 	 */
 	public String getWallObjectName(int objId) {
@@ -4294,7 +4294,6 @@ public class Controller {
 
 	/**
 	 * If on tutorial island, skips tutorial island.
-	 * @return
 	 */
 	public void skipTutorialIsland() {
 		while(mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);

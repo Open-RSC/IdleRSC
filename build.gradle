@@ -120,7 +120,7 @@ ext.commitCount = { ->
 }
 
 // create release zip
-tasks.register('release', Exec) {
+tasks.register("release", Exec) {
     dependsOn build
 
     def releaseName = "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}"
@@ -147,4 +147,11 @@ tasks.register('release', Exec) {
     doLast {
         println "Archive saved to ${releaseName}.zip"
     }
+}
+
+// update documentation stored in the repository under doc/
+tasks.register("updateDocumentation", Copy) {
+    dependsOn javadoc
+    from "./build/docs/javadoc"
+    into "./doc"
 }

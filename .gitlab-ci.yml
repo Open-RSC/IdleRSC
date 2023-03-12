@@ -7,9 +7,12 @@ default:
 
 stages:
   - build
+  - pages
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
+  - apt-get update --quiet --assume-yes
+  - apt-get install --quiet --assume-yes git
 
 # git rev-list --count does not work correctly with the default settings.
 variables:
@@ -35,10 +38,17 @@ cache:
 build:
   stage: build
   script: 
-    - apt-get update -q -y
-    - apt-get install -y git
     - ./gradlew --build-cache release
   artifacts:
     paths:
       - ./*.zip
     expire_in: 1 week
+
+pages:
+  stage: pages
+  script: 
+    - ./gradlew --build-cache updateDocumentation
+    - cp -r doc public
+  artifacts:
+    paths:
+      - public

@@ -256,7 +256,7 @@ public class K_Paladins extends IdleScript {
 
 
 	//Important PUBLIC VOID's below
-	public void leaveCombat() {
+	public void leaveCombatOld() {
 
 		if(controller.isInCombat()) {
 			controller.setStatus("@red@Leaving combat..");
@@ -264,7 +264,16 @@ public class K_Paladins extends IdleScript {
 			controller.sleep(800);
 		}
 	}
-
+    public void leaveCombat() {
+        for (int i = 1; i <= 20; i++) {
+            if (controller.isInCombat()) {
+                controller.setStatus("@red@Leaving combat..");
+                controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+                controller.sleep(200);
+            }
+            controller.sleep(10);
+        }
+    }
 
 	public void eat() {
 

@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import orsc.ORSCharacter;
+
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -17,7 +19,7 @@ import javax.swing.JLabel;
  * start in bank with knife in inventory
  * by Kaila
  */
-public class K_FastBowFletcher extends IdleScript {	
+public class K_FastBowFletcher extends IdleScript {
 	JFrame scriptFrame = null;
 	int objectx = 0;
 	int objecty = 0;
@@ -27,10 +29,10 @@ public class K_FastBowFletcher extends IdleScript {
 	boolean scriptStarted = false;
 	int logsInBank = 0;
 	int totalBows = 0;
-	
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
-	
+
 	public int start(String parameters[]) {
 		if (!guiSetup) {
 			setupGUI();
@@ -42,15 +44,29 @@ public class K_FastBowFletcher extends IdleScript {
 			}
 			scriptStart();
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
-	
+
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount(logId) < 1) {
+                if (!controller.isInBank()) {
+                    int[] bankerIds = {95, 224, 268, 540, 617, 792};
+                    ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+                    if (npc != null) {
+                        controller.setStatus("@yel@Walking to Banker..");
+                        controller.displayMessage("@yel@Walking to Banker..");
+                        controller.walktoNPCAsync(npc.serverIndex);
+                        controller.sleep(200);
+                    } else {
+                        controller.log("@red@Error..");
+                        controller.sleep(1000);
+                    }
+                }
 				bank();
 			}
 			if(controller.getInventoryItemCount(logId) > 0) {
+                controller.displayMessage("@gre@Fletching..");
 				controller.setStatus("@gre@Fletching..");
 				controller.useItemOnItemBySlot(controller.getInventoryItemSlotIndex(13), controller.getInventoryItemSlotIndex(logId));
 				controller.sleep(1200);
@@ -58,20 +74,19 @@ public class K_FastBowFletcher extends IdleScript {
 				while(controller.isBatching()) controller.sleep(1000);
 			}
 			controller.sleep(320);
-		}	
+		}
 	}
-	
-
 	public void bank() {
 
-		controller.setStatus("@yel@Banking..");
+		controller.setStatus("@gre@Banking..");
+        controller.displayMessage("@gre@Banking..");
 		controller.openBank();
 		controller.sleep(640);
 
 		if (controller.isInBank()) {
-			
+
 			totalBows = totalBows + 29;
-			
+
 			if(controller.getBankItemCount(logId) < 30) {    //stops making when 30 in bank to not mess up alignments/organization of bank!!!
 				controller.setStatus("@red@NO Logs in the bank, Logging Out!.");
 				controller.setAutoLogin(false);
@@ -97,24 +112,24 @@ public class K_FastBowFletcher extends IdleScript {
 				controller.withdrawItem(logId, 29);
 				controller.sleep(650);
 			}
-		
+
 			logsInBank = controller.getBankItemCount(logId);
 			controller.closeBank();
-			
+
 		}
-	}	
-	
-	
-	
-	//GUI stuff below (icky)	
-	
+	}
+
+
+
+	//GUI stuff below (icky)
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
 		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 		frame.setLocation(x, y);
 	}
-	
+
 	public void setupGUI() {
 		JLabel header = new JLabel("Unstrung Longbow Maker - Kaila");
 		JLabel knifeLabel = new JLabel("Start with Knife in Inv!");
@@ -135,9 +150,9 @@ public class K_FastBowFletcher extends IdleScript {
 				controller.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
-		
+
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		scriptFrame.add(header);
@@ -161,6 +176,19 @@ public class K_FastBowFletcher extends IdleScript {
 
 		return new String(twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
 	}
+    /**
+     * credit to chomp for toTimeToCompletion (from AA_Script) (totalBars, barsInBank, startTime)
+     */
+    public static String toTimeToCompletion(final int processed, final int remaining, final long time) {
+        if (processed == 0) {
+            return "0:00:00";
+        }
+
+        final double seconds = (System.currentTimeMillis() - time) / 1000.0;
+        final double secondsPerItem = seconds / processed;
+        final long ttl = (long) (secondsPerItem * remaining);
+        return String.format("%d:%02d:%02d", ttl / 3600, (ttl % 3600) / 60, (ttl % 60));
+    }
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
@@ -176,8 +204,10 @@ public class K_FastBowFletcher extends IdleScript {
 			controller.drawString("@red@Fast Bow Fletcher @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
 			controller.drawString("@whi@Logs In bank: @yel@" + String.valueOf(this.logsInBank), 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Longbows Made: @yel@" + String.valueOf(this.totalBows), 350, 76, 0xFFFFFF, 1);
-            controller.drawString("@whi@Longbows Per Hr: @yel@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 350, 90, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 350, 104, 0xFFFFFF, 1);
+            controller.drawString("@whi@Longbows Per Hr: @yel@" + String.format("%,d", successPerHr) + "@yel@/@whi@hr", 350, 90, 0xFFFFFF, 1);
+            controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBows, logsInBank, startTime), 350, 104, 0xFFFFFF, 1);
+			controller.drawString("@whi@Runtime: " + runTime, 350, 104+14, 0xFFFFFF, 1);
+
 		}
 	}
 }

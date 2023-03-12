@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
 
 /**-
 *Easy AF Wine drinker
-*Start in VARROCK EAST BANK ONLY
+*
 *Drinks wines from the bank, stores the jugs and any half wine you might get
 *About 7k+ wines processed per hour!
 *Author Kaila
@@ -32,15 +32,26 @@ public class K_WineDrinker extends IdleScript {
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 
 	public int start(String parameters[]) {
-		controller.displayMessage("@red@Wine Drinker, Start in Varrock East!!!");
+		controller.displayMessage("@red@Wine Drinker!!");
 
 
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount(142) < 1) {
 				controller.setStatus("@gre@Banking..");
-				controller.walkTo(98,510);
-				controller.sleep(640);
-				controller.walktoNPCAsync(95);
+                controller.displayMessage("@gre@Banking..");
+                if (!controller.isInBank()) {
+                    int[] bankerIds = {95, 224, 268, 540, 617, 792};
+                    ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+                    if (npc != null) {
+                        controller.setStatus("@yel@Walking to Banker..");
+                        controller.displayMessage("@yel@Walking to Banker..");
+                        controller.walktoNPCAsync(npc.serverIndex);
+                        controller.sleep(200);
+                    } else {
+                        controller.log("@red@Error..");
+                        controller.sleep(1000);
+                    }
+                }
 				bank();
 			}
 			if(controller.getInventoryItemCount(142) > 0) {

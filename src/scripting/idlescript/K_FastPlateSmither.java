@@ -130,6 +130,7 @@ public void scriptStart() {
 	while(controller.isRunning()) {
 		if(controller.getInventoryItemCount(barId) < 5 && !controller.isInBank()) {
 			controller.setStatus("@gre@Banking..");
+            controller.displayMessage("@gre@Banking..");
 			controller.walkTo(150,507);
 			bank();
 			controller.walkTo(148,512);
@@ -137,6 +138,7 @@ public void scriptStart() {
 		if(controller.getInventoryItemCount(barId) > 4) {
 			controller.sleepHandler(98, true);
 			controller.setStatus("@gre@Smithing..");
+            controller.displayMessage("@gre@Smithing..");
 			controller.useItemIdOnObject(148, 513, barId);
 			controller.sleep(1000);
 			controller.optionAnswer(1);
@@ -317,8 +319,8 @@ public void scriptStart() {
             controller.drawString("@whi@Bars Per Hr: @gre@" + String.format("%,d", barSuccessPerHr) + "@yel@/@whi@hr", 350, 90, 0xFFFFFF, 1);
 			controller.drawString("@whi@Platebodies Made: @gre@" + this.totalPlates, 350, 104, 0xFFFFFF, 1);
             controller.drawString("@whi@Platebodies Per Hr: @gre@" + String.format("%,d", plateSuccessPerHr) + "@yel@/@whi@hr", 350, 118, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 350, 118+14, 0xFFFFFF, 1);
-            controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), 350, 118+28, 0xFFFFFF, 1);
+            controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), 350, 118+14, 0xFFFFFF, 1);
+            controller.drawString("@whi@Runtime: " + runTime, 350, 118+28, 0xFFFFFF, 1);
 		}
 	}
 }

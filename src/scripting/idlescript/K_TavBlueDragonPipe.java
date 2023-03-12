@@ -18,10 +18,14 @@ import javax.swing.JTextField;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila");
- * Start in Edge bank with Armor");
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
- * 31 Magic Required for escape tele");
+ * Wildy Fire Giant Killer - By Kaila.
+ *
+ *      Start in Fally west with gear on, or in Dragon room!
+ *      Uses Coleslaw agility pipe shortcut.
+ *      70 Agility required, for the shortcut.
+ *      Sharks/Laws/Airs/Earths IN BANK REQUIRED.
+ *      31 Magic Required for escape tele.
+*       Adjustable Food Withdraw amount.
  *
  * Author - Kaila
  */

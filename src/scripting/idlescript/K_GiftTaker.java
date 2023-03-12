@@ -16,22 +16,28 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**-
-*Tested on christmas crackers and christmas holiday presents!
- * Should work in any bank, tested in varrock west
-*requires 2 accounts
-*This bot is the present "taker", it will bank when you have 29 items
-*
-*To setup start both accounts near each other with NO items in either inventory
-*start the taker bot FIRST before even starting giver bot
-*the bots will need to be synced up similar to trader bots
-*ideally monitor them, if something goes wrong present stuff will drop to the floor and despawn!!!!! you have been warned!
-*
-*
-*WARNING: while within 1 tile of the giver, you will continue to recieve presents
-*WARNING: regardless of how full your inventory is. items WILL drop to the floor
-*Walk 1 tile away to stop the trades temporarily, and/or bank items
  *
- * Heavily edited by Kailash
+ * K_GiftTaker - by Kaila
+ *
+ *      This bot will open the bank and automatically bank when it gets close to a full inventory.
+ *
+ *
+ *      Tested on christmas crackers and christmas holiday presents!
+ *      Should work in any bank, Ideal one is draynor!
+ *      requires 2 accounts
+ *      This bot is the present "taker", it will bank when you have 29 items
+ *
+ *      To setup start both accounts near each other with NO items in either inventory
+ *      start the taker bot FIRST before even starting giver bot
+ *      the bots will need to be synced up similar to trader bots
+ *      ideally monitor them, if something goes wrong present stuff will drop to the floor and despawn!!!!! you have been warned!
+ *
+ *
+ *      WARNING: while within 1 tile of the giver, you will continue to recieve presents
+ *      WARNING: regardless of how full your inventory is. items WILL drop to the floor
+ *      Recommend observing bot due to high value of rares.
+ *
+ * Author -  Kaila
  */
 public class K_GiftTaker extends IdleScript {
 	int objectx = 0;

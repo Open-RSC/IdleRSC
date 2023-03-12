@@ -14,8 +14,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * start in bank with bones in bank
-*by Kaila
+ * Fast Bank Bury.
+ *
+ *      Selectable Bone Id.
+ *      start in bank with unnoted bones in bank.
+ *      Will withdraw and bury bones.
+ *
+ *  todo
+ *      add gui and statistics.
+ *
+ *  Author - Kaila
  */
 public class K_FastBankBury extends IdleScript {
 	JFrame scriptFrame = null;

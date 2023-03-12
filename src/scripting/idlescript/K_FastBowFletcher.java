@@ -16,8 +16,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * start in bank with knife in inventory
- * by Kaila
+ * Fast Longbow Fletcher
+ *
+ *      Start in any bank with knife in inventory
+ *
+ *      todo
+ *          Add autostart sequence from fastPlate and change variables
+ *
+ * Author - Kaila
  */
 public class K_FastBowFletcher extends IdleScript {
 	JFrame scriptFrame = null;

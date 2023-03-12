@@ -14,25 +14,28 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Start in bank with hammer
- * Batch bars MUST be toggled on with in-game settings! (for coleslaw)
+ * Fast Platebody Smither - by Kaila.
  *
+ * 		Start with Hammer in Inv!
+ * 		Batch Bars MUST be toggled ON in settings!!!
+ * 		This ensures 5 Plates are made per Menu Cycle.
+ * 		Supports all bar types.
+ *
+ *        This bot supports the \"autostart\" parameter.
+ *                  defaults to steel plates.
  *
  * Parameters for Starting:
- *              auto, autostart  - makes steel platebodies
- *              bronze  - makes bronze platebodies
- *              iron -   makes iron platebodies
- *              steel -  makes steel platebodies
- *              mith, mithril -   makes mithril platebodies
- *              addy, adamantite -  makes adamantite platebodies
- *              rune, runite -  makes runite platebodies
+ *              auto, autostart  - makes steel platebodies.
+ *              bronze  - makes bronze platebodies.
+ *              iron -   makes iron platebodies.
+ *              steel -  makes steel platebodies.
+ *              mith, mithril -   makes mithril platebodies.
+ *              addy, adamantite -  makes adamantite platebodies.
+ *              rune, runite -  makes runite platebodies.
  *
  *
- *        This bot supports the \"autostart\" parameter
- *                  defaults to steel plates
  *
- *
- * Script by Kaila
+ * Author - Kaila
  *
  */
 public class K_FastPlateSmither extends IdleScript {

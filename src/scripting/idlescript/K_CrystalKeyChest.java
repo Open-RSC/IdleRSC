@@ -17,12 +17,16 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Buys attack capes from rovin and banks
+ * Crystal Key Chest Opener.
  *
+ *      Start by Crystal chest or in Catherby Bank!
+ *      Only works on Coleslaw for the time Being.
+ *      Utilizes the White Wolf Mountain Agility Shortcut.
  *
+ *  todo
+ *      add, "if fail agility shortcut" fallback? - currently bot may break.
  *
- *
- * Author - Kaila
+ * Author - Kaila.
  */
 public class K_CrystalKeyChest extends IdleScript {
 	JFrame scriptFrame = null;

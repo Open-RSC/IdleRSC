@@ -17,12 +17,27 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
+ *      Mines Addy/Mith/Coal in Hobgoblin Mine and banks in Edge! (some pk/death protection).
  *
+ *      This bot supports the "autostart" parameter to automatiically start the bot without gui.
  *
- * This bot supports the "autostart" parameter to automatiically start the bot without gui
+ *		Start in Edge bank with Armor and Pickaxe.
+ * 		Sharks in bank REQUIRED.
  *
+ * 		Teleport if Pkers Attack Option.
+ * 		31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ * 		Unselected, bot WALKS to Edge when Attacked.
+ * 		Selected, bot walks to 19 wildy & teleports.
+ *
+ * 		Return to Hobs Mine after Escaping Option.
+ * 		Unselected, bot will log out after escaping Pkers.
+ * 		Selected, bot will grab more food and return.
+ *
+ *      This bot supports the \"autostart\" parameter.
+ *      Defaults to Teleport Off, Return On.
  *
  * Author - Kaila
+ *
  */
 public class K_HobsMiner extends IdleScript {
 	JFrame scriptFrame = null;

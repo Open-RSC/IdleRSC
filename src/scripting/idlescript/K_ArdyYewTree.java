@@ -20,9 +20,9 @@ import orsc.ORSCharacter;
  * Cuts yew logs in NE ardy, including the far western one, banks in seers.
  *
  * todo:
- *   logic to cut same tree as other players
+ *   logic to cut same tree as other players.
  *
- * Author - Kaila
+ * Author - Kaila.
  */
 public class K_ArdyYewTree extends IdleScript {
 	JFrame scriptFrame = null;
@@ -94,7 +94,7 @@ public class K_ArdyYewTree extends IdleScript {
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount() < 30) {
-
+                controller.setStatus("@gre@Cutting Yews..");
 				if(controller.getObjectAtCoord(509,571) == 309) {
 					controller.walkTo(510,570);
 					controller.atObject(509,571);
@@ -141,10 +141,15 @@ public class K_ArdyYewTree extends IdleScript {
 	}
 
 public void goToBank() {
+    controller.setStatus("@gre@Walking to Bank..");
     controller.walkPathReverse(bankToYews);
+    controller.setStatus("@gre@Done Walking to Bank..");
+    controller.walkTo(551,613);
 	totalTrips = totalTrips + 1;
 	bank();
+    controller.setStatus("@gre@Going to Yews..");
     controller.walkPath(bankToYews);
+    controller.setStatus("@gre@Done Walking to Yews..");
 }
 
 

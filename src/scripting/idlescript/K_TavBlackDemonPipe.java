@@ -17,11 +17,12 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Tav black demons - By Kaila
- * Start in Fally west bank with gear
- * Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED. super atk, super str pots suggested.
- * 37 Magic Required for  tele, 37 prayer for paralize monster, 70 agility for shortcut.
- * anti dragon shield required. rune squareshield recomended.
+ * Tav black demons - By Kaila.
+ *
+ *      Start in Fally west bank with gear. Uses Coleslaw agility pipe shortcut.
+ *      Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED. super atk, super str pots suggested.
+ *      37 Magic Required for  tele, 37 prayer for paralize monster, 70 agility for shortcut.
+ *      anti dragon shield required. D2h recommended to demon kill rates don't suck.
  *
  * Author - Kaila
  */

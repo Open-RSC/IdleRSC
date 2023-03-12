@@ -17,10 +17,16 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs Nats from edge monestary
+ * Crafts Nature runes on Karamja.
  *
- *This bot supports the "autostart" parameter to automatiically start the bot without gui
+ * 	    Start in Karamja Shop or Inside/Outside Nature Alter.
+ * 	    Start with Coins, Noted Ess, and Nat Talisman.
+ * 	    Need 79+ combat so tribesmen don't poison you.
+ *      Unnotes ess in jungle shop, walks to alter to craft, repeat.
  *
+ *      Does NOT work for offical coleslaw irons (cannot purchase from overstock shops)
+ *
+ *      This bot supports the "autostart" parameter/CLI to automatiically start the bot without gui - Will automatically start without GUI.
  *
  * Author - Kaila
  */

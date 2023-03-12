@@ -18,13 +18,21 @@ import orsc.ORSCharacter;
 
 /**
  * Paladin Tower Thiever - By Kaila
- * Start in Ardy South Bank OR in Paladin Tower
- * Sharks in bank REQUIRED, can be changed in script
- * Switching to Defensive combat mode is ideal.
- * Low Atk/Str and Higher Def is more Efficient
- * Ensure to never wield weapons when Thieving.
  *
- * ~300k per hr+ xp per hr possible!
+ *      Start in Ardy South Bank OR in Paladin Tower
+ *      Sharks in bank REQUIRED, can be changed in script
+ *      Switching to Defensive combat mode is ideal.
+ *      Low Atk/Str and Higher Def is more Efficient
+ *      Ensure to never wield weapons when Thieving.
+ *
+ *      ~300k per hr+ xp per hr possible! (at 99 with thieving cape)
+ *
+ * todo
+ *      add more food selection
+ *
+ *
+ *
+ *
  *
  * Author - Kaila
  */

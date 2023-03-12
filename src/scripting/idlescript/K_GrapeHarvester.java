@@ -17,10 +17,15 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs Grapes from edge monestary
+ * Harvests Grapes from Edgeville Monastery.
  *
- *  This bot supports the "autostart" parameter to automatiically start the bot without gui
+ *      This bot supports the "autostart" parameter to automatiically start the bot without gui.
  *
+ * 		Grape Harvester - By Kaila.
+ * 	    Coleslaw Only
+ * 		Harvests Grapes near Edge Monastery.
+ * 		Start in Edge Bank with Herb Clippers.
+ * 		Recommend Armor against lvl 21 Scorpions.
  *
  * Author - Kaila
  */

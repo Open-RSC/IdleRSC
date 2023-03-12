@@ -17,11 +17,11 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Cuts Magic logs in seers, including the far western one, banks in seers.
+ * Cuts Magic logs in seers, including the far western one, banks in Seers.
  *
  * todo:
- *   reduce walking between locations - pause at each side
- *   logic to cut same tree as other players
+ *   reduce walking between locations - pause at each side.
+ *   logic to cut same tree as other players.
  *
  * Author - Kaila
  */

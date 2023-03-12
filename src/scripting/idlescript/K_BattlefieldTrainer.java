@@ -17,12 +17,17 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Battlefield Trainer - By Kaila");
- * Start in Edge bank with Armor");
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
- * 31 Magic Required for escape tele");
+ * Battlefield Trainer - By Kaila.
  *
- * Author - Kaila
+ *      Start in Ardy or at Battlefield.
+ *      Sharks in Bank REQUIRED.
+ *
+ * todo
+ *      add food type selection
+ *      add maging option
+ *
+ *
+ * Author - Kaila.
  */
 public class K_BattlefieldTrainer extends IdleScript {
 	JFrame scriptFrame = null;

@@ -16,11 +16,14 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**-
-*Easy AF Wine drinker
-*
-*Drinks wines from the bank, stores the jugs and any half wine you might get
-*About 7k+ wines processed per hour!
-*Author Kaila
+ * Easy AF Wine drinker
+ *
+ * Drinks wine from the bank,
+ * Banks the jugs and any half wine you might get.
+ * About 7k+ wines processed per hour!
+ *
+ * Author - Kaila
+ *
  */
 public class K_WineDrinker extends IdleScript {
 	int vialsFilled = 0;

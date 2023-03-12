@@ -80,7 +80,7 @@ public class K_Paladins extends IdleScript {
 
 					619, 	//blood rune
 					32,		//water rune
-					//170,    //iron bar
+					//170,    //iron bar //too common to loot
 					171,    //steel bar
 					173,    //mithril bar
 
@@ -192,7 +192,7 @@ public class K_Paladins extends IdleScript {
 			eat();
 			if(controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(610, 1549, 0, true);
+                leaveCombat();
 				invCoins = controller.getInventoryItemCount(10);
 				invChaos = controller.getInventoryItemCount(41);
 				controller.sleep(800);
@@ -288,12 +288,9 @@ public class K_Paladins extends IdleScript {
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
 
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
-
-			if(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(610, 1549, 0, true);
-				controller.sleep(800);
-			}
+            if(controller.isInCombat()) {
+                leaveCombat();
+            }
 			controller.setStatus("@red@Eating..");
 
 			boolean ate = false;

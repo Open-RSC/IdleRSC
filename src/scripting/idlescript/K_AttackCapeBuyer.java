@@ -19,7 +19,7 @@ import orsc.ORSCharacter;
 /**
  * 	Attack Cape Buyer - By Kaila.
  *
- * 		Talks to Rovin for capes & Banks.
+ * 		Talks to Rovin for capes and Banks.
  * 		Start by Rovin or varrock west!
  * 		Need coins in the inventory to buy.
  *
@@ -160,16 +160,7 @@ public class K_AttackCapeBuyer extends IdleScript {
 	}
 
 
-	//GUI stuff below (icky)
-
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
+	//GUI stuff below
 	public void setupGUI() {
 		JLabel header = new JLabel("Attack Cape Buyer - By Kaila");
 		JLabel label1 = new JLabel("Talks to Rovin for capes & Banks");
@@ -187,7 +178,7 @@ public class K_AttackCapeBuyer extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -196,10 +187,10 @@ public class K_AttackCapeBuyer extends IdleScript {
 		scriptFrame.add(label2);
 		scriptFrame.add(label3);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

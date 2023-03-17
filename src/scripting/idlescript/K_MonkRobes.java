@@ -198,22 +198,13 @@ public class K_MonkRobes extends IdleScript {
 
 
 	//GUI stuff below (icky)
-
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Monk Robe Picker - By Kaila");
-		JLabel label1 = new JLabel("Picks up Monks Robe SETS in Edge Monastery & Banks");
+		JLabel label1 = new JLabel("Picks up Monks Robe SETS in Edge Monastery and Banks");
 		JLabel label2 = new JLabel("*Start in Edge Bank or near Robes!");
 		JLabel label3 = new JLabel("*Recommend Armor against lvl 21 Scorpions");
 		JLabel label4 = new JLabel("*Please Gain Permission to enter Prayer guild FIRST");
-		JLabel label5 = new JLabel("*Bot will loot Equal Amounts of robe tops & bottoms");
+		JLabel label5 = new JLabel("*Bot will loot Equal Amounts of robe tops and bottoms");
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
@@ -226,7 +217,7 @@ public class K_MonkRobes extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -237,10 +228,10 @@ public class K_MonkRobes extends IdleScript {
 		scriptFrame.add(label4);
 		scriptFrame.add(label5);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

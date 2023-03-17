@@ -451,11 +451,11 @@ public class AIOFighter extends IdleScript {
     	JLabel npcIdsLabel = new JLabel("NPC IDs:");
     	JTextField npcIdsField = new JTextField("3");
     	JLabel maxWanderLabel = new JLabel("Max Wander Distance: (-1 to disable)");
-    	JTextField maxWanderField = new JTextField("30");
+    	JTextField maxWanderField = new JTextField("20");
     	JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
     	JTextField eatAtHpField = new JTextField(String.valueOf(controller.getCurrentStat(controller.getStatId("Hits")) / 2));
     	JLabel lootTableLabel = new JLabel("Loot Table: (comma separated)");
-    	JTextField lootTableField = new JTextField("381,10");
+    	JTextField lootTableField = new JTextField("381");
     	JCheckBox openDoorsCheckbox = new JCheckBox("Open doors/gates? (if On, then set a max wander!)");
     	JCheckBox buryBonesCheckbox = new JCheckBox("Loot & Bury Bones? (only loots bones when npc is null)");
         JCheckBox prioritizeBonesCheckbox = new JCheckBox("Prioritize Bone looting over attacking NPCs?)");
@@ -506,7 +506,7 @@ public class AIOFighter extends IdleScript {
         });
 
 
-    	scriptFrame = new JFrame("Script Options");
+    	scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
     	scriptFrame.setLayout(new GridLayout(0,2));
     	scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

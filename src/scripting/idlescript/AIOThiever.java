@@ -353,7 +353,7 @@ public class AIOThiever extends IdleScript {
 
 
 
-    	scriptFrame = new JFrame("Script Options");
+    	scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
     	scriptFrame.setLayout(new GridLayout(0,1));
     	scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

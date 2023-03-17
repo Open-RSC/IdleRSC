@@ -15,10 +15,26 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Druid Killer - By Kaila");
- * Start in Edge bank with Armor");
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
- * 31 Magic Required for escape tele");
+ * Edge Druid Killer - By Kaila.
+ *
+ * 		Start in Edge bank with Gear.
+ * 		Sharks in bank REQUIRED.
+ *
+ * 		Teleport if Pkers Attack option.
+ * 		31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ * 		Unselected, bot WALKS to Edge when Attacked.
+ * 		Selected, bot teleports, then walks to edge.
+ *
+ * 		Return to Druids after Escaping option.
+ * 		Unselected, bot will log out after escaping Pkers.
+ * 		Selected, bot will grab more food and return.
+ *
+ * 		Food Withdraw Amount Selection.
+ *
+ *      todo
+ *          add regular attack/str pot option? - use asgarnian ice
+ *          add food type selection?
+ *          add collect lower level herbs option.
  *
  * Author - Kaila
  */
@@ -437,7 +453,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 	public void setupGUI() {
 		JLabel header = new JLabel("Edge Druid Killer - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Gear");
-		JLabel label2 = new JLabel("Sharks/Laws/Airs/Earths IN BANK REQUIRED");
+		JLabel label2 = new JLabel("Sharks in bank REQUIRED");
 		JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
 		JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
 		JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");

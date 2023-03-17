@@ -17,10 +17,14 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila");
- * Start in Edge bank with Armor");
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
- * 31 Magic Required for escape tele");
+ * Wildy Fire Giant Killer - By Kaila.
+ *
+ *      Start in Edge bank with Armor.
+ *      Uses Coleslaw agility pipe shortcut.
+ *      70 Agility required, for the shortcut!
+ *      Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED.
+ *      31 Magic Required for escape tele.
+ *      Bot will attempt to wield dragonfire shield when in blue dragon room.
  *
  * Author - Kaila
  */

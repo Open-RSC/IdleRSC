@@ -16,8 +16,11 @@ import orsc.ORSCharacter;
 
 /**
  * Ice Dungeon Hob/Pirate Killer - By Kaila
- * Start in Fally East bank with Armor
- * Sharks IN BANK REQUIRED (reg atk str optional)
+ *
+ * 		Start in Fally East bank or In Ice Cave.
+ * 		Sharks IN BANK REQUIRED (pots optional).
+ * 		Use regular Atk/Str Pots Option.
+ * 		Food Withdraw amount Selection.
  *
  * Author - Kaila
  */
@@ -96,7 +99,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 	public boolean isWithinLootzone(int x, int y) {
 		return controller.distance(282, 3522, x, y) <= 14; //center of lootzone
 	}
-	
+
 	public int start(String parameters[]) {
 
 		if (scriptStarted) {
@@ -128,7 +131,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 				}
 			}
 		}
-		return 1000; //start() must return a int value now. 
+		return 1000; //start() must return a int value now.
 	}
 
 	public void scriptStart() {
@@ -197,13 +200,13 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		}
 	}
 
-		
-
-	
 
 
-	
-	
+
+
+
+
+
 	public void bank() {
 
 		controller.setStatus("@yel@Banking..");
@@ -211,7 +214,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		controller.sleep(640);
 
 		if (controller.isInBank()) {
-			
+
 			totalGuam = totalGuam + controller.getInventoryItemCount(165);
 			totalMar = totalMar + controller.getInventoryItemCount(435);
 			totalTar = totalTar + controller.getInventoryItemCount(436);
@@ -286,15 +289,15 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 
 	public void eat() {
 		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-		
-		
+
+
 		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
 
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -377,7 +380,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		totalTrips = totalTrips + 1;
     	controller.setStatus("@gre@Done Walking..");
 	}
-	
+
     public void BankToIce() {
     	controller.setStatus("@gre@Walking to Ice Dungeon..");
 		controller.walkTo(287,571);
@@ -422,8 +425,8 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 			controller.sleep(10);
 		}
 	}
-	
-    
+
+
 	//GUI stuff below (icky)
 
 	public void setValuesFromGUI(JCheckBox potUpCheckbox) {
@@ -433,7 +436,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 			potUp = false;
 		}
 	}
-	
+
 	public static void centerWindow(Window frame) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -462,7 +465,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 				scriptStarted = true;
 			}
 		});
-		
+
 		scriptFrame = new JFrame("Script Options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
@@ -494,7 +497,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 	@Override
 	public void paintInterrupt() {
 		if (controller != null) {
-			
+
 			String runTime = msToString(System.currentTimeMillis() - startTime);
 	    	int guamSuccessPerHr = 0;
     		int marSuccessPerHr = 0;
@@ -510,7 +513,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
     		int natSuccessPerHr = 0;
 			int GemsSuccessPerHr = 0;
     		int TripSuccessPerHr = 0;
-    		
+
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
@@ -528,11 +531,11 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 	    		natSuccessPerHr = (int)(totalNat * scale);
 				GemsSuccessPerHr = (int)(totalGems * scale);
 	    		TripSuccessPerHr = (int)(totalTrips * scale);
-	    		
+
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
-	    	
+
 			controller.drawString("@red@Asgarnian Pirate Hobs @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
 			controller.drawString("@whi@Guams: @gre@" + String.valueOf(this.totalGuam) + "@yel@ (@whi@" + String.format("%,d", guamSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Marrentills: @gre@" + String.valueOf(this.totalMar) + "@yel@ (@whi@" + String.format("%,d", marSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);

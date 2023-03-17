@@ -14,25 +14,28 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Start in bank with hammer
- * Batch bars MUST be toggled on with in-game settings! (for coleslaw)
+ * Fast Platebody Smither - by Kaila.
  *
+ * 		Start with Hammer in Inv!
+ * 		Batch Bars MUST be toggled ON in settings!!!
+ * 		This ensures 5 Plates are made per Menu Cycle.
+ * 		Supports all bar types.
+ *
+ *        This bot supports the \"autostart\" parameter.
+ *                  defaults to steel plates.
  *
  * Parameters for Starting:
- *              auto, autostart  - makes steel platebodies
- *              bronze  - makes bronze platebodies
- *              iron -   makes iron platebodies
- *              steel -  makes steel platebodies
- *              mith, mithril -   makes mithril platebodies
- *              addy, adamantite -  makes adamantite platebodies
- *              rune, runite -  makes runite platebodies
+ *              auto, autostart  - makes steel platebodies.
+ *              bronze  - makes bronze platebodies.
+ *              iron -   makes iron platebodies.
+ *              steel -  makes steel platebodies.
+ *              mith, mithril -   makes mithril platebodies.
+ *              addy, adamantite -  makes adamantite platebodies.
+ *              rune, runite -  makes runite platebodies.
  *
  *
- *        This bot supports the \"autostart\" parameter
- *                  defaults to steel plates
  *
- *
- * Script by Kaila
+ * Author - Kaila
  *
  */
 public class K_FastPlateSmither extends IdleScript {
@@ -130,6 +133,7 @@ public void scriptStart() {
 	while(controller.isRunning()) {
 		if(controller.getInventoryItemCount(barId) < 5 && !controller.isInBank()) {
 			controller.setStatus("@gre@Banking..");
+            controller.displayMessage("@gre@Banking..");
 			controller.walkTo(150,507);
 			bank();
 			controller.walkTo(148,512);
@@ -137,6 +141,7 @@ public void scriptStart() {
 		if(controller.getInventoryItemCount(barId) > 4) {
 			controller.sleepHandler(98, true);
 			controller.setStatus("@gre@Smithing..");
+            controller.displayMessage("@gre@Smithing..");
 			controller.useItemIdOnObject(148, 513, barId);
 			controller.sleep(1000);
 			controller.optionAnswer(1);
@@ -311,14 +316,14 @@ public void scriptStart() {
         	} catch(Exception e) {
         		//divide by zero
         	}
-			controller.drawString("@red@Fast Plate Smither @gre@by Kaila", 340, 48, 0xFFFFFF, 1);
-			controller.drawString("@whi@Bars In bank: @yel@" + String.valueOf(this.barsInBank), 350, 62, 0xFFFFFF, 1);
-			controller.drawString("@whi@Bars Used: @yel@" + String.valueOf(this.totalBars), 350, 76, 0xFFFFFF, 1);
-            controller.drawString("@whi@Bars Per Hr: @yel@" + String.format("%,d", barSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 90, 0xFFFFFF, 1);
-			controller.drawString("@whi@Platebodies Made: @yel@" + String.valueOf(this.totalPlates), 350, 104, 0xFFFFFF, 1);
-            controller.drawString("@whi@Platebodies Per Hr: @yel@" + String.format("%,d", plateSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 118, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 350, 118+14, 0xFFFFFF, 1);
-            controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), 350, 118+28, 0xFFFFFF, 1);
+			controller.drawString("@red@Fast Plate Smither @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
+			controller.drawString("@whi@Bars In bank: @gre@" + this.barsInBank, 350, 62, 0xFFFFFF, 1);
+			controller.drawString("@whi@Bars Used: @gre@" + this.totalBars, 350, 76, 0xFFFFFF, 1);
+            controller.drawString("@whi@Bars Per Hr: @gre@" + String.format("%,d", barSuccessPerHr) + "@yel@/@whi@hr", 350, 90, 0xFFFFFF, 1);
+			controller.drawString("@whi@Platebodies Made: @gre@" + this.totalPlates, 350, 104, 0xFFFFFF, 1);
+            controller.drawString("@whi@Platebodies Per Hr: @gre@" + String.format("%,d", plateSuccessPerHr) + "@yel@/@whi@hr", 350, 118, 0xFFFFFF, 1);
+            controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), 350, 118+14, 0xFFFFFF, 1);
+            controller.drawString("@whi@Runtime: " + runTime, 350, 118+28, 0xFFFFFF, 1);
 		}
 	}
 }

@@ -21,8 +21,18 @@ import static java.lang.Boolean.parseBoolean;
 
 /**
  * Ice Dungeon Ice Giant/Warrior Killer - By Kaila
- * Start in Fally East bank with Armor or In Cave!
- * Sharks IN BANK REQUIRED (reg atk str optional)
+ *
+ *      This bot supports the "autostart" Parameter");
+ *      Usage: foodname numberOfFood potUp?
+ *      example: "shark,5,true".
+ *      "autostart": uses lobsters,5,true.
+ *
+ * 		Start in Fally East bank or In Ice Cave.
+ * 		Food in bank REQUIRED.
+ * 		Use regular Atk/Str Pots Selector.
+ * 		Food Withdraw amount Selector
+ * 		Type of Food Array Selector
+ *
  *
  * Author - Kaila
  */

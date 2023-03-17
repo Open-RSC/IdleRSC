@@ -17,10 +17,13 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs Grapes from edge monestary
- *
- *
- *
+ * Grabs Monks Robes from edge monestary
+*
+ * 		Picks up Monks Robe SETS in Edge Monastery & Banks (equal amount of tops and bottoms)
+ * 		Start in Edge Bank or near Robes
+ * 		Recommend Armor against lvl 21 Scorpions
+ * 		Please Gain Permission to enter Prayer guild FIRST
+ * 		Bot will loot Equal Amounts of robe tops & bottoms
  *
  * Author - Kaila
  */
@@ -209,7 +212,7 @@ public class K_MonkRobes extends IdleScript {
 		JLabel label1 = new JLabel("Picks up Monks Robe SETS in Edge Monastery & Banks");
 		JLabel label2 = new JLabel("*Start in Edge Bank or near Robes!");
 		JLabel label3 = new JLabel("*Recommend Armor against lvl 21 Scorpions");
-		JLabel label4 = new JLabel("*Please Gain Permission to entire Prayer guild FIRST");
+		JLabel label4 = new JLabel("*Please Gain Permission to enter Prayer guild FIRST");
 		JLabel label5 = new JLabel("*Bot will loot Equal Amounts of robe tops & bottoms");
 		JButton startScriptButton = new JButton("Start");
 

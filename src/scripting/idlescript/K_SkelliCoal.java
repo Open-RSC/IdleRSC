@@ -17,10 +17,10 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+
+ * Mines coal from the Skelli coal mine, banks in edge.
  *
- *
- *
+ *      Brings food, banks if out of food.
+ *		Start in Edge bank with Armor and Pickaxe or near skilli mine.
  *
  * Author - Kaila
  */

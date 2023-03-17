@@ -17,9 +17,10 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs red spider Wines in edge dungeon, recommend very high stats ~90+
- *
- *
+ * Tele Grabs Wines in chaos temple.
+ * NOT recommended to use on coleslaw,
+ * wines can be obtained with harvesting.
+ * Not tested on uranium, but should function if sleep added.
  *
  *
  * Author - Kaila

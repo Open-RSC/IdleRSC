@@ -31,18 +31,18 @@ public class PathWalker_Wild extends Script
 	 * Prefers road over ground.
 	 * Can open many doors. Extra IDs and specifics like which key needs to
 	 * be used are appreciated.
-	 * 
+	 *
 	 * - Limitations, etc.
 	 * Can't change levels (with ladders, etc) or use any kind of
 	 * teleportation point.
 	 * No proper handling of direction with bounds.
 	 * Object information in the default loaded map may be inaccurate.
-	 * 
+	 *
 	 * - Credits
 	 * Stormy
 	 * Wikipedia
 	 * Xueqiao Xu <xueqiaoxu@gmail.com>
-	 * 
+	 *
 	 * Contributions are appreciated.
 	 */
 	 /**kRiStOf's edits:
@@ -214,7 +214,7 @@ public class PathWalker_Wild extends Script
 	public static final Location[] locations = new Location[] {
 	    new Location("Edgeville", 215, 450, true),
 	    new Location("Varrock East", 102, 511, true),
-	    new Location("Caslte", 271, 352, false),
+	    new Location("Dark Warriors' Fortress", 271, 352, false),
 		new Location("Lvl 11 Alter", 115, 357, false),
 		new Location("Graveyard", 162, 311, false),
 		new Location("Black Unicorns", 120, 302, false),
@@ -494,7 +494,7 @@ public class PathWalker_Wild extends Script
 				atObject(111,142);
 				System.out.println("doing a gate to f2p wild");
 				c_time = wait_time;
-			}			
+			}
 			else {
 				walkTo(x, y);
 			}
@@ -504,7 +504,7 @@ public class PathWalker_Wild extends Script
 			} else {
 				wait_time = c_time + random(600, 800);
 			}
-		}		
+		}
 		return true;
 	}
 

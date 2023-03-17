@@ -17,10 +17,20 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Black Unicorn Killer - By Kaila
- * Start in Edge bank with Armor
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED
- * 31 Magic Required for escape tele
+ * Black Unicorn Killer - By Kaila.
+ *
+ *      This bot supports the \"autostart\" parameter.
+ *      Defaults to Teleport Off, Return On.
+ *
+ * 		Start in Edge bank or Uni's with Gear.
+ * 		Sharks IN BANK REQUIRED.
+ *      Teleport if Pkers Attack Option.
+ *      31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ *      Unselected, bot WALKS to Edge when Attacked.
+ *      Selected, bot walks to 19 wildy & teleports.
+ *      Return to Hobs Mine after Escaping?", true.
+ *      Unselected, bot will log out after escaping Pkers.
+ *      Selected, bot will grab more food and return.
  *
  * Author - Kaila
  */

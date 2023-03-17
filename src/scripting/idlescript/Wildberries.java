@@ -26,6 +26,7 @@ public class Wildberries extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
+    int totalTrips = 0;
 	int[] gateToBerries = new int[] {
 			140, 181,
 			142, 191,
@@ -166,6 +167,7 @@ public class Wildberries extends IdleScript {
 				controller.walkPathReverse(gateToBerries);
 				gateCheckSouthToNorth();
 				controller.walkPathReverse(varrockToGate);
+                totalTrips = totalTrips + 1;
 				bank();
 				eat();
 				eat();
@@ -350,10 +352,12 @@ public class Wildberries extends IdleScript {
         if(controller != null) {
 			String runTime = msToString(System.currentTimeMillis() - startTime);
         	int berriesPerHr = 0;
+            int TripSuccessPerHr = 0;
         	try {
         		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
         		float scale = (60 * 60) / timeRan;
         		berriesPerHr = (int)(berriesPicked * scale);
+                TripSuccessPerHr = (int)(totalTrips * scale);
         	} catch(Exception e) {
         		//divide by zero
         	}
@@ -363,7 +367,9 @@ public class Wildberries extends IdleScript {
             controller.drawString("@whi@Berries picked: @gre@" + String.format("%,d", berriesPicked) + " @yel@(@whi@" + String.format("%,d", berriesPerHr) + "@yel@/@whi@hr@yel@)", 10, 21+14, 0xFFFFFF, 1);
             controller.drawString("@whi@Berries in bank: @gre@" + String.format("%,d", berriesBanked), 10, 21+14+14, 0xFFFFFF, 1);
 			controller.drawString("@whi@Sharks in bank: @gre@" + String.format("%,d", sharksInBank), 10, 21+14+14+14, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 10, 21+14+14+14+14, 0xFFFFFF, 1);
+            controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@(@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 10, 21+14+14+14+14, 0xFFFFFF, 1);
+			controller.drawString("@whi@Runtime: " + runTime, 10, 21+14+14+14+14+14, 0xFFFFFF, 1);
+
         }
     }
 

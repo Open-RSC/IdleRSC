@@ -18,13 +18,21 @@ import orsc.ORSCharacter;
 
 /**
  * Paladin Tower Thiever - By Kaila
- * Start in Ardy South Bank OR in Paladin Tower
- * Sharks in bank REQUIRED, can be changed in script
- * Switching to Defensive combat mode is ideal.
- * Low Atk/Str and Higher Def is more Efficient
- * Ensure to never wield weapons when Thieving.
  *
- * ~300k per hr+ xp per hr possible!
+ *      Start in Ardy South Bank OR in Paladin Tower
+ *      Sharks in bank REQUIRED, can be changed in script
+ *      Switching to Defensive combat mode is ideal.
+ *      Low Atk/Str and Higher Def is more Efficient
+ *      Ensure to never wield weapons when Thieving.
+ *
+ *      ~300k per hr+ xp per hr possible! (at 99 with thieving cape)
+ *
+ * todo
+ *      add more food selection
+ *
+ *
+ *
+ *
  *
  * Author - Kaila
  */
@@ -88,21 +96,40 @@ public class K_Paladins extends IdleScript {
 
     public void startSequence(){
         controller.displayMessage("@ran@Paladin Tower - By Kaila");
+        controller.displayMessage("@gre@Beginning Startup Sequence");
         if(controller.isInBank() == true) {
             controller.closeBank();
         }
-        if(controller.currentY() < 1500) {
+        if(controller.currentY() < 620 && controller.currentY() > 608 && controller.currentX() > 550 && controller.currentX() < 555) {  //inside bank
             bank();
             BankToPaladins();
             controller.sleep(1380);
         }
-        if(controller.currentY() > 1542 && controller.currentY() < 1548 && controller.currentX() == 609) {
+        if(controller.currentY() > 1542 && controller.currentY() < 1548 && controller.currentX() > 607 && controller.currentX() < 614) {  //inside paladin antichamber
             controller.atWallObject2(609,1548);     //locked door
             controller.sleep(640);
             while(controller.isBatching()) controller.sleep(1000);
             controller.sleep(640);
             controller.walkTo(610,1549);
             controller.sleep(640);
+        }
+        if(controller.currentY() < 650 && controller.currentY() > 550 && controller.currentX() < 540 && controller.currentX() > 500) {  //in witchhaven
+            witchhavenToBank();
+            bank();
+            BankToPaladins();
+            controller.sleep(1380);
+        }
+        if(controller.currentY() < 650 && controller.currentY() > 550 && controller.currentX() > 568 && controller.currentX() < 620) {   //on path
+            pathToBank();
+            bank();
+            BankToPaladins();
+            controller.sleep(1380);
+        }
+        if(controller.currentY() < 2496 && controller.currentY() > 2486 && controller.currentX() < 614 && controller.currentX() > 607) {  //Upstairs
+            TreasureRoomToBank();
+            bank();
+            BankToPaladins();
+            controller.sleep(1380);
         }
     }
 	public int start(String parameters[]) {
@@ -177,7 +204,7 @@ public class K_Paladins extends IdleScript {
 					ORSCharacter npc = controller.getNearestNpcById(323, false);
 					if(npc != null) {
 						controller.thieveNpc(npc.serverIndex);
-						controller.sleep(10); //this sleep time is important
+						controller.sleep(20); //this sleep time is important
 					} else {
 						invCoins = controller.getInventoryItemCount(10);
 						invChaos = controller.getInventoryItemCount(41);
@@ -197,7 +224,8 @@ public class K_Paladins extends IdleScript {
 			}
 			if(controller.getInventoryItemCount(foodId) == 0) {   //bank if no food-
 				controller.setStatus("@yel@Banking..");
-				PaladinsToBank();
+                goUpPaladinsLadder();
+                TreasureRoomToBank();
 				bank();
 				BankToPaladins();
 				controller.sleep(618);
@@ -210,7 +238,8 @@ public class K_Paladins extends IdleScript {
 					controller.sleep(700);
 				} else {
                     controller.setStatus("@yel@Banking..");
-                    PaladinsToBank();
+                    goUpPaladinsLadder();
+                    TreasureRoomToBank();
                     bank();
                     BankToPaladins();
                     controller.sleep(618);
@@ -235,7 +264,7 @@ public class K_Paladins extends IdleScript {
 
 
 	//Important PUBLIC VOID's below
-	public void leaveCombat() {
+	public void leaveCombatOld() {
 
 		if(controller.isInCombat()) {
 			controller.setStatus("@red@Leaving combat..");
@@ -243,7 +272,16 @@ public class K_Paladins extends IdleScript {
 			controller.sleep(800);
 		}
 	}
-
+    public void leaveCombat() {
+        for (int i = 1; i <= 20; i++) {
+            if (controller.isInCombat()) {
+                controller.setStatus("@red@Leaving combat..");
+                controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+                controller.sleep(200);
+            }
+            controller.sleep(10);
+        }
+    }
 
 	public void eat() {
 
@@ -271,7 +309,8 @@ public class K_Paladins extends IdleScript {
 			if(!ate) {
 				controller.setStatus("@red@We've ran out of Food! Banking!.");
 				controller.sleep(308);
-				PaladinsToBank();
+                goUpPaladinsLadder();
+                TreasureRoomToBank();
 				bank();
 				BankToPaladins();
 			}
@@ -333,15 +372,13 @@ public class K_Paladins extends IdleScript {
 
 
 	//Pathing Scripts Below
-
-	public void PaladinsToBank() {
-
-    	controller.setStatus("@gre@Walking to Bank..");
-		controller.walkTo(611,1550);
-		controller.atObject(611,1551);
-		controller.sleep(640);
-
-
+    public void goUpPaladinsLadder(){
+        controller.setStatus("@gre@Walking to Bank..");
+        controller.walkTo(611,1550);
+        controller.atObject(611,1551);
+        controller.sleep(640);
+    }
+	public void TreasureRoomToBank() {
 		int[] coords = controller.getNearestItemById(427);
 		if(coords != null) {      //Loot
 			controller.setStatus("@yel@Grabbing Black Scimmy..");
@@ -437,9 +474,16 @@ public class K_Paladins extends IdleScript {
 		controller.sleep(320);
     	controller.setStatus("@gre@Done Walking..");
     }
-
-
-
+    public void pathToBank() {
+        controller.walkPath(pathToBank);
+    }
+    int[] pathToBank =  {
+            604, 603,
+            589, 604,
+            575, 605,
+            564, 606,
+            554, 607
+    };
 
 
 	//GUI stuff below (icky)

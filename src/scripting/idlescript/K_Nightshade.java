@@ -17,10 +17,11 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs Grapes from edge monestary
+ * Grabs Nightshades in Gu'Tanoth (for entrance to ogre enclave).
  *
- *
- *
+ * 		Picks Nightshade in northern skavid cave.
+ * 		Start in Yanille bank or northern nightshade cave.
+ * 		Requires Lit Candle and Skavid Map in Invent.
  *
  * Author - Kaila
  */

@@ -17,15 +17,14 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Cuts Magic logs in seers, including the far western one, banks in Seers.
+ * Cuts yew logs in NE ardy, including the far western one, banks in seers.
  *
  * todo:
- *   reduce walking between locations - pause at each side.
  *   logic to cut same tree as other players.
  *
- * Author - Kaila
+ * Author - Kaila.
  */
-public class K_SeersMagicTree extends IdleScript {
+public class K_ArdyYewTree extends IdleScript {
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -35,30 +34,47 @@ public class K_SeersMagicTree extends IdleScript {
     int[] axeId = {
             87,12,88,203,204,405     //bronze to rune in order
     };
+    int[] mainYewToAltYew = {
+            511,559,
+            505,552,
+            505,541,
+            505,537,
+    };
+    int[] bankToYews = {
+            550,612,
+            547,602,
+            534,595,
+            521,588,
+            512,577,
+            512,571
+    };
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
+
+
     public void startSequence(){
-        controller.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
+        controller.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
         if(controller.isInBank() == true) {
             controller.closeBank();
         }
-        if(controller.currentY() < 458) {
+        if(controller.currentY() < 620 && controller.currentY() > 600 && controller.currentX() > 543 && controller.currentX() < 555) {  //inside bank
             bank();
-            controller.walkTo(500,454);
-            controller.walkTo(503,457);
-            controller.walkTo(503,460);
-            controller.walkTo(506,463);
-            controller.walkTo(506,472);
-            controller.walkTo(506,478);
-            controller.walkTo(516,488);
+            controller.walkPath(bankToYews);
+            controller.sleep(1380);
+        }
+        if(controller.currentY() < 600 && controller.currentY() > 587 && controller.currentX() > 525 && controller.currentX() < 543) {
+            controller.walkTo(533,596);
+            controller.walkTo(548,600);
+            bank();
+            controller.walkPath(bankToYews);
             controller.sleep(1380);
         }
     }
 	public int start(String parameters[]) {
         if (parameters.length > 0 && !parameters[0].equals("")) {
             if (parameters[0].toLowerCase().startsWith("auto")) {
-                controller.displayMessage("Got Autostart, Cutting Magics", 0);
-                System.out.println("Got Autostart, Cutting Magics");
+                controller.displayMessage("Got Autostart, Cutting Yews", 0);
+                System.out.println("Got Autostart, Cutting Yews");
                 parseVariables();
                 startSequence();
                 scriptStart();
@@ -78,10 +94,10 @@ public class K_SeersMagicTree extends IdleScript {
 	public void scriptStart() {
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount() < 30) {
-
-				if(controller.getObjectAtCoord(519,494) == 310) {
-					controller.walkTo(519,493);
-					controller.atObject(519,494);
+                controller.setStatus("@gre@Cutting Yews..");
+				if(controller.getObjectAtCoord(509,571) == 309) {
+					controller.walkTo(510,570);
+					controller.atObject(509,571);
 					controller.sleep(2000);
 					while(controller.isBatching() && controller.getInventoryItemCount() < 30) {
 						controller.sleep(1000);
@@ -90,9 +106,9 @@ public class K_SeersMagicTree extends IdleScript {
 						goToBank();
 					}
 				}
-				if(controller.getObjectAtCoord(521,492) == 310) {
-					controller.walkTo(521,491);
-					controller.atObject(521,492);
+				if(controller.getObjectAtCoord(507,567) == 309) {
+					controller.walkTo(509,568);
+					controller.atObject(507,567);
 					controller.sleep(2000);
 					while(controller.isBatching() && controller.getInventoryItemCount() < 30) {
 						controller.sleep(1000);
@@ -101,33 +117,22 @@ public class K_SeersMagicTree extends IdleScript {
 						goToBank();
 					}
 				}
-				if(controller.getObjectAtCoord(524,489) == 310) {
-					controller.walkTo(524,488);
-					controller.atObject(524,489);
+				controller.walkPath(mainYewToAltYew);
+				if(controller.getObjectAtCoord(513,525) == 309) {
+					controller.walkTo(512,526);
+					controller.atObject(513,525);
 					controller.sleep(2000);
 					while(controller.isBatching() && controller.getInventoryItemCount() < 30) {
 						controller.sleep(1000);
 					}
 					if(controller.getInventoryItemCount() > 29) {
-						goToBank();
+                        controller.walkPathReverse(mainYewToAltYew);
+                        controller.walkTo(511,571);
+                        controller.walkPathReverse(bankToYews);
 					}
+					controller.walkTo(505,533);
 				}
-				controller.walkTo(530,487);
-				controller.walkTo(538,486);
-				if(controller.getObjectAtCoord(548,484) == 310) {
-					controller.walkTo(547,484);
-					controller.atObject(548,484);
-					controller.sleep(2000);
-					while(controller.isBatching() && controller.getInventoryItemCount() < 30) {
-						controller.sleep(1000);
-					}
-					if(controller.getInventoryItemCount() > 29) {
-						goToBank2();
-					}
-					controller.walkTo(538,486);
-				}
-				controller.walkTo(530,487);
-				controller.walkTo(524,488);
+                controller.walkPathReverse(mainYewToAltYew);
 			} else {
 				goToBank();
 			}
@@ -135,45 +140,18 @@ public class K_SeersMagicTree extends IdleScript {
 	//	return 1000; //start() must return a int value now.
 	}
 
-
 public void goToBank() {
-	controller.walkTo(516,488);
-	controller.walkTo(506,478);
-	controller.walkTo(506,472);
-	controller.walkTo(506,463);
-	controller.walkTo(503,460);
-	controller.walkTo(503,457);
-	controller.walkTo(500,454);
+    controller.setStatus("@gre@Walking to Bank..");
+    controller.walkPathReverse(bankToYews);
+    controller.setStatus("@gre@Done Walking to Bank..");
+    controller.walkTo(551,613);
 	totalTrips = totalTrips + 1;
 	bank();
-	controller.walkTo(500,454);
-	controller.walkTo(503,457);
-	controller.walkTo(503,460);
-	controller.walkTo(506,463);
-	controller.walkTo(506,472);
-	controller.walkTo(506,478);
-	controller.walkTo(516,488);
+    controller.setStatus("@gre@Going to Yews..");
+    controller.walkPath(bankToYews);
+    controller.setStatus("@gre@Done Walking to Yews..");
 }
 
-public void goToBank2() {
-	controller.walkTo(547,484);
-	controller.walkTo(537,474);
-	controller.walkTo(531,468);
-	controller.walkTo(521,468);
-	controller.walkTo(510,468);
-	controller.walkTo(504,462);
-	controller.walkTo(504,458);
-	controller.walkTo(500,454);
-	totalTrips = totalTrips + 1;
-	bank();
-	controller.walkTo(500,454);
-	controller.walkTo(503,457);
-	controller.walkTo(503,460);
-	controller.walkTo(506,463);
-	controller.walkTo(506,472);
-	controller.walkTo(506,478);
-	controller.walkTo(516,488);
-}
 
 public void bank() {
 
@@ -209,7 +187,7 @@ public void bank() {
 		frame.setLocation(x, y);
 	}
 	public void setupGUI() {
-		JLabel header = new JLabel("Seers Magic Logs by Kaila");
+		JLabel header = new JLabel("Ardy Yew Logs by Kaila");
 		JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
 		JLabel label2 = new JLabel("Wield or have rune axe in Inv");
 		JButton startScriptButton = new JButton("Start");
@@ -262,7 +240,7 @@ public void bank() {
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
-			controller.drawString("@red@Seers Magic Logs @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
+			controller.drawString("@red@Ardy Yew Logs @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
 			controller.drawString("@whi@Logs in Bank: @gre@" + String.valueOf(this.logInBank), 350, 62, 0xFFFFFF, 1);
 			controller.drawString("@whi@Logs Cut: @gre@" + String.valueOf(this.totalLog) + "@yel@ (@whi@" + String.format("%,d", successPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);
 			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", tripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 90, 0xFFFFFF, 1);

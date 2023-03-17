@@ -17,12 +17,13 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Buys attack capes from rovin and banks
+ * 	Attack Cape Buyer - By Kaila.
  *
+ * 		Talks to Rovin for capes & Banks.
+ * 		Start by Rovin or varrock west!
+ * 		Need coins in the inventory to buy.
  *
- *
- *
- * Author - Kaila
+ * Author - Kaila.
  */
 public class K_AttackCapeBuyer extends IdleScript {
 	JFrame scriptFrame = null;

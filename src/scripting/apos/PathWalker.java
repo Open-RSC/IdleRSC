@@ -32,24 +32,28 @@ public class PathWalker extends Script
 	 * Prefers road over ground.
 	 * Can open many doors. Extra IDs and specifics like which key needs to
 	 * be used are appreciated.
-	 * 
+	 *
 	 * - Limitations, etc.
 	 * Can't change levels (with ladders, etc) or use any kind of
 	 * teleportation point.
 	 * No proper handling of direction with bounds.
 	 * Object information in the default loaded map may be inaccurate.
-	 * 
+	 *
 	 * - Credits
 	 * Stormy
 	 * Wikipedia
 	 * Xueqiao Xu <xueqiaoxu@gmail.com>
-	 * 
+	 *
 	 * Contributions are appreciated.
 	 */
 	 /**kRiStOf's edits:
 	 /* added paint
 	 /* added runtime to paint
 	 */
+     /**Kaila Edits:
+     *Added ~30 new Locations
+     *
+      */
 
 	// class for encapsulation
 	public static class Path {
@@ -212,35 +216,75 @@ public class PathWalker extends Script
 	}
 
 	public static final Location[] locations = new Location[] {
-	    new Location("Al Kharid", 87, 695, true),
+            //Big city Travel
+            new Location("Al Kharid", 87, 695, true),
             new Location("AK Mine Crossroads", 76, 573, false),
-	    new Location("Ardougne North", 580, 573, true),
-	    new Location("Ardougne South", 550, 612, true),
-	    new Location("Catherby", 440, 496, true),
-	    new Location("Draynor", 220, 635, true),
-        new Location("Dwarf Mine/cannon", 280, 490, false),
-	    new Location("Edgeville", 215, 450, true),
-            new Location("Khazard House", 615, 683, false),
-	    new Location("Falador East", 285, 570, true),
-	    new Location("Falador West", 330, 555, true),
-	    new Location("Gnome Tree", 692, 494, false),
+            new Location("Ardougne North", 580, 573, true),
+            new Location("Ardougne South", 550, 612, true),
+            new Location("Barbarian Village", 230, 513, false),
+            new Location("Battle Field", 631, 634, false),
+            new Location("Baxtorian Falls", 650, 450, false),
+            new Location("Black Knights' Fortress", 267, 444, false),
+            new Location("Bone Yard", 700, 648, false),
+            new Location("Catherby", 440, 496, true),
+            new Location("Champions Guild", 151, 551, false),
+            new Location("Chaos Temple (Goblin Village)", 309,434, false),
+            new Location("Coal Trucks", 614, 477, false),
+            new Location("Crafting Guild", 347, 599, false),
+            new Location("Dark Wizards' Tower", 355, 572, false),
+            new Location("Dark Wizards' Circle", 119, 546, false),
+            new Location("Draynor", 220, 635, true),
+            new Location("Draynor Manor", 210, 557, false),
+            new Location("Dwarf Mine/cannon", 280, 490, false),
+            new Location("Edgeville", 215, 450, true),
+            new Location("Fight Arena", 615, 683, false),
+            new Location("Fishing Guild", 586, 527, false),
+            new Location("Falador East", 285, 570, true),
+            new Location("Falador West", 330, 555, true),
+            new Location("Feldip Hills", 630, 841, false),
+            new Location("Gnome Tree", 692, 494, false),
             new Location("Goblin Village", 326, 453, false),
+            new Location("Hemenster", 556,497, false),
+            new Location("Heroes Guild", 372, 443, false),
             new Location("Ice Cave Ladder", 288, 711, false),
-	    new Location("Lumbridge", 128, 640, false),
-	    new Location("Port Sarim", 270, 625, false),
-        new Location("Rimmington", 320, 653, false),
-	    new Location("Seers Village", 500, 453, true),
-	    new Location("Shilo Village", 401, 849, true),
-	    new Location("Varrock East", 102, 511, true),
-	    new Location("Varrock West", 150, 505, true),
-	    new Location("Yanille", 587, 752, true),
-		new Location("Bone Yard", 700, 648, false),
-		new Location("Legends Guild", 512, 554, false),
-		new Location("Heroes Guild", 372, 443, false),
-		new Location("Fishing Guild", 586, 527, false),
-		new Location("Crafting Guild", 347, 599, false),
-        new Location("Shantay pass", 62, 730, false),
-		new Location("Lost City Hut", 128, 686, false)
+            new Location("Kandarin Monastery", 589, 653, false),
+            new Location("Kandarin Monastery mine", 620, 655, false),
+            new Location("Legends Guild", 512, 554, false),
+            new Location("Lost City Hut", 128, 686, false),
+            new Location("Lumber Yard", 82, 436, false),
+            new Location("Lumbridge", 128, 640, false),
+            new Location("Lumbridge Windmill", 175, 608, false),
+            new Location("Makeover Mage", 366, 579, false),
+            new Location("Port Khazard", 553, 702, false),
+            new Location("Port Sarim", 270, 625, false),
+            new Location("Rimmington", 320, 653, false),
+            new Location("Shantay pass", 62, 730, false),
+            new Location("Seers Village", 500, 453, true),
+            new Location("Shilo Village", 401, 849, false),
+            new Location("Sorcerors' Tower", 511, 512, false),
+            new Location("Taverley", 373, 495, false),
+            new Location("Varrock East", 102, 511, true),
+            new Location("Varrock West", 150, 505, true),
+            new Location("Wizard's Tower", 217, 687, false),
+            new Location("Yanille", 587, 752, true),
+            //Skilling Locations
+            new Location("Skilling - Al-Kharid Mine", 71, 589, false),
+            new Location("Skilling - Legends' Guild Mine", 521, 573, false),
+            new Location("Skilling - Seers Magic Trees", 518, 490, false),
+            new Location("Skilling - Varrock East Mine", 73, 542, false),
+            new Location("Skilling - Varrock West Mine", 158, 540, false),
+            //Karamja
+            new Location("Karamja Only - Brimhaven", 466, 661, false),
+            new Location("Karamja Only - Musa Point", 338, 712, false),  //pathwalker cannot return from musa, but will go to musa
+            new Location("Karamja Only - Tai Bwo Wannai", 461, 760, false),
+            new Location("Karamja Only - Shilo Bridge", 449, 843, false), //autowalk cannot cross shilo bridge
+            //Wilderness
+            new Location("WILD - Skelli mine", 269, 381, false),
+            new Location("WILD - Dark Warriors' Fortress", 271, 352, false),
+            new Location("WILD - Black Unicorns", 120, 302, false),
+            new Location("WILD - Hobgoblin Mine", 213, 268, false),
+            new Location("WILD - Mage Bank", 222, 107, false),
+            new Location("WILD - Agility Course", 296, 138, false)
 	};
 	private static final boolean DEBUG = false;
 	private static final int WORLD_W = 900;
@@ -349,12 +393,12 @@ public class PathWalker extends Script
             } catch (InterruptedException ex) {
             }
         }
-    	
+
         try {
             Thread.sleep(1000L);
         } catch (InterruptedException ex) {
         }
-        
+
         if (start_time == -1L) {
         start_time = System.currentTimeMillis();
         }
@@ -452,81 +496,81 @@ public class PathWalker extends Script
 	}
 
 		public boolean walkPath() {
-		if (path == null) return false;
-		Node last = path[path.length - 1];
-		if (getX() == last.x && getY() == last.y) {
-			path = null;
-			return false;
-		}
-		long c_time = System.currentTimeMillis();
-		if (c_time >= wait_time) {
-			Node n = getCurrentDest();
-			if (n == null) return true;
-			int x = n.x;
-			int y = n.y;
-			if (isAtApproxCoords(331,487,10) && (n.x > 341)) {
-				atObject(341,487);
-				System.out.println("doing a gate to tav, line 448");
-				wait_time = c_time + 8000;
+            if (path == null) return false;
+            Node last = path[path.length - 1];
+            if (getX() == last.x && getY() == last.y) {
+                path = null;
+                return false;
+            }
+            long c_time = System.currentTimeMillis();
+            if (c_time >= wait_time) {
+                Node n = getCurrentDest();
+                if (n == null) return true;
+                int x = n.x;
+                int y = n.y;
+                if (isAtApproxCoords(331,487,10) && (n.x > 341)) {
+                    atObject(341,487);
+                    System.out.println("doing a gate to tav");
+                    wait_time = c_time + 8000;
 
-			}
-			else if (isAtApproxCoords(352,487,10) && (n.x <= 341)) {
-				atObject(341,487);
-				System.out.println("doing a gate to fally");
+                }
+                else if (isAtApproxCoords(352,487,10) && (n.x <= 341)) {
+                    atObject(341,487);
+                    System.out.println("doing a gate to fally");
+                    wait_time = c_time + 8000;
+                }
+                else if (isAtApproxCoords(343,591,10) && (n.y < 581)) {
+                    atObject(343,581);
+                    System.out.println("doing a gate to tav");
+                    wait_time = c_time + 8000;
+                }
+                else if (isAtApproxCoords(343,570,10) && (n.y >= 581)) {
+                    atObject(343,581);
+                    System.out.println("doing a gate to fally");
+                    wait_time = c_time + 8000;
+                }
+                else if (isAtApproxCoords(703,542,10) && (n.y <= 531)) {
+                    atObject(703,531);
+                    System.out.println("doing a gate to gnome tree");
+                    wait_time = c_time + 8000;
+                }
+                else if (isAtApproxCoords(703,521,10) && (n.y > 531)) {
+                    atObject(703,531);
+                    System.out.println("doing a gate from gnome tree");
+                    wait_time = c_time + 8000;
+                }
+                else if (isAtApproxCoords(445,682,10) && (n.x < 435)) {
+                    atObject(434,682);
+                    System.out.println("doing a gate to f2p karajammin");
 				wait_time = c_time + 8000;
-			}
-			else if (isAtApproxCoords(343,591,10) && (n.y < 581)) {
-				atObject(343,581);
-				System.out.println("doing a gate to tav");
+                }
+                else if (isAtApproxCoords(424,521,10) && (n.x >= 435)) {
+                    atObject(434,682);
+                    System.out.println("doing a gate to p2p karajammin");
 				wait_time = c_time + 8000;
-			}
-			else if (isAtApproxCoords(343,570,10) && (n.y >= 581)) {
-				atObject(343,581);
-				System.out.println("doing a gate to fally");
-				wait_time = c_time + 8000;
-			}
-			else if (isAtApproxCoords(703,542,10) && (n.y <= 531)) {
-				atObject(703,531);
-				System.out.println("doing a gate to gnome tree");
-				wait_time = c_time + 8000;
-			}
-			else if (isAtApproxCoords(703,521,10) && (n.y > 531)) {
-				atObject(703,531);
-				System.out.println("doing a gate from gnome tree");
-				wait_time = c_time + 8000;
-			}
-			else if (isAtApproxCoords(445,682,10) && (n.x < 435)) {
-				atObject(434,682);
-				System.out.println("doing a gate to f2p karajammin");
-				wait_time = c_time + 8000;
-			}
-			else if (isAtApproxCoords(424,521,10) && (n.x >= 435)) {
-				atObject(434,682);
-				System.out.println("doing a gate to p2p karajammin");
-				wait_time = c_time + 8000;
-			}
-			else if (isAtApproxCoords(111,152,10) && (n.y < 142)) {
-				atObject(111,142);
-				System.out.println("doing a gate to p2p wild");
-				c_time = wait_time;
-			}
-			else if (isAtApproxCoords(117,131,10) && (n.y >= 142)) {
-				atObject(111,142);
-				System.out.println("doing a gate to f2p wild");
-				c_time = wait_time;
-			}
-			else {
-				walkTo(x, y);
-			}
-			int d = distanceTo(x, y);
-			if (d != 0) {
-				wait_time = c_time + random(500 * d, 600 * d);
-			} else {
-				wait_time = c_time + random(600, 800);
-			}
-		}		
-		return true;
-	}
+                }
+                else if (isAtApproxCoords(111,152,10) && (n.y < 142)) {
+                    atObject(111,142);
+                    System.out.println("doing a gate to p2p wild");
+                    c_time = wait_time;
+                }
+                else if (isAtApproxCoords(117,131,10) && (n.y >= 142)) {
+                    atObject(111,142);
+                    System.out.println("doing a gate to f2p wild");
+                    c_time = wait_time;
+                }
+                else {
+                    walkTo(x, y);
+                }
+                int d = distanceTo(x, y);
+                if (d != 0) {
+                    wait_time = c_time + random(500 * d, 600 * d);
+                } else {
+                    wait_time = c_time + random(600, 800);
+                }
+            }
+            return true;
+        }
 
 	public void resetWait() {
 		wait_time = System.currentTimeMillis();
@@ -893,7 +937,7 @@ public class PathWalker extends Script
 		drawVLine(x-7, 36, y - 32, 0x1E90FF);
 		drawHLine(x-7, y + 3, 196, 0x1E90FF);
     }
-	
+
 	private static String get_time_since(long t) {
 		long millis = (System.currentTimeMillis() - t) / 1000;
 		long second = millis % 60;

@@ -17,10 +17,19 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+
+ * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+ and good defensive armor.
  *
+ * 		Start in Edge bank with Armor.
+ * 		Sharks in bank REQUIRED.
  *
+ * 		Should bot Teleport if Pkers Attack?.
+ * 		31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ * 		Unselected, bot WALKS to Edge when Attacked.
+ * 		Selected, bot teleports, then walks to edge.
  *
+ * 		Should bot Return to Eggz after Escaping?.
+ * 		Unselected, bot will log out after escaping Pkers.
+ * 		Selected, bot will grab more food and return.
  *
  * Author - Kaila
  */

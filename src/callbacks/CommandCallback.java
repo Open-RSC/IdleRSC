@@ -4,26 +4,29 @@ import bot.Main;
 import controller.Controller;
 import scripting.idlescript.IdleScript;
 
-import java.util.Locale;
 
 public class CommandCallback {
-	
-	private static String helpMessageText = "@red@IdleRSC @yel@Help:"
-			+ "% @red@::bothelp -- @yel@Shows this message"
-			+ "% @red@::show -- @yel@Unhides the bot sidepane"
-			+ "% @red@::gfx -- @yel@toggle graphics"
-			+ "% @red@::hidepaint -- @yel@turn off bot painting (progress reports, xp counter, etc)"
-			+ "% @red@::showpaint -- @yel@turn on bot painting (progress reports, xp counter, etc)"
-			+ "%"
-			+ " %"
-			+ " %"
-			+ " %@red@F11 -- @yel@Stop the current script and load a new one"
-			+ " %@red@F12 -- @yel@Show help menu"
-			+ " %"
-            + " %"
-            + " %"
-            + " %"
-			+ "@red@IdleRSC @yel@by @red@Dvorak @yel@2021";
+
+	private static String helpMessageText =
+                "@cya@IdleRSC Help Menu:"
+			+ " %@red@::bothelp - @yel@Shows this help menu"
+			+ " %@red@::show - @yel@Unhides the bot sidepane"
+			+ " %@red@::gfx - @yel@toggle graphic rendering"
+            + " %@red@::screenshot - @yel@Take a Screenshot"
+			+ " %@red@::hidepaint or ::showpaint - @yel@Toggle Paint Left-Side Menu"
+			+ " %@red@::toggleid - @yel@Toggle Item/Object/NPC right click Id's"
+            + " %@red@F1  - @yel@Toggle Interlacing Mode"
+            + " %@red@F2  - @yel@Toggle Openrsc Left-Side Sub Menu"
+            + " %@red@F3  - @yel@Returns Camera Zoom to Default level"
+			+ " %@red@F4  - @yel@Toggles 1st/3rd Person Perspective"
+			+ " %@red@F5  - @yel@Attack Item Swapping. See Readme for Instructions"
+			+ " %@red@F6 - @yel@Strength Item Swapping. See Readme for Instructions"
+			+ " %@red@F7 - @yel@Defense Item Swapping. See Readme for Instructions"
+			+ " %@red@F8 - @yel@Spell ID casting. See Readme for Instructions"
+            + " %@red@F9 - @yel@Take a Screenshot, saved to ./IdleRSC/Screenshots/accountName"
+            + " %@red@F10 - @yel@Lock the client's camera position till F10 or mouse click."
+            + " %@red@F11 - @yel@Stop the current script and load a new one"
+			+ " %@red@F12 - @yel@Show this help menu";
 
     public static void commandHook(String command) {
         Controller c = Main.getController();
@@ -49,6 +52,14 @@ public class CommandCallback {
         	if(c != null) {
         		c.setServerMessage(helpMessageText, true, true);
         	}
+        } else if(command.equals("toggleid")) {
+            if(c != null) {
+                c.fakeDeveloper();
+            }
+        } else if(command.equals("screenshot")) {
+            if(c != null) {
+                c.takeScreenshot("");
+            }
         } else {
             //pass to script
             if(c != null && c.getShowBotPaint() == true && c.isRunning() && Main.getCurrentRunningScript() != null) {

@@ -2,7 +2,6 @@ package callbacks;
 
 import bot.Main;
 import controller.Controller;
-import orsc.buffers.RSBuffer_Bits;
 import orsc.mudclient;
 
 import javax.imageio.ImageIO;
@@ -23,7 +22,7 @@ import java.nio.file.Files;
 public class SleepCallback {
     private static String previousSleepWord = "";
     private static int currentFatigue = 100;
-    
+
 
     /**
      * Sleep hook which is called by the patched jar whenever the client goes to sleep.
@@ -36,15 +35,15 @@ public class SleepCallback {
             saveSleepImage(packet, packet.length);
 
             Main.log("HC.bmp saved.");
-            if(currentFatigue == 0) 
+            if(currentFatigue == 0)
             	handleSleep();
             //Main.log("Waiting for fatigue to reach 0...");
-                
+
         } else {
             Main.log("Packet received was not a legitimate sleep image!");
         }
     }
-    
+
     /**
      * Fatigue hook which is called by the patched jar whenever the client receives an update on fatigue.
      *
@@ -53,11 +52,11 @@ public class SleepCallback {
     public static void fatigueHook(int fatigue) {
     	Main.log("Current fatigue in sleep: " + Integer.toString(fatigue));
     	currentFatigue = fatigue;
-    	
+
     	if(fatigue == 0) {
     		handleSleep();
     	}
-    	
+
     }
 
     private static void handleSleep() {
@@ -69,11 +68,11 @@ public class SleepCallback {
             return;
 
         mud = controller.getMud();
-        
+
         if(Main.config.getLocalOCR()) {
 	        Main.log("Local OCR specified...");
-	        controller.sleep(1000); //give OCR time to catch up. 
-	        
+	        controller.sleep(1000); //give OCR time to catch up.
+
 	    	try {
 	    		String guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
 	    		int fileReadAttempts = 0;
@@ -83,7 +82,7 @@ public class SleepCallback {
 	    			controller.sleep(1000);
 	    			fileReadAttempts++;
 	    		}
-	  	  
+
 	    		if(fileReadAttempts == 10) {
 	    			Main.log("OCR is not running or not functioning properly!");
 	    			return;
@@ -111,9 +110,9 @@ public class SleepCallback {
         	controller.sleep(1000);
         }
     }
-    
+
 	public static String uploadCaptcha(String captchaFile) {
-		
+
 		try {
 			String url = "http://idlersc.com:8080/captcha";
 			String charset = "UTF-8";
@@ -121,11 +120,11 @@ public class SleepCallback {
 			File binaryFile = new File(captchaFile);
 			String boundary = Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
 			String CRLF = "\r\n"; // Line separator required by multipart/form-data.
-	
+
 			URLConnection connection = new URL(url).openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-	
+
 			try (
 			    OutputStream output = connection.getOutputStream();
 			    PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true);
@@ -135,8 +134,8 @@ public class SleepCallback {
 			    writer.append("Content-Disposition: form-data; name=\"param\"").append(CRLF);
 			    writer.append("Content-Type: text/plain; charset=" + charset).append(CRLF);
 			    writer.append(CRLF).append(param).append(CRLF).flush();
-	
-	
+
+
 			    // Send binary file.
 			    writer.append("--" + boundary).append(CRLF);
 			    writer.append("Content-Disposition: form-data; name=\"fileupload\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
@@ -146,29 +145,29 @@ public class SleepCallback {
 			    Files.copy(binaryFile.toPath(), output);
 			    output.flush(); // Important before continuing with writer!
 			    writer.append(CRLF).flush(); // CRLF is important! It indicates end of boundary.
-	
+
 			    // End of multipart/form-data.
 			    writer.append("--" + boundary + "--").append(CRLF).flush();
 			}
-	
+
 			// Request is lazily fired whenever you need to obtain information about response.
 			int responseCode = ((HttpURLConnection) connection).getResponseCode();
 			if(responseCode == 200) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 				String result;
-				
+
 				result = in.readLine();
-				
+
 				return result;
-			} 
-			
+			}
+
 			return null;
 		} catch(Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-    
+
     private static BufferedImage convertImageTo1Bpp(BufferedImage o) { //we have to convert the sleep image to 1bpp otherwise FOCR will freak out and cause an 8 hour investigation into why it broke
         BufferedImage img = new BufferedImage(o.getWidth(), o.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 

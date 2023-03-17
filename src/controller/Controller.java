@@ -1,11 +1,15 @@
 package controller;
 
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 
 import callbacks.DrawCallback;
 import com.openrsc.client.entityhandling.EntityHandler;
@@ -40,7 +43,6 @@ import orsc.buffers.RSBufferUtils;
 import orsc.enumerations.GameMode;
 import orsc.enumerations.MessageType;
 import orsc.enumerations.ORSCharacterDirection;
-import orsc.graphics.gui.MessageHistory;
 import orsc.graphics.gui.Panel;
 import orsc.graphics.two.MudClientGraphics;
 import reflector.Reflector;
@@ -79,8 +81,7 @@ public class Controller {
 	}
 
 	/**
-	 * Whether or not a script is currently running.
-	 * @return
+	 * @return Whether or not a script is currently running.
 	 */
 	public boolean isRunning() {
 		return Main.isRunning();
@@ -94,9 +95,7 @@ public class Controller {
 	}
 
 	/**
-	 * Sleeps for the specified amount of milliseconds.
-	 *
-	 * @param ms
+	 * @param ms Sleeps for the specified amount of milliseconds.
 	 */
 	public void sleep(int ms) {
 		try {
@@ -135,9 +134,9 @@ public class Controller {
 	}
 
 	/**
-	 * Sends the specified message via chat.
 	 *
-	 * @param rstext -- you may use @col@ colors here.
+	 *
+	 * @param rstext Sends the specified message via chat. Y ou may use @col@ colors here.
 	 */
 	public void chatMessage(String rstext) {
 		for(char c : rstext.toCharArray()) {
@@ -147,9 +146,9 @@ public class Controller {
 	}
 
 	/**
-	 * Sets the fight mode.
 	 *
-	 * @param mode
+	 *
+	 * @param mode Sets the fight mode.
 	 */
 	public void setFightMode(int mode) {
 		mud.setCombatStyle(mode);
@@ -219,7 +218,7 @@ public class Controller {
 	/**
 	 * Retrieve a list of items on the ground near the player. Duplicate items on the same tile will be added to the list once, with the actual amount available from the getAmount() method.
 	 *
-	 * @return guaranteed to not be null. 
+	 * @return guaranteed to not be null.
 	 */
 	public List<GroundItemDef> getGroundItemsStacked() {
 		int[] groundItemIDs = this.getGroundItems();
@@ -377,7 +376,7 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of nearby players.
-	 * 
+	 *
 	 * @return guaranteed to not be null.
 	 */
 	public List<ORSCharacter> getPlayers() {
@@ -710,9 +709,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of nearby objects. 
-	 * 
-	 * @return guaranteed to not be null. 
+	 * Retrieves a list of nearby objects.
+	 *
+	 * @return guaranteed to not be null.
 	 */
 	public List<GameObjectDef> getObjects() {
 		int[] gameObjectInstanceIDs = getObjectsIds();
@@ -766,9 +765,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of NPCs nearby. 
-	 * 
-	 * @return guaranteed to not be null. 
+	 * Retrieves a list of NPCs nearby.
+	 *
+	 * @return guaranteed to not be null.
 	 */
 	public List<ORSCharacter> getNpcs() {
 		List<ORSCharacter> _list = new ArrayList();
@@ -793,9 +792,9 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of wall objects nearby. 
-	 * 
-	 * @return guaranteed to not be null. 
+	 * Retrieves a list of wall objects nearby.
+	 *
+	 * @return guaranteed to not be null.
 	 */
 	public List<DoorDef> getWallObjects() {
 		List<Integer> _list = new ArrayList();
@@ -1795,7 +1794,7 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of all the items inside the bank.
-	 * 
+	 *
 	 * @return guaranteed to not be null.
 	 */
 	public List<Item> getBankItems() {
@@ -2095,6 +2094,12 @@ public class Controller {
 		mud.resizeWidth = width;
 		mud.resizeHeight = height;
 	}
+    /**
+     * Makes the "unique" file name for each screenshot to prevent screenshot file over writing. could be shortened?
+     * Theoretically allows 1 screenshot to be saved per second forever, also screenshots will autosort by date/time when sorted by filename.
+     * This uses an almost identical save file structure and (I assume) similar method as to Runelite.
+     */
+    private static final SimpleDateFormat screenshotNameFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
 	/**
 	 * Takes a screenshot of the client applet and saves a bitmap as the specified filename.
@@ -2102,7 +2107,19 @@ public class Controller {
 	 * @param filename
 	 * @return boolean -- returns true on success. Returns false if image could not be saved.
 	 */
+
 	public boolean takeScreenshot(String filename) {
+        boolean TemporaryToggledGFX = false;
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String playerTime = screenshotNameFormat.format(timestamp);
+        String playerName = getPlayerName();
+
+
+
+       if(!isDrawEnabled()) { //if you take a screenshot, it will toggle on graphics briefly to take it, then toggle off again ~ Kaila ~
+           setDrawing(true);
+           TemporaryToggledGFX = true;
+       }
 		MudClientGraphics gfx = getMudGraphics();
 
 
@@ -2137,13 +2154,44 @@ public class Controller {
 		}
 
 		try {
-			ImageIO.write(img, "png", new File("Screenshots/" + filename + ".png"));
-			Main.log("Screenshot saved.");
+            /***
+             * First, make a string of /sceenshots/playerName/ folder
+             * second, use Path command to turn string into Path for /Screenshots/playerName/
+             * third, use Files.createDirectories  to make the folder structure for /Screenshots/playerName/
+             *                       -this will regenerate the folder structure if user deleted at any point
+             *                       -screenshots will NOT save if the folder path doesn't exist when imageIO writes
+             * fourth, use ImageIO.write to actually write the "img" created earlier
+             * fifth, String the save location, calc Path, calculate boolean Files.exists(Path)
+             * 6th - Confirm image was saved to the user with log
+             *
+             *
+             * ~ Kaila ~
+             *
+            **/
+            String dir = "Screenshots/" + playerName + "/";
+            Path screenshotpath = Paths.get(dir);
+            Files.createDirectories(screenshotpath);
+            ImageIO.write(img, "png", new File("Screenshots/" + playerName + "/" + filename + playerName + "_" + playerTime + ".png"));
+
+            String saveLocPath = "Screenshots/" + playerName + "/" + filename + playerName + "_" + playerTime + ".png";
+            Path imageSaveLocation = Paths.get(saveLocPath);
+            boolean newImageExists = Files.exists(imageSaveLocation);
+            if (newImageExists) {
+                log("@cya@Screenshot successfully saved to folder ./IdleRSC/screenshots/" + playerName);
+            } else {
+                log("@red@Error: @cya@Screenshot not detected in folder ./IdleRSC/screenshots/" + playerName);
+            }
 		} catch (IOException e) {
+            System.err.println("Failed to create directory and/or take screenshot!" + e.getMessage());
 			e.printStackTrace();
+            if (TemporaryToggledGFX) {
+                setDrawing(false);
+            }
 			return false;
 		}
-
+        if (TemporaryToggledGFX) {
+            setDrawing(false);
+        }
 		return true;
 	}
 
@@ -2677,8 +2725,8 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves a list of all the shop items in the shop. 
-	 * 
+	 * Retrieves a list of all the shop items in the shop.
+	 *
 	 * @return shopItems guaranteed to not be null.
 	 */
 	public List<Item> getShopItems() {
@@ -2791,8 +2839,8 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of all the skills.
-	 * 
-	 * @return _list guaranteed to not be null. 
+	 *
+	 * @return _list guaranteed to not be null.
 	 */
 	public List<SkillDef> getSkills() {
 		String[] skillNames = this.getSkillNamesLong();
@@ -3161,7 +3209,7 @@ public class Controller {
 
 	/**
 	 * Retrieves items which the player is offering in the trade.
-	 * 
+	 *
 	 * @return localTradeItems guaranteed to not be null.
 	 */
 	public List<Item> getLocalTradeItems() {
@@ -3198,8 +3246,8 @@ public class Controller {
 	}
 
 	/**
-	 * Retrieves  a list of items which your trade recipient is offering. 
-	 * 
+	 * Retrieves  a list of items which your trade recipient is offering.
+	 *
 	 * @return recipientTradeItems guaranteed to not be null.
 	 */
 	public List<Item> getRecipientTradeItems() {
@@ -3302,7 +3350,7 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of all items in the inventory.
-	 * 
+	 *
 	 * @return _list guaranteed to not be null.
 	 */
 	public List<Item> getInventoryItems() {
@@ -3356,8 +3404,8 @@ public class Controller {
     }
 
     /**
-     * Retrieves a list of users on the friends list. 
-     * 
+     * Retrieves a list of users on the friends list.
+     *
      * @return friendsList guaranteed to never be null.
      */
 	public List<String> getFriendList() {
@@ -3376,7 +3424,7 @@ public class Controller {
 
 	/**
 	 * Retrieves a list of users on the ignore list.
-	 * 
+	 *
 	 * @return ignoreList guaranteed to never be null.
 	 */
 	public List<String> getIgnoreList() {
@@ -3944,9 +3992,9 @@ public class Controller {
 	 * Toggle draw/graphics.
 	 */
 	public void setDrawing(boolean b) {
-		if (!isAuthentic()) {
-			Config.C_EXPERIENCE_DROPS = b;
-		}
+		//if (!isAuthentic()) {
+		//	Config.C_EXPERIENCE_DROPS = b;  //removed, this was toggling xp drops ON against player will whenever graphics were toggled in client!!!
+		//}
 
 		drawing = b;
 	}
@@ -4066,7 +4114,7 @@ public class Controller {
 
 	/**
 	 * Retrieves the examine text of the specified wall object id.
-	 * 
+	 *
 	 * @param objId
 	 * @return String -- guaranteed to not be null
 	 */
@@ -4080,7 +4128,7 @@ public class Controller {
 
 	/**
 	 * Retrieves the examine text of the specified wall object id.
-	 * 
+	 *
 	 * @param objId
 	 * @return String -- guaranteed to not be null
 	 */
@@ -4349,7 +4397,6 @@ public class Controller {
 		mud.packetHandler.getClientStream().bufferBits.putByte(direction);
 		mud.packetHandler.getClientStream().finishPacket();
 	}
-
 	/**
 	 * Internal function used to grant the ability for normal accounts to access the developer ID menus.
 	 */
@@ -4359,9 +4406,19 @@ public class Controller {
 
 			orsc.Config.C_SIDE_MENU_OVERLAY = false; //bugfix for coleslaw flickering
 
+            if(isBatching()) {
+                displayMessage("@cya@Please STOP skill action to Toggle ID tags");
+            }
+            if(isCurrentlyWalking()) {
+                displayMessage("@cya@Please stand still to Toggle ID tags");
+            }
 			if(groupId == 10) {
-				getPlayer().groupID = 8;
-			}
-		}
+                displayMessage("@cya@Turning on right click ID tags");
+				getPlayer().groupID = 9;  //was set to 8 incorrectly
+			} else if(groupId == 9) {
+                displayMessage("@cya@Turning off right click ID tags");
+                getPlayer().groupID = 10;
+            }
+        }
 	}
 }

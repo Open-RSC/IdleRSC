@@ -62,7 +62,7 @@ public class Main {
 
     private static boolean isRunning = false; // this is tied to the start/stop button on the side panel.
     private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; //all the windows.
-    private static JButton startStopButton, loadScriptButton, pathwalkerButton, openDebuggerButton, hideButton, resetXpButton; //all the buttons on the sidepanel.
+    private static JButton startStopButton, loadScriptButton, pathwalkerButton, openDebuggerButton, hideButton, resetXpButton, takeScreenshotButton, showIdButton; //all the buttons on the sidepanel.
     private static JCheckBox autoLoginCheckbox, logWindowCheckbox, unstickCheckbox, debugCheckbox, graphicsCheckbox, autoscrollLogsCheckbox; //all the checkboxes on the sidepanel.
 
 
@@ -339,7 +339,6 @@ public class Main {
             log(current);
         }
     }
-
     /**
      * Sets up the sidepanel
      *
@@ -358,9 +357,12 @@ public class Main {
         debugCheckbox = new JCheckBox("Debug");
         graphicsCheckbox = new JCheckBox("Graphics");
 
-        openDebuggerButton = new JButton("Open Debugger");
+        takeScreenshotButton = new JButton("Screenshot");
+        showIdButton = new JButton("Show ID's");
+        openDebuggerButton = new JButton("Open Debugg");
         hideButton = new JButton("Hide Sidepane");
         resetXpButton = new JButton("Reset XP");
+
 
         startStopButton.addActionListener(new ActionListener() {
             @Override
@@ -418,7 +420,18 @@ public class Main {
         		DrawCallback.resetXpCounter();
         	}
         });
-
+        showIdButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.fakeDeveloper();
+            }
+        });
+        takeScreenshotButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.takeScreenshot("");
+            }
+        });
         graphicsCheckbox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -444,8 +457,15 @@ public class Main {
         botFrame.add(unstickCheckbox);
         botFrame.add(debugCheckbox);
         botFrame.add(graphicsCheckbox);
+        botFrame.add(takeScreenshotButton);
+        takeScreenshotButton.setMaximumSize(buttonSize);
+        takeScreenshotButton.setPreferredSize(buttonSize);
+        botFrame.add(showIdButton);
+        showIdButton.setMaximumSize(buttonSize);
+        showIdButton.setPreferredSize(buttonSize);
         botFrame.add(openDebuggerButton);
         openDebuggerButton.setMaximumSize(buttonSize);
+        openDebuggerButton.setPreferredSize(buttonSize);
         hideButton.setPreferredSize(buttonSize);
         botFrame.add(hideButton);
         hideButton.setMaximumSize(buttonSize);
@@ -454,8 +474,6 @@ public class Main {
         resetXpButton.setPreferredSize(buttonSize);
         resetXpButton.setMaximumSize(buttonSize);
         botFrame.add(resetXpButton);
-
-
         // abcd
         autoLoginCheckbox.setSelected(true);
         graphicsCheckbox.setSelected(true);

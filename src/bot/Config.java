@@ -1,6 +1,5 @@
 package bot;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -229,39 +228,39 @@ public class Config {
     public boolean getEnablegfx() {
         return enablegfx;
     }
-    
+
     public boolean getLocalOCR() {
     	return localOCR;
     }
-    
+
     private ArrayList<Integer> itemsStringToIntArray(String items) {
     	try {
     		String[] itemsArray = items.split(",");
     		ArrayList<Integer> itemIds = new ArrayList<Integer>();
-    		
+
     		for(String id : itemsArray) {
     			itemIds.add(Integer.parseInt(id));
     		}
-    		
+
     		return itemIds;
-    		
+
     	} catch(Exception e) {
     		return null;
     	}
     }
-    
+
     public ArrayList<Integer> getAttackItems() {
     	return itemsStringToIntArray(attackItems);
     }
-    
+
     public ArrayList<Integer> getStrengthItems() {
     	return itemsStringToIntArray(strengthItems);
     }
-    
-    public ArrayList<Integer> getDefenceItems() { 
+
+    public ArrayList<Integer> getDefenceItems() {
     	return itemsStringToIntArray(defenceItems);
     }
-    
+
     public int getSpellId() {
     	try {
     		return Integer.parseInt(spellId);

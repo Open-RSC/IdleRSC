@@ -19,11 +19,11 @@ import orsc.ORSCharacter;
 /**
  * Grabs Monks Robes from edge monestary
 *
- * 		Picks up Monks Robe SETS in Edge Monastery & Banks (equal amount of tops and bottoms)
+ * 		Picks up Monks Robe SETS in Edge Monastery and Banks (equal amount of tops and bottoms)
  * 		Start in Edge Bank or near Robes
  * 		Recommend Armor against lvl 21 Scorpions
  * 		Please Gain Permission to enter Prayer guild FIRST
- * 		Bot will loot Equal Amounts of robe tops & bottoms
+ * 		Bot will loot Equal Amounts of robe tops and bottoms
  *
  * Author - Kaila
  */

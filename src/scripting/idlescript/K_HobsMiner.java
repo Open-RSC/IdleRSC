@@ -27,7 +27,7 @@ import orsc.ORSCharacter;
  * 		Teleport if Pkers Attack Option.
  * 		31 Magic, Laws, Airs, and Earths required for Escape Tele.
  * 		Unselected, bot WALKS to Edge when Attacked.
- * 		Selected, bot walks to 19 wildy & teleports.
+ * 		Selected, bot walks to 19 wildy and teleports.
  *
  * 		Return to Hobs Mine after Escaping Option.
  * 		Unselected, bot will log out after escaping Pkers.

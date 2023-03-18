@@ -166,8 +166,11 @@ public void scriptStart() {
 		c.setStatus("@gre@Banking..");
 		c.openBank();
 		c.sleep(640);
-
-		if(controller.isInBank()) {
+        if(!c.isInBank()) { //attempt to fix desync issue, remove later
+            c.walkTo(150,502);
+            c.openBank();
+            c.sleep(1280);
+        }
 		if(c.isInBank()) {
 
 			totalPlates = totalPlates + 5;

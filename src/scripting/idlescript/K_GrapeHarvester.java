@@ -187,12 +187,7 @@ public class K_GrapeHarvester extends IdleScript {
 public void parseVariables() {
     startTime = System.currentTimeMillis();
 }
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
+
 	public void setupGUI() {
 		JLabel header = new JLabel("Grape Harvester - By Kaila");
 		JLabel label1 = new JLabel("Harvests Grapes near Edge Monastery");
@@ -211,7 +206,7 @@ public void parseVariables() {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -221,10 +216,10 @@ public void parseVariables() {
 		scriptFrame.add(label3);
         scriptFrame.add(label4);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

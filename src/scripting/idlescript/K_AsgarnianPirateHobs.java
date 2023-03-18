@@ -436,13 +436,6 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 			potUp = false;
 		}
 	}
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer - By Kaila");
 		JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
@@ -466,7 +459,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -478,10 +471,10 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 		scriptFrame.add(foodWithdrawAmountField);
 		scriptFrame.add(blankLabel);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

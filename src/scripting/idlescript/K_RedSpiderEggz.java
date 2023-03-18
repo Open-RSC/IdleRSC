@@ -351,12 +351,6 @@ public class K_RedSpiderEggz extends IdleScript {
 			returnEscape = false;
 		}
 	}
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Red Spider Egg Picker - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Armor");
@@ -381,7 +375,7 @@ public class K_RedSpiderEggz extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -396,10 +390,10 @@ public class K_RedSpiderEggz extends IdleScript {
 		scriptFrame.add(label6);
 		scriptFrame.add(label7);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

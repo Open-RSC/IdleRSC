@@ -136,78 +136,73 @@ public class K_SeersMagicTree extends IdleScript {
 	}
 
 
-public void goToBank() {
-	controller.walkTo(516,488);
-	controller.walkTo(506,478);
-	controller.walkTo(506,472);
-	controller.walkTo(506,463);
-	controller.walkTo(503,460);
-	controller.walkTo(503,457);
-	controller.walkTo(500,454);
-	totalTrips = totalTrips + 1;
-	bank();
-	controller.walkTo(500,454);
-	controller.walkTo(503,457);
-	controller.walkTo(503,460);
-	controller.walkTo(506,463);
-	controller.walkTo(506,472);
-	controller.walkTo(506,478);
-	controller.walkTo(516,488);
-}
+    public void goToBank() {
+        controller.walkTo(516,488);
+        controller.walkTo(506,478);
+        controller.walkTo(506,472);
+        controller.walkTo(506,463);
+        controller.walkTo(503,460);
+        controller.walkTo(503,457);
+        controller.walkTo(500,454);
+        totalTrips = totalTrips + 1;
+        bank();
+        controller.walkTo(500,454);
+        controller.walkTo(503,457);
+        controller.walkTo(503,460);
+        controller.walkTo(506,463);
+        controller.walkTo(506,472);
+        controller.walkTo(506,478);
+        controller.walkTo(516,488);
+    }
 
-public void goToBank2() {
-	controller.walkTo(547,484);
-	controller.walkTo(537,474);
-	controller.walkTo(531,468);
-	controller.walkTo(521,468);
-	controller.walkTo(510,468);
-	controller.walkTo(504,462);
-	controller.walkTo(504,458);
-	controller.walkTo(500,454);
-	totalTrips = totalTrips + 1;
-	bank();
-	controller.walkTo(500,454);
-	controller.walkTo(503,457);
-	controller.walkTo(503,460);
-	controller.walkTo(506,463);
-	controller.walkTo(506,472);
-	controller.walkTo(506,478);
-	controller.walkTo(516,488);
-}
+    public void goToBank2() {
+        controller.walkTo(547,484);
+        controller.walkTo(537,474);
+        controller.walkTo(531,468);
+        controller.walkTo(521,468);
+        controller.walkTo(510,468);
+        controller.walkTo(504,462);
+        controller.walkTo(504,458);
+        controller.walkTo(500,454);
+        totalTrips = totalTrips + 1;
+        bank();
+        controller.walkTo(500,454);
+        controller.walkTo(503,457);
+        controller.walkTo(503,460);
+        controller.walkTo(506,463);
+        controller.walkTo(506,472);
+        controller.walkTo(506,478);
+        controller.walkTo(516,488);
+    }
 
-public void bank() {
+    public void bank() {
 
-	controller.setStatus("@yel@Banking..");
-	controller.openBank();
-	controller.sleep(640);
+        controller.setStatus("@yel@Banking..");
+        controller.openBank();
+        controller.sleep(640);
 
-	if (controller.isInBank()) {
+        if (controller.isInBank()) {
 
-		totalLog = totalLog + controller.getInventoryItemCount(636);
+            totalLog = totalLog + controller.getInventoryItemCount(636);
 
-        for (int itemId : controller.getInventoryItemIds()) {
-            if (itemId != 1263 && itemId != axeId[0] && itemId != axeId[1] && itemId != axeId[2] && itemId != axeId[3] && itemId != axeId[4] && itemId != axeId[5]) {
-                controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+            for (int itemId : controller.getInventoryItemIds()) {
+                if (itemId != 1263 && itemId != axeId[0] && itemId != axeId[1] && itemId != axeId[2] && itemId != axeId[3] && itemId != axeId[4] && itemId != axeId[5]) {
+                    controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+                }
             }
-        }
 
-        logInBank = controller.getBankItemCount(636);
-		controller.closeBank();
-		controller.sleep(1000);
-	}
-}
+            logInBank = controller.getBankItemCount(636);
+            controller.closeBank();
+            controller.sleep(1000);
+        }
+    }
 	//GUI stuff below (icky)
 
 
 	public void parseVariables() {
         startTime = System.currentTimeMillis();
     }
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
+
 	public void setupGUI() {
 		JLabel header = new JLabel("Seers Magic Logs by Kaila");
 		JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
@@ -224,7 +219,7 @@ public void bank() {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -232,10 +227,10 @@ public void bank() {
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);  //need this for proper windows behavior
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

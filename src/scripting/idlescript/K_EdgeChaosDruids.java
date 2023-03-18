@@ -90,7 +90,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 			1277, 	 //shield (left) half
 			1092 	 //rune spear
 			};
-
+    String[] foodTypes = new String[] { "Sharks", "Swordfish", "Tuna", "Lobsters" };
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 
@@ -429,9 +429,9 @@ public class K_EdgeChaosDruids extends IdleScript {
         controller.setStatus("@gre@Done Opening Wildy Gate..");
 	}
 
+
+
 	//GUI stuff below (icky)
-
-
 	public void setValuesFromGUI(JCheckBox potUpCheckbox, JCheckBox escapeCheckbox) {
 		if (potUpCheckbox.isSelected()) {
 			teleportOut = true;
@@ -443,12 +443,6 @@ public class K_EdgeChaosDruids extends IdleScript {
 		} else {
 			returnEscape = false;
 		}
-	}
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
 	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Edge Druid Killer - By Kaila");
@@ -478,7 +472,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -495,10 +489,10 @@ public class K_EdgeChaosDruids extends IdleScript {
 		scriptFrame.add(foodWithdrawAmountLabel);
 		scriptFrame.add(foodWithdrawAmountField);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

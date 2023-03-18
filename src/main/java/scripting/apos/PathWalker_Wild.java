@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +13,6 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 public class PathWalker_Wild extends Script implements ActionListener, ItemListener {
 
@@ -271,15 +269,13 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
       System.out.print("Reading map... ");
 
       byte[][] walkable = new byte[WORLD_W][WORLD_H];
-      String dataPath = "/map/data.gz";
-      InputStream resIn = null;
-      GZIPInputStream in = null;
+      String dataPath = "/map/data";
+      BufferedInputStream in = null;
       try {
-        resIn = PathWalker_Wild.class.getResourceAsStream(dataPath);
-        if (resIn == null) {
+        in = new BufferedInputStream(PathWalker_Wild.class.getResourceAsStream(dataPath));
+        if (in == null) {
           throw new IOException("resource not found: " + dataPath);
         }
-        in = new GZIPInputStream(new BufferedInputStream(resIn));
         for (int i = 0; i < WORLD_W; ++i) {
           int read = 0;
           do {

@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 public class PathWalker extends Script implements ActionListener, ItemListener {
 
@@ -310,15 +309,15 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
       System.out.print("Reading map... ");
 
       byte[][] walkable = new byte[WORLD_W][WORLD_H];
-      String dataPath = "/map/data.gz";
+      String dataPath = "/map/data";
       InputStream resIn = null;
-      GZIPInputStream in = null;
+      BufferedInputStream in = null;
       try {
         resIn = PathWalker.class.getResourceAsStream(dataPath);
         if (resIn == null) {
           throw new IOException("resource not found: " + dataPath);
         }
-        in = new GZIPInputStream(new BufferedInputStream(resIn));
+        in = new BufferedInputStream(resIn);
         for (int i = 0; i < WORLD_W; ++i) {
           int read = 0;
           do {

@@ -1,20 +1,19 @@
 package scripting.idlescript;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import bot.Main;
+import controller.Controller;
 import orsc.ORSCharacter;
+import orsc.enumerations.MessageType;
 
 /**
  * Paladin Tower Thiever - By Kaila
@@ -27,222 +26,287 @@ import orsc.ORSCharacter;
  *
  *      ~300k per hr+ xp per hr possible! (at 99 with thieving cape)
  *
- * todo
- *      add more food selection
  *
  *
- *
- *
- *
- * Author - Kaila
+ * Author ~ Kaila ~
  */
 public class K_Paladins extends IdleScript {
-
+    Controller c = Main.getController();
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
+    long startTime;
+    long startTimestamp = System.currentTimeMillis() / 1000L;
 
 	int totalCoins = 0;
-    int totalShark = 0;  //raw sharks
+    int fightMode = 3;
+    int totalShark = 0;  //raw sharks that we pick up
     int totalChaos = 0;
     int totalAda = 0;
     int totalSap = 0;
     int totalScim = 0;
-    int coinsInBank = 0;
-    int chaosInBank = 0;
-    int foodInBank = 0;
+    int coinsInBank = -1;
+    int chaosInBank = -1;
+    int foodInBank = -1;
     int totalTrips = 0;
 	int invCoins = 0;
 	int invChaos = 0;
+    int thieveSuccess = 0;
+    int openChest = 0;
+    int usedFood = 0;
+    int thieveFailure = 0;
+    int thieveCapture = 0;
+    int foodId = -1;
 	int startCoins;
 	int startChaos;
-	int foodId = -1;
+    int[] pathToBank =  {
+            604, 603,
+            589, 604,
+            575, 605,
+            564, 606,
+            554, 607
+    };
+	int[] loot = {
+            10,		//coins
+            41,		//chaos runes
 
-	int[] foodIds = { 546, 370, 367, 373 }; //cooked shark, swordfish, tuna, lobster
-	int[] loot = {  10,		//coins
-					41,		//chaos runes
+            526, 	 //tooth half
+            527, 	 //loop half
+            1277, 	 //shield (left) half
+            1092, 	 //rune spear
+            160, 	 //saph
+            159, 	 //emerald
+            158, 	 //ruby
+            157,	 //diamond
 
-					526, 	 //tooth half
-					527, 	 //loop half
-					1277, 	 //shield (left) half
-					1092, 	 //rune spear
-					160, 	 //saph
-					159, 	 //emerald
-					158, 	 //ruby
-					157,	 //diamond
+            438, 	 //Grimy ranarr
+            439,  	 //Grimy irit
+            440,  	 //Grimy ava
+            441,	 //Grimy kwu
+            442, 	 //Grimy cada
+            443, 	 //Grimy dwu
 
-					438, 	 //Grimy ranarr
-					439,  	 //Grimy irit
-					440,  	 //Grimy ava
-					441,	 //Grimy kwu
-					442, 	 //Grimy cada
-					443, 	 //Grimy dwu
+            619, 	//blood rune
+            32,		//water rune
+            //170,    //iron bar
+            171,    //steel bar
+            173,    //mithril bar
 
-					619, 	//blood rune
-					32,		//water rune
-					//170,    //iron bar
-					171,    //steel bar
-					173,    //mithril bar
+            400,	//rune chain
+            402,	//rune legs
+            404,	//rune kite
+            112,	//rune helm
+            315,	//defense amulet
+    };
+    int[] foodIds = {
+            1191,   //cooked Manta Ray
+            1193,   //cooked Sea Turtle
+            546,    //cooked shark
+            370,    //cooked swordfish
+            367,    //cooked tuna
+            373,    //cooked lobster
+            555,    //cooked Bass
+            553,    //cooked Mackerel
+            551,    //cooked Cod
+            364,    //cooked Pike
+            362,    //cooked Herring
+            357,    //cooked Salmon
+            352,    //cooked Trout
+            350,    //cooked Anchovies
+            132     //cooked Chicken
+    };
+    String[] foodTypes = new String[] {
+            "Manta Ray" ,
+            "Sea Turtle",
+            "Shark",
+            "Swordfish",
+            "Tuna",
+            "Lobster",
+            "Bass",
+            "Mackerel",
+            "Cod",
+            "Pike",
+            "Herring",
+            "Salmon",
+            "Trout",
+            "Anchovies",
+            "Shrimp",
+            "Chicken"
+    };
 
-					400,	//rune chain
-					402,	//rune legs
-					404,	//rune kite
-					112,	//rune helm
-					315,	//defense amulet
-					};
 
-	long startTime;
-	long startTimestamp = System.currentTimeMillis() / 1000L;
 
     public void startSequence(){
-        controller.displayMessage("@ran@Paladin Tower - By Kaila");
-        controller.displayMessage("@gre@Beginning Startup Sequence");
-        if(controller.isInBank() == true) {
-            controller.closeBank();
+        for (int i = 1; i <= 240; i++) {
+            if (i < 5) {
+                if (!c.isLoggedIn()) {
+                    int sleepTime = (int) (Math.random() * 30000) + 30000;
+                    c.log("Not Logged In, Waiting to Start Script... trying again in " + sleepTime + " ms...","cya");
+                    c.sleep(sleepTime);
+                } else {
+                    c.log("Logged In!","gre");
+                    break;
+                }
+            } else {
+                if (!c.isLoggedIn()) {
+                    int sleepTime = (int) (Math.random() * 30000) + (((i * 15) / (i + 60)) * 30000) + 30000;
+                    c.log("Not Logged In, Waiting to Start Script... trying again in \" + sleepTime + \" ms...","cya");
+                    c.sleep(sleepTime);
+                } else {
+                    c.log("Logged In!","gre");
+                    break;
+                }
+            }
+            controller.sleep(100);
         }
-        if(controller.currentY() < 620 && controller.currentY() > 608 && controller.currentX() > 550 && controller.currentX() < 555) {  //inside bank
+        c.displayMessage("@ran@Paladin Tower - By Kaila.");
+        c.displayMessage("@gre@Beginning Startup Sequence.");
+        if(c.isInBank() == true) {
+            c.closeBank();
+        }
+        if(c.currentY() < 621 && c.currentY() > 600 && c.currentX() > 539 && c.currentX() < 565) {  //NEAR bank
             bank();
             BankToPaladins();
-            controller.sleep(1380);
+            c.sleep(1380);
         }
-        if(controller.currentY() > 1542 && controller.currentY() < 1548 && controller.currentX() > 607 && controller.currentX() < 614) {  //inside paladin antichamber
-            controller.atWallObject2(609,1548);     //locked door
-            controller.sleep(640);
-            while(controller.isBatching()) controller.sleep(1000);
-            controller.sleep(640);
-            controller.walkTo(610,1549);
-            controller.sleep(640);
+        if(c.currentY() > 1542 && c.currentY() < 1548 && c.currentX() > 607 && c.currentX() < 614) {  //inside paladin antichamber
+            c.atWallObject2(609,1548);     //locked door
+            c.sleep(640);
+            while(c.isBatching()) c.sleep(1000);
+            c.sleep(640);
+            c.walkTo(610,1549);
+            c.sleep(640);
         }
-        if(controller.currentY() < 650 && controller.currentY() > 550 && controller.currentX() < 540 && controller.currentX() > 500) {  //in witchhaven
+        if(c.currentY() < 650 && c.currentY() > 550 && c.currentX() < 540 && c.currentX() > 500) {  //in witchhaven
             witchhavenToBank();
             bank();
             BankToPaladins();
-            controller.sleep(1380);
+            c.sleep(1380);
         }
-        if(controller.currentY() < 650 && controller.currentY() > 550 && controller.currentX() > 568 && controller.currentX() < 620) {   //on path
+        if(c.currentY() < 650 && c.currentY() > 550 && c.currentX() > 564 && c.currentX() < 620) {   //on path
             pathToBank();
             bank();
             BankToPaladins();
-            controller.sleep(1380);
+            c.sleep(1380);
         }
-        if(controller.currentY() < 2496 && controller.currentY() > 2486 && controller.currentX() < 614 && controller.currentX() > 607) {  //Upstairs
+        if(c.currentY() < 2496 && c.currentY() > 2486 && c.currentX() < 614 && c.currentX() > 607) {  //Upstairs
             TreasureRoomToBank();
             bank();
             BankToPaladins();
-            controller.sleep(1380);
+            c.sleep(1380);
         }
+        c.displayMessage("@gre@Finished Startup Sequence.");
     }
 	public int start(String parameters[]) {
-        if (parameters.length > 0 && !parameters[0].equals("")) {
-            if (parameters[0].toLowerCase().startsWith("autostart")) {
-                controller.displayMessage("Got Autostart", 0);
-                System.out.println("Got Autostart, Using Sharks");
+        if (scriptStarted) {
+            startSequence();
+            scriptStart();
+        } else {
+            if (parameters[0].toLowerCase().startsWith("auto")) {
                 foodId = 546;
+                c.displayMessage("Got Autostart Parameter");
+                c.log("@cya@Auto-Starting script using Sharks with a foodID of " + foodId,"cya");
                 parseVariables();
                 startSequence();
                 scriptStart();
-            }
-            if (parameters[0].toLowerCase().startsWith("shark")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using Sharks!", 0);
-                System.out.println("Got param" + parameters[0] + ", Using Sharks");
-                foodId = 546;
-                parseVariables();
-                startSequence();
-                scriptStart();
-            }
-            if (parameters[0].toLowerCase().startsWith("lobster")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using Lobsters!", 0);
-                System.out.println("Got param" + parameters[0] + ", Using Lobsters!");
-                foodId = 373;
-                parseVariables();
-                startSequence();
-                scriptStart();
-            }
-            if (parameters[0].toLowerCase().startsWith("swordfish")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using Swordfish!", 0);
-                System.out.println("Got param" + parameters[0] + ", Using Swordfish!");
-                foodId = 370;
-                parseVariables();
-                startSequence();
-                scriptStart();
-            }
-            if (parameters[0].toLowerCase().startsWith("tuna")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using Tuna!", 0);
-                System.out.println("Got param" + parameters[0] + ", Using Tuna!");
-                foodId = 367;
-                parseVariables();
-                startSequence();
-                scriptStart();
+            } else if (parameters.length > 0 && !parameters[0].equals("")) {
+                try {
+                    c.displayMessage("@cya@Got parameter: " + parameters[0]);
+                    for(int i = 0; i < foodTypes.length; i++) {
+                        String option = foodTypes[i];
+
+                        if(option.toLowerCase().equals(parameters[0].toLowerCase())) {
+                            foodId = foodIds[i];
+                            break;
+                        }
+                    }
+
+
+
+                    if(foodId == -1) {
+                        throw new Exception("Food Type not selected! Format is \"Lobster\" ");
+                    }
+                    if(foodId != -1) {
+                        c.log("@cya@Starting script using " + parameters[0] + " with a foodID of " + foodId,"cya");
+                        parseVariables();
+                        startSequence();
+                        scriptStart();
+                    }
+                }
+                catch(Exception e) {
+                    c.log("@red@Could not parse parameters! Could not parse ","red");
+                    c.stop();
+                }
+            } else {
+                if (!guiSetup) {
+                    setupGUI();
+                    guiSetup = true;
+                }
+                if (scriptStarted) {
+                    startSequence();
+                    scriptStart();
+                }
             }
         }
-		if (!guiSetup) {
-			setupGUI();
-			guiSetup = true;
-		}
-		if (scriptStarted) {
-            startSequence();
-			scriptStart();
-		}
 		return 1000; //start() must return a int value now.
 	}
-
 	public void scriptStart(){
-		while(controller.isRunning()) {
+		while(c.isRunning()) {
 
 			eat();
-			if(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(610, 1549, 0, true);
-				invCoins = controller.getInventoryItemCount(10);
-				invChaos = controller.getInventoryItemCount(41);
-				controller.sleep(800);
+			if(c.isInCombat()) {
+				c.setStatus("@red@Leaving combat..");
+				c.walkTo(610, 1549, 0, true);
+				c.sleep(800);
 			}
-			if(controller.getInventoryItemCount(foodId) > 0 && controller.currentY() > 1547 && controller.currentY() < 1552 ) {
+            if(c.getFightMode() != fightMode) {
+                c.log("@red@Changing fightmode to " + fightMode);
+                c.setFightMode(fightMode);
+            }
+			if(c.getInventoryItemCount(foodId) > 0 && c.currentY() > 1547 && c.currentY() < 1552 ) {
 
-				if(!controller.isInCombat()) {
-					controller.setStatus("@yel@Thieving Paladins");
-					ORSCharacter npc = controller.getNearestNpcById(323, false);
+				if(!c.isInCombat()) {
+					c.setStatus("@yel@Thieving Paladins");
+					ORSCharacter npc = c.getNearestNpcById(323, false);
 					if(npc != null) {
-						controller.thieveNpc(npc.serverIndex);
-						controller.sleep(20); //this sleep time is important
+						c.thieveNpc(npc.serverIndex);
+						c.sleep(100); //this sleep time is important
 					} else {
-						invCoins = controller.getInventoryItemCount(10);
-						invChaos = controller.getInventoryItemCount(41);
-						controller.sleep(10); //this sleep time is important
+						c.sleep(10); //this sleep time is important
 					}
 				}
 				for(int lootId : loot) {
-					int[] coords = controller.getNearestItemById(lootId);
+					int[] coords = c.getNearestItemById(lootId);
 					if(coords != null) {      //Loot
-						controller.setStatus("@yel@Looting..");
-						controller.pickupItem(coords[0], coords[1], lootId, true, true);
-						controller.sleep(618); //ignore this sleep time
+						c.setStatus("@yel@Looting..");
+						c.pickupItem(coords[0], coords[1], lootId, true, true);
+						c.sleep(618); //ignore this sleep time
 					} else {
-						controller.sleep(5); //this sleep time is important (total of all 3 sleep times should be about 200-300ms to prevent high cpu usage)
+						c.sleep(5); //this sleep time is important (total of all 3 sleep times should be about 200-300ms to prevent high cpu usage)
 					}
 				}
 			}
-			if(controller.getInventoryItemCount(foodId) == 0) {   //bank if no food-
-				controller.setStatus("@yel@Banking..");
+			if(c.getInventoryItemCount(foodId) == 0) {   //bank if no food-
+				c.setStatus("@yel@Banking..");
                 goUpPaladinsLadder();
                 TreasureRoomToBank();
 				bank();
 				BankToPaladins();
-				controller.sleep(618);
+				c.sleep(618);
 			}
-			if(controller.getInventoryItemCount() == 30) {
+			if(c.getInventoryItemCount() == 30) {
 				leaveCombat();
-				controller.setStatus("@red@Eating Food to Loot..");
-				if(controller.getInventoryItemCount(foodId) > 0) {
-					controller.itemCommand(foodId);
-					controller.sleep(700);
+				c.setStatus("@red@Eating Food to Loot..");
+				if(c.getInventoryItemCount(foodId) > 0) {
+					c.itemCommand(foodId);
+					c.sleep(700);
 				} else {
-                    controller.setStatus("@yel@Banking..");
+                    c.setStatus("@yel@Banking..");
                     goUpPaladinsLadder();
                     TreasureRoomToBank();
                     bank();
                     BankToPaladins();
-                    controller.sleep(618);
+                    c.sleep(618);
                 }
 			}
 		}
@@ -250,65 +314,41 @@ public class K_Paladins extends IdleScript {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 	//Important PUBLIC VOID's below
-	public void leaveCombatOld() {
+	public void leaveCombat() {
 
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat..");
-			controller.walkTo(610, 1549, 0, true);
-			controller.sleep(800);
+		if(c.isInCombat()) {
+			c.setStatus("@red@Leaving combat..");
+			c.walkTo(610, 1549, 0, true);
+			c.sleep(800);
 		}
 	}
-    public void leaveCombat() {
-        for (int i = 1; i <= 20; i++) {
-            if (controller.isInCombat()) {
-                controller.setStatus("@red@Leaving combat..");
-                controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-                controller.sleep(200);
-            }
-            controller.sleep(10);
-        }
-    }
-
 	public void eat() {
 
-		int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
+		int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-		if(controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+		if(c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
 
-			if(controller.isInCombat()) {
-				controller.setStatus("@red@Leaving combat..");
-				controller.walkTo(610, 1549, 0, true);
-				controller.sleep(800);
+			if(c.isInCombat()) {
+				c.setStatus("@red@Leaving combat..");
+				c.walkTo(610, 1549, 0, true);
+				c.sleep(800);
 			}
-			controller.setStatus("@red@Eating..");
+			c.setStatus("@red@Eating..");
 
 			boolean ate = false;
 
-			for(int id : controller.getFoodIds()) {
-				if(controller.getInventoryItemCount(id) > 0) {
-					controller.itemCommand(id);
-					controller.sleep(700);
+			for(int id : c.getFoodIds()) {
+				if(c.getInventoryItemCount(id) > 0) {
+					c.itemCommand(id);
+					c.sleep(700);
 					ate = true;
 					break;
 				}
 			}
 			if(!ate) {
-				controller.setStatus("@red@We've ran out of Food! Banking!.");
-				controller.sleep(308);
+				c.setStatus("@red@We've ran out of Food! Banking!.");
+				c.sleep(308);
                 goUpPaladinsLadder();
                 TreasureRoomToBank();
 				bank();
@@ -319,230 +359,222 @@ public class K_Paladins extends IdleScript {
 
 	public void bank() {
 
-		controller.setStatus("@yel@Banking..");
-		controller.openBank();
-		controller.sleep(1240); //lower?
+		c.setStatus("@yel@Banking..");
+		c.openBank();
+		c.sleep(1240); //lower?
 
-		if(controller.isInBank()){
+		if(c.isInBank()){
 
-			totalCoins = totalCoins + controller.getInventoryItemCount(10);
-			totalChaos = totalChaos + controller.getInventoryItemCount(41);
-			totalShark = totalShark + controller.getInventoryItemCount(545);
-			totalAda = totalAda + controller.getInventoryItemCount(154);
-			totalSap = totalSap + controller.getInventoryItemCount(160);
-			totalScim = totalScim + controller.getInventoryItemCount(427);
-			coinsInBank = (controller.getBankItemCount(10)/1000000);
-			chaosInBank = controller.getBankItemCount(41);
-			foodInBank = controller.getBankItemCount(foodId);
+			totalCoins = totalCoins + c.getInventoryItemCount(10);
+			totalChaos = totalChaos + c.getInventoryItemCount(41);
+			totalShark = totalShark + c.getInventoryItemCount(545);
+			totalAda = totalAda + c.getInventoryItemCount(154);
+			totalSap = totalSap + c.getInventoryItemCount(160);
+			totalScim = totalScim + c.getInventoryItemCount(427);
+			coinsInBank = (c.getBankItemCount(10)/1000000);
+			chaosInBank = c.getBankItemCount(41);
+			foodInBank = c.getBankItemCount(foodId);
 
-			for (int itemId : controller.getInventoryItemIds()) {                                                            //change 546(shark) to desired food id
-				controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-				controller.sleep(100);
+			for (int itemId : c.getInventoryItemIds()) {                                                            //change 546(shark) to desired food id
+				c.depositItem(itemId, c.getInventoryItemCount(itemId));
+				c.sleep(100);
 			}
-			controller.sleep(1280);   //Important, leave in
+			c.sleep(1280);   //Important, leave in
 
-			if(controller.getInventoryItemCount(foodId) < 27) {  //withdraw 27 shark if needed        //change 546(shark) to desired food id
-				controller.withdrawItem(foodId, 27 - controller.getInventoryItemCount(foodId));          //change 546(shark) to desired food id
-				controller.sleep(640);
+			if(c.getInventoryItemCount(foodId) < 27) {  //withdraw 27 shark if needed        //change 546(shark) to desired food id
+				c.withdrawItem(foodId, 27 - c.getInventoryItemCount(foodId));          //change 546(shark) to desired food id
+				c.sleep(640);
 			}
-			if(controller.getBankItemCount(foodId) == 0) {
-				controller.setStatus("@red@NO Food in the bank, Logging Out!.");
-				controller.setAutoLogin(false);
-				controller.logout();
-				if(!controller.isLoggedIn()) {
-					controller.stop();
+			if(c.getBankItemCount(foodId) == 0) {
+				c.setStatus("@red@NO Food in the bank, Logging Out!.");
+				c.setAutoLogin(false);
+				c.logout();
+				if(!c.isLoggedIn()) {
+					c.stop();
 					return;
 				}
 			}
-			controller.closeBank();
-			controller.sleep(1320);
-			invCoins = controller.getInventoryItemCount(10);
-			invChaos = controller.getInventoryItemCount(41);
+			c.closeBank();
+			c.sleep(1320);
+			invCoins = c.getInventoryItemCount(10);
+			invChaos = c.getInventoryItemCount(41);
 		}
 	}
 
-
-
-
-
-
-
-
-
-
-
 	//Pathing Scripts Below
     public void goUpPaladinsLadder(){
-        controller.setStatus("@gre@Walking to Bank..");
-        controller.walkTo(611,1550);
-        controller.atObject(611,1551);
-        controller.sleep(640);
+        c.setStatus("@gre@Walking to Bank..");
+        c.walkTo(611,1550);
+        c.atObject(611,1551);
+        c.sleep(640);
     }
 	public void TreasureRoomToBank() {
-		int[] coords = controller.getNearestItemById(427);
+		int[] coords = c.getNearestItemById(427);
 		if(coords != null) {      //Loot
-			controller.setStatus("@yel@Grabbing Black Scimmy..");
-			controller.walkTo(coords[0], coords[1]);
-			controller.sleep(640);
-   			controller.pickupItem(coords[0], coords[1], 427, true, true);
+			c.setStatus("@yel@Grabbing Black Scimmy..");
+			c.walkTo(coords[0], coords[1]);
+			c.sleep(640);
+   			c.pickupItem(coords[0], coords[1], 427, true, true);
 
    		}
-		controller.sleep(640);
-		int[] coords2 = controller.getNearestObjectById(338);
+		c.sleep(640);
+		int[] coords2 = c.getNearestObjectById(338);
 		if(coords2 != null) {
-			controller.setStatus("@red@Stealing From Chest..");
-				controller.walkTo(610,2488);
-				controller.sleep(340);
-				controller.atObject2(610,2487);
-				controller.sleep(340);
-				controller.atObject2(610,2487);
-				controller.sleep(340);
-				if(controller.currentX() == 610 && controller.currentY() == 2488) {  //got stuck here!!!
-					controller.atObject2(610,2487);
-					controller.sleep(1340);
+			c.setStatus("@red@Stealing From Chest..");
+				c.walkTo(610,2488);
+				c.sleep(340);
+				c.atObject2(610,2487);
+				c.sleep(340);
+				c.atObject2(610,2487);
+				c.sleep(340);
+				if(c.currentX() == 610 && c.currentY() == 2488) {  //got stuck here!!!
+					c.atObject2(610,2487);
+					c.sleep(1340);
 				}
 				witchhavenToBank();
 		}
 		if(coords2 == null) {
-			controller.setStatus("@red@Chest Empty, Walking...");
-			controller.walkTo(611,2494);
-			controller.atObject(611,2495);
-   			controller.sleep(320);
-			controller.walkTo(609,1548);
-			controller.atWallObject(609,1548);  //added this, some chance of breaking before.....
-			controller.sleep(320);
-   			if(controller.currentX() == 609 && controller.currentY() == 1548) {
-   				controller.atWallObject(609,1548);     //locked door
-   				controller.sleep(640);
+			c.setStatus("@red@Chest Empty, Walking...");
+			c.walkTo(611,2494);
+			c.atObject(611,2495);
+   			c.sleep(320);
+			c.walkTo(609,1548);
+			c.atWallObject(609,1548);  //added this, some chance of breaking before.....
+			c.sleep(320);
+   			if(c.currentX() == 609 && c.currentY() == 1548) {
+   				c.atWallObject(609,1548);     //locked door
+   				c.sleep(640);
    			}
-			controller.walkTo(611,1544);
-			controller.atObject(611,1545);
-			controller.walkTo(608,603);
-			controller.walkTo(599,603);
+			c.walkTo(611,1544);
+			c.atObject(611,1545);
+			c.walkTo(608,603);
+			c.walkTo(599,603);
 			//add open front gate to castle?
-			controller.walkTo(577,603);
-			controller.walkTo(574,606);
-			controller.walkTo(564,606);
-			controller.walkTo(552,606);
-			controller.walkTo(550,608);
-			controller.walkTo(550,612);
-	    	controller.setStatus("@gre@Done Walking..");
+			c.walkTo(577,603);
+			c.walkTo(574,606);
+			c.walkTo(564,606);
+			c.walkTo(552,606);
+			c.walkTo(550,608);
+			c.walkTo(550,612);
+	    	c.setStatus("@gre@Done Walking..");
 			totalTrips = totalTrips + 1;
-			controller.sleep(640);
+			c.sleep(640);
 		}
 	}
-
-
-
     public void BankToPaladins() {
-    	controller.setStatus("@gre@Walking to Paladins..");
-		controller.walkTo(550,612);
-		controller.walkTo(550,606);
-		controller.walkTo(560,606);
-		controller.walkTo(570,606);
-		controller.walkTo(582,606);
-		controller.walkTo(585,603);
-		controller.walkTo(598,603);
+    	c.setStatus("@gre@Walking to Paladins..");
+		c.walkTo(550,612);
+		c.walkTo(550,606);
+		c.walkTo(560,606);
+		c.walkTo(570,606);
+		c.walkTo(582,606);
+		c.walkTo(585,603);
+		c.walkTo(598,603);
 		//insert open outer castle gate?
-		controller.walkTo(607,603);
-		controller.walkTo(612,604);	//just below stair
-		while(controller.currentX() < 615 && controller.currentX() > 609 && controller.currentY() < 610 && controller.currentY() > 600) {  //needs to be WHILE to escape paladins
-				controller.walkTo(612,604);
-				controller.atObject(611,601);    //sometimes get stuck here  CHANGED TO AREA INSTEAD!!!  change coords to caslte perimeter instead!!
-				controller.sleep(320);
+		c.walkTo(607,603);
+		c.walkTo(612,604);	//just below stair
+		while(c.currentX() < 615 && c.currentX() > 609 && c.currentY() < 610 && c.currentY() > 600) {  //needs to be WHILE to escape paladins
+				c.walkTo(612,604);
+				c.atObject(611,601);    //sometimes get stuck here  CHANGED TO AREA INSTEAD!!!  change coords to caslte perimeter instead!!
+				c.sleep(320);
 		}
-		controller.walkTo(609,1547);
-		if(controller.currentX() == 609 && controller.currentY() == 1547) {
-			controller.atWallObject2(609,1548);     //locked door
-			controller.sleep(640);
-			while(controller.isBatching()) controller.sleep(1000);
+		c.walkTo(609,1547);
+		if(c.currentX() == 609 && c.currentY() == 1547) {
+			c.atWallObject2(609,1548);     //locked door
+			c.sleep(640);
+			while(c.isBatching()) c.sleep(1000);
 		}
-    	controller.setStatus("@gre@Done Walking..");
+    	c.setStatus("@gre@Done Walking..");
 	}
-
-
     public void witchhavenToBank() {
-		if(controller.currentX() > 500 && controller.currentX() < 532) {
-			controller.walkTo(528,597);
-			controller.walkTo(534,597);
-			controller.sleep(640);
+		if(c.currentX() > 500 && c.currentX() < 532) {
+			c.walkTo(528,597);
+			c.walkTo(534,597);
+			c.sleep(640);
 		}
-		controller.walkTo(534,597);
-		controller.walkTo(543,597);
-		controller.walkTo(543,605);
-		controller.walkTo(550,612);
-		controller.sleep(320);
-    	controller.setStatus("@gre@Done Walking..");
+		c.walkTo(534,597);
+		c.walkTo(543,597);
+		c.walkTo(543,605);
+		c.walkTo(550,612);
+		c.sleep(320);
+    	c.setStatus("@gre@Done Walking..");
     }
     public void pathToBank() {
-        controller.walkPath(pathToBank);
+        c.walkPath(pathToBank);
     }
-    int[] pathToBank =  {
-            604, 603,
-            589, 604,
-            575, 605,
-            564, 606,
-            554, 607
-    };
+
 
 
 	//GUI stuff below (icky)
+    public void moveCharacter() {
+        c.log("Moving Character!","cya");
 
+        int x = c.currentX();
+        int y = c.currentY();
 
+        if(c.isReachable(x + 1, y, true))
+            c.walkTo(x+1, y, 0, false);
+        else if(c.isReachable(x - 1, y, true))
+            c.walkTo(x - 1, y, 0, false);
+        else if(c.isReachable(x, y+1, true))
+            c.walkTo(x, y+1,0 , false);
+        else if(c.isReachable(x, y-1, true))
+            c.walkTo(x, y-1,0, false);
+
+        c.sleep(1000);
+
+        c.walkTo(x, y, 0, false);
+    }
     public void parseVariables(){
-        startCoins = controller.getInventoryItemCount(10);
-        startChaos = controller.getInventoryItemCount(41);
-        invCoins = controller.getInventoryItemCount(10);
-        invChaos = controller.getInventoryItemCount(41);
+        startCoins = c.getInventoryItemCount(10);
+        startChaos = c.getInventoryItemCount(41);
+        invCoins = c.getInventoryItemCount(10);
+        invChaos = c.getInventoryItemCount(41);
         startTime = System.currentTimeMillis();
     }
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
-		JLabel header = new JLabel("Paladin Thiever - By Kaila");
-		JLabel label1 = new JLabel("Start in Ardy South Bank OR in Paladin Tower");
-		JLabel label2 = new JLabel("Sharks/Swords/Tuna/Lobs in bank REQUIRED");
-		JLabel label3 = new JLabel("Switch to Defensive combat mode.");
-		JLabel label5 = new JLabel("Never wield weapons when Thieving.");
-        JLabel label6 = new JLabel("This script can use param \"autostart\" (Sharks)");
-        JLabel label7 = new JLabel("or param \"Sharks\", \"Swordfish\", \"Tuna\", or \"Lobsters\"");
+		JLabel header = new JLabel("Paladin Thiever - By Kaila.");
+		JLabel label1 = new JLabel("Start in Ardy South Bank OR in Paladin Tower.");
+		JLabel label2 = new JLabel("Please don't wield weapons while Thieving.");
+        JLabel label7 = new JLabel("Param Format: \"foodType\", \"Sharks\", \"etc\".");
+        JLabel fightModeLabel = new JLabel("Fight Mode:");
+        JComboBox<String> fightModeField = new JComboBox<String>(new String[] { "Controlled", "Aggressive", "Accurate", "Defensive"});
 		JLabel foodLabel = new JLabel("Type of Food:");
-		JComboBox<String> foodField = new JComboBox<String>( new String[] { "Sharks", "Swordfish", "Tuna", "Lobsters" });
+		JComboBox<String> foodField = new JComboBox<String>( foodTypes );
+        fightModeField.setSelectedIndex(3);              //sets default to sharks
+        foodField.setSelectedIndex(2);              //sets default to sharks
 		JButton startScriptButton = new JButton("Start");
 
 		startScriptButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
                 foodId = foodIds[foodField.getSelectedIndex()];
+                fightMode = fightModeField.getSelectedIndex();
                 parseVariables();
+                c.log("@cya@Starting script using " + foodField.getSelectedIndex() + " with a foodID of " + foodId,"cya");
 				scriptFrame.setVisible(false);
 				scriptFrame.dispose();
 				scriptStarted = true;
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		scriptFrame.add(header);
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
-		scriptFrame.add(label3);
-		scriptFrame.add(label5);
-        scriptFrame.add(label6);
         scriptFrame.add(label7);
+        scriptFrame.add(fightModeLabel);
+        scriptFrame.add(fightModeField);
 		scriptFrame.add(foodLabel);
 		scriptFrame.add(foodField);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {
@@ -555,39 +587,130 @@ public class K_Paladins extends IdleScript {
 
 		return new String(twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
 	}
+    /**
+     * credit to chomp for toTimeToCompletion (from AA_Script) (totalBars, barsInBank, startTime)
+     */
+    public static String toTimeToCompletion(final int processed, final int remaining, final long time) {
+        if (processed == 0) {
+            return "0:00:00";
+        }
 
+        final double seconds = (System.currentTimeMillis() - time) / 1000.0;
+        final double secondsPerItem = seconds / processed;
+        final long ttl = (long) (secondsPerItem * remaining);
+        return String.format("%d:%02d:%02d", ttl / 3600, (ttl % 3600) / 60, (ttl % 60));
+    }
+    @Override
+    public void serverMessageInterrupt(String message) {
+        if(message.contains("You have been standing here for")) { //bot needs its own
+            c.log("got standing message!","cya");
+            if(c != null)
+                moveCharacter(); //this is responsible for auto-walk!
+        } else if(message.contains("are under attack")) {
+            thieveCapture++;
+        }
+    }
+    @Override
+    public void questMessageInterrupt(String message) {
+        if(message.contains("You pick the paladin's pocket")) {
+            thieveSuccess++;
+            invCoins = c.getInventoryItemCount(10);
+            invChaos = c.getInventoryItemCount(41);
+        } else if(message.contains("You fail to pick the paladin's pocket")) {
+            thieveFailure++;
+        } else if(message.contains("You have been standing here for")) { //bot needs its own
+            c.log("got standing message!","cya");
+            if(c != null)
+                c.moveCharacter(); //this is responsible for auto-walk!
+        } else if(message.contains("You eat the")) {
+            usedFood++;
+        } else if(message.contains("You open the chest")) {
+            openChest++;
+        }
+    }
 	@Override
 	public void paintInterrupt() {
-		if (controller != null) {
+		if (c != null) {
 
 			String runTime = msToString(System.currentTimeMillis() - startTime);
-    		int CoinSuccessPerHr = 0;
-    		int ChaosSuccessPerHr = 0;
-    		int TripSuccessPerHr = 0;
+    		int coinSuccessPerHr = 0;
+    		int chaosSuccessPerHr = 0;
+    		int tripSuccessPerHr = 0;
+            int thieveSuccessPerHr = 0;
+            int thieveFailurePerHr = 0;
+            int thieveCapturePerHr = 0;
+            int foodUsedPerHr = 0;
 
 	    	try {
 	    		float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
 	    		float scale = (60 * 60) / timeRan;
-	    		CoinSuccessPerHr = (int)((totalCoins + invCoins - startCoins) * scale);
-	    		ChaosSuccessPerHr = (int)((totalChaos + invChaos - startChaos) * scale);
-	    		TripSuccessPerHr = (int)(totalTrips * scale);
+	    		coinSuccessPerHr = (int)((totalCoins + invCoins - startCoins) * scale);
+	    		chaosSuccessPerHr = (int)((totalChaos + invChaos - startChaos) * scale);
+	    		tripSuccessPerHr = (int)(totalTrips * scale);
+                thieveSuccessPerHr = (int)(thieveSuccess * scale);
+                thieveFailurePerHr = (int)(thieveFailure * scale);
+                thieveCapturePerHr = (int)(thieveCapture * scale);
+                foodUsedPerHr = (int)(usedFood * scale);
 
 	    	} catch(Exception e) {
 	    		//divide by zero
 	    	}
-			controller.drawString("@red@Paladins Thiever @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-			controller.drawString("@whi@Coins: @gre@" + String.valueOf(this.totalCoins + this.invCoins - this.startCoins) + "@yel@ (@whi@" + String.format("%,d", CoinSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 62, 0xFFFFFF, 1);
-			controller.drawString("@whi@Chaos: @gre@" + String.valueOf(this.totalChaos + this.invChaos - this.startChaos) + "@yel@ (@whi@" + String.format("%,d", ChaosSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 76, 0xFFFFFF, 1);
-			controller.drawString("@whi@Raw Shark: @gre@" + String.valueOf(this.totalShark), 350, 90, 0xFFFFFF, 1);
-			controller.drawString("@whi@Adamantite Ore: @gre@" + String.valueOf(this.totalAda), 350, 104, 0xFFFFFF, 1);
-			controller.drawString("@whi@Uncut Sapphire: @gre@" + String.valueOf(this.totalSap), 350, 118, 0xFFFFFF, 1);
-			controller.drawString("@whi@Black Scimitar: @gre@" + String.valueOf(this.totalScim), 350, 132, 0xFFFFFF, 1);
-			controller.drawString("@whi@Items In Bank:", 330, 146, 0xFFFFFF, 1);
-			controller.drawString("@whi@Coins: @gre@" + String.valueOf(this.coinsInBank) + " @gre@Million", 350, 160, 0xFFFFFF, 1);
-			controller.drawString("@whi@Chaos: @gre@" + String.valueOf(this.chaosInBank), 350, 174, 0xFFFFFF, 1);
-			controller.drawString("@whi@Food in Bank: @gre@" + String.valueOf(this.foodInBank), 350, 188, 0xFFFFFF, 1);
-			controller.drawString("@whi@Total Trips: @gre@" + String.valueOf(this.totalTrips) + "@yel@ (@whi@" + String.format("%,d", TripSuccessPerHr) + "@yel@/@whi@hr@yel@)", 350, 202, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 350, 216, 0xFFFFFF, 1);
+            int x = 6;
+            int y = 15;
+			c.drawString("@red@Paladins Thiever @gre@by Kaila", x, y-3, 0xFFFFFF, 1);
+            c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
+            if(coinsInBank == -1) {
+                c.drawString("@whi@Coins: @gre@" + (totalCoins + invCoins - startCoins)
+                                + "@yel@ (@whi@" + String.format("%,d", coinSuccessPerHr) + "@yel@/@whi@hr@yel@)"
+                                + "@yel@ (@whi@Coins in Bank: @gre@ Unknown @yel@)",
+                        x, y+14, 0xFFFFFF, 1);
+            } else {
+                c.drawString("@whi@Coins: @gre@" + (totalCoins + invCoins - startCoins)
+                                + "@yel@ (@whi@" + String.format("%,d", coinSuccessPerHr) + "@yel@/@whi@hr@yel@)"
+                                + "@yel@ (@whi@Coins in Bank: @gre@" + coinsInBank + " @gre@million@yel@)",
+                        x, y+14, 0xFFFFFF, 1);
+            }
+            if (chaosInBank == -1) {
+                c.drawString("@whi@Chaos: @gre@" + (totalChaos + invChaos - startChaos)
+                                + "@yel@ (@whi@" + String.format("%,d", chaosSuccessPerHr) + "@yel@/@whi@hr@yel@)"
+                                + "@yel@ (@whi@Chaos in Bank: @gre@ Unknown @yel@)",
+                        x, y+(14*2), 0xFFFFFF, 1);
+            } else {
+                c.drawString("@whi@Chaos: @gre@" + (totalChaos + invChaos - startChaos)
+                                + "@yel@ (@whi@" + String.format("%,d", chaosSuccessPerHr) + "@yel@/@whi@hr@yel@)"
+                                + "@yel@ (@whi@Chaos in Bank: @gre@" + chaosInBank + "@yel@)",
+                        x, y+(14*2), 0xFFFFFF, 1);
+            }
+            if(foodInBank == -1) {
+                c.drawString("@whi@Food Used: @gre@" + usedFood   //working off eat()
+                                + "@yel@ (@whi@" + String.format("%,d", foodUsedPerHr) + "@yel@/@whi@hr@yel@)"
+                                + "@yel@ (@whi@Food in Bank: @gre@ Unknown@yel@)",
+                        x, y + (14 * 3), 0xFFFFFF, 1);
+            } else {
+                c.drawString("@whi@Food Used: @gre@" + usedFood   //working off eat()
+                                + "@yel@ (@whi@" + String.format("%,d", foodUsedPerHr) + "@yel@/@whi@hr@yel@)"
+                                + "@yel@ (@whi@Food in Bank: @gre@" + foodInBank + "@yel@)",
+                        x, y + (14 * 3), 0xFFFFFF, 1);
+            }
+			c.drawString("@whi@Success: @gre@" + thieveSuccess
+                            + "@yel@ (@whi@" + String.format("%,d", thieveSuccessPerHr) + "@yel@/@whi@hr@yel@)"
+                            + "@yel@ (@whi@Fail: @gre@" + thieveFailure + "@yel@)"
+                            + "@yel@ (@whi@" + String.format("%,d", thieveFailurePerHr) + "@yel@/@whi@hr@yel@)"
+                            + "@yel@ (@whi@Capture: @gre@" + thieveCapture + "@yel@)"
+                            + "@yel@ (@whi@" + String.format("%,d", thieveCapturePerHr) + "@yel@/@whi@hr@yel@)" //works off interrupt
+                    ,
+                    x, y+(14*4), 0xFFFFFF, 1);
+            c.drawString("@whi@Total Trips: @gre@" + totalTrips
+                            + "@yel@ (@whi@" + String.format("%,d", tripSuccessPerHr) + "@yel@/@whi@hr@yel@)"
+                            + "@yel@ (@whi@Chest's Opened: @gre@" + openChest + "@yel@)",
+                    x, y+(14*5), 0xFFFFFF, 1);
+            if(usedFood == 0 || foodInBank == -1) {
+                c.drawString("@whi@Time till out of Food: Unable to Parse, Please wait!", x, y + (14 * 6), 0xFFFFFF, 1);
+            } else {
+                c.drawString("@whi@Time till out of Food: " + toTimeToCompletion(usedFood, foodInBank, startTime), x, y + (14 * 6), 0xFFFFFF, 1);
+            }
+            c.drawString("@whi@Runtime: " + runTime, x, y+(14*7), 0xFFFFFF, 1);
+            c.drawString("@whi@__________________", x, y+3+(14*7), 0xFFFFFF, 1);
 		}
 	}
 }

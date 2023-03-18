@@ -34,20 +34,7 @@ public class K_ArdyYewTree extends IdleScript {
     int[] axeId = {
             87,12,88,203,204,405     //bronze to rune in order
     };
-    int[] mainYewToAltYew = {
-            511,559,
-            505,552,
-            505,541,
-            505,537,
-    };
-    int[] bankToYews = {
-            550,612,
-            547,602,
-            534,595,
-            521,588,
-            512,577,
-            512,571
-    };
+
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 
@@ -59,14 +46,14 @@ public class K_ArdyYewTree extends IdleScript {
         }
         if(controller.currentY() < 620 && controller.currentY() > 600 && controller.currentX() > 543 && controller.currentX() < 555) {  //inside bank
             bank();
-            controller.walkPath(bankToYews);
+            bankToYews();
             controller.sleep(1380);
         }
         if(controller.currentY() < 600 && controller.currentY() > 587 && controller.currentX() > 525 && controller.currentX() < 543) {
             controller.walkTo(533,596);
             controller.walkTo(548,600);
             bank();
-            controller.walkPath(bankToYews);
+            bankToYews();
             controller.sleep(1380);
         }
     }
@@ -117,7 +104,7 @@ public class K_ArdyYewTree extends IdleScript {
 						goToBank();
 					}
 				}
-				controller.walkPath(mainYewToAltYew);
+				mainYewToAltYew();
 				if(controller.getObjectAtCoord(513,525) == 309) {
 					controller.walkTo(512,526);
 					controller.atObject(513,525);
@@ -126,29 +113,54 @@ public class K_ArdyYewTree extends IdleScript {
 						controller.sleep(1000);
 					}
 					if(controller.getInventoryItemCount() > 29) {
-                        controller.walkPathReverse(mainYewToAltYew);
+                        altYewToMainYew();
                         controller.walkTo(511,571);
-                        controller.walkPathReverse(bankToYews);
+                        bankToYews();
 					}
 					controller.walkTo(505,533);
 				}
-                controller.walkPathReverse(mainYewToAltYew);
+                altYewToMainYew();
 			} else {
 				goToBank();
 			}
 		}
 	//	return 1000; //start() must return a int value now.
 	}
+    public void mainYewToAltYew() {
+      //  controller.walkTo(511,559);
+        controller.walkTo(507, 553);
+        controller.walkTo(505,541);
+    }
+    public void altYewToMainYew() {
+        controller.walkTo(505,541);
+        controller.walkTo(507, 553);
+    }
+    public void yewToBank() {
+        controller.walkTo(512,571);
+        controller.walkTo(512,577);
+        controller.walkTo(521,588);
+        controller.walkTo(534,595);
+        controller.walkTo(547,602);
+        controller.walkTo(550,612);
+    }
+    public void bankToYews() {
+        controller.walkTo(550,612);
+        controller.walkTo(547,602);
+        controller.walkTo(534,595);
+        controller.walkTo(521,588);
+        controller.walkTo(512,577);
+        controller.walkTo(512,571);
+    }
 
 public void goToBank() {
     controller.setStatus("@gre@Walking to Bank..");
-    controller.walkPathReverse(bankToYews);
+    yewToBank();
     controller.setStatus("@gre@Done Walking to Bank..");
     controller.walkTo(551,613);
 	totalTrips = totalTrips + 1;
 	bank();
     controller.setStatus("@gre@Going to Yews..");
-    controller.walkPath(bankToYews);
+    bankToYews();
     controller.setStatus("@gre@Done Walking to Yews..");
 }
 
@@ -161,7 +173,7 @@ public void bank() {
 
 	if (controller.isInBank()) {
 
-		totalLog = totalLog + controller.getInventoryItemCount(636);
+		totalLog = totalLog + controller.getInventoryItemCount(635);
 
         for (int itemId : controller.getInventoryItemIds()) {
             if (itemId != 1263 && itemId != axeId[0] && itemId != axeId[1] && itemId != axeId[2] && itemId != axeId[3] && itemId != axeId[4] && itemId != axeId[5]) {
@@ -169,23 +181,26 @@ public void bank() {
             }
         }
 
-        logInBank = controller.getBankItemCount(636);
+        logInBank = controller.getBankItemCount(635);
 		controller.closeBank();
 		controller.sleep(1000);
 	}
 }
 	//GUI stuff below (icky)
-
-
+    public String getOperatingSystem() {
+        String os = System.getProperty("os.name");
+        System.out.println("Using System Property: " + os);
+        return os;
+    }
+    public static void centerWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+        frame.setLocation(x, y);
+    }
 	public void parseVariables() {
         startTime = System.currentTimeMillis();
     }
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Ardy Yew Logs by Kaila");
 		JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
@@ -202,7 +217,7 @@ public void bank() {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -210,10 +225,10 @@ public void bank() {
 		scriptFrame.add(label1);
 		scriptFrame.add(label2);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

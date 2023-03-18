@@ -75,6 +75,7 @@ public class Controller {
 	private boolean showBotPaint = true;
 	private boolean drawing = true;
 	private boolean needToMove = false;
+    private boolean viewedFirstToggleId = false;
 
 	public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) {
 		reflector = _reflector; client = _client; mud = _mud;
@@ -2110,18 +2111,21 @@ public class Controller {
 
 	public boolean takeScreenshot(String filename) {
         boolean TemporaryToggledGFX = false;
+        boolean TemporaryToggledInterlacing = false;
+
+        if(isInterlacing()) {
+            setInterlacer(false);
+            TemporaryToggledInterlacing = true;
+            sleep(100); //we NEED to sleep here to give interlacer time to toggle off before taking the screenshot
+        }
+        if(!isDrawEnabled()) { //if you take a screenshot, it will toggle on graphics briefly to take it, then toggle off again ~ Kaila ~
+           setDrawing(true);
+           TemporaryToggledGFX = true;
+        }
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String playerTime = screenshotNameFormat.format(timestamp);
         String playerName = getPlayerName();
-
-
-
-       if(!isDrawEnabled()) { //if you take a screenshot, it will toggle on graphics briefly to take it, then toggle off again ~ Kaila ~
-           setDrawing(true);
-           TemporaryToggledGFX = true;
-       }
-		MudClientGraphics gfx = getMudGraphics();
-
+        MudClientGraphics gfx = getMudGraphics();
 
 	    final int numSnapshots = 5;
 		int[][] snapshots = new int[numSnapshots][gfx.width2 * gfx.height2];
@@ -2177,18 +2181,24 @@ public class Controller {
             Path imageSaveLocation = Paths.get(saveLocPath);
             boolean newImageExists = Files.exists(imageSaveLocation);
             if (newImageExists) {
-                log("@cya@Screenshot successfully saved to folder ./IdleRSC/screenshots/" + playerName);
+                log("@cya@Screenshot successfully saved to folder ./IdleRSC/screenshots/" + playerName + "/");
             } else {
-                log("@red@Error: @cya@Screenshot not detected in folder ./IdleRSC/screenshots/" + playerName);
+                log("@red@Error: @cya@Screenshot not detected in folder ./IdleRSC/screenshots/" + playerName + "/");
             }
 		} catch (IOException e) {
             System.err.println("Failed to create directory and/or take screenshot!" + e.getMessage());
 			e.printStackTrace();
+            if(TemporaryToggledInterlacing) {
+                setInterlacer(true);
+            }
             if (TemporaryToggledGFX) {
                 setDrawing(false);
             }
 			return false;
 		}
+        if(TemporaryToggledInterlacing) {
+            setInterlacer(true);
+        }
         if (TemporaryToggledGFX) {
             setDrawing(false);
         }
@@ -3611,7 +3621,7 @@ public class Controller {
 	 * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
 	 */
 	public void log(String text, String rsTextColor) {
-		System.out.println(text);
+		//System.out.println(text);
 		Main.log(text);
 		displayMessage("@" + rsTextColor + "@" + text);
 	}
@@ -4402,6 +4412,10 @@ public class Controller {
 	 */
 	public void fakeDeveloper() {
 		if(isLoggedIn()) {
+            if (!viewedFirstToggleId) {
+                displayMessage("@red@Toggle Id will NOT remain ON unless standing still and NO skilling/batching actions!");
+                viewedFirstToggleId = true;
+            }
 			int groupId = getPlayer().groupID;
 
 			orsc.Config.C_SIDE_MENU_OVERLAY = false; //bugfix for coleslaw flickering

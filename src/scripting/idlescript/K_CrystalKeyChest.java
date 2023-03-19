@@ -17,12 +17,16 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Buys attack capes from rovin and banks
+ * Crystal Key Chest Opener.
  *
+ *      Start by Crystal chest or in Catherby Bank!
+ *      Only works on Coleslaw for the time Being.
+ *      Utilizes the White Wolf Mountain Agility Shortcut.
  *
+ *  todo
+ *      add, "if fail agility shortcut" fallback? - currently bot may break.
  *
- *
- * Author - Kaila
+ * Author - Kaila.
  */
 public class K_CrystalKeyChest extends IdleScript {
 	JFrame scriptFrame = null;
@@ -205,15 +209,6 @@ public class K_CrystalKeyChest extends IdleScript {
 
 
 	//GUI stuff below (icky)
-
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Crystal Key Chest Opener - By Kaila");
 		JLabel label1 = new JLabel("Start by Crystal chest or in Catherby Bank!");
@@ -231,7 +226,7 @@ public class K_CrystalKeyChest extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -240,10 +235,10 @@ public class K_CrystalKeyChest extends IdleScript {
 		scriptFrame.add(label2);
 		scriptFrame.add(label3);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

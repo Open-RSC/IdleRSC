@@ -17,10 +17,19 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+
+ * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+ and good defensive armor.
  *
+ * 		Start in Edge bank with Armor.
+ * 		Sharks in bank REQUIRED.
  *
+ * 		Should bot Teleport if Pkers Attack?.
+ * 		31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ * 		Unselected, bot WALKS to Edge when Attacked.
+ * 		Selected, bot teleports, then walks to edge.
  *
+ * 		Should bot Return to Eggz after Escaping?.
+ * 		Unselected, bot will log out after escaping Pkers.
+ * 		Selected, bot will grab more food and return.
  *
  * Author - Kaila
  */
@@ -342,12 +351,6 @@ public class K_RedSpiderEggz extends IdleScript {
 			returnEscape = false;
 		}
 	}
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Red Spider Egg Picker - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Armor");
@@ -372,7 +375,7 @@ public class K_RedSpiderEggz extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -387,10 +390,10 @@ public class K_RedSpiderEggz extends IdleScript {
 		scriptFrame.add(label6);
 		scriptFrame.add(label7);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

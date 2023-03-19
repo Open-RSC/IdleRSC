@@ -1,13 +1,8 @@
 package callbacks;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import bot.Main;
-import compatibility.sbot.Script;
 import controller.Controller;
 import orsc.ORSCharacter;
-import orsc.enumerations.MessageType;
 import scripting.idlescript.IdleScript;
 
 /**

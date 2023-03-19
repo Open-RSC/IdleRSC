@@ -16,9 +16,10 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**-
-*Opens Holiday event Presents on an Iron, banks loot (coleslaw)
-*only works on irons. start in any bank.
-*Author Kaila
+ *   Opens Holiday event Presents on an Iron, banks loot (coleslaw)
+ *   only works on official irons. start in any bank.
+ *
+ *   Author - Kaila
  */
 public class K_IronPresentOpener extends IdleScript {
 	int objectx = 0;
@@ -32,6 +33,19 @@ public class K_IronPresentOpener extends IdleScript {
 
 		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount(980) < 1) {
+                if (!controller.isInBank()) {
+                    int[] bankerIds = {95, 224, 268, 540, 617, 792};
+                    ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+                    if (npc != null) {
+                        controller.setStatus("@yel@Walking to Banker..");
+                        controller.displayMessage("@yel@Walking to Banker..");
+                        controller.walktoNPCAsync(npc.serverIndex);
+                        controller.sleep(200);
+                    } else {
+                        controller.log("@red@Error..");
+                        controller.sleep(1000);
+                    }
+                }
 				bank();
 			}
 			if(controller.getInventoryItemCount(980) > 0) {

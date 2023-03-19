@@ -17,11 +17,12 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Tav black demons - By Kaila
- * Start in Fally west bank with gear
- * Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED. super atk, super str pots suggested.
- * 37 Magic Required for  tele, 37 prayer for paralize monster, 70 agility for shortcut.
- * anti dragon shield required. rune squareshield recomended.
+ * Tav black demons - By Kaila.
+ *
+ *      Start in Fally west bank with gear. Uses Coleslaw agility pipe shortcut.
+ *      Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED. super atk, super str pots suggested.
+ *      37 Magic Required for  tele, 37 prayer for paralize monster, 70 agility for shortcut.
+ *      anti dragon shield required. D2h recommended to demon kill rates don't suck.
  *
  * Author - Kaila
  */
@@ -669,14 +670,6 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
 	//GUI stuff below (icky)
 
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setValuesFromGUI(JCheckBox d2hCheckbox) {
 		if(d2hCheckbox.isSelected()) {
 			d2hWield = true;
@@ -703,7 +696,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -715,10 +708,10 @@ public class K_TavBlackDemonPipe extends IdleScript {
 		scriptFrame.add(label5);
 		scriptFrame.add(d2hCheckbox);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

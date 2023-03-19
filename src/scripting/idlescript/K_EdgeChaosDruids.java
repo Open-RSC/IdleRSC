@@ -15,10 +15,26 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Druid Killer - By Kaila");
- * Start in Edge bank with Armor");
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
- * 31 Magic Required for escape tele");
+ * Edge Druid Killer - By Kaila.
+ *
+ * 		Start in Edge bank with Gear.
+ * 		Sharks in bank REQUIRED.
+ *
+ * 		Teleport if Pkers Attack option.
+ * 		31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ * 		Unselected, bot WALKS to Edge when Attacked.
+ * 		Selected, bot teleports, then walks to edge.
+ *
+ * 		Return to Druids after Escaping option.
+ * 		Unselected, bot will log out after escaping Pkers.
+ * 		Selected, bot will grab more food and return.
+ *
+ * 		Food Withdraw Amount Selection.
+ *
+ *      todo
+ *          add regular attack/str pot option? - use asgarnian ice
+ *          add food type selection?
+ *          add collect lower level herbs option.
  *
  * Author - Kaila
  */
@@ -74,7 +90,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 			1277, 	 //shield (left) half
 			1092 	 //rune spear
 			};
-
+    String[] foodTypes = new String[] { "Sharks", "Swordfish", "Tuna", "Lobsters" };
 	long startTime;
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 
@@ -413,9 +429,9 @@ public class K_EdgeChaosDruids extends IdleScript {
         controller.setStatus("@gre@Done Opening Wildy Gate..");
 	}
 
+
+
 	//GUI stuff below (icky)
-
-
 	public void setValuesFromGUI(JCheckBox potUpCheckbox, JCheckBox escapeCheckbox) {
 		if (potUpCheckbox.isSelected()) {
 			teleportOut = true;
@@ -428,16 +444,10 @@ public class K_EdgeChaosDruids extends IdleScript {
 			returnEscape = false;
 		}
 	}
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Edge Druid Killer - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Gear");
-		JLabel label2 = new JLabel("Sharks/Laws/Airs/Earths IN BANK REQUIRED");
+		JLabel label2 = new JLabel("Sharks in bank REQUIRED");
 		JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
 		JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
 		JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
@@ -462,7 +472,7 @@ public class K_EdgeChaosDruids extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -479,10 +489,10 @@ public class K_EdgeChaosDruids extends IdleScript {
 		scriptFrame.add(foodWithdrawAmountLabel);
 		scriptFrame.add(foodWithdrawAmountField);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

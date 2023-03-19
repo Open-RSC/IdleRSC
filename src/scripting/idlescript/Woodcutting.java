@@ -39,7 +39,7 @@ public class Woodcutting extends IdleScript {
 	boolean bankTime = false;
 	boolean chopTime = false;
 	int[] bankerIds = { 95, 224, 268, 485, 540, 617 };
-	
+
 	int[] axes = {12, 87, 88, 203, 204, 405, 1263};
 
 	public int start(String parameters[]) {
@@ -51,8 +51,8 @@ public class Woodcutting extends IdleScript {
 		if (scriptStarted) {
 			scriptStart();
 		}
-		
-		return 1000; //start() must return a int value now. 
+
+		return 1000; //start() must return a int value now.
 	}
 
 	public void startWalking(int x, int y) {
@@ -82,7 +82,7 @@ public class Woodcutting extends IdleScript {
 				controller.walkToAsync(newX, newY, 2);
 				controller.sleep(1000);
 			} else {
-				controller.walkToAsync(newX, newY, 2); 
+				controller.walkToAsync(newX, newY, 2);
 				controller.sleep(1000);
 			}
 		}
@@ -93,7 +93,7 @@ public class Woodcutting extends IdleScript {
 			if(axes[i] == id)
 				return true;
 		}
-		
+
 		return false;
 	}
 
@@ -106,7 +106,7 @@ public class Woodcutting extends IdleScript {
 			if (controller.getInventoryItemCount() <= 29) {
 				bankTime = false;
 			}
-			if (controller.getNearestObjectById(treeId) != null && chopTime && !controller.isBatching()) {  //bot spams  getNearestObjectById and goes to 25% cpu, this specific one 
+			if (controller.getNearestObjectById(treeId) != null && chopTime && !controller.isBatching()) {  //bot spams  getNearestObjectById and goes to 25% cpu, this specific one
 				controller.sleepHandler(98, true);
 				int[] treeCoords = controller.getNearestObjectById(treeId);
 				controller.atObject(treeCoords[0], treeCoords[1]);
@@ -127,7 +127,7 @@ public class Woodcutting extends IdleScript {
 					controller.sleep(100);
 				}
 			}
-			while (controller.isInBank()) { // && controller.getInventoryItemCount() > 0  //removed, not needed
+			if (controller.isInBank()) { // && controller.getInventoryItemCount() > 0  //removed, not needed
 				totalLogs = totalLogs + controller.getInventoryItemCount(logId);
 				for (int itemId : controller.getInventoryItemIds()) {
 					if (itemId != 0 && !isAxe(itemId) && itemId != 1263) {

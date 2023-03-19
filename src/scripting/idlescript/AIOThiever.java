@@ -18,8 +18,8 @@ import javax.swing.JTextField;
 import orsc.ORSCharacter;
 
 /**
- * A basic thiever that supports most things in the game. Only supports banking in Ardougne at the moment. 
- * 
+ * A basic thiever that supports most things in the game. Only supports banking in Ardougne at the moment.
+ *
  * @author Dvorak
  */
 
@@ -31,24 +31,24 @@ public class AIOThiever extends IdleScript {
 	int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
 	int[] doorObjectIds = {60, 64};
 
-	
+
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 	int success = 0;
 	int failure = 0;
-	
+
     class ThievingObject {
 		String name;
 		int id;
 		boolean isNpc;
 		boolean isObject;
-		
+
 		public ThievingObject(String _name, int _id, boolean _isNpc, boolean _isObject) {
 			name = _name;
 			id = _id;
 			isNpc = _isNpc;
 			isObject = _isObject;
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
 			if(o instanceof ThievingObject) {
@@ -56,17 +56,17 @@ public class AIOThiever extends IdleScript {
 					return true;
 				}
 			}
-		
+
 			return false;
 		}
 	}
-    
+
     ThievingObject target = null;
     int fightMode = 0;
     int eatingHealth = 0;
     boolean doBank = false;
     int foodWithdrawAmount = 0;
-    
+
 	ArrayList<ThievingObject> objects = new ArrayList<ThievingObject>() {{
 		add(new ThievingObject("Man", 11, true, false));
 		add(new ThievingObject("Farmer", 63, true, false));
@@ -80,7 +80,7 @@ public class AIOThiever extends IdleScript {
 		add(new ThievingObject("Paladin", 323, true, false));
 		add(new ThievingObject("Gnome", 592, true, false));
 		add(new ThievingObject("Hero", 324, true, false));
-		
+
 		add(new ThievingObject("Tea Stall", 1183, false, true));
 		add(new ThievingObject("Bakers Stall", 322, false, true));
 		add(new ThievingObject("Bakers Stall (Banking)", 322, false, true));
@@ -90,14 +90,14 @@ public class AIOThiever extends IdleScript {
 		add(new ThievingObject("Silver Stall", 325, false, true));
 		add(new ThievingObject("Spice Stall", 326, false, true));
 		add(new ThievingObject("Gem Stall", 327, false, true));
-		
+
 		//add(new ThievingObject("10 Coin Chest", 327, false, true)); //who's gonna bother?
 		add(new ThievingObject("Nature Rune Chest", 335, false, true));
 		add(new ThievingObject("50 Coin Chest", 336, false, true));
 		add(new ThievingObject("Hemenster Chest", 379, false, true));
 
 	}};
-	
+
 	public int start(String parameters[]) {
     	if(scriptStarted) {
     		scriptStart();
@@ -112,21 +112,21 @@ public class AIOThiever extends IdleScript {
     			try {
     				fightMode = Integer.parseInt(parameters[0]);
     				eatingHealth = Integer.parseInt(parameters[1]);
-    				
+
     				for(ThievingObject obj : objects) {
     					if(obj.name.equals(parameters[2]))
     						target = obj;
     				}
-    				
+
     				doBank = Boolean.parseBoolean(parameters[3]);
     				foodWithdrawAmount = Integer.parseInt(parameters[4]);
-    				
+
     				if(target == null)
     					throw new Exception("Could not parse thieving target!");
-    				
+
     				scriptStarted = true;
     				controller.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
-    				
+
     			} catch(Exception e) {
     				System.out.println("Could not parse parameters!");
     				controller.displayMessage("@red@Could not parse parameters!");
@@ -134,18 +134,18 @@ public class AIOThiever extends IdleScript {
     			}
     		}
     	}
-    	
-    	return 1000; //start() must return a int value now. 
+
+    	return 1000; //start() must return a int value now.
 	}
-	
+
 	public void scriptStart() {
 		while(controller.isRunning()) {
-			
+
 			eat();
-			
+
 			if(controller.getFightMode() != this.fightMode)
 				controller.setFightMode(this.fightMode);
-			
+
 			//for(int doorId : doorObjectIds) {
 			//	int[] doorCoords = controller.getNearestObjectById(doorId);
 			//
@@ -157,17 +157,17 @@ public class AIOThiever extends IdleScript {
 			//		controller.sleep(200);
 			//	}
 			//}
-			
+
 			if(controller.getInventoryItemCount(140) > 0) { //drop jugs from heroes
 				controller.setStatus("@red@Dropping empty jugs..");
 				controller.dropItem(controller.getInventoryItemSlotIndex(140));
 				controller.sleep(500);
 			}
-			
+
 			while(controller.isBatching()) controller.sleep(10);
-			
-			
-			if(!controller.isInCombat()) { 
+
+
+			if(!controller.isInCombat()) {
 				if(target.isNpc == true) {
 					controller.sleepHandler(98, true);
 					ORSCharacter npc = controller.getNearestNpcById(target.id, false);
@@ -180,39 +180,39 @@ public class AIOThiever extends IdleScript {
 						controller.sleep(200);
 					}
 				}
-				
-				if(doBank) { 
+
+				if(doBank) {
 					if(target.name.contains("Bakers")) {
 						if(controller.getInventoryItemCount() < 30) {
 							controller.setStatus("@red@Stealing..");
-							
+
 							if(controller.currentX() != 543 && controller.currentY() != 600)
 								controller.walkTo(543, 600);
-								
+
 							controller.atObject(544, 599);
-						} 
+						}
 					}
-					
+
 					if(controller.getInventoryItemCount() == 30 || countFood() == 0) {
 						controller.setStatus("@red@Banking...");
 						controller.walkTo(548, 589);
 						controller.walkTo(547, 607);
 						controller.openBank();
-						
+
 						for(int id : lootIds) {
 							if(controller.getInventoryItemCount(id) > 0) {
 								controller.depositItem(id, controller.getInventoryItemCount(id));
 								controller.sleep(500);
 							}
 						}
-						
+
 						for(int id : controller.getFoodIds()) {
 							if(controller.getInventoryItemCount(id) > 0) {
 								controller.depositItem(id, controller.getInventoryItemCount(id));
 								controller.sleep(500);
 							}
 						}
-						
+
 						for(int id : controller.getFoodIds()) {
 							if(controller.getBankItemCount(id) > 0) {
 								controller.withdrawItem(id, foodWithdrawAmount);
@@ -220,10 +220,10 @@ public class AIOThiever extends IdleScript {
 								break;
 							}
 						}
-						
+
 						controller.walkTo(548, 605);
 					}
-					
+
 				} else { //we are not banking
 					if(target.isObject == true) {
 						int[] coords = controller.getNearestObjectById(target.id);
@@ -244,7 +244,7 @@ public class AIOThiever extends IdleScript {
 			} else {
 				controller.setStatus("@red@Leaving combat..");
 				leaveCombat();
-				controller.sleep(400);				
+				controller.sleep(400);
 			}
 			controller.sleep(250);
 		}
@@ -252,13 +252,13 @@ public class AIOThiever extends IdleScript {
 
 	public void eat() {
 		if(controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
-			
-			
+
+
 			leaveCombat();
 			controller.setStatus("@red@Eating..");
-			
+
 			boolean ate = false;
-			
+
 			for(int id : controller.getFoodIds()) {
 				if(controller.getInventoryItemCount(id) > 0) {
 					controller.itemCommand(id);
@@ -267,79 +267,32 @@ public class AIOThiever extends IdleScript {
 					break;
 				}
 			}
-			
+
 			while(!doBank && !ate) {
 				controller.setStatus("@red@Logging out..");
 				leaveCombat();
 				controller.setAutoLogin(false);
 				controller.logout();
 				controller.sleep(1000);
-				
+
 				if(!controller.isLoggedIn()) {
 					controller.stop();
 					return;
 				}
-				
+
 			}
 		}
 	}
-	public void leaveCombat() {
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (1)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (2)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (3)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (4)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (5)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (6)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (7)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (8)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (9)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (10)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-		if(controller.isInCombat()) {
-			controller.setStatus("@red@Leaving combat (11)..");
-			controller.walkTo(controller.currentX(),controller.currentY(), 0, true);
-			controller.sleep(800);
-		}
-	}
+    public void leaveCombat() {
+        for (int i = 1; i <= 15; i++) {
+            if (controller.isInCombat()) {
+                controller.setStatus("@red@Leaving combat..");
+                controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+                controller.sleep(400);
+            }
+            controller.sleep(10);
+        }
+    }
 
 
 
@@ -352,33 +305,33 @@ public class AIOThiever extends IdleScript {
 		for(int id : controller.getFoodIds()) {
 			result += controller.getInventoryItemCount(id);
 		}
-		
+
 		return result;
 	}
-	
+
 	public static void centerWindow(Window frame) {
 	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 	    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
 	    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 	    frame.setLocation(x, y);
 	}
-	
-    public void setupGUI() { 	
+
+    public void setupGUI() {
     	JLabel fightModeLabel = new JLabel("Fight Mode:");
     	JComboBox<String> fightModeField = new JComboBox<String>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
     	JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
     	JTextField eatAtHpField = new JTextField(String.valueOf(controller.getBaseStat(controller.getStatId("Hits")) / 2));
-    	JComboBox<String> targetField = new JComboBox<String>();  
+    	JComboBox<String> targetField = new JComboBox<String>();
     	JCheckBox doBankCheckbox = new JCheckBox("Bank? (Ardougne Square only)");
     	JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (Ardougne Square only)");
     	JTextField foodWithdrawAmountField = new JTextField();
         JButton startScriptButton = new JButton("Start");
 
-        
+
         for(ThievingObject obj : objects) {
         	targetField.addItem(obj.name);
         }
-        
+
         startScriptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -386,22 +339,22 @@ public class AIOThiever extends IdleScript {
             		eatingHealth = Integer.parseInt(eatAtHpField.getText());
             		target = objects.get(targetField.getSelectedIndex());
             		doBank = doBankCheckbox.isSelected();
-            		
+
             		if(!foodWithdrawAmountField.getText().equals(""))
             			foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-            		
+
 	            	scriptFrame.setVisible(false);
 	            	scriptFrame.dispose();
 	            	scriptStarted = true;
-	            	
+
 	            	controller.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
             	}
         });
-        
-        
-        
-    	scriptFrame = new JFrame("Script Options");
-    	
+
+
+
+    	scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+
     	scriptFrame.setLayout(new GridLayout(0,1));
     	scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	scriptFrame.add(fightModeLabel);
@@ -413,18 +366,18 @@ public class AIOThiever extends IdleScript {
     	scriptFrame.add(foodWithdrawAmountLabel);
     	scriptFrame.add(foodWithdrawAmountField);
     	scriptFrame.add(startScriptButton);
-    	
+
     	centerWindow(scriptFrame);
     	scriptFrame.setVisible(true);
     	scriptFrame.pack();
     }
-    
+
     @Override
     public void serverMessageInterrupt(String message) {
     	if(message.contains("You steal"))
     		success++;
     }
-    
+
     @Override
     public void questMessageInterrupt(String message) {
         if(message.contains("You pick") || message.contains("You steal"))
@@ -432,11 +385,11 @@ public class AIOThiever extends IdleScript {
         else if(message.contains("You fail") || message.contains("Hey thats mine") || message.contains("hands off there"))
         	failure++;
     }
-	
+
     @Override
     public void paintInterrupt() {
         if(controller != null) {
-        			
+
         	int successPerHr = 0;
         	float ratio = 0;
         	try {
@@ -447,7 +400,7 @@ public class AIOThiever extends IdleScript {
         	} catch(Exception e) {
         		//divide by zero
         	}
-        	
+
             controller.drawBoxAlpha(7, 7, 160, 21+14+14+14, 0xFF0000, 128);
             controller.drawString("@red@AIOThiever @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
             controller.drawString("@red@Successes: @whi@" + String.format("%,d", success) + " @red@(@whi@" + String.format("%,d", successPerHr) + "@red@/@whi@hr@red@)", 10, 21+14, 0xFFFFFF, 1);
@@ -455,5 +408,5 @@ public class AIOThiever extends IdleScript {
             controller.drawString("@red@Ratio: @whi@" + String.format("%.2f", ratio), 10, 21+14+14+14, 0xFFFFFF, 1);
         }
     }
-    	
+
 }

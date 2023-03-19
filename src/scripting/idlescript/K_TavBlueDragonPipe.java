@@ -18,10 +18,14 @@ import javax.swing.JTextField;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila");
- * Start in Edge bank with Armor");
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED");
- * 31 Magic Required for escape tele");
+ * Wildy Fire Giant Killer - By Kaila.
+ *
+ *      Start in Fally west with gear on, or in Dragon room!
+ *      Uses Coleslaw agility pipe shortcut.
+ *      70 Agility required, for the shortcut.
+ *      Sharks/Laws/Airs/Earths IN BANK REQUIRED.
+ *      31 Magic Required for escape tele.
+*       Adjustable Food Withdraw amount.
  *
  * Author - Kaila
  */
@@ -542,15 +546,6 @@ public class K_TavBlueDragonPipe extends IdleScript {
 
 
 	//GUI stuff below (icky)
-
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Tavelry Blue Dragons (Pipe) - By Kaila");
 		JLabel label1 = new JLabel("Start in Fally west with gear on, or in Dragon room!");
@@ -573,7 +568,7 @@ public class K_TavBlueDragonPipe extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -584,11 +579,10 @@ public class K_TavBlueDragonPipe extends IdleScript {
 		scriptFrame.add(foodWithdrawAmountLabel);
 		scriptFrame.add(foodWithdrawAmountField);
 		scriptFrame.add(startScriptButton);
-
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

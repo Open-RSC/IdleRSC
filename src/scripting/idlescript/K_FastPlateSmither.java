@@ -1,9 +1,10 @@
 package scripting.idlescript;
 
-import java.awt.Dimension;
+import bot.Main;
+import controller.Controller;
+import orsc.ORSCharacter;
+
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -14,28 +15,32 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Start in bank with hammer
- * Batch bars MUST be toggled on with in-game settings! (for coleslaw)
+ * Fast Platebody Smither - by Kaila.
  *
+ * 		Start with Hammer in Inv!
+ * 		Batch Bars MUST be toggled ON in settings!!!
+ * 		This ensures 5 Plates are made per Menu Cycle.
+ * 		Supports all bar types.
+ *
+ *        This bot supports the \"autostart\" parameter.
+ *                  defaults to steel plates.
  *
  * Parameters for Starting:
- *              auto, autostart  - makes steel platebodies
- *              bronze  - makes bronze platebodies
- *              iron -   makes iron platebodies
- *              steel -  makes steel platebodies
- *              mith, mithril -   makes mithril platebodies
- *              addy, adamantite -  makes adamantite platebodies
- *              rune, runite -  makes runite platebodies
+ *              auto, autostart  - makes steel platebodies.
+ *              bronze  - makes bronze platebodies.
+ *              iron -   makes iron platebodies.
+ *              steel -  makes steel platebodies.
+ *              mith, mithril -   makes mithril platebodies.
+ *              addy, adamantite -  makes adamantite platebodies.
+ *              rune, runite -  makes runite platebodies.
  *
  *
- *        This bot supports the \"autostart\" parameter
- *                  defaults to steel plates
  *
- *
- * Script by Kaila
+ * Author - Kaila
  *
  */
 public class K_FastPlateSmither extends IdleScript {
+    Controller c = Main.getController();
 	JFrame scriptFrame = null;
 	boolean guiSetup = false;
 	boolean scriptStarted = false;
@@ -49,14 +54,14 @@ public class K_FastPlateSmither extends IdleScript {
 	long startTimestamp = System.currentTimeMillis() / 1000L;
 
     public void startSequence() {
-        if(controller.isInBank() == true) {
-            controller.closeBank();
+        if(c.isInBank() == true) {
+            c.closeBank();
         }
     }
 	public int start(String parameters[]) {
         if (parameters.length > 0 && !parameters[0].equals("")) {
             if (parameters[0].toLowerCase().startsWith("auto")) {
-                controller.displayMessage("Got param " + parameters[0] + ", Auto-starting Steel Plates", 0);
+                c.displayMessage("Got param " + parameters[0] + ", Auto-starting Steel Plates", 0);
                 System.out.println("Got param" + parameters[0] + ", Auto-starting Steel Plates");
                 barId = 171;
                 parseVariables();
@@ -64,7 +69,7 @@ public class K_FastPlateSmither extends IdleScript {
                 scriptStart();
             }
             if (parameters[0].toLowerCase().startsWith("bronze")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using bronze bars!", 0);
+                c.displayMessage("Got param " + parameters[0] + ". Using bronze bars!", 0);
                 System.out.println("Got param" + parameters[0] + ", Using bronze bars");
                 barId = 169;
                 parseVariables();
@@ -72,7 +77,7 @@ public class K_FastPlateSmither extends IdleScript {
                 scriptStart();
             }
             if (parameters[0].toLowerCase().startsWith("iron")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using iron bars!", 0);
+                c.displayMessage("Got param " + parameters[0] + ". Using iron bars!", 0);
                 System.out.println("Got param" + parameters[0] + ", Using iron bars!");
                 barId = 170;
                 parseVariables();
@@ -80,7 +85,7 @@ public class K_FastPlateSmither extends IdleScript {
                 scriptStart();
             }
             if (parameters[0].toLowerCase().startsWith("steel")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using steel bars!", 0);
+                c.displayMessage("Got param " + parameters[0] + ". Using steel bars!", 0);
                 System.out.println("Got param" + parameters[0] + ", Using steel bars!");
                 barId = 171;
                 parseVariables();
@@ -89,7 +94,7 @@ public class K_FastPlateSmither extends IdleScript {
             }
             if (parameters[0].toLowerCase().startsWith("mith")
                     || parameters[0].toLowerCase().startsWith("mithril")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using mith bars!", 0);
+                c.displayMessage("Got param " + parameters[0] + ". Using mith bars!", 0);
                 System.out.println("Got param" + parameters[0] + ", Using mithril bars!");
                 barId = 173;
                 parseVariables();
@@ -98,7 +103,7 @@ public class K_FastPlateSmither extends IdleScript {
             }
             if (parameters[0].toLowerCase().startsWith("addy")
                     || parameters[0].toLowerCase().startsWith("adamantite")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using addy bars!", 0);
+                c.displayMessage("Got param " + parameters[0] + ". Using addy bars!", 0);
                 System.out.println("Got param" + parameters[0] + ", Using adamantite bars!");
                 barId = 174;
                 parseVariables();
@@ -107,7 +112,7 @@ public class K_FastPlateSmither extends IdleScript {
             }
             if (parameters[0].toLowerCase().startsWith("rune")
                     || parameters[0].toLowerCase().startsWith("runite")) {
-                controller.displayMessage("Got param " + parameters[0] + ". Using rune bars!", 0);
+                c.displayMessage("Got param " + parameters[0] + ". Using rune bars!", 0);
                 System.out.println("Got param" + parameters[0] + ", Using rune bars!");
                 barId = 408;
                 parseVariables();
@@ -120,115 +125,97 @@ public class K_FastPlateSmither extends IdleScript {
 			guiSetup = true;
 		}
 		if (scriptStarted) {
+            c.quitIfAuthentic();
             startSequence();
 			scriptStart();
 		}
 		return 1000; //start() must return a int value now.
 	}
-
 public void scriptStart() {
-	while(controller.isRunning()) {
-		if(controller.getInventoryItemCount(barId) < 5 && !controller.isInBank()) {
-			controller.setStatus("@gre@Banking..");
-			controller.walkTo(150,507);
+	while(c.isRunning()) {
+		if(c.getInventoryItemCount(barId) < 5 && !c.isInBank()) {
+			c.setStatus("@gre@Banking..");
+            c.displayMessage("@gre@Banking..");
+			c.walkTo(150,507);
 			bank();
-			controller.walkTo(148,512);
+			c.walkTo(148,512);
 		}
-		if(controller.getInventoryItemCount(barId) > 4) {
-			controller.sleepHandler(98, true);
-			controller.setStatus("@gre@Smithing..");
-			controller.useItemIdOnObject(148, 513, barId);
-			controller.sleep(1000);
-			controller.optionAnswer(1);
-			controller.sleep(500);
-			controller.optionAnswer(2);
-			controller.sleep(500);
-			controller.optionAnswer(2);
-			controller.sleep(500);
-			if (!controller.isAuthentic()) {
-				controller.optionAnswer(3);
-				controller.sleep(1000); //was 650
-				while (controller.isBatching()) controller.sleep(200);
+		if(c.getInventoryItemCount(barId) > 4) {
+			c.sleepHandler(98, true);
+			c.setStatus("@gre@Smithing..");
+            c.displayMessage("@gre@Smithing..");
+			c.useItemIdOnObject(148, 513, barId);
+			c.sleep(1000);
+			c.optionAnswer(1);
+			c.sleep(500);
+			c.optionAnswer(2);
+			c.sleep(500);
+			c.optionAnswer(2);
+			c.sleep(500);
+			if (!c.isAuthentic()) {
+				c.optionAnswer(3);
+				c.sleep(1000); //was 650
+				while (c.isBatching()) c.sleep(200);
 			}
 		}
-		//controller.sleep(320);
+		//c.sleep(320);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public void bank() {
 
-		controller.setStatus("@gre@Banking..");
-		controller.openBank();
-		controller.sleep(600);
-
-		if(controller.isInBank()) {
+		c.setStatus("@gre@Banking..");
+		c.openBank();
+		c.sleep(640);
+        if(!c.isInBank()) { //attempt to fix desync issue, remove later
+            c.walkTo(150,502);
+            c.openBank();
+            c.sleep(1280);
+        }
+		if(c.isInBank()) {
 
 			totalPlates = totalPlates + 5;
 			totalBars = totalBars + 25;
 
-			if(controller.getBankItemCount(barId) < 30) {    //stops making when 30 in bank to not mess up alignments/organization of bank!!!
-				controller.setStatus("@red@NO Bars in the bank, Logging Out!.");
-				controller.setAutoLogin(false);
-				controller.logout();
-				if(!controller.isLoggedIn()) {
-					controller.stop();
+			if(c.getBankItemCount(barId) < 30) {    //stops making when 30 in bank to not mess up alignments/organization of bank!!!
+				c.setStatus("@red@NO Bars in the bank, Logging Out!.");
+				c.setAutoLogin(false);
+				c.logout();
+				if(!c.isLoggedIn()) {
+					c.stop();
 					return;
 				}
 			}
-			if(controller.getInventoryItemCount() >  1) {
-				for (int itemId : controller.getInventoryItemIds()) {
+			if(c.getInventoryItemCount() >  1) {
+				for (int itemId : c.getInventoryItemIds()) {
 					if (itemId != 168 && itemId != 1263 && itemId != barId) {
-						controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+						c.depositItem(itemId, c.getInventoryItemCount(itemId));
 					}
 				}
-				controller.sleep(100);
+				c.sleep(100);
 			}
-			if (controller.getInventoryItemCount(168) < 1) {
-				controller.withdrawItem(168, 1);
-				controller.sleep(100);
+			if (c.getInventoryItemCount(168) < 1) {
+				c.withdrawItem(168, 1);
+				c.sleep(100);
 			}
-			if (controller.getInventoryItemCount(barId) < 25) {
-				controller.withdrawItem(barId, 25);
-				controller.sleep(100);
+			if (c.getInventoryItemCount(barId) < 25) {
+				c.withdrawItem(barId, 25);
+				c.sleep(100);
 			}
 
-			barsInBank = controller.getBankItemCount(barId);
-			controller.closeBank();
-			controller.sleep(200);
+			barsInBank = c.getBankItemCount(barId);
+			c.closeBank();
+			c.sleep(200);
 		}
 	}
 
 
 
 	//GUI stuff below (icky)
-
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
     public void parseVariables() {
         startTime = System.currentTimeMillis();
-        controller.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
-        controller.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
+        c.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
+        c.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
+        c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
     }
 	public void setupGUI() {
 		JLabel header = new JLabel("Platebody Smithing - Kaila");
@@ -254,7 +241,7 @@ public void scriptStart() {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -268,10 +255,10 @@ public void scriptStart() {
         scriptFrame.add(paramLabel1);
         scriptFrame.add(paramLabel2);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {
@@ -299,7 +286,7 @@ public void scriptStart() {
     }
 	@Override
 	public void paintInterrupt() {
-		if (controller != null) {
+		if (c != null) {
             String runTime = msToString(System.currentTimeMillis() - startTime);
         	int plateSuccessPerHr = 0;
             int barSuccessPerHr = 0;
@@ -311,14 +298,18 @@ public void scriptStart() {
         	} catch(Exception e) {
         		//divide by zero
         	}
-			controller.drawString("@red@Fast Plate Smither @gre@by Kaila", 340, 48, 0xFFFFFF, 1);
-			controller.drawString("@whi@Bars In bank: @yel@" + String.valueOf(this.barsInBank), 350, 62, 0xFFFFFF, 1);
-			controller.drawString("@whi@Bars Used: @yel@" + String.valueOf(this.totalBars), 350, 76, 0xFFFFFF, 1);
-            controller.drawString("@whi@Bars Per Hr: @yel@" + String.format("%,d", barSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 90, 0xFFFFFF, 1);
-			controller.drawString("@whi@Platebodies Made: @yel@" + String.valueOf(this.totalPlates), 350, 104, 0xFFFFFF, 1);
-            controller.drawString("@whi@Platebodies Per Hr: @yel@" + String.format("%,d", plateSuccessPerHr) + "@red@/@whi@hr@red@)", 350, 118, 0xFFFFFF, 1);
-			controller.drawString("@whi@Runtime: " + runTime, 350, 118+14, 0xFFFFFF, 1);
-            controller.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), 350, 118+28, 0xFFFFFF, 1);
+            int x = 6;
+            int y = 15;
+			c.drawString("@red@Fast Plate Smither @gre@by Kaila", x, 12, 0xFFFFFF, 1);
+            c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
+			c.drawString("@whi@Bars In bank: @gre@" + this.barsInBank, x, y+14, 0xFFFFFF, 1);
+			c.drawString("@whi@Bars Used: @gre@" + this.totalBars, x, y+(14*2), 0xFFFFFF, 1);
+            c.drawString("@whi@Bars Per Hr: @gre@" + String.format("%,d", barSuccessPerHr) + "@yel@/@whi@hr", x, y+(14*3), 0xFFFFFF, 1);
+			c.drawString("@whi@Platebodies Made: @gre@" + this.totalPlates, x, y+(14*4), 0xFFFFFF, 1);
+            c.drawString("@whi@Platebodies Per Hr: @gre@" + String.format("%,d", plateSuccessPerHr) + "@yel@/@whi@hr", x, y+(14*5), 0xFFFFFF, 1);
+            c.drawString("@whi@Time Remaining: " + toTimeToCompletion(totalBars, barsInBank, startTime), x, y+(14*6), 0xFFFFFF, 1);
+            c.drawString("@whi@Runtime: " + runTime, x, y+(14*7), 0xFFFFFF, 1);
+            c.drawString("@whi@__________________", x, y+3+(14*7), 0xFFFFFF, 1);
 		}
 	}
 }

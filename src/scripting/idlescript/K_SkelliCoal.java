@@ -17,10 +17,10 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+
+ * Mines coal from the Skelli coal mine, banks in edge.
  *
- *
- *
+ *      Brings food, banks if out of food.
+ *		Start in Edge bank with Armor and Pickaxe or near skilli mine.
  *
  * Author - Kaila
  */
@@ -268,11 +268,8 @@ public class K_SkelliCoal extends IdleScript {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
 				controller.sleep(600);
-			} else {
-				controller.setStatus("@red@Done Leaving combat..");
-				break;
 			}
-			controller.sleep(10);
+			controller.sleep(50);
 		}
 	}
 
@@ -285,12 +282,7 @@ public class K_SkelliCoal extends IdleScript {
     public void parseVariables(){
         startTime = System.currentTimeMillis();
     }
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
+
 	public void setupGUI() {
 		JLabel header = new JLabel("Skeleton Coal Miner - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");
@@ -306,17 +298,17 @@ public class K_SkelliCoal extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		scriptFrame.add(header);
 		scriptFrame.add(label1);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

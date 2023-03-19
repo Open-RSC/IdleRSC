@@ -17,9 +17,10 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs red spider Wines in edge dungeon, recommend very high stats ~90+
- *
- *
+ * Tele Grabs Wines in chaos temple.
+ * NOT recommended to use on coleslaw,
+ * wines can be obtained with harvesting.
+ * Not tested on uranium, but should function if sleep added.
  *
  *
  * Author - Kaila
@@ -193,15 +194,6 @@ public class K_TeleWines extends IdleScript {
 
 
 	//GUI stuff below (icky)
-
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Zammy Wine Picker - By Kaila");
 		JLabel label1 = new JLabel("Start in Fally West Bank");
@@ -219,7 +211,7 @@ public class K_TeleWines extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -228,10 +220,10 @@ public class K_TeleWines extends IdleScript {
 		scriptFrame.add(label2);
 		scriptFrame.add(label3);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

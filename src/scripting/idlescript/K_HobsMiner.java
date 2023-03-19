@@ -17,12 +17,27 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
+ *      Mines Addy/Mith/Coal in Hobgoblin Mine and banks in Edge! (some pk/death protection).
  *
+ *      This bot supports the "autostart" parameter to automatiically start the bot without gui.
  *
- * This bot supports the "autostart" parameter to automatiically start the bot without gui
+ *		Start in Edge bank with Armor and Pickaxe.
+ * 		Sharks in bank REQUIRED.
  *
+ * 		Teleport if Pkers Attack Option.
+ * 		31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ * 		Unselected, bot WALKS to Edge when Attacked.
+ * 		Selected, bot walks to 19 wildy and teleports.
+ *
+ * 		Return to Hobs Mine after Escaping Option.
+ * 		Unselected, bot will log out after escaping Pkers.
+ * 		Selected, bot will grab more food and return.
+ *
+ *      This bot supports the \"autostart\" parameter.
+ *      Defaults to Teleport Off, Return On.
  *
  * Author - Kaila
+ *
  */
 public class K_HobsMiner extends IdleScript {
 	JFrame scriptFrame = null;
@@ -508,10 +523,7 @@ public class K_HobsMiner extends IdleScript {
 			if (controller.isInCombat()) {
 				controller.setStatus("@red@Leaving combat..");
 				controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-				controller.sleep(600);
-			} else {
-				controller.setStatus("@red@Done Leaving combat..");
-				break;
+				controller.sleep(400);
 			}
 			controller.sleep(10);
 		}
@@ -538,12 +550,6 @@ public class K_HobsMiner extends IdleScript {
 			returnEscape = false;
 		}
 	}
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Hobs Miner - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");
@@ -551,7 +557,7 @@ public class K_HobsMiner extends IdleScript {
 		JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
 		JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
 		JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
-		JLabel label5 = new JLabel("Selected, bot walks to 19 wildy & teleports");
+		JLabel label5 = new JLabel("Selected, bot walks to 19 wildy and teleports");
 		JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
 		JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
 		JLabel label7 = new JLabel("Selected, bot will grab more food and return");
@@ -570,7 +576,7 @@ public class K_HobsMiner extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -587,10 +593,10 @@ public class K_HobsMiner extends IdleScript {
         scriptFrame.add(label8);
         scriptFrame.add(label9);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

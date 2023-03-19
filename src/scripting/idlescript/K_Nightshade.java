@@ -17,10 +17,11 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Grabs Grapes from edge monestary
+ * Grabs Nightshades in Gu'Tanoth (for entrance to ogre enclave).
  *
- *
- *
+ * 		Picks Nightshade in northern skavid cave.
+ * 		Start in Yanille bank or northern nightshade cave.
+ * 		Requires Lit Candle and Skavid Map in Invent.
  *
  * Author - Kaila
  */
@@ -169,15 +170,6 @@ public class K_Nightshade extends IdleScript {
 
 
 	//GUI stuff below (icky)
-
-
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Nightshade Picker - By Kaila");
 		JLabel label1 = new JLabel("Picks Nightshade in northern skavid cave");
@@ -195,7 +187,7 @@ public class K_Nightshade extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -204,10 +196,10 @@ public class K_Nightshade extends IdleScript {
 		scriptFrame.add(label2);
 		scriptFrame.add(label3);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

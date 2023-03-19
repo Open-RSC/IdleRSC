@@ -21,8 +21,18 @@ import static java.lang.Boolean.parseBoolean;
 
 /**
  * Ice Dungeon Ice Giant/Warrior Killer - By Kaila
- * Start in Fally East bank with Armor or In Cave!
- * Sharks IN BANK REQUIRED (reg atk str optional)
+ *
+ *      This bot supports the "autostart" Parameter");
+ *      Usage: foodname numberOfFood potUp?
+ *      example: "shark,5,true".
+ *      "autostart": uses lobsters,5,true.
+ *
+ * 		Start in Fally East bank or In Ice Cave.
+ * 		Food in bank REQUIRED.
+ * 		Use regular Atk/Str Pots Selector.
+ * 		Food Withdraw amount Selector
+ * 		Type of Food Array Selector
+ *
  *
  * Author - Kaila
  */
@@ -529,13 +539,6 @@ public class K_AsgarnianIce extends IdleScript {
 			potUp = false;
 		}
 	}
-
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
     public void parseVariables(){
         startTime = System.currentTimeMillis();
     }
@@ -580,7 +583,7 @@ public class K_AsgarnianIce extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -600,10 +603,10 @@ public class K_AsgarnianIce extends IdleScript {
 		scriptFrame.add(foodField);
 		scriptFrame.add(blankLabel);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

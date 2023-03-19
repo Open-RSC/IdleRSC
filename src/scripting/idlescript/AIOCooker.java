@@ -123,18 +123,19 @@ public class AIOCooker extends IdleScript {
 	}
 
 	public void scriptStart() {
-		while(controller.isRunning()) {
 
+		while(controller.isRunning()) {
 			if(controller.getInventoryItemCount(target.rawId) == 0) {
+                goToBank();
 				bank();
+                goToCook();
 			} else {
 				cook();
 			}
-
 			controller.sleep(250);
-
 		}
 	}
+
 
 	public void bank() {
 
@@ -142,73 +143,76 @@ public class AIOCooker extends IdleScript {
 		openDoor();
 
 		controller.openBank();
+        controller.sleep(600);
 
+        if(controller.isInBank()) {
+            if (controller.getInventoryItemCount(target.cookedId) > 0) {
+                controller.depositItem(target.cookedId, controller.getInventoryItemCount(target.cookedId));
+                controller.sleep(250);
+            }
+            if (!this.dropBurnt) {
+                if (controller.getInventoryItemCount(target.burntId) > 0) {
+                    controller.depositItem(target.burntId, controller.getInventoryItemCount(target.burntId));
+                    controller.sleep(250);
+                }
+            }
 
-		if(controller.getInventoryItemCount(target.cookedId) > 0) {
-			controller.depositItem(target.cookedId, controller.getInventoryItemCount(target.cookedId));
-			controller.sleep(250);
-		}
-		if(!this.dropBurnt) {
-			if(controller.getInventoryItemCount(target.burntId) > 0) {
-				controller.depositItem(target.burntId, controller.getInventoryItemCount(target.burntId));
-				controller.sleep(250);
-			}
-		}
+            if (this.gauntlets && controller.getInventoryItemCount(700) == 0) {
+                controller.withdrawItem(700);
+                controller.sleep(250);
+            }
 
-		if(this.gauntlets && controller.getInventoryItemCount(700) == 0) {
-			controller.withdrawItem(700);
-			controller.sleep(250);
-		}
+            if (controller.getInventoryItemCount(target.rawId) == 0) {
+                controller.withdrawItem(target.rawId, 30);
+                controller.sleep(250);
+            }
 
-		if(controller.getInventoryItemCount(target.rawId) == 0) {
-			controller.withdrawItem(target.rawId, 30);
-			controller.sleep(250);
-		}
-
-
+            controller.closeBank();
+            controller.sleep(200);
+        }
 		controller.walkTo(439, 496);
 		openDoor();
 	}
+    public void goToCook() {
+        controller.walkTo(435, 486);
+        openCookDoor();
 
-	public void cook() {
+        if(this.gauntlets == true) {
 
-		controller.walkTo(435, 486);
-		openCookDoor();
+            if(controller.getInventoryItemCount(700) < 1) {
+                controller.displayMessage("@red@Please withdraw gauntlets. Stopping script.");
+                controller.stop();
+                return;
+            }
 
-		if(this.gauntlets == true) {
+            if(!controller.isEquipped(controller.getInventoryItemSlotIndex(700))) {
+                controller.equipItem(controller.getInventoryItemSlotIndex(700));
+                controller.sleep(618);
+            }
+        }
+    }
+    public void goToBank() {
+        if(this.dropBurnt) {
+            while(controller.getInventoryItemCount(target.burntId) > 0) {
+                controller.dropItem(controller.getInventoryItemSlotIndex(target.burntId));
+                controller.sleep(250);
+            }
+        }
 
-			if(controller.getInventoryItemCount(700) < 1) {
-				controller.displayMessage("@red@Please withdraw gauntlets. Stopping script.");
-				controller.stop();
-				return;
-			}
+        controller.walkTo(435, 485);
+        openCookDoor();
+    }
+    public void cook() {
+        if(controller.getInventoryItemCount(target.rawId) > 0) {
+            controller.sleepHandler(98, true);
 
-			if(!controller.isEquipped(controller.getInventoryItemSlotIndex(700))) {
-				controller.equipItem(controller.getInventoryItemSlotIndex(700));
-				controller.sleep(618);
-			}
-		}
-
-		while(controller.getInventoryItemCount(target.rawId) > 0) {
-
-			if(controller.isBatching() == false)
-				controller.useItemIdOnObject(432, 480, target.rawId);
-
-			controller.sleepHandler(98, true);
-
-			controller.sleep(250);
-		}
-
-		if(this.dropBurnt) {
-			while(controller.getInventoryItemCount(target.burntId) > 0) {
-				controller.dropItem(controller.getInventoryItemSlotIndex(target.burntId));
-				controller.sleep(250);
-			}
-		}
-
-		controller.walkTo(435, 485);
-		openCookDoor();
-	}
+            if(controller.isBatching() == false) {
+                controller.useItemIdOnObject(432, 480, target.rawId);
+            }
+            controller.sleep(640);
+            while (controller.isBatching()) controller.sleep(640);
+        }
+    }
 
 	public void openDoor() {
 		while(controller.getObjectAtCoord(439, 497) == 64) {
@@ -232,8 +236,8 @@ public class AIOCooker extends IdleScript {
     public void setupGUI() {
     	JLabel headerLabel = new JLabel("Start in Catherby!");
     	JComboBox<String> foodField = new JComboBox<String>();
-    	JCheckBox dropBurntCheckbox = new JCheckBox("Drop Burnt?", true);
-    	JCheckBox gauntletsCheckbox = new JCheckBox("Cooking Gauntlets?", true);
+    	JCheckBox dropBurntCheckbox = new JCheckBox("Drop Burnt?", false);
+    	JCheckBox gauntletsCheckbox = new JCheckBox("Cooking Gauntlets?", false);
 
 
         JButton startScriptButton = new JButton("Start");
@@ -255,12 +259,14 @@ public class AIOCooker extends IdleScript {
 	            	scriptStarted = true;
 
 	            	controller.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
+                    controller.displayMessage("@red@Coleslaw: Recommend Batch bars be toggle on in settings!");
+                    controller.displayMessage("@red@Coleslaw: This will slightly increase efficiency!");
             	}
         });
 
 
 
-    	scriptFrame = new JFrame("Script Options");
+    	scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
     	scriptFrame.setLayout(new GridLayout(0,1));
     	scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

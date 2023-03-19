@@ -17,10 +17,20 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Black Unicorn Killer - By Kaila
- * Start in Edge bank with Armor
- * Sharks/Laws/Airs/Earths IN BANK REQUIRED
- * 31 Magic Required for escape tele
+ * Black Unicorn Killer - By Kaila.
+ *
+ *      This bot supports the \"autostart\" parameter.
+ *      Defaults to Teleport Off, Return On.
+ *
+ * 		Start in Edge bank or Uni's with Gear.
+ * 		Sharks IN BANK REQUIRED.
+ *      Teleport if Pkers Attack Option.
+ *      31 Magic, Laws, Airs, and Earths required for Escape Tele.
+ *      Unselected, bot WALKS to Edge when Attacked.
+ *      Selected, bot walks to 19 wildy and teleports.
+ *      Return to Hobs Mine after Escaping?", true.
+ *      Unselected, bot will log out after escaping Pkers.
+ *      Selected, bot will grab more food and return.
  *
  * Author - Kaila
  */
@@ -341,12 +351,6 @@ public class K_BlackUnicorns extends IdleScript {
             returnEscape = false;
         }
     }
-	public static void centerWindow(Window frame) {
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-		frame.setLocation(x, y);
-	}
 	public void setupGUI() {
 		JLabel header = new JLabel("Black Unicorn Killer - By Kaila");
 		JLabel label1 = new JLabel("Start in Edge bank or Uni's with Gear");
@@ -354,7 +358,7 @@ public class K_BlackUnicorns extends IdleScript {
         JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
         JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
         JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
-        JLabel label5 = new JLabel("Selected, bot walks to 19 wildy & teleports");
+        JLabel label5 = new JLabel("Selected, bot walks to 19 wildy and teleports");
         JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
         JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
         JLabel label7 = new JLabel("Selected, bot will grab more food and return");
@@ -372,7 +376,7 @@ public class K_BlackUnicorns extends IdleScript {
 			}
 		});
 
-		scriptFrame = new JFrame("Script Options");
+		scriptFrame = new JFrame(controller.getPlayerName() + " - options");
 
 		scriptFrame.setLayout(new GridLayout(0, 1));
 		scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -389,10 +393,10 @@ public class K_BlackUnicorns extends IdleScript {
         scriptFrame.add(label8);
         scriptFrame.add(label9);
 		scriptFrame.add(startScriptButton);
-		centerWindow(scriptFrame);
-		scriptFrame.setVisible(true);
-		scriptFrame.pack();
-		scriptFrame.requestFocus();
+        scriptFrame.pack();
+        scriptFrame.setLocationRelativeTo(null);
+        scriptFrame.setVisible(true);
+        scriptFrame.requestFocus();
 
 	}
 	public static String msToString(long milliseconds) {

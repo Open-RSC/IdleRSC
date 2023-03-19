@@ -28,22 +28,32 @@
 
 TIMEOUT /t 1 > NUL
 run_exampleAccount_01.vbs
+echo Launched 1st Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_02.vbs
+echo Launched 2nd Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_03.vbs
+echo Launched 3rd Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_04.vbs
+echo Launched 4th Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_05.vbs
+echo Launched 5th Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_06.bat
+echo Launched 6th Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_07.bat
+echo Launched 7th Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_08.bat
+echo Launched 8th Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_09.bat
+echo Launched 9th Bot
 TIMEOUT /t 2 > NUL
 run_exampleAccount_10.bat
+echo Launched 10th Bot
 TIMEOUT /t 5

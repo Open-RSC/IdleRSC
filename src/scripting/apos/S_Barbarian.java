@@ -241,7 +241,7 @@ public final class S_Barbarian extends Script {
     frame.setLocationRelativeTo(null);
     frame.toFront();
     frame.setVisible(true);
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     start_time = -1L;
   }
 

@@ -120,7 +120,7 @@ public final class S_Stake extends Script {
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
   }
 

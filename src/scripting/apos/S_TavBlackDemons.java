@@ -239,7 +239,7 @@ public final class S_TavBlackDemons extends Script implements ActionListener {
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
   }
 

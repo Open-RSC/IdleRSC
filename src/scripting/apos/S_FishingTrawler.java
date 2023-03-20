@@ -266,7 +266,7 @@ public final class S_FishingTrawler extends Script implements ActionListener {
     cb_panel.validate();
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
   }
 

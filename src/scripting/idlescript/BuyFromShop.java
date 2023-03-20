@@ -201,7 +201,7 @@ public class BuyFromShop extends IdleScript {
     centerWindow(scriptFrame);
     scriptFrame.setVisible(true);
     scriptFrame.pack();
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 
   @Override

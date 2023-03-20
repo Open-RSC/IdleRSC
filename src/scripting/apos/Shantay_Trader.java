@@ -107,7 +107,7 @@ public final class Shantay_Trader extends Script implements ActionListener {
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
 
     start_time = System.currentTimeMillis();

@@ -220,7 +220,7 @@ public class MineGoldCraftingGuild extends IdleScript {
     scriptFrame.setVisible(true);
     centerWindow(scriptFrame);
     scriptFrame.pack();
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 
   @Override

@@ -92,12 +92,12 @@ public class Debugger implements Runnable {
 
     // Just show the debugger window if already listening
     if (!this.frame.hasFocus() && this.isVisible() && this.listening) {
-      this.frame.requestFocus();
+      this.frame.requestFocusInWindow();
       return;
     }
 
     this.frame.setVisible(true);
-    this.frame.requestFocus();
+    this.frame.requestFocusInWindow();
     this.listen();
   }
 

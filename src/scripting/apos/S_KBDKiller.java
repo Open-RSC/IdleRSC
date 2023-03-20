@@ -258,7 +258,7 @@ public final class S_KBDKiller extends Script implements ActionListener {
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
   }
 

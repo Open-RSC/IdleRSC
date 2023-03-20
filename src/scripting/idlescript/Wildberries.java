@@ -337,7 +337,7 @@ public class Wildberries extends IdleScript {
     centerWindow(scriptFrame);
     scriptFrame.setVisible(true);
     scriptFrame.pack();
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 
   public static String msToString(long milliseconds) {

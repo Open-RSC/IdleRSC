@@ -236,7 +236,7 @@ public final class S_MultiSmith extends Script implements ActionListener {
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
   }
 

@@ -92,7 +92,7 @@ public class J_Quester extends Script implements ActionListener {
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
 
     pw.init(null);

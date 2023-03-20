@@ -419,7 +419,7 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
     field_start.setText(str);
     frame.toFront();
     frame.setLocationRelativeTo(null);
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
   }
 

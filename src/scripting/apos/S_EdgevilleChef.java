@@ -111,7 +111,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
 
     frame.toFront();
     frame.setLocationRelativeTo(null);
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
 
     bank_time = -1L;

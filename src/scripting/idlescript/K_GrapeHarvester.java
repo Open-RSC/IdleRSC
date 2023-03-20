@@ -201,7 +201,7 @@ public class K_GrapeHarvester extends IdleScript {
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 
   public static String msToString(long milliseconds) {

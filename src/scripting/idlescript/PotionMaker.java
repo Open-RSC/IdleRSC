@@ -900,6 +900,6 @@ public class PotionMaker extends IdleScript {
     centerWindow(scriptFrame);
     scriptFrame.setVisible(true);
     scriptFrame.pack();
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 }

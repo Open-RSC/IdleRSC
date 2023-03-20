@@ -861,7 +861,7 @@ public class Main {
   public static void showLoadScript() {
     if (!isRunning) {
       scriptFrame.setVisible(true);
-      scriptFrame.requestFocus();
+      scriptFrame.requestFocusInWindow();
     } else {
       JOptionPane.showMessageDialog(null, "Stop the current script first.");
     }

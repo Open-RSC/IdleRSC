@@ -230,7 +230,7 @@ public class Woodcutting extends IdleScript {
     centerWindow(scriptFrame);
     scriptFrame.setVisible(true);
     scriptFrame.pack();
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 
   @Override

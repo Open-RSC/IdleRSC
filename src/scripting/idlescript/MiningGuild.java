@@ -257,7 +257,7 @@ public class MiningGuild extends IdleScript {
     scriptFrame.setVisible(true);
     centerWindow(scriptFrame);
     scriptFrame.pack();
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 
   public void quit(Integer i) {

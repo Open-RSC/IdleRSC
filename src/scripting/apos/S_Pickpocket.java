@@ -252,7 +252,7 @@ public final class S_Pickpocket extends Script implements ActionListener, ItemLi
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
   }
 

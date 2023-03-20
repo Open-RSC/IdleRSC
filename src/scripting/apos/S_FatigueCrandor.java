@@ -193,7 +193,7 @@ public final class S_FatigueCrandor extends Script implements ActionListener {
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     frame.setVisible(true);
     start_time = -1L;
   }

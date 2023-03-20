@@ -117,6 +117,6 @@ public class K_FastBankBury extends IdleScript {
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
-    scriptFrame.requestFocus();
+    scriptFrame.requestFocusInWindow();
   }
 }

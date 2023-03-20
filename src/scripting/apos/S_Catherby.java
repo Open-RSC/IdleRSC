@@ -274,7 +274,7 @@ public final class S_Catherby extends Script {
     frame.setLocationRelativeTo(null);
     frame.toFront();
     frame.setVisible(true);
-    frame.requestFocus();
+    frame.requestFocusInWindow();
     start_time = -1L;
   }
 

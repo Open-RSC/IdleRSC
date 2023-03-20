@@ -1,87 +1,66 @@
 package scripting.apos;
+
 import compatibility.apos.Script;
-public class AlchPlates extends Script
 
-{
+public class AlchPlates extends Script {
 
- public AlchPlates(String paramExtension)
+  public AlchPlates(String paramExtension) {
 
- {
+    //   super(paramExtension);
 
-//   super(paramExtension);
+  }
 
- }
+  public void init(String paramString) {
 
+    System.out.println("Steel Plate Alcher by XcendroX start in bank with fire staff and natures");
+  }
 
+  public int main() {
 
- public void init(String paramString) {
+    if (getFatigue() > 90) {
 
-   System.out.println("Steel Plate Alcher by XcendroX start in bank with fire staff and natures");
+      useSleepingBag();
 
- }
+      return 1000;
+    }
 
+    if (getInventoryCount(new int[] {118}) > 0) {
 
+      castOnItem(28, getInventoryIndex(new int[] {118}));
 
- public int main()
+      return 1000;
+    }
 
- {
+    if (isBanking()) {
 
-   if (getFatigue() > 90) {
+      if (getInventoryCount(new int[] {118}) == 0) {
 
-     useSleepingBag();
+        withdraw(118, 25);
 
-     return 1000;
+        return random(1000, 1500);
+      }
 
-   }
+      closeBank();
 
+      return random(500, 600);
+    }
 
+    if (isQuestMenu()) {
 
-   if (getInventoryCount(new int[] { 118 }) > 0) {
+      answer(0);
 
-     castOnItem(28, getInventoryIndex(new int[] { 118 }));
+      return random(500, 600);
+    }
 
-     return 1000;
+    int[] arrayOfInt = getNpcByIdNotTalk(this.BANKERS);
 
-   }
+    if (arrayOfInt[0] != -1) {
 
-   if (isBanking()) {
+      talkToNpc(arrayOfInt[0]);
 
-     if (getInventoryCount(new int[] { 118 }) == 0) {
+      return 1000;
+    }
 
-       withdraw(118, 25);
-
-
-
-       return random(1000, 1500);
-
-     }
-
-     closeBank();
-
-     return random(500, 600);
-
-   }
-
-   if (isQuestMenu()) {
-
-     answer(0);
-
-     return random(500, 600);
-
-   }
-
-   int[] arrayOfInt = getNpcByIdNotTalk(this.BANKERS);
-
-   if (arrayOfInt[0] != -1) {
-
-     talkToNpc(arrayOfInt[0]);
-
-     return 1000;
-
-   }
-
-   return random(500, 1000);
-
- }
-
+    return random(500, 1000);
+  }
 }

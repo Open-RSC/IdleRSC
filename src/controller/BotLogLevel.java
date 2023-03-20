@@ -1,7 +1,7 @@
 package controller;
 
 public enum BotLogLevel {
-    INFO,
-    DEBUG,
-    WARN
+  INFO,
+  DEBUG,
+  WARN
 }

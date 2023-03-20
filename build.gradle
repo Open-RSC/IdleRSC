@@ -1,9 +1,9 @@
 plugins {
-    // Facilitates Java compilation
-    id 'java'
-    // For formatting source-code
-    // NOTE: This is the maximum version that will work with JDK 8.
-    id 'com.diffplug.spotless' version '6.12.0'
+  // Facilitates Java compilation
+  id 'java'
+  // For formatting source-code
+  // NOTE: This is the maximum version that will work with JDK 8.
+  id 'com.diffplug.spotless' version '6.12.0'
 }
 
 // Tasks not related to build are split out into their own gradle scripts
@@ -13,52 +13,52 @@ apply from: "$project.rootDir/optional.gradle"
 
 // Where the code is
 sourceSets {
-    main {
-        java {
-            srcDir 'src/'
-        }
+  main {
+    java {
+      srcDir 'src/'
     }
+  }
 }
 
 // Where dependencies are fetched from
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 // Ensure gradle is aware of the patched_client.jar dependency
 dependencies {
-    // Ensure gradle is aware of the patched_client.jar dependency
-    implementation files('patched_client.jar')
-    // Used to find/populate scripts
-    implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
+  // Ensure gradle is aware of the patched_client.jar dependency
+  implementation files('patched_client.jar')
+  // Used to find/populate scripts
+  implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
 }
 
 jar {
-    // Define entry point for application
-    manifest {
-        attributes 'Main-Class': 'bot.Main'
-    }
+  // Define entry point for application
+  manifest {
+    attributes 'Main-Class': 'bot.Main'
+  }
 
-    // Modify jar task to include all dependencies (a.k.a. create a fat jar)
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
+  // Modify jar task to include all dependencies (a.k.a. create a fat jar)
+  from {
+    configurations.runtimeClasspath.collect {
+      it.isDirectory() ? it : zipTree(it)
     }
+  }
 }
 
 // ensure builds are reproducible
 // ref: https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
 tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
+  preserveFileTimestamps = false
+  reproducibleFileOrder = true
 }
 
 tasks.register('cleanBuildDir', Delete) {
-    group 'Build'
-    description 'Deletes the build directory after compilation.'
+  group 'Build'
+  description 'Deletes the build directory after compilation.'
 
-    delete 'build'
+  delete 'build'
 }
 
 // Ensure all tasks are completed when running build by making build require

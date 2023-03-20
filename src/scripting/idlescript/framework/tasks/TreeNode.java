@@ -1,9 +1,9 @@
 package scripting.idlescript.framework.tasks;
 
 public interface TreeNode {
-    TreeNode traverse();
+  TreeNode traverse();
 
-    TreeNode onTrue(TreeNode onTrueNode);
+  TreeNode onTrue(TreeNode onTrueNode);
 
-    TreeNode onFalse(TreeNode onFalseNode);
+  TreeNode onFalse(TreeNode onFalseNode);
 }

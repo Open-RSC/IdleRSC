@@ -1,5 +1,5 @@
 package controller;
 
 public class Path {
-    protected Node[] n;
+  protected Node[] n;
 }

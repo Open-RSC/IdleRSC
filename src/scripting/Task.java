@@ -1,17 +1,15 @@
 package scripting;
 
-import controller.BotController;
-
 import static scripting.ControllerProvider.getBotController;
 
+import controller.BotController;
+
 public abstract class Task {
-    protected BotController botController = getBotController();
+  protected BotController botController = getBotController();
 
-    public Task() {
-    }
+  public Task() {}
 
-    protected abstract void execute();
+  protected abstract void execute();
 
-    public abstract int tickDelay();
-
+  public abstract int tickDelay();
 }

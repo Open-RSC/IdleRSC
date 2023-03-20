@@ -1,6 +1,2 @@
-/**
- * Container package for the {@link reflector.Reflector} class.
- *
- */
-
+/** Container package for the {@link reflector.Reflector} class. */
 package reflector;

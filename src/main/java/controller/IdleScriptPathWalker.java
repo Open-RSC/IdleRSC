@@ -6,9 +6,8 @@ import static controller.Node.getNode;
 import static controller.Node.resetNodes;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -76,13 +75,17 @@ class IdleScriptPathWalker {
 
   private static byte[][] createWalkable() {
     System.out.print("Reading map... ");
-    File dir = new File("." + File.separator + "Map" + File.separator);
-    dir.mkdir();
-    File file = new File(dir, "data.gz");
+
     byte[][] walkable = new byte[WORLD_W][WORLD_H];
+    String dataPath = "/map/data.gz";
+    InputStream resIn = null;
     GZIPInputStream in = null;
     try {
-      in = new GZIPInputStream(new BufferedInputStream(new FileInputStream(file)));
+      resIn = IdleScriptPathWalker.class.getResourceAsStream(dataPath);
+      if (resIn == null) {
+        throw new IOException("resource not found: " + dataPath);
+      }
+      in = new GZIPInputStream(new BufferedInputStream(resIn));
       for (int i = 0; i < WORLD_W; ++i) {
         int read = 0;
         do {

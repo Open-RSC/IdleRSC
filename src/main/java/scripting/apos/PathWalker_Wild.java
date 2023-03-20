@@ -3,11 +3,10 @@ package scripting.apos;
 import compatibility.apos.Script;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,10 +15,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import javax.imageio.ImageIO;
-
-// import com.aposbot.Constants;
-// import com.aposbot.StandardCloseHandler;
 
 public class PathWalker_Wild extends Script implements ActionListener, ItemListener {
 
@@ -273,14 +268,18 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
     dir.mkdir();
 
     if (nodes == null) {
-      File file = new File(dir, "data.gz");
-
       System.out.print("Reading map... ");
 
       byte[][] walkable = new byte[WORLD_W][WORLD_H];
+      String dataPath = "/map/data.gz";
+      InputStream resIn = null;
       GZIPInputStream in = null;
       try {
-        in = new GZIPInputStream(new BufferedInputStream(new FileInputStream(file)));
+        resIn = PathWalker_Wild.class.getResourceAsStream(dataPath);
+        if (resIn == null) {
+          throw new IOException("resource not found: " + dataPath);
+        }
+        in = new GZIPInputStream(new BufferedInputStream(resIn));
         for (int i = 0; i < WORLD_W; ++i) {
           int read = 0;
           do {
@@ -351,20 +350,6 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
     return "Path Walker";
   }
 
-  private BufferedImage getMapImage() {
-    File file = new File("." + File.separator + "Map" + File.separator + "map.png");
-
-    System.out.print("Reading map image... ");
-    try {
-      BufferedImage image = ImageIO.read(file);
-      System.out.println("done.");
-      return image;
-    } catch (IOException ex) {
-      System.out.println("failed: " + ex);
-    }
-    return null;
-  }
-
   private void createFrame() {
     if (frame == null) {
       Panel bp = new Panel();
@@ -396,10 +381,6 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
       field_end.setText("0,0");
 
       frame = new Frame(getClass().getSimpleName());
-      //			frame.addWindowListener(
-      //			    new StandardCloseHandler(frame, StandardCloseHandler.HIDE)
-      //			);
-      //			frame.setIconImages(Constants.ICONS);
       frame.add(tp, BorderLayout.NORTH);
       frame.add(pp, BorderLayout.CENTER);
       frame.add(bp, BorderLayout.SOUTH);
@@ -807,39 +788,9 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
         return;
       }
 
-      BufferedImage image = getMapImage();
-      if (image == null) {
-        return;
-      }
-
-      System.out.print("Generating path image... ");
-      Graphics g = image.getGraphics();
-      g.setColor(Color.GREEN);
-      int len = path.length;
-      for (int i = 0; i < len; ++i) {
-        Node p = path[i];
-        g.fillOval(WORLD_W - 1 - p.x, p.y, 3, 3);
-      }
-      g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
-      g.setColor(Color.BLACK);
-      g.drawString("Start", WORLD_W - x1, y1 + 1);
-      g.drawString("Goal", WORLD_W - x2, y2 + 1);
-      g.setColor(Color.WHITE);
-      g.drawString("Start", WORLD_W - 1 - x1, y1);
-      g.drawString("Goal", WORLD_W - 1 - x2, y2);
-      System.out.println("done.");
-      System.out.print("Writing path image... ");
-      try {
-        ImageIO.write(
-            image, "PNG", new File("." + File.separator + "Map" + File.separator + "path.png"));
-        System.out.println("done.");
-      } catch (Throwable t) {
-        System.out.println("failed: " + t);
-      }
       Path p = new Path();
       p.n = path;
       setPath(p);
-      image = null;
       System.gc();
       System.out.println("Ready to run.");
     }

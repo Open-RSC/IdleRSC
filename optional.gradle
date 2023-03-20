@@ -17,8 +17,6 @@ tasks.register('release', Exec) {
     'UraniumCache',
     'run_linux.sh',
     'run_windows.bat',
-    'Map/data.gz',
-    'Map/map.png',
     'README.md',
     '--output',
     "${releaseName}.zip"

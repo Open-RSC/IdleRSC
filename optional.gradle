@@ -57,7 +57,7 @@ ext.commitHash = { ->
     }
     return stdout.toString().trim()
   }
-  catch (e) {
+  catch (ignored) {
     return 'dev'
   }
 }
@@ -78,7 +78,7 @@ ext.commitDate = { ->
     }
     return stdout.toString().trim()
   }
-  catch (e) {
+  catch (ignored) {
     return '2001.01.04'
   }
 }
@@ -98,7 +98,7 @@ ext.commitCount = { ->
     }
     return stdout.toString().trim()
   }
-  catch (e) {
+  catch (ignored) {
     return '1'
   }
 }

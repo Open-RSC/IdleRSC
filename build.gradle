@@ -1,6 +1,7 @@
-// Used for building a runnable jar
 plugins {
+    // Facilitates Java compilation
     id 'java'
+    // For moving the compiled jar to root directory
     id 'base'
 }
 
@@ -13,23 +14,26 @@ sourceSets {
     }
 }
 
+// Where dependencies are fetched from
 repositories {
     mavenCentral()
 }
 
 // Ensure gradle is aware of the patched_client.jar dependency
 dependencies {
+    // Ensure gradle is aware of the patched_client.jar dependency
     implementation files('patched_client.jar')
+    // Used to find/populate scripts
     implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
 }
 
 jar {
-    // Starting class
+    // Define entry point for application
     manifest {
         attributes 'Main-Class': 'bot.Main'
     }
 
-    // Include all the source files
+    // Modify jar task to include all dependencies (a.k.a. create a fat jar)
     from {
         configurations.runtimeClasspath.collect {
             it.isDirectory() ? it : zipTree(it)
@@ -49,8 +53,9 @@ tasks.withType(AbstractArchiveTask).configureEach {
     reproducibleFileOrder = true
 }
 
-// Deletes the build directory
-tasks.register("cleanBuildDir", Delete) {
+tasks.register('cleanBuildDir', Delete) {
+    group 'Build'
+    description 'Deletes the build directory after compilation.'
     delete 'build'
 }
 
@@ -74,7 +79,7 @@ ext.commitHash = { ->
         return stdout.toString().trim()
     }
     catch (e) {
-        return "dev"
+        return 'dev'
     }
 }
 
@@ -95,7 +100,7 @@ ext.commitDate = { ->
         return stdout.toString().trim()
     }
     catch (e) {
-        return "2001.01.04"
+        return '2001.01.04'
     }
 }
 
@@ -115,12 +120,13 @@ ext.commitCount = { ->
         return stdout.toString().trim()
     }
     catch (e) {
-        return "1"
+        return '1'
     }
 }
 
-// create release zip
-tasks.register("release", Exec) {
+tasks.register('release', Exec) {
+    group 'Distribution'
+    description 'Create release zip for end-users.'
     dependsOn build
 
     def releaseName = "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}"
@@ -150,8 +156,11 @@ tasks.register("release", Exec) {
 }
 
 // update documentation stored in the repository under doc/
-tasks.register("updateDocumentation", Copy) {
+tasks.register('updateDocumentation', Copy) {
+    group 'Documentation'
+    description 'Update documentation stored in the repository under doc/.'
     dependsOn javadoc
-    from "./build/docs/javadoc"
-    into "./doc"
+
+    from './build/docs/javadoc'
+    into './doc'
 }

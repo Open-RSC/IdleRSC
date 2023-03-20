@@ -6,6 +6,7 @@ default:
   image: eclipse-temurin:8-jdk-jammy
 
 stages:
+  - format
   - build
   - pages
 
@@ -32,9 +33,15 @@ cache:
     - .gradle/caches
     - .gradle/notifications
 
-# Install dependencies (so far, just git), explicitly state to gradle wrapper
-# that we want the cache to be enabled, build a release zip, then upload the
-# zip artifact to Gitlab CI for end-users to download.
+# Check if source code is formatted properly.
+format:
+  stage: format
+  script:
+    - ./gradlew --build-cache spotlessCheck
+
+# Explicitly state to gradle wrapper that we want the cache to be enabled,
+# build a release zip, then upload the zip artifact to Gitlab CI for end-users
+# to download.
 build:
   stage: build
   script: 
@@ -44,6 +51,7 @@ build:
       - ./*.zip
     expire_in: 1 week
 
+# Upload Javadoc API documentation to Gitlab pages.
 pages:
   stage: pages
   script: 

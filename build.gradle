@@ -1,8 +1,6 @@
 plugins {
     // Facilitates Java compilation
     id 'java'
-    // For moving the compiled jar to root directory
-    id 'base'
     // For formatting source-code
     // NOTE: This is the maximum version that will work with JDK 8.
     id 'com.diffplug.spotless' version '6.12.0'
@@ -49,11 +47,6 @@ jar {
     }
 }
 
-// Moves the compiled jar to the root folder
-base {
-    libsDirectory = getProjectDir()
-}
-
 // ensure builds are reproducible
 // ref: https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
 tasks.withType(AbstractArchiveTask).configureEach {
@@ -64,9 +57,21 @@ tasks.withType(AbstractArchiveTask).configureEach {
 tasks.register('cleanBuildDir', Delete) {
     group 'Build'
     description 'Deletes the build directory after compilation.'
+
     delete 'build'
 }
 
 // Ensure all tasks are completed when running build by making build require
 // the last task in a dependency chain
 build.dependsOn(cleanBuildDir)
+
+tasks.register('copyJar', Copy) {
+  group 'build'
+  description 'Copies jar archive into root directory.'
+
+  from './build/libs'
+  into './'
+}
+
+// Run copyJar straight after build
+build.finalizedBy(copyJar)

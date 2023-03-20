@@ -54,17 +54,6 @@ tasks.withType(AbstractArchiveTask).configureEach {
   reproducibleFileOrder = true
 }
 
-tasks.register('cleanBuildDir', Delete) {
-  group 'Build'
-  description 'Deletes the build directory after compilation.'
-
-  delete 'build'
-}
-
-// Ensure all tasks are completed when running build by making build require
-// the last task in a dependency chain
-build.dependsOn(cleanBuildDir)
-
 tasks.register('copyJar', Copy) {
   group 'build'
   description 'Copies jar archive into root directory.'

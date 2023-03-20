@@ -11,6 +11,7 @@ plugins {
 // Tasks not related to build are split out into their own gradle scripts
 // in order to keep build.gradle as compact as possible.
 apply from: "$project.rootDir/spotless.gradle"
+apply from: "$project.rootDir/optional.gradle"
 
 // Where the code is
 sourceSets {
@@ -69,105 +70,3 @@ tasks.register('cleanBuildDir', Delete) {
 // Ensure all tasks are completed when running build by making build require
 // the last task in a dependency chain
 build.dependsOn(cleanBuildDir)
-
-// obtain current commit hash
-ext.commitHash = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            executable('git')
-            args(
-                'rev-parse',
-                '--short',
-                'HEAD'
-            )
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    }
-    catch (e) {
-        return 'dev'
-    }
-}
-
-// obtain current commit date
-ext.commitDate = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            executable('git')
-            args(
-                'show',
-                '--no-patch',
-                '--format=%cd',
-                '--date=format:%Y.%m.%d'
-            )
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    }
-    catch (e) {
-        return '2001.01.04'
-    }
-}
-
-// obtain current commit count
-ext.commitCount = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            executable('git')
-            args(
-                'rev-list',
-                '--count',
-                'HEAD'
-            )
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    }
-    catch (e) {
-        return '1'
-    }
-}
-
-tasks.register('release', Exec) {
-    group 'Distribution'
-    description 'Create release zip for end-users.'
-    dependsOn build
-
-    def releaseName = "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}"
-
-    executable('git')
-    args(
-        'archive',
-        '--prefix',
-        "${releaseName}/",
-        'HEAD',
-        '--add-file',
-        "${project.name}.jar",
-        'ColeslawCache',
-        'UraniumCache',
-        'run_linux.sh',
-        'run_windows.bat',
-        'Map/data.gz',
-        'Map/map.png',
-        'README.md',
-        '--output',
-        "${releaseName}.zip"
-    )
-
-    doLast {
-        println "Archive saved to ${releaseName}.zip"
-    }
-}
-
-// update documentation stored in the repository under doc/
-tasks.register('updateDocumentation', Copy) {
-    group 'Documentation'
-    description 'Update documentation stored in the repository under doc/.'
-    dependsOn javadoc
-
-    from './build/docs/javadoc'
-    into './doc'
-}

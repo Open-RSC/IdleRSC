@@ -1,0 +1,104 @@
+tasks.register('release', Exec) {
+    group 'Distribution'
+    description 'Create release zip for end-users.'
+    dependsOn build
+
+    def releaseName = "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}"
+
+    executable('git')
+    args(
+        'archive',
+        '--prefix',
+        "${releaseName}/",
+        'HEAD',
+        '--add-file',
+        "${project.name}.jar",
+        'ColeslawCache',
+        'UraniumCache',
+        'run_linux.sh',
+        'run_windows.bat',
+        'Map/data.gz',
+        'Map/map.png',
+        'README.md',
+        '--output',
+        "${releaseName}.zip"
+    )
+
+    doLast {
+        println "Archive saved to ${releaseName}.zip"
+    }
+}
+
+tasks.register('updateDocumentation', Copy) {
+    group 'Documentation'
+    description 'Update documentation stored in the repository under doc/.'
+    dependsOn javadoc
+
+    doLast {
+        delete './doc'
+
+        from './build/docs/javadoc'
+        into './doc'
+    }
+}
+
+// Obtain current commit hash
+ext.commitHash = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            executable('git')
+            args(
+                'rev-parse',
+                '--short',
+                'HEAD'
+            )
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        return 'dev'
+    }
+}
+
+// Obtain current commit date
+ext.commitDate = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            executable('git')
+            args(
+                'show',
+                '--no-patch',
+                '--format=%cd',
+                '--date=format:%Y.%m.%d'
+            )
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        return '2001.01.04'
+    }
+}
+
+// Obtain current commit count
+ext.commitCount = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            executable('git')
+            args(
+                'rev-list',
+                '--count',
+                'HEAD'
+            )
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        return '1'
+    }
+}

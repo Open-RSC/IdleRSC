@@ -1,9 +1,6 @@
 package scripting.idlescript;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -308,8 +305,8 @@ public class AIOFighter extends IdleScript {
 
     parent.add(textLabel);
     parent.add(okButton);
-    parent.setVisible(true);
     parent.pack();
+    parent.setVisible(true);
   }
 
   public boolean validateFields(
@@ -569,18 +566,12 @@ public class AIOFighter extends IdleScript {
     switchIdField.setEnabled(false);
     prioritizeBonesCheckbox.setEnabled(false);
 
-    centerWindow(scriptFrame);
-    scriptFrame.setVisible(true);
     scriptFrame.pack();
+    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setVisible(true);
+    scriptFrame.requestFocusInWindow();
 
     controller.setStatus("@red@Waiting for start...");
-  }
-
-  public static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
   }
 
   @Override

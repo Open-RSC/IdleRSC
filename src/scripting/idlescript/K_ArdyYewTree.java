@@ -1,9 +1,6 @@
 package scripting.idlescript;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -202,13 +199,6 @@ public class K_ArdyYewTree extends IdleScript {
     return os;
   }
 
-  public static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
-  }
-
   public void parseVariables() {
     startTime = System.currentTimeMillis();
   }
@@ -238,6 +228,7 @@ public class K_ArdyYewTree extends IdleScript {
     scriptFrame.add(label1);
     scriptFrame.add(label2);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);

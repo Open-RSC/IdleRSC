@@ -1,9 +1,6 @@
 package scripting.idlescript;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -258,13 +255,6 @@ public class DamWildyAgility extends IdleScript {
   //	}
   // };
 
-  public static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
-  }
-
   public void setValuesFromGUI(int i) {
     if (i == 0) {}
   }
@@ -307,9 +297,9 @@ public class DamWildyAgility extends IdleScript {
     scriptFrame.add(FishField);
     scriptFrame.add(startScriptButton);
 
-    centerWindow(scriptFrame);
-    scriptFrame.setVisible(true);
     scriptFrame.pack();
+    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 

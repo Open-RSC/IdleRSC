@@ -716,7 +716,7 @@ public class Main {
     scriptFrame.add(scriptButton);
     scriptFrame.setSize(300, 300);
 
-    centerWindow(scriptFrame);
+    scriptFrame.setLocationRelativeTo(null);
   }
 
   private static FocusListener getPlaceholderFocusListener(
@@ -748,18 +748,6 @@ public class Main {
         }
       }
     };
-  }
-
-  /**
-   * Helper function for centering any window.
-   *
-   * @param frame -- the window to be centered.
-   */
-  public static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
   }
 
   /** un-hides the bot sidepanel. */
@@ -809,9 +797,10 @@ public class Main {
     cacheFrame.add(cacheLabel);
     cacheFrame.add(uraniumButton);
     cacheFrame.add(coleslawButton);
-    centerWindow(cacheFrame);
-    cacheFrame.setVisible(true);
+
     cacheFrame.pack();
+    cacheFrame.setLocationRelativeTo(null);
+    cacheFrame.setVisible(true);
 
     while (cacheDirectory.exists() == false) {
 

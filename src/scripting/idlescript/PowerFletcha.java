@@ -1,9 +1,6 @@
 package scripting.idlescript;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -130,13 +127,6 @@ public class PowerFletcha extends IdleScript {
     }
   }
 
-  public static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
-  }
-
   public void setupGUI() {
     JLabel headerLabel = new JLabel("Start with a knife, axe, and next to trees!");
     JComboBox<String> targetField = new JComboBox<String>();
@@ -167,9 +157,10 @@ public class PowerFletcha extends IdleScript {
     scriptFrame.add(targetField);
     scriptFrame.add(startScriptButton);
 
-    centerWindow(scriptFrame);
-    scriptFrame.setVisible(true);
     scriptFrame.pack();
+    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setVisible(true);
+    scriptFrame.requestFocusInWindow();
   }
 
   @Override

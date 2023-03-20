@@ -12,10 +12,7 @@ import static scripting.ControllerProvider.setBotController;
 
 import controller.BotController;
 import controller.BotLogLevel;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -197,13 +194,6 @@ public class AIOMiner extends IdleScript {
         .runTasks();
   }
 
-  private static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
-  }
-
   private void setupGUI() {
     scriptFrame = new JFrame("Script Options");
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -249,9 +239,10 @@ public class AIOMiner extends IdleScript {
         createStartButton(
             disableBankCheckBox, bankOptions, miningCampOptions, customX, customY, rockOptions));
 
-    centerWindow(scriptFrame);
-    scriptFrame.setVisible(true);
     scriptFrame.pack();
+    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setVisible(true);
+    scriptFrame.requestFocusInWindow();
   }
 
   private JButton createStartButton(

@@ -481,9 +481,10 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     }
     field_start.setText(str);
     frame.toFront();
+
     frame.setLocationRelativeTo(null);
-    frame.requestFocusInWindow();
     frame.setVisible(true);
+    frame.requestFocusInWindow();
   }
 
   public boolean walkPath() {

@@ -2,10 +2,7 @@ package scripting.idlescript;
 
 import static bot.Main.log;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -230,13 +227,6 @@ public class AIOCooker extends IdleScript {
     }
   }
 
-  public static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
-  }
-
   public void setupGUI() {
     JLabel headerLabel = new JLabel("Start in Catherby!");
     JComboBox<String> foodField = new JComboBox<String>();
@@ -279,9 +269,10 @@ public class AIOCooker extends IdleScript {
     scriptFrame.add(gauntletsCheckbox);
     scriptFrame.add(startScriptButton);
 
-    centerWindow(scriptFrame);
-    scriptFrame.setVisible(true);
     scriptFrame.pack();
+    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setVisible(true);
+    scriptFrame.requestFocusInWindow();
   }
 
   @Override

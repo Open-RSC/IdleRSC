@@ -1,9 +1,6 @@
 package scripting.idlescript;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -225,13 +222,6 @@ public class MiningGuild extends IdleScript {
     }
   }
 
-  public static void centerWindow(Window frame) {
-    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-    frame.setLocation(x, y);
-  }
-
   public void setup() {
     JButton startScriptButton = new JButton("Start");
 
@@ -254,9 +244,10 @@ public class MiningGuild extends IdleScript {
     scriptFrame.add(mithrilCheck);
     scriptFrame.add(coalCheck);
     scriptFrame.add(startScriptButton);
-    scriptFrame.setVisible(true);
-    centerWindow(scriptFrame);
+
     scriptFrame.pack();
+    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 

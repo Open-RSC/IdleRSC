@@ -11,15 +11,6 @@ plugins {
 apply from: "$project.rootDir/spotless.gradle"
 apply from: "$project.rootDir/optional.gradle"
 
-// Where the code is
-sourceSets {
-  main {
-    java {
-      srcDir 'src/'
-    }
-  }
-}
-
 // Where dependencies are fetched from
 repositories {
   mavenCentral()

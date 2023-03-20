@@ -3,7 +3,14 @@ plugins {
     id 'java'
     // For moving the compiled jar to root directory
     id 'base'
+    // For formatting source-code
+    // NOTE: This is the maximum version that will work with JDK 8.
+    id 'com.diffplug.spotless' version '6.12.0'
 }
+
+// Tasks not related to build are split out into their own gradle scripts
+// in order to keep build.gradle as compact as possible.
+apply from: "$project.rootDir/spotless.gradle"
 
 // Where the code is
 sourceSets {

@@ -1,0 +1,23 @@
+spotless {
+  format 'misc', {
+    // Define the files to apply `misc` to
+    target '**/*.gradle', '**/*.md', '**/.gitignore'
+
+    // Define the steps to apply to those files
+    trimTrailingWhitespace()
+    indentWithSpaces(2)
+    endWithNewline()
+  }
+  java {
+    // Use the default importOrder configuration
+    importOrder()
+    // Remove unused imports
+    removeUnusedImports()
+    // Follow the Google Java formatting guide
+    // ref: https://google.github.io/styleguide/javaguide.html
+    // NOTE: This is the maximum version that will work with JDK 8.
+    googleJavaFormat('1.7')
+    // Fix formatting of type annotations
+    formatAnnotations()
+  }
+}

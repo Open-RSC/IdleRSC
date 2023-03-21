@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -40,6 +41,7 @@ import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
 import scripting.idlescript.IdleScript;
+import utils.Extractor;
 
 /**
  * This is the starting class of the entire IdleRSC project.
@@ -777,19 +779,17 @@ public class Main {
     JButton coleslawButton = new JButton("Coleslaw (modified RSC, new content)");
 
     uraniumButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            copyDirectory("UraniumCache", "Cache");
-          }
+        e -> {
+          // Create Uranium cache
+          final int URANIUM_PORT = 43235;
+          createCache(URANIUM_PORT);
         });
 
     coleslawButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            copyDirectory("ColeslawCache", "Cache");
-          }
+        e -> {
+          // Create Coleslaw cache
+          final int COLESLAW_PORT = 43599;
+          createCache(COLESLAW_PORT);
         });
 
     cacheFrame.setLayout(new GridLayout(0, 1));
@@ -815,6 +815,28 @@ public class Main {
 
     cacheFrame.setVisible(false);
     cacheFrame.dispose();
+  }
+
+  private static void createCache(int ServerPort) {
+    // Create Cache directory
+    File dir = new File("." + File.separator + "Cache");
+    dir.mkdirs();
+
+    // Copy embedded cache to cache directory
+    try {
+      Extractor.extractZipResource("/cache/ZipCache.zip", dir.toPath());
+    } catch (IOException ignored) {
+      System.out.print(ignored);
+    }
+
+    // Add port to client cache
+    try {
+      FileWriter portFile = new FileWriter("Cache/port.txt");
+      portFile.write(Integer.toString(ServerPort));
+      portFile.close();
+    } catch (IOException ignored) {
+      System.out.print(ignored);
+    }
   }
 
   private static void copyDirectory(

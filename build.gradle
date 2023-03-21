@@ -55,3 +55,16 @@ tasks.register('copyJar', Copy) {
 
 // Run copyJar straight after build
 build.finalizedBy(copyJar)
+
+tasks.register('createClientCache', Zip) {
+  group 'build'
+  description 'Create client cache for inclusion in the jar archive.'
+
+  archiveFileName = 'ZipCache.zip'
+  destinationDirectory = file('src/main/resources/cache/')
+  from 'ClientCache/'
+  include '**/*'
+}
+
+// Create client cache before processResources runs
+processResources.dependsOn(createClientCache)

@@ -13,8 +13,6 @@ tasks.register('release', Exec) {
     'HEAD',
     '--add-file',
     "${project.name}.jar",
-    'ColeslawCache',
-    'UraniumCache',
     'run_linux.sh',
     'run_windows.bat',
     'README.md',

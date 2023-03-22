@@ -24,7 +24,7 @@ dependencies {
   implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
 }
 
-jar {
+tasks.named('jar') {
   // Define entry point for application
   manifest {
     attributes 'Main-Class': 'bot.Main'
@@ -38,6 +38,13 @@ jar {
   }
 }
 
+// Additional files to clean
+tasks.named('clean') {
+  delete 'src/main/resources/cache'
+  delete "${project.name}.jar"
+  delete "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}.zip"
+}
+
 // ensure builds are reproducible
 // ref: https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
 tasks.withType(AbstractArchiveTask).configureEach {
@@ -48,6 +55,7 @@ tasks.withType(AbstractArchiveTask).configureEach {
 tasks.register('copyJar', Copy) {
   group 'build'
   description 'Copies jar archive into root directory.'
+  dependsOn build
 
   from './build/libs'
   into './'

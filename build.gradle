@@ -2,8 +2,7 @@ plugins {
   // Facilitates Java compilation
   id 'java'
   // For formatting source-code
-  // NOTE: This is the maximum version that will work with JDK 8.
-  id 'com.diffplug.spotless' version '6.12.0'
+  alias(libs.plugins.spotless)
 }
 
 // Tasks not related to build are split out into their own gradle scripts
@@ -21,7 +20,7 @@ dependencies {
   // Ensure gradle is aware of the patched_client.jar dependency
   implementation files('patched_client.jar')
   // Used to find/populate scripts
-  implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
+  implementation libs.reflections
 }
 
 tasks.named('jar') {

@@ -15,8 +15,7 @@ spotless {
     removeUnusedImports()
     // Follow the Google Java formatting guide
     // ref: https://google.github.io/styleguide/javaguide.html
-    // NOTE: This is the maximum version that will work with JDK 8.
-    googleJavaFormat('1.7')
+    googleJavaFormat("${libs.versions.google.java.format.get()}")
     // Fix formatting of type annotations
     formatAnnotations()
   }

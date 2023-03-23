@@ -262,8 +262,6 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
   @Override
   public void init(String params) {
     start_time = -1L;
-    File dir = new File("." + File.separator + "Map" + File.separator);
-    dir.mkdir();
 
     if (nodes == null) {
       System.out.print("Reading map... ");

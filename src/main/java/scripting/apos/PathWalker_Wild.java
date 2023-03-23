@@ -4,7 +4,6 @@ import compatibility.apos.Script;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import utils.Extractor;
 
 public class PathWalker_Wild extends Script implements ActionListener, ItemListener {
 
@@ -270,7 +270,7 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
       String dataPath = "/map/data";
       BufferedInputStream in = null;
       try {
-        in = new BufferedInputStream(PathWalker_Wild.class.getResourceAsStream(dataPath));
+        in = new BufferedInputStream(Extractor.extractResourceAsStream(dataPath));
         if (in == null) {
           throw new IOException("resource not found: " + dataPath);
         }

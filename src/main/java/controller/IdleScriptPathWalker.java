@@ -7,12 +7,12 @@ import static controller.Node.resetNodes;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import utils.Extractor;
 
 class IdleScriptPathWalker {
 
@@ -77,14 +77,9 @@ class IdleScriptPathWalker {
 
     byte[][] walkable = new byte[WORLD_W][WORLD_H];
     String dataPath = "/map/data";
-    InputStream resIn = null;
     BufferedInputStream in = null;
     try {
-      resIn = IdleScriptPathWalker.class.getResourceAsStream(dataPath);
-      if (resIn == null) {
-        throw new IOException("resource not found: " + dataPath);
-      }
-      in = new BufferedInputStream(resIn);
+      in = new BufferedInputStream(Extractor.extractResourceAsStream(dataPath));
       for (int i = 0; i < WORLD_W; ++i) {
         int read = 0;
         do {

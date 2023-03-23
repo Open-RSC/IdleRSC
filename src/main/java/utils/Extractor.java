@@ -57,4 +57,20 @@ public class Extractor {
       }
     }
   }
+
+  /**
+   * Extract the contents of a resource file to an InputStream.
+   *
+   * @param name Name of resource.
+   * @return InputStream containing a resource file.
+   */
+  public static InputStream extractResourceAsStream(String name) throws IOException {
+    InputStream in = Extractor.class.getResourceAsStream(name);
+
+    if (in == null) {
+      throw new IOException("Resource not found: " + name);
+    }
+
+    return in;
+  }
 }

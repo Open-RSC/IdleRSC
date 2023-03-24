@@ -22,6 +22,7 @@ public class Config {
   private String strengthItems = "";
   private String defenceItems = "";
   private String spellId = "";
+  private String initCache = "";
 
   /*
    Add the following?
@@ -65,14 +66,16 @@ public class Config {
             + enablegfx
             + " --localOCR "
             + localOCR
-            + "--attack-items"
+            + "--attack-items "
             + attackItems
-            + "--strength-items"
+            + "--strength-items "
             + strengthItems
-            + "--defence-items"
+            + "--defence-items "
             + defenceItems
-            + "--spell-id"
-            + spellId);
+            + "--spell-id "
+            + spellId
+            + "--init-cache "
+            + initCache);
   }
 
   public void printUsage() {
@@ -190,6 +193,9 @@ public class Config {
         case "--spell-id":
           spellId = clientArgs[++argIndex];
           break;
+        case "--init-cache":
+          initCache = clientArgs[++argIndex].toLowerCase();
+          break;
         default:
           if (clientArgs[argIndex].startsWith("--")) {
             System.out.println(
@@ -264,6 +270,10 @@ public class Config {
 
   public boolean getLocalOCR() {
     return localOCR;
+  }
+
+  public String getInitCache() {
+    return initCache;
   }
 
   private ArrayList<Integer> itemsStringToIntArray(String items) {

@@ -184,8 +184,8 @@ public class Main {
       throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
           SecurityException, InstantiationException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, InterruptedException {
-    handleCache();
     config = new Config(args);
+    handleCache(config);
 
     Reflector reflector = new Reflector(); // start up our reflector helper
     OpenRSC client = reflector.createClient(); // start up our client jar
@@ -767,11 +767,28 @@ public class Main {
   }
 
   /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
-  private static void handleCache() {
+  private static void handleCache(Config config) {
+    final int COLESLAW_PORT = 43599;
+    final int URANIUM_PORT = 43235;
     // Does the directory exist?
     File cacheDirectory = new File("Cache/");
 
     if (cacheDirectory.exists()) return;
+
+    // If --init-cache argument is used, bypass the GUI
+    if (!config.getInitCache().equals("")) {
+      if (config.getInitCache().equals("uranium")) {
+        // Create Uranium cache
+        createCache(URANIUM_PORT);
+        return;
+      } else if (config.getInitCache().equals("coleslaw")) {
+        // Create Coleslaw cache
+        createCache(COLESLAW_PORT);
+        return;
+      } else {
+        System.out.println("Server (" + config.getInitCache() + ") is not known.");
+      }
+    }
 
     JFrame cacheFrame = new JFrame("Cache Setup");
     JLabel cacheLabel = new JLabel("First setup: you must select either Uranium or Coleslaw.");
@@ -781,14 +798,12 @@ public class Main {
     uraniumButton.addActionListener(
         e -> {
           // Create Uranium cache
-          final int URANIUM_PORT = 43235;
           createCache(URANIUM_PORT);
         });
 
     coleslawButton.addActionListener(
         e -> {
           // Create Coleslaw cache
-          final int COLESLAW_PORT = 43599;
           createCache(COLESLAW_PORT);
         });
 

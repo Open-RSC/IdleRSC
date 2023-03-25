@@ -15,7 +15,6 @@ repositories {
   mavenCentral()
 }
 
-// Ensure gradle is aware of the patched_client.jar dependency
 dependencies {
   // Ensure gradle is aware of the patched_client.jar dependency
   implementation files('patched_client.jar')
@@ -61,8 +60,8 @@ tasks.register('copyJar', Copy) {
   description 'Copies jar archive into root directory.'
   dependsOn build
 
-  from './build/libs'
-  into './'
+  from rootProject.file("build/libs/${project.name}.jar")
+  into rootProject.file(".")
 }
 
 // Run copyJar straight after build

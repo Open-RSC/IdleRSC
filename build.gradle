@@ -23,8 +23,9 @@ dependencies {
 }
 
 tasks.named('compileJava') {
-  // Run spotlessApply before compiling
-  dependsOn spotlessApply
+  // Run spotlessApply after successful compilation rather than before, so
+  // that any developer errors can be dealt with prior to formatting
+  finalizedBy spotlessApply
 }
 
 tasks.named('jar') {

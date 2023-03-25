@@ -23,6 +23,11 @@ dependencies {
   implementation libs.reflections
 }
 
+tasks.named('compileJava') {
+  // Run spotlessApply before compiling
+  dependsOn spotlessApply
+}
+
 tasks.named('jar') {
   // Define entry point for application
   manifest {

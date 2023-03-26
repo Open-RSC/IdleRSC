@@ -1,6 +1,8 @@
 plugins {
   // Facilitates Java compilation
   id 'java'
+  // Move compiled jar to root folder
+  id 'base'
   // For formatting source-code
   alias(libs.plugins.spotless)
 }
@@ -20,6 +22,11 @@ dependencies {
   implementation files('patched_client.jar')
   // Used to find/populate scripts
   implementation libs.reflections
+}
+
+// Moves the compiled jar to the root folder
+base {
+    libsDirectory = getProjectDir()
 }
 
 tasks.named('compileJava') {
@@ -55,18 +62,6 @@ tasks.withType(AbstractArchiveTask).configureEach {
   preserveFileTimestamps = false
   reproducibleFileOrder = true
 }
-
-tasks.register('copyJar', Copy) {
-  group 'build'
-  description 'Copies jar archive into root directory.'
-  dependsOn build
-
-  from rootProject.file("build/libs/${project.name}.jar")
-  into rootProject.file(".")
-}
-
-// Run copyJar straight after build
-build.finalizedBy(copyJar)
 
 tasks.register('createClientCache', Zip) {
   group 'build'

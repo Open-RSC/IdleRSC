@@ -1,40 +1,27 @@
-// Used for building a runnable jar
 plugins {
-    id 'java'
-    id 'base'
+  // Facilitates Java compilation
+  id 'java'
+  // Move compiled jar to root folder
+  id 'base'
+  // For formatting source-code
+  alias(libs.plugins.spotless)
 }
 
-// Where the code is
-sourceSets {
-    main {
-        java {
-            srcDir 'src/'
-        }
-    }
-}
+// Tasks not related to build are split out into their own gradle scripts
+// in order to keep build.gradle as compact as possible.
+apply from: "$project.rootDir/spotless.gradle"
+apply from: "$project.rootDir/optional.gradle"
 
+// Where dependencies are fetched from
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
-// Ensure gradle is aware of the patched_client.jar dependency
 dependencies {
-    implementation files('patched_client.jar')
-    implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
-}
-
-jar {
-    // Starting class
-    manifest {
-        attributes 'Main-Class': 'bot.Main'
-    }
-
-    // Include all the source files
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
+  // Ensure gradle is aware of the patched_client.jar dependency
+  implementation files('patched_client.jar')
+  // Used to find/populate scripts
+  implementation libs.reflections
 }
 
 // Moves the compiled jar to the root folder
@@ -42,116 +29,49 @@ base {
     libsDirectory = getProjectDir()
 }
 
+tasks.named('compileJava') {
+  // Run spotlessApply after successful compilation rather than before, so
+  // that any developer errors can be dealt with prior to formatting
+  finalizedBy spotlessApply
+}
+
+tasks.named('jar') {
+  // Define entry point for application
+  manifest {
+    attributes 'Main-Class': 'bot.Main'
+  }
+
+  // Modify jar task to include all dependencies (a.k.a. create a fat jar)
+  from {
+    configurations.runtimeClasspath.collect {
+      it.isDirectory() ? it : zipTree(it)
+    }
+  }
+}
+
+// Additional files to clean
+tasks.named('clean') {
+  delete 'src/main/resources/cache'
+  delete "${project.name}.jar"
+  delete "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}.zip"
+}
+
 // ensure builds are reproducible
 // ref: https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
 tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
+  preserveFileTimestamps = false
+  reproducibleFileOrder = true
 }
 
-// Deletes the build directory
-tasks.register("cleanBuildDir", Delete) {
-    delete 'build'
+tasks.register('createClientCache', Zip) {
+  group 'build'
+  description 'Create client cache for inclusion in the jar archive.'
+
+  archiveFileName = 'ZipCache.zip'
+  destinationDirectory = file('src/main/resources/cache/')
+  from 'ClientCache/'
+  include '**/*'
 }
 
-// Ensure all tasks are completed when running build by making build require
-// the last task in a dependency chain
-build.dependsOn(cleanBuildDir)
-
-// obtain current commit hash
-ext.commitHash = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            executable('git')
-            args(
-                'rev-parse',
-                '--short',
-                'HEAD'
-            )
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    }
-    catch (e) {
-        return "dev"
-    }
-}
-
-// obtain current commit date
-ext.commitDate = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            executable('git')
-            args(
-                'show',
-                '--no-patch',
-                '--format=%cd',
-                '--date=format:%Y.%m.%d'
-            )
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    }
-    catch (e) {
-        return "2001.01.04"
-    }
-}
-
-// obtain current commit count
-ext.commitCount = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            executable('git')
-            args(
-                'rev-list',
-                '--count',
-                'HEAD'
-            )
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    }
-    catch (e) {
-        return "1"
-    }
-}
-
-// create release zip
-tasks.register("release", Exec) {
-    dependsOn build
-
-    def releaseName = "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}"
-
-    executable('git')
-    args(
-        'archive',
-        '--prefix',
-        "${releaseName}/",
-        'HEAD',
-        '--add-file',
-        "${project.name}.jar",
-        'ColeslawCache',
-        'UraniumCache',
-        'run_linux.sh',
-        'run_windows.bat',
-        'Map/data.gz',
-        'Map/map.png',
-        'README.md',
-        '--output',
-        "${releaseName}.zip"
-    )
-
-    doLast {
-        println "Archive saved to ${releaseName}.zip"
-    }
-}
-
-// update documentation stored in the repository under doc/
-tasks.register("updateDocumentation", Copy) {
-    dependsOn javadoc
-    from "./build/docs/javadoc"
-    into "./doc"
-}
+// Create client cache before processResources runs
+processResources.dependsOn(createClientCache)

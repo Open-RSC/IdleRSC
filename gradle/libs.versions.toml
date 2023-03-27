@@ -1,0 +1,11 @@
+[versions]
+spotless = '6.12.0' # maximum version that will work with JDK 8.
+google-java-format = '1.7' # maximum version that will work with JDK 8.
+reflections = '0.10.2'
+
+[plugins]
+spotless = { id = 'com.diffplug.spotless', version.ref = 'spotless' }
+google-java-format = { id = 'com.google.googlejavaformat', version.ref = 'google-java-format' }
+
+[libraries]
+reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }

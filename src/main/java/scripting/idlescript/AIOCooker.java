@@ -33,7 +33,7 @@ public class AIOCooker extends IdleScript {
   boolean gauntlets = true;
 
   final ArrayList<FoodObject> objects =
-      new ArrayList<>() {
+      new ArrayList<FoodObject>() {
         {
           add(new FoodObject("Chicken", 133, 132, 134)); // raw, cooked, burnt
           add(new FoodObject("Shrimp", 349, 350, 353));

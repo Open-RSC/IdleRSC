@@ -1,9 +1,7 @@
 package scripting.apos;
 
 import compatibility.apos.Script;
-import java.io.IOException;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.swing.*;
 
@@ -105,9 +103,9 @@ public class B_Herblore extends Script {
     if (screenshot[0] != -1L) {
       return screenshot(now);
     }
-    if (checkin == -1L || now > checkin + 900000L) {
-      return checkin(now);
-    }
+    // if (checkin == -1L || now > checkin + 900000L) {
+    //  return checkin(now);
+    // }
     if (getFatigue() > 95) {
       useSleepingBag();
       return 1000;
@@ -439,50 +437,52 @@ public class B_Herblore extends Script {
   /*
      Edit this and use it to post data elsewhere if you wish
   */
-  private int checkin(long now) {
-    if (name == null) {
-      name = getPlayerName(0);
-    }
-    if (!name.equals("blood")) {
+  /*
+    private int checkin(long now) {
+      if (name == null) {
+        name = getPlayerName(0);
+      }
+      if (!name.equals("blood")) {
+        checkin = now;
+        return 0;
+      }
+      System.out.print("Checking in... ");
+      if (getX() <= 0) {
+        System.out.println("Failed.");
+        return 1000;
+      }
+      try {
+        StringBuilder stats = new StringBuilder();
+        for (int i = 0; i < SKILL.length; i++) {
+          stats.append(getXpForLevel(i));
+          if (i < SKILL.length - 1) {
+            stats.append(",");
+          }
+        }
+          URL url =
+                  new URL(
+                          "https://example.com/submit"
+                                  + "?name="
+                                  + URLEncoder.encode("blood", "UTF-8")
+                                  + "&skills="
+                                  + URLEncoder.encode(stats.toString(), "UTF-8"));
+
+
+        URLConnection conn = url.openConnection();
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(5000);
+        conn.getInputStream();
+        System.out.println("Done.");
+      } catch (NoRouteToHostException | SocketTimeoutException e) {
+        System.out.println("Failed.");
+        return 1000;
+      } catch (IOException ioe) {
+        System.out.println("Failed.");
+      }
       checkin = now;
       return 0;
     }
-    System.out.print("Checking in... ");
-    if (getX() <= 0) {
-      System.out.println("Failed.");
-      return 1000;
-    }
-    try {
-      StringBuilder stats = new StringBuilder();
-      for (int i = 0; i < SKILL.length; i++) {
-        stats.append(getXpForLevel(i));
-        if (i < SKILL.length - 1) {
-          stats.append(",");
-        }
-      }
-      URL url =
-          new URL(
-              "https://example.com/submit"
-                  + "?name="
-                  + URLEncoder.encode("blood", StandardCharsets.UTF_8)
-                  + "&skills="
-                  + URLEncoder.encode(stats.toString(), StandardCharsets.UTF_8));
-
-      URLConnection conn = url.openConnection();
-      conn.setConnectTimeout(5000);
-      conn.setReadTimeout(5000);
-      conn.getInputStream();
-      System.out.println("Done.");
-    } catch (NoRouteToHostException | SocketTimeoutException e) {
-      System.out.println("Failed.");
-      return 1000;
-    } catch (IOException ioe) {
-      System.out.println("Failed.");
-    }
-    checkin = now;
-    return 0;
-  }
-
+  */
   private static class Potion {
     public final String potion_name;
     public final String herb_name;

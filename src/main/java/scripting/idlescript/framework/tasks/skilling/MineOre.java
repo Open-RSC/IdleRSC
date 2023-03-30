@@ -24,7 +24,7 @@ public class MineOre extends IdleTask {
   @Override
   protected void executeTask() {
     Optional<Interactable> rock = findRock(rocks);
-    if (rock.isEmpty()) {
+    if (!rock.isPresent()) {
       throw new IdleTaskStuckException("No rocks found");
     }
 
@@ -33,7 +33,7 @@ public class MineOre extends IdleTask {
 
   private Optional<Interactable> findRock(List<Rock> rocks) {
     Optional<Rock> rock = rocks.stream().findFirst();
-    if (rock.isEmpty()) {
+    if (!rock.isPresent()) {
       return Optional.empty();
     }
 

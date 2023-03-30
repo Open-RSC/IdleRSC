@@ -47,7 +47,7 @@ public class AKMiner extends IdleScript {
   }
 
   final ArrayList<MiningObject> objects =
-      new ArrayList<>() {
+      new ArrayList<MiningObject>() {
         {
           add(new MiningObject("Copper", 100));
           add(new MiningObject("Tin", 104));

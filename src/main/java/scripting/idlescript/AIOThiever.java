@@ -58,7 +58,7 @@ public class AIOThiever extends IdleScript {
   int foodWithdrawAmount = 0;
 
   final ArrayList<ThievingObject> objects =
-      new ArrayList<>() {
+      new ArrayList<ThievingObject>() {
         {
           add(new ThievingObject("Man", 11, true, false));
           add(new ThievingObject("Farmer", 63, true, false));

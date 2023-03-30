@@ -366,7 +366,7 @@ public class DamRc extends IdleScript {
   }
 
   final ArrayList<guiObject> objects =
-      new ArrayList<>() {
+      new ArrayList<guiObject>() {
         {
           add(new guiObject("Air - Fally south"));
           add(new guiObject("Mind - Fally north"));

@@ -50,7 +50,7 @@ public class PowerFletcha extends IdleScript {
   }
 
   final ArrayList<FletchObject> objects =
-      new ArrayList<>() {
+      new ArrayList<FletchObject>() {
         {
           add(new FletchObject("Arrow Shafts", 1, 14, 0));
           add(new FletchObject("Shortbow", 1, 14, 1));

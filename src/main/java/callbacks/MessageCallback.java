@@ -124,7 +124,7 @@ public class MessageCallback {
     if (m.find()) {
       skillName = m.group(2);
       if (skillName != null && skillName.length() > 1) {
-        if (skillName.toLowerCase().equals("woodcut")) skillName = "Woodcutting";
+        if (skillName.equalsIgnoreCase("woodcut")) skillName = "Woodcutting";
 
         skillName = Character.toUpperCase(skillName.charAt(0)) + skillName.substring(1);
 

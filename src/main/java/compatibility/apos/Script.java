@@ -258,17 +258,17 @@ public abstract class Script implements IScript {
     if (isSleeping()) {
       return controller.getFatigueDuringSleep();
     }
-    return (int) controller.getFatigue();
+    return controller.getFatigue();
   }
 
   public double getAccurateFatigue() {
     controller.log("WARNING: Scripts which do fatiguing on IdleRSC may be inaccurate.");
 
     if (controller.isSleeping()) {
-      return (double) controller.getFatigueDuringSleep();
+      return controller.getFatigueDuringSleep();
     }
 
-    return (double) controller.getFatigue();
+    return controller.getFatigue();
   }
 
   /**
@@ -2015,7 +2015,6 @@ public abstract class Script implements IScript {
     //		x, y, colour);
     // no scripts use this.
     Main.log("apos.setPixel() unimplemented");
-    return;
   }
 
   /**
@@ -2028,7 +2027,6 @@ public abstract class Script implements IScript {
   public void drawImage(Image image, int start_x, int start_y) {
     // no scripts use this.
     Main.log("apos.drawImage() unimplemented");
-    return;
   }
   //		if (image instanceof BufferedImage) {
   //			drawBuf((BufferedImage) image,
@@ -2552,7 +2550,7 @@ public abstract class Script implements IScript {
   }
 }
 
-/**
+/*
  * unimplemented functions:
  *
  * <p>x hop (currently there aren't multiple worlds on openrsc) x getAccurateFatigue (inauthentic,

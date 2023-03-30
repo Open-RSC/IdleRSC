@@ -17,6 +17,8 @@ public class Config {
   private boolean debug = false;
   private boolean hidesidepanel = false;
   private boolean enablegfx = true;
+  private boolean enableInterlace = false;
+  private boolean openSelector = false;
   private boolean localOCR = false;
   private String attackItems = "";
   private String strengthItems = "";
@@ -52,6 +54,8 @@ public class Config {
             + " --scriptarguments <"
             + String.join(" ", scriptArguments)
             + ">"
+            + " --openselector "
+            + openSelector
             + " --autologin "
             + autologin
             + " --logwindow "
@@ -64,6 +68,8 @@ public class Config {
             + hidesidepanel
             + " --enablegfx "
             + enablegfx
+            + " --interlace "
+            + enableInterlace
             + " --localOCR "
             + localOCR
             + "--attack-items "
@@ -160,6 +166,9 @@ public class Config {
           scriptArguments = Arrays.copyOfRange(clientArgs, argIndex, scriptarglength + argIndex);
           argIndex += scriptarglength - 1;
           break;
+        case "--openselector":
+          openSelector = clientArgs[++argIndex].equalsIgnoreCase("true");
+          break;
         case "--autologin":
           autologin = clientArgs[++argIndex].equalsIgnoreCase("true");
           break;
@@ -177,6 +186,9 @@ public class Config {
           break;
         case "--enablegfx":
           enablegfx = clientArgs[++argIndex].equalsIgnoreCase("true");
+          break;
+        case "--interlace":
+          enableInterlace = clientArgs[++argIndex].equalsIgnoreCase("true");
           break;
         case "--localocr":
           localOCR = clientArgs[++argIndex].equalsIgnoreCase("true");
@@ -268,6 +280,14 @@ public class Config {
     return enablegfx;
   }
 
+  public boolean getEnableInterlace() {
+    return enableInterlace;
+  }
+
+  public boolean getOpenSelector() {
+    return openSelector;
+  }
+
   public boolean getLocalOCR() {
     return localOCR;
   }
@@ -279,7 +299,7 @@ public class Config {
   private ArrayList<Integer> itemsStringToIntArray(String items) {
     try {
       String[] itemsArray = items.split(",");
-      ArrayList<Integer> itemIds = new ArrayList<Integer>();
+      ArrayList<Integer> itemIds = new ArrayList<>();
 
       for (String id : itemsArray) {
         itemIds.add(Integer.parseInt(id));

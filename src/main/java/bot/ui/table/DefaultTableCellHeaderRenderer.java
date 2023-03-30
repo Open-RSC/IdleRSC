@@ -17,7 +17,7 @@ import javax.swing.table.JTableHeader;
 public class DefaultTableCellHeaderRenderer extends DefaultTableCellRenderer implements UIResource {
   private boolean horizontalTextPositionSet;
   private Icon sortArrow;
-  private EmptyIcon emptyIcon = new EmptyIcon();
+  private final EmptyIcon emptyIcon = new EmptyIcon();
 
   public DefaultTableCellHeaderRenderer() {
     setHorizontalAlignment(JLabel.RIGHT);
@@ -157,7 +157,7 @@ public class DefaultTableCellHeaderRenderer extends DefaultTableCellRenderer imp
     return new Point(x, y);
   }
 
-  private class EmptyIcon implements Icon, Serializable {
+  private static class EmptyIcon implements Icon, Serializable {
     int width = 0;
     int height = 0;
 

@@ -10,7 +10,6 @@ import com.openrsc.client.entityhandling.defs.SpellDef;
 import com.openrsc.client.entityhandling.instances.Item;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +17,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,25 +46,25 @@ import reflector.Reflector;
  * @author Dvorak
  */
 public class Controller {
-  private Reflector reflector;
-  private OpenRSC client;
-  private mudclient mud;
+  private final Reflector reflector;
+  private final OpenRSC client;
+  private final mudclient mud;
 
-  int[] foodIds = {
+  final int[] foodIds = {
     335, 333, 350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193,
     1191, 325, 326, 327, 328, 329, 330, 332, 334, 336, 750, 751, 257, 258, 259, 261, 262, 263, 210,
     1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179, 1352, 1245, 1348, 1349,
     1350, 1353, 1354, 1359, 1360, 1459, 1460, 210, 1417, 1463
   };
-  int[] bankerIds = {95, 224, 268, 540, 617, 792};
+  final int[] bankerIds = {95, 224, 268, 540, 617, 792};
 
-  int[] closedObjectDoorIds = {
+  final int[] closedObjectDoorIds = {
     57, 60, 64, 93, 94, 137, 138, 142, 180, 252, 253, 254, 256, 305, 311, 319, 346, 347, 356, 358,
     371, 392, 443, 457, 480, 504, 508, 513, 563, 577, 611, 624, 626, 660, 702, 703, 704, 712, 722,
     723, 916, 926, 932, 988, 989, 1019, 1020, 1068, 1079, 1089, 1140, 1165, 465, 471, 472, 486, 583,
     869, 958, 1080, 1160
   };
-  int[] closedWallDoorIds = {
+  final int[] closedWallDoorIds = {
     2, 8, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 43,
     44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 60, 61, 63, 64, 65, 66, 67, 68, 69, 70,
     71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95,
@@ -86,7 +83,7 @@ public class Controller {
   private boolean showBotPaint = true;
   private boolean drawing = true;
   private boolean needToMove = false;
-  private boolean viewedFirstToggleId = false;
+  public static boolean temporaryToggleSideMenu = false;
 
   public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) {
     reflector = _reflector;
@@ -135,7 +132,7 @@ public class Controller {
   /**
    * Types a single key of the specified char.
    *
-   * @param key
+   * @param key character
    */
   public void typeKey(char key) {
     client.keyPressed(new KeyEvent(client, 1, 20, 1, 10, key));
@@ -153,7 +150,7 @@ public class Controller {
   public void setFightMode(int mode) {
     mud.setCombatStyle(mode);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(29);
     mud.packetHandler.getClientStream().bufferBits.putByte(mode);
     mud.packetHandler.getClientStream().finishPacket();
@@ -171,7 +168,7 @@ public class Controller {
   /**
    * Whether or not the specified item id is in the inventory.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean
    */
   public boolean isItemInInventory(int itemId) {
@@ -181,7 +178,7 @@ public class Controller {
   /**
    * Retrieves the itemId of the item at the specified `slotIndex`.
    *
-   * @param slotIndex
+   * @param slotIndex int
    * @return itemId -- returns -1 if no item in slot.
    */
   public int getInventorySlotItemId(int slotIndex) {
@@ -206,7 +203,7 @@ public class Controller {
   /**
    * Retrieves the count of the specified item in the inventory.
    *
-   * @param itemId
+   * @param itemId int
    * @return int
    */
   public int getInventoryItemCount(int itemId) {
@@ -227,7 +224,7 @@ public class Controller {
 
     int groundItemsCount = this.getGroundItemsCount();
 
-    List<GroundItemDef> _list = new ArrayList();
+    List<GroundItemDef> _list = new ArrayList<>();
 
     for (int i = 0; i < groundItemsCount; i++) {
       int groundItemID = groundItemIDs[i];
@@ -247,9 +244,7 @@ public class Controller {
 
       boolean found = false;
 
-      for (int j = 0; j < _list.size(); j++) {
-        GroundItemDef _groundItemDef = _list.get(j);
-
+      for (GroundItemDef _groundItemDef : _list) {
         if (_groundItemDef.getID() == groundItemDef.getID()
             && _groundItemDef.getX() == groundItemDef.getX()
             && _groundItemDef.getZ() == groundItemDef.getZ()) {
@@ -324,9 +319,9 @@ public class Controller {
   /**
    * Retrieves the amount of the item id on the ground at the specified coordinates.
    *
-   * @param itemId
-   * @param x
-   * @param y
+   * @param itemId int
+   * @param x int
+   * @param y int
    * @return int -- always returns 0 or greater.
    */
   public int getGroundItemAmount(int itemId, int x, int y) {
@@ -362,7 +357,7 @@ public class Controller {
   /**
    * Retrieves the ORSCharacter of the specified player server index.
    *
-   * @param serverIndex
+   * @param serverIndex int
    * @return ORSCharacter -- no guarantee on nullability.
    */
   public ORSCharacter getPlayer(int serverIndex) {
@@ -378,15 +373,12 @@ public class Controller {
    */
   public List<ORSCharacter> getPlayers() {
 
-    List<ORSCharacter> _list = new ArrayList();
+    List<ORSCharacter> _list = new ArrayList<>();
 
     ORSCharacter[] players = (ORSCharacter[]) this.getMudClientValue("players");
     int playerCount = this.getPlayerCount();
 
-    for (int i = 0; i < playerCount; i++) {
-      ORSCharacter player = players[i];
-      _list.add(player);
-    }
+    _list.addAll(Arrays.asList(players).subList(0, playerCount));
 
     return _list;
   }
@@ -444,9 +436,9 @@ public class Controller {
   /**
    * Retrieves the distance of the coordinates from the player.
    *
-   * @param coordX
-   * @param coordY
-   * @return
+   * @param coordX int
+   * @param coordY int
+   * @return int
    */
   public int getDistanceFromLocalPlayer(int coordX, int coordY) {
     int localCoordX = this.currentX();
@@ -456,28 +448,36 @@ public class Controller {
   }
 
   /**
-   * Retrieves the current X coordinates of the player.
+   * Retrieves the current X coordinates of the player. This occassionally returns incorrect values
+   * while Underground
    *
    * @return int
    */
   public int currentX() {
-    return mud.getLocalPlayerX() + mud.getMidRegionBaseX();
+    int getLocalPlayerX = mud.getLocalPlayerX();
+    int getMidRegionBaseX = mud.getMidRegionBaseX();
+
+    return getLocalPlayerX + getMidRegionBaseX;
   }
 
   /**
-   * Retrieves the current Y coordinates of the player.
+   * Retrieves the current Y coordinates of the player. This occassionally returns incorrect values
+   * while Underground
    *
    * @return int
    */
   public int currentY() {
-    return mud.getLocalPlayerZ() + mud.getMidRegionBaseZ();
+    int getLocalPlayerZ = mud.getLocalPlayerZ();
+    int getMidRegionBaseZ = mud.getMidRegionBaseZ();
+
+    return getLocalPlayerZ + getMidRegionBaseZ;
   }
 
   /**
    * Walks to the specified tile, does not return until at tile.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    */
   public void walkTo(int x, int y) {
     walkTo(x, y, 0, true);
@@ -486,10 +486,10 @@ public class Controller {
   /**
    * Walks to the specified tile, does not return until at tile or within tile radius.
    *
-   * @param x
-   * @param y
-   * @param radius
-   * @param force
+   * @param x int
+   * @param y int
+   * @param radius int
+   * @param force boolean
    */
   public void walkTo(int x, int y, int radius, boolean force) { // offset applied
     // TODO: re-examine usage of force, can this be removed?
@@ -514,7 +514,7 @@ public class Controller {
             || (currentY() > y + radius))
         && Main.isRunning()) { // offset applied
 
-      int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
+      int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
       walkToActionSource(
           mud,
@@ -531,16 +531,16 @@ public class Controller {
   /**
    * Walks to the specified tile, non-blocking.
    *
-   * @param x
-   * @param y
-   * @param radius
+   * @param x int
+   * @param y int
+   * @param radius int
    */
   public void walkToAsync(int x, int y, int radius) { // offset applied
     if (x < 0 || y < 0) return;
 
     Main.logMethod("WalkToAsync", x, y, radius);
 
-    int fudgeFactor = ThreadLocalRandom.current().nextInt(0 - radius, radius + 1);
+    int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
     walkToActionSource(
         mud,
@@ -554,8 +554,8 @@ public class Controller {
   /**
    * Whether or not the specified tile has an object at it.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return boolean
    */
   public boolean isTileEmpty(int x, int y) {
@@ -576,7 +576,7 @@ public class Controller {
   /**
    * Retrieves the coordinates of the specified object id, if nearby.
    *
-   * @param objectId
+   * @param objectId int
    * @return int[] -- [x, y]. returns null if no object nearby.
    */
   public int[] getNearestObjectById(int objectId) {
@@ -630,8 +630,8 @@ public class Controller {
   /**
    * Performs the primary command option on the specified object id at the specified coordinates.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return boolean -- returns false if no object at those coordinates.
    */
   public boolean atObject(int x, int y) {
@@ -658,8 +658,8 @@ public class Controller {
   /**
    * Performs the 2nd command option on the specified object id at the specified coordinates.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return boolean -- returns false if no object at those coordinates.
    */
   public boolean atObject2(int x, int y) {
@@ -686,16 +686,14 @@ public class Controller {
   /**
    * Whether or not you are within 1 tile of the specified coordinates.
    *
-   * @param x
-   * @param y
-   * @return
+   * @param x int
+   * @param y int
+   * @return boolean
    */
   public boolean isCloseToCoord(int x, int y) {
     System.out.println(currentX() + ", " + currentY() + ", " + x + ", " + y);
     System.out.println(distance(currentX(), currentY(), x, y));
-    if (this.distance(currentX(), currentY(), x, y) <= 1) return true;
-
-    return false;
+    return this.distance(currentX(), currentY(), x, y) <= 1;
   }
 
   private void objectAt(int x, int z, int dir, int objectId) {
@@ -710,7 +708,7 @@ public class Controller {
         5126,
         objectId);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(136);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(z);
@@ -729,7 +727,7 @@ public class Controller {
         5126,
         objectId);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(79);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(z);
@@ -744,7 +742,7 @@ public class Controller {
   public List<GameObjectDef> getObjects() {
     int[] gameObjectInstanceIDs = getObjectsIds();
 
-    List<Integer> _list = new ArrayList();
+    List<Integer> _list = new ArrayList<>();
     int gameObjectInstanceCount = this.getObjectsCount();
 
     for (int i = 0; i < gameObjectInstanceCount; i++) {
@@ -796,15 +794,12 @@ public class Controller {
    * @return guaranteed to not be null.
    */
   public List<ORSCharacter> getNpcs() {
-    List<ORSCharacter> _list = new ArrayList();
+    List<ORSCharacter> _list = new ArrayList<>();
 
     ORSCharacter[] npcs = (ORSCharacter[]) this.getMudClientValue("npcs");
     int npcCount = this.getNpcCount();
 
-    for (int i = 0; i < npcCount; i++) {
-      ORSCharacter npc = npcs[i];
-      _list.add(npc);
-    }
+    _list.addAll(Arrays.asList(npcs).subList(0, npcCount));
 
     return _list;
   }
@@ -824,7 +819,7 @@ public class Controller {
    * @return guaranteed to not be null.
    */
   public List<DoorDef> getWallObjects() {
-    List<Integer> _list = new ArrayList();
+    List<Integer> _list = new ArrayList<>();
 
     int[] wallObjectInstanceIDs = getWallObjectIds();
     int wallObjectInstanceCount = this.getWallObjectsCount();
@@ -930,11 +925,11 @@ public class Controller {
     for (int i = 0; i < npcCount; i++) {
 
       ORSCharacter curNpc = npcs[i];
-      for (int j = 0; j < npcIds.length; j++) {
-        if (curNpc.npcId == npcIds[j]) {
+      for (int npcId : npcIds) {
+        if (curNpc.npcId == npcId) {
 
-          if (inCombatAllowed == false) {
-            if (this.isNpcInCombat(curNpc.serverIndex) == true) {
+          if (!inCombatAllowed) {
+            if (this.isNpcInCombat(curNpc.serverIndex)) {
               continue;
             }
           }
@@ -1012,7 +1007,6 @@ public class Controller {
       walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), npcX, npcZ, true);
 
     } else {
-      return;
     }
   }
 
@@ -1032,7 +1026,6 @@ public class Controller {
 
       walkTo(npcX, npcZ, radius, true);
     } else {
-      return;
     }
   }
 
@@ -1048,7 +1041,7 @@ public class Controller {
 
     walktoNPCAsync(npcServerIndex);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(190);
     mud.packetHandler.getClientStream().bufferBits.putShort(npcServerIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -1057,11 +1050,11 @@ public class Controller {
   /**
    * Casts the specified spell on the specified npc.
    *
-   * @param serverIndex
-   * @param spellId
+   * @param serverIndex int
+   * @param spellId int
    */
   public void castSpellOnNpc(int serverIndex, int spellId) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(50);
     mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
     mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
@@ -1071,13 +1064,13 @@ public class Controller {
   /**
    * Uses the specified item on the specified npc.
    *
-   * @param serverIndex
-   * @param itemId
+   * @param serverIndex int
+   * @param itemId int
    */
   public void useItemOnNpc(int serverIndex, int itemId) {
     walktoNPCAsync(serverIndex);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(135);
     mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
     mud.packetHandler.getClientStream().bufferBits.putShort(this.getInventoryItemSlotIndex(itemId));
@@ -1088,9 +1081,13 @@ public class Controller {
    * Uses the specified item slot on the object at the specified coordinates. Note that this uses a
    * slot id, not an item id.
    *
-   * @param x
-   * @param y
-   * @param slotIndex
+   * <p>This is primarially used to interact with an object, such as using an axe with a tree. For
+   * tasks like opening locked doors try using "c.useItemOnWall(int x, int y, int slotIndex)"
+   * instead
+   *
+   * @param x int
+   * @param y int
+   * @param slotIndex int
    */
   public void useItemSlotOnObject(int x, int y, int slotIndex) {
     reflector.mudInvoker(
@@ -1101,7 +1098,7 @@ public class Controller {
         4,
         5126,
         this.getObjectAtCoord(x, y));
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(115);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -1112,9 +1109,13 @@ public class Controller {
   /**
    * Uses the specified item id on the object at the specified coordinates.
    *
-   * @param x
-   * @param y
-   * @param itemId
+   * <p>This is primarially used to interact with an object, such as using an axe with a tree. For
+   * tasks like opening locked doors try using "c.useItemOnWall(int x, int y, int slotIndex)"
+   * instead
+   *
+   * @param x int
+   * @param y int
+   * @param itemId int
    */
   public void useItemIdOnObject(int x, int y, int itemId) {
     useItemSlotOnObject(x, y, this.getInventoryItemSlotIndex(itemId));
@@ -1124,16 +1125,16 @@ public class Controller {
    * Uses the item at the specified slot on the wall object at the specified coordinates. Note that
    * this uses a slot id, not item id.
    *
-   * @param x
-   * @param y
-   * @param slotIndex
+   * @param x int
+   * @param y int
+   * @param slotIndex int
    */
   public void useItemOnWall(int x, int y, int slotIndex) {
     int direction = getWallObjectDirectionAtCoord(x, y);
 
     reflector.mudInvoker(
         mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(161);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -1145,7 +1146,7 @@ public class Controller {
   /**
    * Thieves the NPC.
    *
-   * @param serverIndex
+   * @param serverIndex int
    */
   public void thieveNpc(int serverIndex) {
     npcCommand1(serverIndex);
@@ -1154,13 +1155,13 @@ public class Controller {
   /**
    * Walks to the NPC and select the 2nd command option.
    *
-   * @param serverIndex
+   * @param serverIndex int
    */
   public void npcCommand1(int serverIndex) {
     Main.logMethod("npcCommand1", serverIndex);
     walktoNPCAsync(serverIndex);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(202);
     mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -1169,13 +1170,13 @@ public class Controller {
   /**
    * Walks to the NPC and select the 2nd command option.
    *
-   * @param serverIndex
+   * @param serverIndex int
    */
   public void npcCommand2(int serverIndex) {
     Main.logMethod("npcCommand2", serverIndex);
     walktoNPCAsync(serverIndex);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(203);
     mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -1184,7 +1185,7 @@ public class Controller {
   /**
    * Whether or not the specified npc is in combat.
    *
-   * @param serverIndex
+   * @param serverIndex int
    * @return boolena -- returns true if in combat. Returns false if not in combat, or if server
    *     index not found.
    */
@@ -1206,8 +1207,8 @@ public class Controller {
   /**
    * Whether or not the door at the specified coordinates is open.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return boolean
    */
   public boolean isDoorOpen(int x, int y) {
@@ -1234,8 +1235,8 @@ public class Controller {
   /**
    * Retrieves the id of the wall object at the specified coordinates.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return int -- returns -1 if no wall object present.
    */
   public int getWallObjectIdAtCoord(int x, int y) {
@@ -1256,9 +1257,9 @@ public class Controller {
   /**
    * Returns the direction of the wall object.
    *
-   * @param x
-   * @param y
-   * @return
+   * @param x int
+   * @param y int
+   * @return int
    */
   public int getWallObjectDirectionAtCoord(int x, int y) {
     int _x = removeOffsetX(x);
@@ -1277,12 +1278,12 @@ public class Controller {
   /**
    * Opens the door at the specified coordinates. Does nothing if the door is already open.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    */
   public void openDoor(int x, int y) {
 
-    if (isDoorOpen(x, y) == true) {
+    if (isDoorOpen(x, y)) {
       System.out.println("door already open");
       return;
     }
@@ -1301,7 +1302,7 @@ public class Controller {
     // while(isDoorOpen(x, y) == false && Main.isRunning()) {
     reflector.mudInvoker(
         mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(opcode);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -1315,19 +1316,19 @@ public class Controller {
   /**
    * Closes the door at the specified coordinates. Does nothing if the door is already closed.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    */
   public void closeDoor(int x, int y) {
 
-    if (isDoorOpen(x, y) == false) {
+    if (!isDoorOpen(x, y)) {
       System.out.println("door already closed");
       return;
     }
 
-    while (isDoorOpen(x, y) == true && Main.isRunning() == true) {
+    while (isDoorOpen(x, y) && Main.isRunning()) {
       reflector.mudInvoker(mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), 0);
-      while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
       mud.packetHandler.getClientStream().newPacket(127);
       mud.packetHandler.getClientStream().bufferBits.putShort(x);
       mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -1341,9 +1342,9 @@ public class Controller {
   /**
    * Whether or not the specified item is present at the specified coordinates.
    *
-   * @param x
-   * @param y
-   * @param itemId
+   * @param x int
+   * @param y int
+   * @param itemId int
    * @return boolean
    */
   public boolean isItemAtCoord(int x, int y, int itemId) {
@@ -1366,7 +1367,7 @@ public class Controller {
   /**
    * Retrieves the coordinates of the specified item, if on the ground.
    *
-   * @param itemId
+   * @param itemId int
    * @return int[] -- [x, y]. Returns null if item not found.
    */
   public int[] getNearestItemById(int itemId) {
@@ -1402,7 +1403,7 @@ public class Controller {
   /**
    * Retrieves the coordinates of the specified items, if on the ground.
    *
-   * @param itemIds
+   * @param itemIds int
    * @return int[] -- [x, y, itemId]. Returns null if no items found.
    */
   public int[] getNearestItemByIds(int[] itemIds) {
@@ -1418,9 +1419,9 @@ public class Controller {
   /**
    * Picks up the item at the specified coordinates.
    *
-   * @param x
-   * @param y
-   * @param itemId
+   * @param x int
+   * @param y int
+   * @param itemId int
    * @param reachable -- whether or not you can stand on top of the item. Set to false if the item
    *     is on a table.
    * @param async -- whether or not to block when walking to the item. If set to true, it will keep
@@ -1440,7 +1441,7 @@ public class Controller {
       else this.walkTo(x, y, 0, false);
     }
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(247);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -1451,7 +1452,7 @@ public class Controller {
   /**
    * Uses the command option on the specified item id.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean -- returns true on success. returns false if the item is not in the inventory.
    */
   public boolean itemCommand(int itemId) {
@@ -1461,7 +1462,7 @@ public class Controller {
 
     if (inventoryIndex == -1) return false;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(90);
     mud.packetHandler.getClientStream().bufferBits.putShort(inventoryIndex);
     mud.packetHandler.getClientStream().bufferBits.putInt(1);
@@ -1475,10 +1476,10 @@ public class Controller {
    * Uses the command option on the item at the specified slot id. Note that this does not use item
    * ids, but slot ids.
    *
-   * @param slotIndex
+   * @param slotIndex int
    */
   public void itemCommandBySlot(int slotIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(90);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
     mud.packetHandler.getClientStream().bufferBits.putInt(1);
@@ -1489,11 +1490,11 @@ public class Controller {
   /**
    * Uses the item at `slot1` on `slot2`. Note that this does not use item ids, but slot ids.
    *
-   * @param slotIndex1
-   * @param slotIndex2
+   * @param slotIndex1 int
+   * @param slotIndex2 int
    */
   public void useItemOnItemBySlot(int slotIndex1, int slotIndex2) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(91);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex1);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex2);
@@ -1504,7 +1505,7 @@ public class Controller {
    * Retrieves the slot id of the specified item id.
    *
    * @param itemId -- returns -1 if item not in inventory.
-   * @return
+   * @return int
    */
   public int getInventoryItemSlotIndex(int itemId) {
     int inventoryItemCount = (int) reflector.getObjectMember(mud, "inventoryItemCount");
@@ -1522,13 +1523,13 @@ public class Controller {
    * Drops one the specified item at the specified item slot. Note that this does not use an item
    * id, but a slot index.
    *
-   * @param slotIndex
+   * @param slotIndex int
    */
   public void dropItem(int slotIndex) {
     int inventoryItemID = mud.getInventoryItemID(slotIndex);
     int inventoryItemCount = this.getInventoryItemCount(inventoryItemID);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(246);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
     mud.packetHandler.getClientStream().bufferBits.putInt(inventoryItemCount);
@@ -1539,11 +1540,11 @@ public class Controller {
    * Drops the specified item at the specified item slot, of specified amount. Note that this does
    * not use an item id, but a slot index.
    *
-   * @param slotIndex
-   * @param amount
+   * @param slotIndex int
+   * @param amount int
    */
   public void dropItem(int slotIndex, int amount) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(246);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
     mud.packetHandler.getClientStream().bufferBits.putInt(amount);
@@ -1554,8 +1555,8 @@ public class Controller {
    * Whether or not the specified item slot is equipped. Note that this does not use an item id, but
    * a slot index.
    *
-   * @param slotIndex
-   * @return
+   * @param slotIndex int
+   * @return boolean
    */
   public boolean isEquipped(int slotIndex) {
     if (slotIndex < 0) return false;
@@ -1577,8 +1578,8 @@ public class Controller {
    * due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected
    * on Uranium.
    *
-   * @param itemId
-   * @return
+   * @param itemId int
+   * @return boolean
    */
   public boolean isItemIdEquipped(int itemId) {
     if (this.isAuthentic()) return this.isEquipped(this.getInventoryItemSlotIndex(itemId));
@@ -1586,7 +1587,7 @@ public class Controller {
     ItemDef[] equippedItems = this.getMud().equippedItems;
     for (ItemDef item : equippedItems) {
       if (item != null) {
-        if (item.getName() == this.getItemName(itemId)) return true;
+        if (Objects.equals(item.getName(), this.getItemName(itemId))) return true;
       }
     }
 
@@ -1597,10 +1598,10 @@ public class Controller {
    * Equips the item in the specified slot. Note that this does not use an item id, but a slot
    * index.
    *
-   * @param slotIndex
+   * @param slotIndex int
    */
   public void equipItem(int slotIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(169);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -1610,10 +1611,10 @@ public class Controller {
    * Unequips the item in the specified slot. Note that this does not use an item id, but a slot
    * index.
    *
-   * @param slotIndex
+   * @param slotIndex int
    */
   public void unequipItem(int slotIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(170);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -1622,7 +1623,7 @@ public class Controller {
   /**
    * Creates the specified account provided in the command line with the specified email.
    *
-   * @param email
+   * @param email String
    */
   public void createAccount(String email) {
     createAccount(email, Main.config.getUsername(), Main.config.getPassword());
@@ -1631,9 +1632,9 @@ public class Controller {
   /**
    * Creates the specified account on the server.
    *
-   * @param email
-   * @param username
-   * @param password
+   * @param email String
+   * @param username String
+   * @param password String
    */
   public void createAccount(String email, String username, String password) {
     // TODO: return true/false based on success
@@ -1703,15 +1704,13 @@ public class Controller {
    */
   public boolean isInCombat() {
     ORSCharacterDirection dir = this.getCharacterDirection(this.getPlayer());
-    if (dir == ORSCharacterDirection.COMBAT_A || dir == ORSCharacterDirection.COMBAT_B) return true;
-
-    return false;
+    return dir == ORSCharacterDirection.COMBAT_A || dir == ORSCharacterDirection.COMBAT_B;
   }
 
   /**
    * Whether or not the specified player index is in combat.
    *
-   * @param playerIndex
+   * @param playerIndex int
    * @return boolean -- returns true if in combat. returns false if not in combat, or if player
    *     index is non-existent.
    */
@@ -1743,7 +1742,7 @@ public class Controller {
    * Retrieves the text of the specified option index when talking to an NPC or performing an
    * action.
    *
-   * @param i
+   * @param i int
    * @return String -- null if option does not exist, or if quest menu is not up.
    */
   public String getOptionsMenuText(int i) {
@@ -1772,7 +1771,7 @@ public class Controller {
 
     Main.logMethod("optionAnswer", answerIndex);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(116);
     mud.packetHandler.getClientStream().bufferBits.putByte(answerIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -1781,7 +1780,7 @@ public class Controller {
   /**
    * Talks to the specified npc server index.
    *
-   * @param serverIndex
+   * @param serverIndex int
    * @return true -- true if request to talk sent, false if server index is invalid.
    */
   public boolean talkToNpc(int serverIndex) {
@@ -1790,7 +1789,7 @@ public class Controller {
 
     walktoNPCAsync(serverIndex);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(153);
     mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -1818,7 +1817,7 @@ public class Controller {
    * @return guaranteed to not be null.
    */
   public List<Item> getBankItems() {
-    List<Item> bankItems = new ArrayList();
+    List<Item> bankItems = new ArrayList<>();
 
     if (!isInBank()) {
       return bankItems;
@@ -1852,11 +1851,11 @@ public class Controller {
   /**
    * Retrieves the amount of the item in the bank.
    *
-   * @param itemId
+   * @param itemId int
    * @return int -- returns -1 if bank not open.
    */
   public int getBankItemCount(int itemId) {
-    if (this.isInBank() == false) return -1;
+    if (!this.isInBank()) return -1;
 
     List<Item> bankItems = this.getBankItems();
 
@@ -1874,7 +1873,7 @@ public class Controller {
   /**
    * Whether or not the specified item ID is in the bank.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean -- true if item is in the bank. Returns false if item not present or bank is
    *     not open.
    */
@@ -1885,7 +1884,7 @@ public class Controller {
   /**
    * Deposits one of specified item into the bank.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean -- returns true on success. Returns false if you do not have that item in your
    *     inventory, or if the bank is not open.
    */
@@ -1896,8 +1895,8 @@ public class Controller {
   /**
    * Deposits the specified item, of specified amount, into the bank.
    *
-   * @param itemId
-   * @param amount
+   * @param itemId int
+   * @param amount int
    * @return boolean -- returns true on success. Returns false if you do not have that item in your
    *     inventory, or if the bank is not open.
    */
@@ -1924,7 +1923,7 @@ public class Controller {
   /**
    * Withdraws one of the specified item from the bank.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean -- returns true if you already have one or more of those items in your
    *     inventory. Returns false if you currently do not have that amount, or if you do not have
    *     the bank open.
@@ -1936,19 +1935,19 @@ public class Controller {
   /**
    * Withdraws the specified item, of specified amount, from the bank.
    *
-   * @param itemId
-   * @param amount
+   * @param itemId int
+   * @param amount int
    * @return boolean -- returns true if you already have that amount in your inventory. Returns
    *     false if you do not currently have that amount, or if you do not have the bank open.
    */
   public boolean withdrawItem(int itemId, int amount) {
-    if (isInBank() == false) return false;
+    if (!isInBank()) return false;
 
     if (getInventoryItemCount(itemId) >= amount) return true;
 
     if (amount <= 0) return true;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(22);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().bufferBits.putInt(amount);
@@ -1961,11 +1960,11 @@ public class Controller {
   }
 
   public boolean withdrawItem_apos(int itemId, int amount) {
-    if (isInBank() == false) return false;
+    if (!isInBank()) return false;
 
     if (amount <= 0) return true;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(22);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().bufferBits.putInt(amount);
@@ -1981,8 +1980,8 @@ public class Controller {
    * Withdraws the specified item, as a note, of specified amount, from the bank. Only works on
    * Coleslaw.
    *
-   * @param itemId
-   * @param amount
+   * @param itemId int
+   * @param amount int
    * @return boolean -- returns true if you already have that amount in your inventory. Returns
    *     false if you do not currently have that amount, or if you do not have the bank open.
    */
@@ -1992,11 +1991,11 @@ public class Controller {
       return false;
     }
 
-    if (isInBank() == false) return false;
+    if (!isInBank()) return false;
 
     if (getInventoryItemCount(itemId) >= amount) return true;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(22);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().bufferBits.putInt(amount);
@@ -2008,7 +2007,29 @@ public class Controller {
   }
 
   /**
-   * Dislays a message in the client chat window, of the specified orsc.enumerations.MessageType.
+   * Dislays a message in the client chat window, of the specified MessageType.
+   *
+   * <p>EXAMPLE(int type, "default @color code@")
+   *
+   * <p>GAME(0, "@whi@")
+   *
+   * <p>PRIVATE_RECIEVE(1, "@cya@")
+   *
+   * <p>PRIVATE_SEND(2, "@cya@")
+   *
+   * <p>QUEST(3, "@whi@")
+   *
+   * <p>CHAT(4, "@yel@")
+   *
+   * <p>FRIEND_STATUS(5, "@cya@")
+   *
+   * <p>TRADE(6, "@whi@")
+   *
+   * <p>INVENTORY(7, "@whi@")
+   *
+   * <p>GLOBAL_CHAT(8, "@yel@")
+   *
+   * <p>CLAN_CHAT(9, "@yel@")
    *
    * @param rstext -- you may use @col@ colors here.
    */
@@ -2028,10 +2049,10 @@ public class Controller {
   /**
    * Retrieves the distance between two tiles.
    *
-   * @param x1
-   * @param y1
-   * @param x2
-   * @param y2
+   * @param x1 int
+   * @param y1 int
+   * @param x2 int
+   * @param y2 int
    * @return
    */
   public int distance(int x1, int y1, int x2, int y2) {
@@ -2041,8 +2062,8 @@ public class Controller {
   /**
    * Converts local region coordinates to global coordinates.
    *
-   * @param x
-   * @return
+   * @param x int
+   * @return int
    */
   public int offsetX(int x) {
     return x + mud.getMidRegionBaseX();
@@ -2051,8 +2072,8 @@ public class Controller {
   /**
    * Converts local region coordinates to global coordinates.
    *
-   * @param z
-   * @return
+   * @param z int
+   * @return int
    */
   public int offsetZ(int z) {
     return z + mud.getMidRegionBaseZ();
@@ -2061,8 +2082,8 @@ public class Controller {
   /**
    * Converts global coordinates to local region coordinates.
    *
-   * @param x
-   * @return
+   * @param x int
+   * @return int
    */
   public int removeOffsetX(int x) {
     return x - mud.getMidRegionBaseX();
@@ -2071,8 +2092,8 @@ public class Controller {
   /**
    * Converts global coordinates to local region coordinates.
    *
-   * @param z
-   * @return
+   * @param z int
+   * @return int
    */
   public int removeOffsetZ(int z) {
     return z - mud.getMidRegionBaseZ();
@@ -2081,8 +2102,8 @@ public class Controller {
   /**
    * Converts player/NPC coordinates to local region coordinates to global coordinates.
    *
-   * @param x
-   * @return
+   * @param x int
+   * @return int
    */
   public int convertX(int x) {
     return (x - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
@@ -2091,8 +2112,8 @@ public class Controller {
   /**
    * Converts player/NPC coordinates to local region coordinates to global coordinates.
    *
-   * @param z
-   * @return
+   * @param z int
+   * @return int
    */
   public int convertZ(int z) {
     return (z - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
@@ -2105,8 +2126,8 @@ public class Controller {
   /**
    * Resizes the client applet window.
    *
-   * @param width
-   * @param height
+   * @param width int
+   * @param height int
    */
   public void resizeWindow(int width, int height) {
     mud.resizeWidth = width;
@@ -2124,23 +2145,23 @@ public class Controller {
   /**
    * Takes a screenshot of the client applet and saves a bitmap as the specified filename.
    *
-   * @param filename
+   * @param filename String
    * @return boolean -- returns true on success. Returns false if image could not be saved.
    */
   public boolean takeScreenshot(String filename) {
-    boolean TemporaryToggledGFX = false;
-    boolean TemporaryToggledInterlacing = false;
+    boolean temporaryToggledGFX = false;
+    boolean temporaryToggledInterlacing = false;
 
     if (isInterlacing()) {
       setInterlacer(false);
-      TemporaryToggledInterlacing = true;
+      temporaryToggledInterlacing = true;
       sleep(100); // we NEED to sleep here to give interlacer time to toggle off before taking the
       // screenshot
     }
     if (!isDrawEnabled()) { // if you take a screenshot, it will toggle on graphics briefly to take
       // it, then toggle off again ~ Kaila ~
       setDrawing(true);
-      TemporaryToggledGFX = true;
+      temporaryToggledGFX = true;
     }
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
     String playerTime = screenshotNameFormat.format(timestamp);
@@ -2177,7 +2198,7 @@ public class Controller {
     }
 
     try {
-      /**
+      /*
        * * First, make a string of /sceenshots/playerName/ folder second, use Path command to turn
        * string into Path for /Screenshots/playerName/ third, use Files.createDirectories to make
        * the folder structure for /Screenshots/playerName/ -this will regenerate the folder
@@ -2222,18 +2243,18 @@ public class Controller {
     } catch (IOException e) {
       System.err.println("Failed to create directory and/or take screenshot!" + e.getMessage());
       e.printStackTrace();
-      if (TemporaryToggledInterlacing) {
+      if (temporaryToggledInterlacing) {
         setInterlacer(true);
       }
-      if (TemporaryToggledGFX) {
+      if (temporaryToggledGFX) {
         setDrawing(false);
       }
       return false;
     }
-    if (TemporaryToggledInterlacing) {
+    if (temporaryToggledInterlacing) {
       setInterlacer(true);
     }
-    if (TemporaryToggledGFX) {
+    if (temporaryToggledGFX) {
       setDrawing(false);
     }
     return true;
@@ -2242,7 +2263,7 @@ public class Controller {
   /**
    * Retrieves the command of the specified item.
    *
-   * @param itemId
+   * @param itemId int
    * @return String -- guaranteed to not be null.
    */
   public String getItemCommand(int itemId) {
@@ -2264,7 +2285,7 @@ public class Controller {
   /**
    * Retrieves the examine text of the specified item.
    *
-   * @param itemId
+   * @param itemId int
    * @return String -- guaranteed to not be null.
    */
   public String getItemExamineText(int itemId) {
@@ -2278,7 +2299,7 @@ public class Controller {
   /**
    * Retrieves whether or not the item is tradeable.
    *
-   * @param itemId
+   * @param itemId int
    */
   public boolean isItemTradeable(int itemId) {
     try {
@@ -2291,7 +2312,7 @@ public class Controller {
   /**
    * Retrieves the name of the specified item.
    *
-   * @param itemId
+   * @param itemId int
    * @return String -- guaranteed to not be null.
    */
   public String getItemName(int itemId) {
@@ -2305,13 +2326,13 @@ public class Controller {
   /**
    * Retrieves the item id of the specified item name.
    *
-   * @param itemName
+   * @param itemName String
    * @return int -- returns -1 if item does not exist
    */
   public int getItemId(String itemName) {
     try {
       for (int i = 0; i <= 10000; i++) {
-        if (EntityHandler.getItemDef(i).getName().toLowerCase().equals(itemName.toLowerCase())) {
+        if (EntityHandler.getItemDef(i).getName().equalsIgnoreCase(itemName)) {
           return i;
         }
       }
@@ -2325,7 +2346,7 @@ public class Controller {
   /**
    * Whether or not the specified item is a wearable item.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean
    */
   public boolean isItemWearable(int itemId) {
@@ -2339,7 +2360,7 @@ public class Controller {
   /**
    * Whether or not the specified item is a stackable item.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean
    */
   public boolean isItemStackable(int itemId) {
@@ -2353,15 +2374,14 @@ public class Controller {
   /**
    * Sets the current server message window text.
    *
-   * @param msg
-   * @param largeBox
-   * @param show
+   * @param msg String
+   * @param largeBox boolean
+   * @param show boolean
    */
   public void setServerMessage(String msg, boolean largeBox, boolean show) {
     mud.setServerMessage(msg);
     mud.setServerMessageBoxTop(largeBox);
     mud.setShowDialogServerMessage(show);
-    return;
   }
 
   /** Closes the current server message popup window. */
@@ -2388,8 +2408,7 @@ public class Controller {
     try {
       for (int i = 0; i < EntityHandler.spellCount(); i++) {
         SpellDef d = EntityHandler.getSpellDef(i);
-        if (EntityHandler.getSpellDef(i).getName().toLowerCase().equals(name.toLowerCase()))
-          return i;
+        if (EntityHandler.getSpellDef(i).getName().equalsIgnoreCase(name)) return i;
       }
     } catch (Exception e) {
       return -1;
@@ -2401,12 +2420,12 @@ public class Controller {
   /**
    * Casts the specified spell on the object at the specified coordinates.
    *
-   * @param spellId
-   * @param x
-   * @param y
+   * @param spellId int
+   * @param x int
+   * @param y int
    */
   public void castSpellOnObject(int spellId, int x, int y) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(99);
     mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
@@ -2417,11 +2436,11 @@ public class Controller {
   /**
    * Casts the specified spell on the specified inventory item. Based on item slot, not item id.
    *
-   * @param spellId
-   * @param slotIndex
+   * @param spellId int
+   * @param slotIndex int
    */
   public void castSpellOnInventoryItem(int spellId, int slotIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(4);
     mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
@@ -2431,10 +2450,10 @@ public class Controller {
   /**
    * Casts the specified spell on the specified ground item on the specified tile.
    *
-   * @param spellId
-   * @param itemId
-   * @param x
-   * @param y
+   * @param spellId int
+   * @param itemId int
+   * @param x int
+   * @param y int
    */
   public void castSpellOnGroundItem(int spellId, int itemId, int x, int y) {
     int a = mud.getMidRegionBaseX();
@@ -2442,7 +2461,7 @@ public class Controller {
 
     int direction = getDirection(x, y);
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(249);
     mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
@@ -2454,8 +2473,8 @@ public class Controller {
   /**
    * Retrieves the direction of the specified coordinate, relative to the player.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return int -- returns NORTH if standing on specified tile.
    */
   public int getDirection(int x, int y) {
@@ -2468,24 +2487,16 @@ public class Controller {
     }
 
     if (y > currentY()) {
-      if (direction != null) {
-        if (direction == ORSCharacterDirection.WEST) {
-          direction = ORSCharacterDirection.SOUTH_WEST;
-        } else {
-          direction = ORSCharacterDirection.SOUTH_EAST;
-        }
+      if (direction == ORSCharacterDirection.WEST) {
+        direction = ORSCharacterDirection.SOUTH_WEST;
       } else {
-        direction = ORSCharacterDirection.SOUTH;
+        direction = ORSCharacterDirection.SOUTH_EAST;
       }
     } else if (y < currentY()) {
-      if (direction != null) {
-        if (direction == ORSCharacterDirection.WEST) {
-          direction = ORSCharacterDirection.NORTH_WEST;
-        } else {
-          direction = ORSCharacterDirection.NORTH_EAST;
-        }
+      if (direction == ORSCharacterDirection.WEST) {
+        direction = ORSCharacterDirection.NORTH_WEST;
       } else {
-        direction = ORSCharacterDirection.NORTH;
+        direction = ORSCharacterDirection.NORTH_EAST;
       }
     }
 
@@ -2495,7 +2506,7 @@ public class Controller {
   /**
    * Retrieves the 1st command of the specified NPC.
    *
-   * @param npcId
+   * @param npcId int
    * @return String -- guaranteed to not be null
    */
   public String getNpcCommand1(int npcId) {
@@ -2509,7 +2520,7 @@ public class Controller {
   /**
    * Retrieves the 2nd command of the specified NPC.
    *
-   * @param npcId
+   * @param npcId int
    * @return String -- guaranteed to not be null
    */
   public String getNpcCommand2(int npcId) {
@@ -2523,7 +2534,7 @@ public class Controller {
   /**
    * Retrieves the examine text of the specified NPC.
    *
-   * @param npcId
+   * @param npcId int
    * @return String -- guaranteed to not be null
    */
   public String getNpcExamineText(int npcId) {
@@ -2537,7 +2548,7 @@ public class Controller {
   /**
    * Retrieves the name of the specified NPC.
    *
-   * @param npcId
+   * @param npcId int
    * @return String -- guaranteed to not be null
    */
   public String getNpcName(int npcId) {
@@ -2552,7 +2563,7 @@ public class Controller {
    * Whether or not the specified npcId is attackable. This does not reflect whether or not the
    * specified NPC is in combat.
    *
-   * @param npcId -- the id of the npc. This is NOT a server index.
+   * @param npcId int -- the id of the npc. This is NOT a server index.
    * @return boolean
    */
   public boolean isNpcAttackable(int npcId) {
@@ -2566,7 +2577,7 @@ public class Controller {
   /**
    * Retrieves the 1st command of the specified object id.
    *
-   * @param objId
+   * @param objId int
    * @return String -- guaranteed to not be null
    */
   public String getObjectCommand1(int objId) {
@@ -2580,7 +2591,7 @@ public class Controller {
   /**
    * Retrieves the 2nd command of the specified object id.
    *
-   * @param objId
+   * @param objId int
    * @return String -- guaranteed to not be null
    */
   public String getObjectCommand2(int objId) {
@@ -2594,7 +2605,7 @@ public class Controller {
   /**
    * Retrieves the examine text of the specified object id.
    *
-   * @param objId
+   * @param objId int
    * @return String -- guaranteed to not be null
    */
   public String getObjectExamineText(int objId) {
@@ -2608,7 +2619,7 @@ public class Controller {
   /**
    * Retrieves the name of the specified object id.
    *
-   * @param objId
+   * @param objId int
    * @return String -- guaranteed to not be null
    */
   public String getObjectName(int objId) {
@@ -2633,9 +2644,7 @@ public class Controller {
   public int getPrayerId(String prayerName) {
     try {
       for (int i = 0; i < EntityHandler.prayerCount(); i++) {
-        if (prayerName
-            .toLowerCase()
-            .equals(EntityHandler.getPrayerDef(i).getName().toLowerCase())) {
+        if (prayerName.equalsIgnoreCase(EntityHandler.getPrayerDef(i).getName())) {
           return i;
         }
       }
@@ -2663,7 +2672,7 @@ public class Controller {
   /**
    * Retrieves the level required to use the specified prayer.
    *
-   * @param prayerId
+   * @param prayerId int
    * @return int -- -1 if the prayer does not exist
    */
   public int getPrayerLevel(int prayerId) {
@@ -2677,7 +2686,7 @@ public class Controller {
   /**
    * Retrieves the drain rate of the specified prayer.
    *
-   * @param prayerId
+   * @param prayerId int
    * @return int -- -1 if the prayer does not exist
    */
   public int getPrayerDrain(int prayerId) {
@@ -2691,7 +2700,7 @@ public class Controller {
   /**
    * Whether or not the specified prayer is currently on.
    *
-   * @param prayerId
+   * @param prayerId int
    * @return boolean
    */
   public boolean isPrayerOn(int prayerId) {
@@ -2701,11 +2710,11 @@ public class Controller {
   /**
    * Enables the prayer.
    *
-   * @param prayerId
+   * @param prayerId int
    */
   public void enablePrayer(int prayerId) {
     // TODO: check prayer lvl and return true/false based off it
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(60);
     mud.packetHandler.getClientStream().bufferBits.putByte(prayerId);
     mud.packetHandler.getClientStream().finishPacket();
@@ -2715,11 +2724,11 @@ public class Controller {
   /**
    * Disables the prayer.
    *
-   * @param prayerId
+   * @param prayerId int
    */
   public void disablePrayer(int prayerId) {
     // TODO: check prayer lvl and return true/false based off it
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(254);
     mud.packetHandler.getClientStream().bufferBits.putByte(prayerId);
     mud.packetHandler.getClientStream().finishPacket();
@@ -2729,7 +2738,7 @@ public class Controller {
   /**
    * Whether or not a shop window is currently open.
    *
-   * @return
+   * @return boolean
    */
   public boolean isInShop() {
     return (boolean) reflector.getObjectMember(mud, "showDialogShop");
@@ -2770,7 +2779,7 @@ public class Controller {
    * @return shopItems guaranteed to not be null.
    */
   public List<Item> getShopItems() {
-    List<Item> shopItems = new ArrayList();
+    List<Item> shopItems = new ArrayList<>();
 
     if (!this.isInShop()) {
       return shopItems;
@@ -2799,7 +2808,7 @@ public class Controller {
   /**
    * Retrieves how many of the specified item is in stock.
    *
-   * @param itemId
+   * @param itemId int
    * @return int -- stock amount. If item is not sold at shop, it returns -1.
    */
   public int getShopItemCount(int itemId) {
@@ -2819,7 +2828,7 @@ public class Controller {
   /**
    * Retrieves the price of the item in the shop.
    *
-   * @param itemId
+   * @param itemId int
    * @return int -- price. -1 if item is not in the shop at all.
    */
   public int getShopItemPrice(int itemId) {
@@ -2839,7 +2848,7 @@ public class Controller {
   /**
    * Buys the specified item from the currently open shop.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean -- true on success. false if the shop is not open or shop does not have enough
    *     stock.
    */
@@ -2847,7 +2856,7 @@ public class Controller {
     // TODO: check if enough coins in inventory, return false if not enough.
     if (!isInShop() || getShopItemCount(itemId) < 1) return false;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(236);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
@@ -2860,7 +2869,7 @@ public class Controller {
   /**
    * Sells the specified item to the currently open shop.
    *
-   * @param itemId
+   * @param itemId int
    * @return boolean -- true on success. false if shop is not open, shop does not accept the item,
    *     or not enough in inventory.
    */
@@ -2868,7 +2877,7 @@ public class Controller {
     if (!isInShop() || getShopItemCount(itemId) == -1 || this.getInventoryItemCount(itemId) < 1)
       return false;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(221);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
@@ -2886,13 +2895,13 @@ public class Controller {
   public List<SkillDef> getSkills() {
     String[] skillNames = this.getSkillNamesLong();
 
-    List<SkillDef> _list = new ArrayList();
+    List<SkillDef> _list = new ArrayList<>();
 
     if (skillNames != null) {
-      for (int i = 0; i < skillNames.length; i++) {
+      for (String skillName : skillNames) {
         SkillDef skillDef = new SkillDef();
 
-        String name = skillNames[i];
+        String name = skillName;
         int id = this.getStatId(name);
         int base = this.getBaseStat(id);
         int current = this.getCurrentStat(id);
@@ -2917,14 +2926,14 @@ public class Controller {
    * Retrieves the id of the specified skill name. Skill name is case insensitive and must match
    * what is spelled inside the stat tab.
    *
-   * @param statName
+   * @param statName int
    * @return int -- -1 if the skill does not exist.
    */
   public int getStatId(String statName) {
     String[] skillNames = mud.getSkillNamesLong();
 
     for (int i = 0; i < skillNames.length; i++) {
-      if (statName.toLowerCase().equals(skillNames[i].toLowerCase())) return i;
+      if (statName.equalsIgnoreCase(skillNames[i])) return i;
     }
 
     return -1;
@@ -2934,28 +2943,28 @@ public class Controller {
    * Retrieves the base level (excluding boosted/degraded stats) of the specified skill. `id` must
    * be within [0, getStatCount()].
    *
-   * @param statId
+   * @param statId int
    * @return int
    */
   public int getBaseStat(int statId) {
-    return (int) ((int[]) reflector.getObjectMember(mud, "playerStatBase"))[statId];
+    return ((int[]) reflector.getObjectMember(mud, "playerStatBase"))[statId];
   }
 
   /**
    * Retrieves the current level (including boosted/degraded stats) of the specified skill. `id`
    * must be within [0, getStatCount()].
    *
-   * @param statId
+   * @param statId int
    * @return int
    */
   public int getCurrentStat(int statId) {
-    return (int) ((int[]) reflector.getObjectMember(mud, "playerStatCurrent"))[statId];
+    return ((int[]) reflector.getObjectMember(mud, "playerStatCurrent"))[statId];
   }
 
   /**
    * Retrieves the current XP in the specified skill. `id` must be within [0, getStatCount()].
    *
-   * @param statId
+   * @param statId int
    * @return int
    */
   public int getStatXp(int statId) {
@@ -2965,7 +2974,7 @@ public class Controller {
   /**
    * Retrieves the number of skills in the game.
    *
-   * @return
+   * @return int
    */
   public int getStatCount() {
     return ((long[]) reflector.getObjectMember(mud, "playerStatXpGained")).length;
@@ -2974,7 +2983,7 @@ public class Controller {
   /**
    * Retrieves the amount of XP gained in the skill since last login.
    *
-   * @param statId
+   * @param statId int
    * @return int
    */
   public int getPlayerExperience(int statId) {
@@ -3006,7 +3015,7 @@ public class Controller {
 
   /** Disables autologin and attempts to logout. No guarantee on success. */
   public void logout() {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(102);
     mud.packetHandler.getClientStream().finishPacket();
   }
@@ -3014,8 +3023,8 @@ public class Controller {
   /**
    * Retrieves the id of the object at the specified coordinates.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return int -- -1 if no object at the coordinates.
    */
   public int getObjectAtCoord(int x, int y) {
@@ -3036,15 +3045,15 @@ public class Controller {
   /**
    * Uses the specified item in the inventory on the specified ground item.
    *
-   * @param x
-   * @param y
-   * @param itemId
-   * @param groundItemId
+   * @param x int
+   * @param y int
+   * @param itemId int
+   * @param groundItemId int
    */
   public void useItemOnGroundItem(int x, int y, int itemId, int groundItemId) {
     // TODO: check if item in inventory
     // TODO: check if item is on ground
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(53);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -3056,8 +3065,8 @@ public class Controller {
   /**
    * Retrieves the server index of the player at the specified coordinates.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return int -- returns -1 if no player at specified tile.
    */
   public int getPlayerAtCoord(int x, int y) {
@@ -3084,7 +3093,7 @@ public class Controller {
   public int getPlayerServerIndexByName(String name) {
     for (ORSCharacter player : getPlayers()) {
       if (player != null) {
-        if (player.displayName.toLowerCase().equals(name.toLowerCase())) {
+        if (player.displayName.equalsIgnoreCase(name)) {
           return player.serverIndex;
         }
       }
@@ -3099,7 +3108,7 @@ public class Controller {
    * @param playerServerIndex
    */
   public void duelPlayer(int playerServerIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(103);
     mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -3108,10 +3117,10 @@ public class Controller {
   /**
    * Follows the specified player.
    *
-   * @param playerServerIndex
+   * @param playerServerIndex int
    */
   public void followPlayer(int playerServerIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(165);
     mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -3120,10 +3129,10 @@ public class Controller {
   /**
    * Attacks the specified player.
    *
-   * @param playerServerIndex
+   * @param playerServerIndex int
    */
   public void attackPlayer(int playerServerIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(171);
     mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -3132,11 +3141,11 @@ public class Controller {
   /**
    * Uses the specified item on the player.
    *
-   * @param slotIndex
-   * @param playerServerIndex
+   * @param slotIndex int
+   * @param playerServerIndex int
    */
   public void useItemOnPlayer(int slotIndex, int playerServerIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(113);
     mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
@@ -3146,11 +3155,11 @@ public class Controller {
   /**
    * Casts the specified spell on the specified player.
    *
-   * @param spellId
-   * @param playerServerIndex
+   * @param spellId int
+   * @param playerServerIndex int
    */
   public void castSpellOnPlayer(int spellId, int playerServerIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(229);
     mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
     mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
@@ -3160,10 +3169,10 @@ public class Controller {
   /**
    * Casts the specified spell on the player.
    *
-   * @param spellId
+   * @param spellId int
    */
   public void castSpellOnSelf(int spellId) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(137);
     mud.packetHandler.getClientStream().bufferBits.putShort(spellId);
     mud.packetHandler.getClientStream().finishPacket();
@@ -3175,7 +3184,7 @@ public class Controller {
    * @param playerServerIndex -- player index, retrievable with getPlayerServerIndexByName("name").
    */
   public void tradePlayer(int playerServerIndex) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(142);
     mud.packetHandler.getClientStream().bufferBits.putShort(playerServerIndex);
     mud.packetHandler.getClientStream().finishPacket();
@@ -3219,21 +3228,21 @@ public class Controller {
 
   /** Declines the trade. */
   public void declineTrade() {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(230);
     mud.packetHandler.getClientStream().finishPacket();
   }
 
   /** Accepts the trade on the first trade window. */
   public void acceptTrade() {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(55);
     mud.packetHandler.getClientStream().finishPacket();
   }
 
   /** Accepts the current trade on the final trade window. */
   public void acceptTradeConfirmation() {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(104);
     mud.packetHandler.getClientStream().finishPacket();
   }
@@ -3244,15 +3253,12 @@ public class Controller {
    * @return localTradeItems guaranteed to not be null.
    */
   public List<Item> getLocalTradeItems() {
-    List<Item> localTradeItems = new ArrayList();
+    List<Item> localTradeItems = new ArrayList<>();
 
     Item[] _localTradeItems = (Item[]) this.getMudClientValue("trade");
     int localTradeItemsCount = this.getLocalTradeItemsCount();
 
-    for (int i = 0; i < localTradeItemsCount; i++) {
-      Item localTradeItem = _localTradeItems[i];
-      localTradeItems.add(localTradeItem);
-    }
+    localTradeItems.addAll(Arrays.asList(_localTradeItems).subList(0, localTradeItemsCount));
 
     return localTradeItems;
   }
@@ -3281,15 +3287,12 @@ public class Controller {
    * @return recipientTradeItems guaranteed to not be null.
    */
   public List<Item> getRecipientTradeItems() {
-    List<Item> recipientTradeItems = new ArrayList();
+    List<Item> recipientTradeItems = new ArrayList<>();
 
     Item[] _recipientTradeItems = (Item[]) this.getMudClientValue("tradeRecipient");
     int recipientItemsCount = this.getRecipientTradeItemsCount();
 
-    for (int i = 0; i < recipientItemsCount; i++) {
-      Item recipientTradeItem = _recipientTradeItems[i];
-      recipientTradeItems.add(recipientTradeItem);
-    }
+    recipientTradeItems.addAll(Arrays.asList(_recipientTradeItems).subList(0, recipientItemsCount));
 
     return recipientTradeItems;
   }
@@ -3317,7 +3320,7 @@ public class Controller {
     for (int i = 0; i < itemIds.length; i++)
       if (amounts[i] > getInventoryItemCount(itemIds[i])) return false;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(46);
     mud.packetHandler.getClientStream().bufferBits.putByte(itemIds.length);
 
@@ -3342,7 +3345,7 @@ public class Controller {
   /**
    * Toggles auto-login.
    *
-   * @param value
+   * @param value boolean
    */
   public void setAutoLogin(boolean value) {
     Main.setAutoLogin(value);
@@ -3356,7 +3359,7 @@ public class Controller {
   /**
    * Toggles the client interlacer, which is for saving CPU cycles.
    *
-   * @param value
+   * @param value boolean
    */
   public void setInterlacer(boolean value) {
     mud.interlace = value;
@@ -3373,15 +3376,12 @@ public class Controller {
    * @return _list guaranteed to not be null.
    */
   public List<Item> getInventoryItems() {
-    List<Item> _list = new ArrayList();
+    List<Item> _list = new ArrayList<>();
 
     Item[] inventoryItems = mud.getInventory();
     int inventoryItemCount = this.getInventoryItemCount();
 
-    for (int i = 0; i < inventoryItemCount; i++) {
-      Item inventoryItem = inventoryItems[i];
-      _list.add(inventoryItem);
-    }
+    _list.addAll(Arrays.asList(inventoryItems).subList(0, inventoryItemCount));
 
     return _list;
   }
@@ -3427,15 +3427,12 @@ public class Controller {
    * @return friendsList guaranteed to never be null.
    */
   public List<String> getFriendList() {
-    List<String> friendList = new ArrayList();
+    List<String> friendList = new ArrayList<>();
 
     int friendListCount = SocialLists.friendListCount;
     String[] _friendList = SocialLists.friendList;
 
-    for (int i = 0; i < friendListCount; i++) {
-      String friendName = _friendList[i];
-      friendList.add(friendName);
-    }
+    friendList.addAll(Arrays.asList(_friendList).subList(0, friendListCount));
 
     return friendList;
   }
@@ -3446,15 +3443,12 @@ public class Controller {
    * @return ignoreList guaranteed to never be null.
    */
   public List<String> getIgnoreList() {
-    List<String> ignoreList = new ArrayList();
+    List<String> ignoreList = new ArrayList<>();
 
     int ignoreListCount = SocialLists.ignoreListCount;
     String[] _ignoreList = SocialLists.ignoreList;
 
-    for (int i = 0; i < ignoreListCount; i++) {
-      String ignoreName = _ignoreList[i];
-      ignoreList.add(ignoreName);
-    }
+    ignoreList.addAll(Arrays.asList(_ignoreList).subList(0, ignoreListCount));
 
     return ignoreList;
   }
@@ -3614,7 +3608,7 @@ public class Controller {
   /**
    * Logs text to the console, bot log window, and OpenRSC applet.
    *
-   * @param text
+   * @param text String
    */
   public void log(String text) {
     log(text, "red");
@@ -3623,7 +3617,7 @@ public class Controller {
   /**
    * Logs text to the console, bot log window, and OpenRSC applet with the specified @col@.
    *
-   * @param text
+   * @param text String
    * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
    */
   public void log(String text, String rsTextColor) {
@@ -3662,7 +3656,6 @@ public class Controller {
           this.sleep(1000);
         }
 
-        return;
       } else {
         this.itemCommand(1263);
 
@@ -3697,15 +3690,15 @@ public class Controller {
   /**
    * Buys the specified itemId from the shop.
    *
-   * @param itemId
-   * @param amount
+   * @param itemId int
+   * @param amount int
    * @return boolean -- returns true on success. False if not in shop, or if shop has no stock.
    */
   public boolean shopBuy(int itemId, int amount) {
     // TODO: check if enough coins in inventory, return false if not enough.
     if (!isInShop() || getShopItemCount(itemId) < 1) return false;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(236);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
@@ -3718,8 +3711,8 @@ public class Controller {
   /**
    * Sells the specified itemId to the shop.
    *
-   * @param itemId
-   * @param amount
+   * @param itemId int
+   * @param amount int
    * @return boolean -- returns true on success. False if not in shop, if shop does not accept item,
    *     or not enough items in inventory.
    */
@@ -3728,7 +3721,7 @@ public class Controller {
     if (!isInShop() || getShopItemCount(itemId) == -1 || getInventoryItemCount(itemId) < amount)
       return false;
 
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(221);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().bufferBits.putShort(getShopItemCount(itemId));
@@ -3741,10 +3734,10 @@ public class Controller {
   /**
    * Draws a gradient box at the specified coordinates.
    *
-   * @param x
-   * @param y
-   * @param width
-   * @param height
+   * @param x int
+   * @param y int
+   * @param width int
+   * @param height int
    * @param topColor -- RGB "HTML" Color
    * @param bottomColor -- RGB "HTML" Color
    */
@@ -3757,10 +3750,10 @@ public class Controller {
    * Draws a box at the specified coordinates with the specified color and transparency. Must be
    * used inside paintInterrupt().
    *
-   * @param x
-   * @param y
-   * @param width
-   * @param height
+   * @param x int
+   * @param y int
+   * @param width int
+   * @param height int
    * @param color -- RGB "HTML" Color
    * @param transparency -- must be between 0 and 255
    */
@@ -3771,10 +3764,10 @@ public class Controller {
   /**
    * Draws a hollow rectangle at the specified coordinates. Must be used inside paintInterrupt().
    *
-   * @param x
-   * @param y
-   * @param width
-   * @param height
+   * @param x int
+   * @param y int
+   * @param width int
+   * @param height int
    * @param color -- RGB "HTML" Color
    */
   public void drawBoxBorder(int x, int y, int width, int height, int color) {
@@ -3785,12 +3778,12 @@ public class Controller {
    * Draws a circle at the specified coordinates with specified radius, color, and transparency.
    * Must be used inside paintInterrupt().
    *
-   * @param x
-   * @param y
-   * @param radius
+   * @param x int
+   * @param y int
+   * @param radius int
    * @param color -- RGB "HTML" Color
    * @param transparency -- must be between 0 and 255
-   * @param dummy
+   * @param dummy int
    */
   public void drawCircle(int x, int y, int radius, int color, int transparency, int dummy) {
     mud.getSurface().drawCircle(x, y, radius, color, transparency, dummy);
@@ -3800,9 +3793,9 @@ public class Controller {
    * Draws a horizontal line at the specified coordinates with the specified width. Must be used
    * inside paintInterrupt().
    *
-   * @param x
-   * @param y
-   * @param width
+   * @param x int
+   * @param y int
+   * @param width int
    * @param color -- RGB "HTML" Color
    */
   public void drawLineHoriz(int x, int y, int width, int color) {
@@ -3812,9 +3805,9 @@ public class Controller {
   /**
    * Draws a vertical line at the specified coordinates with the specified height.
    *
-   * @param x
-   * @param y
-   * @param height
+   * @param x int
+   * @param y int
+   * @param height int
    * @param color -- RGB "HTML" Color
    */
   public void drawLineVert(int x, int y, int height, int color) {
@@ -3825,8 +3818,8 @@ public class Controller {
    * Draws text at the specified coordinates. Must be used inside paintInterrupt().
    *
    * @param str -- you may use @col@ colors here.
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @param color -- RGB "HTML" Color
    * @param font -- 1 or greater
    */
@@ -3838,8 +3831,8 @@ public class Controller {
    * Draws shadow text at the specified coordinates. Must be used inside paintInterrupt().
    *
    * @param text -- you may use @col@ colors here.
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @param textColor -- RGB "HTML" color
    * @param fontSize -- 1 or greater
    * @param center
@@ -3891,7 +3884,7 @@ public class Controller {
   /**
    * Toggles the left-hand status indicator.
    *
-   * @param b
+   * @param b int
    */
   public void setShowStatus(boolean b) {
     showStatus = b;
@@ -3909,7 +3902,7 @@ public class Controller {
   /**
    * Toggles the left-hand coordinates indicator.
    *
-   * @param b
+   * @param b int
    */
   public void setShowCoords(boolean b) {
     showCoords = b;
@@ -3927,7 +3920,7 @@ public class Controller {
   /**
    * Toggles the left-hand XP counter.
    *
-   * @param b
+   * @param b int
    */
   public void setShowXp(boolean b) {
     showXp = b;
@@ -3945,7 +3938,7 @@ public class Controller {
   /**
    * Toggle bot painting (such as progress reports.) This does not disable client graphics.
    *
-   * @param b
+   * @param b int
    */
   public void setBotPaint(boolean b) {
     showBotPaint = b;
@@ -3954,8 +3947,8 @@ public class Controller {
   /**
    * Whether or not the tile is reachable in the current map segment.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @param includeTileEdges -- whether or not the edges of the tile are permitted. Such as picking
    *     up an item on a table -- you can't walk on top of the table, but you can reach the edges.
    * @return true if the tile is reachable, false if blocked.
@@ -3993,7 +3986,7 @@ public class Controller {
   /**
    * Retrieves the coordinates of the specified NPC.
    *
-   * @param serverIndex
+   * @param serverIndex int
    * @return int[] -- [x, y]. Returns [-1, -1] on no NPC present.
    */
   public int[] getPlayerCoordsByServerIndex(int serverIndex) {
@@ -4099,12 +4092,6 @@ public class Controller {
     }
   }
 
-  /** <b>Internal use only.</b> Used by LoginListener to hide the welcome message. */
-  public void hideWelcomeMessage() {
-    this.log("Hiding welcome screen...");
-    client.mousePressed(new MouseEvent(client, 1, 21, 0, 99, 99, 1, false)); // click on (99,99)
-  }
-
   public int[] getMudMouseCoords() {
     return new int[] {mud.getMouseX(), mud.getMouseY()};
   }
@@ -4138,7 +4125,7 @@ public class Controller {
   /**
    * Retrieves the examine text of the specified wall object id.
    *
-   * @param objId
+   * @param objId int
    * @return String -- guaranteed to not be null
    */
   public String getWallObjectExamineText(int objId) {
@@ -4152,7 +4139,7 @@ public class Controller {
   /**
    * Retrieves the examine text of the specified wall object id.
    *
-   * @param objId
+   * @param objId int
    * @return String -- guaranteed to not be null
    */
   public String getWallObjectName(int objId) {
@@ -4239,14 +4226,14 @@ public class Controller {
   }
 
   public void addFriend(String username) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(195);
     mud.packetHandler.getClientStream().bufferBits.putString(username);
     mud.packetHandler.getClientStream().finishPacket();
   }
 
   public void addIgnore(String username) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(132);
     mud.packetHandler.getClientStream().bufferBits.putString(username);
     mud.packetHandler.getClientStream().finishPacket();
@@ -4254,7 +4241,7 @@ public class Controller {
 
   /** Does not update on client side */
   public void removeFriend(String username) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(167);
     mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, 110);
     mud.packetHandler.getClientStream().finishPacket();
@@ -4262,14 +4249,14 @@ public class Controller {
 
   /** Does not update on client side */
   public void removeIgnore(String username) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(241);
     mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, -78);
     mud.packetHandler.getClientStream().finishPacket();
   }
 
   public void sendPrivateMessage(String username, String message) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(218);
     mud.packetHandler.getClientStream().bufferBits.putString(username);
     RSBufferUtils.putEncryptedString(mud.packetHandler.getClientStream().bufferBits, message);
@@ -4338,8 +4325,8 @@ public class Controller {
    * Returns the NPC object of the NPC at the specified coordinates. If there is no NPC at those
    * coordinates, it returns nothing.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    * @return
    */
   public ORSCharacter getNpcAtCoords(int x, int y) {
@@ -4356,7 +4343,7 @@ public class Controller {
 
   /** If on tutorial island, skips tutorial island. */
   public void skipTutorialIsland() {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(84);
     mud.packetHandler.getClientStream().finishPacket();
   }
@@ -4364,10 +4351,10 @@ public class Controller {
   /**
    * Internal function used for sleeping.
    *
-   * @param word
+   * @param word String
    */
   public void sendSleepWord(String word) {
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(45);
     mud.packetHandler.getClientStream().bufferBits.putByte(1);
     mud.packetHandler.getClientStream().bufferBits.putNullThenString(word, 116);
@@ -4377,8 +4364,8 @@ public class Controller {
   /**
    * Walks to the wall object and then interacts with it.
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    */
   public void atWallObject(int x, int y) {
     int opcode = 14; // opcode was switched
@@ -4386,7 +4373,7 @@ public class Controller {
 
     reflector.mudInvoker(
         mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(opcode);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -4397,8 +4384,8 @@ public class Controller {
   /**
    * Walks to the wall object and then interacts with it (secondary interaction.)
    *
-   * @param x
-   * @param y
+   * @param x int
+   * @param y int
    */
   public void atWallObject2(int x, int y) {
     int opcode = 127; // opcode was switched
@@ -4406,7 +4393,7 @@ public class Controller {
 
     reflector.mudInvoker(
         mud, "walkToWall", this.removeOffsetX(x), this.removeOffsetZ(y), direction);
-    while (mud.packetHandler.getClientStream().hasFinishedPackets() == true) sleep(1);
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(opcode);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
@@ -4417,30 +4404,146 @@ public class Controller {
    * Internal function used to grant the ability for normal accounts to access the developer ID
    * menus.
    */
-  public void fakeDeveloper() {
+  public void toggleViewId() {
     if (isLoggedIn()) {
-      if (!viewedFirstToggleId) {
-        displayMessage(
-            "@red@Toggle Id will NOT remain ON unless standing still and NO skilling/batching actions!");
-        viewedFirstToggleId = true;
-      }
       int groupId = getPlayer().groupID;
 
-      orsc.Config.C_SIDE_MENU_OVERLAY = false; // bugfix for coleslaw flickering
-
-      if (isBatching()) {
-        displayMessage("@cya@Please STOP skill action to Toggle ID tags");
-      }
-      if (isCurrentlyWalking()) {
-        displayMessage("@cya@Please stand still to Toggle ID tags");
-      }
-      if (groupId == 10) {
-        displayMessage("@cya@Turning on right click ID tags");
-        getPlayer().groupID = 9; // was set to 8 incorrectly
-      } else if (groupId == 9) {
-        displayMessage("@cya@Turning off right click ID tags");
-        getPlayer().groupID = 10;
+      if (groupId == 10) { // if off, change to on
+        if (Config.C_SIDE_MENU_OVERLAY) {
+          temporaryToggleSideMenu = true;
+          orsc.Config.C_SIDE_MENU_OVERLAY = false; // bugfix for coleslaw flickering
+        }
+        DrawCallback.toggleOnViewId = true;
+      } else if (groupId == 9) { // if on, change to off
+        DrawCallback.toggleOnViewId = false;
+        if (temporaryToggleSideMenu) {
+          temporaryToggleSideMenu = false;
+          orsc.Config.C_SIDE_MENU_OVERLAY = true; // bugfix for coleslaw flickering
+        }
       }
     }
+  }
+  /**
+   * Function to toggle on Batch Bars in the openrsc client config for native scripts utilizing
+   * batch bars. Can be used with isAuthentic to ensure batching on coleslaw conditions for scripts.
+   * Example to toggle on batch bars for coleslaw only: if(!c.isAuthentic() &&
+   * !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+   */
+  public void toggleBatchBars() {
+    if (isLoggedIn()) {
+      Config.C_BATCH_PROGRESS_BAR = !Config.C_BATCH_PROGRESS_BAR;
+    }
+  }
+  /**
+   * Display String "Hr:Min:Sec" version of milliseconds long int.
+   *
+   * @param milliseconds long timeInMilliseconds
+   * @return String Hr:Min:Sec
+   */
+  public String msToString(long milliseconds) {
+    long sec = milliseconds / 1000;
+    long min = sec / 60;
+    long hour = min / 60;
+    sec %= 60;
+    min %= 60;
+    DecimalFormat twoDigits = new DecimalFormat("00");
+
+    return twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec);
+  }
+
+  /**
+   * Display String "Hr:Min" version of milliseconds long int.
+   *
+   * @param milliseconds long timeInMilliseconds
+   * @return String Hr:Min
+   */
+  public String msToShortString(long milliseconds) {
+    long sec = milliseconds / 1000;
+    long min = sec / 60;
+    sec %= 60;
+    min %= 60;
+    DecimalFormat twoDigits = new DecimalFormat("00");
+
+    return twoDigits.format(min) + ":" + twoDigits.format(sec);
+  }
+  /**
+   * Shows Time to Completions in hours, minutes, and seconds. ("01:23:45")
+   *
+   * <p>credit to chomp for toTimeToCompletion (from AA_Script) (totalBars, barsInBank, startTime)
+   *
+   * @param processed int totalItemsUsed
+   * @param remaining int totalItemsUnused
+   * @param time startTime System.currentTimeMillis when bot started
+   * @return String Hr:Min:Sec
+   */
+  public String timeToCompletion(final int processed, final int remaining, final long time) {
+    if (processed == 0) {
+      return "0:00:00";
+    }
+
+    final double seconds = (System.currentTimeMillis() - time) / 1000.0;
+    final double secondsPerItem = seconds / processed;
+    final long ttl = (long) (secondsPerItem * remaining);
+    return String.format("%d:%02d:%02d", ttl / 3600, (ttl % 3600) / 60, (ttl % 60));
+  }
+  /**
+   * Shows short Time to Completions in hours only. ("1234")
+   *
+   * <p>credit to chomp for toTimeToCompletion (from AA_Script) (totalBars, barsInBank, startTime)
+   *
+   * @param processed int totalItemsUsed
+   * @param remaining int totalItemsUnused
+   * @param time startTime System.currentTimeMillis when bot started
+   * @return String Hr
+   */
+  public String shortTimeToCompletion(final int processed, final int remaining, final long time) {
+    if (processed == 0) {
+      return "0";
+    }
+
+    final double seconds = (System.currentTimeMillis() - time) / 1000.0;
+    final double secondsPerItem = seconds / processed;
+    final long ttl = (long) (secondsPerItem * remaining);
+    return String.format("%d", ttl / 3600);
+  }
+  /** Hides Details Menu */
+  public void hideDetails() {
+    // int opcode = 253;
+    mud.setShowContactDialogue(false);
+
+    /*
+            reflector.mudInvoker(mud, "hideDetails");
+            while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+            mud.packetHandler.getClientStream().newPacket(opcode);
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().finishPacket();
+    */
+  }
+  /** Show Details Menu */
+  public void showDetails() {
+    // int opcode = 253;
+    mud.setShowContactDialogue(true);
+
+    /*
+            reflector.mudInvoker(mud, "hideDetails");
+            while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+            mud.packetHandler.getClientStream().newPacket(opcode);
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().bufferBits.putByte(0);
+            mud.packetHandler.getClientStream().bufferBits.putString(" ");
+            mud.packetHandler.getClientStream().finishPacket();
+    */
   }
 }

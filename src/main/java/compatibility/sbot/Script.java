@@ -31,7 +31,7 @@ public abstract class Script {
    * @param command -- usually the name of the script.
    * @param parameters -- script parameters.
    */
-  public void start(String command, String parameters[]) {
+  public void start(String command, String[] parameters) {
     System.out.println("If you see this, your script did not call the start function.");
   }
   /**
@@ -213,7 +213,7 @@ public abstract class Script {
    */
   public int TradeStatus() {
     Main.logMethod("TradeStatus");
-    if (controller.isInTrade() == true) {
+    if (controller.isInTrade()) {
       if (controller.isInTradeConfirmation()) return 2;
       return 1;
     } else {
@@ -253,7 +253,7 @@ public abstract class Script {
    * @param item -- multiple ids
    * @param amount -- multiple amounts
    */
-  public void TradeArray(int item[], int amount[]) {
+  public void TradeArray(int[] item, int[] amount) {
     Main.logMethod("TradeArray", item, amount);
     controller.setTradeItems(item, amount);
   }
@@ -350,7 +350,7 @@ public abstract class Script {
   public void SexyPrint(String message) {
     Main.logMethod("SexyPrint", message);
     for (int i = 0; i < message.length() - 1; i++) {
-      System.out.print(message.substring(i, i + 1));
+      System.out.print(message.charAt(i));
       Wait(1);
     }
     System.out.println(message.substring(message.length() - 1));
@@ -393,7 +393,7 @@ public abstract class Script {
    *
    * @param coords
    */
-  public void AtObject(int coords[]) {
+  public void AtObject(int[] coords) {
     Main.logMethod("AtObject", coords);
     AtObject(coords[0], coords[1]);
   }
@@ -415,7 +415,7 @@ public abstract class Script {
    *
    * @param coords
    */
-  public void AtObject2(int coords[]) {
+  public void AtObject2(int[] coords) {
     Main.logMethod("AtObject2", coords);
     AtObject2(coords[0], coords[1]);
   }
@@ -476,18 +476,18 @@ public abstract class Script {
     boolean FoundEmpty = false;
     for (int horizontal = x1; horizontal <= x2; horizontal++) {
       for (int vertical = y1; vertical <= y2; vertical++) {
-        if (EmptyTile(horizontal, vertical) == true) {
+        if (EmptyTile(horizontal, vertical)) {
           FoundEmpty = true;
         }
       }
     }
-    if (FoundEmpty == true) {
+    if (FoundEmpty) {
       boolean GoneTo = false;
-      while (GoneTo == false) {
+      while (!GoneTo) {
         WaitForLoad();
         int TempX = Rand(x1, x2);
         int TempY = Rand(y1, y2);
-        if (EmptyTile(TempX, TempY) == true) {
+        if (EmptyTile(TempX, TempY)) {
           Walk(TempX, TempY);
           GoneTo = true;
         }
@@ -518,8 +518,7 @@ public abstract class Script {
   public boolean Obstructed(int x, int y) {
     if (ObjectAt(x, y) != -1) return true;
     if (PlayerAt(x, y) != -1) return true;
-    if (!CanReach(x, y)) return true;
-    return false;
+    return !CanReach(x, y);
   }
   /**
    * Within the specified 2 points, walks to an empty tile within that rectangle -- asynchronous.
@@ -535,18 +534,18 @@ public abstract class Script {
     boolean FoundEmpty = false;
     for (int horizontal = x1; horizontal <= x2; horizontal++) {
       for (int vertical = y1; vertical <= y2; vertical++) {
-        if (EmptyTile(horizontal, vertical) == true) {
+        if (EmptyTile(horizontal, vertical)) {
           FoundEmpty = true;
         }
       }
     }
-    if (FoundEmpty == true) {
+    if (FoundEmpty) {
       boolean GoneTo = false;
-      while (GoneTo == false) {
+      while (!GoneTo) {
         WaitForLoad();
         int TempX = Rand(x1, x2);
         int TempY = Rand(y1, y2);
-        if (EmptyTile(TempX, TempY) == true) {
+        if (EmptyTile(TempX, TempY)) {
           Walk(TempX, TempY);
           GoneTo = true;
         }
@@ -948,7 +947,7 @@ public abstract class Script {
    * @param type
    * @return
    */
-  public int[] GetNearestObject(int type[]) {
+  public int[] GetNearestObject(int[] type) {
     Main.logMethod("GetNearestObject", type);
     WaitForLoad();
 
@@ -990,7 +989,7 @@ public abstract class Script {
     return new int[] {-1, -1};
   }
   /** <b> NOT IMPLEMENTED YET </b> */
-  public int[] GetNearestObject(int type[], int x1, int y1, int x2, int y2) {
+  public int[] GetNearestObject(int[] type, int x1, int y1, int x2, int y2) {
     // THIS IS NOT IMPLEMENTED.
     // This would be really easy to implement but I'm lazy and someone else can do it :)
     return new int[] {-1, -1};
@@ -1015,7 +1014,7 @@ public abstract class Script {
    * @param type
    * @return
    */
-  public int GetNearestNPC(int type[]) {
+  public int GetNearestNPC(int[] type) {
     Main.logMethod("GetNearestNPC", type);
     ORSCharacter npc = controller.getNearestNpcByIds(type, false);
 
@@ -1030,7 +1029,7 @@ public abstract class Script {
     return -1;
   }
   /** <b> NOT IMPLEMENTED YET </b> */
-  public int GetNearestNPC(int type[], int x1, int y1, int x2, int y2) {
+  public int GetNearestNPC(int[] type, int x1, int y1, int x2, int y2) {
     // THIS IS NOT IMPLEMENTED.
     // This would be really easy to implement but I'm lazy and someone else can do it :)
     return -1;
@@ -1055,7 +1054,7 @@ public abstract class Script {
    * @param type
    * @return
    */
-  public int[] GetNearestItem(int type[]) {
+  public int[] GetNearestItem(int[] type) {
     Main.logMethod("GetNearestItem", type);
     return controller.getNearestItemById(type[0]);
   }
@@ -1326,7 +1325,7 @@ public abstract class Script {
     boolean newMessage = false;
     String currentMessage = LastServerMessage();
     long T = System.currentTimeMillis();
-    while (newMessage == false && System.currentTimeMillis() - T <= timeout) {
+    while (!newMessage && System.currentTimeMillis() - T <= timeout) {
       if (currentMessage.equals(LastServerMessage())) {
         Wait(10);
       } else {
@@ -1344,10 +1343,7 @@ public abstract class Script {
     Main.logMethod("InLastServerMessage", st);
     if (LastServerMessage() == null) return false;
 
-    if (LastServerMessage().indexOf(st) >= 0) {
-      return true;
-    }
-    return false;
+    return LastServerMessage().contains(st);
   }
   /**
    * Retrieves the slot index of the specified item id.
@@ -1503,8 +1499,7 @@ public abstract class Script {
    * @return
    */
   public boolean InStr(String str, String locate) {
-    if (str.indexOf(locate) >= 0) return true;
-    return false;
+    return str.contains(locate);
   }
   /**
    * Retrieves the text of the specified option answer in NPC dialogue.
@@ -1698,10 +1693,7 @@ public abstract class Script {
   public boolean InArea(int x1, int y1, int x2, int y2) {
     int x = GetX();
     int y = GetY();
-    if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-      return true;
-    }
-    return false;
+    return x >= x1 && x <= x2 && y >= y1 && y <= y2;
   }
 
   public boolean Wearable(int type) {
@@ -1727,7 +1719,7 @@ public abstract class Script {
     return controller.isNpcAttackable(type);
   }
 
-  public void WalkPath(int pathx[], int pathy[]) {
+  public void WalkPath(int[] pathx, int[] pathy) {
     if (pathx.length != pathy.length) {
       Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
       return;
@@ -1743,7 +1735,7 @@ public abstract class Script {
     for (int i = startPoint; i < pathx.length; i++) Walk(pathx[i], pathy[i], Rand(8000, 12000));
   }
 
-  public void WalkPath(int pathx[], int pathy[], int ticks) {
+  public void WalkPath(int[] pathx, int[] pathy, int ticks) {
     if (pathx.length != pathy.length) {
       Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
       return;
@@ -1759,7 +1751,7 @@ public abstract class Script {
     for (int i = startPoint; i < pathx.length; i++) Walk(pathx[i], pathy[i], ticks);
   }
 
-  public void WalkPathReverse(int pathx[], int pathy[]) {
+  public void WalkPathReverse(int[] pathx, int[] pathy) {
     if (pathx.length != pathy.length) {
       Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
       return;
@@ -1777,7 +1769,7 @@ public abstract class Script {
       Walk(pathx[pathx.length - 1 - i], pathy[pathx.length - 1 - i], Rand(8000, 12000));
   }
 
-  public void WalkPathReverse(int pathx[], int pathy[], int ticks) {
+  public void WalkPathReverse(int[] pathx, int[] pathy, int ticks) {
     if (pathx.length != pathy.length) {
       Println("### WalkPath - COORDINATES NOT THE SAME LENGTH");
       return;
@@ -1795,14 +1787,12 @@ public abstract class Script {
       Walk(pathx[pathx.length - 1 - i], pathy[pathx.length - 1 - i], ticks);
   }
 
-  public boolean CoordsAt(int pos[]) {
-    if (GetX() == pos[0] && GetY() == pos[1]) return true;
-    return false;
+  public boolean CoordsAt(int[] pos) {
+    return GetX() == pos[0] && GetY() == pos[1];
   }
 
   public boolean CoordsAt(int x, int y) {
-    if (GetX() == x && GetY() == y) return true;
-    return false;
+    return GetX() == x && GetY() == y;
   }
 
   public boolean IsWalking() {
@@ -1864,7 +1854,7 @@ public abstract class Script {
     return this.GetNearestNPC(id);
   }
 
-  public int GetRandomNPC(int id[]) {
+  public int GetRandomNPC(int[] id) {
     Main.logMethod("GetRandomNPC", id);
     for (int i : id) {
       int tmp = GetRandomNPC(i);

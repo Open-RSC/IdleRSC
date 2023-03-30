@@ -17,7 +17,7 @@ import orsc.mudclient;
  */
 public class Reflector {
 
-  ClassLoader classLoader = this.getClass().getClassLoader();
+  final ClassLoader classLoader = this.getClass().getClassLoader();
 
   /**
    * Creates the RSC client object.

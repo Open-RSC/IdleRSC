@@ -48,7 +48,7 @@ public class SleepCallback {
    * @param fatigue -- the current fatigue
    */
   public static void fatigueHook(int fatigue) {
-    Main.log("Current fatigue in sleep: " + Integer.toString(fatigue));
+    Main.log("Current fatigue in sleep: " + fatigue);
     currentFatigue = fatigue;
 
     if (fatigue == 0) {
@@ -123,7 +123,7 @@ public class SleepCallback {
       connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
       try (OutputStream output = connection.getOutputStream();
-          PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true); ) {
+          PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true)) {
         // Send normal param.
         writer.append("--" + boundary).append(CRLF);
         writer.append("Content-Disposition: form-data; name=\"param\"").append(CRLF);

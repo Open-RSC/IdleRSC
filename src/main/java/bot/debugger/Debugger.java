@@ -48,7 +48,7 @@ public class Debugger implements Runnable {
 
   // Sections
   private DebuggerSection activeSection = null;
-  private List<DebuggerSection> sections = new ArrayList();
+  private final List<DebuggerSection> sections = new ArrayList<>();
 
   private JPanel actionsPanel = null;
   private JCheckBox refreshCheckbox = null;
@@ -302,13 +302,10 @@ public class Debugger implements Runnable {
     }
 
     this.sectionDropdown.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-              DebuggerSection selectedSection = (DebuggerSection) e.getItem();
-              onChangeSection(selectedSection);
-            }
+        e -> {
+          if (e.getStateChange() == ItemEvent.SELECTED) {
+            DebuggerSection selectedSection1 = (DebuggerSection) e.getItem();
+            onChangeSection(selectedSection1);
           }
         });
   }
@@ -397,9 +394,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateRecipientTradeItems(Table sectionTable) {
-    for (int i = 0; i < this.recipientTradeItems.size(); i++) {
-      Item recipientTradeItem = this.recipientTradeItems.get(i);
-
+    for (Item recipientTradeItem : this.recipientTradeItems) {
       Object[] row = {
         recipientTradeItem.getItemDef().name,
         recipientTradeItem.getItemDef().id,
@@ -412,9 +407,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateLocalTradeSection(Table sectionTable) {
-    for (int i = 0; i < this.localTradeItems.size(); i++) {
-      Item localTradeItem = this.localTradeItems.get(i);
-
+    for (Item localTradeItem : this.localTradeItems) {
       Object[] row = {
         localTradeItem.getItemDef().name,
         localTradeItem.getItemDef().id,
@@ -427,9 +420,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateIgnoreSection(Table sectionTable) {
-    for (int i = 0; i < this.ignoreList.size(); i++) {
-      String ignoreName = this.ignoreList.get(i);
-
+    for (String ignoreName : this.ignoreList) {
       Object[] row = {ignoreName};
 
       sectionTable.addRow(row);
@@ -437,9 +428,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateFriendSection(Table sectionTable) {
-    for (int i = 0; i < this.friendList.size(); i++) {
-      String friendName = this.friendList.get(i);
-
+    for (String friendName : this.friendList) {
       Object[] row = {friendName};
 
       sectionTable.addRow(row);
@@ -447,9 +436,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateShopSection(Table sectionTable) {
-    for (int i = 0; i < this.shopItems.size(); i++) {
-      Item shopItem = this.shopItems.get(i);
-
+    for (Item shopItem : this.shopItems) {
       Object[] row = {
         shopItem.getItemDef().name,
         shopItem.getItemDef().id,
@@ -463,9 +450,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateBankSection(Table sectionTable) {
-    for (int i = 0; i < this.bankItems.size(); i++) {
-      Item bankItem = this.bankItems.get(i);
-
+    for (Item bankItem : this.bankItems) {
       Object[] row = {
         bankItem.getItemDef().name,
         bankItem.getItemDef().id,
@@ -478,9 +463,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateSkillsSection(Table table) {
-    for (int i = 0; i < this.skills.size(); i++) {
-      SkillDef skillDef = this.skills.get(i);
-
+    for (SkillDef skillDef : this.skills) {
       Object[] row = {
         skillDef.getName(),
         skillDef.getId(),
@@ -495,9 +478,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateGroundItemsSection(Table table) {
-    for (int i = 0; i < this.groundItemDefs.size(); i++) {
-      GroundItemDef groundItemDef = this.groundItemDefs.get(i);
-
+    for (GroundItemDef groundItemDef : this.groundItemDefs) {
       Object[] row = {
         groundItemDef.getName(),
         groundItemDef.getID(),
@@ -512,9 +493,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateInventoryItemsSection(Table table) {
-    for (int i = 0; i < this.inventoryItems.size(); i++) {
-      Item inventoryItem = this.inventoryItems.get(i);
-
+    for (Item inventoryItem : this.inventoryItems) {
       if (inventoryItem.getItemDef() != null) {
         Object[] row = {
           inventoryItem.getItemDef().name, inventoryItem.getItemDef().id, inventoryItem.getAmount()
@@ -574,9 +553,7 @@ public class Debugger implements Runnable {
   }
 
   private void updateNPCsSection(Table table) {
-    for (int i = 0; i < this.npcs.size(); i++) {
-      ORSCharacter npc = this.npcs.get(i);
-
+    for (ORSCharacter npc : this.npcs) {
       if (npc != null) {
         int npcCoordX = controller.convertX(npc.currentX);
         int npcCoordZ = controller.convertZ(npc.currentZ);
@@ -593,9 +570,7 @@ public class Debugger implements Runnable {
   }
 
   private void updatePlayersSection(Table table) {
-    for (int i = 0; i < this.players.size(); i++) {
-      ORSCharacter player = this.players.get(i);
-
+    for (ORSCharacter player : this.players) {
       if (player.displayName.equals(controller.getPlayer().displayName)) {
         continue;
       }
@@ -633,7 +608,7 @@ public class Debugger implements Runnable {
   }
 
   private List<Integer> getIntegerListFromIntArray(int[] arr) {
-    List<Integer> _list = new ArrayList(arr.length);
+    List<Integer> _list = new ArrayList<>(arr.length);
 
     for (int val : arr) {
       _list.add(val);

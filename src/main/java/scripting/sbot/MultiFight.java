@@ -1,11 +1,9 @@
 package scripting.sbot;
 
 import compatibility.sbot.Script;
-import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.*;
 import javax.swing.*;
 
 public class MultiFight extends Script {
@@ -67,8 +65,8 @@ public class MultiFight extends Script {
   public JLabel pAvKilled, attExp, defExp, strExp, stats, wantedStats, xpPerHr, secs;
   public JRadioButton Gate, Door, Gate2, Door2;
   public int startDefExp, startStrExp, startAttExp, radius;
-  public int i[] = new int[9];
-  public int npcArr[] = new int[4];
+  public final int[] i = new int[9];
+  public final int[] npcArr = new int[4];
   public JComboBox fightMode;
   public boolean aw = false;
   public boolean pI = false;
@@ -144,12 +142,7 @@ public class MultiFight extends Script {
     JLabel itemTtl = new JLabel("Item IDs:", SwingConstants.LEFT);
     itemTtl.setFont(new Font("Helvetica", Font.BOLD, 20));
     JCheckBox items = new JCheckBox("Pick up items?");
-    items.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            pI = true;
-          }
-        });
+    items.addActionListener(event -> pI = true);
 
     item1 = new JTextField("1", 4);
     item2 = new JTextField("1", 4);
@@ -178,28 +171,19 @@ public class MultiFight extends Script {
     antiWander.setFont(new Font("Helvetica", Font.BOLD, 20));
     awRadius = new JTextField("1", 2);
     JCheckBox awYN = new JCheckBox("Use anti wander?");
-    awYN.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            if (aw == false) aw = true;
-            else aw = false;
-          }
-        });
+    awYN.addActionListener(event -> aw = !aw);
     awPanel.add(antiWander);
     awPanel.add(awYN);
     awPanel.add(new JLabel("Radius:"));
     awPanel.add(awRadius);
     JButton help = new JButton("Help");
     help.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
+        event ->
             JOptionPane.showMessageDialog(
                 null,
                 "Put the number of squares you want the anti wander square to be (measured from middle of the square to any side). Put 1 to range",
                 "Anti Wander Help",
-                JOptionPane.PLAIN_MESSAGE);
-          }
-        });
+                JOptionPane.PLAIN_MESSAGE));
     awPanel.add(help);
     // ----------------------------------------------------------------------//
     JPanel alPanel = new JPanel(new GridLayout(5, 3));
@@ -219,18 +203,8 @@ public class MultiFight extends Script {
     ButtonGroup doorGroup = new ButtonGroup();
     doorGroup.add(Gate);
     doorGroup.add(Door);
-    Door.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            gOD = 1;
-          }
-        });
-    Gate.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            gOD = 2;
-          }
-        });
+    Door.addActionListener(event -> gOD = 1);
+    Gate.addActionListener(event -> gOD = 2);
     Gate2 = new JRadioButton("Gate");
     Gate2.setActionCommand("Gate");
     Door2 = new JRadioButton("Door");
@@ -238,18 +212,8 @@ public class MultiFight extends Script {
     ButtonGroup doorGroup2 = new ButtonGroup();
     doorGroup2.add(Gate2);
     doorGroup2.add(Door2);
-    Door2.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            gOD2 = 1;
-          }
-        });
-    Gate2.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            gOD2 = 2;
-          }
-        });
+    Door2.addActionListener(event -> gOD2 = 1);
+    Gate2.addActionListener(event -> gOD2 = 2);
     antiLock = new JLabel("Anti LockOut:", SwingConstants.LEFT);
     antiLock.setFont(new Font("Helvetica", Font.BOLD, 20));
     d1IDLbl = new JLabel("Door/Gate closed id:", SwingConstants.LEFT);
@@ -304,12 +268,9 @@ public class MultiFight extends Script {
 
     JCheckBox bYN = new JCheckBox("Bury Bones?");
     bYN.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            if (bones == false) bones = true;
-            else bones = false;
-            i[8] = 20;
-          }
+        event -> {
+          bones = !bones;
+          i[8] = 20;
         });
 
     mP = new JTextField("1", 2);
@@ -321,14 +282,8 @@ public class MultiFight extends Script {
     // -----------------------------------------------------------------------//
     JPanel magePanel = new JPanel(new GridLayout(1, 3));
     JCheckBox mYN = new JCheckBox("Mage?");
-    mYN.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            if (mage == false) mage = true;
-            else mage = false;
-          }
-        });
-    String spellList[] = {
+    mYN.addActionListener(event -> mage = !mage);
+    String[] spellList = {
       "Wind Strike",
       "Confuse",
       "Water Strike",
@@ -357,42 +312,40 @@ public class MultiFight extends Script {
 
     JButton save = new JButton("Save choices");
     save.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            run_script = true;
-            cAtt = Integer.parseInt(att.getText());
-            cDef = Integer.parseInt(def.getText());
-            cStr = Integer.parseInt(str.getText());
-            radius = Integer.parseInt(awRadius.getText());
-            d1CId = Integer.parseInt(d1ID.getText());
-            d2CId = Integer.parseInt(d2ID.getText());
-            d1D = Integer.parseInt(d1Dir.getText());
-            d2D = Integer.parseInt(d2Dir.getText());
-            d1XC = Integer.parseInt(d1X.getText());
-            d1YC = Integer.parseInt(d1Y.getText());
-            d2XC = Integer.parseInt(d2X.getText());
-            d2YC = Integer.parseInt(d2Y.getText());
-            eAHP = Integer.parseInt(eatAtHP.getText());
-            fID = Integer.parseInt(foodId.getText());
-            npcArr[0] = Integer.parseInt(npc1.getText());
-            npcArr[1] = Integer.parseInt(npc2.getText());
-            npcArr[2] = Integer.parseInt(npc3.getText());
-            npcArr[3] = Integer.parseInt(npc4.getText());
-            fTime = Integer.parseInt(cT.getText());
-            i[0] = Integer.parseInt(item1.getText());
-            i[1] = Integer.parseInt(item2.getText());
-            i[2] = Integer.parseInt(item3.getText());
-            i[3] = Integer.parseInt(item4.getText());
-            i[4] = Integer.parseInt(item5.getText());
-            i[5] = Integer.parseInt(item6.getText());
-            i[6] = Integer.parseInt(item7.getText());
-            i[7] = Integer.parseInt(item8.getText());
-            maxPrayer = Integer.parseInt(mP.getText());
-            spell = spells.getSelectedIndex();
-            fName = file.getText() + ".mf";
-            saveSettings(fName);
-            frame.dispose();
-          }
+        event -> {
+          run_script = true;
+          cAtt = Integer.parseInt(att.getText());
+          cDef = Integer.parseInt(def.getText());
+          cStr = Integer.parseInt(str.getText());
+          radius = Integer.parseInt(awRadius.getText());
+          d1CId = Integer.parseInt(d1ID.getText());
+          d2CId = Integer.parseInt(d2ID.getText());
+          d1D = Integer.parseInt(d1Dir.getText());
+          d2D = Integer.parseInt(d2Dir.getText());
+          d1XC = Integer.parseInt(d1X.getText());
+          d1YC = Integer.parseInt(d1Y.getText());
+          d2XC = Integer.parseInt(d2X.getText());
+          d2YC = Integer.parseInt(d2Y.getText());
+          eAHP = Integer.parseInt(eatAtHP.getText());
+          fID = Integer.parseInt(foodId.getText());
+          npcArr[0] = Integer.parseInt(npc1.getText());
+          npcArr[1] = Integer.parseInt(npc2.getText());
+          npcArr[2] = Integer.parseInt(npc3.getText());
+          npcArr[3] = Integer.parseInt(npc4.getText());
+          fTime = Integer.parseInt(cT.getText());
+          i[0] = Integer.parseInt(item1.getText());
+          i[1] = Integer.parseInt(item2.getText());
+          i[2] = Integer.parseInt(item3.getText());
+          i[3] = Integer.parseInt(item4.getText());
+          i[4] = Integer.parseInt(item5.getText());
+          i[5] = Integer.parseInt(item6.getText());
+          i[6] = Integer.parseInt(item7.getText());
+          i[7] = Integer.parseInt(item8.getText());
+          maxPrayer = Integer.parseInt(mP.getText());
+          spell = spells.getSelectedIndex();
+          fName = file.getText() + ".mf";
+          saveSettings(fName);
+          frame.dispose();
         });
     savePanel.add(saveLbl);
     savePanel.add(file);
@@ -498,23 +451,16 @@ public class MultiFight extends Script {
     filName = new JTextField("file", 15);
     JButton load = new JButton("Load from file");
     JButton start = new JButton("Change settings");
-    load.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            readFile(filName.getText());
-          }
-        });
+    load.addActionListener(event -> readFile(filName.getText()));
     start.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent event) {
-            settingsFrame.dispose();
-            try {
-              UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            } catch (Exception e) {
-              System.out.println("Couldn't change look and feel");
-            }
-            addWidgets();
+        event -> {
+          settingsFrame.dispose();
+          try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+          } catch (Exception e) {
+            System.out.println("Couldn't change look and feel");
           }
+          addWidgets();
         });
     settingsPanel.add(new JLabel("File Name:"));
     settingsPanel.add(filName);
@@ -554,13 +500,11 @@ public class MultiFight extends Script {
         i[z] = Integer.parseInt(input.readLine());
       }
       maxPrayer = Integer.parseInt(input.readLine());
-      if (Integer.parseInt(input.readLine()) == 1) aw = true;
-      else aw = false;
+      aw = Integer.parseInt(input.readLine()) == 1;
       gOD = Integer.parseInt(input.readLine());
       gOD2 = Integer.parseInt(input.readLine());
       spell = Integer.parseInt(input.readLine());
-      if (input.readLine().equalsIgnoreCase("true")) mage = true;
-      else mage = false;
+      mage = input.readLine().equalsIgnoreCase("true");
     } catch (FileNotFoundException ex) {
       JOptionPane.showMessageDialog(
           null, "Error: Invalid Filename", "Message Dialog", JOptionPane.PLAIN_MESSAGE);
@@ -579,13 +523,8 @@ public class MultiFight extends Script {
     run_script = true;
   }
 
-  public void start(String command, String parameter[]) {
-    javax.swing.SwingUtilities.invokeLater(
-        new Runnable() {
-          public void run() {
-            loadSettings();
-          }
-        });
+  public void start(String command, String[] parameter) {
+    javax.swing.SwingUtilities.invokeLater(() -> loadSettings());
     while (!run_script && Running()) Wait(100);
     if (run_script) starttime = System.currentTimeMillis();
     minutes = (System.currentTimeMillis() - starttime) / 1000;
@@ -630,8 +569,7 @@ public class MultiFight extends Script {
   }
 
   public boolean npc() {
-    if (nNPC() != -1) return true;
-    else return false;
+    return nNPC() != -1;
   }
 
   public int nNPC() {
@@ -639,14 +577,15 @@ public class MultiFight extends Script {
   }
 
   public boolean sB() {
-    if (InvCount(1263) > 0) return true;
-    else return false;
+    return InvCount(1263) > 0;
   }
 
   public boolean pOB() {
-    if (GetX() < x + radius && GetX() > x - radius && GetY() < y + radius && GetY() > x - radius
-        || !aw) return false;
-    else return true;
+    return (GetX() >= x + radius
+            || GetX() <= x - radius
+            || GetY() >= y + radius
+            || GetY() <= x - radius)
+        && aw;
   }
 
   public void Kill() {
@@ -697,43 +636,41 @@ public class MultiFight extends Script {
 
   public void openGate() {
     new Thread(
-            new Runnable() {
-              public void run() {
-                while (Running()) {
-                  if (lO() && Running()) {
-                    DisplayMessage("Opening gate/door..", 3);
-                    if (gOD == 2) {
-                      while (ObjectAt(d1XC, d1YC) == d1CId) {
-                        AtObject(d1XC, d1YC);
-                        Wait(1000);
-                      }
-                      while (ObjectAt(d2XC, d2YC) == d2CId) {
-                        AtObject(d2XC, d2YC);
-                        Wait(1000);
-                      }
+            () -> {
+              while (Running()) {
+                if (lO() && Running()) {
+                  DisplayMessage("Opening gate/door..", 3);
+                  if (gOD == 2) {
+                    while (ObjectAt(d1XC, d1YC) == d1CId) {
+                      AtObject(d1XC, d1YC);
+                      Wait(1000);
                     }
-                    if (gOD == 1) {
-                      while (DoorAt(d1XC, d1YC, d1D) == d1CId) {
-                        OpenDoor(d1XC, d1YC, d2D);
-                        Wait(1000);
-                      }
-                      while (DoorAt(d2XC, d2YC, d2D) == d2CId) {
-                        OpenDoor(d2XC, d2YC, d2D);
-                        Wait(1000);
-                      }
+                    while (ObjectAt(d2XC, d2YC) == d2CId) {
+                      AtObject(d2XC, d2YC);
+                      Wait(1000);
                     }
                   }
-                  if (GetFightMode() != fS && Running()) {
-                    if (fS == 2) DisplayMessage("Switching fight mode to accurate", 3);
-                    if (fS == 1) DisplayMessage("Switching fight mode to agressive", 3);
-                    if (fS == 3) DisplayMessage("Switching fight mode to defensive", 3);
-                    SetFightMode(fS);
+                  if (gOD == 1) {
+                    while (DoorAt(d1XC, d1YC, d1D) == d1CId) {
+                      OpenDoor(d1XC, d1YC, d2D);
+                      Wait(1000);
+                    }
+                    while (DoorAt(d2XC, d2YC, d2D) == d2CId) {
+                      OpenDoor(d2XC, d2YC, d2D);
+                      Wait(1000);
+                    }
                   }
-                  while (pOB() && aw && Running() && !lO()) {
-                    DisplayMessage("Out of bounds on the full", 3);
-                    WalkNoWait(x, y);
-                    Wait(400);
-                  }
+                }
+                if (GetFightMode() != fS && Running()) {
+                  if (fS == 2) DisplayMessage("Switching fight mode to accurate", 3);
+                  if (fS == 1) DisplayMessage("Switching fight mode to agressive", 3);
+                  if (fS == 3) DisplayMessage("Switching fight mode to defensive", 3);
+                  SetFightMode(fS);
+                }
+                while (pOB() && aw && Running() && !lO()) {
+                  DisplayMessage("Out of bounds on the full", 3);
+                  WalkNoWait(x, y);
+                  Wait(400);
                 }
               }
             })
@@ -747,12 +684,7 @@ public class MultiFight extends Script {
     long minutes = eTime / 1000 / 60;
     eTime -= (minutes * 60 * 1000);
     long seconds = eTime / 1000;
-    return (Long.toString(hours)
-        + " Hours: "
-        + Long.toString(minutes)
-        + " Minutes: "
-        + Long.toString(seconds)
-        + " Seconds");
+    return (hours + " Hours: " + minutes + " Minutes: " + seconds + " Seconds");
   }
 
   public void showReport() {
@@ -792,9 +724,7 @@ public class MultiFight extends Script {
   }
 
   public boolean reportTime() {
-    if ((TickCount() - time) > (5 * 60000)) {
-      return true;
-    } else return false;
+    return (TickCount() - time) > (5 * 60000);
   }
 
   public int cHP() {
@@ -802,59 +732,48 @@ public class MultiFight extends Script {
   }
 
   public boolean sF() {
-    if (InvCount(fID) > 0) return true;
-    else return false;
+    return InvCount(fID) > 0;
   }
 
   public boolean lHP() {
-    if (cHP() <= eAHP) return true;
-    else return false;
+    return cHP() <= eAHP;
   }
 
   public boolean sN() {
-    if (Fatigue() < 99) return false;
-    else return true;
+    return Fatigue() >= 99;
   }
 
   public boolean fOB() {
-    if (InvCount() == 30 && InvCount(20) > 0) return true;
-    else return false;
+    return InvCount() == 30 && InvCount(20) > 0;
   }
 
   public boolean lO() {
     if (gOD == 2 || gOD2 == 2) {
-      if (ObjectAt(d1XC, d1YC) == d1CId || ObjectAt(d2XC, d2YC) == d2CId) return true;
-      else return false;
+      return ObjectAt(d1XC, d1YC) == d1CId || ObjectAt(d2XC, d2YC) == d2CId;
     }
 
     if (gOD == 1 || gOD2 == 1) {
-      if (DoorAt(d1XC, d1YC, d1D) == d1CId || (DoorAt(d2XC, d2YC, d2D) == d2CId)) return true;
-      else return false;
+      return DoorAt(d1XC, d1YC, d1D) == d1CId || (DoorAt(d2XC, d2YC, d2D) == d2CId);
     } else return false;
   }
 
   public boolean wFS() {
-    if (GetFightMode() != fS) return true;
-    else return false;
+    return GetFightMode() != fS;
   }
 
   public boolean fT() {
-    if (GetStat(0) >= cAtt && GetStat(1) >= cDef && GetStat(2) >= cStr) return true;
-    else return false;
+    return GetStat(0) >= cAtt && GetStat(1) >= cDef && GetStat(2) >= cStr;
   }
 
   public boolean fTCS() {
     if (fS == 2) {
-      if (GetStat(0) >= cAtt) return true;
-      else return false;
+      return GetStat(0) >= cAtt;
     }
     if (fS == 3) {
-      if (GetStat(1) >= cDef) return true;
-      else return false;
+      return GetStat(1) >= cDef;
     }
     if (fS == 1) {
-      if (GetStat(2) >= cStr) return true;
-      else return false;
+      return GetStat(2) >= cStr;
     } else return false;
   }
 
@@ -875,11 +794,10 @@ public class MultiFight extends Script {
 
   public boolean iOB(int id) {
     if (GetNearestItem(id) != null) {
-      if (GetNearestItem(id)[0] < x + radius
-          && GetNearestItem(id)[0] > x - radius
-          && GetNearestItem(id)[1] < y + radius
-          && GetNearestItem(id)[1] > x - radius) return false;
-      else return true;
+      return GetNearestItem(id)[0] >= x + radius
+          || GetNearestItem(id)[0] <= x - radius
+          || GetNearestItem(id)[1] >= y + radius
+          || GetNearestItem(id)[1] <= x - radius;
     }
     return false;
   }

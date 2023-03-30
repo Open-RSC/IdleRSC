@@ -133,7 +133,7 @@ public class IronMinerSmelter extends Script {
   }
 
   public void MineRimmingtonIron() {
-    int IronLoc[] = GetNearestObject(102);
+    int[] IronLoc = GetNearestObject(102);
     if (IronLoc[1] < 643 && IronLoc[1] != -1 && IronLoc[0] != -1) {
       AtObject(IronLoc[0], IronLoc[1]);
       Wait(1000);
@@ -154,7 +154,7 @@ public class IronMinerSmelter extends Script {
     }
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     int OreCount = 0;
     int BarCount = 0;
     int DiamondCount = 0;

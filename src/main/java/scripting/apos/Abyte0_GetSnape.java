@@ -7,17 +7,17 @@ public class Abyte0_GetSnape extends Abyte0_Script {
   int[] path = null;
   int loop = 0;
 
-  int halfKey1 = 526;
-  int halfKey2 = 527;
-  int HalfDragonSquareShield1 = 1276;
-  int HalfDragonSquareShield2 = 1277;
+  final int halfKey1 = 526;
+  final int halfKey2 = 527;
+  final int HalfDragonSquareShield1 = 1276;
+  final int HalfDragonSquareShield2 = 1277;
 
-  int lawRune = 42;
+  final int lawRune = 42;
 
-  int irit = 439;
-  int kwuarm = 441;
-  int dwarfWeed = 443;
-  int[] herbs = {
+  final int irit = 439;
+  final int kwuarm = 441;
+  final int dwarfWeed = 443;
+  final int[] herbs = {
     HalfDragonSquareShield1,
     HalfDragonSquareShield2,
     halfKey1,
@@ -44,7 +44,7 @@ public class Abyte0_GetSnape extends Abyte0_Script {
   }
 
   public void init(String params) {
-    String str[] = params.split(",");
+    String[] str = params.split(",");
 
     if (str.length >= 2) {
       fmode = Integer.parseInt(str[0]);
@@ -81,9 +81,9 @@ public class Abyte0_GetSnape extends Abyte0_Script {
         return random(1000, 1500);
       }
 
-      for (int h = 0; h < herbs.length; h++) {
-        if (getInventoryCount(herbs[h]) > 0) {
-          deposit(herbs[h], getInventoryCount(herbs[h]));
+      for (int herb : herbs) {
+        if (getInventoryCount(herb) > 0) {
+          deposit(herb, getInventoryCount(herb));
           return random(1000, 1500);
         }
       }
@@ -108,8 +108,8 @@ public class Abyte0_GetSnape extends Abyte0_Script {
       path = new int[] {351, 621, 336, 620, 320, 607, 307, 594, 294, 584, 282, 569};
 
       // We need to Pick Up the Item if any on floor
-      for (int h = 0; h < herbs.length; h++) {
-        int[] groundItems = getItemById(herbs[h]);
+      for (int herb : herbs) {
+        int[] groundItems = getItemById(herb);
         if (groundItems[0] != -1) {
           if (isAtApproxCoords(groundItems[1], groundItems[2], 8)) {
             pickupItem(groundItems[0], groundItems[1], groundItems[2]);

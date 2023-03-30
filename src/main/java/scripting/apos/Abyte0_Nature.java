@@ -3,7 +3,7 @@ package scripting.apos;
 import compatibility.apos.Script;
 
 /**
- * a simple nature rune chest thiever. picks the chest and... thats about it. works at the chest
+ * a simple nature rune chest thiever. picks the chest and... that's about it. works at the chest
  * near banker stall, dunno if it works at the other one.
  *
  * <p>- yomama`
@@ -47,7 +47,7 @@ public class Abyte0_Nature extends Script {
       return 2000;
     }
 
-    int nats[] = getObjectById(335, 334, 340); // 332,333,334,335,336,337,338,339,340
+    int[] nats = getObjectById(335, 334, 340); // 332,333,334,335,336,337,338,339,340
     if (nats[0] != -1) {
       atObject2(nats[1], nats[2]);
       print("thieve: " + nats[0]);

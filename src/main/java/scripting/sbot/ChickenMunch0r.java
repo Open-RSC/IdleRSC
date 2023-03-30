@@ -7,9 +7,9 @@ public class ChickenMunch0r extends Script {
     return new String[] {"cho0k"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("ChookMunch0r - pun@ran@K@whi@rocke@ran@R", 3);
-    int Meat[] = GetNearestItem(133);
+    int[] Meat = GetNearestItem(133);
 
     while (Running()) {
 

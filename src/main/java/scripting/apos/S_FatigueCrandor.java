@@ -38,10 +38,10 @@ public final class S_FatigueCrandor extends Script implements ActionListener {
   // d sword, d axe. have only ONE.
   private static final int[] weapons = {593, 594};
 
-  private boolean kill_giants = true;
+  private final boolean kill_giants = true;
 
   // properly calculated
-  private double min_fatigue = kill_giants ? 98.92 : 98.665;
+  private final double min_fatigue = kill_giants ? 98.92 : 98.665;
 
   private static final int LESSER_DEMON = 22,
       MOSS_GIANT = 104,
@@ -847,10 +847,7 @@ public final class S_FatigueCrandor extends Script implements ActionListener {
     if (p == null) {
       return false;
     }
-    if (y >= p.y) {
-      return false;
-    }
-    return true;
+    return y < p.y;
   }
 
   private static Point get_safespot(int x, int y) {

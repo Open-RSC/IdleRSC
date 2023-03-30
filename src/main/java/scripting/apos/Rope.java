@@ -10,7 +10,7 @@ public class Rope extends Script {
   private int[] initial_xp;
   private long time;
   private String filename;
-  private long[] screenshot = new long[4];
+  private final long[] screenshot = new long[4];
 
   public Rope(String e) {
     //       super(e);
@@ -132,7 +132,6 @@ public class Rope extends Script {
     }
     if (s.contains("too tired")) {
       sleep_at = getFatigue() - 1;
-      return;
     }
   }
 

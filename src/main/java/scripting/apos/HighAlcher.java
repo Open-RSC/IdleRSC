@@ -17,7 +17,7 @@ public final class HighAlcher extends Script {
   private long menu_time;
   private boolean spell_failed, prevent_logout = false;
   private long spell_fail_wait;
-  private Point bankChest = new Point(58, 731);
+  private final Point bankChest = new Point(58, 731);
 
   private static final int[] fire_staffs = {197, 615, 682};
 
@@ -94,9 +94,9 @@ public final class HighAlcher extends Script {
       }
       if (getInventoryIndex(fire_staffs) == -1) {
         int len = fire_staffs.length;
-        for (int i = 0; i < len; ++i) {
-          if (bankCount(fire_staffs[i]) > 0) {
-            withdraw(fire_staffs[i], 1);
+        for (int fireStaff : fire_staffs) {
+          if (bankCount(fireStaff) > 0) {
+            withdraw(fireStaff, 1);
             return random(600, 900);
           }
         }

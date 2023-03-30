@@ -16,11 +16,11 @@ public class GnomeAgility extends Script {
   int Trips = 1;
   long StartTime = 0;
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     StartSleeper();
     TotalStartXP = GetExperience(16);
     StartLevel = GetStat(16);
-    StartTime = (long) ((int) (TickCount() / 1000));
+    StartTime = (int) (TickCount() / 1000);
     Println("##### Start Agility Experience: " + TotalStartXP + " (" + StartLevel + ")");
     while (Running()) {
 
@@ -127,17 +127,15 @@ public class GnomeAgility extends Script {
 
   public void StartSleeper() {
     new Thread(
-            new Runnable() {
-              public void run() {
-                while (Running()) {
-                  if (Fatigue() > 95 && !Sleeping()) {
-                    Println("Fatigue is " + Fatigue() + ", using sleeping bag");
-                    Use(FindInv(1263));
-                    BagCount++;
-                    Wait(5000);
-                  }
-                  Wait(250);
+            () -> {
+              while (Running()) {
+                if (Fatigue() > 95 && !Sleeping()) {
+                  Println("Fatigue is " + Fatigue() + ", using sleeping bag");
+                  Use(FindInv(1263));
+                  BagCount++;
+                  Wait(5000);
                 }
+                Wait(250);
               }
             })
         .start();

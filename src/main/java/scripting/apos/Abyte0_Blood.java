@@ -4,8 +4,8 @@ public class Abyte0_Blood extends Abyte0_Script {
   // Version 3.1 2021-08-17 Support Cake as 330
 
   int fmode = 2;
-  int coinsId = 10;
-  int bloodId = 619;
+  final int coinsId = 10;
+  final int bloodId = 619;
   int foodId = 373;
   int minFoodToBankAt = 3;
   int SafeOrNot = 0; // 0 oui 1 non
@@ -19,7 +19,7 @@ public class Abyte0_Blood extends Abyte0_Script {
   }
 
   public void init(String params) {
-    String str[] = params.split(",");
+    String[] str = params.split(",");
 
     if (str.length >= 5) {
       fmode = Integer.parseInt(str[0]);
@@ -91,7 +91,7 @@ public class Abyte0_Blood extends Abyte0_Script {
       } else {
         // si asser de food on thieve le chest :D
         // si blblabla  614 3398      614 3402
-        int bloodChest[] = getObjectById(337);
+        int[] bloodChest = getObjectById(337);
         if (getHpPercent() < 60) {
           if (inCombat()) {
             RunFromCombat();
@@ -203,7 +203,7 @@ public class Abyte0_Blood extends Abyte0_Script {
           || getInventoryCount(bloodId) > 5
           || getInventoryCount(coinsId) > 1000) {
         if (!isQuestMenu()) {
-          int banker[] = getNpcByIdNotTalk(new int[] {95});
+          int[] banker = getNpcByIdNotTalk(95);
           if (banker[0] != -1) {
             talkToNpc(banker[0]);
             return random(2000, 2700);
@@ -251,7 +251,7 @@ public class Abyte0_Blood extends Abyte0_Script {
 
   public int walk() {
     if (getInventoryCount(foodId) <= minFoodToBankAt) {
-      // wee need to bank
+      // we need to bank
       // 617, 558, 609, 565, 603, 582, 600, 595, 588, 598, 590, 578, 581, 574
       if (getX() > 600) {
         if (getY() < 558) walkTo(617, 558);

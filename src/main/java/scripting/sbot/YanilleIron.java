@@ -3,7 +3,7 @@ package scripting.sbot;
 import compatibility.sbot.Script;
 
 public class YanilleIron extends Script {
-  public long StartTime = System.currentTimeMillis();
+  public final long StartTime = System.currentTimeMillis();
   public int Trips = 0;
   public int RockCount = 0;
 
@@ -11,7 +11,7 @@ public class YanilleIron extends Script {
     return new String[] {"yaniron"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage(
         "@ran@-@ran@=@ran@=@ran@:@ora@Yanille Iron Miner By Unknown Idiot started@ran@:@ran@=@ran@=@ran@-",
         3);
@@ -39,19 +39,18 @@ public class YanilleIron extends Script {
   public void DoMining() {
     DisplayMessage("@ran@-@ran@=@ran@=@ran@:@ora@UI Yanille Miner: @gre@Mining iron...", 3);
     while (InvCount() < 30) {
-      if (Fatigue() >= 95 && Running() == true) {
-        while (Sleeping() == false) {
+      if (Fatigue() >= 95 && Running()) {
+        while (!Sleeping()) {
           Use(FindInv(1263));
           Wait(2500);
         }
-        while (Sleeping() == true) {
+        while (Sleeping()) {
           Wait(500);
           Beep();
         }
       }
-      if (ObjectAt(567, 716) == 102 && Running() == true) AtObject(567, 716);
-      if (ObjectAt(569, 715) == 102 && ObjectAt(567, 716) == 98 && Running() == true)
-        AtObject(569, 715);
+      if (ObjectAt(567, 716) == 102 && Running()) AtObject(567, 716);
+      if (ObjectAt(569, 715) == 102 && ObjectAt(567, 716) == 98 && Running()) AtObject(569, 715);
       Wait(2000);
     }
   }
@@ -74,13 +73,13 @@ public class YanilleIron extends Script {
   // BANKING PROCEDURE
   public void DoBanking() {
     DisplayMessage("@ran@-@ran@=@ran@=@ran@:@ora@UI Yanille Miner: @gre@Banking...", 3);
-    while (QuestMenu() == false) {
+    while (!QuestMenu()) {
       int BankerID = GetNearestNPC(95);
       TalkToNPC(BankerID);
       Wait(2000);
     }
     Answer(0);
-    while (Bank() == false) Wait(10);
+    while (!Bank()) Wait(10);
     while (InvCount(151) > 0) {
       Deposit(151, 1);
       Wait(100);

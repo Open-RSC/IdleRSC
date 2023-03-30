@@ -12,7 +12,7 @@ public class MageDogs extends Script {
   int BagCount = 0;
   int ShootCount = 0;
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     Println("##### Start Magic Experience: " + GetExperience(6) + " (" + GetStat(6) + ")");
     while (Running()) FightGuards();
     Println("#### Script Ended ####");

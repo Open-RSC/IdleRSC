@@ -8,7 +8,7 @@ public class HerberTaverly extends Script {
     return (new String[] {"herbme"});
   }
 
-  public void start(String s, String as[]) {
+  public void start(String s, String[] as) {
     if (as.length != 1) {
       DisplayMessage("@gre@Bruncle: @whi@Invalid number of parameters. /RUN herbmeup [STYLE]", 3);
     } else {
@@ -41,133 +41,133 @@ public class HerberTaverly extends Script {
             do {
               if (k != -1 || !Running() || InvCount() >= 30) break;
               k = GetNearestNPC(c);
-              int ai[] = GetNearestItem(1);
+              int[] ai = GetNearestItem(1);
               if (ai[0] != -1 && ai[1] != -1 && Running()) {
                 TakeItem(ai[0], ai[1], 1);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai1[] = GetNearestItem(40);
+              int[] ai1 = GetNearestItem(40);
               if (ai1[0] != -1 && ai1[1] != -1 && Running()) {
                 TakeItem(ai1[0], ai1[1], 40);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai2[] = GetNearestItem(436);
+              int[] ai2 = GetNearestItem(436);
               if (ai2[0] != -1 && ai2[1] != -1 && Running()) {
                 TakeItem(ai2[0], ai2[1], 436);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai3[] = GetNearestItem(437);
+              int[] ai3 = GetNearestItem(437);
               if (ai3[0] != -1 && ai3[1] != -1 && Running()) {
                 TakeItem(ai3[0], ai3[1], 437);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai4[] = GetNearestItem(438);
+              int[] ai4 = GetNearestItem(438);
               if (ai4[0] != -1 && ai4[1] != -1 && Running()) {
                 TakeItem(ai4[0], ai4[1], 438);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai5[] = GetNearestItem(439);
+              int[] ai5 = GetNearestItem(439);
               if (ai5[0] != -1 && ai5[1] != -1 && Running()) {
                 TakeItem(ai5[0], ai5[1], 439);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai6[] = GetNearestItem(440);
+              int[] ai6 = GetNearestItem(440);
               if (ai6[0] != -1 && ai6[1] != -1 && Running()) {
                 TakeItem(ai6[0], ai6[1], 440);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai7[] = GetNearestItem(441);
+              int[] ai7 = GetNearestItem(441);
               if (ai7[0] != -1 && ai7[1] != -1 && Running()) {
                 TakeItem(ai7[0], ai7[1], 441);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai8[] = GetNearestItem(442);
+              int[] ai8 = GetNearestItem(442);
               if (ai8[0] != -1 && ai8[1] != -1 && Running()) {
                 TakeItem(ai8[0], ai8[1], 442);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai9[] = GetNearestItem(443);
+              int[] ai9 = GetNearestItem(443);
               if (ai9[0] != -1 && ai9[1] != -1 && Running()) {
                 TakeItem(ai9[0], ai9[1], 443);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai10[] = GetNearestItem(815);
+              int[] ai10 = GetNearestItem(815);
               if (ai10[0] != -1 && ai10[1] != -1 && Running()) {
                 TakeItem(ai10[0], ai10[1], 815);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai11[] = GetNearestItem(817);
+              int[] ai11 = GetNearestItem(817);
               if (ai11[0] != -1 && ai11[1] != -1 && Running()) {
                 TakeItem(ai11[0], ai11[1], 817);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai12[] = GetNearestItem(819);
+              int[] ai12 = GetNearestItem(819);
               if (ai12[0] != -1 && ai12[1] != -1 && Running()) {
                 TakeItem(ai12[0], ai12[1], 819);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai13[] = GetNearestItem(821);
+              int[] ai13 = GetNearestItem(821);
               if (ai13[0] != -1 && ai13[1] != -1 && Running()) {
                 TakeItem(ai13[0], ai13[1], 821);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai14[] = GetNearestItem(823);
+              int[] ai14 = GetNearestItem(823);
               if (ai14[0] != -1 && ai14[1] != -1 && Running()) {
                 TakeItem(ai14[0], ai14[1], 823);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai15[] = GetNearestItem(933);
+              int[] ai15 = GetNearestItem(933);
               if (ai15[0] != -1 && ai15[1] != -1 && Running()) {
                 TakeItem(ai15[0], ai15[1], 933);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai16[] = GetNearestItem(42);
+              int[] ai16 = GetNearestItem(42);
               if (ai16[0] != -1 && ai16[1] != -1 && Running()) {
                 TakeItem(ai16[0], ai16[1], 42);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai17[] = GetNearestItem(33);
+              int[] ai17 = GetNearestItem(33);
               if (ai17[0] != -1 && ai17[1] != -1 && Running()) {
                 TakeItem(ai17[0], ai17[1], 33);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai18[] = GetNearestItem(40);
+              int[] ai18 = GetNearestItem(40);
               if (ai18[0] != -1 && ai18[1] != -1 && Running()) {
                 TakeItem(ai18[0], ai18[1], 40);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai19[] = GetNearestItem(526);
+              int[] ai19 = GetNearestItem(526);
               if (ai19[0] != -1 && ai19[1] != -1 && Running()) {
                 TakeItem(ai19[0], ai19[1], 526);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai20[] = GetNearestItem(527);
+              int[] ai20 = GetNearestItem(527);
               if (ai20[0] != -1 && ai20[1] != -1 && Running()) {
                 TakeItem(ai20[0], ai20[1], 527);
                 Wait(1500);
                 k = GetNearestNPC(c);
               }
-              int ai21[] = GetNearestItem(1277);
+              int[] ai21 = GetNearestItem(1277);
               if (ai21[0] != -1 && ai21[1] != -1 && Running()) {
                 TakeItem(ai21[0], ai21[1], 1277);
                 Wait(1500);

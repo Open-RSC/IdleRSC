@@ -33,7 +33,6 @@ public final class S_Teleporter extends Script {
       }
     } catch (Throwable t) {
       System.out.println("Error parsing parameters. " + "Example: spellid OR placename");
-      return;
     }
   }
 

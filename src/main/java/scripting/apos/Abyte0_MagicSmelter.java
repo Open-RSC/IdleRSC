@@ -23,22 +23,22 @@ public class Abyte0_MagicSmelter extends Script {
   int[] mix;
 
   // Ores
-  int oreIron = 151;
-  int oreMith = 153;
-  int oreAddy = 150;
-  int oreRune = 409;
-  int oreCoal = 155;
-  int oreSilver = 383;
-  int oreGold = 152;
+  final int oreIron = 151;
+  final int oreMith = 153;
+  final int oreAddy = 150;
+  final int oreRune = 409;
+  final int oreCoal = 155;
+  final int oreSilver = 383;
+  final int oreGold = 152;
 
   // Bars
-  int barIron = 170;
-  int barSteel = 171;
-  int barMith = 173;
-  int barAddy = 174;
-  int barRune = 408;
-  int barSilver = 384;
-  int barGold = 172;
+  final int barIron = 170;
+  final int barSteel = 171;
+  final int barMith = 173;
+  final int barAddy = 174;
+  final int barRune = 408;
+  final int barSilver = 384;
+  final int barGold = 172;
 
   boolean oneItemSmelting = false;
 
@@ -58,24 +58,37 @@ public class Abyte0_MagicSmelter extends Script {
 
     oneItemSmelting = false;
 
-    if (params.equals("silver")) {
-      mix = new int[] {barSilver, 0, oreSilver, 27, oreCoal, 0};
-      oneItemSmelting = true;
-    } else if (params.equals("gold")) {
-      mix = new int[] {barGold, 0, oreGold, 27, oreCoal, 0};
-      oneItemSmelting = true;
-    } else if (params.equals("i")) {
-      mix = new int[] {barIron, 0, oreIron, 27, oreCoal, 0};
-      oneItemSmelting = true;
-    } else if (params.equals("s")) mix = new int[] {barSteel, 9, oreIron, 9, oreCoal, 18};
-    else if (params.equals("m")) mix = new int[] {barMith, 5, oreMith, 5, oreCoal, 20};
-    else if (params.equals("a")) mix = new int[] {barAddy, 3, oreAddy, 3, oreCoal, 18};
-    else if (params.equals("r")) mix = new int[] {barRune, 3, oreRune, 3, oreCoal, 24};
-    else {
-      print("LowerCase Letter Param ARE: i = iron, s = steel, m = mith, a = addy, r = runite");
-      print("LowerCase Letter Param ARE: silver = silver, gold = gold");
-      print("exemple for rune type: abyte0_magicsmelter r");
-      stopScript();
+    switch (params) {
+      case "silver":
+        mix = new int[] {barSilver, 0, oreSilver, 27, oreCoal, 0};
+        oneItemSmelting = true;
+        break;
+      case "gold":
+        mix = new int[] {barGold, 0, oreGold, 27, oreCoal, 0};
+        oneItemSmelting = true;
+        break;
+      case "i":
+        mix = new int[] {barIron, 0, oreIron, 27, oreCoal, 0};
+        oneItemSmelting = true;
+        break;
+      case "s":
+        mix = new int[] {barSteel, 9, oreIron, 9, oreCoal, 18};
+        break;
+      case "m":
+        mix = new int[] {barMith, 5, oreMith, 5, oreCoal, 20};
+        break;
+      case "a":
+        mix = new int[] {barAddy, 3, oreAddy, 3, oreCoal, 18};
+        break;
+      case "r":
+        mix = new int[] {barRune, 3, oreRune, 3, oreCoal, 24};
+        break;
+      default:
+        print("LowerCase Letter Param ARE: i = iron, s = steel, m = mith, a = addy, r = runite");
+        print("LowerCase Letter Param ARE: silver = silver, gold = gold");
+        print("exemple for rune type: abyte0_magicsmelter r");
+        stopScript();
+        break;
     }
 
     barType = params;
@@ -95,7 +108,7 @@ public class Abyte0_MagicSmelter extends Script {
     }
     if (isBanking()) {
       if (getInventoryCount(40) <= 30) {
-        // on withdraw les nats
+        // on withdraw less nats
         withdraw(40, 100);
         return 1000 + random(10, 500);
       }
@@ -133,7 +146,7 @@ public class Abyte0_MagicSmelter extends Script {
           return 1000 + random(10, 500);
         } else if (getInventoryCount(mix[4]) == 0) {
           withdraw(mix[4], mix[5]);
-          // withdraw(oreCoal,8);//18 only take out 10 so i try 10 then 8 after...
+          // withdraw(oreCoal,8);//18 only take out 10 so I try 10 then 8 after...
           return 1000 + random(10, 500);
         } else if (getInventoryCount(mix[2]) == mix[3]
             && getInventoryCount(mix[4]) == mix[5]
@@ -179,7 +192,7 @@ public class Abyte0_MagicSmelter extends Script {
   }
 
   public final int talkBanker() {
-    int banker[] = getNpcByIdNotTalk(new int[] {95});
+    int[] banker = getNpcByIdNotTalk(95);
     if (banker[0] != -1 && !isBanking()) {
       // print("Hello you Banker!");
       talkToNpc(banker[0]);

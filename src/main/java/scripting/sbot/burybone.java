@@ -10,31 +10,31 @@ public class burybone extends Script {
     return new String[] {"burybone"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     level = Integer.parseInt(parameter[0]);
     while (Running()) {
-      if (Fatigue() >= 90 && Running() == true) {
-        while (Sleeping() == false && Running() == true) {
+      if (Fatigue() >= 90 && Running()) {
+        while (!Sleeping() && Running()) {
           Use(FindInv(1263));
           Wait(2500);
         }
-        while (Sleeping() == true && Running() == true) {
+        while (Sleeping() && Running()) {
           Wait(100);
         }
       }
       while (InvCount() < 30) {
-        int i[] = GetNearestItem(20);
+        int[] i = GetNearestItem(20);
         TakeItem(i[0], i[1], 20);
         Wait(1000);
       }
       if (InvCount() == 30) {
         while (InvCount(20) > 0) {
-          if (Fatigue() >= 90 && Running() == true) {
-            while (Sleeping() == false && Running() == true) {
+          if (Fatigue() >= 90 && Running()) {
+            while (!Sleeping() && Running()) {
               Use(FindInv(1263));
               Wait(2500);
             }
-            while (Sleeping() == true && Running() == true) {
+            while (Sleeping() && Running()) {
               Wait(100);
             }
           }
@@ -46,7 +46,7 @@ public class burybone extends Script {
       if (GetCurrentStat(5) == level) {
         Logout();
       }
-      if (LoggedIn() == false && GetCurrentStat(5) != level) {
+      if (!LoggedIn() && GetCurrentStat(5) != level) {
         Login("funman", "hehehe");
       }
     }

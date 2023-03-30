@@ -4,6 +4,7 @@ import compatibility.sbot.Script;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Objects;
 import javax.swing.*;
 
 public class AnywhereMiner extends Script implements ActionListener {
@@ -19,35 +20,35 @@ public class AnywhereMiner extends Script implements ActionListener {
   JButton cmdStart;
   JButton cmdCancel;
 
-  int copper_rock_id = 100;
-  int iron_rock_id = 102;
-  int tin_rock_id = 104;
-  int mithril_rock_id = 106;
-  int adamantite_rock_id = 108;
-  int coal_rock_id = 110;
-  int gold_rock_id = 112;
-  int clay_rock_id = 114;
-  int silver_rock_id = 196;
+  final int copper_rock_id = 100;
+  final int iron_rock_id = 102;
+  final int tin_rock_id = 104;
+  final int mithril_rock_id = 106;
+  final int adamantite_rock_id = 108;
+  final int coal_rock_id = 110;
+  final int gold_rock_id = 112;
+  final int clay_rock_id = 114;
+  final int silver_rock_id = 196;
 
-  int banker_id = 95;
+  final int banker_id = 95;
   int fat_level = 95;
-  int sleepingbag_id = 1263;
+  final int sleepingbag_id = 1263;
 
-  int copper_ore = 150;
-  int iron_ore = 151;
-  int tin_ore = 202;
-  int gold = 152;
-  int silver = 383;
-  int mithril_ore = 153;
-  int coal = 155;
-  int adamantite_ore = 154;
+  final int copper_ore = 150;
+  final int iron_ore = 151;
+  final int tin_ore = 202;
+  final int gold = 152;
+  final int silver = 383;
+  final int mithril_ore = 153;
+  final int coal = 155;
+  final int adamantite_ore = 154;
 
-  int uncut_diamond = 157;
-  int uncut_ruby = 158;
-  int uncut_emerald = 159;
-  int uncut_sapphire = 160;
+  final int uncut_diamond = 157;
+  final int uncut_ruby = 158;
+  final int uncut_emerald = 159;
+  final int uncut_sapphire = 160;
 
-  int ores_gems[] =
+  final int[] ores_gems =
       new int[] {
         copper_ore,
         iron_ore,
@@ -70,14 +71,9 @@ public class AnywhereMiner extends Script implements ActionListener {
     return new String[] {"anywhereminer"};
   }
 
-  public void start(String cmd, String params[]) {
+  public void start(String cmd, String[] params) {
     Msg("@red@Anywhere @whi@Miner + Banker - by @ran@e@ran@X@ran@e@ran@m@ran@p@ran@l@ran@a@ran@r");
-    javax.swing.SwingUtilities.invokeLater(
-        new Runnable() {
-          public void run() {
-            LoadDialog();
-          }
-        });
+    javax.swing.SwingUtilities.invokeLater(() -> LoadDialog());
     while (!run_script && Running()) Wait(100);
     if (run_script) {
       Msg("Running mining script..");
@@ -128,7 +124,7 @@ public class AnywhereMiner extends Script implements ActionListener {
   }
 
   public void actionPerformed(ActionEvent e) {
-    if (e.getActionCommand() == "Start!") {
+    if (Objects.equals(e.getActionCommand(), "Start!")) {
       run_script = true;
     } else {
       fmeSettings.dispose();
@@ -254,12 +250,12 @@ public class AnywhereMiner extends Script implements ActionListener {
   }
 
   public void ParseCommand(String cmd) {
-    if (cmd.indexOf("(") < 0 && cmd.indexOf(")") < 0) {
+    if (!cmd.contains("(") && !cmd.contains(")")) {
       Msg("Invalid command: " + cmd);
       return;
     }
     String dothing = cmd.substring(0, cmd.indexOf("("));
-    String params[] = cmd.substring(cmd.indexOf("(") + 1, cmd.indexOf(")")).split(",");
+    String[] params = cmd.substring(cmd.indexOf("(") + 1, cmd.indexOf(")")).split(",");
     if (dothing.equalsIgnoreCase("Walk")) {
       Println("Walking to " + params[0] + "," + params[1]);
       ForceWalk(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
@@ -311,27 +307,26 @@ public class AnywhereMiner extends Script implements ActionListener {
 
   public void WaitForNPCMessage(int type, int time, String message) {
     ResetLastNPCMessage();
-    while (LastNPCMessage().indexOf(message) < 0) {
+    while (!LastNPCMessage().contains(message)) {
       ResetLastServerMessage();
       ResetLastNPCMessage();
       int id = GetNearestNPC(type);
       long T = TickCount();
       TalkToNPC(id);
       while (TickCount() - T < 8000
-          && LastServerMessage().indexOf("busy") < 0
-          && LastNPCMessage() == "") Wait(100);
-      if (LastServerMessage().indexOf("busy") < 0) {
+          && !LastServerMessage().contains("busy")
+          && Objects.equals(LastNPCMessage(), "")) Wait(100);
+      if (!LastServerMessage().contains("busy")) {
         T = TickCount();
         if (LastNPCMessage() != null)
-          while (LastNPCMessage().indexOf(message) < 0 && TickCount() - T < (time * 1000))
-            Wait(100);
+          while (!LastNPCMessage().contains(message) && TickCount() - T < (time * 1000L)) Wait(100);
       }
       Wait(1000);
     }
   }
 
   public void ChatMessage(String message) {
-    if (Running() == true) {
+    if (Running()) {
       Msg("Anti-Mod protection activated,");
       Msg("Chat recieved: " + message);
       Quit();
@@ -339,7 +334,7 @@ public class AnywhereMiner extends Script implements ActionListener {
   }
 
   public void TradeRequest(int PlayerID) {
-    if (Running() == true) {
+    if (Running()) {
       Msg("Anti-Mod protection activated,");
       Msg("Trade recieved from: " + PlayerID);
       Quit();

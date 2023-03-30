@@ -167,7 +167,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
     int raw = getInvRawID();
     if (raw != -1) {
       if (isInBankArea()) {
-        int doors[] = getObjectById(ID_BANK_SHUT);
+        int[] doors = getObjectById(ID_BANK_SHUT);
         if (doors[0] != -1) {
           atObject(doors[1], doors[2]);
           return random(800, 1200);
@@ -183,7 +183,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
         return random(1000, 2000);
       }
       if (isInShopArea()) {
-        int ladder[] = getObjectById(ID_LADDER_UP);
+        int[] ladder = getObjectById(ID_LADDER_UP);
         if (ladder[0] != -1) {
           atObject(ladder[1], ladder[2]);
           return random(1500, 3000);
@@ -193,7 +193,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
       // on range floor
       if (getY() > 1300) {
         if (getFatigue() > sleep_at) {
-          int bed[] = getObjectById(ID_BED);
+          int[] bed = getObjectById(ID_BED);
           if (bed[0] != -1) {
             atObject(bed[1], bed[2]);
             return random(1500, 2500);
@@ -218,7 +218,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
     } else {
       // on range floor
       if (getY() > 1300) {
-        int ladder[] = getObjectById(ID_LADDER_DOWN);
+        int[] ladder = getObjectById(ID_LADDER_DOWN);
         if (ladder[0] != -1) {
           atObject(ladder[1], ladder[2]);
           return random(1500, 3000);
@@ -226,7 +226,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
         return 0;
       }
       if (isInBankArea()) {
-        int banker[] = getNpcByIdNotTalk(BANKERS);
+        int[] banker = getNpcByIdNotTalk(BANKERS);
         if (banker[0] != -1) {
           talkToNpc(banker[0]);
           return random(2500, 4500);
@@ -253,7 +253,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
         return 0;
       }
       // midway
-      int doors[] = getObjectById(ID_BANK_SHUT);
+      int[] doors = getObjectById(ID_BANK_SHUT);
       if (doors[0] != -1) {
         atObject(doors[1], doors[2]);
         return random(800, 1200);
@@ -288,9 +288,9 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
     return "Stormy's Edgeville Chef";
   }
 
-  private static int parseSplit(String str)[] {
-    String as[] = str.split(",");
-    int ai[] = new int[as.length];
+  private static int[] parseSplit(String str) {
+    String[] as = str.split(",");
+    int[] ai = new int[as.length];
     for (int i = 0; i < ai.length; ++i) {
       ai[i] = Integer.parseInt(as[i]);
     }
@@ -336,10 +336,7 @@ public final class S_EdgevilleChef extends Script implements ActionListener, Ite
     if (myx <= x1 && myx >= x2 && myy >= y2 && myy <= y1) {
       return true;
     }
-    if (myx <= x2 && myx >= x1 && myy >= y1 && myy <= y2) {
-      return true;
-    }
-    return false;
+    return myx <= x2 && myx >= x1 && myy >= y1 && myy <= y2;
   }
 
   private static boolean isInBankArea(int x, int y) {

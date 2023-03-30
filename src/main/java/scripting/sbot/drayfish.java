@@ -7,16 +7,16 @@ public class drayfish extends Script {
     return new String[] {"drayfish"};
   }
 
-  public void start(String command, String parameter[]) {
-    while (Running() == true) {
+  public void start(String command, String[] parameter) {
+    while (Running()) {
 
-      while (Running() == true && InvCount() < 30) {
-        if (Fatigue() >= 95 && Running() == true) {
-          while (Sleeping() == false) {
+      while (Running() && InvCount() < 30) {
+        if (Fatigue() >= 95 && Running()) {
+          while (!Sleeping()) {
             Use(FindInv(1263));
             Wait(2500);
           }
-          while (Sleeping() == true) {
+          while (Sleeping()) {
             Wait(100);
           }
         }
@@ -36,13 +36,13 @@ public class drayfish extends Script {
       Wait(100);
       Walk(220, 633);
 
-      while (QuestMenu() == false) {
+      while (!QuestMenu()) {
         int BankerID = GetNearestNPC(95);
         TalkToNPC(BankerID);
         Wait(1300);
       }
       Answer(0);
-      while (Bank() == false) Wait(2000);
+      while (!Bank()) Wait(2000);
       while (InvCount(351) > 1) {
         Deposit(351, 1);
         Wait(100);

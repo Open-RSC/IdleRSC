@@ -3,6 +3,7 @@ package scripting.apos;
 import compatibility.apos.Script;
 import java.io.IOException;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.swing.*;
 
@@ -17,7 +18,7 @@ public class B_Herblore extends Script {
   private boolean unfinished;
   private int[] initial_xp;
   private long time;
-  private long[] screenshot = new long[4];
+  private final long[] screenshot = new long[4];
   private String filename;
   private String name;
   private int potion_choice;
@@ -463,9 +464,9 @@ public class B_Herblore extends Script {
           new URL(
               "https://example.com/submit"
                   + "?name="
-                  + URLEncoder.encode("blood", "UTF-8")
+                  + URLEncoder.encode("blood", StandardCharsets.UTF_8)
                   + "&skills="
-                  + URLEncoder.encode(stats.toString(), "UTF-8"));
+                  + URLEncoder.encode(stats.toString(), StandardCharsets.UTF_8));
 
       URLConnection conn = url.openConnection();
       conn.setConnectTimeout(5000);
@@ -482,17 +483,17 @@ public class B_Herblore extends Script {
     return 0;
   }
 
-  private class Potion {
-    public String potion_name;
-    public String herb_name;
-    public int level;
-    public double xp;
-    public int grimy;
-    public double grimy_xp;
-    public int clean;
-    public int secondary;
-    public int unfinished;
-    public int finished;
+  private static class Potion {
+    public final String potion_name;
+    public final String herb_name;
+    public final int level;
+    public final double xp;
+    public final int grimy;
+    public final double grimy_xp;
+    public final int clean;
+    public final int secondary;
+    public final int unfinished;
+    public final int finished;
 
     public Potion(
         String potion_name,

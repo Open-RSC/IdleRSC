@@ -1,12 +1,12 @@
 package scripting.apos;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.util.Objects;
 import javax.swing.*;
 
 /**
  * * This script is used to cook your food in catherby. * start at catherby bank, change the rawID
- * and cookedID and burntID varables too cook whatever you want. * * v 1.5 * - yomama` edited by
+ * and cookedID and burntID varables to cook whatever you want. * * v 1.5 * - yomama` edited by
  * XcendroX Edited by Abyte0
  */
 // Version 2.0 Updated to OpenRSC 2012-07-02
@@ -21,33 +21,33 @@ public class Abyte0_CatherbyCooker extends Abyte0_Script {
   int burntID = 368;
   // enter burnt fishies ID
 
-  String tunasParam = "T";
-  String lobstersParam = "L";
-  String swordfishsParam = "S";
-  String sharksParam = "Shark";
+  final String tunasParam = "T";
+  final String lobstersParam = "L";
+  final String swordfishsParam = "S";
+  final String sharksParam = "Shark";
 
-  int[] Tunas = new int[] {366, 367, 368};
+  final int[] Tunas = new int[] {366, 367, 368};
   // 366: Raw Tuna
   // 367: Tuna
   // 368: Burnt fish
 
-  int[] Swordfishs = new int[] {369, 370, 371};
+  final int[] Swordfishs = new int[] {369, 370, 371};
   // 369: Raw Swordfish
   // 370: Swordfish
   // 371: Burnt Swordfish
 
-  int[] Lobsters = new int[] {372, 373, 374};
+  final int[] Lobsters = new int[] {372, 373, 374};
   // 372: Raw Lobster
   // 373: Lobster
   // 374: Burnt Lobster
 
-  int[] Sharks = new int[] {545, 546, 547};
+  final int[] Sharks = new int[] {545, 546, 547};
   // 545: Raw Shark
   // 546: Shark
   // 547: Burnt Shark
 
-  int[] cookArea = new int[] {435, 485};
-  int[] bankArea = new int[] {439, 495};
+  final int[] cookArea = new int[] {435, 485};
+  final int[] bankArea = new int[] {439, 495};
 
   public Abyte0_CatherbyCooker(String e) {
     super(e);
@@ -74,10 +74,10 @@ public class Abyte0_CatherbyCooker extends Abyte0_Script {
                   fishes,
                   null);
 
-      if (S_FightMode == "Tunas") params = tunasParam;
-      if (S_FightMode == "Lobsters") params = lobstersParam;
-      if (S_FightMode == "Swordfishs") params = swordfishsParam;
-      if (S_FightMode == "Sharks") params = sharksParam;
+      if (Objects.equals(S_FightMode, "Tunas")) params = tunasParam;
+      if (Objects.equals(S_FightMode, "Lobsters")) params = lobstersParam;
+      if (Objects.equals(S_FightMode, "Swordfishs")) params = swordfishsParam;
+      if (Objects.equals(S_FightMode, "Sharks")) params = sharksParam;
     }
 
     if (params.equals(tunasParam)) {
@@ -141,7 +141,7 @@ public class Abyte0_CatherbyCooker extends Abyte0_Script {
     }
 
     if (distanceTo(bankArea[0], bankArea[1]) < 10) {
-      int banker[] = getNpcByIdNotTalk(BANKERS);
+      int[] banker = getNpcByIdNotTalk(BANKERS);
       if (banker[0] != -1) talkToNpc(banker[0]);
       return 2500;
     } else {

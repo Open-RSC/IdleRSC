@@ -8,11 +8,11 @@ public class dummy extends Script {
     return new String[] {"dummy"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@dre@=@whi@=@dre@= @lre@Dummy Script Started - By Fert @dre@=@whi@=@dre@=", 3);
 
     while (Running()) {
-      if (Fatigue() > 95 && Sleeping() == false) {
+      if (Fatigue() > 95 && !Sleeping()) {
         DisplayMessage("@Dre@SBoT: @whi@Sleeping", 3);
         Use(FindInv(1263));
         Wait(5000);
@@ -21,8 +21,8 @@ public class dummy extends Script {
         Use(FindInv(269));
       }
 
-      int Dummy[] = GetNearestObject(49);
-      if (Dummy[0] > -1 & Running() == true) AtObject2(Dummy[0], Dummy[1]);
+      int[] Dummy = GetNearestObject(49);
+      if (Dummy[0] > -1 & Running()) AtObject2(Dummy[0], Dummy[1]);
       Wait(100);
     }
 

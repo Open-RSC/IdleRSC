@@ -60,13 +60,13 @@ public final class S_Fatigue extends Script implements ActionListener {
   private int range;
   private int food_id;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path return_walk;
   private PathWalker.Location nearest_bank;
   private boolean pw_init;
 
   private final DecimalFormat iformat = new DecimalFormat("#,##0");
-  private int[] start_xp = new int[SKILL.length];
+  private final int[] start_xp = new int[SKILL.length];
   private long start_time;
 
   private int[] banked_count;
@@ -482,7 +482,6 @@ public final class S_Fatigue extends Script implements ActionListener {
     int best_dist = Integer.MAX_VALUE;
     // try to find a spot around a tree where a fire can be lit
     for (int x = -1; x <= 1; ++x) {
-      ly:
       for (int y = -1; y <= 1; ++y) {
         if (x == 0 && y == 0) {
           continue;
@@ -505,7 +504,6 @@ public final class S_Fatigue extends Script implements ActionListener {
     }
     // fall back to checking diagonals
     for (int x = -1; x <= 1; ++x) {
-      ly:
       for (int y = -1; y <= 1; ++y) {
         int wx = tree_x + x;
         int wy = tree_y + y;
@@ -532,8 +530,8 @@ public final class S_Fatigue extends Script implements ActionListener {
     for (int i = 0; i < count; ++i) {
       int id = getInventoryId(i);
       String str = getItemNameId(id).toLowerCase(Locale.ENGLISH);
-      for (int j = 0; j < weapons.length; ++j) {
-        if (str.contains(weapons[j])) {
+      for (String weapon : weapons) {
+        if (str.contains(weapon)) {
           return i;
         }
       }
@@ -744,8 +742,8 @@ public final class S_Fatigue extends Script implements ActionListener {
   private void create_frame() {
     ch_fm = new Choice();
     int len = FIGHTMODES.length;
-    for (int i = 0; i < len; ++i) {
-      ch_fm.add(FIGHTMODES[i]);
+    for (String fightmode : FIGHTMODES) {
+      ch_fm.add(fightmode);
     }
     ch_fm.select(1);
 

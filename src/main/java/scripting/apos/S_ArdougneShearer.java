@@ -22,7 +22,7 @@ public final class S_ArdougneShearer extends Script {
   private int total_success;
   private int banked_count;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path to_bank;
   private PathWalker.Path from_bank;
 

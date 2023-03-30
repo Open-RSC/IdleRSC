@@ -65,10 +65,10 @@ public final class S_CatherbyBuyer extends Script {
     if (isBanking()) {
       bank_time = -1L;
       int inv_num;
-      for (int i = 0; i < items.length; i++) {
-        inv_num = getInventoryCount(items[i]);
+      for (int item : items) {
+        inv_num = getInventoryCount(item);
         if (inv_num > 0) {
-          deposit(items[i], inv_num);
+          deposit(item, inv_num);
           return random(600, 800);
         }
       }

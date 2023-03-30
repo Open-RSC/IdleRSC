@@ -787,15 +787,12 @@ public final class S_KBDKiller extends Script implements ActionListener {
   }
 
   private boolean should_bank() {
-    if (getInventoryCount(SHARK) < MIN_SHARKS
+    return getInventoryCount(SHARK) < MIN_SHARKS
         || getInventoryIndex(att_pots) == -1
         || getInventoryIndex(def_pots) == -1
         || getInventoryIndex(str_pots) == -1
         || getInventoryIndex(DSTONE_CHARGED) == -1
-        || getInventoryIndex(DSTONE_UNCHARGED) != -1) {
-      return true;
-    }
-    return false;
+        || getInventoryIndex(DSTONE_UNCHARGED) != -1;
   }
 
   @Override
@@ -1013,10 +1010,7 @@ public final class S_KBDKiller extends Script implements ActionListener {
     if (item[1] == getX() && item[2] == getY()) {
       return true;
     }
-    if (in_fight_area(item[1], item[2]) && item[2] <= 3326) {
-      return true;
-    }
-    return false;
+    return in_fight_area(item[1], item[2]) && item[2] <= 3326;
   }
 
   private boolean in_edge_bank() {

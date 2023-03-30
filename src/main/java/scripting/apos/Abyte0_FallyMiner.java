@@ -3,14 +3,14 @@ package scripting.apos;
 import compatibility.apos.Script;
 
 public class Abyte0_FallyMiner extends Script {
-  int oreID = 151;
+  final int oreID = 151;
   // Iron
   int banker = 95; // Banker    // uncut gem id's
-  int gem1 = 160; // sapph
-  int gem2 = 159; // emerald
-  int gem3 = 158; // ruby
-  int gem4 = 157; // diamond
-  int fMode = 3;
+  final int gem1 = 160; // sapph
+  final int gem2 = 159; // emerald
+  final int gem3 = 158; // ruby
+  final int gem4 = 157; // diamond
+  final int fMode = 3;
   int mined;
   int cptTry = 0;
   int cptInventaireToBank = 30;
@@ -117,7 +117,7 @@ public class Abyte0_FallyMiner extends Script {
         // Si dans la banque
         print("Talking to Banker");
         if (!isBanking()) {
-          int banker[] = getNpcByIdNotTalk(new int[] {95});
+          int[] banker = getNpcByIdNotTalk(95);
           if (banker[0] != -1 && !isBanking()) {
             talkToNpc(banker[0]);
             return random(2000, 3000);

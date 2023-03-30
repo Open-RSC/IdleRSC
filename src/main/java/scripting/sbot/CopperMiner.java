@@ -9,11 +9,11 @@ public class CopperMiner extends Script {
 
   public void ServerMessage(String message) {}
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
 
     while (Running()) {
       if (Fatigue() < 95 && !Sleeping()) {
-        int RockPos[] = GetNearestObject(104);
+        int[] RockPos = GetNearestObject(104);
         AtObject(RockPos[0], RockPos[1]);
         Wait(Rand(500, Rand(2000, 3000)));
       } else {

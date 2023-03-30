@@ -9,17 +9,17 @@ public class YanilleLedge extends Script {
   private final int[][] LEDGES = {{601, 3558}, {601, 3562}};
   private int balance_success;
   private int sleep_at = 95;
-  private int[] initial_xp;
+  private final int[] initial_xp;
   private long time;
   private String filename;
-  private long[] screenshot = new long[4];
-  int[] loot = {526, 527, 1277};
+  private final long[] screenshot = new long[4];
+  final int[] loot = {526, 527, 1277};
 
   boolean logOut = false;
 
   int fMode = 3;
-  String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
-  int[] fModeIdList = {2, 3, 1, 0};
+  final String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
+  final int[] fModeIdList = {2, 3, 1, 0};
 
   public YanilleLedge(String e) {
     // super(e);
@@ -80,7 +80,7 @@ public class YanilleLedge extends Script {
       return random(400, 800);
     }
 
-    if (logOut == true) {
+    if (logOut) {
       if (getY() == 3563) {
         walkTo(600, getY());
         System.out.println("logOut = true");
@@ -93,8 +93,8 @@ public class YanilleLedge extends Script {
       }
     }
 
-    for (int i = 0; i < loot.length; i++) {
-      int[] groundLoot = getItemById(loot[i]);
+    for (int j : loot) {
+      int[] groundLoot = getItemById(j);
       if (groundLoot[1] == getX() && groundLoot[2] == getY() && getEmptySlots() > 0) {
         if (groundLoot[0] != -1 && !inCombat()) {
           pickupItem(groundLoot[0], groundLoot[1], groundLoot[2]);
@@ -103,7 +103,7 @@ public class YanilleLedge extends Script {
       }
     }
 
-    if (!isWalking() && !inCombat() && logOut == false) {
+    if (!isWalking() && !inCombat() && !logOut) {
       atObject(LEDGES[ledge][0], LEDGES[ledge][1]);
       return random(110, 180);
     }
@@ -201,7 +201,6 @@ public class YanilleLedge extends Script {
     }
     if (s.contains("standing here")) {
       logOut = true;
-      ;
     }
   }
 

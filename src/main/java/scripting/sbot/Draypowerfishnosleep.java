@@ -7,13 +7,13 @@ public class Draypowerfishnosleep extends Script {
     return new String[] {"fish"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@cya@we all live in a yellow submarine", 3);
     while (Running()) {
       int pid = PID();
       System.out.println(pid);
       {
-        if (Fatigue() >= 99 && Running() == true) {
+        if (Fatigue() >= 99 && Running()) {
 
           Quit();
         }

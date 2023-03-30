@@ -132,8 +132,7 @@ public final class S_CrystalKeyChest extends Script {
     if (isBanking()) {
       bank_time = -1L;
       int array_sz = items.length;
-      for (int i = 0; i < array_sz; ++i) {
-        ChestItem item = items[i];
+      for (ChestItem item : items) {
         int count = getInventoryCount(item.id);
         if (count > 0) {
           deposit(item.id, count);
@@ -174,12 +173,12 @@ public final class S_CrystalKeyChest extends Script {
     if (isAtApproxCoords(367, 496, 4)) {
       final ChestItem[] ground = get_ground_items();
       final int array_sz = ground.length;
-      for (int i = 0; i < array_sz; ++i) {
+      for (ChestItem chestItem : ground) {
         if (getInventoryCount() == MAX_INV_SIZE) {
-          int meow = drop_greater(index_of(ground[i].id));
+          int meow = drop_greater(index_of(chestItem.id));
           if (meow != 0) return meow;
         } else {
-          pickupItem(ground[i].id, getX(), getY());
+          pickupItem(chestItem.id, getX(), getY());
           return random(1000, 1500);
         }
       }
@@ -298,8 +297,7 @@ public final class S_CrystalKeyChest extends Script {
     drawString("Banked items", x, y, 1, orangey);
     y += 15;
     int num = items.length;
-    for (int i = 0; i < num; ++i) {
-      ChestItem item = items[i];
+    for (ChestItem item : items) {
       if (item.count > 0) {
         drawString(item.count + " " + item.name, x + 10, y, 1, white);
         y += 15;
@@ -349,9 +347,9 @@ public final class S_CrystalKeyChest extends Script {
       }
       final int id = getGroundItemId(i);
       final int array_sz = items.length;
-      for (int j = 0; j < array_sz; ++j) {
-        if (items[j].id == id) {
-          result[ptr++] = items[j];
+      for (ChestItem item : items) {
+        if (item.id == id) {
+          result[ptr++] = item;
           break;
         }
       }

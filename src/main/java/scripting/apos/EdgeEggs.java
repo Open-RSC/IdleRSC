@@ -152,7 +152,7 @@ public class EdgeEggs extends Script {
         return 1000;
       }
       //
-      int banker[] = getNpcByIdNotTalk(BANKERS);
+      int[] banker = getNpcByIdNotTalk(BANKERS);
       if (banker[0] != -1) {
         talkToNpc(banker[0]);
         return 4000;
@@ -219,7 +219,6 @@ public class EdgeEggs extends Script {
     }
     if (isAtApproxCoords(205, 3240, 3)) {
       state = State.PICKING;
-      return;
     }
   }
 

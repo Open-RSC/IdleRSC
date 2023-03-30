@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.Objects;
 
 // import com.aposbot.Constants;
 // import com.aposbot.StandardCloseHandler;
@@ -331,7 +332,7 @@ public final class ChestTrader extends Script implements ActionListener {
       String[] items;
       tradingPartner = tf_tradingPartner.getText().trim();
       System.out.println("Trading partner is " + tradingPartner);
-      if (ch_GiveTake.getSelectedItem() == "Give") {
+      if (Objects.equals(ch_GiveTake.getSelectedItem(), "Give")) {
         System.out.println("Option selected: GIVING");
         giving = true;
       } else {

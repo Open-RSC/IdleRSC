@@ -4,10 +4,10 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 public class Abyte0_Firemaking extends Abyte0_Script {
-  private int fmode = 3;
+  private final int fmode = 3;
   private int _lastActionReturn = 0;
   private ArrayList<Point> _lastTree = null;
-  private ArrayList<ArrayList<Point>> _paths = new ArrayList<ArrayList<Point>>();
+  private final ArrayList<ArrayList<Point>> _paths = new ArrayList<>();
 
   public Abyte0_Firemaking(String e) {
     super(e);
@@ -99,14 +99,14 @@ public class Abyte0_Firemaking extends Abyte0_Script {
   }
 
   private final ArrayList<Point> findNextTree(int pX, int pY) {
-    for (int i = 0; i < _paths.size(); i++) {
-      if (_paths.get(i).get(0).x == pX && _paths.get(i).get(0).y == pY) {
-        return _paths.get(i);
+    for (ArrayList<Point> path : _paths) {
+      if (path.get(0).x == pX && path.get(0).y == pY) {
+        return path;
       }
     }
 
     // Lost lets try to get to first tree
-    ArrayList<Point> objTemp = new ArrayList<Point>();
+    ArrayList<Point> objTemp = new ArrayList<>();
     objTemp.add(new Point(pX, pY));
     objTemp.add(_paths.get(0).get(1));
     objTemp.add(_paths.get(0).get(2));
@@ -217,7 +217,7 @@ public class Abyte0_Firemaking extends Abyte0_Script {
 
   // addPath( PossibleXY , XYToWalkToBeReadyToCutTree , TreeXY )
   private final void addPath(Point pFrom, Point pTo, Point pTree) {
-    ArrayList<Point> objListFromTo = new ArrayList<Point>();
+    ArrayList<Point> objListFromTo = new ArrayList<>();
     objListFromTo.add(pFrom);
     objListFromTo.add(pTo);
     objListFromTo.add(pTree);

@@ -20,8 +20,8 @@ import java.util.Locale;
 
 public final class Shantay_Trader extends Script implements ActionListener {
 
-  private int BANK_CHEST_X = 58;
-  private int BANK_CHEST_Y = 731;
+  private final int BANK_CHEST_X = 58;
+  private final int BANK_CHEST_Y = 731;
   private boolean[] itm_banked;
   private String name;
   private long bank_time;
@@ -321,7 +321,7 @@ public final class Shantay_Trader extends Script implements ActionListener {
   @Override
   public void onServerMessage(String str) {
     str = str.toLowerCase(Locale.ENGLISH);
-    if (str.contains("This chest")) {
+    if (str.contains("this chest")) {
       bank_time = System.currentTimeMillis();
     } else if (str.contains("have been standing")) {
       is_idle = true;

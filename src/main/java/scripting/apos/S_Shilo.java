@@ -27,7 +27,7 @@ import java.util.Locale;
 public final class S_Shilo extends Script {
 
   private static final class Stage {
-    int id;
+    final int id;
     PathWalker.Path path_to;
 
     String cert_name;
@@ -133,7 +133,7 @@ public final class S_Shilo extends Script {
 
   private int box_bottom;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private boolean pw_init;
 
   private final List<Stage> stages = new ArrayList<>();
@@ -794,8 +794,7 @@ public final class S_Shilo extends Script {
 
     switch (s.id) {
       case STAGE_DEPOSIT:
-        for (int i = 0; i < bank_ids.length; ++i) {
-          int id = bank_ids[i];
+        for (int id : bank_ids) {
           if (getInventoryIndex(id) != -1) {
             found = true;
             break;
@@ -860,56 +859,46 @@ public final class S_Shilo extends Script {
 
     final Checkbox cook = new Checkbox("Cook fish", false);
     cook.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+        e -> {
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
 
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
 
-            int change = e.getStateChange();
-            if (change == ItemEvent.SELECTED) {
-              sell_cooked.setEnabled(true);
-              buy_cooked.setEnabled(false);
-              power.setEnabled(true);
-            } else {
-              sell_cooked.setEnabled(false);
-              buy_cooked.setEnabled(true);
-            }
+          int change = e.getStateChange();
+          if (change == ItemEvent.SELECTED) {
+            sell_cooked.setEnabled(true);
+            buy_cooked.setEnabled(false);
+            power.setEnabled(true);
+          } else {
+            sell_cooked.setEnabled(false);
+            buy_cooked.setEnabled(true);
           }
         });
 
     acquire_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+        e -> {
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
 
-            int change = e.getStateChange();
-            if (change != ItemEvent.SELECTED) {
-              return;
-            }
-            if (cook.getState() || e.getSource() == fish) {
-              power.setEnabled(true);
-            } else {
-              power.setEnabled(false);
-            }
-            if (e.getSource() == buy_raw) {
-              sell_raw.setEnabled(false);
-              cook.setEnabled(true);
-            } else if (e.getSource() == buy_cooked) {
-              sell_raw.setEnabled(false);
-              cook.setEnabled(false);
-            } else {
-              sell_raw.setEnabled(true);
-              cook.setEnabled(true);
-            }
+          int change = e.getStateChange();
+          if (change != ItemEvent.SELECTED) {
+            return;
+          }
+          power.setEnabled(cook.getState() || e.getSource() == fish);
+          if (e.getSource() == buy_raw) {
+            sell_raw.setEnabled(false);
+            cook.setEnabled(true);
+          } else if (e.getSource() == buy_cooked) {
+            sell_raw.setEnabled(false);
+            cook.setEnabled(false);
+          } else {
+            sell_raw.setEnabled(true);
+            cook.setEnabled(true);
           }
         };
 
@@ -922,11 +911,7 @@ public final class S_Shilo extends Script {
     non_keepies.add(sell_cooked);
     non_keepies.add(power);
 
-    dispose_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {}
-        };
+    dispose_box_listener = e -> {};
 
     for (Checkbox c : dispose_boxes) {
       c.addItemListener(dispose_box_listener);
@@ -981,31 +966,28 @@ public final class S_Shilo extends Script {
     list.add("Pike");
     list.select(0);
     list.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            checkboxes.invalidate();
-            checkboxes.remove(space_saver_a);
-            checkboxes.remove(space_saver_b);
-            checkboxes.remove(space_saver_c);
-            pickup.setEnabled(true);
-            if (cook.getState()) {
-              sell_cooked.setEnabled(true);
-            }
-
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
-
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
-
-            checkboxes.add(space_saver_a);
-            checkboxes.add(space_saver_b);
-            checkboxes.add(space_saver_c);
-            checkboxes.validate();
+        e -> {
+          checkboxes.invalidate();
+          checkboxes.remove(space_saver_a);
+          checkboxes.remove(space_saver_b);
+          checkboxes.remove(space_saver_c);
+          pickup.setEnabled(true);
+          if (cook.getState()) {
+            sell_cooked.setEnabled(true);
           }
+
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+
+          checkboxes.add(space_saver_a);
+          checkboxes.add(space_saver_b);
+          checkboxes.add(space_saver_c);
+          checkboxes.validate();
         });
 
     Button ok = new Button("OK");
@@ -1124,13 +1106,7 @@ public final class S_Shilo extends Script {
         });
 
     Button cancel = new Button("Cancel");
-    cancel.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-          }
-        });
+    cancel.addActionListener(e -> frame.setVisible(false));
 
     Panel buttons = new Panel();
     buttons.add(ok);

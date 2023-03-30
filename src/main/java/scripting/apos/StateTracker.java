@@ -3,6 +3,7 @@ package scripting.apos;
 import compatibility.apos.Script;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -78,10 +79,10 @@ public final class StateTracker {
     str = String.format(str, args);
     str = String.format("[%s UTC] %s\n", df.format(new Date()), str);
     try {
-      out.write(str.getBytes("UTF-8"));
+      out.write(str.getBytes(StandardCharsets.UTF_8));
       out.flush();
     } catch (IOException e) {
-      System.err.printf("Error writing to log\n");
+      System.err.print("Error writing to log\n");
     }
   }
 
@@ -116,7 +117,7 @@ public final class StateTracker {
     if (count < last_inv_count) {
       /* Inventory smaller */
       for (int i = (count - 1); i < last_inv_count; ++i) {
-        log(s, "INVENTORY_REMOVED %s", s.getItemNameId(last_items[i]));
+        log(s, "INVENTORY_REMOVED %s", Script.getItemNameId(last_items[i]));
       }
     } else if (count > last_inv_count) {
       /* Inventory bigger */
@@ -127,7 +128,7 @@ public final class StateTracker {
       /* Inventory size same, check if any items are different */
       for (int i = 0; i < count; ++i) {
         if (s.getInventoryId(i) != last_items[i]) {
-          log(s, "INVENTORY_REMOVED %s", s.getItemNameId(last_items[i]));
+          log(s, "INVENTORY_REMOVED %s", Script.getItemNameId(last_items[i]));
           log(s, "INVENTORY_ADDED %s", s.getItemName(i));
         }
       }
@@ -138,7 +139,11 @@ public final class StateTracker {
       if (index == -1) continue;
       int stack = s.getInventoryStack(index);
       if (last_stacks[i] != stack) {
-        log(s, "STACK_CHANGED_BY %s,%d", s.getItemNameId(last_items[i]), stack - last_stacks[i]);
+        log(
+            s,
+            "STACK_CHANGED_BY %s,%d",
+            Script.getItemNameId(last_items[i]),
+            stack - last_stacks[i]);
         last_stacks[i] = stack;
       }
     }

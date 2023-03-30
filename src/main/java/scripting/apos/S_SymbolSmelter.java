@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public final class S_SymbolSmelter extends Script implements ActionListener {
 
-  private static final int MOULD[] = {386, 1026};
+  private static final int[] MOULD = {386, 1026};
   private static final int FURNACE = 118;
   private static final int SILVER_ORE = 383;
   private static final int SILVER_BAR = 384;
@@ -46,7 +46,7 @@ public final class S_SymbolSmelter extends Script implements ActionListener {
   private String name;
   private int symbol_id;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private Frame frame;
 
   private PathWalker.Path to_bank;

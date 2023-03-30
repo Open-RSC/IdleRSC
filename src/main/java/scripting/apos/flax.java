@@ -19,7 +19,7 @@ public class flax extends Script {
   private static final int[] flax = {313, 687, 519};
 
   private int flax_made = 0;
-  private int xp_to_stop_at = 13034200; // go on, have a party
+  private final int xp_to_stop_at = 13034200; // go on, have a party
   private static final int[] next_level = {
     0, 83, 174, 276, 388, 512, 650, 801, 969, 1154, 1358, 1584, 1833, 2107, 2411, 2746, 3115, 3523,
     3973, 4470, 5018, 5624, 6291, 7028, 7842, 8740, 9730, 10824, 12031, 13363, 14833, 16456, 18247,
@@ -154,7 +154,7 @@ public class flax extends Script {
     Date date = new Date();
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(".\\logs\\" + name + ".txt", true));
-      out.write(date.toString() + " " + name + " : " + msg + "\r\n");
+      out.write(date + " " + name + " : " + msg + "\r\n");
       out.close();
     } catch (IOException e) {
     }
@@ -286,22 +286,20 @@ public class flax extends Script {
   private String getRunTime() {
     long ttime = ((System.currentTimeMillis() - time) / 1000);
     if (ttime >= 7200)
-      return new String(
-          (ttime / 3600)
-              + " hours, "
-              + ((ttime % 3600) / 60)
-              + " minutes, "
-              + (ttime % 60)
-              + " seconds.");
+      return (ttime / 3600)
+          + " hours, "
+          + ((ttime % 3600) / 60)
+          + " minutes, "
+          + (ttime % 60)
+          + " seconds.";
     if (ttime >= 3600 && ttime < 7200)
-      return new String(
-          (ttime / 3600)
-              + " hour, "
-              + ((ttime % 3600) / 60)
-              + " minutes, "
-              + (ttime % 60)
-              + " seconds.");
-    if (ttime >= 60) return new String(ttime / 60 + " minutes, " + (ttime % 60) + " seconds.");
-    return new String(ttime + " seconds.");
+      return (ttime / 3600)
+          + " hour, "
+          + ((ttime % 3600) / 60)
+          + " minutes, "
+          + (ttime % 60)
+          + " seconds.";
+    if (ttime >= 60) return ttime / 60 + " minutes, " + (ttime % 60) + " seconds.";
+    return ttime + " seconds.";
   }
 }

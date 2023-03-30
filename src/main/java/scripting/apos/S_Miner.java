@@ -55,7 +55,7 @@ public final class S_Miner extends Script implements ActionListener {
 
   private static final Map<String, int[]> map_rocks = new HashMap<>();
 
-  private GenericImpl[] impls = {
+  private final GenericImpl[] impls = {
     new DwarfMineScorpImpl(), new MiningGuildImpl(), new CraftingGuildImpl()
   };
 
@@ -74,7 +74,7 @@ public final class S_Miner extends Script implements ActionListener {
   private PathWalker.Path lumb_to_bank;
   private PathWalker.Path from_bank;
   private PathWalker.Path to_bank;
-  private PathWalker pw;
+  private final PathWalker pw;
 
   private Frame frame;
   private Checkbox cb_bank;
@@ -548,10 +548,7 @@ public final class S_Miner extends Script implements ActionListener {
       if (c_x <= x1 && c_x >= x2 && c_y >= y2 && c_y <= y1) {
         return true;
       }
-      if (c_x <= x2 && c_x >= x1 && c_y >= y1 && c_y <= y2) {
-        return true;
-      }
-      return false;
+      return c_x <= x2 && c_x >= x1 && c_y >= y1 && c_y <= y2;
     }
 
     private boolean isInBankArea(int x, int y) {
@@ -957,8 +954,8 @@ public final class S_Miner extends Script implements ActionListener {
 
   private int mine_rocks() {
     int array_sz = rocks.length;
-    for (int i = 0; i < array_sz; ++i) {
-      int[] rock = get_closest_rock(rocks[i]);
+    for (int[] ints : rocks) {
+      int[] rock = get_closest_rock(ints);
       if (rock[0] == -1 || (impl != null && !impl.isRockValid(rock))) {
         continue;
       }
@@ -976,16 +973,13 @@ public final class S_Miner extends Script implements ActionListener {
   }
 
   public boolean should_bank() {
-    if (getInventoryCount() == MAX_INV_SIZE) {
-      return true;
-    }
+    return getInventoryCount() == MAX_INV_SIZE;
     // if (getInventoryIndex(pickaxes) == -1) {
     //	return true;
     // }
     // if (getInventoryIndex(SLEEPING_BAG) == -1) {
     //	return true;
     // }
-    return false;
   }
 
   private void walk_approx(int x, int y) {
@@ -1114,42 +1108,47 @@ public final class S_Miner extends Script implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     String command = e.getActionCommand();
-    if (command.equals("OK")) {
-      if (frame.equals(get_window((Component) e.getSource()))) {
-        try {
-          int rock_count = list_rocks.getItemCount();
-          if (rock_count <= 0) {
-            throw new Exception("no rocks selected");
+    switch (command) {
+      case "OK":
+        if (frame.equals(get_window((Component) e.getSource()))) {
+          try {
+            int rock_count = list_rocks.getItemCount();
+            if (rock_count <= 0) {
+              throw new Exception("no rocks selected");
+            }
+            rocks = new int[rock_count][];
+            for (int i = 0; i < rock_count; ++i) {
+              rocks[i] = map_rocks.get(list_rocks.getItem(i));
+            }
+            if (cb_bank.getState()) {
+              init_path = false;
+            }
+          } catch (Throwable t) {
+            System.out.println(t.getClass().getSimpleName() + ": " + t.getMessage());
           }
-          rocks = new int[rock_count][];
-          for (int i = 0; i < rock_count; ++i) {
-            rocks[i] = map_rocks.get(list_rocks.getItem(i));
-          }
-          if (cb_bank.getState()) {
-            init_path = false;
-          }
-        } catch (Throwable t) {
-          System.out.println(t.getClass().getSimpleName() + ": " + t.getMessage());
+          frame.setVisible(false);
         }
-        frame.setVisible(false);
-      }
-    } else if (command.equals("Cancel")) {
-      if (frame.equals(get_window((Component) e.getSource()))) {
-        frame.setVisible(false);
-      }
-    } else if (command.equals("Add")) {
-      String selected = choice_rocks.getSelectedItem();
-      int count = list_rocks.getItemCount();
-      for (int i = 0; i < count; ++i) {
-        if (!list_rocks.getItem(i).equals(selected)) {
-          continue;
+        break;
+      case "Cancel":
+        if (frame.equals(get_window((Component) e.getSource()))) {
+          frame.setVisible(false);
         }
-        System.out.println("ERROR: " + selected + " has already been added.");
-        return;
-      }
-      list_rocks.add(selected);
-    } else if (command.equals("Reset")) {
-      list_rocks.removeAll();
+        break;
+      case "Add":
+        String selected = choice_rocks.getSelectedItem();
+        int count = list_rocks.getItemCount();
+        for (int i = 0; i < count; ++i) {
+          if (!list_rocks.getItem(i).equals(selected)) {
+            continue;
+          }
+          System.out.println("ERROR: " + selected + " has already been added.");
+          return;
+        }
+        list_rocks.add(selected);
+        break;
+      case "Reset":
+        list_rocks.removeAll();
+        break;
     }
   }
 

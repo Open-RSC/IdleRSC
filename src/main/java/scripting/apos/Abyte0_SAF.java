@@ -15,10 +15,10 @@ public class Abyte0_SAF extends Abyte0_Script {
   int startY = -1;
   int eatAt = -1;
   int foodID = 373;
-  int bigBonesID = 413;
+  final int bigBonesID = 413;
   int pickupID = -1;
   boolean isPickupEnabled = false;
-  int[] foodIDs =
+  final int[] foodIDs =
       new int[] {
         330, // cake 3/3
         333, // cake 2/3
@@ -51,11 +51,11 @@ public class Abyte0_SAF extends Abyte0_Script {
 
       in = params.trim().toLowerCase().split(",");
 
-      for (int i = 0; i < in.length; i++) {
+      for (String s : in) {
 
-        if (in[i].startsWith("f=")) {
+        if (s.startsWith("f=")) {
 
-          fmode = Integer.parseInt(in[i].substring(2));
+          fmode = Integer.parseInt(s.substring(2));
 
           if (fmode < 0 || fmode > 3) throw new Exception("Invalid fight mode (" + fmode + ")");
 
@@ -64,18 +64,18 @@ public class Abyte0_SAF extends Abyte0_Script {
           continue;
         }
 
-        if (in[i].startsWith("n=")) {
+        if (s.startsWith("n=")) {
 
-          npcID = Integer.parseInt(in[i].substring(2));
+          npcID = Integer.parseInt(s.substring(2));
 
           print("npcID set " + npcID);
 
           continue;
         }
 
-        if (in[i].startsWith("p=")) {
+        if (s.startsWith("p=")) {
 
-          int flag = Integer.parseInt(in[i].substring(2));
+          int flag = Integer.parseInt(s.substring(2));
 
           if (flag < 0 || flag > 10000) throw new Exception("Invalid pickup id ");
 
@@ -88,18 +88,18 @@ public class Abyte0_SAF extends Abyte0_Script {
           continue;
         }
 
-        if (in[i].startsWith("r=")) {
+        if (s.startsWith("r=")) {
 
-          radius = Integer.parseInt(in[i].substring(2));
+          radius = Integer.parseInt(s.substring(2));
 
           print("radius set " + radius);
 
           continue;
         }
 
-        if (in[i].startsWith("s=")) {
+        if (s.startsWith("s=")) {
 
-          sleepAt = Integer.parseInt(in[i].substring(2));
+          sleepAt = Integer.parseInt(s.substring(2));
 
           if (sleepAt < 0 || sleepAt > 100)
             throw new Exception("Invalid sleep at (" + sleepAt + ")");
@@ -109,9 +109,9 @@ public class Abyte0_SAF extends Abyte0_Script {
           continue;
         }
 
-        if (in[i].startsWith("h=")) {
+        if (s.startsWith("h=")) {
 
-          eatAt = Integer.parseInt(in[i].substring(2));
+          eatAt = Integer.parseInt(s.substring(2));
 
           if (sleepAt < 0 || sleepAt > 100) throw new Exception("Invalid eat at (" + eatAt + ")");
 
@@ -120,35 +120,35 @@ public class Abyte0_SAF extends Abyte0_Script {
           continue;
         }
 
-        if (in[i].startsWith("e=")) {
+        if (s.startsWith("e=")) {
 
-          foodID = Integer.parseInt(in[i].substring(2));
+          foodID = Integer.parseInt(s.substring(2));
 
           print("foodID set " + foodID);
 
           continue;
         }
 
-        if (in[i].startsWith("b=")) {
+        if (s.startsWith("b=")) {
 
-          int flag = Integer.parseInt(in[i].substring(2));
+          int flag = Integer.parseInt(s.substring(2));
 
           if (flag != 0 && flag != 1) throw new Exception("Invalid bury flag (" + flag + ")");
 
-          bury = (flag == 0 ? false : true);
+          bury = (flag != 0);
 
           print("bury set " + bury);
 
           continue;
         }
 
-        if (in[i].startsWith("w=")) {
+        if (s.startsWith("w=")) {
 
-          int flag = Integer.parseInt(in[i].substring(2));
+          int flag = Integer.parseInt(s.substring(2));
 
           if (flag != 0 && flag != 1) throw new Exception("Invalid walkback flag (" + flag + ")");
 
-          walkBack = (flag == 0 ? false : true);
+          walkBack = (flag != 0);
 
           print("walkBack set " + walkBack);
 
@@ -236,7 +236,7 @@ public class Abyte0_SAF extends Abyte0_Script {
   }
 
   public int TryBury() {
-    if (bury == true) {
+    if (bury) {
       if (getInventoryCount(bigBonesID) > 0) {
         if (inCombat()) {
           RunFromCombat();
@@ -364,7 +364,7 @@ public class Abyte0_SAF extends Abyte0_Script {
       int pickReturn = TryPickup();
       if (pickReturn != -1) return pickReturn;
 
-      int npc[];
+      int[] npc;
 
       if (radius != Integer.MAX_VALUE) npc = getNpcInRadius(npcID, startX, startY, radius);
       else npc = getNpcById(npcID);

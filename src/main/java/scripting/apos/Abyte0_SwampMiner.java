@@ -3,18 +3,18 @@ package scripting.apos;
 import compatibility.apos.Script;
 
 public class Abyte0_SwampMiner extends Script {
-  int oreMith = 153; // Mith ore
-  int oreAddy = 154; // Addy ore
-  int oreCoal = 155; // Coal ore
+  final int oreMith = 153; // Mith ore
+  final int oreAddy = 154; // Addy ore
+  final int oreCoal = 155; // Coal ore
 
-  int RockCoal = 110; // Coal rock
-  int RockMith = 106; // Mith rock 	//est id=107 au guild
-  int RockAddy = 108; // Addy rock 	//pas 109 a la swamp entk
+  final int RockCoal = 110; // Coal rock
+  final int RockMith = 106; // Mith rock 	//est id=107 au guild
+  final int RockAddy = 108; // Addy rock 	//pas 109 a la swamp entk
 
-  int gem1 = 160; // sapph
-  int gem2 = 159; // emerald
-  int gem3 = 158; // ruby
-  int gem4 = 157; // diamond
+  final int gem1 = 160; // sapph
+  final int gem2 = 159; // emerald
+  final int gem3 = 158; // ruby
+  final int gem4 = 157; // diamond
 
   int cptMithBanked;
   int cptAddyBanked;
@@ -24,7 +24,7 @@ public class Abyte0_SwampMiner extends Script {
 
   boolean bankCoal;
 
-  int cptInventaireToBank = 30;
+  final int cptInventaireToBank = 30;
 
   public Abyte0_SwampMiner(String e) {
     // super(e);
@@ -191,7 +191,7 @@ public class Abyte0_SwampMiner extends Script {
         // Si dans la banque
         print("Talking to Banker");
         if (!isBanking()) {
-          int banker[] = getNpcByIdNotTalk(new int[] {95});
+          int[] banker = getNpcByIdNotTalk(95);
           if (banker[0] != -1 && !isBanking()) {
             talkToNpc(banker[0]);
             return random(2000, 3000);

@@ -9,7 +9,7 @@ public final class S_Tanner extends Script {
   private static final int ID_HIDE = 147;
   private static final int ID_TANNER = 172;
   private static final int ID_COINS = 10;
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path to_bank;
   private PathWalker.Path from_bank;
   private long bank_time;

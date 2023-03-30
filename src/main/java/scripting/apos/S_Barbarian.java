@@ -35,7 +35,7 @@ public final class S_Barbarian extends Script {
   private static final int[] ids_axe = {12, 87, 88, 203, 204, 405};
 
   private static final class Stage {
-    int id;
+    final int id;
     PathWalker.Path path_to;
 
     String cert_name;
@@ -141,7 +141,7 @@ public final class S_Barbarian extends Script {
 
   private int box_bottom;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private boolean pw_init;
 
   private final List<Stage> stages = new ArrayList<>();
@@ -827,9 +827,9 @@ public final class S_Barbarian extends Script {
       return 0;
     }
     int id = -1;
-    for (int i = 0; i < raw_ids.length; ++i) {
-      if (getInventoryCount(raw_ids[i]) > 0) {
-        id = raw_ids[i];
+    for (int rawId : raw_ids) {
+      if (getInventoryCount(rawId) > 0) {
+        id = rawId;
         break;
       }
     }
@@ -839,7 +839,7 @@ public final class S_Barbarian extends Script {
       useItemOnObject(id, x, y);
       return random(600, 800);
     }
-    int logs[] = getItemById(ID_LOGS);
+    int[] logs = getItemById(ID_LOGS);
     if (logs[1] == x && logs[2] == y) {
       int box_slot = getInventoryIndex(ID_TINDERBOX);
       if (box_slot == -1) {
@@ -863,7 +863,7 @@ public final class S_Barbarian extends Script {
       stopScript();
       return 0;
     }
-    int tree[] = getObjectById(ID_TREE);
+    int[] tree = getObjectById(ID_TREE);
     if (distanceTo(tree[1], tree[2]) < 5) {
       atObject(tree[1], tree[2]);
       return random(1000, 1500);
@@ -905,35 +905,25 @@ public final class S_Barbarian extends Script {
 
     final Checkbox cook = new Checkbox("Cook fish", false);
     cook.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+        e -> {
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
 
-            int change = e.getStateChange();
-            if (change == ItemEvent.SELECTED) {
-              power.setEnabled(true);
-            } else {
-            }
+          int change = e.getStateChange();
+          if (change == ItemEvent.SELECTED) {
+            power.setEnabled(true);
+          } else {
           }
         });
 
     acquire_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            int change = e.getStateChange();
-            if (change != ItemEvent.SELECTED) {
-              return;
-            }
-            if (cook.getState() || e.getSource() == fish) {
-              power.setEnabled(true);
-            } else {
-              power.setEnabled(false);
-            }
+        e -> {
+          int change = e.getStateChange();
+          if (change != ItemEvent.SELECTED) {
+            return;
           }
+          power.setEnabled(cook.getState() || e.getSource() == fish);
         };
 
     for (Checkbox c : acquire_boxes) {
@@ -943,11 +933,7 @@ public final class S_Barbarian extends Script {
     final List<Checkbox> non_keepies = new ArrayList<>(3);
     non_keepies.add(power);
 
-    dispose_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {}
-        };
+    dispose_box_listener = e -> {};
 
     for (Checkbox c : dispose_boxes) {
       c.addItemListener(dispose_box_listener);
@@ -996,24 +982,21 @@ public final class S_Barbarian extends Script {
     list.add("Pike");
     list.select(0);
     list.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            checkboxes.invalidate();
-            checkboxes.remove(space_saver_a);
-            checkboxes.remove(space_saver_b);
-            checkboxes.remove(space_saver_c);
-            pickup.setEnabled(true);
+        e -> {
+          checkboxes.invalidate();
+          checkboxes.remove(space_saver_a);
+          checkboxes.remove(space_saver_b);
+          checkboxes.remove(space_saver_c);
+          pickup.setEnabled(true);
 
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
 
-            checkboxes.add(space_saver_a);
-            checkboxes.add(space_saver_b);
-            checkboxes.add(space_saver_c);
-            checkboxes.validate();
-          }
+          checkboxes.add(space_saver_a);
+          checkboxes.add(space_saver_b);
+          checkboxes.add(space_saver_c);
+          checkboxes.validate();
         });
 
     Button ok = new Button("OK");
@@ -1075,13 +1058,7 @@ public final class S_Barbarian extends Script {
         });
 
     Button cancel = new Button("Cancel");
-    cancel.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-          }
-        });
+    cancel.addActionListener(e -> frame.setVisible(false));
 
     Panel buttons = new Panel();
     buttons.add(ok);

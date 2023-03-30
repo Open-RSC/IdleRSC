@@ -39,7 +39,7 @@ public final class S_MultiSmith extends Script implements ActionListener {
     public String toString() {
       return last_option + " (" + bars_per + " bars)";
     }
-  };
+  }
 
   /*
    * categories:
@@ -109,7 +109,7 @@ public final class S_MultiSmith extends Script implements ActionListener {
       this.name = name;
       this.id = id;
     }
-  };
+  }
 
   private static final BarType[] bars = {
     new BarType("Bronze", 169),

@@ -6,11 +6,11 @@ import javax.swing.JOptionPane;
 
 public final class S_EdgevilleDruids extends Script {
 
-  private int food_id = 373;
-  private int eat_at = 30;
-  private int food_to_withdraw = 0;
-  private int combat_style = 1;
-  private boolean sleep = true;
+  private final int food_id = 373;
+  private final int eat_at = 30;
+  private final int food_to_withdraw = 0;
+  private final int combat_style = 1;
+  private final boolean sleep = true;
 
   private static final int SKILL_HITS = 3, LUMB_X = 128, LUMB_Y = 640, EDGE_X = 215, EDGE_Y = 450;
   private static final int[] gate_path_x = {215, 217, 217, 203, 197, 196};

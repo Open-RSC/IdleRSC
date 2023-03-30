@@ -4,7 +4,7 @@ import compatibility.apos.Script;
 
 public final class PathWalkerArgs extends Script {
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path walkingPath;
 
   public PathWalkerArgs(String ex) {

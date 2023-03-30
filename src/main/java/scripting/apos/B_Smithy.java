@@ -78,11 +78,11 @@ public class B_Smithy extends Script {
     items[18] = new Item(bar_ids[option], bar_names[option] + " Plate Body", 5, 1, 1, 2, 1);
     JPanel panel = new JPanel();
     panel.add(new JLabel("What item would you like to make?"));
-    DefaultComboBoxModel<String> cb = new DefaultComboBoxModel<String>();
+    DefaultComboBoxModel<String> cb = new DefaultComboBoxModel<>();
     for (Item item : items) {
       cb.addElement(item.getItemName());
     }
-    JComboBox<String> comboBox = new JComboBox<String>(cb);
+    JComboBox<String> comboBox = new JComboBox<>(cb);
     panel.add(comboBox);
     option =
         JOptionPane.showConfirmDialog(
@@ -111,7 +111,7 @@ public class B_Smithy extends Script {
       return screenshot(System.currentTimeMillis());
     }
     if (getFatigue() > 95) {
-      System.out.println("Sleeping... " + new Date().toString());
+      System.out.println("Sleeping... " + new Date());
       useSleepingBag();
       return random(800, 1200);
     }
@@ -276,7 +276,6 @@ public class B_Smithy extends Script {
     if (s.contains("just advanced")) {
       screenshot[0] = System.currentTimeMillis();
       filename = new Date().getTime() + " - " + s;
-      return;
     }
   }
 
@@ -380,12 +379,12 @@ public class B_Smithy extends Script {
     return 50;
   }
 
-  private class Item {
-    private int bar_id;
-    private int bars_required;
-    private int items_made;
-    private int[] keys;
-    private String name;
+  private static class Item {
+    private final int bar_id;
+    private final int bars_required;
+    private final int items_made;
+    private final int[] keys;
+    private final String name;
 
     public Item(int bar_id, String name, int bars_required, int items_made, int... keys) {
       this.bar_id = bar_id;

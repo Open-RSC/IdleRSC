@@ -181,7 +181,7 @@ public final class S_TavBlueDragons extends Script implements ActionListener {
 
   private final DecimalFormat int_format = new DecimalFormat("#,##0");
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path bank_to_gate;
   private PathWalker.Path gate_to_ladder;
   private long start_time;
@@ -198,8 +198,8 @@ public final class S_TavBlueDragons extends Script implements ActionListener {
   private static final int[] dont_bank = {LAW_RUNE, WATER_RUNE};
   // stuff also in pickup_ids that must be obtained twice before it can be banked
   private static final int[] pickup_equipment = {};
-  private boolean[] banked_loot = new boolean[pickup_ids.length];
-  private int[] banked_counts = new int[pickup_ids.length];
+  private final boolean[] banked_loot = new boolean[pickup_ids.length];
+  private final int[] banked_counts = new int[pickup_ids.length];
   private Frame frame;
 
   private int pray_xp;
@@ -907,10 +907,7 @@ public final class S_TavBlueDragons extends Script implements ActionListener {
     if (item[1] == getX() && item[2] == getY()) {
       return true;
     }
-    if (in_fight_area(item[1], item[2])) {
-      return true;
-    }
-    return false;
+    return in_fight_area(item[1], item[2]);
   }
 
   private boolean is_underground() {

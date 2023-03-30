@@ -64,7 +64,6 @@ public final class S_NatureChest extends Script {
   public void onServerMessage(String str) {
     if (str.contains("standing here")) {
       move_time = (System.currentTimeMillis() + random(1500, 1800));
-      return;
     }
   }
 

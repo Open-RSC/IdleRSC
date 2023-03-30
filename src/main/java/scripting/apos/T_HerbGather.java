@@ -12,11 +12,11 @@ public class T_HerbGather extends Script {
   // private Weps weapid2;
   int loop = 0;
   int i = 0;
-  int[] herbs = {
+  final int[] herbs = {
     438, 439, 440, 441, 442, 443, 526, 527, 157, 158, 159, 160, 1277, 815, 817, 819, 821, 823, 933,
     40, 20, 33, 42
   };
-  int[] gathered = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  final int[] gathered = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int[] path = null;
   int staffid;
   int weapid; // 75,593, 594
@@ -104,7 +104,7 @@ public class T_HerbGather extends Script {
     if (isAtApproxCoords(330, 552, 5) && getInventoryCount() == 30) {
       i = 0;
       if (!isQuestMenu()) {
-        int banker[] = getNpcByIdNotTalk(new int[] {95});
+        int[] banker = getNpcByIdNotTalk(95);
         if (banker[0] != -1) {
           talkToNpc(banker[0]);
           return random(2000, 2700);
@@ -120,8 +120,8 @@ public class T_HerbGather extends Script {
     if (isAtApproxCoords(344, 3318, 5) && getInventoryCount() != 30) {
       // System.out.println("problem!");
       int[] druid = getNpcById(270);
-      for (int h = 0; h < herbs.length; h++) {
-        int[] groundHerbs = getItemById(herbs[h]);
+      for (int herb : herbs) {
+        int[] groundHerbs = getItemById(herb);
         if (groundHerbs[0] != -1
             && groundHerbs[1] >= 344 - 5
             && groundHerbs[1] <= 344 + 5
@@ -358,9 +358,9 @@ public class T_HerbGather extends Script {
     return String.format("%02d seconds", second);
   }
 
-  public class Weps {
-    String name;
-    int wep_id;
+  public static class Weps {
+    final String name;
+    final int wep_id;
 
     public Weps(String name, int wep_id) {
       this.name = name;

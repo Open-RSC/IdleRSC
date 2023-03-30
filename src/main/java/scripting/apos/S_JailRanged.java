@@ -24,7 +24,7 @@ public final class S_JailRanged extends Script {
 
   static {
     // aim spots for the various npcs
-    tiles = new HashMap<Integer, Point[]>();
+    tiles = new HashMap<>();
     tiles.put(
         ID_PIRATE, new Point[] {new Point(285, 658), new Point(285, 659), new Point(285, 661)});
     tiles.put(ID_THIEF, new Point[] {new Point(285, 655), new Point(285, 657)});

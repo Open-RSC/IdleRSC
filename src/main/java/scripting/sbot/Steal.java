@@ -8,7 +8,7 @@ public class Steal extends Script {
     return (new String[] {"steal"});
   }
 
-  public void start(String s, String s1[]) {
+  public void start(String s, String[] s1) {
     while (Running()) {
       DisplayMessage("@gre@SBoT: @whi@Nat stealer - Billy www.wildrscheats.com", 3);
       while (Running()) {

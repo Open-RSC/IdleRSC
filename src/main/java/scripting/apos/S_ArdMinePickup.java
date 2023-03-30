@@ -45,12 +45,7 @@ public final class S_ArdMinePickup extends Script {
       int count = getInventoryCount();
       if (count > 0 && count > last_inv_count) {
         int id = getInventoryId(count - 1);
-        Integer collected = gained.get(id);
-        if (collected != null) {
-          gained.put(id, collected + 1);
-        } else {
-          gained.put(id, 1);
-        }
+        gained.merge(id, 1, Integer::sum);
       }
       last_inv_count = count;
     }

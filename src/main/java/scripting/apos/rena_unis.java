@@ -8,7 +8,7 @@ public class rena_unis extends Script {
   int loop = 0;
   int fightMode = 0;
   int horn = 0;
-  int trips = 0;
+  final int trips = 0;
   boolean walk_lumbydeath;
   boolean bankingnow;
   boolean walk_edgetounis;
@@ -57,7 +57,7 @@ public class rena_unis extends Script {
         || this.walk_unistoedge)) {
       if (this.isAtApproxCoords(120, 648, 3)) {
         this.walkTo(133, 636);
-        return rena_unis.random((int) 1000, (int) 1500);
+        return rena_unis.random(1000, 1500);
       }
       if (this.isAtApproxCoords(133, 636, 1)) {
         this.step = 0;
@@ -78,7 +78,7 @@ public class rena_unis extends Script {
         this.loop = 0;
         this.path = null;
         System.out.println("[Rena] Switching to banking !");
-        return rena_unis.random((int) 1000, (int) 1500);
+        return rena_unis.random(1000, 1500);
       }
     }
     if (!(this.walk_lumbydeath
@@ -87,10 +87,10 @@ public class rena_unis extends Script {
         || this.fightingnow
         || this.walk_unistoedge)) {
       if (this.isBanking()) {
-        if (this.getInventoryCount(new int[] {466}) > 0) {
-          this.deposit(466, this.getInventoryCount(new int[] {466}));
-          this.horn += this.getInventoryCount(new int[] {466});
-          return rena_unis.random((int) 900, (int) 1000);
+        if (this.getInventoryCount(466) > 0) {
+          this.deposit(466, this.getInventoryCount(466));
+          this.horn += this.getInventoryCount(466);
+          return rena_unis.random(900, 1000);
         }
         this.walk_lumbydeath = false;
         this.bankingnow = false;
@@ -106,14 +106,14 @@ public class rena_unis extends Script {
         System.out.println("Did " + this.trips + " trips so far!");
         System.out.println("Obtained " + this.horn + " unicorn horns so far!");
         System.out.println(" ");
-        return rena_unis.random((int) 800, (int) 1000);
+        return rena_unis.random(800, 1000);
       }
       if (this.isQuestMenu()) {
         this.answer(0);
-        return rena_unis.random((int) 5000, (int) 5200);
+        return rena_unis.random(5000, 5200);
       }
       if (this.distanceTo(217, 453) < 6) {
-        int[] arrn = this.getNpcByIdNotTalk(new int[] {95});
+        int[] arrn = this.getNpcByIdNotTalk(95);
         if (arrn[0] != -1) {
           this.talkToNpc(arrn[0]);
         }
@@ -140,14 +140,14 @@ public class rena_unis extends Script {
         System.out.println("[Rena] Died somehow ... Walking back to edge !");
       }
       if (this.isAtApproxCoords(217, 453, 5)) {
-        int[] arrn = this.getObjectById(new int[] {64});
+        int[] arrn = this.getObjectById(64);
         if (arrn[0] != -1 && arrn[2] < 451) {
           System.out.println("[Rena] Door closed? Opening it !");
           this.atObject(arrn[1], arrn[2]);
-          return rena_unis.random((int) 1000, (int) 1500);
+          return rena_unis.random(1000, 1500);
         }
         this.walkTo(218, 446);
-        return rena_unis.random((int) 1000, (int) 1500);
+        return rena_unis.random(1000, 1500);
       }
       if (this.isAtApproxCoords(218, 446, 1)) {
         this.step = 0;
@@ -170,7 +170,7 @@ public class rena_unis extends Script {
         this.step = 0;
         this.loop = 0;
         this.path = null;
-        return rena_unis.random((int) 500, (int) 600);
+        return rena_unis.random(500, 600);
       }
     }
     if (!(this.walk_lumbydeath
@@ -214,9 +214,9 @@ public class rena_unis extends Script {
         this.started = false;
         System.out.println("[Rena] Time to go Home! (Edge)");
         System.out.println(" ");
-        return rena_unis.random((int) 1600, (int) 1800);
+        return rena_unis.random(1600, 1800);
       }
-      int[] arrn = this.getItemById(new int[] {466});
+      int[] arrn = this.getItemById(466);
       if (arrn[0] != -1) {
         if (this.inCombat()) {
           this.walkTo(this.getX(), this.getY());
@@ -225,7 +225,7 @@ public class rena_unis extends Script {
         this.pickupItem(466, arrn[1], arrn[2]);
         System.out.println("[Rena] Picking up uni horn at " + arrn[1] + "," + arrn[2] + " ...");
         System.out.println(" ");
-        return rena_unis.random((int) 200, (int) 300);
+        return rena_unis.random(200, 300);
       }
       if (this.getFatigue() > 80) {
         if (this.inCombat()) {
@@ -239,19 +239,19 @@ public class rena_unis extends Script {
       int[] arrn2 = this.getNpcInRadius(296, 122, 299, 15);
       if (arrn2[0] != -1 && !this.inCombat()) {
         this.attackNpc(arrn2[0]);
-        return rena_unis.random((int) 200, (int) 300);
+        return rena_unis.random(200, 300);
       }
       if (arrn2[0] == -1 && !this.inCombat()) {
         this.walkTo(122, 299);
-        return rena_unis.random((int) 900, (int) 1100);
+        return rena_unis.random(900, 1100);
       }
       if (!this.isAtApproxCoords(122, 299, 15) && !this.inCombat()) {
         this.walkTo(122, 299);
         System.out.println("[Rena] Went outside Magical Unicorns Zone ... Walking back!");
         System.out.println(" ");
-        return rena_unis.random((int) 900, (int) 1100);
+        return rena_unis.random(900, 1100);
       }
-      return rena_unis.random((int) 900, (int) 1200);
+      return rena_unis.random(900, 1200);
     }
     if (!(this.walk_lumbydeath
         || this.bankingnow
@@ -270,7 +270,7 @@ public class rena_unis extends Script {
       if (this.inCombat()) {
         this.walkTo(this.getX(), this.getY());
         System.out.println("[Rena] DaFaq? We're being attacked ! Running ...");
-        return rena_unis.random((int) 150, (int) 250);
+        return rena_unis.random(150, 250);
       }
       if (this.isAtApproxCoords(217, 453, 5)) {
         this.walk_lumbydeath = false;
@@ -290,7 +290,7 @@ public class rena_unis extends Script {
           && !this.started) {
         this.walkTo(122, 299);
         System.out.println("[Rena] Walking outta here ... ");
-        return rena_unis.random((int) 150, (int) 250);
+        return rena_unis.random(150, 250);
       }
       if (this.isAtApproxCoords(122, 299, 1)) {
         this.started = true;
@@ -304,23 +304,23 @@ public class rena_unis extends Script {
       }
     }
     if (this.step + 1 < this.path.length) {
-      int[] arrn = this.getObjectById(new int[] {64});
+      int[] arrn = this.getObjectById(64);
       if (arrn[0] != -1 && arrn[2] < 451) {
         this.atObject(arrn[1], arrn[2]);
-        return rena_unis.random((int) 1000, (int) 1500);
+        return rena_unis.random(1000, 1500);
       }
       if (this.isAtApproxCoords(this.path[this.step], this.path[this.step + 1], 1)) {
         this.step += 2;
       }
       this.walkTo(this.path[this.step], this.path[this.step + 1]);
       System.out.println("[Rena] Running . . . ! ");
-      return rena_unis.random((int) 350, (int) 550);
+      return rena_unis.random(350, 550);
     }
     ++this.loop;
     if (this.loop > 10) {
       this.step = 0;
       this.loop = 0;
     }
-    return rena_unis.random((int) 500, (int) 600);
+    return rena_unis.random(500, 600);
   }
 }

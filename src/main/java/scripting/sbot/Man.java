@@ -24,18 +24,18 @@ public class Man extends Script {
   }
 
   public void Checksleep() {
-    if (Fatigue() >= 90 && Running() == true) {
-      while (Sleeping() == false && Running() == true) {
+    if (Fatigue() >= 90 && Running()) {
+      while (!Sleeping() && Running()) {
         Use(FindInv(1263));
         Wait(2500);
       }
-      while (Sleeping() == true && Running() == true) {
+      while (Sleeping() && Running()) {
         Wait(100);
       }
     }
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@red@G-unit's Man Thiever plesh", 3);
     while (Running()) {
       thieve();

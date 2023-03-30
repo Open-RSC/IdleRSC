@@ -1,8 +1,6 @@
 package scripting.apos;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import javax.swing.*;
 
 public class Abyte0_Sinister extends Abyte0_Script {
@@ -14,51 +12,52 @@ public class Abyte0_Sinister extends Abyte0_Script {
   int inventoryCount = 18;
   // -----------------------
 
-  int cptRunesToBankAt =
-      100; // zero is too dangerous as you cant hit with 0 str and 0 attack so you fight to death if
+  final int cptRunesToBankAt =
+      100; // zero is too dangerous as you cant hit with 0 str and 0 attack, so you fight to death
+  // if
   // stuck
 
-  int chaosDruids = 270;
-  int salarinId = 567;
-  int[] allNpcIds = {chaosDruids, salarinId};
+  final int chaosDruids = 270;
+  final int salarinId = 567;
+  final int[] allNpcIds = {chaosDruids, salarinId};
 
-  int mindRunes = 35;
-  int chaosRunes = 41;
+  final int mindRunes = 35;
+  final int chaosRunes = 41;
 
-  int sinisterKey = 932;
-  int halfKey1 = 526;
-  int halfKey2 = 527;
+  final int sinisterKey = 932;
+  final int halfKey1 = 526;
+  final int halfKey2 = 527;
 
-  int WhiteBerries = 471;
+  final int WhiteBerries = 471;
 
-  int HalfDragonSquareShield1 = 1276;
-  int HalfDragonSquareShield2 = 1277;
+  final int HalfDragonSquareShield1 = 1276;
+  final int HalfDragonSquareShield2 = 1277;
 
-  int windBolt = 8;
-  int waterBolt = 11;
-  int earthBolt = 14;
-  int fireBolt = 17;
+  final int windBolt = 8;
+  final int waterBolt = 11;
+  final int earthBolt = 14;
+  final int fireBolt = 17;
 
-  int FireRune = 31;
-  int WaterRune = 32;
-  int AirRune = 33;
-  int EarthRune = 34;
-  int deathRunes = 38;
+  final int FireRune = 31;
+  final int WaterRune = 32;
+  final int AirRune = 33;
+  final int EarthRune = 34;
+  final int deathRunes = 38;
   int nature = 40;
-  int law = 42;
-  int CosmicRune = 46;
+  final int law = 42;
+  final int CosmicRune = 46;
 
-  int superDef1 = 497;
+  final int superDef1 = 497;
 
-  int irit = 439;
-  int avantoe = 440;
-  int kwuarm = 441;
-  int dwarfWeed = 443;
+  final int irit = 439;
+  final int avantoe = 440;
+  final int kwuarm = 441;
+  final int dwarfWeed = 443;
 
-  int vial = 465;
+  final int vial = 465;
 
-  String[] itemsName = {"Shield + Keys + Law + Pot", "All Good Items"};
-  int[] items0 = {
+  final String[] itemsName = {"Shield + Keys + Law + Pot", "All Good Items"};
+  final int[] items0 = {
     HalfDragonSquareShield1,
     HalfDragonSquareShield2,
     sinisterKey,
@@ -67,7 +66,7 @@ public class Abyte0_Sinister extends Abyte0_Script {
     law,
     superDef1
   };
-  int[] items1 = {
+  final int[] items1 = {
     HalfDragonSquareShield1,
     HalfDragonSquareShield2,
     sinisterKey,
@@ -95,27 +94,27 @@ public class Abyte0_Sinister extends Abyte0_Script {
     823,
     933
   };
-  Object[] itemsList = {items0, items1};
+  final Object[] itemsList = {items0, items1};
 
   int[] items = items1; // Default Setting
 
-  String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
-  int[] fModeIdList = {2, 3, 1, 0};
+  final String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
+  final int[] fModeIdList = {2, 3, 1, 0};
 
-  String[] spellName = {"Wind strike", "Wind bolt"};
-  int[] spellIdList = {0, 8};
-  int camelotTeleport = 22;
+  final String[] spellName = {"Wind strike", "Wind bolt"};
+  final int[] spellIdList = {0, 8};
+  final int camelotTeleport = 22;
 
-  String[] runesCountName = {"500", "1000", "2500", "5000"};
-  int[] runesCountList = {500, 1000, 2500, 5000};
+  final String[] runesCountName = {"500", "1000", "2500", "5000"};
+  final int[] runesCountList = {500, 1000, 2500, 5000};
 
-  String[] foodName = {"Tunas", "Lobs", "Swordfish", "Sharks"};
-  int[] foodIdList = {367, 373, 370, 546};
+  final String[] foodName = {"Tunas", "Lobs", "Swordfish", "Sharks"};
+  final int[] foodIdList = {367, 373, 370, 546};
 
-  String[] foodCountName = {"0", "5", "10", "12"};
-  int[] foodCountList = {30, 25, 20, 18};
+  final String[] foodCountName = {"0", "5", "10", "12"};
+  final int[] foodCountList = {30, 25, 20, 18};
 
-  String[] drinkOrNotName = {"Drink", "No Drink"};
+  final String[] drinkOrNotName = {"Drink", "No Drink"};
   int drinkOrNot = 0; // Default Setting
 
   public Abyte0_Sinister(String e) {
@@ -350,8 +349,8 @@ public class Abyte0_Sinister extends Abyte0_Script {
         return random(500, 700);
       }
       // We need to Pick Up the Item if any on floor
-      for (int h = 0; h < items.length; h++) {
-        int[] groundItems = getItemById(items[h]);
+      for (int item : items) {
+        int[] groundItems = getItemById(item);
         if (groundItems[0] != -1) {
           if (isAtApproxCoords(groundItems[1], groundItems[2], 8)) {
             // if in combat we run else we pickup
@@ -414,11 +413,11 @@ public class Abyte0_Sinister extends Abyte0_Script {
       return random(1200, 1400);
     }
     if (isBanking()) {
-      for (int h = 0; h < items.length; h++) {
-        if (items[h] == law) continue;
+      for (int item : items) {
+        if (item == law) continue;
 
-        if (getInventoryCount(items[h]) > 0) {
-          deposit(items[h], getInventoryCount(items[h]));
+        if (getInventoryCount(item) > 0) {
+          deposit(item, getInventoryCount(item));
           return random(1000, 1500);
         }
       }
@@ -471,7 +470,7 @@ public class Abyte0_Sinister extends Abyte0_Script {
       // IF WE NEAR BANK BUT OUTSIDE HOUSE
       if (isAtApproxCoords(585, 753, 30)) {
         if (!isQuestMenu()) {
-          int banker[] = getNpcByIdNotTalk(new int[] {95});
+          int[] banker = getNpcByIdNotTalk(95);
           if (banker[0] != -1) {
             talkToNpc(banker[0]);
             return random(2000, 2700);
@@ -607,8 +606,8 @@ public class Abyte0_Sinister extends Abyte0_Script {
 
     print("Run or attack V2");
 
-    for (int i = 0; i < npcIds.length; i++) {
-      int[] npcs = getNpcInRadius(npcIds[i], getX(), getY() + 1, 0);
+    for (int npcId : npcIds) {
+      int[] npcs = getNpcInRadius(npcId, getX(), getY() + 1, 0);
       if (npcs[0] == -1) continue;
 
       print("attacking" + npcs[0]);

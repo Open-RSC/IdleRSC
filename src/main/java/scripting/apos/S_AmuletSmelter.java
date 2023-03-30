@@ -50,7 +50,7 @@ public final class S_AmuletSmelter extends Script implements ActionListener {
   private String name;
   private int gem_id;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private Frame frame;
 
   private PathWalker.Path to_bank;

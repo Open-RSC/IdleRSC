@@ -25,29 +25,36 @@ public final class S_Enchant extends Script {
 
   @Override
   public void init(String params) {
-    if (params.equals("dragonstone")) {
-      amulet_id = 610;
-      enchanted_id = 522;
-      spell_id = 42;
-    } else if (params.equals("sapphire")) {
-      amulet_id = 302;
-      enchanted_id = 314;
-      spell_id = 3;
-    } else if (params.equals("emerald")) {
-      amulet_id = 303;
-      enchanted_id = 315;
-      spell_id = 13;
-    } else if (params.equals("ruby")) {
-      amulet_id = 304;
-      enchanted_id = 316;
-      spell_id = 24;
-    } else if (params.equals("diamond")) {
-      amulet_id = 305;
-      enchanted_id = 317;
-      spell_id = 30;
-    } else {
-      System.out.println(
-          "You entered the parameter incorrectly. " + "It must be the gem type in lowercase.");
+    switch (params) {
+      case "dragonstone":
+        amulet_id = 610;
+        enchanted_id = 522;
+        spell_id = 42;
+        break;
+      case "sapphire":
+        amulet_id = 302;
+        enchanted_id = 314;
+        spell_id = 3;
+        break;
+      case "emerald":
+        amulet_id = 303;
+        enchanted_id = 315;
+        spell_id = 13;
+        break;
+      case "ruby":
+        amulet_id = 304;
+        enchanted_id = 316;
+        spell_id = 24;
+        break;
+      case "diamond":
+        amulet_id = 305;
+        enchanted_id = 317;
+        spell_id = 30;
+        break;
+      default:
+        System.out.println(
+            "You entered the parameter incorrectly. " + "It must be the gem type in lowercase.");
+        break;
     }
     init = false;
     enchanted = 0;

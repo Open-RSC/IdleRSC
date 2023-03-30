@@ -7,13 +7,12 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import utils.Extractor;
 
+/** kRiStOf's edits: added paint added runtime to paint Kaila Edits: Added ~30 new Locations */
 public class PathWalker extends Script implements ActionListener, ItemListener {
 
   /*
@@ -37,8 +36,6 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
    *
    * Contributions are appreciated.
    */
-  /** kRiStOf's edits: /* added paint /* added runtime to paint */
-  /** Kaila Edits: Added ~30 new Locations */
 
   // class for encapsulation
   public static class Path {
@@ -115,7 +112,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
       final int x = this.x;
       final int y = this.y;
       Node n;
-      final ArrayList<Node> neighbors = new ArrayList<Node>(0);
+      final ArrayList<Node> neighbors = new ArrayList<>(0);
 
       n = getNode(nodes, x, y - 1);
       if (n != null) {
@@ -183,10 +180,10 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
   public static class Location {
 
-    public String name;
-    public int x;
-    public int y;
-    public boolean bank;
+    public final String name;
+    public final int x;
+    public final int y;
+    public final boolean bank;
 
     public Location(String name, int x, int y, boolean b) {
       this.name = name;
@@ -307,9 +304,8 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
       byte[][] walkable = new byte[WORLD_W][WORLD_H];
       String dataPath = "/map/data";
-      BufferedInputStream in = null;
-      try {
-        in = new BufferedInputStream(Extractor.extractResourceAsStream(dataPath));
+      try (BufferedInputStream in =
+          new BufferedInputStream(Extractor.extractResourceAsStream(dataPath))) {
         for (int i = 0; i < WORLD_W; ++i) {
           int read = 0;
           do {
@@ -323,11 +319,6 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
       } catch (IOException ex) {
         System.out.println("failed: " + ex);
         return;
-      } finally {
-        try {
-          in.close();
-        } catch (Throwable t) {
-        }
       }
 
       nodes = new Node[WORLD_W][WORLD_H];
@@ -585,8 +576,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     if (handleObject(x - 1, y - 1)) return true;
     if (handleObject(x + 1, y + 1)) return true;
     if (handleObject(x - 1, y + 1)) return true;
-    if (handleObject(x + 1, y - 1)) return true;
-    return false;
+    return handleObject(x + 1, y - 1);
   }
 
   private boolean handleObject(int x, int y) {
@@ -644,20 +634,16 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         ordered.add(loc);
       }
     }
-    Collections.sort(
-        ordered,
-        new Comparator<Location>() {
-          @Override
-          public int compare(Location l1, Location l2) {
-            int dist1 = distanceTo(x, y, l1.x, l1.y);
-            int dist2 = distanceTo(x, y, l2.x, l2.y);
-            if (dist1 == dist2) {
-              return 0;
-            } else if (dist1 < dist2) {
-              return -1;
-            } else {
-              return 1;
-            }
+    ordered.sort(
+        (l1, l2) -> {
+          int dist1 = distanceTo(x, y, l1.x, l1.y);
+          int dist2 = distanceTo(x, y, l2.x, l2.y);
+          if (dist1 == dist2) {
+            return 0;
+          } else if (dist1 < dist2) {
+            return -1;
+          } else {
+            return 1;
           }
         });
     int best_dist = Integer.MAX_VALUE;
@@ -684,12 +670,12 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
     start.f = (short) start.estHeuristicCost(goal);
 
-    Deque<Node> open = new ArrayDeque<Node>(32);
+    Deque<Node> open = new ArrayDeque<>(32);
     open.add(start);
     start.open = true;
 
     // The map of navigated nodes
-    Map<Node, Node> came_from = new HashMap<Node, Node>();
+    Map<Node, Node> came_from = new HashMap<>();
 
     Node[][] nodes = this.nodes;
 
@@ -743,7 +729,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
   private static Node[] constructPath(Map<Node, Node> came_from, Node start, Node goal) {
 
-    Deque<Node> path = new ArrayDeque<Node>();
+    Deque<Node> path = new ArrayDeque<>();
     Node p = came_from.get(goal);
     while (p != start) {
       path.push(p);
@@ -789,11 +775,8 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
   @Override
   public void itemStateChanged(ItemEvent e) {
     Location loc = locations[choice.getSelectedIndex()];
-    StringBuilder b = new StringBuilder();
-    b.append(loc.x);
-    b.append(',');
-    b.append(loc.y);
-    field_end.setText(b.toString());
+    String b = String.valueOf(loc.x) + ',' + loc.y;
+    field_end.setText(b);
   }
 
   private class FinderInit implements Runnable {
@@ -801,12 +784,12 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     @Override
     public void run() {
       String[] split = field_start.getText().split(",");
-      int x1 = Integer.valueOf(split[0]);
-      int y1 = Integer.valueOf(split[1]);
+      int x1 = Integer.parseInt(split[0]);
+      int y1 = Integer.parseInt(split[1]);
 
       split = field_end.getText().split(",");
-      int x2 = Integer.valueOf(split[0]);
-      int y2 = Integer.valueOf(split[1]);
+      int x2 = Integer.parseInt(split[0]);
+      int y2 = Integer.parseInt(split[1]);
 
       Node start = getNode(nodes, x1, y1);
 

@@ -22,413 +22,377 @@ public class LeetFletcher2 extends Script {
   }
 
   public void ChopOak() {
-    while (Running() == true && InvCount(632) < 26 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(632) < 26 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
-      int OakCoords[] = GetNearestObject(306);
+      int[] OakCoords = GetNearestObject(306);
       AtObject(OakCoords[0], OakCoords[1]);
       Wait(800);
     }
   }
 
   public void CutOakShort() {
-    while (Running() == true && InvCount(632) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(632) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(632));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(0);
       }
     }
   }
 
   public void TakeOakShort() {
-    while (Running() == true && InvCount(649) < 13) {
+    while (Running() && InvCount(649) < 13) {
       Withdraw(649, 1);
       Wait(100);
     }
   }
 
   public void MakeOakShort() {
-    while (Running() == true && InvCount(649) > 0 && InvCount(676) > 0) {
+    while (Running() && InvCount(649) > 0 && InvCount(676) > 0) {
       UseWithInventory(FindInv(649), FindInv(676));
       Wait(100);
     }
   }
 
   public void CutOakLong() {
-    while (Running() == true && InvCount(632) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(632) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(632));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(1);
       }
     }
   }
 
   public void TakeOakLong() {
-    while (Running() == true && InvCount(648) < 13) {
+    while (Running() && InvCount(648) < 13) {
       Withdraw(648, 1);
       Wait(100);
     }
   }
 
   public void MakeOakLong() {
-    while (Running() == true
-        && InvCount(648) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(648) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(648), FindInv(676));
       Wait(100);
     }
   }
 
   public void ChopWillow() {
-    while (Running() == true && InvCount(633) < 26 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(633) < 26 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
-      int WillowCoords[] = GetNearestObject(307);
+      int[] WillowCoords = GetNearestObject(307);
       AtObject(WillowCoords[0], WillowCoords[1]);
       Wait(800);
     }
   }
 
   public void CutWillowShort() {
-    while (Running() == true && InvCount(633) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(633) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(633));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(0);
       }
     }
   }
 
   public void TakeWillowShort() {
-    while (Running() == true && InvCount(651) < 13) {
+    while (Running() && InvCount(651) < 13) {
       Withdraw(651, 1);
       Wait(100);
     }
   }
 
   public void MakeWillowShort() {
-    while (Running() == true
-        && InvCount(651) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(651) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(651), FindInv(676));
       Wait(100);
     }
   }
 
   public void CutWillowLong() {
-    while (Running() == true && InvCount(633) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(633) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(633));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(1);
       }
     }
   }
 
   public void TakeWillowLong() {
-    while (Running() == true && InvCount(650) < 13) {
+    while (Running() && InvCount(650) < 13) {
       Withdraw(650, 1);
       Wait(100);
     }
   }
 
   public void MakeWillowLong() {
-    while (Running() == true
-        && InvCount(650) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(650) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(650), FindInv(676));
       Wait(100);
     }
   }
 
   public void ChopMaple() {
-    while (Running() == true && InvCount(634) < 26 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(634) < 26 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
-      int MapleCoords[] = GetNearestObject(308);
+      int[] MapleCoords = GetNearestObject(308);
       AtObject(MapleCoords[0], MapleCoords[1]);
       Wait(800);
     }
   }
 
   public void CutMapleShort() {
-    while (Running() == true && InvCount(634) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(634) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(634));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(0);
       }
     }
   }
 
   public void TakeMapleShort() {
-    while (Running() == true && InvCount(653) < 13) {
+    while (Running() && InvCount(653) < 13) {
       Withdraw(653, 1);
       Wait(100);
     }
   }
 
   public void MakeMapleShort() {
-    while (Running() == true
-        && InvCount(653) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(653) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(653), FindInv(676));
       Wait(100);
     }
   }
 
   public void CutMapleLong() {
-    while (Running() == true && InvCount(634) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(634) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(634));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(1);
       }
     }
   }
 
   public void TakeMapleLong() {
-    while (Running() == true && InvCount(652) < 13) {
+    while (Running() && InvCount(652) < 13) {
       Withdraw(652, 1);
       Wait(100);
     }
   }
 
   public void MakeMapleLong() {
-    while (Running() == true
-        && InvCount(652) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(652) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(652), FindInv(676));
       Wait(100);
     }
   }
 
   public void ChopYew() {
-    while (Running() == true && InvCount(635) < 26 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(635) < 26 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
-      int YewCoords[] = GetNearestObject(309);
+      int[] YewCoords = GetNearestObject(309);
       AtObject(YewCoords[0], YewCoords[1]);
       Wait(800);
     }
   }
 
   public void CutYewShort() {
-    while (Running() == true && InvCount(635) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(635) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(635));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(0);
       }
     }
   }
 
   public void TakeYewShort() {
-    while (Running() == true && InvCount(655) < 13) {
+    while (Running() && InvCount(655) < 13) {
       Withdraw(655, 1);
       Wait(100);
     }
   }
 
   public void MakeYewShort() {
-    while (Running() == true
-        && InvCount(655) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(655) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(655), FindInv(676));
       Wait(100);
     }
   }
 
   public void CutYewLong() {
-    while (Running() == true && InvCount(635) > 0 && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() > 95) {
+    while (Running() && InvCount(635) > 0 && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() > 95) {
         Use(FindInv(1263));
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
       UseWithInventory(FindInv(13), FindInv(635));
       Wait(1000);
-      if (QuestMenu() && Running() == true) {
+      if (QuestMenu() && Running()) {
         Answer(1);
       }
     }
   }
 
   public void TakeYewLong() {
-    while (Running() == true && InvCount(654) < 13) {
+    while (Running() && InvCount(654) < 13) {
       Withdraw(654, 1);
       Wait(100);
     }
   }
 
   public void MakeYewLong() {
-    while (Running() == true
-        && InvCount(654) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(654) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(654), FindInv(676));
       Wait(100);
     }
   }
 
   public void TakeMagicShort() {
-    while (Running() == true && InvCount(657) < 13) {
+    while (Running() && InvCount(657) < 13) {
       Withdraw(657, 1);
       Wait(100);
     }
   }
 
   public void MakeMagicShort() {
-    while (Running() == true
-        && InvCount(657) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(657) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(657), FindInv(676));
       Wait(100);
     }
   }
 
   public void TakeMagicLong() {
-    while (Running() == true && InvCount(656) < 13) {
+    while (Running() && InvCount(656) < 13) {
       Withdraw(656, 1);
       Wait(100);
     }
   }
 
   public void MakeMagicLong() {
-    while (Running() == true
-        && InvCount(656) > 0
-        && InvCount(676) > 0
-        && Fatigue() < 97
-        && Sleeping() == false) {
+    while (Running() && InvCount(656) > 0 && InvCount(676) > 0 && Fatigue() < 97 && !Sleeping()) {
       UseWithInventory(FindInv(656), FindInv(676));
       Wait(100);
     }
   }
 
   public void WalkTrees() {
-    while (Running() == true) {
-      if (ObjectAt(500, 454) != 63 && Running() == true) {
+    while (Running()) {
+      if (ObjectAt(500, 454) != 63 && Running()) {
         AtObject(500, 454);
         Wait(1000);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(503, 455);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(508, 451);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(510, 447);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(512, 455);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(500, 453);
       }
     }
   }
 
   public void WalkToBank() {
-    while (Running() == true) {
-      if (Running() == true) {
+    while (Running()) {
+      if (Running()) {
         Walk(508, 451);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(504, 455);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(500, 454);
       }
-      if (ObjectAt(500, 454) != 63 && Running() == true) {
+      if (ObjectAt(500, 454) != 63 && Running()) {
         AtObject(500, 454);
         Wait(1000);
       }
@@ -436,47 +400,47 @@ public class LeetFletcher2 extends Script {
   }
 
   public void WalkYew() {
-    while (Running() == true) {
-      if (ObjectAt(500, 454) != 63 && Running() == true) {
+    while (Running()) {
+      if (ObjectAt(500, 454) != 63 && Running()) {
         AtObject(500, 454);
         Wait(1000);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(506, 457);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(513, 463);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(520, 465);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(520, 470);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(518, 474);
       }
     }
   }
 
   public void BankYew() {
-    while (Running() == true) {
-      if (Running() == true) {
+    while (Running()) {
+      if (Running()) {
         Walk(520, 467);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(513, 464);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(506, 459);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(501, 455);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(500, 454);
       }
-      if (ObjectAt(500, 454) != 63 && Running() == true) {
+      if (ObjectAt(500, 454) != 63 && Running()) {
         AtObject(500, 454);
         Wait(1000);
       }
@@ -484,89 +448,89 @@ public class LeetFletcher2 extends Script {
   }
 
   public void WalkBank() {
-    while (Running() == true) {
+    while (Running()) {
       AtObject(525, 1406);
       Wait(1000);
-      if (Running() == true) {
+      if (Running()) {
         Walk(522, 465);
       }
-      while (DoorAt(522, 465, 1) == 2 && Running() == true) {
+      while (DoorAt(522, 465, 1) == 2 && Running()) {
         OpenDoor(522, 465, 1);
         Wait(1000);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(520, 461);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(513, 457);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(505, 455);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(500, 454);
       }
-      while (ObjectAt(500, 454) != 63 && Running() == true) {
+      while (ObjectAt(500, 454) != 63 && Running()) {
         AtObject(500, 454);
         Wait(1000);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(500, 453);
       }
     }
   }
 
   public void WalkFlax() {
-    while (Running() == true) {
-      if (ObjectAt(500, 454) != 63 && Running() == true) {
+    while (Running()) {
+      if (ObjectAt(500, 454) != 63 && Running()) {
         AtObject(500, 454);
         Wait(1000);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(492, 459);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(489, 463);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(491, 481);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(490, 487);
       }
     }
   }
 
   public void PickFlax() {
-    while (Running() == true && (InvCount(675) < 26)) {
-      int FlaxCoords[] = GetNearestObject(313);
+    while (Running() && (InvCount(675) < 26)) {
+      int[] FlaxCoords = GetNearestObject(313);
       AtObject2(FlaxCoords[0], FlaxCoords[1]);
       Wait(100);
     }
   }
 
   public void WalkSpin() {
-    while (Running() == true) {
-      if (Running() == true) {
+    while (Running()) {
+      if (Running()) {
         Walk(497, 478);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(503, 470);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(509, 464);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(515, 462);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(521, 465);
       }
-      while (DoorAt(522, 465, 1) == 2 && Running() == true) {
+      while (DoorAt(522, 465, 1) == 2 && Running()) {
         OpenDoor(522, 465, 1);
         Wait(1000);
       }
-      if (Running() == true) {
+      if (Running()) {
         Walk(525, 463);
       }
       AtObject(525, 462);
@@ -575,29 +539,29 @@ public class LeetFletcher2 extends Script {
   }
 
   public void SpinFlax() {
-    while (Running() == true && (InvCount(675) < 0) && Fatigue() < 97 && Sleeping() == false) {
-      while (Running() == true && Sleeping() == false && Fatigue() < 95) {
+    while (Running() && (InvCount(675) < 0) && Fatigue() < 97 && !Sleeping()) {
+      while (Running() && !Sleeping() && Fatigue() < 95) {
         AtObject(524, 1410);
         Wait(1000);
       }
-      while (Running() == true && Sleeping() == true) {
+      while (Running() && Sleeping()) {
         Wait(100);
       }
-      int SpinCoords[] = GetNearestObject(121);
+      int[] SpinCoords = GetNearestObject(121);
       UseOnObject(SpinCoords[0], SpinCoords[1], 2);
       Wait(200);
     }
   }
 
   public void DepositFlax() {
-    while (Running() == true && InvCount(676) > 13) {
+    while (Running() && InvCount(676) > 13) {
       Deposit(676, 1);
       Wait(100);
     }
   }
 
   public void TakeFlax() {
-    while (Running() == true && InvCount(676) < 13) {
+    while (Running() && InvCount(676) < 13) {
       Withdraw(676, 1);
       Wait(150);
     }
@@ -751,7 +715,7 @@ public class LeetFletcher2 extends Script {
     CloseBank();
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@ora@*** @whi@Seer's Village Fletcher @ora@***", 3);
     DisplayMessage("@ora@ *** @whi@Created By: AssPirate@ora@***", 3);
     DisplayMessage("@ora@  *** @whi@ Version 1.0 9/14 @ora@***", 3);

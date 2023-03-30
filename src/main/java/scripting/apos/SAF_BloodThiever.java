@@ -52,18 +52,18 @@ public class SAF_BloodThiever extends Script {
                 waitOptions,
                 waitOptions[1]);
 
-    if (vet.equals("Yes")) {
-      veteran = true;
-    } else {
-      veteran = false;
-    }
+    veteran = vet.equals("Yes");
 
-    if (wait.equals("Short")) {
-      wait_time = 3;
-    } else if (wait.equals("Medium")) {
-      wait_time = 5;
-    } else if (wait.equals("Long")) {
-      wait_time = 7;
+    switch (wait) {
+      case "Short":
+        wait_time = 3;
+        break;
+      case "Medium":
+        wait_time = 5;
+        break;
+      case "Long":
+        wait_time = 7;
+        break;
     }
 
     start_time = System.currentTimeMillis();
@@ -103,12 +103,12 @@ public class SAF_BloodThiever extends Script {
       }
 
       if (getX() == 617 && getY() == 556) {
-        int lockedDoor[] = getWallObjectById(96);
+        int[] lockedDoor = getWallObjectById(96);
         atWallObject2(lockedDoor[1], lockedDoor[2]);
       }
 
       if (getX() >= 615 && getX() <= 620 && getY() <= 555 && getY() >= 550 && no_stick()) {
-        int ladder[] = getObjectById(6);
+        int[] ladder = getObjectById(6);
         atObject(ladder[1], ladder[2]);
       }
 
@@ -234,9 +234,9 @@ public class SAF_BloodThiever extends Script {
     drawString("@gre@Blood Thiever@whi@", x - 4, y - 17, 4, white);
     drawString("Trips: @gre@" + int_format(trips) + " @whi@ ", x, y, font, white);
     y += 15;
-    drawString("Bloods: @gre@" + int_format(trips * 2) + " @whi@ ", x, y, font, white);
+    drawString("Bloods: @gre@" + int_format(trips * 2L) + " @whi@ ", x, y, font, white);
     y += 15;
-    drawString("Gold: $@gre@" + int_format(trips * 500) + "@whi@ ", x, y, font, white);
+    drawString("Gold: $@gre@" + int_format(trips * 500L) + "@whi@ ", x, y, font, white);
     y += 15;
     drawString("Trips per minute: " + get_runspm() + "@whi@ ", x, y, font, white);
     y += 15;

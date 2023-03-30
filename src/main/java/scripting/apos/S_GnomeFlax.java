@@ -11,7 +11,7 @@ public final class S_GnomeFlax extends Script {
   private static final int ID_STRING = 676;
   private static final int ID_WHEEL = 121;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path to_bank;
   private PathWalker.Path from_bank;
 

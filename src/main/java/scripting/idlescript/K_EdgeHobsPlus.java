@@ -7,39 +7,15 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Dungeon Chaos Druids - By Kaila.
+ * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
  *
- * <p>Start in Edge bank or near Druids.
+ * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
+ * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
+ * and Autostart. cannot support bone looting with this bot due to the shape of the dungeon
  *
- * <p>"FoodId" in bank REQUIRED.
- *
- * <p>
- *
- * <p>Teleport if Pkers Attack option.
- *
- * <p>31 Magic, Laws, Airs, and Earths required for Escape Tele.
- *
- * <p>Unselected, bot WALKS to Edge when Attacked.
- *
- * <p>Selected, bot teleports, then walks to edge.
- *
- * <p>
- *
- * <p>Return to Druids after Escaping option.
- *
- * <p>Unselected, bot will log out after escaping Pkers.
- *
- * <p>Selected, bot will grab more food and return.
- *
- * <p>
- *
- * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Food Type, and Food Withdraw
- * Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option, and
- * Autostart.
- *
- * <p>@Author ~ Kaila
+ * <p>Author - Kaila
  */
-public final class K_EdgeChaosDruids extends IdleScript {
+public final class K_EdgeHobsPlus extends IdleScript {
   private static final Controller c = Main.getController();
   private static JFrame scriptFrame = null;
   private static String foodName = "";
@@ -47,20 +23,18 @@ public final class K_EdgeChaosDruids extends IdleScript {
   private static boolean scriptStarted = false;
   private static boolean timeToBank = false;
   private static boolean lootLowLevel = true;
-  private static boolean lootBones = true;
   private static boolean potUp = false;
+  private static boolean timeToBankStay = false;
+  private static boolean lootLimp = true;
 
   private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(215, 3249, x, y) <= 11;
+    return c.distance(207, 3302, x, y) <= 14; // center of lootzone
   }
 
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static long startTime;
   private static int totalGuam = 0;
   private static int totalMar = 0;
   private static int totalTar = 0;
   private static int totalHar = 0;
-  private static int totalHerbs = 0;
   private static int totalRan = 0;
   private static int totalIrit = 0;
   private static int totalAva = 0;
@@ -69,22 +43,29 @@ public final class K_EdgeChaosDruids extends IdleScript {
   private static int totalDwarf = 0;
   private static int totalLaw = 0;
   private static int totalNat = 0;
+  private static int totalFire = 0;
+  private static int totalWater = 0;
+  private static int totalEarth = 0;
+  private static int totalChaos = 0;
+  private static int totalRunes = 0;
+  private static int totalHerbs = 0;
+  private static int totalTrips = 0;
   private static int totalLoop = 0;
   private static int totalTooth = 0;
   private static int totalLeft = 0;
   private static int totalSpear = 0;
   private static int totalGems = 0;
-  private static int totalTrips = 0;
+  private static int foodInBank = -1;
+  private static int usedFood = 0;
   private static int foodWithdrawAmount = 1;
   private static int fightMode = 0;
   private static int foodId = -1;
-  private static int foodInBank = -1;
-  private static int usedFood = 0;
-  private static final int[] bones = {
-    20, // regular bones
-    413, // big bones
-    604, // bat bones
-    814 // dragon bones
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static final int[] npcIds = {
+    67, // Hobgoblin
+    45, // Skelli
+    68 // Zombie
   };
   private static final int[] attackPot = {
     476, // reg attack pot (1)
@@ -97,6 +78,7 @@ public final class K_EdgeChaosDruids extends IdleScript {
     222 // reg str pot (3)
   };
   private static final int[] lowLevelLoot = {
+    11, // bronze arrows (skeletons)
     165, // Grimy Guam
     435, // Grimy mar
     436, // Grimy tar
@@ -107,13 +89,14 @@ public final class K_EdgeChaosDruids extends IdleScript {
     441, // Grimy kwu
     442, // Grimy cada
     443, // Grimy dwu
-    40, // nature rune
     42, // law rune
-    // 33,	 //air rune
-    // 34, 	 //Earth rune
-    // 35,	 //mind runes
-    // 36,	 //body runes
-    // 1026, //unholy mould
+    40, // nature rune
+    41, // chaos rune
+    36, // body rune
+    // 46,    //cosmic rune
+    33, // air rune
+    32, // water rune
+    31, // fire rune
     160, // saph
     159, // emerald
     158, // ruby
@@ -130,11 +113,15 @@ public final class K_EdgeChaosDruids extends IdleScript {
     441, // Grimy kwu
     442, // Grimy cada
     443, // Grimy dwu
-    40, // nature rune
     42, // law rune
-    // 33,	 //air rune
-    // 34, 	 //Earth rune
-    160, // saph
+    40, // nature rune
+    41, // chaos rune
+    // 36,      //body rune
+    // 46,      //cosmic rune
+    33, // air rune
+    32, // water rune
+    31, // fire rune
+    // 160, 	 //saph
     159, // emerald
     158, // ruby
     157, // diamond
@@ -223,25 +210,23 @@ public final class K_EdgeChaosDruids extends IdleScript {
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
-      lootBones = true;
       potUp = false;
       c.displayMessage("Got Autostart Parameter");
-      c.log("@cya@Auto-Starting script using 1 Shark, controlled, Loot Low Level", "cya");
+      c.log("@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, no pot up", "cya");
       scriptStarted = true;
     }
     if (scriptStarted) {
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Edge Druid Killer - By Kaila");
-      c.displayMessage("@red@Start in Edge bank with Armor");
-      c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-      c.displayMessage("@red@31 Magic Required for escape tele");
+      c.displayMessage("@red@Edge Dungeon Hob\\Skelli\\Zombies ~ Kaila");
+      c.displayMessage("@red@Start in Varrock West or in Dungeon");
+      c.displayMessage("@red@Brass Key Required");
 
       if (c.isInBank()) {
         c.closeBank();
       }
       if (c.currentY() < 3000) {
         bank();
-        BankToDruid();
+        bankToDungeon();
         c.sleep(1380);
       }
       whatIsFoodName();
@@ -257,13 +242,18 @@ public final class K_EdgeChaosDruids extends IdleScript {
   private void scriptStart() {
     while (c.isRunning()) {
       int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
       }
       if (c.getFightMode() != fightMode) {
         c.log("@red@Changing fightmode to " + fightMode);
         c.setFightMode(fightMode);
+      }
+      if (c.currentX() < 186) { // down corridor too much
+        c.displayMessage("@red@Error: Too far out of wander range, Walking back!");
+        c.walkTo(198, 3299);
+        c.walkTo(207, 3300);
+        c.sleep(640);
       }
       if (potUp && !c.isInCombat()) {
         if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
@@ -281,48 +271,49 @@ public final class K_EdgeChaosDruids extends IdleScript {
           }
         }
       }
-      if (c.getInventoryItemCount() < 30) {
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
           if (lootLowLevel) {
             lowLevelLooting();
           } else {
             highLevelLooting();
           }
-          c.setStatus("@yel@Attacking Druids");
-          ORSCharacter npc = c.getNearestNpcById(270, false);
+          if (lootLimp) {
+            lootLimp();
+          }
+          c.setStatus("@yel@Attacking..");
+          ORSCharacter npc = controller.getNearestNpcByIds(npcIds, false);
           if (npc != null) {
-            // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
-            c.sleep(640);
-          } else if (lootBones) {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
-            lootBones();
+            c.sleep(2000);
           } else {
             if (lootLowLevel) {
               lowLevelLooting();
             } else {
               highLevelLooting();
             }
-            if (c.currentX() != 218 || c.currentY() != 3245) {
-              c.walkTo(218, 3245);
-              c.sleep(640);
-            }
+            c.sleep(100);
           }
         } else {
           c.sleep(640);
         }
       } else if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
-          || timeToBank) {
+          || timeToBank
+          || timeToBankStay) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
-        DruidToBank();
+        dungeonToBank();
         bank();
-        BankToDruid();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage(
+              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          c.setStatus("@red@Stopping Script.");
+          c.setAutoLogin(false);
+          c.stop();
+        }
+        bankToDungeon();
         c.sleep(618);
       } else {
         c.sleep(100);
@@ -330,21 +321,14 @@ public final class K_EdgeChaosDruids extends IdleScript {
     }
   }
 
-  private void lootBones() {
-    for (int lootId : bones) {
-      int[] lootCoord = c.getNearestItemById(lootId);
-      if (lootCoord != null && !c.isInCombat() && isWithinLootzone(lootCoord[0], lootCoord[1])) {
-        c.setStatus("@red@No NPCs, Picking bones");
-        c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
-        c.sleep(618);
-        buryBones();
-      } else {
-        if (c.currentX() != 218 || c.currentY() != 3245) {
-          c.walkTo(218, 3245);
-          c.sleep(640);
-        }
-        c.sleep(100);
-      }
+  private void lootLimp() {
+    int[] lootCoord = c.getNearestItemById(220);
+    if (lootCoord != null && isWithinLootzone(lootCoord[0], lootCoord[1])) {
+      c.setStatus("@yel@Picking Limps..");
+      c.pickupItem(lootCoord[0], lootCoord[1], 220, true, false);
+      c.sleep(618);
+    } else {
+      c.sleep(100);
     }
   }
 
@@ -373,13 +357,11 @@ public final class K_EdgeChaosDruids extends IdleScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(1200);
 
     if (c.isInBank()) {
-
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -392,11 +374,16 @@ public final class K_EdgeChaosDruids extends IdleScript {
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
       totalLaw = totalLaw + c.getInventoryItemCount(42);
       totalNat = totalNat + c.getInventoryItemCount(40);
+      totalFire = totalFire + c.getInventoryItemCount(31);
+      totalEarth = totalEarth + c.getInventoryItemCount(34);
+      totalChaos = totalChaos + c.getInventoryItemCount(41);
+      totalWater = totalWater + c.getInventoryItemCount(32);
       totalLoop = totalLoop + c.getInventoryItemCount(527);
       totalTooth = totalTooth + c.getInventoryItemCount(526);
       totalLeft = totalLeft + c.getInventoryItemCount(1277);
       totalSpear = totalSpear + c.getInventoryItemCount(1092);
       foodInBank = c.getBankItemCount(foodId);
+      totalRunes = totalFire + totalNat + totalEarth + totalChaos + totalWater + totalLaw;
       totalGems =
           totalGems
               + c.getInventoryItemCount(160)
@@ -416,12 +403,10 @@ public final class K_EdgeChaosDruids extends IdleScript {
               + totalDwarf;
 
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != foodId) {
-          c.depositItem(itemId, c.getInventoryItemCount(itemId));
-        }
+        c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
 
-      c.sleep(1400); // Important, leave in
+      c.sleep(1240); // Important, leave in
 
       if (potUp) {
         if (c.getInventoryItemCount(attackPot[0]) < 1
@@ -437,44 +422,35 @@ public final class K_EdgeChaosDruids extends IdleScript {
           c.sleep(340);
         }
       }
-      if (c.getInventoryItemCount(foodId) > foodWithdrawAmount) { // deposit extra shark
+      if (c.getInventoryItemCount(99) == 0) { // Brass key check
+        c.withdrawItem(99, 1);
+        c.sleep(640);
+      }
+      if (c.getInventoryItemCount(foodId) > foodWithdrawAmount) { // deposit extra food
         c.depositItem(foodId, c.getInventoryItemCount(foodId) - foodWithdrawAmount);
         c.sleep(640);
       }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw 1 shark
+      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw food
         c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
         c.sleep(640);
       }
       if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
+        c.setStatus("@red@NO foodId in the bank, Logging Out!.");
+        c.sleep(3000);
+        endSession();
       }
       c.closeBank();
       c.sleep(1000);
-    }
-  }
-
-  private void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@red@Burying bones..");
-          c.itemCommand(id);
-          c.sleep(618);
-          buryBones();
-        }
-      }
+      brassKeyCheck();
     }
   }
 
   private void eat() {
     leaveCombat();
     c.setStatus("@red@Eating..");
+
     boolean ate = false;
+
     for (int id : c.getFoodIds()) {
       if (c.getInventoryItemCount(id) > 0) {
         c.itemCommand(id);
@@ -486,10 +462,20 @@ public final class K_EdgeChaosDruids extends IdleScript {
     if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
       // usually
       c.setStatus("@red@We've ran out of Food! Running Away!.");
-      DruidToBank();
+      dungeonToBank();
       bank();
-      BankToDruid();
+      bankToDungeon();
       c.sleep(618);
+    }
+  }
+
+  public void endSession() {
+    c.setAutoLogin(false);
+    while (c.isLoggedIn()) {
+      c.logout();
+    }
+    if (!c.isLoggedIn()) {
+      c.stop();
     }
   }
 
@@ -506,30 +492,6 @@ public final class K_EdgeChaosDruids extends IdleScript {
       c.sleep(100);
     }
     c.setStatus("@gre@Done Leaving combat..");
-  }
-
-  private void openGateNorthToSouth() {
-    for (int i = 1; i <= 20; i++) {
-      if (c.currentY() == 3265) {
-        c.setStatus("@gre@Opening Wildy Gate..");
-        c.atObject(196, 3266);
-        c.sleep(640);
-      }
-      c.sleep(100);
-    }
-    c.setStatus("@gre@Done Opening Wildy Gate..");
-  }
-
-  private void openGateSouthToNorth() {
-    for (int i = 1; i <= 20; i++) {
-      if (c.currentY() == 3266) {
-        c.setStatus("@gre@Opening Wildy Gate..");
-        c.atObject(196, 3266);
-        c.sleep(440);
-      }
-      c.sleep(100);
-    }
-    c.setStatus("@gre@Done Opening Wildy Gate..");
   }
 
   private void attackBoost() {
@@ -560,79 +522,92 @@ public final class K_EdgeChaosDruids extends IdleScript {
     }
   }
 
-  private void DruidToBank() {
-    c.setStatus("@gre@Walking to Bank..");
-    c.walkTo(210, 3254);
-    c.walkTo(200, 3254);
-    c.walkTo(196, 3265);
-    c.setStatus("@gre@Opening Wildy Gate North to South(1)..");
-    c.atObject(196, 3266);
-    c.sleep(1000);
-    if (c.currentY() == 3265) {
-      openGateNorthToSouth();
+  private void brassGateNorthToSouth() {
+    int brassKey = 99;
+    for (int i = 1; i <= 10; i++) {
+      if (c.currentX() == 202 && c.currentY() == 484) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(brassKey));
+        c.sleep(800);
+      }
+      c.sleep(10);
     }
-    c.walkTo(197, 3266);
-    c.walkTo(204, 3272);
-    c.walkTo(210, 3273);
-    if (c.getObjectAtCoord(211, 3272) == 57) {
-      c.setStatus("@gre@Opening Edge Gate..");
-      c.walkTo(210, 3273);
-      c.atObject(211, 3272);
-      c.sleep(340);
+  }
+
+  private void brassGateSouthToNorth() {
+    int brassKey = 99;
+    for (int i = 1; i <= 10; i++) {
+      if (c.currentX() == 202 && c.currentY() == 485) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(brassKey));
+        c.sleep(800);
+      }
+      c.sleep(10);
     }
-    c.setStatus("@gre@Walking to Bank..");
-    c.walkTo(217, 3283);
-    c.walkTo(215, 3294);
-    c.walkTo(215, 3299);
-    c.atObject(215, 3300);
-    c.sleep(640);
-    c.walkTo(217, 458);
-    c.walkTo(221, 447);
-    c.walkTo(217, 448);
-    c.sleep(640);
+  }
+
+  private void bankToDungeon() {
+    c.setStatus("@gre@Walking to Edge Dungeon..");
+    c.walkTo(151, 507);
+    c.walkTo(162, 507);
+    c.walkTo(172, 507);
+    c.walkTo(182, 507);
+    c.walkTo(192, 497);
+    c.walkTo(202, 487);
+    c.walkTo(202, 485);
+    brassKeyCheck();
+    c.setStatus("@red@Crossing brass Gate..");
+    brassGateSouthToNorth();
+    c.setStatus("@gre@Walking to Edge Dungeon..");
+    c.walkTo(203, 483);
+    c.atObject(203, 482);
+    c.sleep(2000);
+    c.walkTo(207, 3314);
+    c.setStatus("@gre@Done Walking..");
+  }
+
+  private void dungeonToBank() {
+    c.setStatus("@gre@Walking to Varrock West..");
+    c.walkTo(207, 3315);
+    c.walkTo(203, 3315);
+    c.atObject(203, 3314);
+    c.sleep(2000);
+    c.walkTo(202, 484);
+    brassKeyCheck();
+    c.setStatus("@red@Crossing brass Gate..");
+    brassGateNorthToSouth();
+    c.setStatus("@gre@Walking to Varrock West..");
+    c.walkTo(202, 487);
+    c.walkTo(192, 497);
+    c.walkTo(182, 507);
+    c.walkTo(172, 507);
+    c.walkTo(162, 507);
+    c.walkTo(151, 507);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void BankToDruid() {
-    c.setStatus("@gre@Walking to Druids..");
-    c.walkTo(221, 447);
-    c.walkTo(217, 458);
-    c.walkTo(215, 467);
-    c.atObject(215, 468);
-    c.sleep(640);
-    c.walkTo(217, 3283);
-    c.walkTo(211, 3273);
-    if (c.getObjectAtCoord(211, 3272) == 57) {
-      c.setStatus("@gre@Opening Edge Gate..");
-      c.walkTo(211, 3273);
-      c.atObject(211, 3272);
-      c.sleep(340);
+  public void brassKeyCheck() {
+    if (c.getInventoryItemCount(99) == 0) {
+      c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 30 Seconds");
+      c.sleep(10000);
+      c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 20 Seconds");
+      c.sleep(10000);
+      c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 10 Seconds");
+      c.sleep(5000);
+      c.displayMessage("@red@ERROR - No brass Key, shutting down bot");
+      c.sleep(1000);
+      endSession();
     }
-    c.setStatus("@gre@Walking to Druids..");
-    c.walkTo(204, 3272);
-    c.walkTo(199, 3272);
-    c.walkTo(197, 3266);
-    c.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
-    c.atObject(196, 3266);
-    c.sleep(1000);
-    if (c.currentY() == 3266) {
-      openGateSouthToNorth();
-    }
-    c.walkTo(200, 3254);
-    c.walkTo(210, 3254);
-    c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Druid Killer @mag@~ by Kaila");
-    JLabel label1 = new JLabel("Start in Edge bank with Gear, requires food in bank!");
+    JLabel header = new JLabel("Edge Dungeon Hob\\\\Skelli\\\\Zombies ~ by Kaila");
+    JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
+    JLabel label6 = new JLabel("brass Key Required + Food in Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup");
-    JLabel label4 = new JLabel("Combat Styles ::attack :strength ::defense ::c");
-    JLabel label5 = new JLabel("Param Format: \"auto\" for controlled, shark, 1");
-    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
+    JLabel label3 = new JLabel("::bank ::lowlevel :potup");
+    JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JLabel label5 = new JLabel("Param Format: \"auto\"");
+    JCheckBox lootLimpCheckbox = new JCheckBox("Loot Limps?", true);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -650,8 +625,8 @@ public final class K_EdgeChaosDruids extends IdleScript {
         e -> {
           if (!foodWithdrawAmountField.getText().equals(""))
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          lootLimp = lootLimpCheckbox.isSelected();
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
-          lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
@@ -666,11 +641,12 @@ public final class K_EdgeChaosDruids extends IdleScript {
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     scriptFrame.add(header);
     scriptFrame.add(label1);
+    scriptFrame.add(label6);
     scriptFrame.add(label2);
     scriptFrame.add(label3);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
-    scriptFrame.add(lootBonesCheckbox);
+    scriptFrame.add(lootLimpCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
@@ -680,7 +656,6 @@ public final class K_EdgeChaosDruids extends IdleScript {
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
-
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
@@ -688,19 +663,22 @@ public final class K_EdgeChaosDruids extends IdleScript {
   }
 
   @Override
-  public void chatCommandInterrupt(
-      String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
+  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
     if (commandText.contains("bank")) {
       c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
       timeToBank = true;
       c.sleep(100);
-    } else if (commandText.contains("bones")) {
-      if (!lootBones) {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
-        lootBones = true;
+    } else if (commandText.contains("bankstay")) {
+      c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
+      timeToBankStay = true;
+      c.sleep(100);
+    } else if (commandText.contains("lootlimp")) {
+      if (!lootLimp) {
+        c.displayMessage("@or1@Got toggle @red@lootlimp@or1@, turning on Limpwurt looting!");
+        lootLimp = true;
       } else {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
-        lootBones = false;
+        c.displayMessage("@or1@Got toggle @red@lootlimp@or1@, turning off Limpwurt looting!");
+        lootLimp = false;
       }
       c.sleep(100);
     } else if (commandText.contains("lowlevel")) {
@@ -768,6 +746,7 @@ public final class K_EdgeChaosDruids extends IdleScript {
       int cadaSuccessPerHr = 0;
       int dwarSuccessPerHr = 0;
       int lawSuccessPerHr = 0;
+      int runeSuccessPerHr = 0;
       int natSuccessPerHr = 0;
       int GemsSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
@@ -793,16 +772,16 @@ public final class K_EdgeChaosDruids extends IdleScript {
         GemsSuccessPerHr = (int) (totalGems * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
         herbSuccessPerHr = (int) (totalHerbs * scale);
+        runeSuccessPerHr = (int) (totalRunes * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
       } catch (Exception e) {
         // divide by zero
       }
-
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Chaos Druids @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Dungeon Hobs Plus @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(
@@ -914,13 +893,11 @@ public final class K_EdgeChaosDruids extends IdleScript {
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@Total Trips: @gre@"
-                + totalTrips
+            "@whi@Total Runes: @gre@"
+                + totalRunes
                 + "@yel@ (@whi@"
-                + String.format("%,d", TripSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) "
-                + "@whi@Runtime: "
-                + runTime,
+                + String.format("%,d", runeSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) ",
             x,
             y + (14 * 7),
             0xFFFFFF,
@@ -996,13 +973,11 @@ public final class K_EdgeChaosDruids extends IdleScript {
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@Total Trips: @gre@"
-                + totalTrips
+            "@whi@Total Runes: @gre@"
+                + totalRunes
                 + "@yel@ (@whi@"
-                + String.format("%,d", TripSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) "
-                + "@whi@Runtime: "
-                + runTime,
+                + String.format("%,d", runeSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) ",
             x,
             y + (14 * 5),
             0xFFFFFF,
@@ -1010,6 +985,17 @@ public final class K_EdgeChaosDruids extends IdleScript {
         c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
       }
       c.drawString("@whi@____________________", x, y2, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y2 + 14, 0xFFFFFF, 1);
+      c.drawString(
+          "@whi@Total Trips: @gre@"
+              + totalTrips
+              + "@yel@ (@whi@"
+              + String.format("%,d", TripSuccessPerHr)
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y2 + (14 * 2),
+          0xFFFFFF,
+          1);
       if (foodInBank == -1) {
         c.drawString(
             "@whi@"
@@ -1020,11 +1006,11 @@ public final class K_EdgeChaosDruids extends IdleScript {
                 + String.format("%,d", foodUsedPerHr)
                 + "@yel@/@whi@hr@yel@) ",
             x,
-            y2 + (14 * 2),
+            y2 + (14 * 3),
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, y2 + (14 * 3), 0xFFFFFF, 1);
+            "@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, y2 + (14 * 4), 0xFFFFFF, 1);
       } else {
         c.drawString(
             "@whi@"
@@ -1035,11 +1021,11 @@ public final class K_EdgeChaosDruids extends IdleScript {
                 + String.format("%,d", foodUsedPerHr)
                 + "@yel@/@whi@hr@yel@) ",
             x,
-            y2 + (14 * 2),
+            y2 + (14 * 3),
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, y2 + (14 * 3), 0xFFFFFF, 1);
+            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, y2 + (14 * 4), 0xFFFFFF, 1);
       }
     }
   }

@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,149 +11,147 @@ import javax.swing.JLabel;
  * Grabs Nightshades in Gu'Tanoth (for entrance to ogre enclave).
  *
  * <p>Picks Nightshade in northern skavid cave. Start in Yanille bank or northern nightshade cave.
- * Requires Lit Candle and Skavid Map in Invent.
  *
- * <p>Author - Kaila
+ * <p>Requires Lit Candle and Skavid Map in Invent.
+ *
+ * <p>@Author - Kaila
  */
 public class K_Nightshade extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int GrapezInBank = 0;
-  int totalShade = 0;
-  int totalTrips = 0;
-  int shadeInBank = 0;
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static int totalShade = 0;
+  private static int totalTrips = 0;
+  private static int shadeInBank = 0;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
     if (scriptStarted) {
-      controller.displayMessage("@red@Nightshade Picker - By Kaila");
-      controller.displayMessage("@red@Start in Yanille Bank");
-      if (controller.isInBank() == true) {
-        controller.closeBank();
+      c.displayMessage("@red@Nightshade Picker - By Kaila");
+      c.displayMessage("@red@Start in Yanille Bank");
+      if (c.isInBank()) {
+        c.closeBank();
       }
-      if (controller.currentY() < 800
-          && controller.currentY() > 740
-          && controller.currentX() < 591) {
+      if (c.currentY() < 800 && c.currentY() > 740 && c.currentX() < 591) {
         bank();
         BankToGrape();
-        controller.sleep(1380);
+        c.sleep(1380);
       }
       scriptStart();
     }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
 
-      if (controller.getInventoryItemCount() == 30) {
-        controller.setStatus("@red@Banking..");
+      if (c.getInventoryItemCount() == 30) {
+        c.setStatus("@red@Banking..");
         GrapeToBank();
         bank();
         BankToGrape();
-        controller.sleep(618);
+        c.sleep(618);
       }
 
-      int[] coords = controller.getNearestItemById(1086); // always pick up tops
+      int[] coords = c.getNearestItemById(1086); // always pick up tops
       if (coords != null) {
-        controller.setStatus("@yel@Looting..");
-        controller.walkTo(650, 3559);
-        controller.sleep(340);
-        controller.walkTo(650, 3560);
-        controller.pickupItem(coords[0], coords[1], 1086, true, true);
-        controller.sleep(340);
+        c.setStatus("@yel@Looting..");
+        c.walkTo(650, 3559);
+        c.sleep(340);
+        c.walkTo(650, 3560);
+        c.pickupItem(coords[0], coords[1], 1086, true, true);
+        c.sleep(340);
       } else {
-        controller.sleep(4000);
+        c.sleep(4000);
       }
-      controller.sleep(100);
+      c.sleep(100);
     }
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      totalShade = totalShade + controller.getInventoryItemCount(1086);
+      totalShade = totalShade + c.getInventoryItemCount(1086);
 
-      if (controller.getInventoryItemCount(1086) > 0) { // nightshade
-        controller.depositItem(1086, controller.getInventoryItemCount(1086));
-        controller.sleep(1380);
+      if (c.getInventoryItemCount(1086) > 0) { // nightshade
+        c.depositItem(1086, c.getInventoryItemCount(1086));
+        c.sleep(1380);
       }
-      if (controller.getInventoryItemCount(601) < 1) { // lit candle
-        controller.withdrawItem(601, 1);
-        controller.sleep(1380);
+      if (c.getInventoryItemCount(601) < 1) { // lit candle
+        c.withdrawItem(601, 1);
+        c.sleep(1380);
       }
-      if (controller.getInventoryItemCount(1045) < 1) { // skavid map
-        controller.withdrawItem(1045, 1);
-        controller.sleep(1380);
+      if (c.getInventoryItemCount(1045) < 1) { // skavid map
+        c.withdrawItem(1045, 1);
+        c.sleep(1380);
       }
-      shadeInBank = controller.getBankItemCount(1086);
+      shadeInBank = c.getBankItemCount(1086);
 
-      controller.closeBank();
-      controller.sleep(640);
+      c.closeBank();
+      c.sleep(640);
     }
   }
 
-  public void GrapeToBank() { // replace
+  private void GrapeToBank() { // replace
 
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(649, 3555);
-    while (controller.currentX() == 649 && controller.currentY() == 3555) {
-      controller.atWallObject(649, 3554); // gate wont break if someone else opens it
-      controller.sleep(640);
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(649, 3555);
+    while (c.currentX() == 649 && c.currentY() == 3555) {
+      c.atWallObject(649, 3554); // gate won't break if someone else opens it
+      c.sleep(640);
     }
-    // controller.atObject(649,3554);
-    controller.sleep(340);
-    controller.walkTo(647, 767);
-    controller.walkTo(647, 754);
-    controller.walkTo(642, 754);
-    controller.walkTo(628, 754);
-    controller.walkTo(626, 755);
-    controller.walkTo(615, 755);
-    controller.walkTo(608, 749);
-    controller.walkTo(598, 749);
-    controller.walkTo(584, 749);
-    controller.walkTo(584, 752);
+    // c.atObject(649,3554);
+    c.sleep(340);
+    c.walkTo(647, 767);
+    c.walkTo(647, 754);
+    c.walkTo(642, 754);
+    c.walkTo(628, 754);
+    c.walkTo(626, 755);
+    c.walkTo(615, 755);
+    c.walkTo(608, 749);
+    c.walkTo(598, 749);
+    c.walkTo(584, 749);
+    c.walkTo(584, 752);
     totalTrips = totalTrips + 1;
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void BankToGrape() {
+  private void BankToGrape() {
 
-    controller.setStatus("@gre@Walking to Nightshade..");
-    controller.walkTo(584, 752);
-    controller.walkTo(584, 749);
-    controller.walkTo(598, 749);
-    controller.walkTo(608, 749);
-    controller.walkTo(615, 755);
-    controller.walkTo(626, 755);
-    controller.walkTo(628, 754);
-    controller.walkTo(642, 754);
+    c.setStatus("@gre@Walking to Nightshade..");
+    c.walkTo(584, 752);
+    c.walkTo(584, 749);
+    c.walkTo(598, 749);
+    c.walkTo(608, 749);
+    c.walkTo(615, 755);
+    c.walkTo(626, 755);
+    c.walkTo(628, 754);
+    c.walkTo(642, 754);
     // west yanille GATE
-    controller.walkTo(647, 754);
-    controller.walkTo(647, 767);
-    controller.walkTo(649, 769);
-    controller.sleep(340);
-    controller.atObject(649, 770);
-    controller.walkTo(650, 3560);
-    controller.sleep(340);
+    c.walkTo(647, 754);
+    c.walkTo(647, 767);
+    c.walkTo(649, 769);
+    c.sleep(340);
+    c.atObject(649, 770);
+    c.walkTo(650, 3560);
+    c.sleep(340);
     // ontop of nightshade now
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
   // GUI stuff below (icky)
-  public void setupGUI() {
+  private void setupGUI() {
     JLabel header = new JLabel("Nightshade Picker - By Kaila");
     JLabel label1 = new JLabel("Picks Nightshade in northern skavid cave");
     JLabel label2 = new JLabel("Start in Yanille bank or northern nightshade cave");
@@ -162,17 +159,14 @@ public class K_Nightshade extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -181,34 +175,24 @@ public class K_Nightshade extends IdleScript {
     scriptFrame.add(label2);
     scriptFrame.add(label3);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int ShadeSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         ShadeSuccessPerHr = (int) (totalShade * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
@@ -216,30 +200,33 @@ public class K_Nightshade extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@Nightshade Picker @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-      controller.drawString(
-          "@whi@Nightshade Banked: @gre@" + String.valueOf(this.shadeInBank), 330, 62, 0xFFFFFF, 1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@Nightshade Picker @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString("@whi@Nightshade Banked: @gre@" + shadeInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Nightshade Picked: @gre@"
-              + String.valueOf(this.totalShade)
+              + totalShade
               + "@yel@ (@whi@"
               + String.format("%,d", ShadeSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          330,
-          76,
+          x,
+          y + (14 * 2),
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          330,
-          90,
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 330, 104, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

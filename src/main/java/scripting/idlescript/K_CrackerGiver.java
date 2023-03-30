@@ -1,9 +1,11 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
- * - Christmas Cracker Opener.
+ * Christmas Cracker Opener.
  *
  * <p>Opens Christmas Crackers by using them on a 2nd account. Used in conjunction with K_GiftTaker
  * Script!
@@ -17,83 +19,80 @@ import orsc.ORSCharacter;
  * and despawn!!!!! you have been warned!
  *
  * <p>WARNING: while within 1 tile of the giver, you will continue to recieve presents. WARNING:
- * regardless of how full your inventory is. items WILL drop to the floor.
- *
- * <p>Author - Kaila.
+ * regardless of how full your inventory is. items WILL continue to be recieved and extras will drop
+ * to the floor and despawn. Always monitor this bot!!! @Author ~ Kaila
  */
 public class K_CrackerGiver extends IdleScript {
+  private static final Controller c = Main.getController();
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  public int start(String[] parameters) {
+    c.displayMessage("@red@present GIVER! Let's party like it's 2004!");
+    c.displayMessage("@red@Directions inside K_CrackerGiver.java file");
+    c.displayMessage("@red@Ideal location is Draynor Bank!");
 
-  public int start(String parameters[]) {
-    controller.displayMessage("@red@present GIVER! Let's party like it's 2004!");
-    controller.displayMessage("@red@Directions inside K_CrackerGiver.java file");
-    controller.displayMessage("@red@Ideal location is Draynor Bank!");
-
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount() > 29) {
-        controller.setStatus("@gre@Banking.");
-        if (!controller.isInBank()) {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount() > 29) {
+        c.setStatus("@gre@Banking.");
+        if (!c.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
-          ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+          ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
-            controller.setStatus("@yel@Walking to Banker..");
-            controller.displayMessage("@yel@Walking to Banker..");
-            controller.walktoNPCAsync(npc.serverIndex);
-            controller.sleep(200);
+            c.setStatus("@yel@Walking to Banker..");
+            c.displayMessage("@yel@Walking to Banker..");
+            c.walktoNPCAsync(npc.serverIndex);
+            c.sleep(200);
           } else {
-            controller.log("@red@Error..");
-            controller.sleep(1000);
+            c.log("@red@Error..");
+            c.sleep(1000);
           }
         }
         bank();
       }
-      if (controller.getInventoryItemCount(575) < 2) {
-        controller.setStatus("@gre@Banking.");
-        if (!controller.isInBank()) {
+      if (c.getInventoryItemCount(575) < 2) {
+        c.setStatus("@gre@Banking.");
+        if (!c.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
-          ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+          ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
-            controller.setStatus("@yel@Walking to Banker..");
-            controller.displayMessage("@yel@Walking to Banker..");
-            controller.walktoNPCAsync(npc.serverIndex);
-            controller.sleep(200);
+            c.setStatus("@yel@Walking to Banker..");
+            c.displayMessage("@yel@Walking to Banker..");
+            c.walktoNPCAsync(npc.serverIndex);
+            c.sleep(200);
           } else {
-            controller.log("@red@Error..");
-            controller.sleep(1000);
+            c.log("@red@Error..");
+            c.sleep(1000);
           }
         }
         bank();
       }
-      if (controller.getInventoryItemCount() < 30 && controller.getInventoryItemCount(575) > 1) {
-        controller.setStatus("@gre@Opening.");
-        controller.useItemOnPlayer(
-            1, controller.getPlayerServerIndexByName("kailashu")); // replace the player name
-        controller.sleep(640);
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(575) > 1) {
+        c.setStatus("@gre@Opening.");
+        c.useItemOnPlayer(1, c.getPlayerServerIndexByName("kailashu")); // replace the player name
+        c.sleep(640);
       }
     }
 
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
-      if (controller.getInventoryItemCount() > 0) {
-        for (int itemId : controller.getInventoryItemIds()) {
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+    if (c.isInBank()) {
+      if (c.getInventoryItemCount() > 0) {
+        for (int itemId : c.getInventoryItemIds()) {
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
-        controller.sleep(1280);
+        c.sleep(1280);
       }
-      if (controller.getInventoryItemCount(575) < 23) {
-        controller.withdrawItem(575, 23 - controller.getInventoryItemCount(575));
-        controller.sleep(1280);
-        controller.closeBank();
-        controller.sleep(1280);
+      if (c.getInventoryItemCount(575) < 23) {
+        c.withdrawItem(575, 23 - c.getInventoryItemCount(575));
+        c.sleep(1280);
+        c.closeBank();
+        c.sleep(1280);
       }
     }
   }

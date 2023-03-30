@@ -1,72 +1,69 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
- * - Opens Holiday event Presents on an Iron, banks loot (coleslaw) only works on official irons.
- * start in any bank.
+ * Opens Holiday event Presents on an Iron, banks loot (coleslaw) only works on official irons.
  *
- * <p>Author - Kaila
+ * <p>start in any bank. @Author - Kaila
  */
 public class K_IronPresentOpener extends IdleScript {
-  int objectx = 0;
-  int objecty = 0;
+  private static final Controller c = Main.getController();
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  public int start(String[] parameters) {
+    c.displayMessage("@ran@Iron Present Opener! Let's party like it's 2004!");
 
-  public int start(String parameters[]) {
-    controller.displayMessage("@ran@Iron Present Opener! Let's party like it's 2004!");
-
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount(980) < 1) {
-        if (!controller.isInBank()) {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount(980) < 1) {
+        if (!c.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
-          ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+          ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
-            controller.setStatus("@yel@Walking to Banker..");
-            controller.displayMessage("@yel@Walking to Banker..");
-            controller.walktoNPCAsync(npc.serverIndex);
-            controller.sleep(200);
+            c.setStatus("@yel@Walking to Banker..");
+            c.displayMessage("@yel@Walking to Banker..");
+            c.walktoNPCAsync(npc.serverIndex);
+            c.sleep(200);
           } else {
-            controller.log("@red@Error..");
-            controller.sleep(1000);
+            c.log("@red@Error..");
+            c.sleep(1000);
           }
         }
         bank();
       }
-      if (controller.getInventoryItemCount(980) > 0) {
-        controller.setStatus("@Gre@Opening..");
+      if (c.getInventoryItemCount(980) > 0) {
+        c.setStatus("@Gre@Opening..");
 
-        controller.itemCommand(980);
-        controller.sleep(650);
+        c.itemCommand(980);
+        c.sleep(650);
       }
     }
 
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
   public void bank() {
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    if (c.isInBank()) {
 
-    if (controller.isInBank()) {
-
-      if (controller.getInventoryItemCount() > 0) {
-        for (int itemId : controller.getInventoryItemIds()) {
+      if (c.getInventoryItemCount() > 0) {
+        for (int itemId : c.getInventoryItemIds()) {
           if (itemId != 980) {
-            controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-            controller.sleep(100);
+            c.depositItem(itemId, c.getInventoryItemCount(itemId));
+            c.sleep(100);
           }
         }
       }
-      if (controller.getInventoryItemCount(980) < 29) {
-        controller.withdrawItem(980, 29 - controller.getInventoryItemCount(980));
-        controller.sleep(650);
+      if (c.getInventoryItemCount(980) < 29) {
+        c.withdrawItem(980, 29 - c.getInventoryItemCount(980));
+        c.sleep(650);
       }
-      controller.closeBank();
-      controller.sleep(640);
+      c.closeBank();
+      c.sleep(640);
     }
   }
 }

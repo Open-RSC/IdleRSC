@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,144 +11,127 @@ import orsc.ORSCharacter;
 /**
  * Battlefield Trainer - By Kaila.
  *
- * <p>Start in Ardy or at Battlefield. Sharks in Bank REQUIRED.
- *
- * <p>todo add food type selection add maging option
- *
- * <p>Author - Kaila.
+ * <p>Start in Ardy or at Battlefield. Sharks in Bank REQUIRED. @Author ~ Kaila
+ */
+/*
+ *   todo add food type selection add maging option
  */
 public class K_BattlefieldTrainer extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int totalGuam = 0;
-  int totalMar = 0;
-  int totalTar = 0;
-  int totalHar = 0;
-  int totalRan = 0;
-  int totalIrit = 0;
-  int totalAva = 0;
-  int totalKwuarm = 0;
-  int totalCada = 0;
-  int totalDwarf = 0;
-  int totalLaw = 0;
-  int totalNat = 0;
-  int totalLoop = 0;
-  int totalTooth = 0;
-  int totalLeft = 0;
-  int totalSpear = 0;
-  int totalTrips = 0;
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int totalTrips = 0;
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  public int start(String[] parameters) {
 
-  public int start(String parameters[]) {
+    if (scriptStarted) {
+      c.displayMessage("@red@Battlefield Trainer - By Kaila");
+      c.displayMessage("@red@Start in Ardy or at Battlefield");
+      c.displayMessage("@red@Sharks in Bank REQUIRED");
+      if (c.isInBank()) {
+        c.closeBank();
+      }
+      if (c.currentX() < 600) {
+        bank();
+        BankToDruid();
+        c.sleep(1380);
+      }
+      scriptStart();
+    }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
-    if (scriptStarted) {
-      controller.displayMessage("@red@Battlefield Trainer - By Kaila");
-      controller.displayMessage("@red@Start in Ardy or at Battlefield");
-      controller.displayMessage("@red@Sharks in Bank REQUIRED");
-      if (controller.isInBank() == true) {
-        controller.closeBank();
-      }
-      if (controller.currentX() < 600) {
-        bank();
-        BankToDruid();
-        controller.sleep(1380);
-      }
-      scriptStart();
-    }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
 
       eat();
 
-      if (controller.getInventoryItemCount(546) > 0) {
+      if (c.getInventoryItemCount(546) > 0) {
 
-        if (!controller.isInCombat()) {
+        if (!c.isInCombat()) {
 
-          controller.setStatus("@yel@Attacking Trooper");
-          ORSCharacter npc = controller.getNearestNpcById(407, false);
+          c.setStatus("@yel@Attacking Trooper");
+          ORSCharacter npc = c.getNearestNpcById(407, false);
           if (npc != null) {
-            // controller.walktoNPC(npc.serverIndex,1);
-            controller.attackNpc(npc.serverIndex);
-            controller.sleep(600);
+            // c.walktoNPC(npc.serverIndex,1);
+            c.attackNpc(npc.serverIndex);
+            c.sleep(600);
           } else {
-            controller.sleep(600);
+            c.sleep(600);
           }
         }
-        controller.sleep(380);
-      } else if (controller.getInventoryItemCount(546) == 0) {
-        controller.setStatus("@yel@Banking..");
+        c.sleep(380);
+      } else if (c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@yel@Banking..");
         DruidToBank();
         bank();
         BankToDruid();
-        controller.sleep(618);
+        c.sleep(618);
       }
     }
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      if (controller.getInventoryItemCount() > 1) {
-        for (int itemId : controller.getInventoryItemIds()) {
+      if (c.getInventoryItemCount() > 1) {
+        for (int itemId : c.getInventoryItemIds()) {
           if (itemId != 546) {
-            controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+            c.depositItem(itemId, c.getInventoryItemCount(itemId));
           }
         }
-        controller.sleep(1280); // increased sleep here to prevent double banking
+        c.sleep(1280); // increased sleep here to prevent double banking
       }
-      if (controller.getInventoryItemCount(546) < 28) { // withdraw 1 shark
-        controller.withdrawItem(546, 28);
-        controller.sleep(340);
+      if (c.getInventoryItemCount(546) < 28) { // withdraw 1 shark
+        c.withdrawItem(546, 28);
+        c.sleep(340);
       }
-      if (controller.getBankItemCount(546) == 0) {
-        controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
-        controller.setAutoLogin(false);
-        controller.logout();
-        if (!controller.isLoggedIn()) {
-          controller.stop();
-          return;
+      if (c.getBankItemCount(546) == 0) {
+        c.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
+        c.setAutoLogin(false);
+        c.logout();
+        if (!c.isLoggedIn()) {
+          c.stop();
         }
       }
-      controller.closeBank();
-      controller.sleep(640);
+      c.closeBank();
+      c.sleep(640);
     }
   }
 
-  public void eat() {
-    int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
+  private void eat() {
+    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-    if (controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
 
       leaveCombat();
-      controller.setStatus("@red@Eating..");
+      c.setStatus("@red@Eating..");
 
       boolean ate = false;
 
-      for (int id : controller.getFoodIds()) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.itemCommand(id);
-          controller.sleep(700);
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.itemCommand(id);
+          c.sleep(700);
           ate = true;
           break;
         }
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-        controller.setStatus("@red@We've ran out of Food! Running Away!.");
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
         DruidToBank();
         bank();
         BankToDruid();
@@ -157,70 +139,67 @@ public class K_BattlefieldTrainer extends IdleScript {
     }
   }
 
-  public void DruidToBank() {
-    controller.setStatus("@gre@Walking to Bank..");
+  private void DruidToBank() {
+    c.setStatus("@gre@Walking to Bank..");
 
-    controller.walkTo(649, 639);
-    controller.walkTo(644, 639);
-    controller.walkTo(636, 638);
-    controller.walkTo(624, 638);
-    controller.walkTo(614, 632);
-    controller.walkTo(622, 633);
-    controller.walkTo(614, 632);
-    controller.walkTo(610, 635);
-    controller.walkTo(599, 635);
-    controller.walkTo(598, 632);
-    controller.walkTo(592, 627);
-    controller.walkTo(579, 628);
-    controller.walkTo(571, 628);
-    controller.walkTo(563, 621);
-    controller.walkTo(550, 620);
-    controller.walkTo(550, 613);
+    c.walkTo(649, 639);
+    c.walkTo(644, 639);
+    c.walkTo(636, 638);
+    c.walkTo(624, 638);
+    c.walkTo(614, 632);
+    c.walkTo(622, 633);
+    c.walkTo(614, 632);
+    c.walkTo(610, 635);
+    c.walkTo(599, 635);
+    c.walkTo(598, 632);
+    c.walkTo(592, 627);
+    c.walkTo(579, 628);
+    c.walkTo(571, 628);
+    c.walkTo(563, 621);
+    c.walkTo(550, 620);
+    c.walkTo(550, 613);
 
     totalTrips = totalTrips + 1;
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void BankToDruid() {
-    controller.setStatus("@gre@Walking to Druids..");
+  private void BankToDruid() {
+    c.setStatus("@gre@Walking to Druids..");
 
-    controller.walkTo(550, 613);
-    controller.walkTo(550, 620);
-    controller.walkTo(563, 621);
-    controller.walkTo(571, 628);
-    controller.walkTo(579, 628);
-    controller.walkTo(592, 627);
-    controller.walkTo(598, 632);
-    controller.walkTo(599, 635);
-    controller.walkTo(610, 635);
-    controller.walkTo(614, 632);
-    controller.walkTo(622, 633);
-    controller.walkTo(624, 638);
-    controller.walkTo(636, 638);
-    controller.walkTo(644, 639);
-    controller.walkTo(649, 639);
-    controller.walkTo(653, 642);
-    controller.walkTo(658, 642);
+    c.walkTo(550, 613);
+    c.walkTo(550, 620);
+    c.walkTo(563, 621);
+    c.walkTo(571, 628);
+    c.walkTo(579, 628);
+    c.walkTo(592, 627);
+    c.walkTo(598, 632);
+    c.walkTo(599, 635);
+    c.walkTo(610, 635);
+    c.walkTo(614, 632);
+    c.walkTo(622, 633);
+    c.walkTo(624, 638);
+    c.walkTo(636, 638);
+    c.walkTo(644, 639);
+    c.walkTo(649, 639);
+    c.walkTo(653, 642);
+    c.walkTo(658, 642);
 
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (controller.isInCombat()) {
-        controller.setStatus("@red@Leaving combat..");
-        controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-        controller.sleep(600);
-      } else {
-        controller.setStatus("@red@Done Leaving combat..");
-        break;
+  private void leaveCombat() {
+    for (int i = 1; i <= 10; i++) {
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat..");
+        c.walkTo(c.currentX(), c.currentY(), 0, true);
+        c.sleep(640);
       }
-      controller.sleep(10);
+      c.sleep(10);
     }
   }
 
   // GUI stuff below (icky)
-  public void setupGUI() {
+  private void setupGUI() {
 
     JLabel header = new JLabel("Battlefield Trainer - By Kaila");
     JLabel label1 = new JLabel("Start in Ardy or at Battlefield");
@@ -228,17 +207,14 @@ public class K_BattlefieldTrainer extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -246,33 +222,23 @@ public class K_BattlefieldTrainer extends IdleScript {
     scriptFrame.add(label1);
     scriptFrame.add(label2);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
 
         TripSuccessPerHr = (int) (totalTrips * scale);
@@ -280,19 +246,22 @@ public class K_BattlefieldTrainer extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-
-      controller.drawString("@red@Battlefield Trainer @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@Battlefield Trainer @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          62,
+          x,
+          y + 14,
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 350, 76, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 2), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 2), 0xFFFFFF, 1);
     }
   }
 }

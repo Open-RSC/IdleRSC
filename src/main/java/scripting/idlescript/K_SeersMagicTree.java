@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,173 +10,237 @@ import javax.swing.JLabel;
 /**
  * Cuts Magic logs in seers, including the far western one, banks in Seers.
  *
- * <p>todo: reduce walking between locations - pause at each side. logic to cut same tree as other
- * players.
- *
- * <p>Author - Kaila
+ * <p>@Author - Kaila
+ */
+/*
+ * todo:
+ *   reduce walking between locations - pause at each side.
+ *   logic to cut same tree as other players.
  */
 public class K_SeersMagicTree extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int logInBank = 0;
-  int totalLog = 0;
-  int totalTrips = 0;
-  int[] axeId = {
-    87, 12, 88, 203, 204, 405 // bronze to rune in order
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int logInBank = 0;
+  private static int totalLog = 0;
+  private static int totalTrips = 0;
+  private static final int[] axeId = {
+    87, // bronze axe
+    12, // iron axe
+    88, // steel axe
+    428, // black axe
+    203, // mith axe
+    204, // addy axe
+    405 // rune axe
   };
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  public void startSequence() {
-    controller.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
-    if (controller.isInBank() == true) {
-      controller.closeBank();
+  private void startSequence() {
+    c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
+    if (c.isInBank()) {
+      c.closeBank();
     }
-    if (controller.currentY() < 458) {
+    if (c.currentY() < 458) {
       bank();
-      controller.walkTo(500, 454);
-      controller.walkTo(503, 457);
-      controller.walkTo(503, 460);
-      controller.walkTo(506, 463);
-      controller.walkTo(506, 472);
-      controller.walkTo(506, 478);
-      controller.walkTo(516, 488);
-      controller.sleep(1380);
+      c.walkTo(500, 454);
+      c.walkTo(503, 457);
+      c.walkTo(503, 460);
+      c.walkTo(506, 463);
+      c.walkTo(506, 472);
+      c.walkTo(506, 478);
+      c.walkTo(516, 488);
+      c.sleep(1380);
     }
+    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
   }
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
+    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
-        controller.displayMessage("Got Autostart, Cutting Magics", 0);
+        c.displayMessage("Got Autostart, Cutting Magics", 0);
         System.out.println("Got Autostart, Cutting Magics");
         parseVariables();
         startSequence();
         scriptStart();
       }
     }
-    if (!guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
     if (scriptStarted) {
       startSequence();
       scriptStart();
     }
-    return 1000; // start() must return a int value now.
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount() < 30) {
+  private void scriptStart() {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount() < 30) {
 
-        if (controller.getObjectAtCoord(519, 494) == 310) {
-          controller.walkTo(519, 493);
-          controller.atObject(519, 494);
-          controller.sleep(2000);
-          while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-            controller.sleep(1000);
-          }
-          if (controller.getInventoryItemCount() > 29) {
-            goToBank();
-          }
+        if (c.getObjectAtCoord(519, 494) == 310) {
+          cutFirstTree();
         }
-        if (controller.getObjectAtCoord(521, 492) == 310) {
-          controller.walkTo(521, 491);
-          controller.atObject(521, 492);
-          controller.sleep(2000);
-          while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-            controller.sleep(1000);
-          }
-          if (controller.getInventoryItemCount() > 29) {
-            goToBank();
-          }
+        if (c.getObjectAtCoord(519, 494) == 310) {
+          cutFirstTree();
         }
-        if (controller.getObjectAtCoord(524, 489) == 310) {
-          controller.walkTo(524, 488);
-          controller.atObject(524, 489);
-          controller.sleep(2000);
-          while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-            controller.sleep(1000);
-          }
-          if (controller.getInventoryItemCount() > 29) {
-            goToBank();
-          }
+        if (c.getObjectAtCoord(519, 494) == 310) {
+          cutFirstTree();
         }
-        controller.walkTo(530, 487);
-        controller.walkTo(538, 486);
-        if (controller.getObjectAtCoord(548, 484) == 310) {
-          controller.walkTo(547, 484);
-          controller.atObject(548, 484);
-          controller.sleep(2000);
-          while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-            controller.sleep(1000);
-          }
-          if (controller.getInventoryItemCount() > 29) {
-            goToBank2();
-          }
-          controller.walkTo(538, 486);
+        if (c.getObjectAtCoord(521, 492) == 310) {
+          cutSecondTree();
         }
-        controller.walkTo(530, 487);
-        controller.walkTo(524, 488);
+        if (c.getObjectAtCoord(521, 492) == 310) {
+          cutSecondTree();
+        }
+        if (c.getObjectAtCoord(521, 492) == 310) {
+          cutSecondTree();
+        }
+        if (c.getObjectAtCoord(524, 489) == 310) {
+          cutThirdTree();
+        }
+        if (c.getObjectAtCoord(524, 489) == 310) {
+          cutThirdTree();
+        }
+        if (c.getObjectAtCoord(524, 489) == 310) {
+          cutThirdTree();
+        }
+        c.walkTo(531, 487);
+        if (c.getObjectAtCoord(548, 484) == 310) {
+          cutFourthTree();
+        }
+        c.sleep(1280);
       } else {
         goToBank();
       }
     }
-    //	return 1000; //start() must return a int value now.
   }
 
-  public void goToBank() {
-    controller.walkTo(516, 488);
-    controller.walkTo(506, 478);
-    controller.walkTo(506, 472);
-    controller.walkTo(506, 463);
-    controller.walkTo(503, 460);
-    controller.walkTo(503, 457);
-    controller.walkTo(500, 454);
+  private void cutFirstTree() {
+    c.walkTo(519, 493);
+    c.atObject(519, 494);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank();
+    }
+  }
+
+  private void cutSecondTree() {
+    c.walkTo(521, 491);
+    c.atObject(521, 492);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank();
+    }
+  }
+
+  private void cutThirdTree() {
+    c.walkTo(524, 488);
+    c.atObject(524, 489);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank();
+    }
+  }
+
+  private void cutFourthTree() {
+    c.walkTo(538, 486);
+    c.walkTo(547, 484);
+    c.atObject(548, 484);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank2();
+    }
+    if (c.getObjectAtCoord(548, 484) == 310) {
+      cutFourthTreeAgain();
+    }
+    if (c.getObjectAtCoord(548, 484) == 310) {
+      cutFourthTreeAgain();
+    }
+    if (c.getObjectAtCoord(548, 484) == 310) {
+      cutFourthTreeAgain();
+    }
+    c.walkTo(538, 486);
+    c.walkTo(531, 487);
+  }
+
+  private void cutFourthTreeAgain() {
+    c.atObject(548, 484);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank2();
+    }
+  }
+
+  private void goToBank() {
+    c.walkTo(516, 488);
+    c.walkTo(506, 478);
+    c.walkTo(506, 472);
+    c.walkTo(506, 463);
+    c.walkTo(503, 460);
+    c.walkTo(503, 457);
+    c.walkTo(500, 454);
     totalTrips = totalTrips + 1;
     bank();
-    controller.walkTo(500, 454);
-    controller.walkTo(503, 457);
-    controller.walkTo(503, 460);
-    controller.walkTo(506, 463);
-    controller.walkTo(506, 472);
-    controller.walkTo(506, 478);
-    controller.walkTo(516, 488);
+    c.walkTo(500, 454);
+    c.walkTo(503, 457);
+    c.walkTo(503, 460);
+    c.walkTo(506, 463);
+    c.walkTo(506, 472);
+    c.walkTo(506, 478);
+    c.walkTo(516, 488);
   }
 
-  public void goToBank2() {
-    controller.walkTo(547, 484);
-    controller.walkTo(537, 474);
-    controller.walkTo(531, 468);
-    controller.walkTo(521, 468);
-    controller.walkTo(510, 468);
-    controller.walkTo(504, 462);
-    controller.walkTo(504, 458);
-    controller.walkTo(500, 454);
+  private void goToBank2() {
+    c.walkTo(547, 484);
+    c.walkTo(537, 474);
+    c.walkTo(531, 468);
+    c.walkTo(521, 468);
+    c.walkTo(510, 468);
+    c.walkTo(504, 462);
+    c.walkTo(504, 458);
+    c.walkTo(500, 454);
     totalTrips = totalTrips + 1;
     bank();
-    controller.walkTo(500, 454);
-    controller.walkTo(503, 457);
-    controller.walkTo(503, 460);
-    controller.walkTo(506, 463);
-    controller.walkTo(506, 472);
-    controller.walkTo(506, 478);
-    controller.walkTo(516, 488);
+    c.walkTo(500, 454);
+    c.walkTo(503, 457);
+    c.walkTo(503, 460);
+    c.walkTo(506, 463);
+    c.walkTo(506, 472);
+    c.walkTo(506, 478);
+    c.walkTo(516, 488);
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      totalLog = totalLog + controller.getInventoryItemCount(636);
+      totalLog = totalLog + c.getInventoryItemCount(636);
 
-      for (int itemId : controller.getInventoryItemIds()) {
+      for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 1263
             && itemId != axeId[0]
             && itemId != axeId[1]
@@ -185,39 +248,36 @@ public class K_SeersMagicTree extends IdleScript {
             && itemId != axeId[3]
             && itemId != axeId[4]
             && itemId != axeId[5]) {
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
 
-      logInBank = controller.getBankItemCount(636);
-      controller.closeBank();
-      controller.sleep(1000);
+      logInBank = c.getBankItemCount(636);
+      c.closeBank();
+      c.sleep(1000);
     }
   }
   // GUI stuff below (icky)
 
-  public void parseVariables() {
+  private void parseVariables() {
     startTime = System.currentTimeMillis();
   }
 
-  public void setupGUI() {
+  private void setupGUI() {
     JLabel header = new JLabel("Seers Magic Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
     JLabel label2 = new JLabel("Wield or have rune axe in Inv");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            parseVariables();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          parseVariables();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -225,62 +285,56 @@ public class K_SeersMagicTree extends IdleScript {
     scriptFrame.add(label1);
     scriptFrame.add(label2);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null); // need this for proper windows behavior
+    scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+    if (c != null) {
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int tripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalLog * scale);
         tripSuccessPerHr = (int) (totalTrips * scale);
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@Seers Magic Logs @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-      controller.drawString(
-          "@whi@Logs in Bank: @gre@" + String.valueOf(this.logInBank), 350, 62, 0xFFFFFF, 1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+
+      c.drawString("@red@Seers Magic Logs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Logs Cut: @gre@"
-              + String.valueOf(this.totalLog)
+              + totalLog
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          76,
+          x,
+          y + (14 * 2),
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", tripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          90,
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 350, 104, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

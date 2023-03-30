@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -12,22 +12,28 @@ import orsc.ORSCharacter;
 /**
  * Fast Bank Bury.
  *
- * <p>Selectable Bone Id. start in bank with unnoted bones in bank. Will withdraw and bury bones.
+ * <p>Selectable Bone id. start in bank with unnoted bones in bank. Will withdraw and bury bones.
  *
- * <p>todo add gui and statistics.
- *
- * <p>Author - Kaila
+ * <p>@Author ~ Kaila
+ */
+/*
+ * todo add gui and statistics.
  */
 public class K_FastBankBury extends IdleScript {
-  JFrame scriptFrame = null;
-  int boneId = -1;
-  int[] boneIds = {20, 413, 604, 814};
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static int boneId = -1;
+  private static final int[] boneIds = {
+    20, // regular bones
+    413, // big bones
+    604, // bat bones
+    814 // dragon bones
+  };
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -37,76 +43,72 @@ public class K_FastBankBury extends IdleScript {
       scriptStart();
     }
 
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount(boneId) < 1) {
-        if (!controller.isInBank()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount(boneId) < 1) {
+        if (!c.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
-          ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+          ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
-            controller.setStatus("@yel@Walking to Banker..");
-            controller.displayMessage("@yel@Walking to Banker..");
-            controller.walktoNPCAsync(npc.serverIndex);
-            controller.sleep(200);
+            c.setStatus("@yel@Walking to Banker..");
+            c.displayMessage("@yel@Walking to Banker..");
+            c.walktoNPCAsync(npc.serverIndex);
+            c.sleep(200);
           } else {
-            controller.log("@red@Error..");
-            controller.sleep(1000);
+            c.log("@red@Error..");
+            c.sleep(1000);
           }
         }
-        controller.setStatus("@yel@Banking..");
-        controller.displayMessage("@gre@Banking..");
+        c.setStatus("@yel@Banking..");
+        c.displayMessage("@gre@Banking..");
         bank();
-        controller.sleep(1200);
+        c.sleep(1200);
       }
-      if (controller.getInventoryItemCount(boneId) > 0) {
-        controller.setStatus("@yel@Burying..");
-        controller.itemCommand(boneId);
-        controller.sleep(100);
+      if (c.getInventoryItemCount(boneId) > 0) {
+        c.setStatus("@yel@Burying..");
+        c.itemCommand(boneId);
+        c.sleep(100);
       }
     }
 
-    //	return 1000; //start() must return a int value now.
+    //	return 1000; //start() must return an int value now.
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
-      if (controller.getInventoryItemCount(boneId) < 30) {
-        controller.withdrawItem(boneId, 30);
+    if (c.isInBank()) {
+      if (c.getInventoryItemCount(boneId) < 30) {
+        c.withdrawItem(boneId, 30);
       }
-      controller.closeBank();
+      c.closeBank();
     }
   }
 
-  public void setupGUI() {
+  private void setupGUI() {
     JLabel header = new JLabel("Fast Bone Bury");
     JLabel boneLabel = new JLabel("bone Type:");
     JComboBox<String> boneField =
-        new JComboBox<String>(
-            new String[] {"Normal Bones", "Big Bones", "Bat Bones", "Dragon Bones"});
+        new JComboBox<>(new String[] {"Normal Bones", "Big Bones", "Bat Bones", "Dragon Bones"});
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            boneId = boneIds[boneField.getSelectedIndex()];
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            controller.displayMessage("@gre@" + '"' + "Fast Bone Bury" + '"' + " - by Kaila");
-            controller.displayMessage("@gre@Start in any bank");
-          }
+        e -> {
+          boneId = boneIds[boneField.getSelectedIndex()];
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          c.displayMessage("@gre@" + '"' + "Fast Bone Bury" + '"' + " - by Kaila");
+          c.displayMessage("@gre@Start in any bank");
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -114,6 +116,7 @@ public class K_FastBankBury extends IdleScript {
     scriptFrame.add(boneLabel);
     scriptFrame.add(boneField);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);

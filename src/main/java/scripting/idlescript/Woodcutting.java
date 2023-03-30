@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -12,12 +12,18 @@ import javax.swing.JLabel;
 /**
  * Woodcutting by Searos
  *
+ * <p>Updated by Kaila
+ *
+ * <p>
+ *
  * @author Searos
+ *     <p>Kaila
  */
 public class Woodcutting extends IdleScript {
-  JCheckBox bank = new JCheckBox("Bank", true);
-  JComboBox<String> destination =
-      new JComboBox<String>(
+  private static final Controller c = Main.getController();
+  final JCheckBox bank = new JCheckBox("Bank", true);
+  final JComboBox<String> destination =
+      new JComboBox<>(
           new String[] {
             "Draynor",
             "Varrock West",
@@ -35,144 +41,134 @@ public class Woodcutting extends IdleScript {
   boolean scriptStarted = false;
   int treeId = -1;
   int logId = -1;
-  int[] treeIds = {1, 306, 307, 308, 309, 310};
-  int[] logIds = {14, 632, 633, 634, 635, 636};
+  final int[] treeIds = {1, 306, 307, 308, 309, 310};
   int saveX = 0;
   int saveY = 0;
   int bankSelX = -1;
   int bankSelY = -1;
   int totalLogs = 0;
   int bankedLogs = 0;
-  int[] bankX = {220, 150, 103, 220, 216, 283, 503, 582, 566, 588};
-  int[] bankY = {635, 504, 511, 365, 450, 569, 452, 576, 600, 754};
+  final int[] bankX = {220, 150, 103, 220, 216, 283, 503, 582, 566, 588};
+  final int[] bankY = {635, 504, 511, 365, 450, 569, 452, 576, 600, 754};
   boolean bankTime = false;
   boolean chopTime = false;
-  int[] bankerIds = {95, 224, 268, 485, 540, 617};
+  final int[] bankerIds = {95, 224, 268, 485, 540, 617};
 
-  int[] axes = {12, 87, 88, 203, 204, 405, 1263};
+  final int[] axes = {12, 87, 88, 203, 204, 405, 1263};
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
 
     if (scriptStarted) {
+      if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
       scriptStart();
     }
 
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
   public void startWalking(int x, int y) {
     // shitty autowalk
     int newX = x;
     int newY = y;
-    while (controller.currentX() != x || controller.currentY() != y) {
-      if (controller.currentX() - x > 20) {
-        newX = controller.currentX() - 20;
+    while (c.currentX() != x || c.currentY() != y) {
+      if (c.currentX() - x > 20) {
+        newX = c.currentX() - 20;
       }
-      if (controller.currentY() - y > 20) {
-        newY = controller.currentY() - 20;
+      if (c.currentY() - y > 20) {
+        newY = c.currentY() - 20;
       }
-      if (controller.currentX() - x < -20) {
-        newX = controller.currentX() + 20;
+      if (c.currentX() - x < -20) {
+        newX = c.currentX() + 20;
       }
-      if (controller.currentY() - y < -20) {
-        newY = controller.currentY() + 20;
+      if (c.currentY() - y < -20) {
+        newY = c.currentY() + 20;
       }
-      if (Math.abs(controller.currentX() - x) <= 20) {
+      if (Math.abs(c.currentX() - x) <= 20) {
         newX = x;
       }
-      if (Math.abs(controller.currentY() - y) <= 20) {
+      if (Math.abs(c.currentY() - y) <= 20) {
         newY = y;
       }
-      if (!controller.isTileEmpty(newX, newY)) {
-        controller.walkToAsync(newX, newY, 2);
-        controller.sleep(1000);
-      } else {
-        controller.walkToAsync(newX, newY, 2);
-        controller.sleep(1000);
-      }
+      c.walkToAsync(newX, newY, 2);
+      c.sleep(1000);
     }
   }
 
   public boolean isAxe(int id) {
-    for (int i = 0; i < axes.length; i++) {
-      if (axes[i] == id) return true;
+    for (int axe : axes) {
+      if (axe == id) return true;
     }
-
     return false;
   }
 
   public void scriptStart() {
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount() == 30) {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount() == 30) {
         bankTime = true;
         chopTime = false;
       }
-      if (controller.getInventoryItemCount() <= 29) {
+      if (c.getInventoryItemCount() <= 29) {
         bankTime = false;
       }
-      if (controller.getNearestObjectById(treeId) != null
+      if (c.getNearestObjectById(treeId) != null
           && chopTime
-          && !controller
+          && !c
               .isBatching()) { // bot spams  getNearestObjectById and goes to 25% cpu, this specific
         // one
-        controller.sleepHandler(98, true);
-        int[] treeCoords = controller.getNearestObjectById(treeId);
-        controller.atObject(treeCoords[0], treeCoords[1]);
-        controller.sleep(1200); // more sleep to let batching catch up!
-        while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-          controller.sleep(1000);
-        }
+        c.sleepHandler(98, true);
+        int[] treeCoords = c.getNearestObjectById(treeId);
+        c.atObject(treeCoords[0], treeCoords[1]);
+        c.sleep(1200); // more sleep to let batching catch up!
+        batchingWaitScript();
       } else { // added else so when getNearestObjectById == null this function doesn't repeat and
         // overflow cpu usage
-        controller.sleep(
+        c.sleep(
             2000); // added sleep to this function to stop cpu overflow issue going to high usage
         // (IMPORTANT)
       }
       if (bank.isSelected() && bankTime) {
-        while (controller.getNearestNpcByIds(bankerIds, true) == null) {
+        while (c.getNearestNpcByIds(bankerIds, true) == null) {
           startWalking(bankSelX, bankSelY);
         }
-        controller.setStatus("@red@Banking");
-        if (!controller.isInBank()) { // changed from while to if, might fix occasional bank break?
-          controller.openBank();
-          controller.sleep(100);
+        c.setStatus("@red@Banking");
+        if (!c.isInBank()) { // changed from while to if, might fix occasional bank break?
+          c.openBank();
+          c.sleep(100);
         }
       }
-      if (controller
-          .isInBank()) { // && controller.getInventoryItemCount() > 0  //removed, not needed
-        totalLogs = totalLogs + controller.getInventoryItemCount(logId);
-        for (int itemId : controller.getInventoryItemIds()) {
+      if (c.isInBank()) { // && c.getInventoryItemCount() > 0  //removed, not needed
+        totalLogs = totalLogs + c.getInventoryItemCount(logId);
+        for (int itemId : c.getInventoryItemIds()) {
           if (itemId != 0 && !isAxe(itemId) && itemId != 1263) {
-            controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+            c.depositItem(itemId, c.getInventoryItemCount(itemId));
           }
-          controller.sleep(100);
+          c.sleep(100);
         }
-        bankedLogs = controller.getBankItemCount(logId);
-        controller.sleep(100);
-        controller.closeBank();
+        bankedLogs = c.getBankItemCount(logId);
+        c.sleep(100);
+        c.closeBank();
         bankTime = false;
-        controller.sleep(1000); // added
+        c.sleep(1000); // added
       }
-      if (controller.getInventoryItemCount() == 0 && controller.isInBank()) {
-        controller.closeBank();
-        controller.sleep(100);
+      if (c.getInventoryItemCount() == 0 && c.isInBank()) {
+        c.closeBank();
+        c.sleep(100);
       }
       if (!bankTime && !chopTime) {
-        // controller.sleep(1000);
-        if (controller.getNearestObjectById(treeId) == null) { // changed to if
+        // c.sleep(1000);
+        if (c.getNearestObjectById(treeId) == null) { // changed to if
           startWalking(saveX, saveY);
-          controller.sleep(
+          c.sleep(
               340); // added sleep, this one probably not needed, but small sleep after pathwalking
           // is fine
-        } else { // changed to else to remove 2nd getNearestObjectById check
-          // if (controller.getNearestObjectById(treeId) != null) { //removed
-          controller.setStatus("@red@Chopping");
+        } else { // changed too else to remove 2nd getNearestObjectById check
+          // if (c.getNearestObjectById(treeId) != null) { //removed
+          c.setStatus("@red@Chopping");
           chopTime = true;
-          return;
         }
       }
     }
@@ -180,31 +176,34 @@ public class Woodcutting extends IdleScript {
     guiSetup = false;
   }
 
+  public void batchingWaitScript() {
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+  }
+
   public void setupGUI() {
     JLabel header = new JLabel("Woodcutting");
     JLabel treeLabel = new JLabel("Tree Type:");
     JComboBox<String> treeField =
-        new JComboBox<String>(new String[] {"Normal", "Oak", "Willow", "Maple", "Yew", "Magic"});
+        new JComboBox<>(new String[] {"Normal", "Oak", "Willow", "Maple", "Yew", "Magic"});
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            treeId = treeIds[treeField.getSelectedIndex()];
-            logId = treeIds[treeField.getSelectedIndex()];
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            chopTime = true;
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            controller.displayMessage("@red@Saving position");
-            saveX = controller.currentX();
-            saveY = controller.currentY();
-            bankSelX = bankX[destination.getSelectedIndex()];
-            bankSelY = bankY[destination.getSelectedIndex()];
-            controller.displayMessage("@red@Woodcutter started");
-          }
+        e -> {
+          treeId = treeIds[treeField.getSelectedIndex()];
+          logId = treeIds[treeField.getSelectedIndex()];
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          chopTime = true;
+          c.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          c.displayMessage("@red@Saving position");
+          saveX = c.currentX();
+          saveY = c.currentY();
+          bankSelX = bankX[destination.getSelectedIndex()];
+          bankSelY = bankY[destination.getSelectedIndex()];
+          c.displayMessage("@red@Woodcutter started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -226,17 +225,11 @@ public class Woodcutting extends IdleScript {
 
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
-      controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
-      controller.drawString("@red@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Logs Collected: @yel@" + String.valueOf(this.totalLogs), 10, 21 + 14, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Logs in bank: @yel@" + String.valueOf(this.bankedLogs),
-          10,
-          21 + 14 + 14,
-          0xFFFFFF,
-          1);
+    if (c != null) {
+      c.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+      c.drawString("@red@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+      c.drawString("@red@Logs Collected: @yel@" + totalLogs, 10, 21 + 14, 0xFFFFFF, 1);
+      c.drawString("@red@Logs in bank: @yel@" + bankedLogs, 10, 21 + 14 + 14, 0xFFFFFF, 1);
     }
   }
 }

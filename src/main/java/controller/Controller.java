@@ -4426,8 +4426,7 @@ public class Controller {
   /**
    * Function to toggle on Batch Bars in the openrsc client config for native scripts utilizing
    * batch bars. Can be used with isAuthentic to ensure batching on coleslaw conditions for scripts.
-   * Example to toggle on batch bars:
-   * if(!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+   * Example to toggle on batch bars: if(!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
    */
   public void toggleBatchBars() {
     if (isLoggedIn() && !isAuthentic()) {

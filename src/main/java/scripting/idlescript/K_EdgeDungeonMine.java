@@ -5,7 +5,6 @@ import controller.Controller;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -18,44 +17,18 @@ import javax.swing.JLabel;
  *
  * <p>
  *
- * <p>Start in Edge bank with Armor and Pickaxe.
+ * <p>Start in Varrock East bank or near Mine, with a pickaxe and bass key.
  *
  * <p>Sharks in bank REQUIRED.
  *
- * <p>
- *
- * <p>Teleport if Pkers Attack Option.
- *
- * <p>31 Magic, Laws, Airs, and Earths required for Escape Tele.
- *
- * <p>Unselected, bot WALKS to Edge when Attacked.
- *
- * <p>Selected, bot walks to 19 wildy and teleports.
- *
- * <p>
- *
- * <p>Return to Hobs Mine after Escaping Option.
- *
- * <p>Unselected, bot will log out after escaping Pkers.
- *
- * <p>Selected, bot will grab more food and return.
- *
- * <p>
- *
- * <p>This bot supports the \"autostart\" parameter.
- *
- * <p>Defaults to Teleport Off, Return On.
- *
  * <p>@Author - Kaila
  */
-public class K_HobsMiner extends IdleScript {
+public class K_EdgeDungeonMine extends IdleScript {
   private static final Controller c = Main.getController();
   private static JFrame scriptFrame = null;
   private static String isMining = "none";
   private static boolean guiSetup = false;
   private static boolean scriptStarted = false;
-  private static boolean teleportOut = false;
-  private static boolean returnEscape = true;
   private static long startTime;
   private static final long startTimestamp = System.currentTimeMillis() / 1000L;
   private static int coalInBank = 0;
@@ -69,51 +42,10 @@ public class K_HobsMiner extends IdleScript {
   private static int totalRub = 0;
   private static int totalDia = 0;
   private static int totalTrips = 0;
-
   private static final int[] currentOre = {0, 0};
-  private static final int[] addyIDs = {
-    108, 231, 109
-  }; // 108,231,109 (addy) 106,107 (mith) 110,111 (coal)  98 empty
+  private static final int[] addyIDs = {108, 231, 109};
   private static final int[] mithIDs = {106, 107};
   private static final int[] coalIDs = {110, 111};
-  private static final int[] loot = {
-    // loot RDT hob drops
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-
-    // loot common armor if another bot dies
-    1318, // ring of wealth
-    402, // rune leg
-    400, // rune chain
-    399, // rune med
-    403, // rune sq
-    404, // rune kite
-    112, // rune full helm
-    1262, // rune pic
-    315, // Emerald Amulet of protection
-    317, // Diamond Amulet of power
-    522, // dragonstone ammy
-
-    // loot "some" hobs drops
-    38, // death rune
-    619, // blood rune
-    42, // laws
-    40, // nats
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-  };
-
-  private boolean isWithinLootzone(int x, int y) {
-    return c.distance(225, 251, x, y) <= 30; // center of hobs mine lootzone
-  }
 
   private boolean adamantiteAvailable() {
     return c.getNearestObjectByIds(addyIDs) != null;
@@ -143,31 +75,15 @@ public class K_HobsMiner extends IdleScript {
     if (c.isInBank()) {
       c.closeBank();
     }
-    if (c.currentY() > 340) {
+    if (c.currentY() < 3000) {
       bank();
-      eat();
-      bankToHobs();
-      eat();
+      bankToDungeon();
       c.sleep(1380);
     }
-    if (c.currentY() > 270 && c.currentY() < 341) {
-      bankToHobs();
-      eat();
-      c.sleep(1380);
-    }
-    if (orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
   }
 
   public int start(String[] parameters) {
-    if (parameters.length > 0 && !parameters[0].equals("")) {
-      if (parameters[0].toLowerCase().startsWith("auto")) {
-        c.displayMessage("Auto-starting, teleport false, return escape true", 0);
-        System.out.println("Auto-starting, teleport false, return escape true");
-        teleportOut = false;
-        returnEscape = true;
-        scriptStarted = true;
-      }
-    }
     if (scriptStarted) {
       startTime = System.currentTimeMillis();
       startSequence();
@@ -183,31 +99,10 @@ public class K_HobsMiner extends IdleScript {
   private void scriptStart() {
     while (c.isRunning()) {
 
-      eat();
-      leaveCombat();
-
-      if (c.getInventoryItemCount(546) == 0) {
-        c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-        hobsToTwenty();
-        c.sleep(100);
-        c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
-        c.sleep(308);
-        c.walkTo(120, 644);
-        c.atObject(119, 642);
-        c.walkTo(217, 447);
-        c.sleep(618);
-        bank();
-        bankToHobs();
-      }
       if (c.getInventoryItemCount() == 30) {
-
         goToBank();
       }
       if (c.getInventoryItemCount() < 30) {
-
-        eat();
-        leaveCombat();
-        lootScript();
         if (rockEmpty() || !c.isBatching()) {
           isMining = "none";
           currentOre[0] = 0;
@@ -228,9 +123,6 @@ public class K_HobsMiner extends IdleScript {
           }
           c.sleep(1280);
         }
-        leaveCombat();
-        c.setStatus("@yel@Mining..");
-
         if (!c.isBatching() && Objects.equals(isMining, "none") && rockEmpty()) {
           if (adamantiteAvailable()) {
             mine("adamantite");
@@ -241,18 +133,6 @@ public class K_HobsMiner extends IdleScript {
           }
           c.sleep(1280);
         }
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
       }
     }
   }
@@ -303,132 +183,22 @@ public class K_HobsMiner extends IdleScript {
       totalDia = totalDia + c.getInventoryItemCount(157);
 
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 546
-            && itemId != 156
-            && itemId != 1263
-            && itemId != 1262) { // won't bank sharks, rune/bronze pick, or sleeping bags
+        if (itemId != 99 && itemId != 1262) { // won't bank brass key or sleeping bags
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      c.sleep(1280); // increased sleep here to prevent double banking
-
+      c.sleep(1240);
+      if (controller.getInventoryItemCount(99) < 1) { // withdraw brass key
+        controller.withdrawItem(99, 1);
+        controller.sleep(640);
+      }
       coalInBank = c.getBankItemCount(155);
       mithInBank = c.getBankItemCount(153);
       addyInBank = c.getBankItemCount(154);
-
-      if (teleportOut) {
-        if (c.getInventoryItemCount(33) < 3) { // withdraw 3 air
-          c.withdrawItem(33, 3);
-          c.sleep(640);
-        }
-        if (c.getInventoryItemCount(34) < 1) { // withdraw 1 earth
-          c.withdrawItem(34, 1);
-          c.sleep(640);
-        }
-        if (c.getInventoryItemCount(42) < 1) { // withdraw 1 law
-          c.withdrawItem(42, 1);
-          c.sleep(640);
-        }
-      }
-      if (c.getInventoryItemCount(546) > 1) {
-        c.depositItem(546, c.getInventoryItemCount(546) - 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(546) < 1) { // withdraw 1 shark
-        c.withdrawItem(546, 1);
-        c.sleep(640);
-      }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.sleep(5000);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
       c.closeBank();
       c.sleep(640);
     }
-    if (teleportOut) {
-      airCheck();
-      earthCheck();
-      lawCheck();
-    }
-  }
-
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.sleep(200);
-
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-
-        c.setStatus("@red@We've ran out of Food at Hobs! Running Away!.");
-        isMining = "none";
-        currentOre[0] = 0;
-        currentOre[1] = 0;
-        c.setStatus("@yel@Banking..");
-        hobsToTwenty();
-
-        if (!teleportOut
-            || c.getInventoryItemCount(42) < 1
-            || c.getInventoryItemCount(33) < 3
-            || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
-          twentyToBank();
-        }
-        if (teleportOut) {
-          c.sleep(100);
-          c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport (1)"));
-          c.sleep(800);
-          if (c.currentY() < 425) {
-            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport (2)"));
-            c.sleep(800);
-          }
-          if (c.currentY() < 425) {
-            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport (3)"));
-            c.sleep(1000);
-          }
-          c.walkTo(120, 644);
-          c.atObject(119, 642);
-          c.walkTo(217, 447);
-          c.sleep(308);
-        }
-        if (!returnEscape) {
-          c.setAutoLogin(
-              false); // uncomment and remove bank and banktoHobs to prevent bot going back to mine
-          // after being attacked
-          c.logout();
-          c.sleep(1000);
-
-          if (!c.isLoggedIn()) {
-            c.stop();
-            c.logout();
-          }
-        }
-        if (returnEscape) {
-          bank();
-          bankToHobs();
-          c.sleep(618);
-        }
-      }
-    }
+    dustyKeyCheck();
   }
 
   private void goToBank() {
@@ -436,128 +206,111 @@ public class K_HobsMiner extends IdleScript {
     currentOre[0] = 0;
     currentOre[1] = 0;
     c.setStatus("@yel@Banking..");
-    hobsToTwenty();
-    twentyToBank();
+    dungeonToBank();
     bank();
-    bankToHobs();
+    bankToDungeon();
     c.sleep(618);
   }
 
-  private void hobsToTwenty() {
-    c.setStatus("@gre@Walking to 19 wildy..");
-    c.walkTo(221, 262);
-    c.walkTo(221, 283);
-    c.walkTo(221, 301);
-    c.walkTo(221, 314);
-    totalTrips = totalTrips + 1;
-    c.setStatus("@gre@Done Walking to 19..");
-  }
-
-  private void twentyToBank() {
-    c.setStatus("@gre@Walking to Bank..");
-    eat();
-    c.walkTo(221, 321);
-    c.walkTo(222, 341);
-    c.walkTo(222, 361);
-    c.walkTo(222, 381);
-    c.walkTo(222, 401);
-    c.walkTo(215, 410);
-    c.walkTo(215, 420);
-    c.walkTo(220, 425);
-    c.walkTo(220, 445);
-    c.walkTo(217, 448);
-
-    c.setStatus("@gre@Done Walking..");
-  }
-
-  private void bankToHobs() {
-    c.setStatus("@gre@Walking to Hobs Mine..");
-    c.walkTo(218, 447);
-    c.walkTo(220, 443);
-    c.walkTo(220, 433);
-    c.walkTo(220, 422);
-    c.walkTo(215, 417);
-    c.walkTo(215, 410);
-    c.walkTo(215, 401);
-    c.walkTo(215, 395);
-    eat();
-    c.walkTo(222, 388);
-    c.walkTo(222, 381);
-    c.walkTo(222, 361);
-    c.walkTo(222, 341);
-    c.walkTo(221, 321);
-    c.walkTo(221, 314);
-    c.walkTo(221, 301);
-    c.walkTo(221, 283);
-    c.walkTo(221, 262);
-
-    c.setStatus("@gre@Done Walking..");
-  }
-
-  private void lawCheck() {
-    if (c.getInventoryItemCount(42) < 1) { // law
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(42, 1);
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void earthCheck() {
-    if (c.getInventoryItemCount(34) < 1) { // earth
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(34, 1);
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void airCheck() {
-    if (c.getInventoryItemCount(33) < 3) { // air
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(33, 3 - c.getInventoryItemCount(33));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void leaveCombat() {
+  private void dustyGateNorthToSouth() {
+    int dustyKey = 99;
     for (int i = 1; i <= 10; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(640);
+      if (c.currentX() == 202 && c.currentY() == 484) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
+        c.sleep(2000);
       }
       c.sleep(10);
     }
   }
 
+  private void dustyGateSouthToNorth() {
+    int dustyKey = 99;
+    for (int i = 1; i <= 10; i++) {
+      if (c.currentX() == 202 && c.currentY() == 485) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
+        c.sleep(2000);
+      }
+      c.sleep(10);
+    }
+  }
+
+  private void bankToDungeon() {
+    c.setStatus("@gre@Walking to Edge Dungeon..");
+    c.walkTo(151, 507);
+    c.walkTo(162, 507);
+    c.walkTo(172, 507);
+    c.walkTo(182, 507);
+    c.walkTo(192, 497);
+    c.walkTo(202, 487);
+    c.walkTo(202, 485);
+    dustyKeyCheck();
+    c.setStatus("@gre@Crossing Dusty Gate..");
+    dustyGateSouthToNorth();
+    c.setStatus("@gre@Walking to Edge Dungeon..");
+    c.walkTo(203, 483);
+    c.atObject(203, 482);
+    c.sleep(2000);
+    c.walkTo(207, 3315);
+    c.walkTo(207, 3300);
+    c.walkTo(205, 3299);
+    c.walkTo(193, 3299);
+    c.setStatus("@gre@Done Walking..");
+  }
+
+  private void dungeonToBank() {
+    c.setStatus("@gre@Walking to Varrock West..");
+    c.walkTo(207, 3315);
+    c.walkTo(203, 3315);
+    c.atObject(203, 3314);
+    c.sleep(2000);
+    c.walkTo(202, 484);
+    dustyKeyCheck();
+    c.setStatus("@gre@Crossing Dusty Gate..");
+    dustyGateNorthToSouth();
+    c.setStatus("@gre@Walking to Varrock West..");
+    c.walkTo(202, 487);
+    c.walkTo(192, 497);
+    c.walkTo(182, 507);
+    c.walkTo(172, 507);
+    c.walkTo(162, 507);
+    c.walkTo(151, 507);
+    totalTrips = totalTrips + 1;
+    c.setStatus("@gre@Done Walking..");
+  }
+
+  private void dustyKeyCheck() {
+    if (c.getInventoryItemCount(99) == 0) {
+      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot in 30 Seconds");
+      c.sleep(10000);
+      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot in 20 Seconds");
+      c.sleep(10000);
+      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot in 10 Seconds");
+      c.sleep(5000);
+      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot");
+      c.sleep(1000);
+      endSession();
+    }
+  }
+
+  private void endSession() {
+    c.setAutoLogin(false);
+    while (c.isLoggedIn()) {
+      c.logout();
+    }
+    if (!c.isLoggedIn()) {
+      c.stop();
+    }
+  }
+
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Hobs Miner - By Kaila");
-    JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");
-    JLabel label2 = new JLabel("Sharks in bank REQUIRED");
-    JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
-    JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
-    JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
-    JLabel label5 = new JLabel("Selected, bot walks to 19 wildy and teleports");
-    JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
-    JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
-    JLabel label7 = new JLabel("Selected, bot will grab more food and return");
-    JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
-    JLabel label9 = new JLabel("Defaults to Teleport Off, Return On.");
+    JLabel header = new JLabel("Edge Dungeon Miner - By Kaila");
+    JLabel label1 = new JLabel("Start in Varrock West with Pickaxe and Brass key");
+    JLabel label2 = new JLabel("This bot supports the \"autostart\" parameter");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
-          teleportOut = teleportCheckbox.isSelected();
-          returnEscape = escapeCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
@@ -570,17 +323,7 @@ public class K_HobsMiner extends IdleScript {
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(label2);
-    scriptFrame.add(teleportCheckbox);
-    scriptFrame.add(label3);
-    scriptFrame.add(label4);
-    scriptFrame.add(label5);
-    scriptFrame.add(escapeCheckbox);
-    scriptFrame.add(label6);
-    scriptFrame.add(label7);
-    scriptFrame.add(label8);
-    scriptFrame.add(label9);
     scriptFrame.add(startScriptButton);
-
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);

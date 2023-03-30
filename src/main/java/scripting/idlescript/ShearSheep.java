@@ -12,7 +12,7 @@ public class ShearSheep extends IdleScript {
   int bankedWool = 0;
   int a = 0;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (a == 0) {
       controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
       a = 1;
@@ -119,10 +119,8 @@ public class ShearSheep extends IdleScript {
     if (controller != null) {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Shear Sheep @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Wool collected: @yel@" + String.valueOf(this.totalWool), 10, 35, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Wool in Bank: @yel@" + String.valueOf(this.bankedWool), 10, 49, 0xFFFFFF, 1);
+      controller.drawString("@red@Wool collected: @yel@" + this.totalWool, 10, 35, 0xFFFFFF, 1);
+      controller.drawString("@red@Wool in Bank: @yel@" + this.bankedWool, 10, 49, 0xFFFFFF, 1);
     }
   }
 }

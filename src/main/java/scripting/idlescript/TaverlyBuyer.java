@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -17,9 +15,9 @@ import orsc.ORSCharacter;
  * @author Dvorak, rewritten by Kaila
  */
 public class TaverlyBuyer extends IdleScript {
-  String[] options = new String[] {"Vials", "Newts", "Newts then Vials", "Vials then newts"};
+  final String[] options = new String[] {"Vials", "Newts", "Newts then Vials", "Vials then newts"};
 
-  int[] loot = {465, 270};
+  final int[] loot = {465, 270};
 
   int option = -1;
   boolean scriptStarted = false;
@@ -30,14 +28,14 @@ public class TaverlyBuyer extends IdleScript {
   int newtsBought = 0;
   int newtsBanked = 0;
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public void startSequence() {
     controller.displayMessage("@red@TaverlyBuyer by Dvorak. Fixed by Kaila!");
     controller.displayMessage("@red@Start in Taverly or Fally West with GP!");
     controller.displayMessage("@red@This bot supports the \"autostart\" Parameter");
     controller.displayMessage("@red@autostart collects Newts then Vials");
-    if (controller.isInBank() == true) {
+    if (controller.isInBank()) {
       controller.closeBank();
     }
     if (controller.currentY() > 545) {
@@ -47,7 +45,7 @@ public class TaverlyBuyer extends IdleScript {
     }
   }
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         controller.displayMessage("Auto-starting, Newts then Vials", 0);
@@ -192,8 +190,8 @@ public class TaverlyBuyer extends IdleScript {
 
   public int countLoot() {
     int count = 0;
-    for (int i = 0; i < loot.length; i++) {
-      count += controller.getInventoryItemCount(loot[i]);
+    for (int j : loot) {
+      count += controller.getInventoryItemCount(j);
     }
 
     return count;
@@ -211,11 +209,10 @@ public class TaverlyBuyer extends IdleScript {
     if (controller.isInBank()) {
 
       while (countLoot() > 0) {
-        for (int i = 0; i < loot.length; i++) {
-          if (controller.getInventoryItemCount(loot[i]) > 0) {
+        for (int j : loot) {
+          if (controller.getInventoryItemCount(j) > 0) {
             controller.depositItem(
-                loot[i],
-                controller.getInventoryItemCount(loot[i])); // /////////////////////////////
+                j, controller.getInventoryItemCount(j)); // /////////////////////////////
             controller.sleep(250);
           }
         }
@@ -284,21 +281,18 @@ public class TaverlyBuyer extends IdleScript {
     JLabel Label1 = new JLabel("Start in Taverly or Fally West with GP!");
     JLabel Label2 = new JLabel("This bot supports the \"autostart\" Parameter");
     JLabel Label3 = new JLabel("autostart collects Newts then Vials");
-    JComboBox<String> optionField = new JComboBox<String>(options);
+    JComboBox<String> optionField = new JComboBox<>(options);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            option = optionField.getSelectedIndex();
+        e -> {
+          option = optionField.getSelectedIndex();
 
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
 
-            // controller.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
-          }
+          // controller.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
         });
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -322,8 +316,9 @@ public class TaverlyBuyer extends IdleScript {
 
       int vialsPerHr = 0;
       int newtsPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         vialsPerHr = (int) (vialsBought * scale);
         newtsPerHr = (int) (newtsBought * scale);

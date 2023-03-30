@@ -1,14 +1,8 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import javax.swing.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 /**
  * Picks whiteberries in wilderness. Needs antidragon shields.
@@ -20,7 +14,7 @@ public class Wildberries extends IdleScript {
   boolean guiSetup = false;
   boolean scriptStarted = false;
   int totalTrips = 0;
-  int[] gateToBerries =
+  final int[] gateToBerries =
       new int[] {
         140, 181,
         142, 191,
@@ -28,7 +22,7 @@ public class Wildberries extends IdleScript {
         137, 213
       };
 
-  int[] varrockToGate =
+  final int[] varrockToGate =
       new int[] {
         103, 509,
         109, 498,
@@ -72,15 +66,15 @@ public class Wildberries extends IdleScript {
   int sharksInBank = 0;
   int foodWithdrawAmount = 3;
   long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (scriptStarted) {
       controller.displayMessage("@red@Wildberries by Dvorak. Rewritten by Kaila");
       controller.displayMessage(
           "@red@Start in Varrock East bank! You need antidragon shields in the bank!");
 
-      if (controller.isInBank() == true) {
+      if (controller.isInBank()) {
         controller.closeBank();
       }
       if (controller.currentY() > 509) {
@@ -299,17 +293,14 @@ public class Wildberries extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            if (!foodWithdrawAmountField.getText().equals(""))
-              foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+        e -> {
+          if (!foodWithdrawAmountField.getText().equals(""))
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
 
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -339,8 +330,7 @@ public class Wildberries extends IdleScript {
     min %= 60;
     DecimalFormat twoDigits = new DecimalFormat("00");
 
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
+    return twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec);
   }
 
   @Override
@@ -349,8 +339,9 @@ public class Wildberries extends IdleScript {
       String runTime = msToString(System.currentTimeMillis() - startTime);
       int berriesPerHr = 0;
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         berriesPerHr = (int) (berriesPicked * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
@@ -384,7 +375,7 @@ public class Wildberries extends IdleScript {
           1);
       controller.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + this.totalTrips
               + "@yel@(@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",

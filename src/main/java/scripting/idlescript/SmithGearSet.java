@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -15,9 +13,8 @@ import javax.swing.JLabel;
  */
 public class SmithGearSet extends IdleScript {
   JFrame scriptFrame = null;
-  JComboBox<String> barField =
-      new JComboBox<String>(
-          new String[] {"Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite"});
+  final JComboBox<String> barField =
+      new JComboBox<>(new String[] {"Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite"});
   boolean guiSetup = false;
   boolean scriptStarted = false;
   int barsLeft = -1;
@@ -28,10 +25,10 @@ public class SmithGearSet extends IdleScript {
   int totalKites = 0;
   int totalBaxes = 0;
   int total2Hs = 0;
-  double totalSets = 0;
   boolean bankTime = true;
-  int[] barType = {169, 170, 171, 173, 174, 408};
-  int[][] itemType = {
+  long totalSetCount = 0;
+  final int[] barType = {169, 170, 171, 173, 174, 408};
+  final int[][] itemType = {
     {108, 117, 206, 124, 205, 76},
     {6, 8, 9, 2, 89, 77},
     {109, 118, 121, 129, 90, 78},
@@ -40,7 +37,7 @@ public class SmithGearSet extends IdleScript {
     {112, 401, 402, 404, 93, 81}
   };
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -55,6 +52,13 @@ public class SmithGearSet extends IdleScript {
   public void scriptStart() {
     while (controller.isRunning()) {
       while (bankTime && !controller.isInBank()) {
+        totalSetCount =
+            (controller.getBankItemCount(itemType[barField.getSelectedIndex()][0])
+                + controller.getBankItemCount(itemType[barField.getSelectedIndex()][1])
+                + controller.getBankItemCount(itemType[barField.getSelectedIndex()][2])
+                + controller.getBankItemCount(itemType[barField.getSelectedIndex()][3])
+                + controller.getBankItemCount(itemType[barField.getSelectedIndex()][4])
+                + controller.getBankItemCount(itemType[barField.getSelectedIndex()][5]));
         controller.setStatus("Banking");
         controller.openBank();
         controller.sleep(1000);
@@ -81,14 +85,7 @@ public class SmithGearSet extends IdleScript {
               controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
             }
           }
-          totalSets =
-              ((controller.getBankItemCount(itemType[barField.getSelectedIndex()][0])
-                      + controller.getBankItemCount(itemType[barField.getSelectedIndex()][1])
-                      + controller.getBankItemCount(itemType[barField.getSelectedIndex()][2])
-                      + controller.getBankItemCount(itemType[barField.getSelectedIndex()][3])
-                      + controller.getBankItemCount(itemType[barField.getSelectedIndex()][4])
-                      + controller.getBankItemCount(itemType[barField.getSelectedIndex()][5]))
-                  / 6);
+
           controller.sleep(429);
         }
         if (controller.getInventoryItemCount(168) < 1) {
@@ -257,16 +254,13 @@ public class SmithGearSet extends IdleScript {
     JButton startScriptButton = new JButton("Start");
     JLabel barLabel = new JLabel("Bar Type:");
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            selectedBar = barType[barField.getSelectedIndex()];
-            scriptStarted = true;
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            controller.displayMessage("@red@SmithGearSet started");
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          selectedBar = barType[barField.getSelectedIndex()];
+          scriptStarted = true;
+          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          controller.displayMessage("@red@SmithGearSet started");
         });
     scriptFrame = new JFrame("Script Options");
 
@@ -288,20 +282,14 @@ public class SmithGearSet extends IdleScript {
     if (controller != null) {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Smith Gear Set @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+      controller.drawString("@red@Helms Smithed: @yel@" + totalHelms, 10, 35, 0xFFFFFF, 1);
+      controller.drawString("@red@Plates Smithed: @yel@" + totalPlates, 10, 49, 0xFFFFFF, 1);
+      controller.drawString("@red@Legs Smithed: @yel@" + totalLegs, 10, 63, 0xFFFFFF, 1);
+      controller.drawString("@red@Kites Smithed: @yel@" + totalKites, 10, 77, 0xFFFFFF, 1);
+      controller.drawString("@red@Baxes Smithed: @yel@" + totalBaxes, 10, 91, 0xFFFFFF, 1);
+      controller.drawString("@red@2Hs Smithed: @yel@" + total2Hs, 10, 105, 0xFFFFFF, 1);
       controller.drawString(
-          "@red@Helms Smithed: @yel@" + String.valueOf(this.totalHelms), 10, 35, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Plates Smithed: @yel@" + String.valueOf(this.totalPlates), 10, 49, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Legs Smithed: @yel@" + String.valueOf(this.totalLegs), 10, 63, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Kites Smithed: @yel@" + String.valueOf(this.totalKites), 10, 77, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Baxes Smithed: @yel@" + String.valueOf(this.totalBaxes), 10, 91, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@2Hs Smithed: @yel@" + String.valueOf(this.total2Hs), 10, 105, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Sets in Bank: @yel@" + String.valueOf(this.totalSets), 10, 105 + 14, 0xFFFFFF, 1);
+          "@red@Sets in Bank: @yel@" + (totalSetCount / 6), 10, 105 + 14, 0xFFFFFF, 1);
     }
   }
 }

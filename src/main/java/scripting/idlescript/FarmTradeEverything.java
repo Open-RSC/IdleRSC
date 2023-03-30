@@ -21,10 +21,7 @@ public class FarmTradeEverything extends IdleScript {
 
   public int start(String[] parameters) {
 
-    controller.log(
-        Integer.toString(controller.getMudMouseCoords()[0])
-            + ","
-            + Integer.toString(controller.getMudMouseCoords()[1]));
+    controller.log(controller.getMudMouseCoords()[0] + "," + controller.getMudMouseCoords()[1]);
 
     if (controller.getInventoryItemCount() == 0) {
       controller.log("opening...");
@@ -63,7 +60,7 @@ public class FarmTradeEverything extends IdleScript {
       }
     }
 
-    if (controller.getInventoryItemCount() > 0 && controller.isInTrade() == false) {
+    if (controller.getInventoryItemCount() > 0 && !controller.isInTrade()) {
       int serverIndex = controller.getPlayerServerIndexByName(parameters[0]);
 
       if (serverIndex == -1) {
@@ -84,9 +81,9 @@ public class FarmTradeEverything extends IdleScript {
       } else {
 
         int[] _itemIds = controller.getInventoryItemIds();
-        HashSet<Integer> itemIds = new HashSet<Integer>();
-        ArrayList<Integer> tradeIds = new ArrayList<Integer>();
-        ArrayList<Integer> tradeAmounts = new ArrayList<Integer>();
+        HashSet<Integer> itemIds = new HashSet<>();
+        ArrayList<Integer> tradeIds = new ArrayList<>();
+        ArrayList<Integer> tradeAmounts = new ArrayList<>();
 
         // grab unique inventory ids
         for (int id : itemIds) {

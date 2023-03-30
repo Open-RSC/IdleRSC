@@ -1,8 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -10,32 +9,32 @@ import javax.swing.JFrame;
 public class MiningGuild extends IdleScript {
   // Mining Guild Script by Seatta
 
-  JCheckBox runiteCheck = new JCheckBox("Mine Runite", true);
-  JCheckBox adamantiteCheck = new JCheckBox("Mine Adamantite", true);
-  JCheckBox mithrilCheck = new JCheckBox("Mine Mithril", true);
-  JCheckBox coalCheck = new JCheckBox("Mine Coal", true);
+  private static final JCheckBox runiteCheck = new JCheckBox("Mine Runite", true);
+  private static final JCheckBox adamantiteCheck = new JCheckBox("Mine Adamantite", true);
+  private static final JCheckBox mithrilCheck = new JCheckBox("Mine Mithril", true);
+  private static final JCheckBox coalCheck = new JCheckBox("Mine Coal", true);
 
-  Integer rockIDs[] = {210, 109, 107, 110, 98};
-  Integer oreIDs[] = {409, 154, 153, 155};
-  Integer gemIDs[] = {157, 158, 159, 160};
-  Integer banked[] = {0, 0, 0, 0};
-  Integer currentOre[] = {0, 0};
-  Integer ladderUp[] = {274, 3398};
-  Integer ladderDown[] = {274, 566};
-  JFrame scriptFrame = null;
+  private static final int[] rockIDs = {210, 109, 107, 110, 98};
+  private static final int[] oreIDs = {409, 154, 153, 155};
+  private static final int[] gemIDs = {157, 158, 159, 160};
+  private static final int[] banked = {0, 0, 0, 0};
+  private static final int[] currentOre = {0, 0};
+  private static final int[] ladderUp = {274, 3398};
+  private static final int[] ladderDown = {274, 566};
+  private static JFrame scriptFrame = null;
 
-  Boolean mineRunite = false;
-  Boolean mineAdamantite = false;
-  Boolean mineMithril = false;
-  Boolean mineCoal = false;
-  Boolean guiSetup = false;
-  Boolean setupCompleted = false;
-  Boolean stopped = false;
-  Boolean debug = false;
-  String isMining = "none";
-  Integer miningLevel;
+  private static boolean mineRunite = false;
+  private static boolean mineAdamantite = false;
+  private static boolean mineMithril = false;
+  private static boolean mineCoal = false;
+  private static boolean guiSetup = false;
+  private static boolean setupCompleted = false;
+  private static boolean stopped = false;
+  private static boolean debug = false;
+  private static String isMining = "none";
+  private static int miningLevel;
 
-  public int start(String param[]) {
+  public int start(String[] param) {
     if (!guiSetup) {
       setup();
       guiSetup = true;
@@ -87,7 +86,7 @@ public class MiningGuild extends IdleScript {
           currentOre[1] = 0;
         }
         if (controller.isBatching()) {
-          if (isMining == "runite") {
+          if (Objects.equals(isMining, "runite")) {
             while (controller.isBatching() && runiteAvailable() && controller.isLoggedIn()) {
               controller.sleep(640);
             }
@@ -95,12 +94,12 @@ public class MiningGuild extends IdleScript {
           if (miningLevel >= 85 && mineRunite && runiteAvailable()) {
             mine("runite");
           }
-          if (isMining == "mithril") {
+          if (Objects.equals(isMining, "mithril")) {
             if (miningLevel >= 70 && mineAdamantite && adamantiteAvailable()) {
               mine("adamantite");
             }
           }
-          if (isMining == "coal") {
+          if (Objects.equals(isMining, "coal")) {
             if (miningLevel >= 70 && mineAdamantite && adamantiteAvailable()) {
               mine("adamantite");
             } else if (mineMithril && mithrilAvailable()) {
@@ -109,7 +108,7 @@ public class MiningGuild extends IdleScript {
           }
           controller.sleep(1280);
         }
-        if (!controller.isBatching() && isMining == "none" && rockEmpty()) {
+        if (!controller.isBatching() && Objects.equals(isMining, "none") && rockEmpty()) {
           if (miningLevel >= 85 && mineRunite && runiteAvailable()) {
             mine("runite");
           } else if (miningLevel >= 70 && mineAdamantite && adamantiteAvailable()) {
@@ -130,32 +129,32 @@ public class MiningGuild extends IdleScript {
   }
 
   public void mine(String i) {
-    if (i == "runite") {
-      int oreCoords[] = controller.getNearestObjectById(rockIDs[0]);
+    if (Objects.equals(i, "runite")) {
+      int[] oreCoords = controller.getNearestObjectById(rockIDs[0]);
       if (oreCoords != null) {
         isMining = "runite";
         controller.atObject(oreCoords[0], oreCoords[1]);
         currentOre[0] = oreCoords[0];
         currentOre[1] = oreCoords[1];
       }
-    } else if (i == "adamantite") {
-      int oreCoords[] = controller.getNearestObjectById(rockIDs[1]);
+    } else if (Objects.equals(i, "adamantite")) {
+      int[] oreCoords = controller.getNearestObjectById(rockIDs[1]);
       if (oreCoords != null && oreCoords[1] > 3383) {
         isMining = "adamantite";
         controller.atObject(oreCoords[0], oreCoords[1]);
         currentOre[0] = oreCoords[0];
         currentOre[1] = oreCoords[1];
       }
-    } else if (i == "mithril") {
-      int oreCoords[] = controller.getNearestObjectById(rockIDs[2]);
+    } else if (Objects.equals(i, "mithril")) {
+      int[] oreCoords = controller.getNearestObjectById(rockIDs[2]);
       if (oreCoords != null && oreCoords[1] > 3383) {
         isMining = "mithril";
         controller.atObject(oreCoords[0], oreCoords[1]);
         currentOre[0] = oreCoords[0];
         currentOre[1] = oreCoords[1];
       }
-    } else if (i == "coal") {
-      int oreCoords[] = controller.getNearestObjectById(rockIDs[3]);
+    } else if (Objects.equals(i, "coal")) {
+      int[] oreCoords = controller.getNearestObjectById(rockIDs[3]);
       if (oreCoords != null && oreCoords[1] > 3383) {
         isMining = "coal";
         controller.atObject(oreCoords[0], oreCoords[1]);
@@ -190,7 +189,7 @@ public class MiningGuild extends IdleScript {
       quit(1);
     }
     if (controller.isInBank() && controller.isRunning()) {
-      for (Integer i = 0; i < oreIDs.length; i++) { // deposits all ores
+      for (int i = 0; i < oreIDs.length; i++) { // deposits all ores
         if (controller.getInventoryItemCount(oreIDs[i]) > 0) {
           banked[i] += controller.getInventoryItemCount(oreIDs[i]); // adds ore to array for paint
           while (controller.getInventoryItemCount(oreIDs[i]) > 0) {
@@ -199,10 +198,10 @@ public class MiningGuild extends IdleScript {
           }
         }
       }
-      for (Integer i = 0; i < gemIDs.length; i++) { // deposits all gems
-        if (controller.getInventoryItemCount(gemIDs[i]) > 0) {
-          while (controller.getInventoryItemCount(gemIDs[i]) > 0) {
-            controller.depositItem(gemIDs[i], controller.getInventoryItemCount(gemIDs[i]));
+      for (Integer gemID : gemIDs) { // deposits all gems
+        if (controller.getInventoryItemCount(gemID) > 0) {
+          while (controller.getInventoryItemCount(gemID) > 0) {
+            controller.depositItem(gemID, controller.getInventoryItemCount(gemID));
             controller.sleep(640);
           }
         }
@@ -226,13 +225,10 @@ public class MiningGuild extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            setupCompleted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          setupCompleted = true;
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -269,17 +265,17 @@ public class MiningGuild extends IdleScript {
   }
 
   public boolean adamantiteAvailable() {
-    int oreCoords[] = controller.getNearestObjectById(rockIDs[1]);
+    int[] oreCoords = controller.getNearestObjectById(rockIDs[1]);
     return controller.getNearestObjectById(rockIDs[1]) != null && oreCoords[1] > 3383;
   }
 
   public boolean mithrilAvailable() {
-    int oreCoords[] = controller.getNearestObjectById(rockIDs[2]);
+    int[] oreCoords = controller.getNearestObjectById(rockIDs[2]);
     return controller.getNearestObjectById(rockIDs[2]) != null && oreCoords[1] > 3383;
   }
 
   public boolean coalAvailable() {
-    int oreCoords[] = controller.getNearestObjectById(rockIDs[3]);
+    int[] oreCoords = controller.getNearestObjectById(rockIDs[3]);
     return controller.getNearestObjectById(rockIDs[3]) != null && oreCoords[1] > 3383;
   }
 
@@ -312,10 +308,10 @@ public class MiningGuild extends IdleScript {
       controller.drawString("@whi@|", 76, 21 + 66, 0xFFFFFF, 1);
       controller.drawString("@whi@|", 76, 21 + 73, 0xFFFFFF, 1);
       controller.drawString("@whi@|", 76, 21 + 80, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + String.valueOf(banked[0]), 81, 21 + 38, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + String.valueOf(banked[1]), 81, 21 + 52, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + String.valueOf(banked[2]), 81, 21 + 66, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + String.valueOf(banked[3]), 81, 21 + 80, 0xFFFFFF, 1);
+      controller.drawString("@whi@" + banked[0], 81, 21 + 38, 0xFFFFFF, 1);
+      controller.drawString("@whi@" + banked[1], 81, 21 + 52, 0xFFFFFF, 1);
+      controller.drawString("@whi@" + banked[2], 81, 21 + 66, 0xFFFFFF, 1);
+      controller.drawString("@whi@" + banked[3], 81, 21 + 80, 0xFFFFFF, 1);
     }
   }
 }

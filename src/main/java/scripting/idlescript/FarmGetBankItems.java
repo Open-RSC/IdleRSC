@@ -13,7 +13,7 @@ public class FarmGetBankItems extends IdleScript {
     if (controller.isInBank()) {
       boolean atLeastOne = false;
       List<Item> _items = controller.getBankItems();
-      HashSet<Item> items = new HashSet<Item>();
+      HashSet<Item> items = new HashSet<>();
       String playerName = controller.getPlayerName();
 
       // create a unique list of items.
@@ -31,7 +31,7 @@ public class FarmGetBankItems extends IdleScript {
         atLeastOne = true;
       }
 
-      if (atLeastOne == false) {
+      if (!atLeastOne) {
         controller.log(playerName + " - bank empty!");
       }
 

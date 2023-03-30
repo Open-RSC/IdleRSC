@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -14,12 +12,12 @@ import javax.swing.JLabel;
  * @author Searos
  */
 public class ArrowMaker extends IdleScript {
-  int[] arrowHeads = {669, 670, 671, 672, 673, 674, 381};
-  int[] completed = {11, 638, 640, 642, 644, 646, 637};
+  final int[] arrowHeads = {669, 670, 671, 672, 673, 674, 381};
+  final int[] completed = {11, 638, 640, 642, 644, 646, 637};
   int selectedArrowHead = -1;
   int completeSelected = -1;
-  JComboBox<String> arrowHead =
-      new JComboBox<String>(
+  final JComboBox<String> arrowHead =
+      new JComboBox<>(
           new String[] {"Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite", "Headless"});
   boolean scriptStarted = false;
   boolean guiSetup = false;
@@ -27,7 +25,7 @@ public class ArrowMaker extends IdleScript {
   int startAmount = 0;
   JFrame scriptFrame = null;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -102,19 +100,16 @@ public class ArrowMaker extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            selectedArrowHead = arrowHeads[arrowHead.getSelectedIndex()];
-            if (arrowHead.getSelectedIndex() == 6) {
-              headless = true;
-            }
-            scriptStarted = true;
-            completeSelected = completed[arrowHead.getSelectedIndex()];
-            startAmount = controller.getInventoryItemCount(completeSelected);
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            controller.displayMessage("@red@ArrowMaker started");
+        e -> {
+          selectedArrowHead = arrowHeads[arrowHead.getSelectedIndex()];
+          if (arrowHead.getSelectedIndex() == 6) {
+            headless = true;
           }
+          scriptStarted = true;
+          completeSelected = completed[arrowHead.getSelectedIndex()];
+          startAmount = controller.getInventoryItemCount(completeSelected);
+          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          controller.displayMessage("@red@ArrowMaker started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -138,8 +133,7 @@ public class ArrowMaker extends IdleScript {
       controller.drawString("@red@Arrow Maker @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       controller.drawString(
           "@red@Arrows Made: @yel@"
-              + String.valueOf(
-                  this.controller.getInventoryItemCount(completeSelected) - startAmount),
+              + (this.controller.getInventoryItemCount(completeSelected) - startAmount),
           10,
           35,
           0xFFFFFF,

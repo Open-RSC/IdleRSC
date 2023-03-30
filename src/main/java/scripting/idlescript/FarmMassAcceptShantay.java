@@ -8,8 +8,8 @@ public class FarmMassAcceptShantay extends IdleScript {
 
   @Override
   public void tradeMessageInterrupt(String player) {
-    if (controller.isInBank() == false
-        && controller.isInTrade() == false
+    if (!controller.isInBank()
+        && !controller.isInTrade()
         && controller.getInventoryItemCount() <= 18) {
       System.out.println("trading!");
       controller.tradePlayer(controller.getPlayerServerIndexByName(player));

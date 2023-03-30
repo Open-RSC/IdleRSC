@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -14,16 +12,16 @@ import javax.swing.JLabel;
  * @author Searos
  */
 public class SpinStrings extends IdleScript {
-  JComboBox<String> item = new JComboBox<String>(new String[] {"Flax", "Wool"});
-  JComboBox<String> destination = new JComboBox<String>(new String[] {"Seers", "Falador"});
+  final JComboBox<String> item = new JComboBox<>(new String[] {"Flax", "Wool"});
+  final JComboBox<String> destination = new JComboBox<>(new String[] {"Seers", "Falador"});
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
-  int[] bankerIds = {95, 224, 268, 485, 540, 617};
-  int[] bankX = {500, 289};
-  int[] bankY = {455, 571};
-  int[] inputIds = {675, 145};
-  int[] outputIds = {676, 207};
+  final int[] bankerIds = {95, 224, 268, 485, 540, 617};
+  final int[] bankX = {500, 289};
+  final int[] bankY = {455, 571};
+  final int[] inputIds = {675, 145};
+  final int[] outputIds = {676, 207};
   int input = -1;
   int output = -1;
   int totalString = 0;
@@ -33,7 +31,7 @@ public class SpinStrings extends IdleScript {
   int bankSelX = -1;
   int bankSelY = -1;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -202,19 +200,16 @@ public class SpinStrings extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            bankSelX = bankX[destination.getSelectedIndex()];
-            bankSelY = bankY[destination.getSelectedIndex()];
-            input = inputIds[item.getSelectedIndex()];
-            output = outputIds[item.getSelectedIndex()];
-            controller.displayMessage("@red@FlaxtoString started");
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          bankSelX = bankX[destination.getSelectedIndex()];
+          bankSelY = bankY[destination.getSelectedIndex()];
+          input = inputIds[item.getSelectedIndex()];
+          output = outputIds[item.getSelectedIndex()];
+          controller.displayMessage("@red@FlaxtoString started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -237,10 +232,8 @@ public class SpinStrings extends IdleScript {
     if (controller != null) {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Spin Strings @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Strings Spun: @yel@" + String.valueOf(this.totalString), 10, 35, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@String in Bank: @yel@" + String.valueOf(this.bankedString), 10, 49, 0xFFFFFF, 1);
+      controller.drawString("@red@Strings Spun: @yel@" + this.totalString, 10, 35, 0xFFFFFF, 1);
+      controller.drawString("@red@String in Bank: @yel@" + this.bankedString, 10, 49, 0xFFFFFF, 1);
     }
   }
 }

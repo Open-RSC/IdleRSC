@@ -3,7 +3,7 @@ package scripting.idlescript;
 /** MassGive by Dvorak. */
 public class FarmMassGive extends IdleScript {
 
-  private String[] names =
+  private final String[] names =
       new String[] {
         "DVORAK 02",
         "DVORAK 11",
@@ -27,7 +27,7 @@ public class FarmMassGive extends IdleScript {
         "DVORAK 99"
       };
 
-  private boolean[] given = new boolean[names.length];
+  private final boolean[] given = new boolean[names.length];
 
   public int start(String[] parameters) {
 
@@ -35,7 +35,7 @@ public class FarmMassGive extends IdleScript {
     int amount = Integer.parseInt(parameters[0].split(",")[1]);
 
     for (int i = 0; i < names.length; i++) {
-      if (given[i] == false) {
+      if (!given[i]) {
         int serverIndex = controller.getPlayerServerIndexByName(names[i]);
 
         if (serverIndex == -1) {

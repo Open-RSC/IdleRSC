@@ -514,11 +514,11 @@ public class AIOSmelter extends IdleScript {
   }
 
   final Map<Integer, Map<Integer, Integer>> ingredientsMapping =
-      new HashMap<>() {
+      new HashMap<Integer, Map<Integer, Integer>>() {
         {
           put(
               169,
-              new HashMap<>() { // bronze
+              new HashMap<Integer, Integer>() { // bronze
                 {
                   put(150, 15);
                   put(202, 15);
@@ -526,21 +526,21 @@ public class AIOSmelter extends IdleScript {
               }); // bronze needs 1 copper and 1 tin
           put(
               170,
-              new HashMap<>() { // iron
+              new HashMap<Integer, Integer>() { // iron
                 {
                   put(151, 30);
                 }
               }); // iron needs 1 iron ore
           put(
               384,
-              new HashMap<>() { // silver
+              new HashMap<Integer, Integer>() { // silver
                 {
                   put(383, 30);
                 }
               }); // silver needs 1 silver ore
           put(
               171,
-              new HashMap<>() { // steel
+              new HashMap<Integer, Integer>() { // steel
                 {
                   put(151, 10);
                   put(155, 20);
@@ -548,7 +548,7 @@ public class AIOSmelter extends IdleScript {
               }); // steel needs 1 iron 2 coal
           put(
               1041,
-              new HashMap<>() { // cannonballs
+              new HashMap<Integer, Integer>() { // cannonballs
                 {
                   put(1057, 1); // cannonballs
                   put(171, 29);
@@ -556,7 +556,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               172,
-              new HashMap<>() { // gold
+              new HashMap<Integer, Integer>() { // gold
                 {
                   put(152, 29); // gold
                   put(699, 1);
@@ -564,7 +564,7 @@ public class AIOSmelter extends IdleScript {
               }); // gold needs 1 gold ore
           put(
               173,
-              new HashMap<>() { // mith bar
+              new HashMap<Integer, Integer>() { // mith bar
                 {
                   put(153, 6);
                   put(155, 24); // coal
@@ -572,7 +572,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               174,
-              new HashMap<>() { // addy bar
+              new HashMap<Integer, Integer>() { // addy bar
                 {
                   put(154, 4);
                   put(155, 24);
@@ -580,7 +580,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               408,
-              new HashMap<>() { // runite bar
+              new HashMap<Integer, Integer>() { // runite bar
                 {
                   put(409, 3);
                   put(155, 24);
@@ -588,7 +588,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               44,
-              new HashMap<>() { // Holy symbol
+              new HashMap<Integer, Integer>() { // Holy symbol
                 {
                   put(384, 29);
                   put(386, 1);
@@ -596,7 +596,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               1027,
-              new HashMap<>() { // Unholy symbol
+              new HashMap<Integer, Integer>() { // Unholy symbol
                 {
                   put(384, 29);
                   put(1026, 1);
@@ -604,7 +604,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               283,
-              new HashMap<>() { // Gold ring
+              new HashMap<Integer, Integer>() { // Gold ring
                 {
                   put(293, 1);
                   put(172, 29);
@@ -612,7 +612,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               288,
-              new HashMap<>() { // Gold necklace
+              new HashMap<Integer, Integer>() { // Gold necklace
                 {
                   put(295, 1);
                   put(172, 29);
@@ -620,7 +620,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               296,
-              new HashMap<>() { // Gold amulet
+              new HashMap<Integer, Integer>() { // Gold amulet
                 {
                   put(294, 1);
                   put(172, 29);
@@ -628,7 +628,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               284,
-              new HashMap<>() { // Sapphire ring
+              new HashMap<Integer, Integer>() { // Sapphire ring
                 {
                   put(293, 1);
                   put(172, 14);
@@ -637,7 +637,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               289,
-              new HashMap<>() { // Sapphire necklace
+              new HashMap<Integer, Integer>() { // Sapphire necklace
                 {
                   put(295, 1);
                   put(172, 14);
@@ -646,7 +646,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               297,
-              new HashMap<>() { // Sapphire amulet
+              new HashMap<Integer, Integer>() { // Sapphire amulet
                 {
                   put(294, 1);
                   put(172, 14);
@@ -655,7 +655,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               285,
-              new HashMap<>() { // Emerald ring
+              new HashMap<Integer, Integer>() { // Emerald ring
                 {
                   put(293, 1);
                   put(172, 14);
@@ -664,7 +664,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               290,
-              new HashMap<>() { // Emerald necklace
+              new HashMap<Integer, Integer>() { // Emerald necklace
                 {
                   put(295, 1);
                   put(172, 14);
@@ -673,7 +673,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               298,
-              new HashMap<>() { // Emerald amulet
+              new HashMap<Integer, Integer>() { // Emerald amulet
                 {
                   put(294, 1);
                   put(172, 14);
@@ -682,7 +682,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               286,
-              new HashMap<>() { // Ruby ring
+              new HashMap<Integer, Integer>() { // Ruby ring
                 {
                   put(293, 1);
                   put(172, 14);
@@ -691,7 +691,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               291,
-              new HashMap<>() { // Ruby necklace
+              new HashMap<Integer, Integer>() { // Ruby necklace
                 {
                   put(295, 1);
                   put(172, 14);
@@ -700,7 +700,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               299,
-              new HashMap<>() { // Ruby amulet
+              new HashMap<Integer, Integer>() { // Ruby amulet
                 {
                   put(294, 1);
                   put(172, 14);
@@ -709,7 +709,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               287,
-              new HashMap<>() { // Diamond ring
+              new HashMap<Integer, Integer>() { // Diamond ring
                 {
                   put(293, 1);
                   put(172, 14);
@@ -718,7 +718,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               292,
-              new HashMap<>() { // Diamond necklace
+              new HashMap<Integer, Integer>() { // Diamond necklace
                 {
                   put(295, 1);
                   put(172, 14);
@@ -727,7 +727,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               300,
-              new HashMap<>() { // Diamond amulet
+              new HashMap<Integer, Integer>() { // Diamond amulet
                 {
                   put(294, 1);
                   put(172, 14);
@@ -736,7 +736,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               543,
-              new HashMap<>() { // Dragonstone ring
+              new HashMap<Integer, Integer>() { // Dragonstone ring
                 {
                   put(293, 1);
                   put(172, 14);
@@ -745,7 +745,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               544,
-              new HashMap<>() { // Dragonstone necklace
+              new HashMap<Integer, Integer>() { // Dragonstone necklace
                 {
                   put(295, 1);
                   put(172, 14);
@@ -754,7 +754,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               524,
-              new HashMap<>() { // Dragonstone amulet
+              new HashMap<Integer, Integer>() { // Dragonstone amulet
                 {
                   put(294, 1);
                   put(172, 14);
@@ -763,7 +763,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               1503,
-              new HashMap<>() { // Gold Crown
+              new HashMap<Integer, Integer>() { // Gold Crown
                 {
                   put(1502, 1);
                   put(172, 29);
@@ -771,7 +771,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               1504,
-              new HashMap<>() { // Sapp Crown
+              new HashMap<Integer, Integer>() { // Sapp Crown
                 {
                   put(1502, 1);
                   put(172, 14);
@@ -780,7 +780,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               1505,
-              new HashMap<>() { // Emerald Crown
+              new HashMap<Integer, Integer>() { // Emerald Crown
                 {
                   put(1502, 1);
                   put(172, 14);
@@ -789,7 +789,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               1506,
-              new HashMap<>() { // ruby Crown
+              new HashMap<Integer, Integer>() { // ruby Crown
                 {
                   put(1502, 1);
                   put(172, 14);
@@ -798,7 +798,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               1507,
-              new HashMap<>() { // Diamond Crown
+              new HashMap<Integer, Integer>() { // Diamond Crown
                 {
                   put(1502, 1);
                   put(172, 14);
@@ -807,7 +807,7 @@ public class AIOSmelter extends IdleScript {
               });
           put(
               1508,
-              new HashMap<>() { // Dragonstone Crown
+              new HashMap<Integer, Integer>() { // Dragonstone Crown
                 {
                   put(1502, 1);
                   put(172, 14);

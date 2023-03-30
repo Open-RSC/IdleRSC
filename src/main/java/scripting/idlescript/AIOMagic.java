@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -23,7 +21,7 @@ import javax.swing.JTextField;
  */
 public class AIOMagic extends IdleScript {
 
-  String[] spells =
+  final String[] spells =
       new String[] {
         "High level alchemy",
         "Superheat item",
@@ -42,12 +40,12 @@ public class AIOMagic extends IdleScript {
         "Charge"
       };
 
-  String[] bars =
+  final String[] bars =
       new String[] {"Bronze", "Iron", "Silver", "Steel", "Gold", "Mithril", "Adamantite", "Runite"};
 
-  String[] jewelry = new String[] {"Amulet", "Ring"};
+  final String[] jewelry = new String[] {"Amulet", "Ring"};
   JFrame scriptFrame = null;
-  int[] lootIds = {
+  final int[] lootIds = {
     10, 169, 170, 171, 172, 173, 174, 384, 314, 315, 316, 317, 408, 522, 1314, 1315, 1316, 1317,
     1318
   }; // dragonstone items not supported. not like anyone will have thousands of those, right? xd
@@ -63,13 +61,13 @@ public class AIOMagic extends IdleScript {
   int secondaryOre = -1;
   int secondaryOreAmount = 0;
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
 
   boolean scriptStarted = false;
   boolean guiSetup = false;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
 
     if (scriptStarted) {
       scriptStart();
@@ -241,8 +239,9 @@ public class AIOMagic extends IdleScript {
     if (controller != null) {
 
       int successPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (success * scale);
       } catch (Exception e) {
@@ -268,16 +267,16 @@ public class AIOMagic extends IdleScript {
     JLabel header = new JLabel("AIOMagic Options");
 
     JLabel spellLabel = new JLabel("Spell:");
-    JComboBox<String> spellField = new JComboBox<String>(spells);
+    JComboBox<String> spellField = new JComboBox<>(spells);
 
     JLabel itemIdLabel = new JLabel("Item ID (alching)");
     JTextField itemIdField = new JTextField("118");
 
     JLabel barIdLabel = new JLabel("Bar type (superheat)");
-    JComboBox<String> barIdField = new JComboBox<String>(bars);
+    JComboBox<String> barIdField = new JComboBox<>(bars);
 
     JLabel jewelryIdLabel = new JLabel("Jewelry type (enchanting)");
-    JComboBox<String> jewelryIdField = new JComboBox<String>(jewelry);
+    JComboBox<String> jewelryIdField = new JComboBox<>(jewelry);
 
     JButton startScriptButton = new JButton("Start");
 
@@ -301,34 +300,31 @@ public class AIOMagic extends IdleScript {
     //        });
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            selectedSpellId = spellField.getSelectedIndex();
-            String text = spells[spellField.getSelectedIndex()];
-            spellId = controller.getSpellIdFromName(text);
+        e -> {
+          selectedSpellId = spellField.getSelectedIndex();
+          String text = spells[spellField.getSelectedIndex()];
+          spellId = controller.getSpellIdFromName(text);
 
-            try {
-              if (text.contains("alchemy")) {
-                selectedItemId = Integer.valueOf(itemIdField.getText());
-              } else if (text.contains("heat")) {
-                selectedBarId = barIdField.getSelectedIndex();
-              } else if (text.contains("jewelry")) {
-                selectedJewelryId = jewelryIdField.getSelectedIndex();
-              }
-            } catch (Exception exc) {
-              controller.displayMessage("Error parsing inputted values, please try again.");
-              exc.printStackTrace();
-              return;
+          try {
+            if (text.contains("alchemy")) {
+              selectedItemId = Integer.parseInt(itemIdField.getText());
+            } else if (text.contains("heat")) {
+              selectedBarId = barIdField.getSelectedIndex();
+            } else if (text.contains("jewelry")) {
+              selectedJewelryId = jewelryIdField.getSelectedIndex();
             }
-
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            determineOreIds();
-
-            controller.displayMessage("@red@AIOMagic by Dvorak. Let's party like it's 2004!");
+          } catch (Exception exc) {
+            controller.displayMessage("Error parsing inputted values, please try again.");
+            exc.printStackTrace();
+            return;
           }
+
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          determineOreIds();
+
+          controller.displayMessage("@red@AIOMagic by Dvorak. Let's party like it's 2004!");
         });
 
     //		itemIdField.setEnabled(true);

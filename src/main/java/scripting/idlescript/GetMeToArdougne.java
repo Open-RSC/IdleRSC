@@ -9,7 +9,7 @@ import orsc.ORSCharacter;
  */
 public class GetMeToArdougne extends IdleScript {
 
-  int[] lumbToShip = {
+  final int[] lumbToShip = {
     120, 648,
     130, 647,
     142, 644,
@@ -26,7 +26,7 @@ public class GetMeToArdougne extends IdleScript {
     267, 641
   };
 
-  int[] shipToGate = {
+  final int[] shipToGate = {
     334, 713,
     355, 709,
     370, 706,
@@ -37,7 +37,7 @@ public class GetMeToArdougne extends IdleScript {
     434, 682
   };
 
-  int[] gateToShip = {
+  final int[] gateToShip = {
     439, 675,
     446, 665,
     459, 661,
@@ -47,7 +47,7 @@ public class GetMeToArdougne extends IdleScript {
   boolean walkedToShip = false;
   boolean inKaramja = false;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.displayMessage("@red@GetMeToArdougne by Dvorak. Start in Lumbridge!");
     controller.displayMessage("@yel@WARNING: @red@Script is not death safe.");
 
@@ -67,15 +67,15 @@ public class GetMeToArdougne extends IdleScript {
         controller.sleep(700);
       }
 
-      if (walkedToShip == false) {
+      if (!walkedToShip) {
         controller.setStatus("@yel@Walking to Port Sarim ship..");
         controller.walkPath(lumbToShip);
         walkedToShip = true;
       }
 
-      if (inKaramja == false) {
+      if (!inKaramja) {
         ORSCharacter npc;
-        while (controller.isInOptionMenu() == false) {
+        while (!controller.isInOptionMenu()) {
           controller.setStatus("@yel@Talking to sailor..");
           npc = controller.getNearestNpcById(166, false);
           if (npc != null) {
@@ -118,7 +118,7 @@ public class GetMeToArdougne extends IdleScript {
         controller.walkPath(gateToShip);
 
         ORSCharacter npc;
-        while (controller.isInOptionMenu() == false) {
+        while (!controller.isInOptionMenu()) {
           controller.setStatus("@yel@Talking to Customs Official..");
           npc = controller.getNearestNpcById(317, false);
           if (npc != null) {

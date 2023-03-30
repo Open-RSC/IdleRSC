@@ -5,7 +5,7 @@ import static scripting.ControllerProvider.getBotController;
 import controller.BotController;
 
 public abstract class Task {
-  protected BotController botController = getBotController();
+  protected final BotController botController = getBotController();
 
   public Task() {}
 

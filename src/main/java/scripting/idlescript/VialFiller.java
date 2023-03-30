@@ -10,9 +10,9 @@ public class VialFiller extends IdleScript {
   int fullVials = 0;
   int emptyVials = 0;
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.displayMessage("@red@VialFiller by Dvorak. Let's party like it's 2004!");
     controller.displayMessage("@red@Start in Falador West bank!");
 
@@ -69,8 +69,9 @@ public class VialFiller extends IdleScript {
     if (controller != null) {
 
       int vialsPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         vialsPerHr = (int) (vialsFilled * scale);
       } catch (Exception e) {

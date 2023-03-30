@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,12 +25,12 @@ public class SellToShop extends IdleScript {
   int startCash = 0;
   int cashMade = 0;
   int totalCash = 0;
-  JTextField items = new JTextField("");
-  JTextField shopCount = new JTextField("10");
-  JTextField vendorId =
+  final JTextField items = new JTextField("");
+  final JTextField shopCount = new JTextField("10");
+  final JTextField vendorId =
       new JTextField("51,55,87,105,145,168,185,222,391,82,83,88,106,146,169,186,223");
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (controller.getInventoryItemCount(10) > 0) {
       startCash = controller.getInventoryItemCount(10);
     }
@@ -83,8 +81,8 @@ public class SellToShop extends IdleScript {
   }
 
   public boolean isSellable(int id) {
-    for (int i = 0; i < itemIds.length; i++) {
-      if (itemIds[i] == id) return true;
+    for (int itemId : itemIds) {
+      if (itemId == id) return true;
     }
 
     return false;
@@ -176,16 +174,13 @@ public class SellToShop extends IdleScript {
     JLabel vendorIdLabel = new JLabel("Shopkeeper ids");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            completeSetup();
-            controller.displayMessage("@red@SelltoShop started");
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          completeSetup();
+          controller.displayMessage("@red@SelltoShop started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -213,11 +208,9 @@ public class SellToShop extends IdleScript {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Sell to Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       controller.drawString(
-          "@red@Profit this inventory: @yel@" + String.valueOf(this.cashMade), 10, 35, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Gold banked: @yel@" + String.valueOf(this.totalCash), 10, 49, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Gold in bank: @yel@" + String.valueOf(this.bankedCash), 10, 49 + 14, 0xFFFFFF, 1);
+          "@red@Profit this inventory: @yel@" + this.cashMade, 10, 35, 0xFFFFFF, 1);
+      controller.drawString("@red@Gold banked: @yel@" + this.totalCash, 10, 49, 0xFFFFFF, 1);
+      controller.drawString("@red@Gold in bank: @yel@" + this.bankedCash, 10, 49 + 14, 0xFFFFFF, 1);
     }
   }
 }

@@ -9,22 +9,22 @@ import javax.swing.JFrame;
  * @author Searos
  */
 public class EssenceMiner extends IdleScript {
-  JComboBox<String> destination = new JComboBox<String>(new String[] {"Seers", "Falador"});
+  JComboBox<String> destination = new JComboBox<>(new String[] {"Seers", "Falador"});
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
-  int[] bankerIds = {95, 224, 268, 485, 540, 617};
-  int[] bankX = {500};
-  int[] bankY = {455};
+  final int[] bankerIds = {95, 224, 268, 485, 540, 617};
+  final int[] bankX = {500};
+  final int[] bankY = {455};
   int totalStones = 0;
   int bankedStones = 0;
   boolean started = false;
   boolean inEssenceMine = false;
   boolean bankTime = false;
 
-  int[] pickaxes = {12, 87, 88, 203, 204, 405, 1263};
+  final int[] pickaxes = {12, 87, 88, 203, 204, 405, 1263};
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
     while (controller.isRunning()) {
       scriptStart();
@@ -67,19 +67,15 @@ public class EssenceMiner extends IdleScript {
   }
 
   public boolean isPickaxe(int id) {
-    for (int i = 0; i < pickaxes.length; i++) {
-      if (pickaxes[i] == id) return true;
+    for (int pickaxe : pickaxes) {
+      if (pickaxe == id) return true;
     }
 
     return false;
   }
 
   public void scriptStart() {
-    if (controller.currentY() <= 95) {
-      inEssenceMine = true;
-    } else {
-      inEssenceMine = false;
-    }
+    inEssenceMine = controller.currentY() <= 95;
     if (controller.getInventoryItemCount() < 30) {
       bankTime = false;
     }
@@ -150,13 +146,9 @@ public class EssenceMiner extends IdleScript {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Essence Miner @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       controller.drawString(
-          "@red@Essence Mined: @yel@" + String.valueOf(this.totalStones), 10, 21 + 14, 0xFFFFFF, 1);
+          "@red@Essence Mined: @yel@" + this.totalStones, 10, 21 + 14, 0xFFFFFF, 1);
       controller.drawString(
-          "@red@Essence in bank: @yel@" + String.valueOf(this.bankedStones),
-          10,
-          21 + 14 + 14,
-          0xFFFFFF,
-          1);
+          "@red@Essence in bank: @yel@" + this.bankedStones, 10, 21 + 14 + 14, 0xFFFFFF, 1);
     }
   }
 }

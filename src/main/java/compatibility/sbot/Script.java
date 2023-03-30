@@ -430,7 +430,7 @@ public abstract class Script {
     controller.walkTo(x, y, 0, false);
   }
   /**
-   * Some hacky SBot method for walking to a tile involving {@link Wait} -- not recommended for use.
+   * Some hacky SBot method for walking to a tile involving wait -- not recommended for use.
    *
    * @param x
    * @param y

@@ -7,10 +7,10 @@ package scripting.idlescript;
  */
 public class AlchWheat extends IdleScript {
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.displayMessage("@red@Start near wheat with fires and nats!");
     while (controller.isRunning()) {
       controller.sleepHandler(98, true);
@@ -52,8 +52,9 @@ public class AlchWheat extends IdleScript {
     if (controller != null) {
 
       int successPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (success * scale);
       } catch (Exception e) {

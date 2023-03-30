@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -14,26 +14,30 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * DamRc by Damrau. Coleslaw only. Added artisan crowns AND cosmic runecrafting - Kaila
+ * DamRc, mines ess and/or crafts runes. Coleslaw only (runecraft is custom content).
  *
- * @author Damrau
+ * @author Damrau - original script
+ *     <p>Kaila - expanded
  * @version 1.1 Conditional sleeps to help with locking up and cut down on total amount of packets
- *     sent
+ *     sent ~ Damrau
+ *     <p>1.2 - artisan crowns, cosmic runes, added parameter support, partial rewrite ~ Kaila
  */
 public class DamRc extends IdleScript {
-
-  public boolean started = false, useObj2 = false, debug, mineEss = false;
+  final Controller c = Main.getController();
+  public boolean started = false;
+  public boolean debug;
+  public boolean mineEss = false;
   public String status, method;
   int[] bankNW, bankSE, spotNW, spotSE, alterNW, alterSE, mineNW, mineSE;
-  int auburyId = 54;
+  final int auburyId = 54;
   int taliId;
   int runeId;
   int alterId;
   int alterZ;
-  int essId = 1299;
+  final int essId = 1299;
   int portalId;
   int ruinsId;
-  int essRockId = 1227;
+  final int essRockId = 1227;
   int[] toBank;
   int[] toSpot;
   int runesMade, runesInBank, startExpRc, startExpMining;
@@ -45,39 +49,36 @@ public class DamRc extends IdleScript {
   boolean crown = false;
 
   public boolean inArea(int[] nwTile, int[] seTile) {
-    if (controller.currentX() <= nwTile[0]
-        && controller.currentX() >= seTile[0]
-        && controller.currentY() >= nwTile[1]
-        && controller.currentY() <= seTile[1]) {
-      return true;
-    }
-    return false;
+    return c.currentX() <= nwTile[0]
+        && c.currentX() >= seTile[0]
+        && c.currentY() >= nwTile[1]
+        && c.currentY() <= seTile[1];
   }
 
   public void sleepItem(int item, boolean gettingItem) {
     long sleepTimeout = System.currentTimeMillis() + 10000;
     while (System.currentTimeMillis() < sleepTimeout) {
-      if (controller.getInventoryItemCount(item) == 0 && !gettingItem
-          || controller.getInventoryItemCount(item) > 0 && gettingItem) {
+      if (c.getInventoryItemCount(item) == 0 && !gettingItem
+          || c.getInventoryItemCount(item) > 0 && gettingItem) {
         if (debug && !gettingItem) {
           status = "No item left breaking sleep";
-          controller.displayMessage("@cya@" + "No item left breaking sleep");
+          c.displayMessage("@cya@" + "No item left breaking sleep");
         }
         if (debug && gettingItem) {
           status = "We have the item breaking sleep";
-          controller.displayMessage("@cya@" + "We have the item breaking sleep");
+          c.displayMessage("@cya@" + "We have the item breaking sleep");
         }
         break;
       } else {
         if (debug && !gettingItem) {
           status = "Sleeping until item is gone";
-          controller.displayMessage("@cya@" + "Sleeping until item is gone");
+          c.displayMessage("@cya@" + "Sleeping until item is gone");
         }
         if (debug && gettingItem) {
           status = "Sleeping until we have the item";
-          controller.displayMessage("@cya@" + "Sleeping until we have the item");
+          c.displayMessage("@cya@" + "Sleeping until we have the item");
         }
-        controller.sleep(640);
+        c.sleep(640);
       }
     }
   }
@@ -88,23 +89,23 @@ public class DamRc extends IdleScript {
       if (inArea(nwTile, seTile)) {
         if (debug) {
           status = "In area breaking sleep";
-          controller.displayMessage("@cya@" + "inArea break from sleep");
+          c.displayMessage("@cya@" + "inArea break from sleep");
         }
         break;
       } else {
         if (debug) {
           status = "Sleeping until in area";
-          controller.displayMessage("@cya@" + "!inArea keep sleeping");
+          c.displayMessage("@cya@" + "!inArea keep sleeping");
         }
-        controller.sleep(640);
+        c.sleep(640);
       }
     }
   }
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("autostart")) {
-        controller.displayMessage("Got Autostart Default, Mine ess - Varrock east", 0);
+        c.displayMessage("Got Autostart Default, Mine ess - Varrock east", 0);
         System.out.println("Got Autostart Default, Mine ess - Varrock east");
         parseVariables();
         essValues();
@@ -113,7 +114,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("ess")) {
-        controller.displayMessage("Got Autostart, Mine ess - Varrock east", 0);
+        c.displayMessage("Got Autostart, Mine ess - Varrock east", 0);
         System.out.println("Got Autostart, Mine ess - Varrock east");
         parseVariables();
         essValues();
@@ -122,7 +123,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("air")) {
-        controller.displayMessage("Got Autostart, Air - Fally south", 0);
+        c.displayMessage("Got Autostart, Air - Fally south", 0);
         System.out.println("Got Autostart, Air - Fally south");
         parseVariables();
         airValues();
@@ -131,7 +132,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("mind")) {
-        controller.displayMessage("Got Autostart, Mind - Fally north", 0);
+        c.displayMessage("Got Autostart, Mind - Fally north", 0);
         System.out.println("Got Autostart, Mind - Fally north");
         parseVariables();
         mindValues();
@@ -140,7 +141,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("earth")) {
-        controller.displayMessage("Got Autostart, Earth - Varrock east", 0);
+        c.displayMessage("Got Autostart, Earth - Varrock east", 0);
         System.out.println("Got Autostart, Earth - Varrock east");
         parseVariables();
         earthValues();
@@ -149,7 +150,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("water")) {
-        controller.displayMessage("Got Autostart, Water - Draynor", 0);
+        c.displayMessage("Got Autostart, Water - Draynor", 0);
         System.out.println("Got Autostart, Water - Draynor");
         parseVariables();
         waterValues();
@@ -158,7 +159,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("fire")) {
-        controller.displayMessage("Got Autostart, Fire -  Al Kharid", 0);
+        c.displayMessage("Got Autostart, Fire -  Al Kharid", 0);
         System.out.println("Got Autostart, Fire -  Al Kharid");
         parseVariables();
         fireValues();
@@ -167,7 +168,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("body")) {
-        controller.displayMessage("Got Autostart, Body - Edge", 0);
+        c.displayMessage("Got Autostart, Body - Edge", 0);
         System.out.println("Got Autostart, Body - Edge");
         parseVariables();
         bodyValues();
@@ -176,7 +177,7 @@ public class DamRc extends IdleScript {
         scriptStart();
       }
       if (parameters[0].toLowerCase().startsWith("cosmic")) {
-        controller.displayMessage("Got Autostart, Cosmic - Zanaris", 0);
+        c.displayMessage("Got Autostart, Cosmic - Zanaris", 0);
         System.out.println("Got Autostart, Cosmic - Zanaris");
         parseVariables();
         cosmicValues();
@@ -192,29 +193,30 @@ public class DamRc extends IdleScript {
     if (started) {
       scriptStart();
     }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
   public void scriptStart() {
-    while (controller.isRunning()) {
+    while (c.isRunning()) {
       if (mineEss) {
+        if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
         if (inArea(mineNW, mineSE)) {
-          if (controller.getInventoryItemCount() >= 30) {
-            if (!controller.isBatching()) {
+          if (c.getInventoryItemCount() >= 30) {
+            if (!c.isBatching()) {
               useObject(portalId);
               sleepInArea(spotNW, spotSE);
             }
           } else {
-            if (!controller.isBatching()) {
+            if (!c.isBatching()) {
               useObject(essRockId);
-              controller.sleep(1000); // sleep after clicking rock (wait for batching)
+              c.sleep(1000); // sleep after clicking rock (wait for batching)
             } else {
-              controller.sleep(1000); // should reduce cpu usage while batching
+              c.sleep(1000); // should reduce cpu usage while batching
             }
           }
         }
-        if (!inArea(mineNW, mineSE) && controller.currentY() > 30 && controller.currentY() <= 600) {
-          if (controller.getInventoryItemCount() >= 30) {
+        if (!inArea(mineNW, mineSE) && c.currentY() > 30 && c.currentY() <= 600) {
+          if (c.getInventoryItemCount() >= 30) {
             if (!inArea(bankNW, bankSE)) {
               walkToBank();
             } else {
@@ -232,12 +234,10 @@ public class DamRc extends IdleScript {
       if (!mineEss) {
 
         if (inArea(alterNW, alterSE)) {
-          if (controller.getInventoryItemCount(essId) > 0) {
-            if (crown == true
-                && !controller.isItemIdEquipped(1511)
-                && controller.isItemInInventory(1511)) {
-              controller.equipItem(controller.getInventoryItemSlotIndex(1511));
-              controller.sleep(1000);
+          if (c.getInventoryItemCount(essId) > 0) {
+            if (crown && !c.isItemIdEquipped(1511) && c.isItemInInventory(1511)) {
+              c.equipItem(c.getInventoryItemSlotIndex(1511));
+              c.sleep(1000);
             }
             useObject(alterId);
             sleepItem(essId, false);
@@ -246,10 +246,8 @@ public class DamRc extends IdleScript {
             sleepInArea(spotNW, spotSE);
           }
         }
-        if (!inArea(alterNW, alterSE)
-            && controller.currentY() > alterZ
-            && controller.currentY() <= 6000) {
-          if (controller.getInventoryItemCount(essId) > 0) {
+        if (!inArea(alterNW, alterSE) && c.currentY() > alterZ && c.currentY() <= 6000) {
+          if (c.getInventoryItemCount(essId) > 0) {
             if (!inArea(spotNW, spotSE)) {
               walkToSpot();
             } else {
@@ -266,31 +264,31 @@ public class DamRc extends IdleScript {
         }
       }
     }
-    controller.sleep(640);
+    c.sleep(640);
   }
 
   public void teleport() {
-    ORSCharacter aubury = controller.getNearestNpcById(auburyId, false);
+    ORSCharacter aubury = c.getNearestNpcById(auburyId, false);
     status = "Teleporting to mine";
     if (debug) {
-      controller.displayMessage("@cya@" + "Teleporting to ess");
+      c.displayMessage("@cya@" + "Teleporting to ess");
     }
     if (aubury != null && aubury.serverIndex > 0) {
-      controller.npcCommand1(aubury.serverIndex);
+      c.npcCommand1(aubury.serverIndex);
       sleepInArea(mineNW, mineSE);
     }
   }
 
   public void useObject(int i) {
-    int[] objID = controller.getNearestObjectById(i);
+    int[] objID = c.getNearestObjectById(i);
     try {
       if (objID.length > 0) {
         status = "Interacting with object id: " + i;
         if (debug) {
-          controller.displayMessage("@cya@" + "Interacting with object id:" + i);
+          c.displayMessage("@cya@" + "Interacting with object id:" + i);
         }
-        controller.atObject(objID[0], objID[1]);
-        controller.sleep(640);
+        c.atObject(objID[0], objID[1]);
+        c.sleep(640);
       }
     } catch (NullPointerException ignored) {
 
@@ -298,40 +296,37 @@ public class DamRc extends IdleScript {
   }
 
   public void bank() {
-    if (controller.isInBank()) {
-      runesInBank = controller.getBankItemCount(runeId);
-      if (crown == true
-          && !mineEss
-          && !controller.isItemIdEquipped(1511)
-          && controller.getBankItemCount(1511) > 0) {
-        controller.withdrawItem(1511, 1);
-        controller.sleep(640);
+    if (c.isInBank()) {
+      runesInBank = c.getBankItemCount(runeId);
+      if (crown && !mineEss && !c.isItemIdEquipped(1511) && c.getBankItemCount(1511) > 0) {
+        c.withdrawItem(1511, 1);
+        c.sleep(640);
       }
-      if (controller.getInventoryItemCount(runeId) > 0) {
+      if (c.getInventoryItemCount(runeId) > 0) {
         status = "Deposit runes";
         if (debug) {
-          controller.displayMessage("@cya@" + "Deposit runes");
+          c.displayMessage("@cya@" + "Deposit runes");
         }
-        runesMade = runesMade + controller.getInventoryItemCount(runeId);
-        controller.depositItem(runeId, controller.getInventoryItemCount(runeId));
+        runesMade = runesMade + c.getInventoryItemCount(runeId);
+        c.depositItem(runeId, c.getInventoryItemCount(runeId));
         sleepItem(runeId, false);
       } else {
         status = "Withdraw ess";
         if (debug) {
-          controller.displayMessage("@cya@" + "Withdraw ess");
+          c.displayMessage("@cya@" + "Withdraw ess");
         }
-        controller.withdrawItem(essId, 29);
+        c.withdrawItem(essId, 29);
         sleepItem(essId, true);
       }
 
     } else {
       status = "Open bank";
       if (debug) {
-        controller.displayMessage("@cya@" + "Open bank");
+        c.displayMessage("@cya@" + "Open bank");
       }
-      if (!controller.isCurrentlyWalking()) {
-        controller.openBank();
-        controller.sleep(640);
+      if (!c.isCurrentlyWalking()) {
+        c.openBank();
+        c.sleep(640);
       }
     }
   }
@@ -339,23 +334,23 @@ public class DamRc extends IdleScript {
   public void walkToBank() {
     status = "Walk to bank";
     if (debug) {
-      controller.displayMessage("@cya@" + "Walk to bank");
+      c.displayMessage("@cya@" + "Walk to bank");
     }
-    controller.walkPath(toBank);
-    controller.sleep(640);
+    c.walkPath(toBank);
+    c.sleep(640);
   }
 
   public void walkToSpot() {
     status = "Walk to tele spot";
     if (debug) {
-      controller.displayMessage("@cya@" + "Walk to tele spot");
+      c.displayMessage("@cya@" + "Walk to tele spot");
     }
-    controller.walkPath(toSpot);
-    controller.sleep(640);
+    c.walkPath(toSpot);
+    c.sleep(640);
   }
 
-  class guiObject {
-    String name;
+  static class guiObject {
+    final String name;
 
     public guiObject(String _name) {
       name = _name;
@@ -364,17 +359,14 @@ public class DamRc extends IdleScript {
     @Override
     public boolean equals(Object o) {
       if (o instanceof guiObject) {
-        if (((guiObject) o).name.equals(this.name)) {
-          return true;
-        }
+        return ((guiObject) o).name.equals(this.name);
       }
-
       return false;
     }
   }
 
-  ArrayList<guiObject> objects =
-      new ArrayList<guiObject>() {
+  final ArrayList<guiObject> objects =
+      new ArrayList<>() {
         {
           add(new guiObject("Air - Fally south"));
           add(new guiObject("Mind - Fally north"));
@@ -403,7 +395,7 @@ public class DamRc extends IdleScript {
     alterNW = new int[] {986, 17};
     alterSE = new int[] {980, 22};
     method = "Air rune crafting";
-    controller.displayMessage("@cya@" + "We're crafting airs");
+    c.displayMessage("@cya@" + "We're crafting airs");
   }
 
   public void mindValues() {
@@ -430,7 +422,7 @@ public class DamRc extends IdleScript {
     alterNW = new int[] {942, 13};
     alterSE = new int[] {928, 29};
     method = "Mind rune crafting";
-    controller.displayMessage("@cya@" + "We're crafting minds");
+    c.displayMessage("@cya@" + "We're crafting minds");
   }
 
   public void earthValues() {
@@ -449,7 +441,7 @@ public class DamRc extends IdleScript {
     alterNW = new int[] {939, 63};
     alterSE = new int[] {929, 77};
     method = "Earth rune crafting";
-    controller.displayMessage("@cya@" + "We're crafting earths");
+    c.displayMessage("@cya@" + "We're crafting earths");
   }
 
   public void waterValues() {
@@ -474,7 +466,7 @@ public class DamRc extends IdleScript {
     alterNW = new int[] {991, 60};
     alterSE = new int[] {980, 75};
     method = "Water rune crafting";
-    controller.displayMessage("@cya@" + "We're crafting waters");
+    c.displayMessage("@cya@" + "We're crafting waters");
   }
 
   public void fireValues() {
@@ -493,7 +485,7 @@ public class DamRc extends IdleScript {
     alterNW = new int[] {894, 15};
     alterSE = new int[] {882, 28};
     method = "Fire rune crafting";
-    controller.displayMessage("@cya@" + "We're crafting fires");
+    c.displayMessage("@cya@" + "We're crafting fires");
   }
 
   public void bodyValues() {
@@ -518,7 +510,7 @@ public class DamRc extends IdleScript {
     alterNW = new int[] {895, 64};
     alterSE = new int[] {882, 77};
     method = "Body rune crafting";
-    controller.displayMessage("@cya@" + "We're crafting bodies");
+    c.displayMessage("@cya@" + "We're crafting bodies");
   }
 
   public void cosmicValues() {
@@ -545,7 +537,7 @@ public class DamRc extends IdleScript {
     alterNW = new int[] {845, 15};
     alterSE = new int[] {833, 28};
     method = "Cosmic rune crafting";
-    controller.displayMessage("@cya@" + "We're crafting cosmics");
+    c.displayMessage("@cya@" + "We're crafting cosmics");
   }
 
   public void essValues() {
@@ -561,7 +553,7 @@ public class DamRc extends IdleScript {
     mineNW = new int[] {705, 5};
     mineSE = new int[] {685, 27};
     method = "Mining rune essence";
-    controller.displayMessage("@cya@" + "We're mining essence");
+    c.displayMessage("@cya@" + "We're mining essence");
   }
 
   public void setValuesFromGUI(int i) {
@@ -594,14 +586,14 @@ public class DamRc extends IdleScript {
 
   public void parseVariables() {
     startTime = System.currentTimeMillis();
-    startExpRc = controller.getStatXp(18);
-    startExpMining = controller.getStatXp(14);
+    startExpRc = c.getStatXp(18);
+    startExpMining = c.getStatXp(14);
   }
 
   public void setupGUI() {
     JLabel headerLabel = new JLabel("If rcing start near the alter/bank with your tali please.");
     JLabel headerLabel2 = new JLabel("If mining start at the bank or in the mine please.");
-    JComboBox<String> guiField = new JComboBox<String>();
+    JComboBox<String> guiField = new JComboBox<>();
     JCheckBox debugCheckbox = new JCheckBox("Debug", false);
     JCheckBox crownCheckbox = new JCheckBox("Artisan Crown?", false);
     JButton startScriptButton = new JButton("Start");
@@ -611,18 +603,15 @@ public class DamRc extends IdleScript {
     }
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            controller.displayMessage("@cya@" + "Ty for using DamScripts <3" + " - Damrau");
-            setValuesFromGUI(guiField.getSelectedIndex());
-            debug = debugCheckbox.isSelected();
-            crown = crownCheckbox.isSelected();
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            parseVariables();
-            started = true;
-          }
+        e -> {
+          c.displayMessage("@cya@" + "Ty for using DamScripts <3" + " - Damrau");
+          setValuesFromGUI(guiField.getSelectedIndex());
+          debug = debugCheckbox.isSelected();
+          crown = crownCheckbox.isSelected();
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          parseVariables();
+          started = true;
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -650,87 +639,84 @@ public class DamRc extends IdleScript {
     min %= 60;
     DecimalFormat twoDigits = new DecimalFormat("00");
 
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
+    return twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec);
   }
 
   @Override
   public void paintInterrupt() {
     if (started) {
       String runTime = msToString(System.currentTimeMillis() - startTime);
-      int gainedExpRc = controller.getStatXp(18) - startExpRc;
+      int gainedExpRc = c.getStatXp(18) - startExpRc;
       double expHrRc =
           ((double) gainedExpRc * (3600000.0 / (System.currentTimeMillis() - startTime)));
       double runesHr =
           ((double) runesMade * (3600000.0 / (System.currentTimeMillis() - startTime)));
-      int gainedExpMining = controller.getStatXp(14) - startExpMining;
+      int gainedExpMining = c.getStatXp(14) - startExpMining;
       double expHrMining =
           ((double) gainedExpMining * (3600000.0 / (System.currentTimeMillis() - startTime)));
-      if (controller != null) {
-        controller.setShowCoords(false);
-        controller.setShowStatus(false);
-        controller.setShowXp(false);
-        controller.drawString("@cya@DamRc v1.1 - By Damrau", 7, 25, 0xFFFFFF, 1);
-        controller.drawString("@cya@Runtime: " + runTime, 7, 25 + 14, 0xFFFFFF, 1);
-        controller.drawString("@cya@Status: " + status, 7, 25 + 28, 0xFFFFFF, 1);
-        if (mineEss) {
-          controller.drawString(
-              "@cya@Ess mined: "
-                  + NumberFormat.getInstance().format(runesMade)
-                  + " ("
-                  + NumberFormat.getInstance().format(Math.floor(runesHr))
-                  + "/Hr)",
-              7,
-              25 + 42,
-              0xFFFFFF,
-              1);
-          controller.drawString(
-              "@cya@Total ess: " + NumberFormat.getInstance().format(runesInBank),
-              7,
-              25 + 56,
-              0xFFFFFF,
-              1);
-          controller.drawString(
-              "@cya@Mining exp gained: "
-                  + NumberFormat.getInstance().format(gainedExpMining)
-                  + " ("
-                  + NumberFormat.getInstance().format(Math.floor(expHrMining))
-                  + "/Hr)",
-              7,
-              25 + 70,
-              0xFFFFFF,
-              1);
-        }
-        if (!mineEss) {
-          controller.drawString(
-              "@cya@Runes made: "
-                  + NumberFormat.getInstance().format(runesMade)
-                  + " ("
-                  + NumberFormat.getInstance().format(Math.floor(runesHr))
-                  + "/Hr)",
-              7,
-              25 + 42,
-              0xFFFFFF,
-              1);
-          controller.drawString(
-              "@cya@Total runes: " + NumberFormat.getInstance().format(runesInBank),
-              7,
-              25 + 56,
-              0xFFFFFF,
-              1);
-          controller.drawString(
-              "@cya@Rc exp gained: "
-                  + NumberFormat.getInstance().format(gainedExpRc)
-                  + " ("
-                  + NumberFormat.getInstance().format(Math.floor(expHrRc))
-                  + "/Hr)",
-              7,
-              25 + 70,
-              0xFFFFFF,
-              1);
-        }
-        controller.drawString("@cya@Method: " + method, 7, 25 + 84, 0xFFFFFF, 1);
+      c.setShowCoords(false);
+      c.setShowStatus(false);
+      c.setShowXp(false);
+      c.drawString("@cya@DamRc v1.1 - By Damrau", 7, 25, 0xFFFFFF, 1);
+      c.drawString("@cya@Runtime: " + runTime, 7, 25 + 14, 0xFFFFFF, 1);
+      c.drawString("@cya@Status: " + status, 7, 25 + 28, 0xFFFFFF, 1);
+      if (mineEss) {
+        c.drawString(
+            "@cya@Ess mined: "
+                + NumberFormat.getInstance().format(runesMade)
+                + " ("
+                + NumberFormat.getInstance().format(Math.floor(runesHr))
+                + "/Hr)",
+            7,
+            25 + 42,
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@cya@Total ess: " + NumberFormat.getInstance().format(runesInBank),
+            7,
+            25 + 56,
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@cya@Mining exp gained: "
+                + NumberFormat.getInstance().format(gainedExpMining)
+                + " ("
+                + NumberFormat.getInstance().format(Math.floor(expHrMining))
+                + "/Hr)",
+            7,
+            25 + 70,
+            0xFFFFFF,
+            1);
       }
+      if (!mineEss) {
+        c.drawString(
+            "@cya@Runes made: "
+                + NumberFormat.getInstance().format(runesMade)
+                + " ("
+                + NumberFormat.getInstance().format(Math.floor(runesHr))
+                + "/Hr)",
+            7,
+            25 + 42,
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@cya@Total runes: " + NumberFormat.getInstance().format(runesInBank),
+            7,
+            25 + 56,
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@cya@Rc exp gained: "
+                + NumberFormat.getInstance().format(gainedExpRc)
+                + " ("
+                + NumberFormat.getInstance().format(Math.floor(expHrRc))
+                + "/Hr)",
+            7,
+            25 + 70,
+            0xFFFFFF,
+            1);
+      }
+      c.drawString("@cya@Method: " + method, 7, 25 + 84, 0xFFFFFF, 1);
     }
   }
 }

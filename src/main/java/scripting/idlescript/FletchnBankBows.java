@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -15,7 +13,7 @@ import javax.swing.JLabel;
  * @author Searos
  */
 public class FletchnBankBows extends IdleScript {
-  JCheckBox string = new JCheckBox("String", true);
+  final JCheckBox string = new JCheckBox("String", true);
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
@@ -23,18 +21,18 @@ public class FletchnBankBows extends IdleScript {
   int logId = -1;
   int bowComplete = -1;
   int ans = -1;
-  int[] bowIdsShort = {277, 659, 661, 663, 665, 667};
-  int[] bowIdsLong = {276, 658, 660, 662, 664, 666};
-  int[] bowCompleteShort = {189, 649, 651, 653, 655, 657};
-  int[] bowCompleteLong = {188, 648, 650, 652, 654, 656};
-  int[] logIds = {14, 632, 633, 634, 635, 636};
+  final int[] bowIdsShort = {277, 659, 661, 663, 665, 667};
+  final int[] bowIdsLong = {276, 658, 660, 662, 664, 666};
+  final int[] bowCompleteShort = {189, 649, 651, 653, 655, 657};
+  final int[] bowCompleteLong = {188, 648, 650, 652, 654, 656};
+  final int[] logIds = {14, 632, 633, 634, 635, 636};
   int totalBows = 0;
   int totalFletched = 0;
   boolean bankTime = false;
   boolean stringTime = false;
   int[] bankerIds = {95, 224, 268, 485, 540, 617};
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -154,30 +152,27 @@ public class FletchnBankBows extends IdleScript {
     JLabel header = new JLabel("Woodcutting");
     JLabel logLabel = new JLabel("Log Type:");
     JComboBox<String> logField =
-        new JComboBox<String>(new String[] {"Normal", "Oak", "Willow", "Maple", "Yew", "Magic"});
+        new JComboBox<>(new String[] {"Normal", "Oak", "Willow", "Maple", "Yew", "Magic"});
     JLabel bowLabel = new JLabel("Bow Type:");
-    JComboBox<String> bowField = new JComboBox<String>(new String[] {"Short", "Long"});
+    JComboBox<String> bowField = new JComboBox<>(new String[] {"Short", "Long"});
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            if (bowField.getSelectedIndex() == 1) {
-              bowId = bowIdsLong[logField.getSelectedIndex()];
-              bowComplete = bowCompleteLong[logField.getSelectedIndex()];
-            } else {
-              bowId = bowIdsShort[logField.getSelectedIndex()];
-              bowComplete = bowCompleteShort[logField.getSelectedIndex()];
-            }
-            ans = bowField.getSelectedIndex() + 1;
-            logId = logIds[logField.getSelectedIndex()];
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            controller.displayMessage("@red@Fletcher started");
+        e -> {
+          if (bowField.getSelectedIndex() == 1) {
+            bowId = bowIdsLong[logField.getSelectedIndex()];
+            bowComplete = bowCompleteLong[logField.getSelectedIndex()];
+          } else {
+            bowId = bowIdsShort[logField.getSelectedIndex()];
+            bowComplete = bowCompleteShort[logField.getSelectedIndex()];
           }
+          ans = bowField.getSelectedIndex() + 1;
+          logId = logIds[logField.getSelectedIndex()];
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          controller.displayMessage("@red@Fletcher started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -204,13 +199,8 @@ public class FletchnBankBows extends IdleScript {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Fletch Bows @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       controller.drawString(
-          "@red@Unstrung Bows Crafted: @yel@" + String.valueOf(this.totalFletched),
-          10,
-          35,
-          0xFFFFFF,
-          1);
-      controller.drawString(
-          "@red@Bows Completed: @yel@" + String.valueOf(this.totalBows), 10, 49, 0xFFFFFF, 1);
+          "@red@Unstrung Bows Crafted: @yel@" + this.totalFletched, 10, 35, 0xFFFFFF, 1);
+      controller.drawString("@red@Bows Completed: @yel@" + this.totalBows, 10, 49, 0xFFFFFF, 1);
     }
   }
 }

@@ -5,7 +5,7 @@ public class ObtainSleepingBag extends IdleScript {
 
     if (controller.isLoggedIn() && controller.getInventoryItemCount(1263) > 0) System.exit(0);
 
-    if (controller.isInTrade() == false) {
+    if (!controller.isInTrade()) {
       int serverIndex = controller.getPlayerServerIndexByName("bilbo baggin");
 
       if (serverIndex == -1) {

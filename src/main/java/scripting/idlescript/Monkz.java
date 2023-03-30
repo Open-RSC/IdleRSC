@@ -12,7 +12,7 @@ public class Monkz extends IdleScript {
   boolean doBuryBones = false;
   int prayerId = -1;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
 
     if (parameters.length != 3) {
       controller.displayMessage("@red@Script args: fightmode doburybones prayerid");
@@ -20,13 +20,13 @@ public class Monkz extends IdleScript {
       controller.stop();
     } else {
       controller.displayMessage("@dor@Monkz by Dvorak");
-      fightMode = Integer.valueOf(parameters[0]);
-      doBuryBones = Boolean.valueOf(parameters[1]);
-      prayerId = Integer.valueOf(parameters[2]);
+      fightMode = Integer.parseInt(parameters[0]);
+      doBuryBones = Boolean.parseBoolean(parameters[1]);
+      prayerId = Integer.parseInt(parameters[2]);
     }
 
     while (controller.isRunning()) {
-      controller.setFightMode(Integer.valueOf(parameters[0]));
+      controller.setFightMode(Integer.parseInt(parameters[0]));
       openDoor();
       pray();
       heal();

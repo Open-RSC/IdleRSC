@@ -30,7 +30,7 @@ import javax.swing.JLabel;
  * <p>Will not work as script selector parameters, should be used in arguments of launcher.
  *
  * @author Dvorak - origional script
- *     <p>Searos - modified & expanded
+ *     <p>Searos - modified and expanded
  *     <p>Kaila - full update, gui, rewrite
  */
 /*

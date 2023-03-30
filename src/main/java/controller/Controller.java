@@ -807,7 +807,7 @@ public class Controller {
   /**
    * Retrieves the count of NPCs nearby.
    *
-   * @return
+   * @return int
    */
   public int getNpcCount() {
     return mud.getNpcCount();
@@ -843,7 +843,7 @@ public class Controller {
   /**
    * Retrieves the count of wall objects nearby.
    *
-   * @return
+   * @return int
    */
   public int getWallObjectsCount() {
     return (int) reflector.getObjectMember(mud, "wallObjectInstanceCount");
@@ -874,7 +874,7 @@ public class Controller {
   /**
    * Retrieves the coordinates of the specified wall object id, if nearby.
    *
-   * @param wallObjectId
+   * @param wallObjectId int
    * @return int[] -- [x, y]. returns null if no wall object nearby.
    */
   public int[] getNearestWallObjectById(int wallObjectId) {
@@ -908,7 +908,7 @@ public class Controller {
   /**
    * Retrieves the character object of the nearest NPC specified in the list of ids.
    *
-   * @param npcIds
+   * @param npcIds int
    * @param inCombatAllowed -- whether or not to return NPCs which are currently engaged in combat.
    * @return orsc.ORSCharacter -- returns null if npc not present.
    */
@@ -949,7 +949,7 @@ public class Controller {
   /**
    * Retrieves the character object of the nearest npc.
    *
-   * @param npcId
+   * @param npcId int
    * @param inCombatAllowed -- whether or not to return NPCs which are currently engaged in combat.
    * @return orsc.ORSCharacter -- returns null if NPC not present.
    */
@@ -963,7 +963,7 @@ public class Controller {
   /**
    * Retrieves the coordinates of the specified NPC.
    *
-   * @param serverIndex
+   * @param serverIndex int
    * @return int[] -- [x, y]. Returns [-1, -1] on no NPC present.
    */
   public int[] getNpcCoordsByServerIndex(int serverIndex) {
@@ -994,7 +994,7 @@ public class Controller {
   /**
    * Walks to the specified NPC. This function is non-blocking.
    *
-   * @param npcServerIndex
+   * @param npcServerIndex int
    */
   public void walktoNPCAsync(int npcServerIndex) {
     if (npcServerIndex < 0) return;
@@ -1013,7 +1013,7 @@ public class Controller {
   /**
    * Walks to the specified NPC.
    *
-   * @param npcServerIndex
+   * @param npcServerIndex int
    * @param radius -- must be 0 or greater.
    */
   public void walktoNPC(int npcServerIndex, int radius) {
@@ -1032,7 +1032,7 @@ public class Controller {
   /**
    * Attacks the specified NPC.
    *
-   * @param npcServerIndex
+   * @param npcServerIndex int
    */
   public void attackNpc(int npcServerIndex) {
     Main.logMethod("attackNpc", npcServerIndex);
@@ -2053,7 +2053,7 @@ public class Controller {
    * @param y1 int
    * @param x2 int
    * @param y2 int
-   * @return
+   * @return int
    */
   public int distance(int x1, int y1, int x2, int y2) {
     return (int) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
@@ -3105,7 +3105,7 @@ public class Controller {
   /**
    * Duels the specified player.
    *
-   * @param playerServerIndex
+   * @param playerServerIndex int
    */
   public void duelPlayer(int playerServerIndex) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
@@ -3833,9 +3833,9 @@ public class Controller {
    * @param text -- you may use @col@ colors here.
    * @param x int
    * @param y int
-   * @param textColor -- RGB "HTML" color
-   * @param fontSize -- 1 or greater
-   * @param center
+   * @param textColor int -- RGB "HTML" color
+   * @param fontSize int -- 1 or greater
+   * @param center boolean
    */
   public void drawShadowText(
       String text, int x, int y, int textColor, int fontSize, boolean center) {
@@ -4005,7 +4005,7 @@ public class Controller {
   /**
    * Whether or not draw/graphics is currently enabled.
    *
-   * @return
+   * @return boolean
    */
   public boolean isDrawEnabled() {
     return drawing;
@@ -4108,7 +4108,7 @@ public class Controller {
   /**
    * Retuns the width, in pixels, of the game window.
    *
-   * @return
+   * @return int
    */
   public int getGameWidth() {
     return mud.getGameWidth();
@@ -4327,7 +4327,7 @@ public class Controller {
    *
    * @param x int
    * @param y int
-   * @return
+   * @return int
    */
   public ORSCharacter getNpcAtCoords(int x, int y) {
     int[] coords = new int[] {x, y};

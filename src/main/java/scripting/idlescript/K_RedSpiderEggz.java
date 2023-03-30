@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -20,306 +19,291 @@ import javax.swing.JLabel;
  * <p>Should bot Return to Eggz after Escaping?. Unselected, bot will log out after escaping Pkers.
  * Selected, bot will grab more food and return.
  *
- * <p>Author - Kaila
+ * <p>@Author - Kaila
  */
 public class K_RedSpiderEggz extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  boolean teleportOut = false;
-  boolean returnEscape = true;
-  int eggzInBank = 0;
-  int totalEggz = 0;
-  int totalTrips = 0;
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static boolean teleportOut = false;
+  private static boolean returnEscape = true;
+  private static int eggzInBank = 0;
+  private static int totalEggz = 0;
+  private static int totalTrips = 0;
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
     if (scriptStarted) {
-      controller.displayMessage("@red@Red Spider Egg Picker - By Kaila");
-      controller.displayMessage("@red@Start in Edge bank with Armor");
-      controller.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
-      controller.displayMessage("@red@31 Magic Required for escape tele");
-      if (controller.isInBank() == true) {
-        controller.closeBank();
+      c.displayMessage("@red@Red Spider Egg Picker - By Kaila");
+      c.displayMessage("@red@Start in Edge bank with Armor");
+      c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
+      c.displayMessage("@red@31 Magic Required for escape tele");
+      if (c.isInBank()) {
+        c.closeBank();
       }
-      if (controller.currentY() > 340 && controller.currentY() < 500) { // fixed start area bug
+      if (c.currentY() > 340 && c.currentY() < 500) { // fixed start area bug
         bank();
         eat();
         BankToEgg();
-        controller.sleep(100);
+        c.sleep(100);
       }
       scriptStart();
     }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
 
       eat();
       leaveCombat();
-      controller.setStatus("@yel@Picking Eggs..");
+      c.setStatus("@yel@Picking Eggs..");
 
-      if (controller.getInventoryItemCount() > 29 || controller.getInventoryItemCount(546) == 0) {
-        controller.setStatus("@red@Banking..");
+      if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@red@Banking..");
         EggToBank();
         bank();
         BankToEgg();
-        controller.sleep(618);
+        c.sleep(618);
       }
-      if (controller.getNearestItemById(219) != null) {
-        int[] coords = controller.getNearestItemById(219);
-        controller.pickupItem(coords[0], coords[1], 219, true, true);
-        controller.sleep(1000);
+      if (c.getNearestItemById(219) != null) {
+        int[] coords = c.getNearestItemById(219);
+        c.pickupItem(coords[0], coords[1], 219, true, true);
+        c.sleep(1000);
       } else { // fixed cpu overrun issue
-        controller.sleep(1000); // fixed cpu overrun issue
+        c.sleep(1000); // fixed cpu overrun issue
       }
     }
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(1200);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(1200);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      totalEggz = totalEggz + controller.getInventoryItemCount(219);
+      totalEggz = totalEggz + c.getInventoryItemCount(219);
 
-      for (int itemId : controller.getInventoryItemIds()) {
+      for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 546) {
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      controller.sleep(1280);
-      eggzInBank = controller.getBankItemCount(219);
+      c.sleep(1280);
+      eggzInBank = c.getBankItemCount(219);
 
-      if (controller.getInventoryItemCount(546) > 1) { // deposit extra shark
-        controller.depositItem(546, controller.getInventoryItemCount(546) - 1);
-        controller.sleep(340);
+      if (c.getInventoryItemCount(546) > 1) { // deposit extra shark
+        c.depositItem(546, c.getInventoryItemCount(546) - 1);
+        c.sleep(340);
       }
-      if (controller.getInventoryItemCount(546) < 1) { // withdraw 1 shark
-        controller.withdrawItem(546, 1);
-        controller.sleep(340);
+      if (c.getInventoryItemCount(546) < 1) { // withdraw 1 shark
+        c.withdrawItem(546, 1);
+        c.sleep(340);
       }
-      if (teleportOut == true) {
-        if (controller.getInventoryItemCount(33) < 3) { // withdraw 3 air
-          controller.withdrawItem(33, 3);
-          controller.sleep(640);
+      if (teleportOut) {
+        if (c.getInventoryItemCount(33) < 3) { // withdraw 3 air
+          c.withdrawItem(33, 3);
+          c.sleep(640);
         }
-        if (controller.getInventoryItemCount(34) < 1) { // withdraw 1 earth
-          controller.withdrawItem(34, 1);
-          controller.sleep(640);
+        if (c.getInventoryItemCount(34) < 1) { // withdraw 1 earth
+          c.withdrawItem(34, 1);
+          c.sleep(640);
         }
-        if (controller.getInventoryItemCount(42) < 1) { // withdraw 1 law
-          controller.withdrawItem(42, 1);
-          controller.sleep(640);
-        }
-      }
-      if (controller.getBankItemCount(546) == 0) {
-        controller.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        controller.setAutoLogin(false);
-        controller.logout();
-        if (!controller.isLoggedIn()) {
-          controller.stop();
-          return;
+        if (c.getInventoryItemCount(42) < 1) { // withdraw 1 law
+          c.withdrawItem(42, 1);
+          c.sleep(640);
         }
       }
-      controller.closeBank();
-      controller.sleep(640);
+      if (c.getBankItemCount(546) == 0) {
+        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
+        c.setAutoLogin(false);
+        c.logout();
+        if (!c.isLoggedIn()) {
+          c.stop();
+        }
+      }
+      c.closeBank();
+      c.sleep(640);
     }
   }
 
-  public void eat() {
+  private void eat() {
 
-    int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
+    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-    if (controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
 
       leaveCombat();
-      controller.setStatus("@red@Eating..");
+      c.setStatus("@red@Eating..");
 
       boolean ate = false;
 
-      for (int id : controller.getFoodIds()) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.itemCommand(id);
-          controller.sleep(700);
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.itemCommand(id);
+          c.sleep(700);
           ate = true;
           break;
         }
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-        controller.setStatus("@red@We've ran out of Food! Running Away!.");
-        if (teleportOut == false
-            || controller.getInventoryItemCount(42) < 1
-            || controller.getInventoryItemCount(33) < 3
-            || controller.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        if (!teleportOut
+            || c.getInventoryItemCount(42) < 1
+            || c.getInventoryItemCount(33) < 3
+            || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
           EggToBank();
           bank();
         }
-        if (teleportOut == true) {
-          controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(1)"));
-          controller.sleep(800);
-          if (controller.currentY() > 3000) {
-            controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(2)"));
-            controller.sleep(800);
+        if (teleportOut) {
+          c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(1)"));
+          c.sleep(800);
+          if (c.currentY() > 3000) {
+            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(2)"));
+            c.sleep(800);
           }
-          if (controller.currentY() > 3000) {
-            controller.castSpellOnSelf(controller.getSpellIdFromName("Lumbridge Teleport(3)"));
-            controller.sleep(800);
+          if (c.currentY() > 3000) {
+            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(3)"));
+            c.sleep(800);
           }
-          controller.walkTo(120, 644);
-          controller.atObject(119, 642);
-          controller.walkTo(217, 447);
+          c.walkTo(120, 644);
+          c.atObject(119, 642);
+          c.walkTo(217, 447);
         }
-        if (returnEscape == false) {
-          controller.setAutoLogin(false);
-          controller.logout();
-          controller.sleep(1000);
+        if (!returnEscape) {
+          c.setAutoLogin(false);
+          c.logout();
+          c.sleep(1000);
 
-          if (!controller.isLoggedIn()) {
-            controller.stop();
-            controller.logout();
-            return;
+          if (!c.isLoggedIn()) {
+            c.stop();
+            c.logout();
           }
         }
-        if (returnEscape == true) {
+        if (returnEscape) {
           bank();
           BankToEgg();
-          controller.sleep(618);
+          c.sleep(618);
         }
       }
     }
   }
 
-  public void EggToBank() {
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(197, 3244);
-    controller.walkTo(197, 3255);
-    controller.walkTo(196, 3265);
-    controller.setStatus("@gre@Opening Wildy Gate North to South(1)..");
-    controller.atObject(196, 3266);
-    controller.sleep(640);
+  private void EggToBank() {
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(197, 3244);
+    c.walkTo(197, 3255);
+    c.walkTo(196, 3265);
+    c.setStatus("@gre@Opening Wildy Gate North to South(1)..");
+    c.atObject(196, 3266);
+    c.sleep(640);
     openGateNorthToSouth();
-    controller.walkTo(197, 3266);
-    controller.walkTo(204, 3272);
-    controller.walkTo(210, 3273);
-    if (controller.getObjectAtCoord(211, 3272) == 57) {
-      controller.setStatus("@gre@Opening Edge Gate..");
-      controller.walkTo(210, 3273);
-      controller.atObject(211, 3272);
-      controller.sleep(340);
+    c.walkTo(197, 3266);
+    c.walkTo(204, 3272);
+    c.walkTo(210, 3273);
+    if (c.getObjectAtCoord(211, 3272) == 57) {
+      c.setStatus("@gre@Opening Edge Gate..");
+      c.walkTo(210, 3273);
+      c.atObject(211, 3272);
+      c.sleep(340);
     }
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(217, 3283);
-    controller.walkTo(215, 3294);
-    controller.walkTo(215, 3299);
-    controller.atObject(215, 3300);
-    controller.sleep(640);
-    controller.walkTo(217, 458);
-    controller.walkTo(221, 447);
-    controller.walkTo(217, 448);
-    controller.sleep(640);
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(217, 3283);
+    c.walkTo(215, 3294);
+    c.walkTo(215, 3299);
+    c.atObject(215, 3300);
+    c.sleep(640);
+    c.walkTo(217, 458);
+    c.walkTo(221, 447);
+    c.walkTo(217, 448);
+    c.sleep(640);
     totalTrips = totalTrips + 1;
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void BankToEgg() {
-    controller.setStatus("@gre@Walking to Eggs..");
-    controller.walkTo(221, 447);
-    controller.walkTo(217, 458);
-    controller.walkTo(215, 467);
-    controller.atObject(215, 468);
-    controller.sleep(640);
-    controller.walkTo(217, 3283);
-    controller.walkTo(211, 3273);
-    if (controller.getObjectAtCoord(211, 3272) == 57) {
-      controller.setStatus("@gre@Opening Edge Gate..");
-      controller.walkTo(211, 3273);
-      controller.atObject(211, 3272);
-      controller.sleep(340);
+  private void BankToEgg() {
+    c.setStatus("@gre@Walking to Eggs..");
+    c.walkTo(221, 447);
+    c.walkTo(217, 458);
+    c.walkTo(215, 467);
+    c.atObject(215, 468);
+    c.sleep(640);
+    c.walkTo(217, 3283);
+    c.walkTo(211, 3273);
+    if (c.getObjectAtCoord(211, 3272) == 57) {
+      c.setStatus("@gre@Opening Edge Gate..");
+      c.walkTo(211, 3273);
+      c.atObject(211, 3272);
+      c.sleep(340);
     }
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(204, 3272);
-    controller.walkTo(199, 3272);
-    controller.walkTo(197, 3266);
-    controller.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
-    controller.atObject(196, 3266);
-    controller.sleep(640);
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(204, 3272);
+    c.walkTo(199, 3272);
+    c.walkTo(197, 3266);
+    c.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
+    c.atObject(196, 3266);
+    c.sleep(640);
     openGateSouthToNorth();
-    controller.walkTo(197, 3244);
-    controller.walkTo(208, 3240);
-    controller.setStatus("@gre@Done Walking..");
+    c.walkTo(197, 3244);
+    c.walkTo(208, 3240);
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void leaveCombat() {
+  private void leaveCombat() {
     for (int i = 1; i <= 15; i++) {
-      if (controller.isInCombat()) {
-        controller.setStatus("@red@Leaving combat (n)..");
-        controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-        controller.sleep(600);
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat (n)..");
+        c.walkTo(c.currentX(), c.currentY(), 0, true);
+        c.sleep(600);
       } else {
-        controller.setStatus("@red@Done Leaving combat..");
+        c.setStatus("@red@Done Leaving combat..");
         break;
       }
-      controller.sleep(10);
+      c.sleep(10);
     }
   }
 
-  public void openGateNorthToSouth() {
+  private void openGateNorthToSouth() {
     for (int i = 1; i <= 25; i++) {
-      if (controller.currentY() == 3265) {
-        controller.setStatus("@gre@Opening Wildy Gate..");
-        controller.atObject(196, 3266);
-        controller.sleep(640);
+      if (c.currentY() == 3265) {
+        c.setStatus("@gre@Opening Wildy Gate..");
+        c.atObject(196, 3266);
+        c.sleep(640);
       } else {
-        controller.setStatus("@red@Done Opening Wildy Gate..");
+        c.setStatus("@red@Done Opening Wildy Gate..");
         break;
       }
-      controller.sleep(10);
+      c.sleep(10);
     }
   }
 
-  public void openGateSouthToNorth() {
+  private void openGateSouthToNorth() {
     for (int i = 1; i <= 25; i++) {
-      if (controller.currentY() == 3266) {
-        controller.setStatus("@gre@Opening Wildy Gate..");
-        controller.atObject(196, 3266);
-        controller.sleep(640);
+      if (c.currentY() == 3266) {
+        c.setStatus("@gre@Opening Wildy Gate..");
+        c.atObject(196, 3266);
+        c.sleep(640);
       } else {
-        controller.setStatus("@red@Done Opening Wildy Gate..");
+        c.setStatus("@red@Done Opening Wildy Gate..");
         break;
       }
-      controller.sleep(10);
+      c.sleep(10);
     }
   }
 
   // GUI stuff below (icky)
-
-  public void setValuesFromGUI(JCheckBox potUpCheckbox, JCheckBox escapeCheckbox) {
-    if (potUpCheckbox.isSelected()) {
-      teleportOut = true;
-    } else {
-      teleportOut = false;
-    }
-    if (escapeCheckbox.isSelected()) {
-      returnEscape = true;
-    } else {
-      returnEscape = false;
-    }
-  }
-
-  public void setupGUI() {
-    JLabel header = new JLabel("Red Spider Egg Picker - By Kaila");
+  private void setupGUI() {
+    JLabel header = new JLabel("Red Spider Egg Picker @mag@~ by Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor");
     JLabel label2 = new JLabel("Sharks in bank REQUIRED");
     JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
@@ -332,18 +316,16 @@ public class K_RedSpiderEggz extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            setValuesFromGUI(teleportCheckbox, escapeCheckbox);
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+        e -> {
+          teleportOut = teleportCheckbox.isSelected();
+          returnEscape = escapeCheckbox.isSelected();
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -358,34 +340,24 @@ public class K_RedSpiderEggz extends IdleScript {
     scriptFrame.add(label6);
     scriptFrame.add(label7);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalEggz * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
@@ -393,30 +365,33 @@ public class K_RedSpiderEggz extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@RedSpiderEggz @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
-      controller.drawString(
-          "@whi@Eggs in Bank: @gre@" + String.valueOf(this.eggzInBank), 350, 62, 0xFFFFFF, 1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@RedSpiderEggz @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString("@whi@Eggs in Bank: @gre@" + eggzInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Eggs Picked: @gre@"
-              + String.valueOf(this.totalEggz)
+              + totalEggz
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          76,
+          x,
+          y + (14 * 2),
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          90,
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 350, 104, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

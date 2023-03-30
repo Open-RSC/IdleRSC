@@ -30,7 +30,7 @@ import java.util.Locale;
 public final class S_Catherby extends Script {
 
   private static final class Stage {
-    int id;
+    final int id;
     PathWalker.Path path_to;
 
     String cert_name;
@@ -200,7 +200,7 @@ public final class S_Catherby extends Script {
 
   private int box_bottom;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private boolean pw_init;
 
   private final List<Stage> stages = new ArrayList<>();
@@ -1175,8 +1175,7 @@ public final class S_Catherby extends Script {
 
     switch (s.id) {
       case STAGE_DEPOSIT:
-        for (int i = 0; i < bank_ids.length; ++i) {
-          int id = bank_ids[i];
+        for (int id : bank_ids) {
           if (inArray(bass, id) && big_netting && have_stage(STAGE_CERT)) {
             continue;
           }
@@ -1290,71 +1289,61 @@ public final class S_Catherby extends Script {
 
     final Checkbox cook = new Checkbox("Cook fish", false);
     cook.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+        e -> {
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
 
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
 
-            int change = e.getStateChange();
-            if (change == ItemEvent.SELECTED) {
-              sell_cooked_tuna.setEnabled(true);
-              sell_cooked_non_bass.setEnabled(true);
-              sell_cooked.setEnabled(true);
-              buy_cooked.setEnabled(false);
-              power.setEnabled(true);
-            } else {
-              sell_cooked_tuna.setEnabled(false);
-              sell_cooked_non_bass.setEnabled(false);
-              sell_cooked.setEnabled(false);
-              buy_cooked.setEnabled(true);
-            }
+          int change = e.getStateChange();
+          if (change == ItemEvent.SELECTED) {
+            sell_cooked_tuna.setEnabled(true);
+            sell_cooked_non_bass.setEnabled(true);
+            sell_cooked.setEnabled(true);
+            buy_cooked.setEnabled(false);
+            power.setEnabled(true);
+          } else {
+            sell_cooked_tuna.setEnabled(false);
+            sell_cooked_non_bass.setEnabled(false);
+            sell_cooked.setEnabled(false);
+            buy_cooked.setEnabled(true);
           }
         });
 
     acquire_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+        e -> {
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
 
-            int change = e.getStateChange();
-            if (change != ItemEvent.SELECTED) {
-              return;
-            }
-            if (cook.getState() || e.getSource() == fish) {
-              power.setEnabled(true);
-            } else {
-              power.setEnabled(false);
-            }
-            if (e.getSource() == buy_raw) {
-              sell_raw_non_bass.setEnabled(false);
-              sell_raw_tuna.setEnabled(false);
-              sell_raw.setEnabled(false);
-              cook.setEnabled(true);
-            } else if (e.getSource() == buy_cooked) {
-              sell_raw_non_bass.setEnabled(false);
-              sell_raw_tuna.setEnabled(false);
-              sell_raw.setEnabled(false);
-              cook.setEnabled(false);
-            } else if (e.getSource() == uncert) {
-              sell_raw_non_bass.setEnabled(false);
-              sell_raw_tuna.setEnabled(true);
-              sell_raw.setEnabled(true);
-              cook.setEnabled(true);
-            } else {
-              sell_raw_non_bass.setEnabled(true);
-              sell_raw_tuna.setEnabled(true);
-              sell_raw.setEnabled(true);
-              cook.setEnabled(true);
-            }
+          int change = e.getStateChange();
+          if (change != ItemEvent.SELECTED) {
+            return;
+          }
+          power.setEnabled(cook.getState() || e.getSource() == fish);
+          if (e.getSource() == buy_raw) {
+            sell_raw_non_bass.setEnabled(false);
+            sell_raw_tuna.setEnabled(false);
+            sell_raw.setEnabled(false);
+            cook.setEnabled(true);
+          } else if (e.getSource() == buy_cooked) {
+            sell_raw_non_bass.setEnabled(false);
+            sell_raw_tuna.setEnabled(false);
+            sell_raw.setEnabled(false);
+            cook.setEnabled(false);
+          } else if (e.getSource() == uncert) {
+            sell_raw_non_bass.setEnabled(false);
+            sell_raw_tuna.setEnabled(true);
+            sell_raw.setEnabled(true);
+            cook.setEnabled(true);
+          } else {
+            sell_raw_non_bass.setEnabled(true);
+            sell_raw_tuna.setEnabled(true);
+            sell_raw.setEnabled(true);
+            cook.setEnabled(true);
           }
         };
 
@@ -1368,34 +1357,31 @@ public final class S_Catherby extends Script {
     non_keepies.add(power);
 
     dispose_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            if (non_keepies.contains(e.getSource()) && e.getStateChange() == ItemEvent.SELECTED) {
-              sell_raw_tuna.setEnabled(false);
-              sell_cooked_tuna.setEnabled(false);
-              sell_raw_non_bass.setEnabled(false);
-              sell_cooked_non_bass.setEnabled(false);
-              drop_raw_tuna.setEnabled(false);
-              drop_raw_non_bass.setEnabled(false);
-              drop_raw_shrimp.setEnabled(false);
-              drop_raw_shrimp.setState(false);
-              drop_raw_sardine.setEnabled(false);
-              drop_raw_sardine.setState(false);
-              big_net_specials.setSelectedCheckbox(null);
-              tuna_specials.setSelectedCheckbox(null);
-              return;
-            }
-            sell_raw_tuna.setEnabled(true);
-            sell_raw_non_bass.setEnabled(true);
-            drop_raw_tuna.setEnabled(true);
-            drop_raw_non_bass.setEnabled(true);
-            drop_raw_shrimp.setEnabled(true);
-            drop_raw_sardine.setEnabled(true);
-            if (cook.getState()) {
-              sell_cooked_non_bass.setEnabled(true);
-              sell_cooked_tuna.setEnabled(true);
-            }
+        e -> {
+          if (non_keepies.contains(e.getSource()) && e.getStateChange() == ItemEvent.SELECTED) {
+            sell_raw_tuna.setEnabled(false);
+            sell_cooked_tuna.setEnabled(false);
+            sell_raw_non_bass.setEnabled(false);
+            sell_cooked_non_bass.setEnabled(false);
+            drop_raw_tuna.setEnabled(false);
+            drop_raw_non_bass.setEnabled(false);
+            drop_raw_shrimp.setEnabled(false);
+            drop_raw_shrimp.setState(false);
+            drop_raw_sardine.setEnabled(false);
+            drop_raw_sardine.setState(false);
+            big_net_specials.setSelectedCheckbox(null);
+            tuna_specials.setSelectedCheckbox(null);
+            return;
+          }
+          sell_raw_tuna.setEnabled(true);
+          sell_raw_non_bass.setEnabled(true);
+          drop_raw_tuna.setEnabled(true);
+          drop_raw_non_bass.setEnabled(true);
+          drop_raw_shrimp.setEnabled(true);
+          drop_raw_sardine.setEnabled(true);
+          if (cook.getState()) {
+            sell_cooked_non_bass.setEnabled(true);
+            sell_cooked_tuna.setEnabled(true);
           }
         };
 
@@ -1459,78 +1445,75 @@ public final class S_Catherby extends Script {
     list.add("Sharks");
     list.select(0);
     list.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            checkboxes.invalidate();
-            checkboxes.remove(sell_raw_tuna);
-            checkboxes.remove(sell_cooked_tuna);
-            checkboxes.remove(sell_raw_non_bass);
-            checkboxes.remove(sell_cooked_non_bass);
-            checkboxes.remove(drop_raw_tuna);
-            checkboxes.remove(drop_raw_non_bass);
-            checkboxes.remove(drop_raw_shrimp);
-            checkboxes.remove(drop_raw_sardine);
-            checkboxes.remove(space_saver_a);
-            checkboxes.remove(space_saver_b);
-            checkboxes.remove(space_saver_c);
-            uncert.setEnabled(false);
-            cert.setEnabled(false);
-            pickup.setEnabled(true);
-            if (cook.getState()) {
-              sell_cooked.setEnabled(true);
-            }
-            big_netting = false;
-
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
-
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
-
-            switch (list.getSelectedItem()) {
-              case "Anchovies/shrimp":
-                checkboxes.add(drop_raw_shrimp);
-                checkboxes.add(space_saver_b);
-                checkboxes.add(space_saver_c);
-                checkboxes.validate();
-                return;
-              case "Herring/sardine":
-                checkboxes.add(drop_raw_sardine);
-                checkboxes.add(space_saver_b);
-                checkboxes.add(space_saver_c);
-                checkboxes.validate();
-                return;
-              case "Sharks":
-                uncert.setEnabled(true);
-                cert.setEnabled(true);
-                break;
-              case "Big net":
-                checkboxes.add(drop_raw_non_bass);
-                checkboxes.add(sell_raw_non_bass);
-                checkboxes.add(sell_cooked_non_bass);
-                sell_cooked.setEnabled(false);
-                uncert.setEnabled(true);
-                cert.setEnabled(true);
-                pickup.setState(true);
-                pickup.setEnabled(false);
-                big_netting = true;
-                checkboxes.validate();
-                return;
-              case "Swordfish/tuna":
-                checkboxes.add(drop_raw_tuna);
-                checkboxes.add(sell_raw_tuna);
-                checkboxes.add(sell_cooked_tuna);
-                checkboxes.validate();
-                return;
-            }
-            checkboxes.add(space_saver_a);
-            checkboxes.add(space_saver_b);
-            checkboxes.add(space_saver_c);
-            checkboxes.validate();
+        e -> {
+          checkboxes.invalidate();
+          checkboxes.remove(sell_raw_tuna);
+          checkboxes.remove(sell_cooked_tuna);
+          checkboxes.remove(sell_raw_non_bass);
+          checkboxes.remove(sell_cooked_non_bass);
+          checkboxes.remove(drop_raw_tuna);
+          checkboxes.remove(drop_raw_non_bass);
+          checkboxes.remove(drop_raw_shrimp);
+          checkboxes.remove(drop_raw_sardine);
+          checkboxes.remove(space_saver_a);
+          checkboxes.remove(space_saver_b);
+          checkboxes.remove(space_saver_c);
+          uncert.setEnabled(false);
+          cert.setEnabled(false);
+          pickup.setEnabled(true);
+          if (cook.getState()) {
+            sell_cooked.setEnabled(true);
           }
+          big_netting = false;
+
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+
+          switch (list.getSelectedItem()) {
+            case "Anchovies/shrimp":
+              checkboxes.add(drop_raw_shrimp);
+              checkboxes.add(space_saver_b);
+              checkboxes.add(space_saver_c);
+              checkboxes.validate();
+              return;
+            case "Herring/sardine":
+              checkboxes.add(drop_raw_sardine);
+              checkboxes.add(space_saver_b);
+              checkboxes.add(space_saver_c);
+              checkboxes.validate();
+              return;
+            case "Sharks":
+              uncert.setEnabled(true);
+              cert.setEnabled(true);
+              break;
+            case "Big net":
+              checkboxes.add(drop_raw_non_bass);
+              checkboxes.add(sell_raw_non_bass);
+              checkboxes.add(sell_cooked_non_bass);
+              sell_cooked.setEnabled(false);
+              uncert.setEnabled(true);
+              cert.setEnabled(true);
+              pickup.setState(true);
+              pickup.setEnabled(false);
+              big_netting = true;
+              checkboxes.validate();
+              return;
+            case "Swordfish/tuna":
+              checkboxes.add(drop_raw_tuna);
+              checkboxes.add(sell_raw_tuna);
+              checkboxes.add(sell_cooked_tuna);
+              checkboxes.validate();
+              return;
+          }
+          checkboxes.add(space_saver_a);
+          checkboxes.add(space_saver_b);
+          checkboxes.add(space_saver_c);
+          checkboxes.validate();
         });
 
     Button ok = new Button("OK");
@@ -1789,13 +1772,7 @@ public final class S_Catherby extends Script {
         });
 
     Button cancel = new Button("Cancel");
-    cancel.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-          }
-        });
+    cancel.addActionListener(e -> frame.setVisible(false));
 
     Panel buttons = new Panel();
     buttons.add(ok);

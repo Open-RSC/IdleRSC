@@ -120,7 +120,7 @@ public final class S_KBDLooter extends Script implements ActionListener {
   private long bank_time;
   private long move_time;
   private boolean poisoned;
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path edge_through_wild;
   private PathWalker.Path lumb_to_dray;
 
@@ -623,14 +623,11 @@ public final class S_KBDLooter extends Script implements ActionListener {
   }
 
   private boolean should_bank() {
-    if (getInventoryCount(SHARK) < MIN_SHARKS
+    return getInventoryCount(SHARK) < MIN_SHARKS
         || getInventoryIndex(SUPER_ATT) == -1
         || getInventoryIndex(SUPER_DEF) == -1
         || getInventoryIndex(SUPER_STR) == -1
-        || getInventoryIndex(DSTONE_CHARGED) == -1) {
-      return true;
-    }
-    return false;
+        || getInventoryIndex(DSTONE_CHARGED) == -1;
   }
 
   private boolean idle_move_p1() {

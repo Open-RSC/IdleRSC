@@ -24,10 +24,7 @@ public class DrawPlayerCallback {
     if (c.getShowBotPaint()) {
       if (healthMax != 0) {
         c.drawString(
-            "@red@"
-                + Integer.toString(c.getPlayer(index).healthCurrent)
-                + "/"
-                + Integer.toString(c.getPlayer(index).healthMax),
+            "@red@" + c.getPlayer(index).healthCurrent + "/" + c.getPlayer(index).healthMax,
             x + 16 + skew,
             y - 5,
             0xFFFFFF,

@@ -8,15 +8,15 @@ package scripting.idlescript;
  */
 public class HerbIdentifier extends IdleScript {
 
-  int[] unids = {933, 443, 442, 441, 440, 439, 438, 437, 436, 435, 165};
+  final int[] unids = {933, 443, 442, 441, 440, 439, 438, 437, 436, 435, 165};
 
   int identifiedCount = 0;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int countUnids() {
     int count = 0;
-    for (int i = 0; i < unids.length; i++) {
-      count += controller.getInventoryItemCount(unids[i]);
+    for (int unid : unids) {
+      count += controller.getInventoryItemCount(unid);
     }
 
     return count;
@@ -121,8 +121,9 @@ public class HerbIdentifier extends IdleScript {
     if (controller != null) {
 
       int identifiedPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         identifiedPerHr = (int) (identifiedCount * scale);
       } catch (Exception e) {

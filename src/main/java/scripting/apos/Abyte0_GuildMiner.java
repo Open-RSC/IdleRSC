@@ -1,8 +1,6 @@
 package scripting.apos;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import javax.swing.*;
 
 public class Abyte0_GuildMiner extends Abyte0_Script {
@@ -12,7 +10,7 @@ public class Abyte0_GuildMiner extends Abyte0_Script {
 
   int RockCoal2 = 110; // Coal rock/ EAST
   int RockCoal = 111; // Coal rock WEST
-  int RockMith = 107; // Mith rock
+  final int RockMith = 107; // Mith rock
 
   boolean mith = false;
   // Extension myReference = null;
@@ -180,7 +178,7 @@ public class Abyte0_GuildMiner extends Abyte0_Script {
         // Si dans la banque
         print("Talking to Banker");
         if (!isBanking()) {
-          int banker[] = getNpcByIdNotTalk(new int[] {95});
+          int[] banker = getNpcByIdNotTalk(95);
           if (banker[0] != -1 && !isBanking()) {
             talkToNpc(banker[0]);
             return random(2000, 3000);

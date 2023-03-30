@@ -67,7 +67,7 @@ public final class S_HerblawShop extends Script {
   private int banked_vials;
   private int banked_eyes;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path bank_to_gate;
   private PathWalker.Path gate_to_bank;
   private PathWalker.Path shop_to_gate;

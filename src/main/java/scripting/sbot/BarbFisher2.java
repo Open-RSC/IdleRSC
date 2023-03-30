@@ -1,12 +1,8 @@
 package scripting.sbot;
 
 import compatibility.sbot.Script;
-import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
 import javax.swing.*;
 
 public class BarbFisher2 extends Script implements ActionListener {
@@ -24,7 +20,8 @@ public class BarbFisher2 extends Script implements ActionListener {
       YFire = 0,
       DepId1 = 0,
       DepId2 = 0;
-  public String preferences[] = new String[2], fishmode = "dunno";
+  public String[] preferences = new String[2];
+  public String fishmode = "dunno";
   public String ctime, bankmode, cMode = " doing nothing";
   JFrame fishFrame, reportFrame;
   JPanel fishPanel, reportPanel;
@@ -40,13 +37,8 @@ public class BarbFisher2 extends Script implements ActionListener {
     if (message.contains("You catch a ")) fishes++;
   }
 
-  public void start(String command, String parameter[]) {
-    javax.swing.SwingUtilities.invokeLater(
-        new Runnable() {
-          public void run() {
-            addWidgets();
-          }
-        });
+  public void start(String command, String[] parameter) {
+    javax.swing.SwingUtilities.invokeLater(() -> addWidgets());
     while (!run_script && Running()) Wait(100);
     if (run_script) RunScipt();
   }
@@ -54,7 +46,7 @@ public class BarbFisher2 extends Script implements ActionListener {
   public void WalkFromFireBarbVill() {
     ForceWalk(232, 502);
     Wait(100);
-    while (ObjectAt(232, 503) == 64 && Running() == true) {
+    while (ObjectAt(232, 503) == 64 && Running()) {
       cMode = " Opening door";
       showReport();
       AtObject(232, 503);
@@ -62,31 +54,31 @@ public class BarbFisher2 extends Script implements ActionListener {
     }
     cMode = " Walking back to fishing spot";
     showReport();
-    if (Running() == true) ForceWalk(226, 503);
-    if (Running() == true) ForceWalk(214, 501);
-    if (Running() == true) ForceWalk(212, 501);
+    if (Running()) ForceWalk(226, 503);
+    if (Running()) ForceWalk(214, 501);
+    if (Running()) ForceWalk(212, 501);
     Wait(100);
   }
 
   public void EatFish() {
-    while (InvCount(357) > 0 && Running() == true && Sleeping() == false) {
+    while (InvCount(357) > 0 && Running() && !Sleeping()) {
       Use(FindInv(357));
       Wait(100);
     }
-    while (InvCount(359) > 0 && Running() == true && Sleeping() == false) {
+    while (InvCount(359) > 0 && Running() && !Sleeping()) {
       Use(FindInv(359));
       Wait(100);
     }
   }
 
   public void WalkFromRangeBank() {
-    while (GetY() > 1000 && Running() == true) {
+    while (GetY() > 1000 && Running()) {
       cMode = " climbing down ladder";
       showReport();
       AtObject(226, 1383);
       Wait(1000);
     }
-    while (DoorAt(225, 444, 0) == 2 && Running() == true) {
+    while (DoorAt(225, 444, 0) == 2 && Running()) {
       cMode = " Opening door";
       showReport();
       OpenDoor(225, 444, 0);
@@ -94,10 +86,10 @@ public class BarbFisher2 extends Script implements ActionListener {
     }
     cMode = " Walking to bank";
     showReport();
-    if (Running() == true) ForceWalk(225, 445);
-    if (Running() == true) ForceWalk(217, 446);
+    if (Running()) ForceWalk(225, 445);
+    if (Running()) ForceWalk(217, 446);
     Wait(100);
-    while (ObjectAt(217, 447) != 63 && Running() == true) {
+    while (ObjectAt(217, 447) != 63 && Running()) {
       cMode = " Opening bank door";
       showReport();
       AtObject(217, 447);
@@ -106,25 +98,25 @@ public class BarbFisher2 extends Script implements ActionListener {
   }
 
   public void CookFish() {
-    while (InvCount(356) > 0 && Running() == true && Sleeping() == false) {
+    while (InvCount(356) > 0 && Running() && !Sleeping()) {
       cMode = " Cooking fish";
       showReport();
-      if (Fatigue() <= 95 && Running() == true) {
+      if (Fatigue() <= 95 && Running()) {
         UseOnObject(XFire, YFire, FindInv(356));
         Wait(2600);
       }
 
-      if (Fatigue() >= 95 && Running() == true) {
+      if (Fatigue() >= 95 && Running()) {
         Sleeptime();
         Wait(50);
       }
     }
-    while (InvCount(358) > 0 && Running() == true && Sleeping() == false) {
+    while (InvCount(358) > 0 && Running() && !Sleeping()) {
       cMode = " Cooking fish";
       showReport();
       UseOnObject(XFire, YFire, FindInv(358));
       Wait(2600);
-      if (Fatigue() >= 95 && Running() == true) {
+      if (Fatigue() >= 95 && Running()) {
         Sleeptime();
         Wait(50);
       }
@@ -134,27 +126,27 @@ public class BarbFisher2 extends Script implements ActionListener {
   public void WalkToRange() {
     cMode = " Walking to Range";
     showReport();
-    if (Running() == true) ForceWalk(211, 501);
-    if (Running() == true) ForceWalk(213, 497);
-    if (Running() == true) ForceWalk(215, 493);
-    if (Running() == true) ForceWalk(217, 488);
-    if (Running() == true) ForceWalk(218, 483);
-    if (Running() == true) ForceWalk(220, 478);
-    if (Running() == true) ForceWalk(221, 470);
-    if (Running() == true) ForceWalk(224, 466);
-    if (Running() == true) ForceWalk(224, 458);
-    if (Running() == true) ForceWalk(222, 449);
-    if (Running() == true) ForceWalk(225, 445);
-    if (Running() == true)
-      while (DoorAt(225, 444, 0) == 2 && Running() == true) {
+    if (Running()) ForceWalk(211, 501);
+    if (Running()) ForceWalk(213, 497);
+    if (Running()) ForceWalk(215, 493);
+    if (Running()) ForceWalk(217, 488);
+    if (Running()) ForceWalk(218, 483);
+    if (Running()) ForceWalk(220, 478);
+    if (Running()) ForceWalk(221, 470);
+    if (Running()) ForceWalk(224, 466);
+    if (Running()) ForceWalk(224, 458);
+    if (Running()) ForceWalk(222, 449);
+    if (Running()) ForceWalk(225, 445);
+    if (Running())
+      while (DoorAt(225, 444, 0) == 2 && Running()) {
         cMode = " Opening door";
         showReport();
         OpenDoor(225, 444, 0);
         Wait(2000);
       }
-    if (Running() == true) ForceWalk(225, 441);
+    if (Running()) ForceWalk(225, 441);
     Wait(100);
-    while (GetY() < 1000 && Running() == true) {
+    while (GetY() < 1000 && Running()) {
       cMode = "Climging up ladder";
       showReport();
       AtObject(226, 439);
@@ -165,18 +157,18 @@ public class BarbFisher2 extends Script implements ActionListener {
   public void WalkFireBarbVill() {
     cMode = " Walking to fire";
     showReport();
-    if (Running() == true) ForceWalk(213, 502);
-    if (Running() == true) ForceWalk(221, 502);
-    if (Running() == true) ForceWalk(225, 503);
-    if (Running() == true) ForceWalk(232, 504);
+    if (Running()) ForceWalk(213, 502);
+    if (Running()) ForceWalk(221, 502);
+    if (Running()) ForceWalk(225, 503);
+    if (Running()) ForceWalk(232, 504);
     Wait(100);
-    while (ObjectAt(232, 503) == 64 && Running() == true) {
+    while (ObjectAt(232, 503) == 64 && Running()) {
       cMode = " Opening door";
       showReport();
       AtObject(232, 503);
       Wait(2000);
     }
-    if (Running() == true) ForceWalk(235, 496);
+    if (Running()) ForceWalk(235, 496);
     Wait(200);
   }
 
@@ -190,7 +182,7 @@ public class BarbFisher2 extends Script implements ActionListener {
   }
 
   public void WalkFromBank() {
-    while (ObjectAt(217, 447) != 63 && Running() == true) {
+    while (ObjectAt(217, 447) != 63 && Running()) {
       cMode = " Opening bank door";
       showReport();
       AtObject(217, 447);
@@ -198,42 +190,39 @@ public class BarbFisher2 extends Script implements ActionListener {
     }
     cMode = " walking back to fishing spot";
     showReport();
-    if (Running() == true) ForceWalk(220, 446);
-    if (Running() == true) ForceWalk(222, 455);
-    if (Running() == true) ForceWalk(224, 463);
-    if (Running() == true) ForceWalk(223, 471);
-    if (Running() == true) ForceWalk(221, 480);
-    if (Running() == true) ForceWalk(217, 492);
-    if (Running() == true) ForceWalk(211, 500);
+    if (Running()) ForceWalk(220, 446);
+    if (Running()) ForceWalk(222, 455);
+    if (Running()) ForceWalk(224, 463);
+    if (Running()) ForceWalk(223, 471);
+    if (Running()) ForceWalk(221, 480);
+    if (Running()) ForceWalk(217, 492);
+    if (Running()) ForceWalk(211, 500);
     Wait(100);
   }
 
   public void TalkBanker() {
-    while (Bank() == false && Running() == true) {
-      while (QuestMenu() == false && Running() == true) {
+    while (!Bank() && Running()) {
+      while (!QuestMenu() && Running()) {
         cMode = " Talking to banker";
         showReport();
         int BankerID = GetNearestNPC(95);
         TalkToNPC(BankerID);
         long Time = System.currentTimeMillis();
-        while (System.currentTimeMillis() - Time <= 2000
-            && QuestMenu() == false
-            && Running() == true) Wait(3001);
+        while (System.currentTimeMillis() - Time <= 2000 && !QuestMenu() && Running()) Wait(3001);
       }
       Answer(0);
       long Time = System.currentTimeMillis();
-      while (System.currentTimeMillis() - Time <= 5000 && Bank() == false && Running() == true)
-        Wait(3001);
+      while (System.currentTimeMillis() - Time <= 5000 && !Bank() && Running()) Wait(3001);
     }
 
-    while (InvCount(DepId1) > 0 && Running() == true && Bank() == true) {
+    while (InvCount(DepId1) > 0 && Running() && Bank()) {
       cMode = " Depositing fish";
       showReport();
       Deposit(DepId1, 1);
       Wait(100);
     }
 
-    while (InvCount(DepId2) > 0 && Running() == true && Bank() == true) {
+    while (InvCount(DepId2) > 0 && Running() && Bank()) {
       cMode = " Depositing fish";
       showReport();
       Deposit(DepId2, 1);
@@ -246,19 +235,19 @@ public class BarbFisher2 extends Script implements ActionListener {
   public void WalkBankNoCook() {
     cMode = " Walking to Bank";
     showReport();
-    if (Running() == true) ForceWalk(211, 501);
-    if (Running() == true) ForceWalk(213, 497);
-    if (Running() == true) ForceWalk(215, 493);
-    if (Running() == true) ForceWalk(217, 488);
-    if (Running() == true) ForceWalk(218, 483);
-    if (Running() == true) ForceWalk(220, 478);
-    if (Running() == true) ForceWalk(221, 470);
-    if (Running() == true) ForceWalk(224, 466);
-    if (Running() == true) ForceWalk(224, 458);
-    if (Running() == true) ForceWalk(222, 449);
-    if (Running() == true) ForceWalk(217, 447);
-    if (Running() == true)
-      while (ObjectAt(217, 447) != 63 && Running() == true) {
+    if (Running()) ForceWalk(211, 501);
+    if (Running()) ForceWalk(213, 497);
+    if (Running()) ForceWalk(215, 493);
+    if (Running()) ForceWalk(217, 488);
+    if (Running()) ForceWalk(218, 483);
+    if (Running()) ForceWalk(220, 478);
+    if (Running()) ForceWalk(221, 470);
+    if (Running()) ForceWalk(224, 466);
+    if (Running()) ForceWalk(224, 458);
+    if (Running()) ForceWalk(222, 449);
+    if (Running()) ForceWalk(217, 447);
+    if (Running())
+      while (ObjectAt(217, 447) != 63 && Running()) {
         cMode = " Opening Door";
         showReport();
         AtObject(217, 447);
@@ -267,7 +256,7 @@ public class BarbFisher2 extends Script implements ActionListener {
   }
 
   public void Fish() {
-    int spot[] = GetNearestObject(192);
+    int[] spot = GetNearestObject(192);
     AtObject(spot[0], spot[1]);
     cMode = " Fishing";
     showReport();
@@ -357,8 +346,8 @@ public class BarbFisher2 extends Script implements ActionListener {
     fishFrame.getRootPane().setDefaultButton(save);
 
     fishFrame.getContentPane().add(fishPanel, BorderLayout.CENTER);
-    String fishModes[] = {"Just Fish", "Fish Then Cook"};
-    String bankModes[] = {"Banking", "No Banking"};
+    String[] fishModes = {"Just Fish", "Fish Then Cook"};
+    String[] bankModes = {"Banking", "No Banking"};
     fishModeLabel = new JLabel("Fishing Mode?", SwingConstants.LEFT);
 
     emptylabel1 = new JLabel("");
@@ -424,7 +413,7 @@ public class BarbFisher2 extends Script implements ActionListener {
         3);
     startexp = GetExperience(10);
 
-    while (Running() == true) {
+    while (Running()) {
 
       showReport();
       Wait(100);
@@ -434,25 +423,25 @@ public class BarbFisher2 extends Script implements ActionListener {
         time = System.currentTimeMillis();
       }
       if (fishmode.equalsIgnoreCase("Just Fish") && bankmode.equalsIgnoreCase("No Banking")) {
-        while (Sleeping() == false && Running() == true) {
+        while (!Sleeping() && Running()) {
           Fish();
 
-          if (Fatigue() >= 95 && Running() == true) {
+          if (Fatigue() >= 95 && Running()) {
             Sleeptime();
             Wait(50);
           }
         }
       }
       if (fishmode.equalsIgnoreCase("Just Fish") && bankmode.equalsIgnoreCase("Banking")) {
-        while (Sleeping() == false && InvCount() < 30 && Running() == true) {
+        while (!Sleeping() && InvCount() < 30 && Running()) {
           Fish();
 
-          if (Fatigue() >= 95 && Running() == true) {
+          if (Fatigue() >= 95 && Running()) {
             Sleeptime();
             Wait(50);
           }
         }
-        if (InvCount() == 30 && Running() == true) {
+        if (InvCount() == 30 && Running()) {
           WalkBankNoCook();
           TalkBanker();
           WalkFromBank();
@@ -460,15 +449,15 @@ public class BarbFisher2 extends Script implements ActionListener {
       }
 
       if (fishmode.equalsIgnoreCase("Fish Then Cook") && bankmode.equalsIgnoreCase("Banking")) {
-        while (Sleeping() == false && InvCount() < 30 && Running() == true) {
+        while (!Sleeping() && InvCount() < 30 && Running()) {
           Fish();
 
-          if (Fatigue() >= 95 && Running() == true) {
+          if (Fatigue() >= 95 && Running()) {
             Sleeptime();
             Wait(50);
           }
         }
-        if (InvCount() == 30 && Running() == true) {
+        if (InvCount() == 30 && Running()) {
           WalkToRange();
           CookFish();
           DropBurnt();
@@ -478,15 +467,15 @@ public class BarbFisher2 extends Script implements ActionListener {
         }
       }
       if (fishmode.equalsIgnoreCase("Fish Then Cook") && bankmode.equalsIgnoreCase("No Banking")) {
-        while (Sleeping() == false && InvCount() < 30 && Running() == true) {
+        while (!Sleeping() && InvCount() < 30 && Running()) {
           Fish();
 
-          if (Fatigue() >= 95 && Running() == true) {
+          if (Fatigue() >= 95 && Running()) {
             Sleeptime();
             Wait(50);
           }
         }
-        if (InvCount() == 30 && Running() == true) {
+        if (InvCount() == 30 && Running()) {
           WalkFireBarbVill();
           CookFish();
           DropBurnt();

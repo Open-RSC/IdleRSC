@@ -11,10 +11,10 @@ import scripting.idlescript.IdleScript;
 public class KeyCallback {
 
   private static class SwitchThread implements Runnable {
-    private Controller c;
-    private boolean attack;
-    private boolean strength;
-    private boolean defence;
+    private final Controller c;
+    private final boolean attack;
+    private final boolean strength;
+    private final boolean defence;
 
     public SwitchThread(Controller c, boolean attack, boolean strength, boolean defence) {
       this.c = c;
@@ -84,17 +84,14 @@ public class KeyCallback {
       SwitchThread switchThread = new SwitchThread(c, true, false, false);
       Thread t = new Thread(switchThread);
       t.start();
-      return;
     } else if (keycode == KeyEvent.VK_F6) {
       SwitchThread switchThread = new SwitchThread(c, false, true, false);
       Thread t = new Thread(switchThread);
       t.start();
-      return;
     } else if (keycode == KeyEvent.VK_F7) {
       SwitchThread switchThread = new SwitchThread(c, false, false, true);
       Thread t = new Thread(switchThread);
       t.start();
-      return;
     } else if (keycode == KeyEvent.VK_F8) {
       ORSCharacter npc = c.getNpcAtCoords(c.currentX(), c.currentY());
       int playerIndex = c.getPlayerAtCoord(c.currentX(), c.currentY());
@@ -126,7 +123,7 @@ public class KeyCallback {
       }
     } else {
       if (c != null
-          && c.getShowBotPaint() == true
+          && c.getShowBotPaint()
           && c.isRunning()
           && Main.getCurrentRunningScript() != null) {
         if (Main.getCurrentRunningScript() instanceof IdleScript) {

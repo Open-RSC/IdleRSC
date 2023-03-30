@@ -11,24 +11,24 @@ public class D_WildyDarkWiz extends Script {
     // TODO Auto-generated constructor stub
   }
 
-  int banker = 95;
+  final int banker = 95;
 
   String fightModeSelected;
   int fightMode;
-  int[] spotToBankX = {
+  final int[] spotToBankX = {
     311, 308, 304, 302, 305, 311, 312, 311, 308, 299, 311, 314, 313, 303, 294, 290, 287
   };
-  int[] spotToBankY = {
+  final int[] spotToBankY = {
     414, 423, 435, 447, 459, 467, 478, 488, 496, 506, 514, 526, 537, 543, 552, 566, 571
   };
-  int[] bankToLumX = {
+  final int[] bankToLumX = {
     287, 290, 290, 290, 279, 265, 251, 236, 222, 209, 194, 180, 166, 154, 139, 135, 134, 123
   };
-  int[] bankToLumY = {
+  final int[] bankToLumY = {
     571, 576, 589, 599, 609, 610, 610, 610, 607, 607, 604, 606, 611, 614, 616, 626, 636, 645
   };
   boolean inBankingSequence = false;
-  int[] lootIds = {
+  final int[] lootIds = {
     464, 220, 438, 439, 440, 441, 442, 443, 526, 527, 157, 158, 159, 160, 1277, 815, 817, 819, 821,
     823, 933, 40, 41, 42, 33, 31, 32, 34, 619, 38, 46
   };
@@ -38,18 +38,18 @@ public class D_WildyDarkWiz extends Script {
   int autoEatHP = 0;
   long time = -1L;
   int withdrawAmount = 0;
-  public int areaX2 = 303;
-  public int areaY2 = 419;
-  public int areaX = 323;
-  public int areaY = 403;
-  public int bankX = 286;
-  public int bankY = 564;
-  public int bankX2 = 280;
-  public int bankY2 = 573;
-  public int bankFrontX = 288;
-  public int bankFrontY = 568;
-  public int bankFrontX2 = 287;
-  public int bankFrontY2 = 574;
+  public final int areaX2 = 303;
+  public final int areaY2 = 419;
+  public final int areaX = 323;
+  public final int areaY = 403;
+  public final int bankX = 286;
+  public final int bankY = 564;
+  public final int bankX2 = 280;
+  public final int bankY2 = 573;
+  public final int bankFrontX = 288;
+  public final int bankFrontY = 568;
+  public final int bankFrontX2 = 287;
+  public final int bankFrontY2 = 574;
   public int airs = 0;
   public int earths = 0;
   public int waters = 0;
@@ -77,17 +77,22 @@ public class D_WildyDarkWiz extends Script {
                 null,
                 fightModeOptions,
                 fightModeOptions[0]);
-    if (fightModeSelected.equals("Strength")) {
-      fightMode = 1;
+    switch (fightModeSelected) {
+      case "Strength":
+        fightMode = 1;
 
-    } else if (fightModeSelected.equals("Attack")) {
-      fightMode = 2;
+        break;
+      case "Attack":
+        fightMode = 2;
 
-    } else if (fightModeSelected.equals("Defense")) {
-      fightMode = 3;
+        break;
+      case "Defense":
+        fightMode = 3;
 
-    } else if (fightModeSelected.equals("Controlled")) {
-      fightMode = 0;
+        break;
+      case "Controlled":
+        fightMode = 0;
+        break;
     }
 
     autoEatHP = Integer.parseInt(JOptionPane.showInputDialog("Eat HP: "));
@@ -154,10 +159,7 @@ public class D_WildyDarkWiz extends Script {
     if (bankEveryMinutes == -1) {
       return false;
     }
-    if ((System.currentTimeMillis() - lastBankTimeMark) < (bankEveryMinutes * 60000)) {
-      return false;
-    }
-    return true;
+    return (System.currentTimeMillis() - lastBankTimeMark) >= (bankEveryMinutes * 60000L);
   }
 
   public int minutesToNextBank() {
@@ -227,7 +229,7 @@ public class D_WildyDarkWiz extends Script {
       // this handles walking to bank & banking & deathwalk.
     } else if ((
         /* getInventoryCount() == 30 && */ !hasInventoryItem(1263) || !hasInventoryItem(foodid))
-        || (inBankingSequence == true)
+        || (inBankingSequence)
         || getY() >= 574
         || bankingTime()) {
 
@@ -246,10 +248,10 @@ public class D_WildyDarkWiz extends Script {
           }
         } else {
           System.out.println("Banking");
-          for (int i = 0; i < lootIds.length; i++) {
-            if (getInventoryCount(lootIds[i]) > 0) {
-              updateLootCount(lootIds[i]);
-              deposit(lootIds[i], getInventoryCount(lootIds[i]));
+          for (int lootId : lootIds) {
+            if (getInventoryCount(lootId) > 0) {
+              updateLootCount(lootId);
+              deposit(lootId, getInventoryCount(lootId));
               inBankingSequence = true;
               return random(1000, 1500);
             }
@@ -286,7 +288,7 @@ public class D_WildyDarkWiz extends Script {
 
       if (inArea(getX(), getY(), bankFrontX, bankFrontY, bankFrontX2, bankFrontY2)) {
         boolean YN = openBankDoors();
-        if (YN == true) {
+        if (YN) {
 
           return random(800, 1200);
         } else {
@@ -313,7 +315,7 @@ public class D_WildyDarkWiz extends Script {
 
       if (inArea(getX(), getY(), bankX, bankY, bankX2, bankY2)) {
         boolean YN = openBankDoors();
-        if (YN == true) {
+        if (YN) {
           return random(800, 1200);
         } else {
 
@@ -412,10 +414,7 @@ public class D_WildyDarkWiz extends Script {
   }
 
   private boolean inArea(int entityX, int entityY, int areaX, int areaY, int areaXx, int areaYy) {
-    if (entityX <= areaX && entityY >= areaY && entityX >= areaXx && entityY <= areaYy) {
-      return true;
-    }
-    return false;
+    return entityX <= areaX && entityY >= areaY && entityX >= areaXx && entityY <= areaYy;
   }
 
   // walks to furthest tile in the given array, put tiles x & y in the

@@ -8,21 +8,21 @@ import java.text.DecimalFormat;
 
 public class ZanarisCooker extends Script implements ActionListener {
 
-  private class Fish {
-    String Name;
-    int RawId;
-    int CookedId;
+  private static class Fish {
+    final String Name;
+    final int RawId;
+    final int CookedId;
 
     private Fish(String name, int rawId, int cookedId) {
       Name = name;
       RawId = rawId;
       CookedId = cookedId;
     }
-  };
+  }
 
   Fish[] allFish;
   Fish fish;
-  private int[] burnedIds = new int[] {353, 360, 365, 368, 371, 374, 547};
+  private final int[] burnedIds = new int[] {353, 360, 365, 368, 371, 374, 547};
   private long startTime = -1L, waitForBank = -1L;
   private int startXp, curXp, remaining, cookedCount = 0, burnedCount = 0;
   private final DecimalFormat iformat = new DecimalFormat("#,##0");

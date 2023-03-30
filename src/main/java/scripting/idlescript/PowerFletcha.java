@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,16 +21,16 @@ public class PowerFletcha extends IdleScript {
   int fightMode = 0;
   int eatingHealth = 0;
 
-  int[] bowIds = {276, 277, 658, 659, 660, 661, 662, 663, 664, 665, 666, 667};
+  final int[] bowIds = {276, 277, 658, 659, 660, 661, 662, 663, 664, 665, 666, 667};
 
   int itemsFletched = 0;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  class FletchObject {
-    String name;
-    int treeId;
-    int logId;
-    int optionId;
+  static class FletchObject {
+    final String name;
+    final int treeId;
+    final int logId;
+    final int optionId;
 
     public FletchObject(String _name, int _treeId, int _logId, int _optionId) {
       name = _name;
@@ -44,16 +42,14 @@ public class PowerFletcha extends IdleScript {
     @Override
     public boolean equals(Object o) {
       if (o instanceof FletchObject) {
-        if (((FletchObject) o).name.equals(this.name)) {
-          return true;
-        }
+        return ((FletchObject) o).name.equals(this.name);
       }
 
       return false;
     }
   }
 
-  ArrayList<FletchObject> objects =
+  final ArrayList<FletchObject> objects =
       new ArrayList<FletchObject>() {
         {
           add(new FletchObject("Arrow Shafts", 1, 14, 0));
@@ -72,7 +68,7 @@ public class PowerFletcha extends IdleScript {
         }
       };
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -129,7 +125,7 @@ public class PowerFletcha extends IdleScript {
 
   public void setupGUI() {
     JLabel headerLabel = new JLabel("Start with a knife, axe, and next to trees!");
-    JComboBox<String> targetField = new JComboBox<String>();
+    JComboBox<String> targetField = new JComboBox<>();
     JButton startScriptButton = new JButton("Start");
 
     for (FletchObject obj : objects) {
@@ -137,16 +133,13 @@ public class PowerFletcha extends IdleScript {
     }
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            target = objects.get(targetField.getSelectedIndex());
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
+        e -> {
+          target = objects.get(targetField.getSelectedIndex());
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
 
-            controller.displayMessage("@red@PowerFletcha by Dvorak. Let's party like it's 2004!");
-          }
+          controller.displayMessage("@red@PowerFletcha by Dvorak. Let's party like it's 2004!");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -173,8 +166,9 @@ public class PowerFletcha extends IdleScript {
     if (controller != null) {
 
       int fletchedPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         fletchedPerHr = (int) (itemsFletched * scale);
       } catch (Exception e) {

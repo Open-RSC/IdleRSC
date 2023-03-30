@@ -11,22 +11,22 @@ public class k_ArdyHerber extends Script {
   int loop = 0;
   int i = 0;
   int j = 0;
-  int[] herbs = {
+  final int[] herbs = {
     31, 33, 34, 40, 42, 157, 158, 159, 160, 438, 439, 440, 441, 442, 443, 448, 449, 450, 451, 452,
     453, 469, 526, 527, 1277, 458, 483
   };
-  int[] extras = {
+  final int[] extras = {
     10, 35, 36, 454, 455, 456, 457, 459, 460, 461, 462, 463, 464, 465, 483, 981, 1026
   };
-  int[] gathered = {
+  final int[] gathered = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
   };
-  int[] bones = {20};
+  final int[] bones = {20};
   int[] path = null;
   int fMode = 2;
 
-  private String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
-  private int[] fModeIdList = {2, 3, 1, 0};
+  private final String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
+  private final int[] fModeIdList = {2, 3, 1, 0};
 
   public k_ArdyHerber(String e) {
     //		super(e);
@@ -77,14 +77,14 @@ public class k_ArdyHerber extends Script {
         }
       }
       int[] crapHerbs = {165, 435, 436, 437, 444, 445, 446, 447};
-      for (int j = 0; j < crapHerbs.length; j++) {
-        if (getInventoryCount(crapHerbs[j]) > 0) {
-          deposit(crapHerbs[j], getInventoryCount(crapHerbs[j]));
+      for (int crapHerb : crapHerbs) {
+        if (getInventoryCount(crapHerb) > 0) {
+          deposit(crapHerb, getInventoryCount(crapHerb));
         }
       }
-      for (int e = 0; e < extras.length; e++) {
-        if (getInventoryCount(extras[e]) > 0) {
-          deposit(extras[e], getInventoryCount(extras[e]));
+      for (int extra : extras) {
+        if (getInventoryCount(extra) > 0) {
+          deposit(extra, getInventoryCount(extra));
         }
       }
       closeBank();
@@ -93,7 +93,7 @@ public class k_ArdyHerber extends Script {
     }
     if (isAtApproxCoords(581, 574, 5) && getInventoryCount() == 30) {
       if (!isQuestMenu()) {
-        int banker[] = getNpcByIdNotTalk(new int[] {95});
+        int[] banker = getNpcByIdNotTalk(95);
         if (banker[0] != -1) {
           talkToNpc(banker[0]);
           return random(2000, 2700);
@@ -250,8 +250,8 @@ public class k_ArdyHerber extends Script {
         useItem(dwa);
         return random(800, 1000);
       }
-      for (int h = 0; h < herbs.length; h++) {
-        int[] groundHerbs = getItemById(herbs[h]);
+      for (int herb : herbs) {
+        int[] groundHerbs = getItemById(herb);
         int[] groundBones = getItemById(bones);
         int[] crapHerbs = getItemById(165, 435, 436, 437);
         int[] groundVial = getItemById(464);
@@ -548,8 +548,8 @@ public class k_ArdyHerber extends Script {
     try {
       int xph =
           (int)
-              ((((long) (current_xp - start_xp) * 60L) * 60L)
-                  / ((long) (System.currentTimeMillis() - time) / 1000L));
+              ((((current_xp - start_xp) * 60L) * 60L)
+                  / ((System.currentTimeMillis() - time) / 1000L));
       return xph;
     } catch (ArithmeticException e) {
     }

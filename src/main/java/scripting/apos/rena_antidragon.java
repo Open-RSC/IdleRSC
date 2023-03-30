@@ -19,7 +19,7 @@ public class rena_antidragon extends Script {
   boolean picked = false;
 
   // Areas
-  int[] bedroomArea = new int[] {133, 1602};
+  final int[] bedroomArea = new int[] {133, 1602};
 
   // Shield Count
   int shieldcount = 0;
@@ -158,7 +158,7 @@ public class rena_antidragon extends Script {
             return random(1000, 1500);
           }
           if (distanceTo(bedroomArea[0], bedroomArea[1]) < 6) {
-            int oldman[] = getNpcByIdNotTalk(198);
+            int[] oldman = getNpcByIdNotTalk(198);
             if (oldman[0] != -1) talkToNpc(oldman[0]);
             return 2000;
 
@@ -267,7 +267,7 @@ public class rena_antidragon extends Script {
       }
       if (distanceTo(217, 453) < 6) {
 
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
 
         if (banker[0] != -1) talkToNpc(banker[0]);
 

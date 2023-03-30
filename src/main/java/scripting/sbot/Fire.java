@@ -12,11 +12,11 @@ public class Fire extends Script {
   int BagCount = 0;
   long StartTime = 0;
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     StartSleeper();
     TotalStartXP = GetExperience(11);
     StartLevel = GetStat(11);
-    StartTime = (long) ((int) (TickCount() / 1000));
+    StartTime = (int) (TickCount() / 1000);
     Println("##### Start Firemaking Experience: " + TotalStartXP + " (" + StartLevel + ")");
     while (Running()) {
       if (!Sleeping() && Fatigue() < 80) {
@@ -34,7 +34,7 @@ public class Fire extends Script {
         while (TickCount() - T < 500 && !ItemAt(GetX(), GetY(), 14)) Wait(1);
 
         Println("## Lighting Fire...");
-        Fire();
+        firemake();
       }
 
       Wait(1);
@@ -42,9 +42,9 @@ public class Fire extends Script {
     Println("#### Script Ended ####");
   }
 
-  public void Fire() {
-    int TreeTypes[] = new int[] {0, 1};
-    int TreeCoords[] = GetNearestObject(TreeTypes);
+  public void firemake() {
+    int[] TreeTypes = new int[] {0, 1};
+    int[] TreeCoords = GetNearestObject(TreeTypes);
     if (TreeCoords[0] != -1) {
       while (ObjectAt(GetX(), GetY()) == -1
           && Running()
@@ -65,8 +65,8 @@ public class Fire extends Script {
   }
 
   public void Tree() {
-    int TreeTypes[] = new int[] {0, 1};
-    int TreeCoords[] = GetNearestObject(TreeTypes);
+    int[] TreeTypes = new int[] {0, 1};
+    int[] TreeCoords = GetNearestObject(TreeTypes);
     if (TreeCoords[0] != -1) {
       while (ObjectAt(TreeCoords[0], TreeCoords[1]) < 2
           && Running()
@@ -86,17 +86,15 @@ public class Fire extends Script {
 
   public void StartSleeper() {
     new Thread(
-            new Runnable() {
-              public void run() {
-                while (Running()) {
-                  if (Fatigue() >= 80 && !Sleeping()) {
-                    Println("Fatigue is " + Fatigue() + ", using sleeping bag");
-                    Use(FindInv(1263));
-                    BagCount++;
-                    Wait(5000);
-                  }
-                  Wait(250);
+            () -> {
+              while (Running()) {
+                if (Fatigue() >= 80 && !Sleeping()) {
+                  Println("Fatigue is " + Fatigue() + ", using sleeping bag");
+                  Use(FindInv(1263));
+                  BagCount++;
+                  Wait(5000);
                 }
+                Wait(250);
               }
             })
         .start();

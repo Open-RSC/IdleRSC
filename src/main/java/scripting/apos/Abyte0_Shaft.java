@@ -40,7 +40,7 @@ public class Abyte0_Shaft extends Abyte0_Script {
       return random(500, 600);
     }
 
-    int[] tree = getObjectById(new int[] {0, 1});
+    int[] tree = getObjectById(0, 1);
 
     if (tree[0] != -1 && getInventoryCount(14) <= 0) {
       if (getX() < x - 35 || getX() > x + 35 || getY() < y - 35 || getY() > y + 35) {

@@ -99,8 +99,8 @@ public final class S_Pickpocket extends Script implements ActionListener, ItemLi
   private int eat_at;
   private int withdraw_food;
 
-  private int[] bank_counts = new int[ids_bank.length];
-  private boolean[] has_banked = new boolean[ids_bank.length];
+  private final int[] bank_counts = new int[ids_bank.length];
+  private final boolean[] has_banked = new boolean[ids_bank.length];
 
   private Frame frame;
   private Choice ch_fm;
@@ -111,7 +111,7 @@ public final class S_Pickpocket extends Script implements ActionListener, ItemLi
   private TextField tf_eat;
   private TextField tf_sleep;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path to_bank;
   private PathWalker.Path from_bank;
   private PathWalker.Location bank;
@@ -599,8 +599,7 @@ public final class S_Pickpocket extends Script implements ActionListener, ItemLi
 
   private void _csvOut() {
     int cursor = ch_npc.getSelectedIndex();
-    List<Entry<String, int[]>> indexedList =
-        new ArrayList<Map.Entry<String, int[]>>(map_npcs.entrySet());
+    List<Entry<String, int[]>> indexedList = new ArrayList<>(map_npcs.entrySet());
     // fullname = non_spaced_npc + " " + (level)
     String fullName = indexedList.get(cursor).getKey();
     String npcname = fullName.substring(0, fullName.indexOf(' '));

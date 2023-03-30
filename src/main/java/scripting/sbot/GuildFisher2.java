@@ -1,11 +1,9 @@
 package scripting.sbot;
 
 import compatibility.sbot.Script;
-import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.net.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -18,7 +16,7 @@ public class GuildFisher2 extends Script implements ActionListener {
   public int fishes = 0;
   public String fishtype = "bruncle";
   public long starttime, minutes;
-  public String preferences[] = new String[2];
+  public String[] preferences = new String[2];
   public int slept = 0;
   public int startexp = 0;
   public int expgained = 0;
@@ -42,16 +40,11 @@ public class GuildFisher2 extends Script implements ActionListener {
       sleep = true;
       DisplayMessage("You need to sleep..", 2);
     }
-    if (message.indexOf("@gam@You catch a ") >= 0) fishes++;
+    if (message.contains("@gam@You catch a ")) fishes++;
   }
 
-  public void start(String command, String parameter[]) {
-    javax.swing.SwingUtilities.invokeLater(
-        new Runnable() {
-          public void run() {
-            addWidgets();
-          }
-        });
+  public void start(String command, String[] parameter) {
+    javax.swing.SwingUtilities.invokeLater(() -> addWidgets());
     while (!run_script && Running()) Wait(100);
     if (run_script) RunScipt();
   }
@@ -125,8 +118,8 @@ public class GuildFisher2 extends Script implements ActionListener {
     fishFrame.getRootPane().setDefaultButton(save);
 
     fishFrame.getContentPane().add(fishPanel, BorderLayout.CENTER);
-    String fishModes[] = {"Fish then cert", "Fish then cook then cert"};
-    String fishs[] = {"Lobster", "Shark"};
+    String[] fishModes = {"Fish then cert", "Fish then cook then cert"};
+    String[] fishs = {"Lobster", "Shark"};
     fishModeLabel = new JLabel("Fishing Mode?", SwingConstants.LEFT);
 
     emptylabel1 = new JLabel("");
@@ -209,7 +202,7 @@ public class GuildFisher2 extends Script implements ActionListener {
       while (InvCount() < 30 && Running()) {
         showReport();
         if (fishtype.equalsIgnoreCase("Lobster")) {
-          int spot[] = GetNearestObject(376);
+          int[] spot = GetNearestObject(376);
           AtObject(spot[0], spot[1]);
           cMode = " fishing lobsters";
           showReport();
@@ -220,7 +213,7 @@ public class GuildFisher2 extends Script implements ActionListener {
           }
         }
         if (fishtype.equalsIgnoreCase("Shark")) {
-          int spot[] = GetNearestObject(261);
+          int[] spot = GetNearestObject(261);
           AtObject2(spot[0], spot[1]);
           Wait(1000);
 
@@ -237,7 +230,7 @@ public class GuildFisher2 extends Script implements ActionListener {
           time = System.currentTimeMillis();
           Report();
         }
-        if (sleep == true && Fatigue() >= 80 && Running()) {
+        if (sleep && Fatigue() >= 80 && Running()) {
           cMode = " sleeping";
           showReport();
           while (!Sleeping() && Running()) {
@@ -518,7 +511,7 @@ public class GuildFisher2 extends Script implements ActionListener {
 
         p = new PrintStream(out);
 
-        p.println("");
+        p.println();
 
         p.close();
       } catch (Exception e) {

@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -14,17 +12,17 @@ import javax.swing.JLabel;
  * @author Searos bugfixes by kaila
  */
 public class MineGoldCraftingGuild extends IdleScript {
-  JCheckBox silver2 = new JCheckBox("Mine Silver", true);
+  final JCheckBox silver2 = new JCheckBox("Mine Silver", true);
   int a = 0;
-  int[] gold = {112, 113};
-  int[] silver = {195, 196, 197};
+  final int[] gold = {112, 113};
+  final int[] silver = {195, 196, 197};
   int bankedSilver = 0;
   int bankedGold = 0;
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -189,15 +187,12 @@ public class MineGoldCraftingGuild extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            controller.displayMessage("@red@MineGold started");
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          controller.displayMessage("@red@MineGold started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -219,10 +214,8 @@ public class MineGoldCraftingGuild extends IdleScript {
     if (controller != null) {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@MineGold @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Gold in Bank: @yel@" + String.valueOf(this.bankedGold), 10, 35, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Silver in bank: @yel@" + String.valueOf(this.bankedSilver), 10, 49, 0xFFFFFF, 1);
+      controller.drawString("@red@Gold in Bank: @yel@" + this.bankedGold, 10, 35, 0xFFFFFF, 1);
+      controller.drawString("@red@Silver in bank: @yel@" + this.bankedSilver, 10, 49, 0xFFFFFF, 1);
     }
   }
 }

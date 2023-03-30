@@ -46,7 +46,8 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
       min_def = 99,
       min_str = 99,
       starting_world = 2;
-  private long min_hop_time = 5000L, max_stand = 10000L;
+  private final long min_hop_time = 5000L;
+  private long max_stand = 10000L;
   private final TextField tf_eat_at = new TextField(String.valueOf(eat_at)),
       tf_pray_at = new TextField(String.valueOf(pray_at)),
       tf_food_count = new TextField(String.valueOf(food_count)),
@@ -72,7 +73,7 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
   // script constants
   private int WALK_BACK_X = 0, WALK_BACK_Y = 0;
 
-  private static final String DESTINATION_LIST[] = {
+  private static final String[] DESTINATION_LIST = {
     "Blue Dragons", "Black Demons", "Black Dragons", "King Black Dragons"
   };
   private static final int KBD_GATE_X = 285,
@@ -216,7 +217,7 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
 
   private final DecimalFormat int_format = new DecimalFormat("#,##0");
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path bank_to_gate;
   private PathWalker.Path bank_to_kbdgate;
   private PathWalker.Path gate_to_ladder;
@@ -282,9 +283,9 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
   // stuff also in pickup_ids that must be obtained twice before it can be banked
   private static final int[] pickup_equipment = {400, 404, 795};
 
-  private boolean[] banked_loot = new boolean[pickup_ids.length];
+  private final boolean[] banked_loot = new boolean[pickup_ids.length];
   private boolean died = false;
-  private int[] banked_counts = new int[pickup_ids.length];
+  private final int[] banked_counts = new int[pickup_ids.length];
   private Frame frame;
 
   private long last_hop;
@@ -448,8 +449,7 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
         }
       }
 
-      for (int i = 0; i < base_items.length; ++i) {
-        int id = base_items[i];
+      for (int id : base_items) {
         int count = getInventoryCount(id);
         if (count == 1) continue;
         if (bankCount(id) >= 1) {
@@ -667,8 +667,7 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
       walk_inside_bank = true;
     }
 
-    for (int i = 0; i < equipt_items.length; ++i) {
-      int id = equipt_items[i];
+    for (int id : equipt_items) {
       int index = getInventoryIndex(id);
       int count = getInventoryCount(id);
       if (count < 1) continue;
@@ -1150,8 +1149,8 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
 
   private boolean should_take_item(int[] item) {
     if (getInventoryCount() == MAX_INV_SIZE) {
-      for (int i = 0; i < rare_drops.length; ++i) {
-        if (item[0] == rare_drops[i]) {
+      for (int rareDrop : rare_drops) {
+        if (item[0] == rareDrop) {
           if (getInventoryIndex(food_id) != -1) {
             useItem(getInventoryIndex(food_id));
             return true;
@@ -1174,10 +1173,7 @@ public final class SAF_Fally_DnD extends Script implements ActionListener {
     if (item[0] == 10) {
       return false;
     }
-    if (in_fight_area(item[1], item[2], target_npc)) {
-      return true;
-    }
-    return false;
+    return in_fight_area(item[1], item[2], target_npc);
   }
 
   private boolean is_underground() {

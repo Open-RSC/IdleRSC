@@ -11,7 +11,7 @@ public final class S_ArmourConverter extends Script {
   // edit the behaviour of the script by changing this
   // second to last = body_to_top (true or false)
   // last = max_count (max number to convert)
-  private Armour[] armours = {
+  private final Armour[] armours = {
     new Armour("Bronze", 308, 117, true, Integer.MAX_VALUE),
     new Armour("Iron", 312, 8, true, Integer.MAX_VALUE),
     new Armour("Steel", 309, 118, true, 0),
@@ -33,9 +33,9 @@ public final class S_ArmourConverter extends Script {
     final String name;
     final int top_id;
     final int body_id;
-    boolean body_to_top;
+    final boolean body_to_top;
     int count;
-    int max_count;
+    final int max_count;
 
     Armour(String name, int top_id, int body_id, boolean body_to_top, int max_count) {
       this.name = name;

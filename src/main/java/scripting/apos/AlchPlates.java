@@ -24,16 +24,16 @@ public class AlchPlates extends Script {
       return 1000;
     }
 
-    if (getInventoryCount(new int[] {118}) > 0) {
+    if (getInventoryCount(118) > 0) {
 
-      castOnItem(28, getInventoryIndex(new int[] {118}));
+      castOnItem(28, getInventoryIndex(118));
 
       return 1000;
     }
 
     if (isBanking()) {
 
-      if (getInventoryCount(new int[] {118}) == 0) {
+      if (getInventoryCount(118) == 0) {
 
         withdraw(118, 25);
 
@@ -52,7 +52,7 @@ public class AlchPlates extends Script {
       return random(500, 600);
     }
 
-    int[] arrayOfInt = getNpcByIdNotTalk(this.BANKERS);
+    int[] arrayOfInt = getNpcByIdNotTalk(BANKERS);
 
     if (arrayOfInt[0] != -1) {
 

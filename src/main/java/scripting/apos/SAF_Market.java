@@ -42,7 +42,7 @@ public class SAF_Market extends Script {
       }
     }
     if (bank_mode == 1) {
-      int banker[] = getNpcByIdNotTalk(95);
+      int[] banker = getNpcByIdNotTalk(95);
       if (banker[0] != -1) talkToNpc(banker[0]);
       bank_mode++;
       return 4500;

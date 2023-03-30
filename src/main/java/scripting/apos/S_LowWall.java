@@ -6,7 +6,7 @@ public final class S_LowWall extends Script {
 
   // thx blood
 
-  private int[][] walls = {
+  private final int[][] walls = {
     {495, 559},
     {495, 558}
   };

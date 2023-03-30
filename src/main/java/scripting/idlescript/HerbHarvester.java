@@ -7,25 +7,25 @@ package scripting.idlescript;
  */
 public class HerbHarvester extends IdleScript {
 
-  int[] herbToDoorPath = {363, 503, 364, 495, 364, 488, 355, 487, 349, 487, 342, 488};
+  final int[] herbToDoorPath = {363, 503, 364, 495, 364, 488, 355, 487, 349, 487, 342, 488};
 
-  int[] doorToBankPath = {
+  final int[] doorToBankPath = {
     338, 488, 335, 493, 329, 498, 324, 501, 318, 507, 316, 513, 316, 518, 320, 526, 323, 535, 325,
     544, 327, 552
   };
 
-  int[] doorToHerbPath = {342, 488, 349, 487, 355, 487, 364, 488, 364, 495, 363, 503};
+  final int[] doorToHerbPath = {342, 488, 349, 487, 355, 487, 364, 488, 364, 495, 363, 503};
 
-  int[] bankToDoorPath = {
+  final int[] bankToDoorPath = {
     327, 552, 325, 544, 323, 535, 320, 526, 316, 518, 316, 513, 318, 507, 324, 501, 329, 498, 335,
     493, 338, 488, 341, 488
   };
 
-  int[] unids = {165, 435, 436, 437, 438, 439, 440, 441, 442, 443};
+  final int[] unids = {165, 435, 436, 437, 438, 439, 440, 441, 442, 443};
 
   int herbsPicked = 0;
   int herbsBanked = 0;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] param) {
     controller.displayMessage("@red@HerbHarvester by Dvorak. Let's party like it's 2004!");
@@ -40,7 +40,7 @@ public class HerbHarvester extends IdleScript {
           controller.setStatus("@whi@Picking herbs!");
           controller.atObject(coords[0], coords[1]);
           controller.sleep(1000);
-          while (controller.getInventoryItemCount() < 30 && controller.isBatching() == true)
+          while (controller.getInventoryItemCount() < 30 && controller.isBatching())
             controller.sleep(10);
         } else {
           // move so we can see all herbs
@@ -88,8 +88,8 @@ public class HerbHarvester extends IdleScript {
 
   public int countHerbs() {
     int count = 0;
-    for (int i = 0; i < unids.length; i++) {
-      count += controller.getInventoryItemCount(unids[i]);
+    for (int unid : unids) {
+      count += controller.getInventoryItemCount(unid);
     }
 
     return count;
@@ -101,17 +101,17 @@ public class HerbHarvester extends IdleScript {
     controller.openBank();
 
     while (countHerbs() > 0) {
-      for (int i = 0; i < unids.length; i++) {
-        if (controller.getInventoryItemCount(unids[i]) > 0) {
-          controller.depositItem(unids[i], controller.getInventoryItemCount(unids[i]));
+      for (int unid : unids) {
+        if (controller.getInventoryItemCount(unid) > 0) {
+          controller.depositItem(unid, controller.getInventoryItemCount(unid));
           controller.sleep(250);
         }
       }
     }
 
     herbsBanked = 0;
-    for (int i = 0; i < unids.length; i++) {
-      herbsBanked += controller.getBankItemCount(unids[i]);
+    for (int unid : unids) {
+      herbsBanked += controller.getBankItemCount(unid);
     }
   }
 
@@ -148,8 +148,9 @@ public class HerbHarvester extends IdleScript {
     if (controller != null) {
 
       int herbsPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         herbsPerHr = (int) (herbsPicked * scale);
       } catch (Exception e) {

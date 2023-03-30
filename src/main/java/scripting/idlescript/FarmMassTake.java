@@ -5,7 +5,7 @@ public class FarmMassTake extends IdleScript {
 
   public int start(String[] parameters) {
 
-    if (controller.isInTrade() == false) {
+    if (!controller.isInTrade()) {
       int serverIndex = controller.getPlayerServerIndexByName(parameters[0]);
 
       if (serverIndex == -1) {

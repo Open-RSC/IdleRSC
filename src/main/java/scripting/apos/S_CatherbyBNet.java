@@ -30,7 +30,7 @@ import java.util.Locale;
 public final class S_CatherbyBNet extends Script {
 
   private static final class Stage {
-    int id;
+    final int id;
     PathWalker.Path path_to;
 
     String cert_name;
@@ -201,7 +201,7 @@ public final class S_CatherbyBNet extends Script {
 
   private int box_bottom;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private boolean pw_init;
 
   private final List<Stage> stages = new ArrayList<>();
@@ -1361,8 +1361,7 @@ public final class S_CatherbyBNet extends Script {
 
     switch (s.id) {
       case STAGE_DEPOSIT:
-        for (int i = 0; i < bank_ids.length; ++i) {
-          int id = bank_ids[i];
+        for (int id : bank_ids) {
           if (inArray(bass, id) && big_netting && have_stage(STAGE_CERT)) {
             continue;
           }
@@ -1458,65 +1457,55 @@ public final class S_CatherbyBNet extends Script {
 
     final Checkbox cook = new Checkbox("Cook fish", false);
     cook.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+        e -> {
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
 
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
 
-            int change = e.getStateChange();
-            if (change == ItemEvent.SELECTED) {
-              sell_cooked_non_bass.setEnabled(true);
-              sell_cooked.setEnabled(true);
-              buy_cooked.setEnabled(false);
-              power.setEnabled(true);
-            } else {
-              sell_cooked_non_bass.setEnabled(false);
-              sell_cooked.setEnabled(false);
-              buy_cooked.setEnabled(true);
-            }
+          int change = e.getStateChange();
+          if (change == ItemEvent.SELECTED) {
+            sell_cooked_non_bass.setEnabled(true);
+            sell_cooked.setEnabled(true);
+            buy_cooked.setEnabled(false);
+            power.setEnabled(true);
+          } else {
+            sell_cooked_non_bass.setEnabled(false);
+            sell_cooked.setEnabled(false);
+            buy_cooked.setEnabled(true);
           }
         });
 
     acquire_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+        e -> {
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
 
-            int change = e.getStateChange();
-            if (change != ItemEvent.SELECTED) {
-              return;
-            }
-            if (cook.getState() || e.getSource() == fish) {
-              power.setEnabled(true);
-            } else {
-              power.setEnabled(false);
-            }
-            if (e.getSource() == buy_raw) {
-              sell_raw_non_bass.setEnabled(false);
-              sell_raw.setEnabled(false);
-              cook.setEnabled(true);
-            } else if (e.getSource() == buy_cooked) {
-              sell_raw_non_bass.setEnabled(false);
-              sell_raw.setEnabled(false);
-              cook.setEnabled(false);
-            } else if (e.getSource() == uncert) {
-              sell_raw_non_bass.setEnabled(false);
-              sell_raw.setEnabled(true);
-              cook.setEnabled(true);
-            } else {
-              sell_raw_non_bass.setEnabled(true);
-              sell_raw.setEnabled(true);
-              cook.setEnabled(true);
-            }
+          int change = e.getStateChange();
+          if (change != ItemEvent.SELECTED) {
+            return;
+          }
+          power.setEnabled(cook.getState() || e.getSource() == fish);
+          if (e.getSource() == buy_raw) {
+            sell_raw_non_bass.setEnabled(false);
+            sell_raw.setEnabled(false);
+            cook.setEnabled(true);
+          } else if (e.getSource() == buy_cooked) {
+            sell_raw_non_bass.setEnabled(false);
+            sell_raw.setEnabled(false);
+            cook.setEnabled(false);
+          } else if (e.getSource() == uncert) {
+            sell_raw_non_bass.setEnabled(false);
+            sell_raw.setEnabled(true);
+            cook.setEnabled(true);
+          } else {
+            sell_raw_non_bass.setEnabled(true);
+            sell_raw.setEnabled(true);
+            cook.setEnabled(true);
           }
         };
 
@@ -1530,21 +1519,18 @@ public final class S_CatherbyBNet extends Script {
     non_keepies.add(power);
 
     dispose_box_listener =
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            if (non_keepies.contains(e.getSource()) && e.getStateChange() == ItemEvent.SELECTED) {
-              sell_raw_non_bass.setEnabled(false);
-              sell_cooked_non_bass.setEnabled(false);
-              drop_raw_non_bass.setEnabled(false);
-              big_net_specials.setSelectedCheckbox(null);
-              return;
-            }
-            sell_raw_non_bass.setEnabled(true);
-            drop_raw_non_bass.setEnabled(true);
-            if (cook.getState()) {
-              sell_cooked_non_bass.setEnabled(true);
-            }
+        e -> {
+          if (non_keepies.contains(e.getSource()) && e.getStateChange() == ItemEvent.SELECTED) {
+            sell_raw_non_bass.setEnabled(false);
+            sell_cooked_non_bass.setEnabled(false);
+            drop_raw_non_bass.setEnabled(false);
+            big_net_specials.setSelectedCheckbox(null);
+            return;
+          }
+          sell_raw_non_bass.setEnabled(true);
+          drop_raw_non_bass.setEnabled(true);
+          if (cook.getState()) {
+            sell_cooked_non_bass.setEnabled(true);
           }
         };
 
@@ -1602,77 +1588,71 @@ public final class S_CatherbyBNet extends Script {
     list.add("Big net");
     list.select(0);
     list.addItemListener(
-        new ItemListener() {
-          @Override
-          public void itemStateChanged(ItemEvent e) {
-            checkboxes.invalidate();
-            checkboxes.remove(sell_raw_non_bass);
-            checkboxes.remove(sell_cooked_non_bass);
-            checkboxes.remove(drop_raw_non_bass);
-            checkboxes.remove(space_saver_a);
-            checkboxes.remove(space_saver_b);
-            checkboxes.remove(space_saver_c);
-            uncert.setEnabled(false);
-            cert.setEnabled(false);
-            pickup.setEnabled(true);
-            if (cook.getState()) {
-              sell_cooked.setEnabled(true);
-            }
-            big_netting = true;
-
-            acquire_group.setSelectedCheckbox(fish);
-            acquire_box_listener.itemStateChanged(
-                new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
-
-            dispose_group.setSelectedCheckbox(deposit);
-            dispose_box_listener.itemStateChanged(
-                new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
-
-            switch (list.getSelectedItem()) {
-              case "Big net":
-                checkboxes.add(drop_raw_non_bass);
-                checkboxes.add(sell_raw_non_bass);
-                checkboxes.add(sell_cooked_non_bass);
-                sell_cooked.setEnabled(false);
-                uncert.setEnabled(true);
-                cert.setEnabled(true);
-                pickup.setState(true);
-                pickup.setEnabled(false);
-                big_netting = true;
-                checkboxes.validate();
-                return;
-            }
-            checkboxes.add(space_saver_a);
-            checkboxes.add(space_saver_b);
-            checkboxes.add(space_saver_c);
-            checkboxes.validate();
+        e -> {
+          checkboxes.invalidate();
+          checkboxes.remove(sell_raw_non_bass);
+          checkboxes.remove(sell_cooked_non_bass);
+          checkboxes.remove(drop_raw_non_bass);
+          checkboxes.remove(space_saver_a);
+          checkboxes.remove(space_saver_b);
+          checkboxes.remove(space_saver_c);
+          uncert.setEnabled(false);
+          cert.setEnabled(false);
+          pickup.setEnabled(true);
+          if (cook.getState()) {
+            sell_cooked.setEnabled(true);
           }
+          big_netting = true;
+
+          acquire_group.setSelectedCheckbox(fish);
+          acquire_box_listener.itemStateChanged(
+              new ItemEvent(fish, ItemEvent.ITEM_FIRST, fish, ItemEvent.SELECTED));
+
+          dispose_group.setSelectedCheckbox(deposit);
+          dispose_box_listener.itemStateChanged(
+              new ItemEvent(deposit, ItemEvent.ITEM_FIRST, deposit, ItemEvent.SELECTED));
+
+          if (list.getSelectedItem().equals("Big net")) {
+            checkboxes.add(drop_raw_non_bass);
+            checkboxes.add(sell_raw_non_bass);
+            checkboxes.add(sell_cooked_non_bass);
+            sell_cooked.setEnabled(false);
+            uncert.setEnabled(true);
+            cert.setEnabled(true);
+            pickup.setState(true);
+            pickup.setEnabled(false);
+            big_netting = true;
+            checkboxes.validate();
+            return;
+          }
+          checkboxes.add(space_saver_a);
+          checkboxes.add(space_saver_b);
+          checkboxes.add(space_saver_c);
+          checkboxes.validate();
         });
 
     Button ok = new Button("OK");
     ok.addActionListener(
         new ActionListener() {
           private void set_ids() {
-            switch (list.getSelectedItem()) {
-              case "Big net":
-                fish_cursor = 0;
-                fish_x = 406;
-                fish_y = 505;
-                click1 = true;
-                if (drop_raw_non_bass.getState()) {
-                  raw_ids = new int[] {554};
-                  cooked_ids = new int[] {555};
-                  burnt_ids = new int[] {368};
-                  discard_ids = new int[] {552, 550, 16, 17, 622};
-                } else {
-                  raw_ids = new int[] {552, 550, 554};
-                  cooked_ids = new int[] {553, 551, 555};
-                  burnt_ids = new int[] {360, 365, 368};
-                  discard_ids = new int[] {16, 17, 622};
-                }
-                break;
-              default:
-                throw new Error("unknown fish");
+            if (list.getSelectedItem().equals("Big net")) {
+              fish_cursor = 0;
+              fish_x = 406;
+              fish_y = 505;
+              click1 = true;
+              if (drop_raw_non_bass.getState()) {
+                raw_ids = new int[] {554};
+                cooked_ids = new int[] {555};
+                burnt_ids = new int[] {368};
+                discard_ids = new int[] {552, 550, 16, 17, 622};
+              } else {
+                raw_ids = new int[] {552, 550, 554};
+                cooked_ids = new int[] {553, 551, 555};
+                burnt_ids = new int[] {360, 365, 368};
+                discard_ids = new int[] {16, 17, 622};
+              }
+            } else {
+              throw new Error("unknown fish");
             }
           }
 
@@ -1798,13 +1778,7 @@ public final class S_CatherbyBNet extends Script {
         });
 
     Button cancel = new Button("Cancel");
-    cancel.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-          }
-        });
+    cancel.addActionListener(e -> frame.setVisible(false));
 
     Panel buttons = new Panel();
     buttons.add(ok);

@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,15 +21,15 @@ public class AKMiner extends IdleScript {
   int fightMode = 0;
   int eatingHealth = 0;
 
-  int[] oreIds = {150, 202, 151, 152, 153, 154, 155, 149, 157, 158, 159, 160, 383};
+  final int[] oreIds = {150, 202, 151, 152, 153, 154, 155, 149, 157, 158, 159, 160, 383};
 
-  long startTimestamp = (System.currentTimeMillis() / 1000L);
+  final long startTimestamp = (System.currentTimeMillis() / 1000L);
   int oresMined = 0;
   int oresInBank = 0;
 
-  class MiningObject {
-    String name;
-    int rockId;
+  static class MiningObject {
+    final String name;
+    final int rockId;
 
     public MiningObject(String _name, int _rockId) {
       name = _name;
@@ -41,16 +39,14 @@ public class AKMiner extends IdleScript {
     @Override
     public boolean equals(Object o) {
       if (o instanceof MiningObject) {
-        if (((MiningObject) o).name.equals(this.name)) {
-          return true;
-        }
+        return ((MiningObject) o).name.equals(this.name);
       }
 
       return false;
     }
   }
 
-  ArrayList<MiningObject> objects =
+  final ArrayList<MiningObject> objects =
       new ArrayList<MiningObject>() {
         {
           add(new MiningObject("Copper", 100));
@@ -64,7 +60,7 @@ public class AKMiner extends IdleScript {
         }
       };
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -155,7 +151,7 @@ public class AKMiner extends IdleScript {
 
   public void setupGUI() {
     JLabel headerLabel = new JLabel("Start in Al-Kharid mine with your pickaxe!");
-    JComboBox<String> targetField = new JComboBox<String>();
+    JComboBox<String> targetField = new JComboBox<>();
     JButton startScriptButton = new JButton("Start");
 
     for (MiningObject obj : objects) {
@@ -163,16 +159,13 @@ public class AKMiner extends IdleScript {
     }
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            target = objects.get(targetField.getSelectedIndex());
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
+        e -> {
+          target = objects.get(targetField.getSelectedIndex());
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
 
-            controller.displayMessage("@red@AKMiner by Dvorak. Let's party like it's 2004!");
-          }
+          controller.displayMessage("@red@AKMiner by Dvorak. Let's party like it's 2004!");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -199,8 +192,9 @@ public class AKMiner extends IdleScript {
     if (controller != null) {
 
       int minedPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         minedPerHr = (int) (oresMined * scale);
       } catch (Exception e) {

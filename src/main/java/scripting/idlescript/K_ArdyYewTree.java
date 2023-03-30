@@ -1,181 +1,216 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts yew logs in NE ardy, including the far western one, banks in seers.
+ * Cuts yew logs in NE ardy, including the far western one, banks in ardy south bank.
  *
- * <p>todo: logic to cut same tree as other players.
+ * <p>Requires 53+ Combat to avoid aggressive bears!
  *
- * <p>Author - Kaila.
+ * <p>Author ~ Kaila
+ */
+/*
+ * todo:
+ *   logic to cut same tree as other players.
  */
 public class K_ArdyYewTree extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int logInBank = 0;
-  int totalLog = 0;
-  int totalTrips = 0;
-  int[] axeId = {
-    87, 12, 88, 203, 204, 405 // bronze to rune in order
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int logInBank = 0;
+  private static int totalLog = 0;
+  private static int totalTrips = 0;
+  private static final int[] axeId = {
+    87, // bronze axe
+    12, // iron axe
+    88, // steel axe
+    428, // black axe
+    203, // mith axe
+    204, // addy axe
+    405 // rune axe
   };
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public void startSequence() {
-    controller.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
-    if (controller.isInBank() == true) {
-      controller.closeBank();
+  private void startSequence() {
+    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
+    if (c.isInBank()) {
+      c.closeBank();
     }
-    if (controller.currentY() < 620
-        && controller.currentY() > 600
-        && controller.currentX() > 543
-        && controller.currentX() < 555) { // inside bank
+    if (c.currentY() < 620
+        && c.currentY() > 600
+        && c.currentX() > 543
+        && c.currentX() < 555) { // inside bank
       bank();
       bankToYews();
-      controller.sleep(1380);
+      c.sleep(1380);
     }
-    if (controller.currentY() < 600
-        && controller.currentY() > 587
-        && controller.currentX() > 525
-        && controller.currentX() < 543) {
-      controller.walkTo(533, 596);
-      controller.walkTo(548, 600);
+    if (c.currentY() < 600 && c.currentY() > 587 && c.currentX() > 525 && c.currentX() < 543) {
+      c.walkTo(533, 596);
+      c.walkTo(548, 600);
       bank();
       bankToYews();
-      controller.sleep(1380);
+      c.sleep(1380);
     }
   }
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
-        controller.displayMessage("Got Autostart, Cutting Yews", 0);
+        c.displayMessage("Got Autostart, Cutting Yews", 0);
         System.out.println("Got Autostart, Cutting Yews");
-        parseVariables();
-        startSequence();
-        scriptStart();
+        scriptStarted = true;
       }
+    }
+    if (scriptStarted) {
+      startSequence();
+      startTime = System.currentTimeMillis();
+      scriptStart();
     }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
-    if (scriptStarted) {
-      startSequence();
-      scriptStart();
-    }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount() < 30) {
-        controller.setStatus("@gre@Cutting Yews..");
-        if (controller.getObjectAtCoord(509, 571) == 309) {
-          controller.walkTo(510, 570);
-          controller.atObject(509, 571);
-          controller.sleep(2000);
-          while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-            controller.sleep(1000);
-          }
-          if (controller.getInventoryItemCount() > 29) {
-            goToBank();
-          }
+  private void scriptStart() {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount() < 30) {
+        c.setStatus("@gre@Cutting Yews..");
+        if (c.getObjectAtCoord(509, 571) == 309) {
+          cutFirstTree();
         }
-        if (controller.getObjectAtCoord(507, 567) == 309) {
-          controller.walkTo(509, 568);
-          controller.atObject(507, 567);
-          controller.sleep(2000);
-          while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-            controller.sleep(1000);
-          }
-          if (controller.getInventoryItemCount() > 29) {
-            goToBank();
-          }
+        if (c.getObjectAtCoord(509, 571) == 309) {
+          cutFirstTree();
+        }
+        if (c.getObjectAtCoord(509, 571) == 309) {
+          cutFirstTree();
+        }
+        if (c.getObjectAtCoord(507, 567) == 309) {
+          cutSecondTree();
+        }
+        if (c.getObjectAtCoord(507, 567) == 309) {
+          cutSecondTree();
+        }
+        if (c.getObjectAtCoord(507, 567) == 309) {
+          cutSecondTree();
         }
         mainYewToAltYew();
-        if (controller.getObjectAtCoord(513, 525) == 309) {
-          controller.walkTo(512, 526);
-          controller.atObject(513, 525);
-          controller.sleep(2000);
-          while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-            controller.sleep(1000);
-          }
-          if (controller.getInventoryItemCount() > 29) {
-            altYewToMainYew();
-            controller.walkTo(511, 571);
-            bankToYews();
-          }
-          controller.walkTo(505, 533);
+        if (c.getObjectAtCoord(513, 525) == 309) {
+          cutThirdTree();
         }
+        if (c.getObjectAtCoord(513, 525) == 309) {
+          cutThirdTree();
+        }
+        if (c.getObjectAtCoord(513, 525) == 309) {
+          cutThirdTree();
+        }
+        c.walkTo(505, 533);
         altYewToMainYew();
       } else {
         goToBank();
       }
     }
-    //	return 1000; //start() must return a int value now.
   }
 
-  public void mainYewToAltYew() {
-    //  controller.walkTo(511,559);
-    controller.walkTo(507, 553);
-    controller.walkTo(505, 541);
+  private void cutFirstTree() {
+    c.walkTo(510, 570);
+    c.atObject(509, 571);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank();
+    }
   }
 
-  public void altYewToMainYew() {
-    controller.walkTo(505, 541);
-    controller.walkTo(507, 553);
+  private void cutSecondTree() {
+    c.walkTo(509, 568);
+    c.atObject(507, 567);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank();
+    }
   }
 
-  public void yewToBank() {
-    controller.walkTo(512, 571);
-    controller.walkTo(512, 577);
-    controller.walkTo(521, 588);
-    controller.walkTo(534, 595);
-    controller.walkTo(547, 602);
-    controller.walkTo(550, 612);
+  private void cutThirdTree() {
+    c.walkTo(512, 526);
+    c.atObject(513, 525);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      altYewToMainYew();
+      c.walkTo(511, 571);
+      bankToYews();
+    }
   }
 
-  public void bankToYews() {
-    controller.walkTo(550, 612);
-    controller.walkTo(547, 602);
-    controller.walkTo(534, 595);
-    controller.walkTo(521, 588);
-    controller.walkTo(512, 577);
-    controller.walkTo(512, 571);
+  private void mainYewToAltYew() {
+    //  c.walkTo(511,559);
+    c.walkTo(507, 553);
+    c.walkTo(505, 541);
   }
 
-  public void goToBank() {
-    controller.setStatus("@gre@Walking to Bank..");
+  private void altYewToMainYew() {
+    c.walkTo(505, 541);
+    c.walkTo(507, 553);
+  }
+
+  private void yewToBank() {
+    c.walkTo(512, 571);
+    c.walkTo(512, 577);
+    c.walkTo(521, 588);
+    c.walkTo(534, 595);
+    c.walkTo(547, 602);
+    c.walkTo(550, 612);
+  }
+
+  private void bankToYews() {
+    c.walkTo(550, 612);
+    c.walkTo(547, 602);
+    c.walkTo(534, 595);
+    c.walkTo(521, 588);
+    c.walkTo(512, 577);
+    c.walkTo(512, 571);
+  }
+
+  private void goToBank() {
+    c.setStatus("@gre@Walking to Bank..");
     yewToBank();
-    controller.setStatus("@gre@Done Walking to Bank..");
-    controller.walkTo(551, 613);
+    c.setStatus("@gre@Done Walking to Bank..");
+    c.walkTo(551, 613);
     totalTrips = totalTrips + 1;
     bank();
-    controller.setStatus("@gre@Going to Yews..");
+    c.setStatus("@gre@Going to Yews..");
     bankToYews();
-    controller.setStatus("@gre@Done Walking to Yews..");
+    c.setStatus("@gre@Done Walking to Yews..");
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      totalLog = totalLog + controller.getInventoryItemCount(635);
+      totalLog = totalLog + c.getInventoryItemCount(635);
 
-      for (int itemId : controller.getInventoryItemIds()) {
+      for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 1263
             && itemId != axeId[0]
             && itemId != axeId[1]
@@ -183,44 +218,31 @@ public class K_ArdyYewTree extends IdleScript {
             && itemId != axeId[3]
             && itemId != axeId[4]
             && itemId != axeId[5]) {
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
 
-      logInBank = controller.getBankItemCount(635);
-      controller.closeBank();
-      controller.sleep(1000);
+      logInBank = c.getBankItemCount(635);
+      c.closeBank();
+      c.sleep(1000);
     }
   }
   // GUI stuff below (icky)
-  public String getOperatingSystem() {
-    String os = System.getProperty("os.name");
-    System.out.println("Using System Property: " + os);
-    return os;
-  }
 
-  public void parseVariables() {
-    startTime = System.currentTimeMillis();
-  }
-
-  public void setupGUI() {
+  private void setupGUI() {
     JLabel header = new JLabel("Ardy Yew Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
     JLabel label2 = new JLabel("Wield or have rune axe in Inv");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            parseVariables();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -235,56 +257,49 @@ public class K_ArdyYewTree extends IdleScript {
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+    if (c != null) {
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int tripSuccessPerHr = 0;
+      long timeInSeconds = System.currentTimeMillis() / 1000L;
+
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalLog * scale);
         tripSuccessPerHr = (int) (totalTrips * scale);
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@Ardy Yew Logs @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-      controller.drawString(
-          "@whi@Logs in Bank: @gre@" + String.valueOf(this.logInBank), 350, 62, 0xFFFFFF, 1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@Ardy Yew Logs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Logs Cut: @gre@"
-              + String.valueOf(this.totalLog)
+              + totalLog
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          76,
+          x,
+          y + (14 * 2),
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", tripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          90,
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 350, 104, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

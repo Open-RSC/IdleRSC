@@ -8,7 +8,7 @@ public class ceikplates extends Script {
     return new String[] {"ceikplate"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     while (Running()) {
 
       DisplayMessage("Steel Platebody Smither by Ceikry", 3);

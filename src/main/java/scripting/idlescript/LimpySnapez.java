@@ -7,22 +7,22 @@ package scripting.idlescript;
  */
 public class LimpySnapez extends IdleScript {
 
-  int[] herbToDoorPath = {366, 472, 360, 478, 353, 484, 347, 487, 342, 487, 342, 488};
+  final int[] herbToDoorPath = {366, 472, 360, 478, 353, 484, 347, 487, 342, 487, 342, 488};
 
-  int[] doorToBankPath = {
+  final int[] doorToBankPath = {
     338, 488, 335, 493, 329, 498, 324, 501, 318, 507, 316, 513, 316, 518, 320, 526, 323, 535, 325,
     544, 327, 552
   };
 
-  int[] doorToHerbPath = {347, 487, 353, 484, 360, 478, 366, 472};
+  final int[] doorToHerbPath = {347, 487, 353, 484, 360, 478, 366, 472};
 
-  int[] bankToDoorPath = {
+  final int[] bankToDoorPath = {
     327, 552, 325, 544, 323, 535, 320, 526, 316, 518, 316, 513, 318, 507, 324, 501, 329, 498, 335,
     493, 338, 488, 341, 488
   };
 
-  int[] plants = {1273, 1281};
-  int[] loot = {220, 469};
+  final int[] plants = {1273, 1281};
+  final int[] loot = {220, 469};
 
   boolean tileFlick = false;
 
@@ -30,7 +30,7 @@ public class LimpySnapez extends IdleScript {
   int snapezInBank = 0;
   int limpzPicked = 0;
   int limpzInBank = 0;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] param) {
 
@@ -50,13 +50,13 @@ public class LimpySnapez extends IdleScript {
             foundPlants = true;
             controller.atObject(coords[0], coords[1]);
             controller.sleep(1000);
-            while (controller.getInventoryItemCount() < 30 && controller.isBatching() == true)
+            while (controller.getInventoryItemCount() < 30 && controller.isBatching())
               controller.sleep(10);
             break;
           }
         }
 
-        if (foundPlants == false) {
+        if (!foundPlants) {
           controller.setStatus("@whi@Searching for plants...");
           if (!tileFlick) {
             controller.walkTo(364, 472);
@@ -104,8 +104,8 @@ public class LimpySnapez extends IdleScript {
 
   public int countPlants() {
     int count = 0;
-    for (int i = 0; i < loot.length; i++) {
-      count += controller.getInventoryItemCount(loot[i]);
+    for (int j : loot) {
+      count += controller.getInventoryItemCount(j);
     }
 
     return count;
@@ -117,9 +117,9 @@ public class LimpySnapez extends IdleScript {
     controller.openBank();
 
     while (countPlants() > 0) {
-      for (int i = 0; i < loot.length; i++) {
-        if (controller.getInventoryItemCount(loot[i]) > 0) {
-          controller.depositItem(loot[i], controller.getInventoryItemCount(loot[i]));
+      for (int j : loot) {
+        if (controller.getInventoryItemCount(j) > 0) {
+          controller.depositItem(j, controller.getInventoryItemCount(j));
           controller.sleep(250);
         }
       }
@@ -164,8 +164,9 @@ public class LimpySnapez extends IdleScript {
 
       int snapezPerHr = 0;
       int limpzPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         snapezPerHr = (int) (snapezPicked * scale);
         limpzPerHr = (int) (limpzPicked * scale);

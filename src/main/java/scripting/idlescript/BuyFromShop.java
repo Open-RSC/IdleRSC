@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,13 +22,13 @@ public class BuyFromShop extends IdleScript {
   int startX = -1;
   int startY = -1;
   int purchased = 0;
-  JTextField items = new JTextField("");
-  JTextField shopCount = new JTextField("10");
+  final JTextField items = new JTextField("");
+  final JTextField shopCount = new JTextField("10");
   JTextField shopBuyCount = new JTextField("10");
-  JTextField vendorId =
+  final JTextField vendorId =
       new JTextField("51,55,87,105,145,168,185,222,391,82,83,88,106,146,169,186,223");
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     startX = controller.currentX();
     startY = controller.currentY();
     if (!guiSetup) {
@@ -78,8 +76,8 @@ public class BuyFromShop extends IdleScript {
   }
 
   public boolean isSellable(int id) {
-    for (int i = 0; i < itemIds.length; i++) {
-      if (itemIds[i] == id) return true;
+    for (int itemId : itemIds) {
+      if (itemId == id) return true;
     }
 
     return false;
@@ -164,16 +162,13 @@ public class BuyFromShop extends IdleScript {
     JLabel vendorIdLabel = new JLabel("Shopkeeper ids");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-            controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-            completeSetup();
-            controller.displayMessage("@red@buyFromShop started");
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          completeSetup();
+          controller.displayMessage("@red@buyFromShop started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -200,11 +195,7 @@ public class BuyFromShop extends IdleScript {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Buy from Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       controller.drawString(
-          "@red@Purchased items banked: @yel@" + String.valueOf(this.purchased),
-          10,
-          35,
-          0xFFFFFF,
-          1);
+          "@red@Purchased items banked: @yel@" + this.purchased, 10, 35, 0xFFFFFF, 1);
     }
   }
 }

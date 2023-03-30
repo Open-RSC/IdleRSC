@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,155 +11,152 @@ import orsc.ORSCharacter;
 /**
  * Attack Cape Buyer - By Kaila.
  *
- * <p>Talks to Rovin for capes and Banks. Start by Rovin or varrock west! Need coins in the
- * inventory to buy.
+ * <p>
  *
- * <p>Author - Kaila.
+ * <p>Talks to Rovin for capes and Banks.
+ *
+ * <p>Start by Rovin or varrock west!
+ *
+ * <p>Need coins in the inventory to buy.
+ *
+ * <p>@Author - Kaila.
  */
 public class K_AttackCapeBuyer extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int GrapezInBank = 0;
-  int totalTopz = 0;
-  int totalBotz = 0;
-  int totalTrips = 0;
-  int TopzInBank = 0;
-  int BotzInBank = 0;
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int totalTopz = 0;
+  private static int totalTrips = 0;
+  private static int TopzInBank = 0;
 
-  int robeId[] = {388, 389};
-
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
+    if (scriptStarted) {
+      c.displayMessage("@red@Attack Cape Buyer - By Kaila");
+      c.displayMessage("@red@Start by Rovin or varrock west!");
+      c.displayMessage("@red@Need coins in the inventory to buy");
+      if (c.isInBank()) {
+        c.closeBank();
+      }
+      if (c.currentY() < 1000) {
+        bank();
+        BankToGrape();
+        c.sleep(1380);
+      }
+      scriptStart();
+    }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
-    if (scriptStarted) {
-      controller.displayMessage("@red@Attack Cape Buyer - By Kaila");
-      controller.displayMessage("@red@Start by Rovin or varrock west!");
-      controller.displayMessage("@red@Need coins in the inventory to buy");
-      if (controller.isInBank() == true) {
-        controller.closeBank();
-      }
-      if (controller.currentY() < 1000) {
-        bank();
-        BankToGrape();
-        controller.sleep(1380);
-      }
-      scriptStart();
-    }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
 
-      if (controller.getInventoryItemCount() == 30) {
-        controller.setStatus("@red@Banking..");
+      if (c.getInventoryItemCount() == 30) {
+        c.setStatus("@red@Banking..");
         GrapeToBank();
         bank();
         BankToGrape();
-        controller.sleep(618);
+        c.sleep(618);
       }
-      ORSCharacter npc = controller.getNearestNpcById(18, true);
+      ORSCharacter npc = c.getNearestNpcById(18, true);
 
       if (npc != null) {
-        controller.setStatus("@red@Getting cape from Rovin..");
-        controller.talkToNpc(npc.serverIndex);
-        controller.sleep(6000);
+        c.setStatus("@red@Getting cape from Rovin..");
+        c.talkToNpc(npc.serverIndex);
+        c.sleep(6000);
 
-        if (controller.isInOptionMenu() == false) continue;
+        if (!c.isInOptionMenu()) continue;
 
-        controller.optionAnswer(2);
-        controller.sleep(9000);
-        controller.optionAnswer(0);
-        controller.sleep(12000);
+        c.optionAnswer(2);
+        c.sleep(9000);
+        c.optionAnswer(0);
+        c.sleep(12000);
       }
     }
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      totalTopz = totalTopz + controller.getInventoryItemCount(1374);
+      totalTopz = totalTopz + c.getInventoryItemCount(1374);
 
-      if (controller.getInventoryItemCount(1374) > 0) { // robe top
-        controller.depositItem(1374, controller.getInventoryItemCount(1374));
-        controller.sleep(1380);
+      if (c.getInventoryItemCount(1374) > 0) { // robe top
+        c.depositItem(1374, c.getInventoryItemCount(1374));
+        c.sleep(1380);
       }
 
-      TopzInBank = controller.getBankItemCount(1374);
+      TopzInBank = c.getBankItemCount(1374);
 
-      controller.closeBank();
-      controller.sleep(640);
+      c.closeBank();
+      c.sleep(640);
     }
   }
 
-  public void GrapeToBank() { // replace
+  private void GrapeToBank() { // replace
 
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(141, 1398);
-    controller.sleep(340);
-    controller.atObject(142, 1398); // down ladder
-    controller.sleep(800);
-    controller.walkTo(135, 460);
-    controller.walkTo(135, 470);
-    controller.walkTo(132, 474);
-    controller.walkTo(132, 484);
-    controller.walkTo(132, 494);
-    controller.walkTo(132, 502);
-    controller.walkTo(137, 507);
-    controller.walkTo(150, 507);
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(141, 1398);
+    c.sleep(340);
+    c.atObject(142, 1398); // down ladder
+    c.sleep(800);
+    c.walkTo(135, 460);
+    c.walkTo(135, 470);
+    c.walkTo(132, 474);
+    c.walkTo(132, 484);
+    c.walkTo(132, 494);
+    c.walkTo(132, 502);
+    c.walkTo(137, 507);
+    c.walkTo(150, 507);
     totalTrips = totalTrips + 1;
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void BankToGrape() {
+  private void BankToGrape() {
 
-    controller.setStatus("@gre@Walking to Rovin..");
-    controller.walkTo(150, 507);
-    controller.walkTo(137, 507);
-    controller.walkTo(132, 502);
-    controller.walkTo(132, 494);
-    controller.walkTo(132, 484);
-    controller.walkTo(132, 474);
-    controller.walkTo(135, 470);
-    controller.walkTo(135, 460);
-    controller.walkTo(141, 454);
-    controller.atObject(142, 454); // up ladder
-    controller.sleep(800);
-    // next to rovin now)
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Walking to Rovin..");
+    c.walkTo(150, 507);
+    c.walkTo(137, 507);
+    c.walkTo(132, 502);
+    c.walkTo(132, 494);
+    c.walkTo(132, 484);
+    c.walkTo(132, 474);
+    c.walkTo(135, 470);
+    c.walkTo(135, 460);
+    c.walkTo(141, 454);
+    c.atObject(142, 454); // up ladder
+    c.sleep(800);
+    // next to rovin now
+    c.setStatus("@gre@Done Walking..");
   }
 
   // GUI stuff below
-  public void setupGUI() {
-    JLabel header = new JLabel("Attack Cape Buyer - By Kaila");
+  private void setupGUI() {
+    JLabel header = new JLabel("Attack Cape Buyer ~ By Kaila");
     JLabel label1 = new JLabel("Talks to Rovin for capes & Banks");
     JLabel label2 = new JLabel("Start by Rovin or varrock west!");
     JLabel label3 = new JLabel("Need coins in the inventory to buy");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -169,34 +165,24 @@ public class K_AttackCapeBuyer extends IdleScript {
     scriptFrame.add(label2);
     scriptFrame.add(label3);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int TopzSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         TopzSuccessPerHr = (int) (totalTopz * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
@@ -204,36 +190,35 @@ public class K_AttackCapeBuyer extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@Attack Cape Buyer @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-      controller.drawString(
-          "@whi@Capes in Bank: @gre@" + String.valueOf(this.TopzInBank), 330, 62, 0xFFFFFF, 1);
-      controller.drawString(
-          "@whi@Coins Spent: @gre@" + String.valueOf(this.totalTopz * 99) + " @whi@K",
-          330,
-          76,
-          0xFFFFFF,
-          1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@Attack Cape Buyer @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString("@whi@Capes in Bank: @gre@" + TopzInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString(
+          "@whi@Coins Spent: @gre@" + (totalTopz * 99) + " @whi@K", x, y + (14 * 2), 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Capes Bought: @gre@"
-              + String.valueOf(this.totalTopz)
+              + totalTopz
               + "@yel@ (@whi@"
               + String.format("%,d", TopzSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          330,
-          90,
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          330,
-          104,
+          x,
+          y + (14 * 4),
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 330, 118, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
     }
   }
 }

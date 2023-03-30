@@ -2,27 +2,27 @@ package compatibility.apos;
 
 public interface IScript {
 
-  public void init(String params);
+  void init(String params);
 
-  public int main();
+  int main();
 
-  public void paint();
+  void paint();
 
-  public void onServerMessage(String str);
+  void onServerMessage(String str);
 
-  public void onTradeRequest(String name);
+  void onTradeRequest(String name);
 
-  public void onChatMessage(String msg, String name, boolean mod, boolean admin);
+  void onChatMessage(String msg, String name, boolean mod, boolean admin);
 
-  public void onPrivateMessage(String msg, String name, boolean mod, boolean admin);
+  void onPrivateMessage(String msg, String name, boolean mod, boolean admin);
 
-  public void onKeyPress(int keycode);
+  void onKeyPress(int keycode);
 
-  public boolean isSleeping();
+  boolean isSleeping();
 
-  public int getFatigue();
+  int getFatigue();
 
-  public boolean isTricking();
+  boolean isTricking();
 
-  public void logout();
+  void logout();
 }

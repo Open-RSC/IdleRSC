@@ -12,7 +12,7 @@ public class FarmGetInventoryItems extends IdleScript {
       controller.sleep(1000);
       boolean atLeastOne = false;
       List<Item> _items = controller.getInventoryItems();
-      HashSet<Item> items = new HashSet<Item>();
+      HashSet<Item> items = new HashSet<>();
       String playerName = controller.getPlayerName();
 
       // create a unique list of items.
@@ -30,7 +30,7 @@ public class FarmGetInventoryItems extends IdleScript {
         atLeastOne = true;
       }
 
-      if (atLeastOne == false) {
+      if (!atLeastOne) {
         controller.log(playerName + " - inventory empty!");
       }
 

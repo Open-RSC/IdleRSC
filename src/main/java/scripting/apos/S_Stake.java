@@ -8,8 +8,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
 
@@ -91,13 +89,7 @@ public final class S_Stake extends Script {
     c_panel.add(player_choice);
     Panel b_panel = new Panel();
     Button ok = new Button("OK");
-    ok.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            frame.setVisible(false);
-          }
-        });
+    ok.addActionListener(e -> frame.setVisible(false));
     b_panel.add(ok);
     //		frame.addWindowListener(
     //			new StandardCloseHandler(frame, StandardCloseHandler.HIDE));
@@ -316,32 +308,37 @@ public final class S_Stake extends Script {
     listen_input = false;
     try {
       String[] input = this.input.toString().trim().toLowerCase(Locale.ENGLISH).split(" ");
-      if (input[0].equals("prayoff")) {
-        prayers_off = true;
-      } else if (input[0].equals("bare")) {
-        bare = true;
-      } else if (input[0].equals("mode")) {
-        switch (input[1].charAt(0)) {
-          case '0':
-          case 'c':
-            set_mode = 0;
-            break;
-          case '1':
-          case 's':
-            set_mode = 1;
-            break;
-          case '2':
-          case 'a':
-            set_mode = 2;
-            break;
-          case '3':
-          case 'd':
-            set_mode = 3;
-            break;
-        }
-      } else if (input[0].equals("switchpray")) {
-        switch_pray = input[1].charAt(0) != '0';
-        System.out.println(switch_mode ? "Switching prayers" : "Not switching prayers");
+      switch (input[0]) {
+        case "prayoff":
+          prayers_off = true;
+          break;
+        case "bare":
+          bare = true;
+          break;
+        case "mode":
+          switch (input[1].charAt(0)) {
+            case '0':
+            case 'c':
+              set_mode = 0;
+              break;
+            case '1':
+            case 's':
+              set_mode = 1;
+              break;
+            case '2':
+            case 'a':
+              set_mode = 2;
+              break;
+            case '3':
+            case 'd':
+              set_mode = 3;
+              break;
+          }
+          break;
+        case "switchpray":
+          switch_pray = input[1].charAt(0) != '0';
+          System.out.println(switch_mode ? "Switching prayers" : "Not switching prayers");
+          break;
       }
     } catch (Throwable t) {
     }

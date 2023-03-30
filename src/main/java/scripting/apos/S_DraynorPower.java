@@ -62,7 +62,7 @@ public final class S_DraynorPower extends Script {
       stopScript();
       return 0;
     }
-    int fish_spot[] = getObjectById(ID_FISHING_SPOT);
+    int[] fish_spot = getObjectById(ID_FISHING_SPOT);
     if (fish_spot[0] != -1) {
       if (distanceTo(fish_spot[1], fish_spot[2]) > 3) {
         if (!isWalking()) {
@@ -78,9 +78,9 @@ public final class S_DraynorPower extends Script {
 
   private int doCook() {
     int id = -1;
-    for (int i = 0; i < ids_raw.length; ++i) {
-      if (getInventoryCount(ids_raw[i]) > 0) {
-        id = ids_raw[i];
+    for (int j : ids_raw) {
+      if (getInventoryCount(j) > 0) {
+        id = j;
         break;
       }
     }
@@ -94,7 +94,7 @@ public final class S_DraynorPower extends Script {
       useItemOnObject(id, x, y);
       return random(600, 800);
     }
-    int logs[] = getItemById(ID_LOGS);
+    int[] logs = getItemById(ID_LOGS);
     if (logs[1] == x && logs[2] == y) {
       int box_slot = getInventoryIndex(ID_TINDERBOX);
       if (box_slot == -1) {
@@ -118,7 +118,7 @@ public final class S_DraynorPower extends Script {
       stopScript();
       return 0;
     }
-    int tree[] = getObjectById(ID_TREE);
+    int[] tree = getObjectById(ID_TREE);
     if (distanceTo(tree[1], tree[2]) < 5) {
       atObject(tree[1], tree[2]);
       return random(1000, 1500);

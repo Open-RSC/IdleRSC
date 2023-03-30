@@ -3,11 +3,11 @@ package scripting.apos;
 import compatibility.apos.Script;
 
 public class StealCake extends Script {
-  int fmode = 3;
-  int stallID = 322;
-  int[] bakeStart1 = new int[] {544, 601};
-  int[] bakeStart2 = new int[] {543, 600};
-  int[] bankArea = new int[] {551, 612};
+  final int fmode = 3;
+  final int stallID = 322;
+  final int[] bakeStart1 = new int[] {544, 601};
+  final int[] bakeStart2 = new int[] {543, 600};
+  final int[] bankArea = new int[] {551, 612};
   boolean power = true;
 
   public StealCake(String e) {
@@ -64,7 +64,7 @@ public class StealCake extends Script {
         walkTo(543, 600);
         return 2000;
       }
-      int baker[] = getNpcByIdNotTalk(325);
+      int[] baker = getNpcByIdNotTalk(325);
       if (baker[0] != -1) {
         int[] stall = getObjectById(stallID);
         if (stall[0] != -1) {
@@ -77,7 +77,7 @@ public class StealCake extends Script {
     }
     if (!power) {
       if (distanceTo(bankArea[0], bankArea[1]) < 10) {
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
         if (banker[0] != -1) talkToNpc(banker[0]);
         return random(1222, 3000);
       } else walkTo(bankArea[0], bankArea[1]);

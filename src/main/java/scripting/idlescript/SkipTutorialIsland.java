@@ -2,7 +2,7 @@ package scripting.idlescript;
 
 public class SkipTutorialIsland extends IdleScript {
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.skipTutorialIsland();
     controller.sleep(5000);
     controller.stop();

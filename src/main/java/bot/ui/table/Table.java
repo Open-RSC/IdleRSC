@@ -43,23 +43,11 @@ public class Table extends JTable {
   }
 
   public void addRowLater(Object[] row) {
-    SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            addRow(row);
-          }
-        });
+    SwingUtilities.invokeLater(() -> addRow(row));
   }
 
   public void addRowAndWait(Object[] row) throws InvocationTargetException, InterruptedException {
-    SwingUtilities.invokeAndWait(
-        new Runnable() {
-          @Override
-          public void run() {
-            addRow(row);
-          }
-        });
+    SwingUtilities.invokeAndWait(() -> addRow(row));
   }
 
   public void removeAllRows() {

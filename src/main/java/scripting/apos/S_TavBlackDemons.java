@@ -45,7 +45,8 @@ public final class S_TavBlackDemons extends Script implements ActionListener {
       min_att = 99,
       min_def = 99,
       min_str = 99;
-  private long min_hop_time = 5000L, max_stand = 10000L;
+  private final long min_hop_time = 5000L;
+  private long max_stand = 10000L;
   private final TextField tf_eat_at = new TextField(String.valueOf(eat_at)),
       tf_pray_at = new TextField(String.valueOf(pray_at)),
       tf_food_count = new TextField(String.valueOf(food_count)),
@@ -143,7 +144,7 @@ public final class S_TavBlackDemons extends Script implements ActionListener {
 
   private final DecimalFormat int_format = new DecimalFormat("#,##0");
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path bank_to_gate;
   private PathWalker.Path gate_to_ladder;
   private long start_time;
@@ -160,8 +161,8 @@ public final class S_TavBlackDemons extends Script implements ActionListener {
   private static final int[] dont_bank = {AIR_RUNE, LAW_RUNE};
   // stuff also in pickup_ids that must be obtained twice before it can be banked
   private static final int[] pickup_equipment = {400, 404, 795};
-  private boolean[] banked_loot = new boolean[pickup_ids.length];
-  private int[] banked_counts = new int[pickup_ids.length];
+  private final boolean[] banked_loot = new boolean[pickup_ids.length];
+  private final int[] banked_counts = new int[pickup_ids.length];
   private Frame frame;
 
   private long last_hop;
@@ -801,10 +802,7 @@ public final class S_TavBlackDemons extends Script implements ActionListener {
     if (item[1] == getX() && item[2] == getY()) {
       return true;
     }
-    if (in_fight_area(item[1], item[2])) {
-      return true;
-    }
-    return false;
+    return in_fight_area(item[1], item[2]);
   }
 
   private boolean is_underground() {

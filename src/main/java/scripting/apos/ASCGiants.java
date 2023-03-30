@@ -1,9 +1,7 @@
 package scripting.apos;
 
 import compatibility.apos.Script;
-import java.awt.Component;
 import java.util.Locale;
-import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
 public class ASCGiants extends Script {
@@ -43,44 +41,40 @@ public class ASCGiants extends Script {
     String var3 =
         (String)
             JOptionPane.showInputDialog(
-                (Component) null,
-                "Where are we starting?",
-                "Fire Giants",
-                -1,
-                (Icon) null,
-                var2,
-                var2[2]);
+                null, "Where are we starting?", "Fire Giants", -1, null, var2, var2[2]);
     Object[] var4 = new Object[] {"Attack", "Strength", "Defense", "Controlled"};
     String var5 =
         (String)
             JOptionPane.showInputDialog(
-                (Component) null,
-                "Choose FightMode",
-                "Fire Giants",
-                -1,
-                (Icon) null,
-                var4,
-                var4[0]);
-    if (var3.equals("Bank")) {
-      this.bankingnow = true;
-      this.walkingnow = false;
-      this.fightingnow = false;
-    } else if (var3.equals("Walking")) {
-      this.bankingnow = false;
-      this.walkingnow = true;
-      this.fightingnow = false;
-    } else if (var3.equals("Fighting")) {
-      this.bankingnow = false;
-      this.walkingnow = false;
-      this.fightingnow = true;
+                null, "Choose FightMode", "Fire Giants", -1, null, var4, var4[0]);
+    switch (var3) {
+      case "Bank":
+        this.bankingnow = true;
+        this.walkingnow = false;
+        this.fightingnow = false;
+        break;
+      case "Walking":
+        this.bankingnow = false;
+        this.walkingnow = true;
+        this.fightingnow = false;
+        break;
+      case "Fighting":
+        this.bankingnow = false;
+        this.walkingnow = false;
+        this.fightingnow = true;
+        break;
     }
 
-    if (var5.equals("Attack")) {
-      this.fightMode = 2;
-    } else if (var5.equals("Strength")) {
-      this.fightMode = 1;
-    } else if (var5.equals("Defense")) {
-      this.fightMode = 3;
+    switch (var5) {
+      case "Attack":
+        this.fightMode = 2;
+        break;
+      case "Strength":
+        this.fightMode = 1;
+        break;
+      case "Defense":
+        this.fightMode = 3;
+        break;
     }
   }
 
@@ -94,100 +88,100 @@ public class ASCGiants extends Script {
       }
 
       if (this.isBanking() && this.bankingnow && !this.walkingnow && !this.fightingnow) {
-        if (this.getInventoryCount(new int[] {795}) > 1) {
-          this.dmed += this.getInventoryCount(new int[] {795});
-          this.deposit(795, this.getInventoryCount(new int[] {795}) - 1);
+        if (this.getInventoryCount(795) > 1) {
+          this.dmed += this.getInventoryCount(795);
+          this.deposit(795, this.getInventoryCount(795) - 1);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {1277}) > 0) {
-          this.dsq += this.getInventoryCount(new int[] {1277});
-          this.deposit(1277, this.getInventoryCount(new int[] {1277}));
+        } else if (this.getInventoryCount(1277) > 0) {
+          this.dsq += this.getInventoryCount(1277);
+          this.deposit(1277, this.getInventoryCount(1277));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {93}) > 0) {
-          this.rbaxe += this.getInventoryCount(new int[] {93});
-          this.deposit(93, this.getInventoryCount(new int[] {93}));
+        } else if (this.getInventoryCount(93) > 0) {
+          this.rbaxe += this.getInventoryCount(93);
+          this.deposit(93, this.getInventoryCount(93));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {81}) > 0) {
-          this.r2h += this.getInventoryCount(new int[] {81});
-          this.deposit(81, this.getInventoryCount(new int[] {81}));
+        } else if (this.getInventoryCount(81) > 0) {
+          this.r2h += this.getInventoryCount(81);
+          this.deposit(81, this.getInventoryCount(81));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {619}) > 0) {
-          this.blood += this.getInventoryCount(new int[] {619});
-          this.deposit(619, this.getInventoryCount(new int[] {619}));
+        } else if (this.getInventoryCount(619) > 0) {
+          this.blood += this.getInventoryCount(619);
+          this.deposit(619, this.getInventoryCount(619));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {404}) > 1) {
-          this.rkite += this.getInventoryCount(new int[] {404}) - 1;
-          this.deposit(404, this.getInventoryCount(new int[] {404}) - 1);
+        } else if (this.getInventoryCount(404) > 1) {
+          this.rkite += this.getInventoryCount(404) - 1;
+          this.deposit(404, this.getInventoryCount(404) - 1);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {10}) > 0) {
-          this.coin += this.getInventoryCount(new int[] {10});
-          this.deposit(10, this.getInventoryCount(new int[] {10}));
+        } else if (this.getInventoryCount(10) > 0) {
+          this.coin += this.getInventoryCount(10);
+          this.deposit(10, this.getInventoryCount(10));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {526}) > 0) {
-          this.teeth += this.getInventoryCount(new int[] {526});
-          this.deposit(526, this.getInventoryCount(new int[] {526}));
+        } else if (this.getInventoryCount(526) > 0) {
+          this.teeth += this.getInventoryCount(526);
+          this.deposit(526, this.getInventoryCount(526));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {527}) > 0) {
-          this.loop += this.getInventoryCount(new int[] {527});
-          this.deposit(527, this.getInventoryCount(new int[] {527}));
+        } else if (this.getInventoryCount(527) > 0) {
+          this.loop += this.getInventoryCount(527);
+          this.deposit(527, this.getInventoryCount(527));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {31}) > 0) {
-          this.fire += this.getInventoryCount(new int[] {31});
-          this.deposit(31, this.getInventoryCount(new int[] {31}));
+        } else if (this.getInventoryCount(31) > 0) {
+          this.fire += this.getInventoryCount(31);
+          this.deposit(31, this.getInventoryCount(31));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {398}) > 0) {
-          this.rscim += this.getInventoryCount(new int[] {398});
-          this.deposit(398, this.getInventoryCount(new int[] {398}));
+        } else if (this.getInventoryCount(398) > 0) {
+          this.rscim += this.getInventoryCount(398);
+          this.deposit(398, this.getInventoryCount(398));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {127}) > 0) {
-          this.adsq += this.getInventoryCount(new int[] {127});
-          this.deposit(127, this.getInventoryCount(new int[] {127}));
+        } else if (this.getInventoryCount(127) > 0) {
+          this.adsq += this.getInventoryCount(127);
+          this.deposit(127, this.getInventoryCount(127));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {1092}) > 0) {
-          this.rspear += this.getInventoryCount(new int[] {1092});
-          this.deposit(1092, this.getInventoryCount(new int[] {1092}));
+        } else if (this.getInventoryCount(1092) > 0) {
+          this.rspear += this.getInventoryCount(1092);
+          this.deposit(1092, this.getInventoryCount(1092));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {615}) > 0) {
-          this.firebstf += this.getInventoryCount(new int[] {615});
-          this.deposit(615, this.getInventoryCount(new int[] {615}));
+        } else if (this.getInventoryCount(615) > 0) {
+          this.firebstf += this.getInventoryCount(615);
+          this.deposit(615, this.getInventoryCount(615));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {42}) > 1) {
-          this.law += this.getInventoryCount(new int[] {42});
-          this.deposit(42, this.getInventoryCount(new int[] {42}) - 1);
+        } else if (this.getInventoryCount(42) > 1) {
+          this.law += this.getInventoryCount(42);
+          this.deposit(42, this.getInventoryCount(42) - 1);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {42}) < 1) {
+        } else if (this.getInventoryCount(42) < 1) {
           this.withdraw(42, 1);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {33}) > 5) {
-          this.deposit(33, this.getInventoryCount(new int[] {33}) - 5);
+        } else if (this.getInventoryCount(33) > 5) {
+          this.deposit(33, this.getInventoryCount(33) - 5);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {33}) < 5) {
-          this.withdraw(33, 5 - this.getInventoryCount(new int[] {33}));
+        } else if (this.getInventoryCount(33) < 5) {
+          this.withdraw(33, 5 - this.getInventoryCount(33));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {237}) > 1) {
-          this.deposit(237, this.getInventoryCount(new int[] {237}) - 1);
+        } else if (this.getInventoryCount(237) > 1) {
+          this.deposit(237, this.getInventoryCount(237) - 1);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {237}) < 1) {
+        } else if (this.getInventoryCount(237) < 1) {
           this.withdraw(237, 1);
-          this.wearItem(this.getInventoryIndex(new int[] {782}));
+          this.wearItem(this.getInventoryIndex(782));
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {782}) > 1) {
-          this.deposit(782, this.getInventoryCount(new int[] {782}) - 1);
+        } else if (this.getInventoryCount(782) > 1) {
+          this.deposit(782, this.getInventoryCount(782) - 1);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {782}) < 1) {
+        } else if (this.getInventoryCount(782) < 1) {
           this.withdraw(782, 17);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {546}) > 17) {
-          this.deposit(546, this.getInventoryCount(new int[] {546}) - 17);
+        } else if (this.getInventoryCount(546) > 17) {
+          this.deposit(546, this.getInventoryCount(546) - 17);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {546}) < 17) {
+        } else if (this.getInventoryCount(546) < 17) {
           this.withdraw(546, 17);
           return random(1000, 1500);
-        } else if (this.getInventoryCount(new int[] {373}) > 0) {
-          this.deposit(373, this.getInventoryCount(new int[] {373}));
+        } else if (this.getInventoryCount(373) > 0) {
+          this.deposit(373, this.getInventoryCount(373));
           return random(1000, 1500);
         } else {
           this.closeBank();
-          this.wearItem(this.getInventoryIndex(new int[] {782}));
+          this.wearItem(this.getInventoryIndex(782));
           this.bankingnow = false;
           this.walkingnow = true;
           this.fightingnow = false;
@@ -202,16 +196,16 @@ public class ASCGiants extends Script {
             this.answer(0);
             return random(5000, 6000);
           } else {
-            var1 = this.getNpcByIdNotTalk(new int[] {95});
+            var1 = this.getNpcByIdNotTalk(95);
             if (var1[0] != -1) {
               this.talkToNpc(var1[0]);
               return 5500;
             } else if (this.getX() >= 455 && this.getX() < 467) {
               this.walkTo(467, 462);
-              this.useItem(this.getInventoryIndex(new int[] {373}));
+              this.useItem(this.getInventoryIndex(373));
               return random(1000, 1500);
             } else if (this.getX() == 467 && this.getY() == 462) {
-              var2 = this.getObjectById(new int[] {57});
+              var2 = this.getObjectById(57);
               if (var2[0] != -1) {
                 this.atObject(var2[1], var2[2]);
                 this.walkTo(469, 464);
@@ -227,7 +221,7 @@ public class ASCGiants extends Script {
               this.walkTo(501, 454);
               return random(1000, 1500);
             } else {
-              var2 = this.getObjectById(new int[] {64});
+              var2 = this.getObjectById(64);
               if (var2[0] != -1) {
                 this.atObject(var2[1], var2[2]);
                 return random(200, 300);
@@ -240,7 +234,7 @@ public class ASCGiants extends Script {
         } else {
           if (!this.bankingnow && this.walkingnow && !this.fightingnow) {
             if (this.isAtApproxCoords(498, 447, 6)) {
-              var1 = this.getObjectById(new int[] {64});
+              var1 = this.getObjectById(64);
               if (var1[0] != -1) {
                 this.atObject(var1[1], var1[2]);
                 return random(200, 300);
@@ -281,7 +275,7 @@ public class ASCGiants extends Script {
             }
 
             if (this.isAtApproxCoords(592, 458, 2) && this.getX() <= 592) {
-              var1 = this.getObjectById(new int[] {680});
+              var1 = this.getObjectById(680);
               if (var1[0] != -1) {
                 this.atObject(var1[1], var1[2]);
                 return random(500, 600);
@@ -301,7 +295,7 @@ public class ASCGiants extends Script {
             }
 
             if (this.getX() == 617 && this.getY() == 473) {
-              var1 = this.getObjectById(new int[] {57});
+              var1 = this.getObjectById(57);
               if (var1[0] != -1) {
                 this.atObject(var1[1], var1[2]);
                 this.walkTo(617, 474);
@@ -338,7 +332,7 @@ public class ASCGiants extends Script {
             }
 
             if (this.getX() == 659 && this.getY() == 449) {
-              var1 = this.getObjectById(new int[] {464});
+              var1 = this.getObjectById(464);
               this.atObject(var1[1], var1[2]);
               return random(2000, 2500);
             }
@@ -364,7 +358,7 @@ public class ASCGiants extends Script {
             }
 
             if (this.getY() > 3302 && this.getY() <= 3305 && this.getFatigue() < 1) {
-              var1 = this.getObjectById(new int[] {471});
+              var1 = this.getObjectById(471);
               if (var1[0] != -1) {
                 this.atObject(var1[1], var1[2]);
                 return random(500, 600);
@@ -377,7 +371,7 @@ public class ASCGiants extends Script {
             }
 
             if (this.getX() == 659 && this.getY() == 3295) {
-              var1 = this.getObjectById(new int[] {64});
+              var1 = this.getObjectById(64);
               if (var1[0] != -1) {
                 this.atObject(var1[1], var1[2]);
                 this.walkTo(659, 3294);
@@ -394,16 +388,16 @@ public class ASCGiants extends Script {
             }
 
             if ((float) this.getX() == 659.0F && this.getY() == 3289) {
-              var1 = this.getObjectById(new int[] {64});
+              var1 = this.getObjectById(64);
               if (var1[0] != -1) {
                 this.atObject(var1[1], var1[2]);
                 this.walkTo(659, 3286);
-                this.wearItem(this.getInventoryIndex(new int[] {317}));
+                this.wearItem(this.getInventoryIndex(317));
                 return random(500, 600);
               }
 
               this.walkTo(659, 3286);
-              this.wearItem(this.getInventoryIndex(new int[] {317}));
+              this.wearItem(this.getInventoryIndex(317));
               return random(150, 200);
             }
 
@@ -423,7 +417,7 @@ public class ASCGiants extends Script {
             }
 
             if (this.getCurrentLevel(3) <= 34) {
-              if (this.getInventoryCount(new int[] {546}) == 0) {
+              if (this.getInventoryCount(546) == 0) {
                 this.castOnSelf(22);
                 return 100;
               }
@@ -433,150 +427,150 @@ public class ASCGiants extends Script {
                 return 100;
               }
 
-              if (this.getInventoryCount(new int[] {373}) > 0) {
+              if (this.getInventoryCount(373) > 0) {
                 if (this.inCombat()) {
                   this.walkTo(this.getX(), this.getY());
                 }
 
-                this.useItem(this.getInventoryIndex(new int[] {373}));
+                this.useItem(this.getInventoryIndex(373));
                 return random(900, 1200);
               }
 
-              if (this.getInventoryCount(new int[] {546}) > 0) {
+              if (this.getInventoryCount(546) > 0) {
                 if (this.inCombat()) {
                   this.walkTo(this.getX(), this.getY());
                 }
 
-                this.useItem(this.getInventoryIndex(new int[] {546}));
+                this.useItem(this.getInventoryIndex(546));
                 ++this.foodused;
                 return random(900, 1200);
               }
             }
 
-            if (this.getInventoryCount(new int[] {546}) == 30) {
+            if (this.getInventoryCount(546) == 30) {
               if (this.inCombat()) {
                 this.walkTo(this.getX(), this.getY());
               }
 
-              this.useItem(this.getInventoryIndex(new int[] {413}));
+              this.useItem(this.getInventoryIndex(413));
               return random(900, 1200);
             }
 
-            if (this.getInventoryCount(new int[] {413}) > 0) {
+            if (this.getInventoryCount(413) > 0) {
               if (this.inCombat()) {
                 this.walkTo(this.getX(), this.getY());
               }
 
-              this.useItem(this.getInventoryIndex(new int[] {413}));
+              this.useItem(this.getInventoryIndex(413));
               return random(900, 1200);
             }
 
-            var1 = this.getItemById(new int[] {795});
+            var1 = this.getItemById(795);
             if (var1[0] != -1) {
               this.walkTo(var1[1], var1[2]);
               this.pickupItem(795, var1[1], var1[2]);
               return random(200, 300);
             }
 
-            var2 = this.getItemById(new int[] {1277});
+            var2 = this.getItemById(1277);
             if (var2[0] != -1) {
               this.walkTo(var2[1], var2[2]);
               this.pickupItem(1277, var2[1], var2[2]);
               return random(200, 300);
             }
 
-            int[] var3 = this.getItemById(new int[] {93});
+            int[] var3 = this.getItemById(93);
             if (var3[0] != -1) {
               this.walkTo(var3[1], var3[2]);
               this.pickupItem(93, var3[1], var3[2]);
               return random(200, 300);
             }
 
-            int[] var4 = this.getItemById(new int[] {81});
+            int[] var4 = this.getItemById(81);
             if (var4[0] != -1) {
               this.walkTo(var4[1], var4[2]);
               this.pickupItem(81, var4[1], var4[2]);
               return random(200, 300);
             }
 
-            int[] var5 = this.getItemById(new int[] {619});
+            int[] var5 = this.getItemById(619);
             if (var5[0] != -1) {
               this.walkTo(var5[1], var5[2]);
               this.pickupItem(619, var5[1], var5[2]);
               return random(200, 300);
             }
 
-            int[] var6 = this.getItemById(new int[] {404});
+            int[] var6 = this.getItemById(404);
             if (var6[0] != -1) {
               this.walkTo(var6[1], var6[2]);
               this.pickupItem(404, var6[1], var6[2]);
               return random(200, 300);
             }
 
-            int[] var7 = this.getItemById(new int[] {10});
+            int[] var7 = this.getItemById(10);
             if (var7[0] != -1) {
               this.walkTo(var7[1], var7[2]);
               this.pickupItem(10, var7[1], var7[2]);
               return random(200, 300);
             }
 
-            int[] var8 = this.getItemById(new int[] {526});
+            int[] var8 = this.getItemById(526);
             if (var8[0] != -1) {
               this.walkTo(var8[1], var8[2]);
               this.pickupItem(526, var8[1], var8[2]);
               return random(200, 300);
             }
 
-            int[] var9 = this.getItemById(new int[] {527});
+            int[] var9 = this.getItemById(527);
             if (var9[0] != -1) {
               this.walkTo(var9[1], var9[2]);
               this.pickupItem(527, var9[1], var9[2]);
               return random(200, 300);
             }
 
-            int[] var10 = this.getItemById(new int[] {413});
+            int[] var10 = this.getItemById(413);
             if (var10[0] != -1) {
               this.walkTo(var10[1], var10[2]);
               this.pickupItem(413, var10[1], var10[2]);
               return random(200, 300);
             }
 
-            int[] var11 = this.getItemById(new int[] {42});
+            int[] var11 = this.getItemById(42);
             if (var11[0] != -1) {
               this.walkTo(var11[1], var11[2]);
               this.pickupItem(42, var11[1], var11[2]);
               return random(200, 300);
             }
 
-            int[] var12 = this.getItemById(new int[] {31});
+            int[] var12 = this.getItemById(31);
             if (var12[0] != -1) {
               this.walkTo(var12[1], var12[2]);
               this.pickupItem(31, var12[1], var12[2]);
               return random(200, 300);
             }
 
-            int[] var13 = this.getItemById(new int[] {373});
+            int[] var13 = this.getItemById(373);
             if (var13[0] != -1) {
               this.walkTo(var13[1], var13[2]);
               this.pickupItem(373, var13[1], var13[2]);
               return random(200, 300);
             }
 
-            int[] var14 = this.getItemById(new int[] {398});
+            int[] var14 = this.getItemById(398);
             if (var14[0] != -1) {
               this.walkTo(var14[1], var14[2]);
               this.pickupItem(398, var14[1], var14[2]);
               return random(200, 300);
             }
 
-            int[] var15 = this.getItemById(new int[] {127});
+            int[] var15 = this.getItemById(127);
             if (var15[0] != -1) {
               this.walkTo(var15[1], var15[2]);
               this.pickupItem(127, var15[1], var15[2]);
               return random(200, 300);
             }
 
-            int[] var16 = this.getItemById(new int[] {1092});
+            int[] var16 = this.getItemById(1092);
             if (var16[0] != -1) {
               this.walkTo(var16[1], var16[2]);
               this.pickupItem(1092, var16[1], var16[2]);
@@ -584,7 +578,7 @@ public class ASCGiants extends Script {
               return random(200, 300);
             }
 
-            int[] var17 = this.getItemById(new int[] {615});
+            int[] var17 = this.getItemById(615);
             if (var17[0] != -1) {
               this.walkTo(var17[1], var17[2]);
               this.pickupItem(615, var17[1], var17[2]);
@@ -697,19 +691,27 @@ public class ASCGiants extends Script {
   private String getTimeRunning() {
     long var1 = (System.currentTimeMillis() - this.time) / 1000L;
     if (var1 >= 7200L) {
-      return new String(
-          var1 / 3600L + " hours, " + var1 % 3600L / 60L + " minutes, " + var1 % 60L + " seconds.");
+      return var1 / 3600L
+          + " hours, "
+          + var1 % 3600L / 60L
+          + " minutes, "
+          + var1 % 60L
+          + " seconds.";
     } else if (var1 >= 3600L && var1 < 7200L) {
-      return new String(
-          var1 / 3600L + " hour, " + var1 % 3600L / 60L + " minutes, " + var1 % 60L + " seconds.");
+      return var1 / 3600L
+          + " hour, "
+          + var1 % 3600L / 60L
+          + " minutes, "
+          + var1 % 60L
+          + " seconds.";
     } else {
       return var1 >= 60L
-          ? new String(var1 / 60L + " minutes, " + var1 % 60L + " seconds.")
-          : new String(var1 + " seconds.");
+          ? var1 / 60L + " minutes, " + var1 % 60L + " seconds."
+          : var1 + " seconds.";
     }
   }
 
   private String doCase(String var1) {
-    return new String(var1.substring(0, 1).toUpperCase() + var1.substring(1, var1.length()));
+    return var1.substring(0, 1).toUpperCase() + var1.substring(1);
   }
 }

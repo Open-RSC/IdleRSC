@@ -16,7 +16,7 @@ import javax.swing.BoxLayout;
 
 public final class SAF_MossFatigue extends Script implements ActionListener {
   /** Using PathWalker */
-  private PathWalker pw;
+  private final PathWalker pw;
 
   private PathWalker.Path bank;
   private PathWalker.Path moss;
@@ -119,7 +119,7 @@ public final class SAF_MossFatigue extends Script implements ActionListener {
     }
     int[] target_npc = getNpcById(MOSS_GIANT);
     // int[] target_npc = getItemById(LOG);
-    /** Path walker handling. */
+    /* Path walker handling. */
     if (pw.walkPath()) {
       return 100;
     }
@@ -168,7 +168,7 @@ public final class SAF_MossFatigue extends Script implements ActionListener {
       pw.setPath(moss);
       return 1000;
     }
-    /** Inside of ardy bank. */
+    /* Inside of ardy bank. */
     if (isAtApproxCoords(BANK[0], BANK[1], 5)) {
       if (isQuestMenu()) {
         answer(0);
@@ -385,7 +385,7 @@ public final class SAF_MossFatigue extends Script implements ActionListener {
             break;
         }
         for (int i = 0; i < FOOD_IDS.length; i++) {
-          if (FOOD_NAME[i].equals(food_choice.getSelectedItem().toString())) {
+          if (FOOD_NAME[i].equals(food_choice.getSelectedItem())) {
             FOOD = FOOD_IDS[i];
           }
         }
@@ -405,7 +405,7 @@ public final class SAF_MossFatigue extends Script implements ActionListener {
   public void paint() {
     int x = 325;
     int y = 65;
-    drawString(combat_choice.getSelectedItem().toString() + " XP", x - 10, y, 4, 0xFFAF2E);
+    drawString(combat_choice.getSelectedItem() + " XP", x - 10, y, 4, 0xFFAF2E);
     y += 20;
     int a = getXpForLevel(STAT);
     if (((System.currentTimeMillis() - this.time) / 1000L) != 0) {
@@ -473,15 +473,15 @@ public final class SAF_MossFatigue extends Script implements ActionListener {
   private String getTimeRunning() {
     long time = ((System.currentTimeMillis() - this.time) / 1000);
     if (time >= 7200) {
-      return new String((time / 3600) + " hours, " + ((time % 3600) / 60) + " minutes");
+      return (time / 3600) + " hours, " + ((time % 3600) / 60) + " minutes";
     }
     if (time >= 3600 && time < 7200) {
-      return new String((time / 3600) + " hour, " + ((time % 3600) / 60) + " minutes");
+      return (time / 3600) + " hour, " + ((time % 3600) / 60) + " minutes";
     }
     if (time >= 60) {
-      return new String(time / 60 + " minutes, " + (time % 60) + " seconds");
+      return time / 60 + " minutes, " + (time % 60) + " seconds";
     }
-    return new String(time + " seconds");
+    return time + " seconds";
   }
 
   private void _walkApprox(int nx, int ny, int range) {

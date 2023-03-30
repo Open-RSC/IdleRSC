@@ -111,7 +111,6 @@ public final class S_RedDragons extends Script {
 
     if (combat_style == -1) {
       writeLine("You must select a combat style...");
-      return;
     }
   }
 

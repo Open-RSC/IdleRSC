@@ -1,9 +1,5 @@
 package scripting.apos;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
 public class Abyte0_Script extends Storm_Script {
 
   // public Extension client;
@@ -32,7 +28,7 @@ public class Abyte0_Script extends Storm_Script {
 
   int bowString = 676;
 
-  public static String[] PROPERTY_NAMES =
+  public static final String[] PROPERTY_NAMES =
       new String[] {
         "nom",
         "money",
@@ -58,7 +54,7 @@ public class Abyte0_Script extends Storm_Script {
         "cookSharks"
       };
 
-  public static String[] PROPERTY_NAMES_STATS =
+  public static final String[] PROPERTY_NAMES_STATS =
       new String[] {
         "nom",
         "attack",
@@ -303,7 +299,7 @@ public class Abyte0_Script extends Storm_Script {
   public void createAccount(String name) {}
 
   public int getExperience(int skill) {
-    return (int) getXpForLevel(skill);
+    return getXpForLevel(skill);
     // return (int) client.getExperience(skill);
   }
 
@@ -331,7 +327,7 @@ public class Abyte0_Script extends Storm_Script {
     int lastInstanceIndex = getLastInventoryIndex(id);
 
     if (!waitingBeforeLastDrop
-        && firstInstanceIndex == lastInstanceIndex) // Lets wait a bit before dropping the last one
+        && firstInstanceIndex == lastInstanceIndex) // Let's wait a bit before dropping the last one
     {
       waitingBeforeLastDrop = true;
       return 2000;

@@ -8,7 +8,7 @@ public class Flaxpick extends Script {
     return new String[] {"flax"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@ran@Flax Picker!", 3);
     DisplayMessage("@ran@by xex", 3);
     SetFightMode(2);
@@ -19,7 +19,7 @@ public class Flaxpick extends Script {
       Walk(499, 474);
       Walk(493, 481);
       Walk(491, 486);
-      while (InvCount() < 30 && Running() == true) {
+      while (InvCount() < 30 && Running()) {
         AtObject2(489, 486);
         Wait(100);
       }
@@ -29,13 +29,13 @@ public class Flaxpick extends Script {
       Walk(502, 458);
       Walk(500, 451);
       int BankerID = GetNearestNPC(95);
-      while (QuestMenu() == false) {
+      while (!QuestMenu()) {
         TalkToNPC(BankerID);
         Wait(1000);
       }
       Answer(0);
-      while (Bank() == false) Wait(1);
-      while (InvCount(675) > 0 && Running() == true) {
+      while (!Bank()) Wait(1);
+      while (InvCount(675) > 0 && Running()) {
         Deposit(675, 1);
         Wait(100);
       }

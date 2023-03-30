@@ -21,28 +21,28 @@ abyte0_fletch m
 */
 
 public class Abyte0_Fletch extends Script {
-  int oakTree = 306;
-  int oakLog = 632;
-  int oakLongBow = 648;
-  int oakLongBowU = 658;
+  final int oakTree = 306;
+  final int oakLog = 632;
+  final int oakLongBow = 648;
+  final int oakLongBowU = 658;
 
-  int willowTree = 307;
-  int willowLog = 633;
-  int willowLongBow = 650;
-  int willowLongBowU = 660;
+  final int willowTree = 307;
+  final int willowLog = 633;
+  final int willowLongBow = 650;
+  final int willowLongBowU = 660;
 
-  int yewTree = 309;
-  int yewLog = 635;
-  int yewLongBow = 654;
-  int yewLongBowU = 664;
+  final int yewTree = 309;
+  final int yewLog = 635;
+  final int yewLongBow = 654;
+  final int yewLongBowU = 664;
 
-  int magicTree = 310;
-  int magicLog = 636;
-  int magicLongBow = 656;
-  int magicLongBowU = 666;
+  final int magicTree = 310;
+  final int magicLog = 636;
+  final int magicLongBow = 656;
+  final int magicLongBowU = 666;
 
-  int bowString = 676;
-  int knife = 13;
+  final int bowString = 676;
+  final int knife = 13;
 
   int xSpot, ySpot;
 
@@ -54,7 +54,7 @@ public class Abyte0_Fletch extends Script {
   int treeId;
   int logId;
 
-  int fmode = 3;
+  final int fmode = 3;
 
   public final void print(String gameText) {
     System.out.println(gameText);
@@ -77,57 +77,67 @@ public class Abyte0_Fletch extends Script {
     logId = yewLog;
     isCutting = true;
 
-    if (param.equals("yew")) {
-      print("Doing Yew");
-    } else if (param.equals("oak")) {
-      print("Doing Oak");
-      itemToDeposit = oakLongBowU;
-      cuttingType = 0;
-      xSpot = 511;
-      ySpot = 444;
-      treeId = oakTree;
-      logId = oakLog;
-      isCutting = true;
-    } else if (param.equals("willow")) {
-      print("Doing Willow");
-      itemToDeposit = willowLongBowU;
-      cuttingType = 1;
-      xSpot = 511;
-      ySpot = 444;
-      treeId = willowTree;
-      logId = willowLog;
-      isCutting = true;
-    } else if (param.equals("magic")) {
-      print("Doing Magic");
-      itemToDeposit = magicLongBowU;
-      cuttingType = 3;
-      xSpot = 521;
-      ySpot = 491;
-      treeId = magicTree;
-      logId = magicLog;
-      isCutting = true;
-    } else if (param.equals("o")) {
-      print("Adding String to Oaks");
-      itemToDeposit = oakLongBow;
-      itemToWithdraw = oakLongBowU;
-      isCutting = false;
-    } else if (param.equals("w")) {
-      print("Adding String to Willows");
-      itemToDeposit = willowLongBow;
-      itemToWithdraw = willowLongBowU;
-      isCutting = false;
-    } else if (param.equals("y")) {
-      print("Adding String to Yews");
-      itemToDeposit = yewLongBow;
-      itemToWithdraw = yewLongBowU;
-      isCutting = false;
-    } else if (param.equals("m")) {
-      print("Adding String to Magics");
-      itemToDeposit = magicLongBow;
-      itemToWithdraw = magicLongBowU;
-      isCutting = false;
-    } else {
-      print("Default = Yew LongBow");
+    switch (param) {
+      case "yew":
+        print("Doing Yew");
+        break;
+      case "oak":
+        print("Doing Oak");
+        itemToDeposit = oakLongBowU;
+        cuttingType = 0;
+        xSpot = 511;
+        ySpot = 444;
+        treeId = oakTree;
+        logId = oakLog;
+        isCutting = true;
+        break;
+      case "willow":
+        print("Doing Willow");
+        itemToDeposit = willowLongBowU;
+        cuttingType = 1;
+        xSpot = 511;
+        ySpot = 444;
+        treeId = willowTree;
+        logId = willowLog;
+        isCutting = true;
+        break;
+      case "magic":
+        print("Doing Magic");
+        itemToDeposit = magicLongBowU;
+        cuttingType = 3;
+        xSpot = 521;
+        ySpot = 491;
+        treeId = magicTree;
+        logId = magicLog;
+        isCutting = true;
+        break;
+      case "o":
+        print("Adding String to Oaks");
+        itemToDeposit = oakLongBow;
+        itemToWithdraw = oakLongBowU;
+        isCutting = false;
+        break;
+      case "w":
+        print("Adding String to Willows");
+        itemToDeposit = willowLongBow;
+        itemToWithdraw = willowLongBowU;
+        isCutting = false;
+        break;
+      case "y":
+        print("Adding String to Yews");
+        itemToDeposit = yewLongBow;
+        itemToWithdraw = yewLongBowU;
+        isCutting = false;
+        break;
+      case "m":
+        print("Adding String to Magics");
+        itemToDeposit = magicLongBow;
+        itemToWithdraw = magicLongBowU;
+        isCutting = false;
+        break;
+      default:
+        print("Default = Yew LongBow");
+        break;
     }
   }
 
@@ -264,7 +274,7 @@ public class Abyte0_Fletch extends Script {
   public int entreBanque() {
     if (getX() >= 498 && getX() <= 504 && getY() >= 447 && getY() <= 453) {
       // Si dans la banque
-      int banker[] = getNpcByIdNotTalk(new int[] {95});
+      int[] banker = getNpcByIdNotTalk(95);
       if (banker[0] != -1 && !isBanking()) talkToNpc(banker[0]);
       else print("No banker!");
       return random(240, 2500);

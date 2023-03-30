@@ -13,13 +13,12 @@ public class DrawCallback {
 
   private static long startTimestamp = System.currentTimeMillis() / 1000L;
   private static long startingXp = Long.MAX_VALUE;
-
   private static String statusText = "@red@Botting!";
-
   private static String levelUpSkill = "", levelUpLevel = "";
   private static String levelUpText = "";
   private static long levelUpTextTimeout = 0;
   private static boolean screenshotTaken = false;
+  public static boolean toggleOnViewId = false;
 
   /** The hook called each frame by the patched client. */
   public static void drawHook() {
@@ -31,7 +30,7 @@ public class DrawCallback {
   /**
    * Sets the left hand pane bot status text.
    *
-   * @param str
+   * @param str "@col@string status text"
    */
   public static void setStatusText(String str) {
     statusText = str;
@@ -41,6 +40,12 @@ public class DrawCallback {
     int y = 130;
     String localStatusText = statusText;
 
+    if (toggleOnViewId) {
+      c.getPlayer().groupID = 9;
+    } else {
+      c.getPlayer().groupID = 10;
+    }
+
     if (c.getShowBotPaint()) { // when true, this shows the left hand paint section
 
       int currentHits = c.getCurrentStat(c.getStatId("Hits"));
@@ -49,23 +54,13 @@ public class DrawCallback {
       int maxPrayer = c.getBaseStat(c.getStatId("Prayer"));
       int fatigue = c.getFatigue();
 
-      c.drawString(
-          "Hits: " + String.valueOf(currentHits) + "@red@/@whi@" + String.valueOf(maxHits),
-          7,
-          y,
-          0xFFFFFF,
-          1);
+      c.drawString("Hits: " + currentHits + "@red@/@whi@" + maxHits, 7, y, 0xFFFFFF, 1);
       y += 14;
-      c.drawString(
-          "Prayer: " + String.valueOf(currentPrayer) + "@red@/@whi@" + String.valueOf(maxPrayer),
-          7,
-          y,
-          0xFFFFFF,
-          1);
+      c.drawString("Prayer: " + currentPrayer + "@red@/@whi@" + maxPrayer, 7, y, 0xFFFFFF, 1);
       y += 14;
       if (c.isAuthentic()) { // hidden on coleslaw so that submenu ON, Npc Kill counts ON can show
         // Kill counter at that screen location! Uranium will still get fatigue.
-        c.drawString("Fatigue: " + String.valueOf(fatigue) + "@red@%", 7, y, 0xFFFFFF, 1);
+        c.drawString("Fatigue: " + fatigue + "@red@%", 7, y, 0xFFFFFF, 1);
       }
       y += 14;
 
@@ -79,11 +74,7 @@ public class DrawCallback {
 
       if (c.getShowCoords())
         c.drawString(
-            "Coords: @red@(@whi@"
-                + String.valueOf(c.currentX())
-                + "@red@,@whi@"
-                + String.valueOf(c.currentY())
-                + "@red@)",
+            "Coords: @red@(@whi@" + c.currentX() + "@red@,@whi@" + c.currentY() + "@red@)",
             7,
             y,
             0xFFFFFF,
@@ -91,11 +82,13 @@ public class DrawCallback {
 
       y += 14;
       long totalXp = getTotalXp();
-      startingXp = totalXp < startingXp ? totalXp : startingXp;
+      startingXp = Math.min(totalXp, startingXp);
       long xpGained = totalXp - startingXp;
       long xpPerHr;
+      long runTimeInSeconds = System.currentTimeMillis() / 1000L;
+
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = runTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         xpPerHr = (int) (xpGained * scale);
       } catch (Exception e) {
@@ -119,7 +112,7 @@ public class DrawCallback {
     if (System.currentTimeMillis() / 1000L < levelUpTextTimeout) {
       y += 14;
       c.drawString(levelUpText, 7, y, 0xFFFFFF, 1);
-      if (screenshotTaken == false) {
+      if (!screenshotTaken) {
         c.takeScreenshot(levelUpLevel + "_" + levelUpSkill + "_");
         screenshotTaken = true;
       }
@@ -129,7 +122,7 @@ public class DrawCallback {
   private static void drawScript(Controller c) {
 
     if (c != null
-        && c.getShowBotPaint() == true
+        && c.getShowBotPaint()
         && c.isRunning()
         && Main.getCurrentRunningScript() != null) {
       if (Main.getCurrentRunningScript() instanceof IdleScript) {
@@ -162,26 +155,40 @@ public class DrawCallback {
   /**
    * Displays level up messages and takes screenshot the next frame.
    *
-   * @param statName
-   * @param level
+   * @param statName string
+   * @param level integer
    */
   public static void displayAndScreenshotLevelUp(String statName, int level) {
     screenshotTaken = false;
     levelUpSkill = statName;
     levelUpLevel = String.valueOf(level);
 
-    levelUpText = "@red@" + String.valueOf(level) + " @whi@" + statName + "@red@!";
+    levelUpText = "@red@" + level + " @whi@" + statName + "@red@!";
     levelUpTextTimeout = System.currentTimeMillis() / 1000L + 15; // display for 15seconds
   }
 
   public static void resetXpCounter() {
     Controller c = Main.getController();
-
+    boolean temporaryToggledGFX = false;
     startTimestamp = System.currentTimeMillis() / 1000L;
     startingXp = Long.MAX_VALUE;
 
     if (c != null) {
       c.displayMessage("@red@IdleRSC@yel@: XP counter reset!");
+      if (!c
+          .isDrawEnabled()) { // if you reset xp, it will toggle on graphics briefly to reset, then
+        // toggle off again. Otherwise, counter will not begin counting xp. It
+        // has to reload counter into memory?  ~ Kaila ~
+        c.setDrawing(true);
+        temporaryToggledGFX = true;
+        c.sleep(
+            100); // sleep here will not affect scripts running, tested with 10s delay no effect on
+        // scripts, it might delay drawcallback, but as graphics were toggled off before
+        // reset xp, shouldn't be an issue.
+      }
+      if (temporaryToggledGFX) {
+        c.setDrawing(false);
+      }
     }
   }
 }

@@ -34,11 +34,7 @@ public final class S_SuperSetCerter extends Script {
 
   @Override
   public void init(String params) {
-    if ("uncert".equals(params)) {
-      uncert = true;
-    } else {
-      uncert = false;
-    }
+    uncert = "uncert".equals(params);
     System.out.println(uncert ? "Uncerting super potion sets" : "Certing super potion sets");
     bank_time = -1L;
     menu_time = -1L;

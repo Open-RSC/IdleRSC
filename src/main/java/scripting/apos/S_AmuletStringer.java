@@ -128,7 +128,6 @@ public final class S_AmuletStringer extends Script {
       y += 15;
       drawString("Banked " + names[i] + " amulets: " + banked_counts[i], 25, y, 1, white);
     }
-    y += 15;
   }
 
   private void _printOut() {

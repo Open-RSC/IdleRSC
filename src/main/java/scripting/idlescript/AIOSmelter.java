@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,25 +15,32 @@ import javax.swing.JLabel;
 /**
  * This is AIOSmelter written for IdleRSC.
  *
- * <p>It is your standard Falador/AK smelter script. Batch bars MUST be toggles on to function
- * properly.
+ * <p>Standard Falador/AK smelter script.
  *
- * <p>It has the following features:
+ * <p>Batch bars MUST be toggles on to function properly.
  *
- * <p>* GUI * * All bars smeltable * Goldsmithing gauntlets support * Cannonball support *
- * Silver/gold/gem items craftable * All Crowns added - Kaila
+ * <p>Features:
  *
- * <p>CLI arg support (example:--scriptname "AIOSmelter" --scriptarguments "Al-Kharid" "Steel Bar")
- * do not work as parameters properly, should be used in arguments of launcher "Steel Bar" can be
- * changed to any of the "option" strings below.
+ * <p>All bars smeltable, Goldsmithing gauntlets, Cannonballs, Silver/gold/gem Items, All Crowns.
  *
- * <p>todo add uranium support/no batching support - need to change how it functionally checks for
- * ores. -issue is that coleslaw smithing cape saves coal, so you need to check "primary" ore
- * amount, such as mith ore.
+ * <p>CLI arg support (example:--scriptname "AIOSmelter" --scriptarguments "al-kharid" "steel bar")
  *
- * @author Dvorak (modified by Searos)
+ * <p>"steel bar" can be changed to the string version of the bot "options"
+ *
+ * <p>Will not work as script selector parameters, should be used in arguments of launcher.
+ *
+ * @author Dvorak - origional script
+ *     <p>Searos - modified and expanded
+ *     <p>Kaila - full update, gui, rewrite
+ */
+/*
+ * todo
+ *      add uranium support/no batching support - need to change how it functionally checks for ores.
+ *      -issue is that coleslaw smithing cape saves coal, so you need to check "primary" ore amount, such as mith ore.
+ *      Fix script selector/cli parameters to work properly
  */
 public class AIOSmelter extends IdleScript {
+  final Controller c = Main.getController();
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
@@ -46,7 +52,7 @@ public class AIOSmelter extends IdleScript {
   int barsInBank = 0;
   long startTime;
   int destinationId = -1;
-  int[] barIds = {
+  final int[] barIds = {
     169, 170, 384, 171, 1041, 172, 173, 174, 408, 44, 1027, 283, 288, 296, 284, 289, 297, 285, 290,
     298, 286, 291, 299, 287, 292, 300, 543, 544, 524
   };
@@ -54,10 +60,10 @@ public class AIOSmelter extends IdleScript {
   String primaryName = "";
   String secondaryName = "";
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
 
-  String[] options =
+  final String[] options =
       new String[] {
         "Bronze Bar",
         "Iron Bar",
@@ -96,11 +102,13 @@ public class AIOSmelter extends IdleScript {
         "Dragonstone crown"
       };
 
-  String[] destinations = new String[] {"Falador", "Al-Kharid"};
+  final String[] destinations = new String[] {"Falador", "Al-Kharid"};
 
   Map<Integer, Integer> ingredients = null;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
+    c.quitIfAuthentic();
+    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     if (scriptStarted) {
       scriptStart();
     } else {
@@ -110,7 +118,6 @@ public class AIOSmelter extends IdleScript {
           guiSetup = true;
         }
         if (scriptStarted) {
-          controller.quitIfAuthentic();
           scriptStart();
         }
       } else {
@@ -119,7 +126,7 @@ public class AIOSmelter extends IdleScript {
           for (int i = 0; i < destinations.length; i++) {
             String option = destinations[i];
 
-            if (option.toLowerCase().equals(parameters[0].toLowerCase())) {
+            if (option.equalsIgnoreCase(parameters[0])) {
               destinationId = i;
               break;
             }
@@ -128,7 +135,7 @@ public class AIOSmelter extends IdleScript {
           for (int i = 0; i < options.length; i++) {
             String option = options[i];
 
-            if (option.toLowerCase().equals(parameters[1].toLowerCase())) {
+            if (option.equalsIgnoreCase(parameters[1])) {
               barId = barIds[i];
               ingredients = ingredientsMapping.get(barId);
               break;
@@ -140,28 +147,29 @@ public class AIOSmelter extends IdleScript {
           }
 
           parseValues(); // has barID set by now
+          if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
           scriptStarted = true;
         } catch (Exception e) {
           System.out.println("Could not parse parameters!");
-          controller.displayMessage("@red@Could not parse parameters!");
-          controller.stop();
+          c.displayMessage("@red@Could not parse parameters!");
+          c.stop();
         }
       }
     }
 
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
   public void scriptStart() {
     if (isEnoughOre()) {
-      if (controller.getNearestObjectById(118) == null) {
-        controller.setStatus("Walking to furnace..");
+      if (c.getNearestObjectById(118) == null) {
+        c.setStatus("Walking to furnace..");
         if (destinationId == 0) {
-          controller.walkTo(318, 551, 0, true);
-          controller.walkTo(311, 545, 0, true);
+          c.walkTo(318, 551, 0, true);
+          c.walkTo(311, 545, 0, true);
         }
         if (destinationId == 1) {
-          controller.walkTo(84, 679, 0, true);
+          c.walkTo(84, 679, 0, true);
         }
       }
       Iterator<Entry<Integer, Integer>> iterator = ingredients.entrySet().iterator();
@@ -171,82 +179,76 @@ public class AIOSmelter extends IdleScript {
 
       if (oreId == 1057) { // do not use the cannonball mold on the furnace!
         oreId = 171;
-      } else if (controller.getInventoryItemCount(293) > 0) {
+      } else if (c.getInventoryItemCount(293) > 0) {
         oreId = 172;
         mouldAnswer = 0;
-      } else if (controller.getInventoryItemCount(295) > 0) {
+      } else if (c.getInventoryItemCount(295) > 0) {
         oreId = 172;
         mouldAnswer = 0; // was 1, Fixes menuing after crafting update
-      } else if (controller.getInventoryItemCount(294) > 0) {
+      } else if (c.getInventoryItemCount(294) > 0) {
         oreId = 172;
         mouldAnswer = 0; // was 2, Fixes menuing after crafting update
-      } else if (controller.getInventoryItemCount(1502) > 0) {
+      } else if (c.getInventoryItemCount(1502) > 0) {
         oreId = 172;
         mouldAnswer = 0;
       }
 
-      if (!controller.isAuthentic()) {
-        gemAnswer = 0;
-      } else { // for uranium
-        if (controller.getInventoryItemCount(164) > 0) gemAnswer = 1;
-        if (controller.getInventoryItemCount(163) > 0) gemAnswer = 2;
-        if (controller.getInventoryItemCount(162) > 0) gemAnswer = 3;
-        if (controller.getInventoryItemCount(161) > 0) gemAnswer = 4;
-        if (controller.getInventoryItemCount(523) > 0) gemAnswer = 5;
+      if (c.isAuthentic()) { // for uranium only
+        if (c.getInventoryItemCount(164) > 0) gemAnswer = 1;
+        if (c.getInventoryItemCount(163) > 0) gemAnswer = 2;
+        if (c.getInventoryItemCount(162) > 0) gemAnswer = 3;
+        if (c.getInventoryItemCount(161) > 0) gemAnswer = 4;
+        if (c.getInventoryItemCount(523) > 0) gemAnswer = 5;
       }
-      if (controller.getInventoryItemCount(oreId) > 0
-          && controller.getNearestObjectById(118) != null) {
+      if (c.getInventoryItemCount(oreId) > 0 && c.getNearestObjectById(118) != null) {
 
-        while (controller.isBatching()) controller.sleep(640);
-        if (controller.getInventoryItemCount(699) > 0) { // wield gauntlets
-          controller.setStatus("Wielding gauntlets..");
-          controller.equipItem(controller.getInventoryItemSlotIndex(699));
-          controller.sleep(618);
+        while (c.isBatching()) c.sleep(640);
+        if (c.getInventoryItemCount(699) > 0) { // wield gauntlets
+          c.setStatus("Wielding gauntlets..");
+          c.equipItem(c.getInventoryItemSlotIndex(699));
+          c.sleep(618);
         }
-        controller.setStatus("Smelting!");
-        controller.sleepHandler(98, true);
-        // if (controller.isBatching() == false) {
-        controller.useItemIdOnObject(
-            controller.getNearestObjectById(118)[0],
-            controller.getNearestObjectById(118)[1],
-            oreId);
+        c.setStatus("Smelting!");
+        c.sleepHandler(98, true);
+        // if (c.isBatching() == false) {
+        c.useItemIdOnObject(c.getNearestObjectById(118)[0], c.getNearestObjectById(118)[1], oreId);
         // }
         if (oreId == 171) {
-          controller.sleep(
+          c.sleep(
               3000); // cannonballs take way longer and can be interrupted by starting another one
         } else if (oreId == 172) {
-          controller.sleep(800);
-          controller.optionAnswer(mouldAnswer);
-          controller.sleep(800);
-          controller.optionAnswer(gemAnswer);
-          controller.sleep(600);
-          if (!controller.isAuthentic()) {
-            while (controller.isBatching()) {
-              controller.sleep(600);
+          c.sleep(800);
+          c.optionAnswer(mouldAnswer);
+          c.sleep(800);
+          c.optionAnswer(gemAnswer);
+          c.sleep(600);
+          if (!c.isAuthentic()) {
+            while (c.isBatching()) {
+              c.sleep(600);
             }
           }
         } else {
-          controller.sleep(618);
+          c.sleep(618);
         }
 
-        while (controller.isBatching()) controller.sleep(340);
+        while (c.isBatching()) c.sleep(340);
       }
 
     } else {
-      controller.setStatus("Banking..");
+      c.setStatus("Banking..");
       if (destinationId == 0) {
-        controller.walkTo(318, 551, 0, true);
-        controller.walkTo(329, 553, 0, true);
+        c.walkTo(318, 551, 0, true);
+        c.walkTo(329, 553, 0, true);
       }
       if (destinationId == 1) {
-        controller.walkTo(87, 694, 0, true);
+        c.walkTo(87, 694, 0, true);
       }
-      controller.openBank();
+      c.openBank();
 
-      for (int itemId : controller.getInventoryUniqueItemIds()) {
+      for (int itemId : c.getInventoryUniqueItemIds()) {
         if (itemId != 0 && itemId != 1263 && itemId != 1057) {
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-          controller.sleep(618);
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
+          c.sleep(618);
         }
       }
 
@@ -254,18 +256,18 @@ public class AIOSmelter extends IdleScript {
         if (entry.getKey() == 699) continue;
 
         if (entry.getKey() == 151 || entry.getKey() == 153) {
-          if (controller.getInventoryItemCount(1263) > 0)
-            controller.withdrawItem(entry.getKey(), entry.getValue() - 1);
-          else controller.withdrawItem(entry.getKey(), entry.getValue());
+          if (c.getInventoryItemCount(1263) > 0)
+            c.withdrawItem(entry.getKey(), entry.getValue() - 1);
+          else c.withdrawItem(entry.getKey(), entry.getValue());
 
         } else {
-          controller.withdrawItem(entry.getKey(), entry.getValue());
+          c.withdrawItem(entry.getKey(), entry.getValue());
         }
-        controller.sleep(618);
+        c.sleep(618);
       }
-      primaryOreInBank = controller.getBankItemCount(primaryOreId);
-      secondaryOreInBank = controller.getBankItemCount(secondaryOreId);
-      barsInBank = controller.getBankItemCount(barId);
+      primaryOreInBank = c.getBankItemCount(primaryOreId);
+      secondaryOreInBank = c.getBankItemCount(secondaryOreId);
+      barsInBank = c.getBankItemCount(barId);
     }
   }
 
@@ -273,14 +275,14 @@ public class AIOSmelter extends IdleScript {
     for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
       if (entry.getKey() == 699) continue;
 
-      if (controller.getInventoryItemCount(1263) > 0) {
-        if (controller.getInventoryItemCount(entry.getKey())
+      if (c.getInventoryItemCount(1263) > 0) {
+        if (c.getInventoryItemCount(entry.getKey())
             < entry.getValue()
                 - 1) // this is why bot leaves after 1 ore when batching is off. When ores in inv
           // are less than par (bank) ores, it leaves.
           return false;
       } else {
-        if (controller.getInventoryItemCount(entry.getKey())
+        if (c.getInventoryItemCount(entry.getKey())
             < entry
                 .getValue()) // this is why bot leaves after 1 ore when batching is off. When ores
           // in inv are less than par (bank) ores, it leaves.
@@ -294,11 +296,10 @@ public class AIOSmelter extends IdleScript {
   public void parseValues() {
     startTime = System.currentTimeMillis();
     whatIsOreId();
-    controller.displayMessage("@cya@AIOSmelter by Dvorak, Searos, and Kaila!");
-    controller.displayMessage("@cya@Al-Kharid support added by Searos. Heh.");
-    controller.displayMessage("@cya@Added Full GUI and more - Kaila.");
-    controller.displayMessage(
-        "@cya@REQUIRES Batch bars be toggle on in settings to work correctly!");
+    c.displayMessage("@cya@AIOSmelter by Dvorak, Searos, and Kaila!");
+    c.displayMessage("@cya@Al-Kharid support added by Searos. Heh.");
+    c.displayMessage("@cya@Added Full GUI and more - Kaila.");
+    c.displayMessage("@cya@REQUIRES Batch bars be toggle on in settings to work correctly!");
   }
 
   public void setupGUI() {
@@ -309,26 +310,23 @@ public class AIOSmelter extends IdleScript {
     JLabel Label2 = new JLabel("--scriptarguments \"Al-Kharid\" \"Steel Bar\")");
     JLabel batchLabel = new JLabel("IMPORTANT: Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures all bars crafted in 1 \"trip.\"");
-    JComboBox<String> destination = new JComboBox<String>(destinations);
+    JComboBox<String> destination = new JComboBox<>(destinations);
     JLabel barLabel = new JLabel("Bar Type:");
-    JComboBox<String> barField = new JComboBox<String>(options);
+    JComboBox<String> barField = new JComboBox<>(options);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            barId = barIds[barField.getSelectedIndex()];
-            destinationId = destination.getSelectedIndex();
-            ingredients = ingredientsMapping.get(barId);
-            parseValues();
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-          }
+        e -> {
+          barId = barIds[barField.getSelectedIndex()];
+          destinationId = destination.getSelectedIndex();
+          ingredients = ingredientsMapping.get(barId);
+          parseValues();
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -457,65 +455,42 @@ public class AIOSmelter extends IdleScript {
     if (message.contains("retrieve a") || message.contains("make a")) success++;
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-  /** credit to chomp for toTimeToCompletion (from AA_Script) (totalBars, barsInBank, startTime) */
-  public static String toTimeToCompletion(
-      final int processed, final int remaining, final long time) {
-    if (processed == 0) {
-      return "0:00:00";
-    }
-
-    final double seconds = (System.currentTimeMillis() - time) / 1000.0;
-    final double secondsPerItem = seconds / processed;
-    final long ttl = (long) (secondsPerItem * remaining);
-    return String.format("%d:%02d:%02d", ttl / 3600, (ttl % 3600) / 60, (ttl % 60));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+    if (c != null) {
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
+      long timeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (success * scale);
       } catch (Exception e) {
         // divide by zero
       }
 
-      // controller.drawBoxAlpha(7, 7, 160, 21+14, 0xFF0000, 128);
-      controller.drawString("@red@AIOSmelter @gre@by Dvorak + Kaila", 6, 21, 0xFFFFFF, 1);
-      controller.drawString("@whi@_____________________", 6, 21 + 3, 0xFFFFFF, 1);
-      controller.drawString(
+      // c.drawBoxAlpha(7, 7, 160, 21+14, 0xFF0000, 128);
+      c.drawString("@red@AIOSmelter @gre@by Dvorak + Kaila", 6, 21, 0xFFFFFF, 1);
+      c.drawString("@whi@_____________________", 6, 21 + 3, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@" + primaryName + " in Bank: @gre@" + this.primaryOreInBank,
           6,
           21 + 17,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@" + secondaryName + " in Bank: @gre@" + this.secondaryOreInBank,
           6,
           21 + 17 + 14,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@" + barName + " in Bank: @gre@" + this.barsInBank,
           6,
           21 + 17 + 14 + 14,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@"
               + barName
               + " Smelted: @gre@"
@@ -527,18 +502,18 @@ public class AIOSmelter extends IdleScript {
           21 + 17 + 28 + 14,
           0xFFFFFF,
           1);
-      controller.drawString(
-          "@whi@Time Remaining: " + toTimeToCompletion(success, primaryOreInBank, startTime),
+      c.drawString(
+          "@whi@Time Remaining: " + c.timeToCompletion(success, primaryOreInBank, startTime),
           6,
           21 + 17 + 42 + 14,
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 6, 21 + 17 + 56 + 14, 0xFFFFFF, 1);
-      controller.drawString("@whi@________________", 6, 21 + 17 + 56 + 14 + 3, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, 6, 21 + 17 + 56 + 14, 0xFFFFFF, 1);
+      c.drawString("@whi@________________", 6, 21 + 17 + 56 + 14 + 3, 0xFFFFFF, 1);
     }
   }
 
-  Map<Integer, Map<Integer, Integer>> ingredientsMapping =
+  final Map<Integer, Map<Integer, Integer>> ingredientsMapping =
       new HashMap<Integer, Map<Integer, Integer>>() {
         {
           put(

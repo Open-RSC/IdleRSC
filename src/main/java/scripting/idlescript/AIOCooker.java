@@ -2,9 +2,9 @@ package scripting.idlescript;
 
 import static bot.Main.log;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -15,20 +15,24 @@ import javax.swing.JLabel;
 /**
  * A basic cooking script to use in Catherby.
  *
- * @author Dvorak
+ * @author Dvorak - original script
+ *     <p>Kaila - rewrite
+ * @version 1.1 - Batch bar autotoggle bugfix still preserving uranium support
+ *     <p>
  */
 public class AIOCooker extends IdleScript {
+  final Controller c = Main.getController();
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
   int failure = 0;
   FoodObject target = null;
   boolean dropBurnt = true;
   boolean gauntlets = true;
 
-  ArrayList<FoodObject> objects =
+  final ArrayList<FoodObject> objects =
       new ArrayList<FoodObject>() {
         {
           add(new FoodObject("Chicken", 133, 132, 134)); // raw, cooked, burnt
@@ -78,16 +82,14 @@ public class AIOCooker extends IdleScript {
     @Override
     public boolean equals(Object o) {
       if (o instanceof FoodObject) {
-        if (((FoodObject) o).name.equals(this.name)) {
-          return true;
-        }
+        return ((FoodObject) o).name.equals(this.name);
       }
-
       return false;
     }
   }
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
+    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     String[] splitParams = null;
     if (parameters != null && parameters[0].contains(" ")) {
       splitParams = parameters[0].split(" ");
@@ -113,123 +115,122 @@ public class AIOCooker extends IdleScript {
       } catch (Exception e) {
         log("Invalid parameters! Usage: ");
         log("foodname true true");
-        controller.stop();
+        c.stop();
       }
     }
 
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
   public void scriptStart() {
 
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount(target.rawId) == 0) {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount(target.rawId) == 0) {
         goToBank();
         bank();
         goToCook();
       } else {
         cook();
       }
-      controller.sleep(250);
+      c.sleep(250);
     }
   }
 
   public void bank() {
 
-    controller.walkTo(439, 497);
+    c.walkTo(439, 497);
     openDoor();
 
-    controller.openBank();
-    controller.sleep(600);
+    c.openBank();
+    c.sleep(600);
 
-    if (controller.isInBank()) {
-      if (controller.getInventoryItemCount(target.cookedId) > 0) {
-        controller.depositItem(target.cookedId, controller.getInventoryItemCount(target.cookedId));
-        controller.sleep(250);
+    if (c.isInBank()) {
+      if (c.getInventoryItemCount(target.cookedId) > 0) {
+        c.depositItem(target.cookedId, c.getInventoryItemCount(target.cookedId));
+        c.sleep(250);
       }
       if (!this.dropBurnt) {
-        if (controller.getInventoryItemCount(target.burntId) > 0) {
-          controller.depositItem(target.burntId, controller.getInventoryItemCount(target.burntId));
-          controller.sleep(250);
+        if (c.getInventoryItemCount(target.burntId) > 0) {
+          c.depositItem(target.burntId, c.getInventoryItemCount(target.burntId));
+          c.sleep(250);
         }
       }
 
-      if (this.gauntlets && controller.getInventoryItemCount(700) == 0) {
-        controller.withdrawItem(700);
-        controller.sleep(250);
+      if (this.gauntlets && c.getInventoryItemCount(700) == 0) {
+        c.withdrawItem(700);
+        c.sleep(250);
       }
 
-      if (controller.getInventoryItemCount(target.rawId) == 0) {
-        controller.withdrawItem(target.rawId, 30);
-        controller.sleep(250);
+      if (c.getInventoryItemCount(target.rawId) == 0) {
+        c.withdrawItem(target.rawId, 30);
+        c.sleep(250);
       }
 
-      controller.closeBank();
-      controller.sleep(200);
+      c.closeBank();
+      c.sleep(200);
     }
-    controller.walkTo(439, 496);
+    c.walkTo(439, 496);
     openDoor();
   }
 
   public void goToCook() {
-    controller.walkTo(435, 486);
+    c.walkTo(435, 486);
     openCookDoor();
 
-    if (this.gauntlets == true) {
+    if (gauntlets) {
 
-      if (controller.getInventoryItemCount(700) < 1) {
-        controller.displayMessage("@red@Please withdraw gauntlets. Stopping script.");
-        controller.stop();
-        return;
+      if (c.getInventoryItemCount(700) < 1) {
+        c.displayMessage("@red@Please withdraw gauntlets. Stopping script.");
+        c.stop();
       }
 
-      if (!controller.isEquipped(controller.getInventoryItemSlotIndex(700))) {
-        controller.equipItem(controller.getInventoryItemSlotIndex(700));
-        controller.sleep(618);
+      if (!c.isEquipped(c.getInventoryItemSlotIndex(700))) {
+        c.equipItem(c.getInventoryItemSlotIndex(700));
+        c.sleep(618);
       }
     }
   }
 
   public void goToBank() {
     if (this.dropBurnt) {
-      while (controller.getInventoryItemCount(target.burntId) > 0) {
-        controller.dropItem(controller.getInventoryItemSlotIndex(target.burntId));
-        controller.sleep(250);
+      while (c.getInventoryItemCount(target.burntId) > 0) {
+        c.dropItem(c.getInventoryItemSlotIndex(target.burntId));
+        c.sleep(250);
       }
     }
 
-    controller.walkTo(435, 485);
+    c.walkTo(435, 485);
     openCookDoor();
   }
 
   public void cook() {
-    if (controller.getInventoryItemCount(target.rawId) > 0) {
-      controller.sleepHandler(98, true);
+    if (c.getInventoryItemCount(target.rawId) > 0) {
+      c.sleepHandler(98, true);
 
-      if (controller.isBatching() == false) {
-        controller.useItemIdOnObject(432, 480, target.rawId);
+      if (!c.isBatching()) {
+        c.useItemIdOnObject(432, 480, target.rawId);
       }
-      controller.sleep(640);
-      while (controller.isBatching()) controller.sleep(640);
+      c.sleep(640);
+      while (c.isBatching()) c.sleep(640);
     }
   }
 
   public void openDoor() {
-    while (controller.getObjectAtCoord(439, 497) == 64) {
-      controller.atObject(439, 497);
-      controller.sleep(100);
+    while (c.getObjectAtCoord(439, 497) == 64) {
+      c.atObject(439, 497);
+      c.sleep(100);
     }
   }
 
   public void openCookDoor() {
-    while (!controller.isDoorOpen(435, 486)) {
-      controller.openDoor(435, 486);
+    while (!c.isDoorOpen(435, 486)) {
+      c.openDoor(435, 486);
     }
   }
 
   public void setupGUI() {
     JLabel headerLabel = new JLabel("Start in Catherby!");
-    JComboBox<String> foodField = new JComboBox<String>();
+    JComboBox<String> foodField = new JComboBox<>();
     JCheckBox dropBurntCheckbox = new JCheckBox("Drop Burnt?", false);
     JCheckBox gauntletsCheckbox = new JCheckBox("Cooking Gauntlets?", false);
 
@@ -240,26 +241,21 @@ public class AIOCooker extends IdleScript {
     }
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        e -> {
+          dropBurnt = dropBurntCheckbox.isSelected();
+          gauntlets = gauntletsCheckbox.isSelected();
+          target = objects.get(foodField.getSelectedIndex());
 
-            dropBurnt = dropBurntCheckbox.isSelected();
-            gauntlets = gauntletsCheckbox.isSelected();
-            target = objects.get(foodField.getSelectedIndex());
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
 
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-
-            controller.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
-            controller.displayMessage(
-                "@red@Coleslaw: Recommend Batch bars be toggle on in settings!");
-            controller.displayMessage("@red@Coleslaw: This will slightly increase efficiency!");
-          }
+          c.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
+          c.displayMessage("@red@Coleslaw: Recommend Batch bars be toggle on in settings!");
+          c.displayMessage("@red@Coleslaw: This will slightly increase efficiency!");
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -287,12 +283,14 @@ public class AIOCooker extends IdleScript {
 
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
       int successPerHr = 0;
       float ratio = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
+
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (success * scale);
         ratio = (float) success / (float) failure;
@@ -300,9 +298,9 @@ public class AIOCooker extends IdleScript {
         // divide by zero
       }
 
-      controller.drawBoxAlpha(7, 7, 160, 21 + 14 + 14 + 14, 0xFF0000, 128);
-      controller.drawString("@red@AIOCooker @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawBoxAlpha(7, 7, 160, 21 + 14 + 14 + 14, 0xFF0000, 128);
+      c.drawString("@red@AIOCooker @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+      c.drawString(
           "@red@Successes: @whi@"
               + String.format("%,d", success)
               + " @red@(@whi@"
@@ -312,9 +310,9 @@ public class AIOCooker extends IdleScript {
           21 + 14,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@red@Failures: @whi@" + String.format("%,d", failure), 10, 21 + 14 + 14, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawString(
           "@red@Ratio: @whi@" + String.format("%.2f", ratio), 10, 21 + 14 + 14 + 14, 0xFFFFFF, 1);
     }
   }

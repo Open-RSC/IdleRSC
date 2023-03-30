@@ -4,8 +4,8 @@ import compatibility.apos.Script;
 
 public final class lowwall extends Script {
 
-  private int[] initial_xp = new int[SKILL.length];
-  private int[][] walls = {
+  private final int[] initial_xp = new int[SKILL.length];
+  private final int[][] walls = {
     {495, 559},
     {495, 558}
   };

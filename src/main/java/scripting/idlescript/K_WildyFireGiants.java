@@ -1,50 +1,69 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila"); Start in Edge bank with Armor"); Sharks/Laws/Airs/Earths IN
- * BANK REQUIRED"); 31 Magic Required for escape tele");
+ * Wildy Fire Giant Killer - By Kaila
  *
- * <p>Author - Kaila
+ * <p>Start in mage bank with Armor
+ *
+ * <p>Sharks/Laws/Airs/Earths IN BANK REQUIRED
+ *
+ * <p>@Author - Kaila
  */
 public class K_WildyFireGiants extends IdleScript {
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
 
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
+  private boolean isWithinLootzone(int x, int y) {
+    return c.distance(269, 2949, x, y) <= 10;
+  }
 
-  int totalBstaff = 0;
-  int totalRscim = 0;
-  int totalRunestuff = 0;
-  int totalGems = 0;
-  int totalFire = 0;
-  int totalLaw = 0;
-  int totalNat = 0;
-  int totalChaos = 0;
-  int totalDeath = 0;
-  int totalBlood = 0;
-  int totalRbar = 0;
-  int totalLoop = 0;
-  int totalTooth = 0;
-  int totalDstone = 0;
-  int totalLeft = 0;
-  int totalSpear = 0;
-  int totalMed = 0;
-  int totalHerb = 0;
-  int totalTrips = 0;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int totalBstaff = 0;
+  private static int totalRscim = 0;
+  private static int totalRunestuff = 0;
+  private static int totalGems = 0;
+  private static int totalFire = 0;
+  private static int totalLaw = 0;
+  private static int totalNat = 0;
+  private static int totalChaos = 0;
+  private static int totalBlood = 0;
+  private static int totalLoop = 0;
+  private static int totalTooth = 0;
+  private static int totalDstone = 0;
+  private static int totalLeft = 0;
+  private static int totalSpear = 0;
+  private static int totalMed = 0;
+  private static int totalHerb = 0;
+  private static int totalTrips = 0;
 
-  int[] bones = {20, 413, 604, 814};
-  int[] attackPot = {488, 487, 486};
-  int[] strPot = {494, 493, 492};
-  int[] loot = {
+  private final int[] bones = {
+    20, // regular bones
+    413, // big bones
+    604, // bat bones
+    814 // dragon bones
+  };
+  private static final int[] superAttackPot = {
+    488, // super  attack pot (1)
+    487, // super  attack pot (2)
+    486 // super attack pot (3)
+  };
+  private static final int[] superStrengthPot = {
+    494, // super str pot (1)
+    493, // super str pot (2)
+    492 // super str pot (3)
+  };
+  private static final int[] loot = {
     // 413,   // big bones //un-comment this to loot and bury dbones, it will reduce Kills per Hr
     // significantly b/c of Shadow Spiders
     1346, // d2h
@@ -98,309 +117,283 @@ public class K_WildyFireGiants extends IdleScript {
     373 // lobster (will get eaten)
   };
 
-  public boolean isWithinLootzone(int x, int y) {
-    return controller.distance(269, 2949, x, y) <= 10;
-  }
+  public int start(String[] parameters) {
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public int start(String parameters[]) {
+    if (scriptStarted) {
+      c.displayMessage("@red@Wildy Fire Giant Killer - By Kaila");
+      c.displayMessage("@red@Start in Mage bank OR in Giants room");
+      c.displayMessage("@red@Sharks IN BANK REQUIRED");
+      if (c.isInBank()) {
+        c.closeBank();
+      }
+      if (c.currentX() > 260 && c.currentX() < 275 && c.currentY() < 132 && c.currentY() > 125) {
+        stairToGiants();
+        c.sleep(1380);
+      }
+      if (c.currentY() > 3364) {
+        bank();
+        BankToStair();
+        stairToGiants();
+        c.sleep(1380);
+      }
+      scriptStart();
+    }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
-    if (scriptStarted) {
-      controller.displayMessage("@red@Wildy Fire Giant Killer - By Kaila");
-      controller.displayMessage("@red@Start in Mage bank OR in Giants room");
-      controller.displayMessage("@red@Sharks IN BANK REQUIRED");
-      if (controller.isInBank() == true) {
-        controller.closeBank();
-      }
-      if (controller.currentX() > 260
-          && controller.currentX() < 275
-          && controller.currentY() < 132
-          && controller.currentY() > 125) {
-        stairToGiants();
-        controller.sleep(1380);
-      }
-      if (controller.currentY() > 3364) {
-        bank();
-        BankToStair();
-        stairToGiants();
-        controller.sleep(1380);
-      }
-      scriptStart();
-    }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
 
       buryBones();
       eat();
 
-      if (controller.getInventoryItemCount(465) > 0 && !controller.isInCombat()) {
-        controller.dropItem(controller.getInventoryItemSlotIndex(465));
+      if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
+        c.dropItem(c.getInventoryItemSlotIndex(465));
       }
-      if (controller.getInventoryItemCount(546) > 0) {
-        if (controller.getInventoryItemCount() < 30) {
-          boolean lootPickedUp = false;
-          for (int lootId : loot) {
-            int[] coords = controller.getNearestItemById(lootId);
-            if (coords != null && this.isWithinLootzone(coords[0], coords[1])) {
-              controller.setStatus("@yel@Looting..");
-              controller.walkTo(coords[0], coords[1]);
-              controller.pickupItem(coords[0], coords[1], lootId, true, true);
-              controller.sleep(618);
-            }
-          }
-          if (lootPickedUp) // we don't want to start to pickup loot then immediately attack a npc
-          continue;
+      if (c.getInventoryItemCount(546) > 0) {
+        if (c.getInventoryItemCount() < 30) {
+          lootScript();
 
-          if (controller.getCurrentStat(controller.getStatId("Attack"))
-              == controller.getBaseStat(controller.getStatId("Attack"))) {
-            if (controller.getInventoryItemCount(attackPot[0]) > 0
-                || controller.getInventoryItemCount(attackPot[1]) > 0
-                || controller.getInventoryItemCount(attackPot[2]) > 0) {
+          if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
+            if (c.getInventoryItemCount(superAttackPot[0]) > 0
+                || c.getInventoryItemCount(superAttackPot[1]) > 0
+                || c.getInventoryItemCount(superAttackPot[2]) > 0) {
               attackBoost();
             }
           }
-          if (controller.getCurrentStat(controller.getStatId("Strength"))
-              == controller.getBaseStat(controller.getStatId("Strength"))) {
-            if (controller.getInventoryItemCount(strPot[0]) > 0
-                || controller.getInventoryItemCount(strPot[1]) > 0
-                || controller.getInventoryItemCount(strPot[2]) > 0) {
+          if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
+            if (c.getInventoryItemCount(superStrengthPot[0]) > 0
+                || c.getInventoryItemCount(superStrengthPot[1]) > 0
+                || c.getInventoryItemCount(superStrengthPot[2]) > 0) {
               strengthBoost();
             }
           }
-          if (!controller.isInCombat()) {
-            controller.setStatus("@yel@Attacking Giants");
-            controller.sleepHandler(98, true);
-            ORSCharacter npc = controller.getNearestNpcById(344, false);
+          if (!c.isInCombat()) {
+            c.setStatus("@yel@Attacking Giants");
+            c.sleepHandler(98, true);
+            ORSCharacter npc = c.getNearestNpcById(344, false);
             if (npc != null) {
-              controller.walktoNPC(npc.serverIndex, 1);
-              controller.attackNpc(npc.serverIndex);
-              controller.sleep(1000);
+              c.walktoNPC(npc.serverIndex, 1);
+              c.attackNpc(npc.serverIndex);
+              c.sleep(1000);
             } else {
-              controller.sleep(1000);
+              c.sleep(1000);
             }
           }
-          controller.sleep(340);
+          c.sleep(340);
         }
-        if (controller.getInventoryItemCount() == 30 && !controller.isInCombat()) {
-          // if(controller.getInventoryItemCount(413) > 0 && controller.getInventoryItemCount() ==
-          // 30) {   //added to bury bones, before eat food!
-          //	controller.setStatus("@red@Burying Bones to Loot..");
-          //	buryBones();
-          // }
-          for (int id : controller.getFoodIds()) {
-            if (controller.getInventoryItemCount(id) > 0)
-              controller.setStatus("@red@Eating 1 Food to Loot..");
-            {
-              controller.itemCommand(id);
-              controller.sleep(700);
-            }
-          }
+        if (c.getInventoryItemCount() == 30 && !c.isInCombat()) {
+          eatFoodToLootScript();
         }
       }
-      if (controller.getInventoryItemCount(546) == 0
-          || controller.getInventoryItemCount(795) > 0
-          || controller.getInventoryItemCount(1277) > 0) { // bank if d med, or left half in inv
-        controller.setStatus("@yel@Banking..");
+      if (c.getInventoryItemCount(546) == 0
+          || c.getInventoryItemCount(795) > 0
+          || c.getInventoryItemCount(1277) > 0) { // bank if d med, or left half in inv
+        c.setStatus("@yel@Banking..");
         GiantsToBank();
         bank();
         BankToStair();
         stairToGiants();
-        controller.sleep(618);
+        c.sleep(618);
       }
     }
   }
 
-  public void buryBones() {
-    if (!controller.isInCombat()) {
-      for (int id : bones) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.setStatus("@red@Burying bones..");
-          controller.itemCommand(id);
+  public void eatFoodToLootScript() {
+    for (int id : c.getFoodIds()) {
+      if (c.getInventoryItemCount(id) > 0) c.setStatus("@red@Eating 1 Food to Loot..");
+      {
+        c.itemCommand(id);
+        c.sleep(700);
+      }
+    }
+  }
 
-          controller.sleep(618);
+  public void lootScript() {
+    for (int lootId : loot) {
+      int[] coords = c.getNearestItemById(lootId);
+      if (coords != null && this.isWithinLootzone(coords[0], coords[1])) {
+        c.setStatus("@yel@Looting..");
+        c.walkTo(coords[0], coords[1]);
+        c.pickupItem(coords[0], coords[1], lootId, true, true);
+        c.sleep(618);
+      }
+    }
+  }
+
+  private void buryBones() {
+    if (!c.isInCombat()) {
+      for (int id : bones) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.setStatus("@red@Burying bones..");
+          c.itemCommand(id);
+
+          c.sleep(618);
           buryBones();
         }
       }
     }
   }
 
-  public void attackBoost() {
+  private void attackBoost() {
     leaveCombat();
-    if (controller.getInventoryItemCount(attackPot[0]) > 0) {
-      controller.itemCommand(attackPot[0]);
-      controller.sleep(320);
-      return;
+    if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
+      c.itemCommand(superAttackPot[0]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(superAttackPot[1]) > 0) {
+      c.itemCommand(superAttackPot[1]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(superAttackPot[2]) > 0) {
+      c.itemCommand(superAttackPot[2]);
+      c.sleep(320);
     }
-    if (controller.getInventoryItemCount(attackPot[1]) > 0) {
-      controller.itemCommand(attackPot[1]);
-      controller.sleep(320);
-      return;
-    }
-    if (controller.getInventoryItemCount(attackPot[2]) > 0) {
-      controller.itemCommand(attackPot[2]);
-      controller.sleep(320);
-      return;
-    }
-    return;
   }
 
-  public void strengthBoost() {
+  private void strengthBoost() {
     leaveCombat();
-    if (controller.getInventoryItemCount(strPot[0]) > 0) {
-      controller.itemCommand(strPot[0]);
-      controller.sleep(320);
-      return;
+    if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
+      c.itemCommand(superStrengthPot[0]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(superStrengthPot[1]) > 0) {
+      c.itemCommand(superStrengthPot[1]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(superStrengthPot[2]) > 0) {
+      c.itemCommand(superStrengthPot[2]);
+      c.sleep(320);
     }
-    if (controller.getInventoryItemCount(strPot[1]) > 0) {
-      controller.itemCommand(strPot[1]);
-      controller.sleep(320);
-      return;
-    }
-    if (controller.getInventoryItemCount(strPot[2]) > 0) {
-      controller.itemCommand(strPot[2]);
-      controller.sleep(320);
-      return;
-    }
-    return;
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      totalBstaff = totalBstaff + controller.getInventoryItemCount(615);
-      totalRscim = totalRscim + controller.getInventoryItemCount(398);
+      totalBstaff = totalBstaff + c.getInventoryItemCount(615);
+      totalRscim = totalRscim + c.getInventoryItemCount(398);
       totalRunestuff =
           totalRunestuff
-              + controller.getInventoryItemCount(404) // kite
-              + controller.getInventoryItemCount(403) // sq
-              + controller.getInventoryItemCount(405) // axe
-              + controller.getInventoryItemCount(81) // 2h
-              + controller.getInventoryItemCount(93) // bAxe
-              + controller.getInventoryItemCount(408); // r bar
+              + c.getInventoryItemCount(404) // kite
+              + c.getInventoryItemCount(403) // sq
+              + c.getInventoryItemCount(405) // axe
+              + c.getInventoryItemCount(81) // 2h
+              + c.getInventoryItemCount(93) // bAxe
+              + c.getInventoryItemCount(408); // r bar
       totalGems =
           totalGems
-              + controller.getInventoryItemCount(160)
-              + controller.getInventoryItemCount(159)
-              + controller.getInventoryItemCount(158)
-              + controller.getInventoryItemCount(157);
+              + c.getInventoryItemCount(160)
+              + c.getInventoryItemCount(159)
+              + c.getInventoryItemCount(158)
+              + c.getInventoryItemCount(157);
       totalHerb =
           totalHerb
-              + controller.getInventoryItemCount(438)
-              + controller.getInventoryItemCount(439)
-              + controller.getInventoryItemCount(440)
-              + controller.getInventoryItemCount(441)
-              + controller.getInventoryItemCount(442)
-              + controller.getInventoryItemCount(443);
-      totalFire = totalFire + controller.getInventoryItemCount(31);
-      totalLaw = totalLaw + controller.getInventoryItemCount(42);
-      totalNat = totalNat + controller.getInventoryItemCount(40);
-      totalChaos = totalChaos + controller.getInventoryItemCount(41);
-      totalBlood = totalBlood + controller.getInventoryItemCount(619);
-      totalLoop = totalLoop + controller.getInventoryItemCount(527);
-      totalTooth = totalTooth + controller.getInventoryItemCount(526);
-      totalDstone = totalDstone + controller.getInventoryItemCount(523);
-      totalLeft = totalLeft + controller.getInventoryItemCount(1277);
-      totalSpear = totalSpear + controller.getInventoryItemCount(1092);
-      totalMed = totalMed + controller.getInventoryItemCount(795);
+              + c.getInventoryItemCount(438)
+              + c.getInventoryItemCount(439)
+              + c.getInventoryItemCount(440)
+              + c.getInventoryItemCount(441)
+              + c.getInventoryItemCount(442)
+              + c.getInventoryItemCount(443);
+      totalFire = totalFire + c.getInventoryItemCount(31);
+      totalLaw = totalLaw + c.getInventoryItemCount(42);
+      totalNat = totalNat + c.getInventoryItemCount(40);
+      totalChaos = totalChaos + c.getInventoryItemCount(41);
+      totalBlood = totalBlood + c.getInventoryItemCount(619);
+      totalLoop = totalLoop + c.getInventoryItemCount(527);
+      totalTooth = totalTooth + c.getInventoryItemCount(526);
+      totalDstone = totalDstone + c.getInventoryItemCount(523);
+      totalLeft = totalLeft + c.getInventoryItemCount(1277);
+      totalSpear = totalSpear + c.getInventoryItemCount(1092);
+      totalMed = totalMed + c.getInventoryItemCount(795);
 
-      for (int itemId : controller.getInventoryItemIds()) {
+      for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 486
             && itemId != 487
             && itemId != 488
             && itemId != 492
             && itemId != 493
             && itemId != 494) { // keep partial pots
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      controller.sleep(1280); // keep, important
+      c.sleep(1280); // keep, important
 
-      if (controller.getInventoryItemCount(attackPot[0]) < 1
-          && controller.getInventoryItemCount(attackPot[1]) < 1
-          && controller.getInventoryItemCount(attackPot[2]) < 1) {
-        controller.withdrawItem(attackPot[2], 1);
-        controller.sleep(340);
+      if (c.getInventoryItemCount(superAttackPot[0]) < 1
+          && c.getInventoryItemCount(superAttackPot[1]) < 1
+          && c.getInventoryItemCount(superAttackPot[2]) < 1) {
+        c.withdrawItem(superAttackPot[2], 1);
+        c.sleep(340);
       }
-      if (controller.getInventoryItemCount(strPot[0]) < 1
-          && controller.getInventoryItemCount(strPot[1]) < 1
-          && controller.getInventoryItemCount(strPot[2]) < 1) {
-        controller.withdrawItem(strPot[2], 1);
-        controller.sleep(340);
+      if (c.getInventoryItemCount(superStrengthPot[0]) < 1
+          && c.getInventoryItemCount(superStrengthPot[1]) < 1
+          && c.getInventoryItemCount(superStrengthPot[2]) < 1) {
+        c.withdrawItem(superStrengthPot[2], 1);
+        c.sleep(340);
       }
-      if (controller.getInventoryItemCount(546) < 27) { // withdraw shark //was 27
-        controller.withdrawItem(546, 27 - controller.getInventoryItemCount(546));
-        controller.sleep(340);
+      if (c.getInventoryItemCount(546) < 27) { // withdraw shark //was 27
+        c.withdrawItem(546, 27 - c.getInventoryItemCount(546));
+        c.sleep(340);
       }
-      if (controller.getBankItemCount(546) == 0) {
-        controller.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        controller.sleep(5000);
-        controller.setAutoLogin(false);
-        controller.logout();
-        if (!controller.isLoggedIn()) {
-          controller.stop();
-          return;
+      if (c.getBankItemCount(546) == 0) {
+        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
+        c.sleep(5000);
+        c.setAutoLogin(false);
+        c.logout();
+        if (!c.isLoggedIn()) {
+          c.stop();
         }
       }
-      controller.closeBank();
-      controller.sleep(640);
+      c.closeBank();
+      c.sleep(640);
       eat();
     }
   }
 
-  public void eat() {
+  private void eat() {
 
-    int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
-    int panicLvl = controller.getBaseStat(controller.getStatId("Hits")) - 50;
+    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
+    int panicLvl = c.getBaseStat(c.getStatId("Hits")) - 50;
 
-    if (controller.getCurrentStat(controller.getStatId("Hits")) < panicLvl) {
-      controller.setStatus(
+    if (c.getCurrentStat(c.getStatId("Hits")) < panicLvl) {
+      c.setStatus(
           "@red@We've taken massive damage! Running Away!."); // Tested and when panic hp goToBank
       // then Logout is working
-      controller.sleep(308);
+      c.sleep(308);
       GiantsToBank();
       bank();
-      controller.setAutoLogin(false);
-      controller.logout();
-      controller.sleep(1000);
+      c.setAutoLogin(false);
+      c.logout();
+      c.sleep(1000);
 
-      if (!controller.isLoggedIn()) {
-        controller.stop();
-        controller.logout();
-        return;
+      if (!c.isLoggedIn()) {
+        c.stop();
+        c.logout();
       }
     }
-    if (controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
 
       leaveCombat();
-      controller.setStatus("@red@Eating..");
+      c.setStatus("@red@Eating..");
 
       boolean ate = false;
 
-      for (int id : controller.getFoodIds()) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.itemCommand(id);
-          controller.sleep(700);
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.itemCommand(id);
+          c.sleep(700);
           ate = true;
           break;
         }
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-        controller.setStatus("@red@We've ran out of Food! Running Away!.");
-        controller.sleep(308);
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        c.sleep(308);
         GiantsToBank();
         bank();
         BankToStair();
@@ -409,308 +402,305 @@ public class K_WildyFireGiants extends IdleScript {
     }
   }
 
-  public void GiantsToBank() {
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(273, 2953);
-    if (controller.getObjectAtCoord(274, 2952) == 57) {
-      controller.setStatus("@gre@Opening Fire Giant Gate..");
-      controller.walkTo(273, 2953);
-      controller.atObject(274, 2952);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+  private void GiantsToBank() {
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(273, 2953);
+    if (c.getObjectAtCoord(274, 2952) == 57) {
+      c.setStatus("@gre@Opening Fire Giant Gate..");
+      c.walkTo(273, 2953);
+      c.atObject(274, 2952);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(275, 2953);
-    controller.walkTo(282, 2969); // broke hgere
-    if (controller.getObjectAtCoord(281, 2969) == 57) {
-      controller.setStatus("@gre@Opening Chaos Dwarf Gate..");
-      controller.walkTo(282, 2969);
-      controller.atObject(281, 2969);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+    c.walkTo(275, 2953);
+    c.walkTo(282, 2969); // broke hgere
+    if (c.getObjectAtCoord(281, 2969) == 57) {
+      c.setStatus("@gre@Opening Chaos Dwarf Gate..");
+      c.walkTo(282, 2969);
+      c.atObject(281, 2969);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(277, 2971);
-    controller.walkTo(273, 2972);
-    if (controller.getObjectAtCoord(272, 2972) == 57) {
-      controller.setStatus("@gre@Opening Giants Gate..");
-      controller.walkTo(273, 2972);
-      controller.atObject(272, 2972);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+    c.walkTo(277, 2971);
+    c.walkTo(273, 2972);
+    if (c.getObjectAtCoord(272, 2972) == 57) {
+      c.setStatus("@gre@Opening Giants Gate..");
+      c.walkTo(273, 2972);
+      c.atObject(272, 2972);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(269, 2972);
-    controller.walkTo(269, 2963);
-    controller.setStatus("@gre@Trying Stairs (1)..");
-    controller.atObject(268, 2960); // try stairs once
-    controller.sleep(1280);
+    c.walkTo(269, 2972);
+    c.walkTo(269, 2963);
+    c.setStatus("@gre@Trying Stairs (1)..");
+    c.atObject(268, 2960); // try stairs once
+    c.sleep(1280);
     goUpStairs();
-    if (controller.currentY() > 1000) {
+    if (c.currentY() > 1000) {
       goUpStairs();
     }
-    if (controller.currentY() > 1000) {
+    if (c.currentY() > 1000) {
       goUpStairs();
     }
-    controller.setStatus("@gre@Walkin..");
-    controller.walkTo(268, 126);
-    controller.walkTo(254, 126);
-    controller.walkTo(232, 104);
-    controller.walkTo(227, 105);
-    controller.sleep(340);
-    if (!controller.isDoorOpen(227, 106)) {
-      controller.setStatus("@gre@Opening Mage Bank Outer Door..");
-      controller.walkTo(227, 105);
-      controller.openDoor(227, 106);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+    c.setStatus("@gre@Walkin..");
+    c.walkTo(268, 126);
+    c.walkTo(254, 126);
+    c.walkTo(232, 104);
+    c.walkTo(227, 105);
+    c.sleep(340);
+    if (!c.isDoorOpen(227, 106)) {
+      c.setStatus("@gre@Opening Mage Bank Outer Door..");
+      c.walkTo(227, 105);
+      c.openDoor(227, 106);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(227, 106);
-    controller.sleep(1000);
-    controller.setStatus("@gre@Cutting Outer Web..");
+    c.walkTo(227, 106);
+    c.sleep(1000);
+    c.setStatus("@gre@Cutting Outer Web..");
     outerWebIn();
-    if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+    if (c.getWallObjectIdAtCoord(227, 107) == 24) {
       outerWebIn();
     }
-    controller.setStatus("@gre@Walkin..");
-    controller.walkTo(227, 108);
-    controller.sleep(340);
-    controller.setStatus("@gre@Cutting Inner Web..");
+    c.setStatus("@gre@Walkin..");
+    c.walkTo(227, 108);
+    c.sleep(340);
+    c.setStatus("@gre@Cutting Inner Web..");
     innerWebIn();
-    if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
+    if (c.getWallObjectIdAtCoord(227, 109) == 24) {
       innerWebIn();
     }
-    controller.setStatus("@gre@Walkin..");
-    controller.walkTo(227, 110);
-    controller.walkTo(226, 110);
-    controller.sleep(340);
-    if (!controller.isDoorOpen(226, 110)) {
-      controller.setStatus("@gre@Opening Mage Bank Inner Door..");
-      controller.walkTo(226, 110);
-      controller.openDoor(226, 110);
-      controller.sleep(340);
+    c.setStatus("@gre@Walkin..");
+    c.walkTo(227, 110);
+    c.walkTo(226, 110);
+    c.sleep(340);
+    if (!c.isDoorOpen(226, 110)) {
+      c.setStatus("@gre@Opening Mage Bank Inner Door..");
+      c.walkTo(226, 110);
+      c.openDoor(226, 110);
+      c.sleep(340);
     }
-    controller.walkTo(224, 110);
-    controller.sleep(320);
-    controller.atObject(223, 110);
-    controller.sleep(320);
+    c.walkTo(224, 110);
+    c.sleep(320);
+    c.atObject(223, 110);
+    c.sleep(320);
     totalTrips = totalTrips + 1;
-    controller.walkTo(451, 3371);
-    controller.walkTo(453, 3376);
-    controller.setStatus("@gre@Done Walking..");
+    c.walkTo(451, 3371);
+    c.walkTo(453, 3376);
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void BankToStair() {
-    controller.setStatus("@gre@Walking to Fire Giants..");
-    controller.walkTo(453, 3374);
-    controller.walkTo(450, 3370);
-    controller.walkTo(446, 3368);
-    controller.sleep(340);
-    controller.atObject(446, 3367);
-    controller.sleep(640);
-    if (controller.currentX() == 446 && controller.currentY() == 3368) {
-      controller.atObject(446, 3367);
-      controller.sleep(640);
+  private void BankToStair() {
+    c.setStatus("@gre@Walking to Fire Giants..");
+    c.walkTo(453, 3374);
+    c.walkTo(450, 3370);
+    c.walkTo(446, 3368);
+    c.sleep(340);
+    c.atObject(446, 3367);
+    c.sleep(640);
+    if (c.currentX() == 446 && c.currentY() == 3368) {
+      c.atObject(446, 3367);
+      c.sleep(640);
     }
-    controller.walkTo(225, 110);
-    controller.sleep(340);
-    if (!controller.isDoorOpen(226, 110)) {
-      controller.setStatus("@gre@Opening Mage Bank Inner Door..");
-      controller.walkTo(225, 110);
-      controller.atWallObject(226, 110);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+    c.walkTo(225, 110);
+    c.sleep(340);
+    if (!c.isDoorOpen(226, 110)) {
+      c.setStatus("@gre@Opening Mage Bank Inner Door..");
+      c.walkTo(225, 110);
+      c.atWallObject(226, 110);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(227, 109);
-    controller.sleep(340);
-    controller.setStatus("@gre@Cutting Inner Web..");
+    c.walkTo(227, 109);
+    c.sleep(340);
+    c.setStatus("@gre@Cutting Inner Web..");
     innerWebOut();
-    if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
+    if (c.getWallObjectIdAtCoord(227, 109) == 24) {
       innerWebOut();
     }
-    controller.setStatus("@gre@Walkin..");
-    controller.walkTo(227, 107);
-    controller.sleep(340);
-    controller.setStatus("@gre@Cutting Outer Web..");
+    c.setStatus("@gre@Walkin..");
+    c.walkTo(227, 107);
+    c.sleep(340);
+    c.setStatus("@gre@Cutting Outer Web..");
     outerWebOut();
-    if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+    if (c.getWallObjectIdAtCoord(227, 107) == 24) {
       outerWebOut();
     }
-    if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
+    if (c.getWallObjectIdAtCoord(227, 107) == 24) {
       outerWebOut();
     }
-    controller.setStatus("@gre@Walkin..");
-    controller.walkTo(227, 106);
-    controller.sleep(340);
-    if (!controller.isDoorOpen(227, 106)) {
-      controller.setStatus("@gre@Opening Mage Bank Outer Door..");
-      controller.walkTo(227, 106);
-      controller.openDoor(227, 106);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+    c.setStatus("@gre@Walkin..");
+    c.walkTo(227, 106);
+    c.sleep(340);
+    if (!c.isDoorOpen(227, 106)) {
+      c.setStatus("@gre@Opening Mage Bank Outer Door..");
+      c.walkTo(227, 106);
+      c.openDoor(227, 106);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(227, 105);
-    controller.walkTo(232, 104);
-    controller.walkTo(254, 126);
-    controller.walkTo(268, 127);
-    controller.sleep(340);
+    c.walkTo(227, 105);
+    c.walkTo(232, 104);
+    c.walkTo(254, 126);
+    c.walkTo(268, 127);
+    c.sleep(340);
   }
 
-  public void stairToGiants() {
-    controller.walkTo(268, 127);
-    controller.setStatus("@gre@Going down stairs..");
-    controller.walkTo(268, 127);
-    controller.atObject(268, 128);
-    controller.sleep(600);
-    controller.setStatus("@gre@Walkin..");
-    controller.walkTo(272, 2972);
-    controller.sleep(340);
-    if (controller.getObjectAtCoord(272, 2972) == 57) {
-      controller.setStatus("@gre@Opening Giants Gate..");
-      controller.walkTo(272, 2972);
-      controller.atObject(272, 2972);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+  private void stairToGiants() {
+    c.walkTo(268, 127);
+    c.setStatus("@gre@Going down stairs..");
+    c.walkTo(268, 127);
+    c.atObject(268, 128);
+    c.sleep(600);
+    c.setStatus("@gre@Walkin..");
+    c.walkTo(272, 2972);
+    c.sleep(340);
+    if (c.getObjectAtCoord(272, 2972) == 57) {
+      c.setStatus("@gre@Opening Giants Gate..");
+      c.walkTo(272, 2972);
+      c.atObject(272, 2972);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(278, 2970);
-    controller.walkTo(281, 2970);
-    controller.sleep(340);
-    if (controller.getObjectAtCoord(281, 2969) == 57) {
-      controller.setStatus("@gre@Opening Chaos Dwarf Gate..");
-      controller.walkTo(281, 2970);
-      controller.atObject(281, 2969);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+    c.walkTo(278, 2970);
+    c.walkTo(281, 2970);
+    c.sleep(340);
+    if (c.getObjectAtCoord(281, 2969) == 57) {
+      c.setStatus("@gre@Opening Chaos Dwarf Gate..");
+      c.walkTo(281, 2970);
+      c.atObject(281, 2969);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(283, 2969);
-    controller.walkTo(281, 2962);
-    controller.walkTo(274, 2953);
-    controller.sleep(340);
-    if (controller.getObjectAtCoord(274, 2952) == 57) {
-      controller.setStatus("@gre@Opening Fire Giant Gate..");
-      controller.walkTo(274, 2953);
-      controller.atObject(274, 2952);
-      controller.sleep(340);
-      controller.setStatus("@gre@Walkin..");
+    c.walkTo(283, 2969);
+    c.walkTo(281, 2962);
+    c.walkTo(274, 2953);
+    c.sleep(340);
+    if (c.getObjectAtCoord(274, 2952) == 57) {
+      c.setStatus("@gre@Opening Fire Giant Gate..");
+      c.walkTo(274, 2953);
+      c.atObject(274, 2952);
+      c.sleep(340);
+      c.setStatus("@gre@Walkin..");
     }
-    controller.walkTo(272, 2953);
-    controller.setStatus("@gre@Done Walking..");
+    c.walkTo(272, 2953);
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void leaveCombat() {
+  private void leaveCombat() {
     for (int i = 1; i <= 6; i++) {
-      if (controller.isInCombat()) {
-        controller.setStatus("@red@Leaving combat..");
-        controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-        controller.sleep(600);
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat..");
+        c.walkTo(c.currentX(), c.currentY(), 0, true);
+        c.sleep(600);
       }
-      controller.sleep(500);
+      c.sleep(500);
     }
   }
 
-  public void goUpStairs() {
+  private void goUpStairs() {
     for (int i = 1; i <= 15; i++) {
-      if (controller.currentY() > 1000) {
-        controller.setStatus("@gre@Going up Stairs..");
-        controller.walkTo(269, 2963);
-        controller.atObject(268, 2960);
-        controller.sleep(800);
+      if (c.currentY() > 1000) {
+        c.setStatus("@gre@Going up Stairs..");
+        c.walkTo(269, 2963);
+        c.atObject(268, 2960);
+        c.sleep(800);
       } else {
-        controller.setStatus("@gre@Done Going up Stairs..");
-        controller.walkTo(268, 126);
-        controller.sleep(300);
+        c.setStatus("@gre@Done Going up Stairs..");
+        c.walkTo(268, 126);
+        c.sleep(300);
         break;
       }
-      controller.sleep(500);
+      c.sleep(500);
     }
   }
 
-  public void innerWebIn() {
+  private void innerWebIn() {
     for (int i = 1; i <= 40; i++) {
-      if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
-        controller.setStatus("@gre@Cutting Inner Web..");
-        controller.atWallObject(227, 109);
-        controller.sleep(1000);
+      if (c.getWallObjectIdAtCoord(227, 109) == 24) {
+        c.setStatus("@gre@Cutting Inner Web..");
+        c.atWallObject(227, 109);
+        c.sleep(1000);
       } else {
-        controller.setStatus("@gre@Done Cutting Inner Web..");
-        controller.walkTo(227, 109);
-        controller.sleep(340);
+        c.setStatus("@gre@Done Cutting Inner Web..");
+        c.walkTo(227, 109);
+        c.sleep(340);
         break;
       }
-      controller.sleep(500);
+      c.sleep(500);
     }
   }
 
-  public void outerWebIn() {
+  private void outerWebIn() {
     for (int i = 1; i <= 40; i++) {
-      if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
-        controller.setStatus("@gre@Cutting Outer Web..");
-        controller.atWallObject(227, 107);
-        controller.sleep(1000);
+      if (c.getWallObjectIdAtCoord(227, 107) == 24) {
+        c.setStatus("@gre@Cutting Outer Web..");
+        c.atWallObject(227, 107);
+        c.sleep(1000);
       } else {
-        controller.setStatus("@gre@Done Cutting Outer Web..");
-        controller.walkTo(227, 107);
-        controller.sleep(340);
+        c.setStatus("@gre@Done Cutting Outer Web..");
+        c.walkTo(227, 107);
+        c.sleep(340);
         break;
       }
-      controller.sleep(500);
+      c.sleep(500);
     }
   }
 
-  public void innerWebOut() {
+  private void innerWebOut() {
     for (int i = 1; i <= 40; i++) {
-      if (controller.getWallObjectIdAtCoord(227, 109) == 24) {
-        controller.setStatus("@gre@Cutting Inner Web..");
-        controller.atWallObject(227, 109);
-        controller.sleep(1000);
+      if (c.getWallObjectIdAtCoord(227, 109) == 24) {
+        c.setStatus("@gre@Cutting Inner Web..");
+        c.atWallObject(227, 109);
+        c.sleep(1000);
       } else {
-        controller.setStatus("@gre@Done Cutting Inner Web..");
-        controller.walkTo(227, 107);
-        controller.sleep(340);
+        c.setStatus("@gre@Done Cutting Inner Web..");
+        c.walkTo(227, 107);
+        c.sleep(340);
         break;
       }
-      controller.sleep(500);
+      c.sleep(500);
     }
   }
 
-  public void outerWebOut() {
+  private void outerWebOut() {
     for (int i = 1; i <= 30; i++) {
-      if (controller.getWallObjectIdAtCoord(227, 107) == 24) {
-        controller.setStatus("@gre@Cutting Outer Web..");
-        controller.atWallObject(227, 107);
-        controller.sleep(1000);
+      if (c.getWallObjectIdAtCoord(227, 107) == 24) {
+        c.setStatus("@gre@Cutting Outer Web..");
+        c.atWallObject(227, 107);
+        c.sleep(1000);
       } else {
-        controller.setStatus("@gre@Done Cutting Outer Web..");
+        c.setStatus("@gre@Done Cutting Outer Web..");
         try {
-          controller.walkTo(227, 106);
-          controller.sleep(340);
+          c.walkTo(227, 106);
+          c.sleep(340);
         } catch (Exception e) {
-          controller.setStatus("@Red@Something went wrong..");
+          c.setStatus("@Red@Something went wrong..");
           System.out.println("Something went wrong.");
         }
         break;
       }
-      controller.sleep(10);
+      c.sleep(10);
     }
   }
 
   // GUI stuff below (icky)
 
-  public void setupGUI() {
-    JLabel header = new JLabel("Wildy Fire Giant Killer - By Kaila");
+  private void setupGUI() {
+    JLabel header = new JLabel("Wildy Fire Giant Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Mage bank OR in Giants room");
     JLabel label2 = new JLabel("Sharks IN BANK REQUIRED");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -724,22 +714,10 @@ public class K_WildyFireGiants extends IdleScript {
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+    if (c != null) {
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int BstaffSuccessPerHr = 0;
       int RscimSuccessPerHr = 0;
       int RuneSuccessPerHr = 0;
@@ -751,9 +729,10 @@ public class K_WildyFireGiants extends IdleScript {
       int BloodSuccessPerHr = 0;
       int HerbSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         BstaffSuccessPerHr = (int) (totalBstaff * scale);
         RscimSuccessPerHr = (int) (totalRscim * scale);
@@ -769,10 +748,10 @@ public class K_WildyFireGiants extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@Wilderness Fire Giants @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawString("@red@Wilderness Fire Giants @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Laws: @gre@"
-              + String.valueOf(this.totalLaw)
+              + totalLaw
               + "@yel@ (@whi@"
               + String.format("%,d", LawSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -780,9 +759,9 @@ public class K_WildyFireGiants extends IdleScript {
           62,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Natures: @gre@"
-              + String.valueOf(this.totalNat)
+              + totalNat
               + "@yel@ (@whi@"
               + String.format("%,d", NatSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -790,9 +769,9 @@ public class K_WildyFireGiants extends IdleScript {
           76,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Fires: @gre@"
-              + String.valueOf(this.totalFire)
+              + totalFire
               + "@yel@ (@whi@"
               + String.format("%,d", FireSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -800,9 +779,9 @@ public class K_WildyFireGiants extends IdleScript {
           90,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Chaos: @gre@"
-              + String.valueOf(this.totalChaos)
+              + totalChaos
               + "@yel@ (@whi@"
               + String.format("%,d", ChaosSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -810,9 +789,9 @@ public class K_WildyFireGiants extends IdleScript {
           104,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Bloods: @gre@"
-              + String.valueOf(this.totalBlood)
+              + totalBlood
               + "@yel@ (@whi@"
               + String.format("%,d", BloodSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -820,9 +799,9 @@ public class K_WildyFireGiants extends IdleScript {
           118,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Fire Bstaff: @gre@"
-              + String.valueOf(this.totalBstaff)
+              + totalBstaff
               + "@yel@ (@whi@"
               + String.format("%,d", BstaffSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -830,9 +809,9 @@ public class K_WildyFireGiants extends IdleScript {
           132,
           0xFFFFFF,
           1); // fix y cords
-      controller.drawString(
+      c.drawString(
           "@whi@Rune Scim: @gre@"
-              + String.valueOf(this.totalRscim)
+              + totalRscim
               + "@yel@ (@whi@"
               + String.format("%,d", RscimSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -840,9 +819,9 @@ public class K_WildyFireGiants extends IdleScript {
           146,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Herbs: @gre@"
-              + String.valueOf(this.totalHerb)
+              + totalHerb
               + "@yel@ (@whi@"
               + String.format("%,d", HerbSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -850,9 +829,9 @@ public class K_WildyFireGiants extends IdleScript {
           160,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Gems: @gre@"
-              + String.valueOf(this.totalGems)
+              + totalGems
               + "@yel@ (@whi@"
               + String.format("%,d", GemsSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -860,9 +839,9 @@ public class K_WildyFireGiants extends IdleScript {
           174,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Rune Items: @gre@"
-              + String.valueOf(this.totalRunestuff)
+              + totalRunestuff
               + "@yel@ (@whi@"
               + String.format("%,d", RuneSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -870,36 +849,27 @@ public class K_WildyFireGiants extends IdleScript {
           188,
           0xFFFFFF,
           1);
-      controller.drawString(
-          "@whi@Tooth: @gre@"
-              + String.valueOf(this.totalTooth)
-              + "@yel@ / @whi@Loop: @gre@"
-              + String.valueOf(this.totalLoop),
+      c.drawString(
+          "@whi@Tooth: @gre@" + totalTooth + "@yel@ / @whi@Loop: @gre@" + totalLoop,
           350,
           202,
           0xFFFFFF,
           1);
-      controller.drawString(
-          "@whi@Dstone: @gre@"
-              + String.valueOf(this.totalDstone)
-              + "@yel@ / @whi@Rune Spear: @gre@"
-              + String.valueOf(this.totalSpear),
+      c.drawString(
+          "@whi@Dstone: @gre@" + totalDstone + "@yel@ / @whi@Rune Spear: @gre@" + totalSpear,
           350,
           216,
           0xFFFFFF,
           1);
-      controller.drawString(
-          "@whi@D Med: @gre@"
-              + String.valueOf(this.totalMed)
-              + "@yel@ / @whi@Left Half: @gre@"
-              + String.valueOf(this.totalLeft),
+      c.drawString(
+          "@whi@D Med: @gre@" + totalMed + "@yel@ / @whi@Left Half: @gre@" + totalLeft,
           350,
           230,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -907,7 +877,7 @@ public class K_WildyFireGiants extends IdleScript {
           244,
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 350, 258, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, 350, 258, 0xFFFFFF, 1);
     }
   }
 }

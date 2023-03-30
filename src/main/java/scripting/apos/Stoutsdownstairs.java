@@ -25,8 +25,8 @@ public class Stoutsdownstairs extends Script {
   269: Dwarven Stout
   142: wine
   */
-  int drinkID = 267;
-  int glassID = 620;
+  final int drinkID = 267;
+  final int glassID = 620;
   /////
 
   boolean train = true;
@@ -107,7 +107,7 @@ public class Stoutsdownstairs extends Script {
       ///// removed
 
       if (distanceTo(bankArea[0], bankArea[1]) < 10) {
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
         if (banker[0] != -1) {
           talkToNpc(banker[0]);
           talk = System.currentTimeMillis();
@@ -121,7 +121,7 @@ public class Stoutsdownstairs extends Script {
     ///// removed
 
     if (distanceTo(actArea[0], actArea[1]) < 10) {
-      int barmaid[] = getNpcByIdNotTalk(142);
+      int[] barmaid = getNpcByIdNotTalk(142);
       if (barmaid[0] != -1) {
         talkToNpc(barmaid[0]);
         talk = System.currentTimeMillis();
@@ -184,7 +184,7 @@ public class Stoutsdownstairs extends Script {
         return random(500, 600);
       }
       if (distanceTo(bankArea[0], bankArea[1]) < 10) {
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
         if (banker[0] != -1) talkToNpc(banker[0]);
         return 1000;
       }

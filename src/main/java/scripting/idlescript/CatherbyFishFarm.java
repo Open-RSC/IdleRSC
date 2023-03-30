@@ -2,8 +2,8 @@ package scripting.idlescript;
 
 public class CatherbyFishFarm extends IdleScript {
 
-  int[] rawIds = {349, 351, 366, 369};
-  int[] cookedIds = {350, 352, 353, 367, 368, 370, 371};
+  final int[] rawIds = {349, 351, 366, 369};
+  final int[] cookedIds = {350, 352, 353, 367, 368, 370, 371};
 
   public int start(String[] param) {
     while (controller.isRunning()) {
@@ -58,7 +58,7 @@ public class CatherbyFishFarm extends IdleScript {
 
         controller.sleepHandler(98, true);
 
-        if (controller.isBatching() == false) controller.useItemIdOnObject(432, 480, rawId);
+        if (!controller.isBatching()) controller.useItemIdOnObject(432, 480, rawId);
 
         controller.sleep(250);
       }

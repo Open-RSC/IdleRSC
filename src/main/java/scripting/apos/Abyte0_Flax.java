@@ -6,9 +6,9 @@ import java.util.Locale;
 public class Abyte0_Flax extends Script {
   private long menu_time;
   private long bank_time;
-  int idFlax = 675;
-  int idString = 676;
-  int idBanker = 540;
+  final int idFlax = 675;
+  final int idString = 676;
+  final int idBanker = 540;
   boolean power = false;
 
   public Abyte0_Flax(String e) {}
@@ -74,7 +74,7 @@ public class Abyte0_Flax extends Script {
     if (getInventoryCount(idString) == 29) {
       // si pres des bankers
       if (isAtApproxCoords(715, 1452, 16)) {
-        int banker[] = getNpcByIdNotTalk(idBanker);
+        int[] banker = getNpcByIdNotTalk(idBanker);
         if (banker[0] != -1) {
           menu_time = System.currentTimeMillis();
           talkToNpc(banker[0]);

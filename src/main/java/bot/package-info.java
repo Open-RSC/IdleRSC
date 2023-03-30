@@ -1,2 +1,2 @@
-/** The package containing the {@link Main} class for starting the bot. */
+/** The package containing the {@link bot.Main} class for starting the bot. */
 package bot;

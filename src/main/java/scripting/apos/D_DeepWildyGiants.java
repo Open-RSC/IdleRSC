@@ -11,35 +11,35 @@ public class D_DeepWildyGiants extends Script {
     // TODO Auto-generated constructor stub
   }
 
-  int banker = 792;
-  int hob = 61;
+  final int banker = 792;
+  final int hob = 61;
   int bbones = 0;
   int limps = 0;
   String fightModeSelected;
   int fightMode;
   int limpsBanked = 0;
-  int[] lumbToP2PGateX = {
+  final int[] lumbToP2PGateX = {
     131, 128, 117, 110, 113, 113, 110, 109, 107, 103, 95, 92, 84, 73, 66, 64, 64, 68, 70, 72, 73,
     79, 88, 97, 106, 110, 110, 110, 109, 109, 110, 109, 110, 109, 111, 113, 117, 120, 119, 128, 130,
     132, 130, 124, 122, 119, 121, 119, 118, 118, 118, 118, 117, 114, 111, 111, 111, 112, 108, 105,
     106, 108, 105, 102, 111,
   };
-  int[] lumbToP2PGateY = {
+  final int[] lumbToP2PGateY = {
     637, 626, 625, 618, 610, 602, 595, 592, 587, 582, 579, 574, 571, 569, 564, 558, 551, 545, 539,
     531, 521, 512, 508, 507, 507, 499, 490, 481, 475, 466, 456, 446, 436, 426, 419, 411, 405, 394,
     384, 376, 369, 363, 355, 346, 339, 328, 321, 312, 304, 297, 288, 281, 273, 262, 254, 243, 233,
     222, 210, 199, 190, 178, 167, 151, 143,
   };
-  int[] gateToMBx = {
+  final int[] gateToMBx = {
     113, 118, 129, 140, 152, 162, 175, 185, 193, 205, 214, 220, 227,
   };
-  int[] gateToMBy = {
+  final int[] gateToMBy = {
     132, 126, 121, 118, 115, 110, 102, 100, 99, 98, 98, 98, 105,
   };
-  int[] mbtoSpotX = {
+  final int[] mbtoSpotX = {
     227, 239, 247, 253, 262, 269,
   };
-  int[] mbtoSpotY = {
+  final int[] mbtoSpotY = {
     105, 110, 118, 126, 125, 127,
   };
   boolean inBankingSequence = false;
@@ -53,14 +53,14 @@ public class D_DeepWildyGiants extends Script {
   int autoEatHP = 0;
   long time = -1L;
   int withdrawAmount = 0;
-  public int areaX2 = 263;
-  public int areaY2 = 110;
-  public int areaX = 269;
-  public int areaY = 100;
-  public int bankFrontX = 225;
-  public int bankFrontY = 108;
-  public int bankFrontX2 = 220;
-  public int bankFrontY2 = 111;
+  public final int areaX2 = 263;
+  public final int areaY2 = 110;
+  public final int areaX = 269;
+  public final int areaY = 100;
+  public final int bankFrontX = 225;
+  public final int bankFrontY = 108;
+  public final int bankFrontX2 = 220;
+  public final int bankFrontY2 = 111;
   public int weaponID = 594;
   int foodid = 373;
   int bankEveryMinutes = 60;
@@ -92,17 +92,19 @@ public class D_DeepWildyGiants extends Script {
                 null,
                 fightModeOptions,
                 fightModeOptions[0]);
-    if (fightModeSelected.equals("Strength")) {
-      fightMode = 1;
-
-    } else if (fightModeSelected.equals("Attack")) {
-      fightMode = 2;
-
-    } else if (fightModeSelected.equals("Defense")) {
-      fightMode = 3;
-
-    } else if (fightModeSelected.equals("Controlled")) {
-      fightMode = 0;
+    switch (fightModeSelected) {
+      case "Strength":
+        fightMode = 1;
+        break;
+      case "Attack":
+        fightMode = 2;
+        break;
+      case "Defense":
+        fightMode = 3;
+        break;
+      case "Controlled":
+        fightMode = 0;
+        break;
     }
 
     autoEatHP = Integer.parseInt(JOptionPane.showInputDialog("Eat HP: "));
@@ -124,11 +126,7 @@ public class D_DeepWildyGiants extends Script {
     }
 
     answer = JOptionPane.showConfirmDialog(null, null, "Bank bones?", JOptionPane.YES_NO_OPTION);
-    if (answer == JOptionPane.YES_OPTION) {
-      bankBones = true;
-    } else {
-      bankBones = false;
-    }
+    bankBones = answer == JOptionPane.YES_OPTION;
 
     start_time = System.currentTimeMillis();
     startxp += getAccurateXpForLevel(0);
@@ -147,10 +145,7 @@ public class D_DeepWildyGiants extends Script {
     if (bankEveryMinutes == -1) {
       return false;
     }
-    if ((System.currentTimeMillis() - lastBankTimeMark) < (bankEveryMinutes * 60000)) {
-      return false;
-    }
-    return true;
+    return (System.currentTimeMillis() - lastBankTimeMark) >= (bankEveryMinutes * 60000L);
   }
 
   public int minutesToNextBank() {
@@ -225,7 +220,7 @@ public class D_DeepWildyGiants extends Script {
         && !bankingTime()) {
 
       if (!inCombat()) {
-        if (bankBones == false) {
+        if (!bankBones) {
           if (getInventoryCount(413) > 0) {
             useItem(getInventoryIndex(413));
             return random(800, 1200);
@@ -247,7 +242,7 @@ public class D_DeepWildyGiants extends Script {
       return random(800, 1000);
       // this handles walking to bank & banking & deathwalk.
     } else if (((!hasInventoryItem(1263) || !hasInventoryItem(foodid))
-            || (inBankingSequence == true)
+            || (inBankingSequence)
             || bankingTime())
         && getX() > 219) {
 
@@ -266,10 +261,10 @@ public class D_DeepWildyGiants extends Script {
           }
         } else {
           System.out.println("Banking");
-          for (int i = 0; i < lootIds.length; i++) {
-            if (getInventoryCount(lootIds[i]) > 0) {
-              updateLootCount(lootIds[i]);
-              deposit(lootIds[i], getInventoryCount(lootIds[i]));
+          for (int lootId : lootIds) {
+            if (getInventoryCount(lootId) > 0) {
+              updateLootCount(lootId);
+              deposit(lootId, getInventoryCount(lootId));
               inBankingSequence = true;
               return random(1000, 1500);
             }
@@ -551,10 +546,7 @@ public class D_DeepWildyGiants extends Script {
   // areaXx,areaYy where first pair of coordinates represents the top left (north-western) corner &
   // second set represents the bottom right (south-eastern) corner
   private boolean inArea(int entityX, int entityY, int areaX, int areaY, int areaXx, int areaYy) {
-    if (entityX <= areaX && entityY >= areaY && entityX >= areaXx && entityY <= areaYy) {
-      return true;
-    }
-    return false;
+    return entityX <= areaX && entityY >= areaY && entityX >= areaXx && entityY <= areaYy;
   }
 
   // walks to furthest tile in the given array, put tiles x & y in the

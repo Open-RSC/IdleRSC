@@ -1,36 +1,35 @@
 package scripting.apos;
 
-/** * Based on Any Thiever from yomama` */
-/** pickpockets anything, eats/banks (cakes) * - yomama` */
+/** Based on Any Thiever from yomama` pickpockets anything, eats/banks (cakes) * - yomama` */
 // Version 5.0 Updated to OpenRSC 2021-06-29
 // Version 5.1 Support Hero
 public class Abyte0_ArdThiever extends Abyte0_Script {
-  int MAX_INVENTORY_SIZE = 30;
-  int freeInventrySlotsRequired = 21;
+  final int MAX_INVENTORY_SIZE = 30;
+  final int freeInventrySlotsRequired = 21;
   int fightMode = 3;
-  int hero = 324;
+  final int hero = 324;
   boolean isDoingHero = false;
 
-  int goldId = 152;
-  int chaosId = 41;
-  int deathId = 38;
-  int bloodId = 619;
-  int wineId = 142;
-  int diamonId = 161;
+  final int goldId = 152;
+  final int chaosId = 41;
+  final int deathId = 38;
+  final int bloodId = 619;
+  final int wineId = 142;
+  final int diamonId = 161;
 
   int[] npcID =
       new int[] {
         // all types of MAN npc's by default
         11, 24, 72, 307, 318, 750, 323 // Paladin
       };
-  int[] dropIDs =
+  final int[] dropIDs =
       new int[] {
         140, // jug
         612, // fire orb
         714, // lockpick
         559 // Poisoned Iron dagger
       };
-  int[] foodIDs =
+  final int[] foodIDs =
       new int[] {
         330, // cake 3/3
         333, // cake 2/3
@@ -182,7 +181,7 @@ public class Abyte0_ArdThiever extends Abyte0_Script {
 
     if (getInventoryCount(foodIDs) == 0
         || (getInventoryCount() == MAX_INVENTORY_SIZE && isDoingHero)) {
-      int banker[] = getNpcByIdNotTalk(BANKERS);
+      int[] banker = getNpcByIdNotTalk(BANKERS);
       if (banker[0] != -1) {
         talkToNpc(banker[0]);
         return 3000;

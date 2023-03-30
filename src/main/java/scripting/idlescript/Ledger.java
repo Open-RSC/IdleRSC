@@ -14,7 +14,7 @@ public class Ledger extends IdleScript {
 
   int successCount = 0;
   int failureCount = 0;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] param) {
 
@@ -90,7 +90,7 @@ public class Ledger extends IdleScript {
           }
         }
 
-        if (withdrew == false) {
+        if (!withdrew) {
           controller.setStatus("@red@We ran out of food! Logging out.");
           controller.setAutoLogin(false);
           controller.logout();
@@ -117,7 +117,6 @@ public class Ledger extends IdleScript {
 
     } else {
       if (!(controller.currentY() <= 3557)) { // wait until we are back upstairs
-        return;
       } else {
         controller.atObject(603, 3554);
         controller.sleep(618);
@@ -222,8 +221,9 @@ public class Ledger extends IdleScript {
 
       int successesPerHr = 0;
       int failuresPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successesPerHr = (int) (successCount * scale);
         failuresPerHr = (int) (failureCount * scale);

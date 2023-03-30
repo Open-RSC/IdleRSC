@@ -43,8 +43,8 @@ public class k_ShopBuyer2 extends Script {
 
     System.out.println("Veteran: " + (veteran ? "Yes" : "No"));
     System.out.println("NPC: " + getNpcNameId(npc_id));
-    for (int i = 0; i < item_ids.length; ++i) {
-      System.out.println("Item: " + getItemNameId(item_ids[i]));
+    for (int itemId : item_ids) {
+      System.out.println("Item: " + getItemNameId(itemId));
     }
 
     start_inventory = new HashMap<>();
@@ -179,11 +179,7 @@ public class k_ShopBuyer2 extends Script {
     }
     for (int item_id : item_ids) {
       int initial;
-      if (start_inventory.containsKey(item_id)) {
-        initial = start_inventory.get(item_id);
-      } else {
-        initial = 0;
-      }
+      initial = start_inventory.getOrDefault(item_id, 0);
       int purchased = getInventoryCount(item_id) - initial;
       if (purchased > 0) {
         drawString(

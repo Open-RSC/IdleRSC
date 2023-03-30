@@ -36,7 +36,7 @@ public final class S_WineMaker extends Script {
   private int start_xp;
   private int wine_made;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path to_bank;
   private PathWalker.Path from_bank;
 

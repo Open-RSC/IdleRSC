@@ -10,9 +10,9 @@ public class JailRanger extends Script {
 
   public void ServerMessage(String message) {}
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     while (Running()) {
-      int ID[] = new int[] {21, 137, 192};
+      int[] ID = new int[] {21, 137, 192};
       int Mob = GetNearestNPC(ID);
       while (Mob != -1) {
         AttackNPC(Mob);
@@ -22,12 +22,12 @@ public class JailRanger extends Script {
       if (GetX() != 285 && GetY() != 659) {
         Walk(285, 659);
       }
-      if (Fatigue() >= 95 && Running() == true) {
-        while (Sleeping() == false && Running() == true) {
+      if (Fatigue() >= 95 && Running()) {
+        while (!Sleeping() && Running()) {
           Use(FindInv(1263));
           Wait(2500);
         }
-        while (Sleeping() == true && Running() == true) {
+        while (Sleeping() && Running()) {
           Wait(100);
         }
       }

@@ -8,7 +8,7 @@ public class CatherbyLobs extends Script {
     return new String[] {"fishlobehs"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@cya@Andrew has been added to your friend list.", 3);
     Wait(1000);
     DisplayMessage("@cya@Andrew: tells you Catherby Lob Script has been activated!", 3);
@@ -18,13 +18,13 @@ public class CatherbyLobs extends Script {
     DisplayMessage("@cya@Andrew has been removed from your friend list.", 3);
     Wait(1000);
     while (Running()) {
-      while (InvCount() < 30 && Running() == true) {
+      while (InvCount() < 30 && Running()) {
         if (Fatigue() >= 82) {
-          while (Sleeping() == false) {
+          while (!Sleeping()) {
             Use(FindInv(1263));
             Wait(100);
           }
-          while (Sleeping() == true) {
+          while (Sleeping()) {
             Wait(100);
           }
         }
@@ -39,20 +39,20 @@ public class CatherbyLobs extends Script {
       Walk(431, 489);
       Walk(435, 485);
       Walk(432, 482);
-      while (InvCount(372) > 0 && Running() == true) {
+      while (InvCount(372) > 0 && Running()) {
         if (Fatigue() >= 95) {
-          while (Sleeping() == false) {
+          while (!Sleeping()) {
             Use(FindInv(1263));
             Wait(100);
           }
-          while (Sleeping() == true) {
+          while (Sleeping()) {
             Wait(100);
           }
         }
         UseOnObject(432, 480, FindInv(372));
         Wait(2000);
       }
-      while (InvCount(374) > 0 && Running() == true) {
+      while (InvCount(374) > 0 && Running()) {
         Drop(FindInv(374));
         Wait(1000);
       }
@@ -64,13 +64,13 @@ public class CatherbyLobs extends Script {
       Walk(436, 497);
       Walk(439, 497);
       Walk(440, 495);
-      while (QuestMenu() == false) {
+      while (!QuestMenu()) {
         int BankerID = GetNearestNPC(95);
         TalkToNPC(BankerID);
         Wait(1000);
       }
       Answer(0);
-      while (Bank() == false) Wait(1);
+      while (!Bank()) Wait(1);
       while (InvCount(373) > 0) {
         Deposit(373, 1);
         Wait(100);

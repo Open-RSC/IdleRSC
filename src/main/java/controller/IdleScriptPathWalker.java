@@ -16,7 +16,7 @@ import utils.Extractor;
 
 class IdleScriptPathWalker {
 
-  private Controller controller;
+  private final Controller controller;
   private static final byte[][] WALKABLE = createWalkable();
 
   /*
@@ -77,9 +77,8 @@ class IdleScriptPathWalker {
 
     byte[][] walkable = new byte[WORLD_W][WORLD_H];
     String dataPath = "/map/data";
-    BufferedInputStream in = null;
-    try {
-      in = new BufferedInputStream(Extractor.extractResourceAsStream(dataPath));
+    try (BufferedInputStream in =
+        new BufferedInputStream(Extractor.extractResourceAsStream(dataPath))) {
       for (int i = 0; i < WORLD_W; ++i) {
         int read = 0;
         do {
@@ -92,11 +91,6 @@ class IdleScriptPathWalker {
       }
     } catch (IOException ex) {
       throw new RuntimeException(ex);
-    } finally {
-      try {
-        in.close();
-      } catch (Throwable t) {
-      }
     }
     System.out.println("done.");
     return walkable;
@@ -252,8 +246,7 @@ class IdleScriptPathWalker {
     if (handleObject(x - 1, y - 1)) return true;
     if (handleObject(x + 1, y + 1)) return true;
     if (handleObject(x - 1, y + 1)) return true;
-    if (handleObject(x + 1, y - 1)) return true;
-    return false;
+    return handleObject(x + 1, y - 1);
   }
 
   private boolean handleObject(int x, int y) {
@@ -304,7 +297,7 @@ class IdleScriptPathWalker {
 
     start.totalCostFromStartToGoalThroughY = (short) start.estHeuristicCost(goal);
 
-    Deque<Node> open = new ArrayDeque<Node>(32);
+    Deque<Node> open = new ArrayDeque<>(32);
     open.add(start);
     start.isTentativeNodeToBeEvaluated = true;
 
@@ -353,7 +346,7 @@ class IdleScriptPathWalker {
 
   private static Node[] constructPath(Map<Node, Node> came_from, Node start, Node goal) {
 
-    Deque<Node> path = new ArrayDeque<Node>();
+    Deque<Node> path = new ArrayDeque<>();
     Node p = came_from.get(goal);
     while (p != start) {
       path.push(p);

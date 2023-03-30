@@ -11,7 +11,7 @@ public class rena_rdkpro extends Script {
   // Collect d bones, rlong, addypl8, runes, halfkeys, med sqs, herbs?, rune spear
   int[] CollectIDs = {1092, 1276, 795, 75, 814, 526, 527, 120, 619, 42, 38, 31, 33, 442, 441};
 
-  int[] ChocolateCake = {332, 334, 336};
+  final int[] ChocolateCake = {332, 334, 336};
 
   int fightMode = 0;
   // Loot reporting
@@ -516,7 +516,7 @@ public class rena_rdkpro extends Script {
       }
       if (distanceTo(217, 450) < 6) {
 
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
 
         if (banker[0] != -1) talkToNpc(banker[0]);
 
@@ -626,7 +626,7 @@ public class rena_rdkpro extends Script {
       }
       if (distanceTo(217, 450) < 6) {
 
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
 
         if (banker[0] != -1) talkToNpc(banker[0]);
 
@@ -1159,7 +1159,6 @@ public class rena_rdkpro extends Script {
   }
 
   private boolean IsInBank() {
-    if (getX() >= 212 && getX() <= 220 && getY() >= 448 && getY() <= 453) return true;
-    return false;
+    return getX() >= 212 && getX() <= 220 && getY() >= 448 && getY() <= 453;
   }
 }

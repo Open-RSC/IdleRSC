@@ -8,7 +8,7 @@ public class Lumby2Edge extends Script {
     return new String[] {"Startwalkin"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@whi@YoungWun's Lumb2Edge", 3);
     while (Running()) {
       Walk(128, 641);

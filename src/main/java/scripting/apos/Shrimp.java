@@ -29,7 +29,7 @@ public class Shrimp extends Script {
       return random(2500, 3000);
     }
     if (isAtApproxCoords(418, 500, 5) && getInventoryCount() != 30) {
-      int[] fish = getObjectById(new int[] {193});
+      int[] fish = getObjectById(193);
       if (fish[0] != -1) {
         atObject(418, 500);
       }
@@ -44,7 +44,7 @@ public class Shrimp extends Script {
       return random(2000, 3000);
     }
     if (isAtApproxCoords(433, 484, 4) && (getInventoryCount(351) + getInventoryCount(349)) != 0) {
-      int[] range = getObjectById(new int[] {11});
+      int[] range = getObjectById(11);
       if (range[0] != -1) {
         if (getInventoryCount(349) != 0) {
           useItemOnObject(349, 11);

@@ -13,15 +13,15 @@ abyte0_powerwc magic
 */
 
 public class Abyte0_PowerWc extends Abyte0_Script {
-  int[] normalTree = {0, 1};
-  int[] oakTree = {306};
-  int[] willowTree = {307};
-  int[] yewTree = {309};
-  int[] magicTree = {310};
+  final int[] normalTree = {0, 1};
+  final int[] oakTree = {306};
+  final int[] willowTree = {307};
+  final int[] yewTree = {309};
+  final int[] magicTree = {310};
 
   int xSpot, ySpot;
   int[] treeId;
-  int fmode = 1;
+  final int fmode = 1;
 
   public Abyte0_PowerWc(String e) {
     super(e);
@@ -36,26 +36,33 @@ public class Abyte0_PowerWc extends Abyte0_Script {
     ySpot = getY();
     treeId = yewTree;
 
-    if (param.equals("yew")) {
-      print("Doing Yew");
-    } else if (param.equals("normal")) {
-      print("Doing Normal");
+    switch (param) {
+      case "yew":
+        print("Doing Yew");
+        break;
+      case "normal":
+        print("Doing Normal");
 
-      treeId = normalTree;
-    } else if (param.equals("oak")) {
-      print("Doing Oak");
+        treeId = normalTree;
+        break;
+      case "oak":
+        print("Doing Oak");
 
-      treeId = oakTree;
-    } else if (param.equals("willow")) {
-      print("Doing Willow");
+        treeId = oakTree;
+        break;
+      case "willow":
+        print("Doing Willow");
 
-      treeId = willowTree;
-    } else if (param.equals("magic")) {
-      print("Doing Magic");
+        treeId = willowTree;
+        break;
+      case "magic":
+        print("Doing Magic");
 
-      treeId = magicTree;
-    } else {
-      print("Default = Yew LongBow");
+        treeId = magicTree;
+        break;
+      default:
+        print("Default = Yew LongBow");
+        break;
     }
   }
 

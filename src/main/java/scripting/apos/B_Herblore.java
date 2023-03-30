@@ -1,7 +1,6 @@
 package scripting.apos;
 
 import compatibility.apos.Script;
-import java.io.IOException;
 import java.net.*;
 import java.util.Date;
 import javax.swing.*;
@@ -17,7 +16,7 @@ public class B_Herblore extends Script {
   private boolean unfinished;
   private int[] initial_xp;
   private long time;
-  private long[] screenshot = new long[4];
+  private final long[] screenshot = new long[4];
   private String filename;
   private String name;
   private int potion_choice;
@@ -104,9 +103,9 @@ public class B_Herblore extends Script {
     if (screenshot[0] != -1L) {
       return screenshot(now);
     }
-    if (checkin == -1L || now > checkin + 900000L) {
-      return checkin(now);
-    }
+    // if (checkin == -1L || now > checkin + 900000L) {
+    //  return checkin(now);
+    // }
     if (getFatigue() > 95) {
       useSleepingBag();
       return 1000;
@@ -438,61 +437,63 @@ public class B_Herblore extends Script {
   /*
      Edit this and use it to post data elsewhere if you wish
   */
-  private int checkin(long now) {
-    if (name == null) {
-      name = getPlayerName(0);
-    }
-    if (!name.equals("blood")) {
+  /*
+    private int checkin(long now) {
+      if (name == null) {
+        name = getPlayerName(0);
+      }
+      if (!name.equals("blood")) {
+        checkin = now;
+        return 0;
+      }
+      System.out.print("Checking in... ");
+      if (getX() <= 0) {
+        System.out.println("Failed.");
+        return 1000;
+      }
+      try {
+        StringBuilder stats = new StringBuilder();
+        for (int i = 0; i < SKILL.length; i++) {
+          stats.append(getXpForLevel(i));
+          if (i < SKILL.length - 1) {
+            stats.append(",");
+          }
+        }
+          URL url =
+                  new URL(
+                          "https://example.com/submit"
+                                  + "?name="
+                                  + URLEncoder.encode("blood", "UTF-8")
+                                  + "&skills="
+                                  + URLEncoder.encode(stats.toString(), "UTF-8"));
+
+
+        URLConnection conn = url.openConnection();
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(5000);
+        conn.getInputStream();
+        System.out.println("Done.");
+      } catch (NoRouteToHostException | SocketTimeoutException e) {
+        System.out.println("Failed.");
+        return 1000;
+      } catch (IOException ioe) {
+        System.out.println("Failed.");
+      }
       checkin = now;
       return 0;
     }
-    System.out.print("Checking in... ");
-    if (getX() <= 0) {
-      System.out.println("Failed.");
-      return 1000;
-    }
-    try {
-      StringBuilder stats = new StringBuilder();
-      for (int i = 0; i < SKILL.length; i++) {
-        stats.append(getXpForLevel(i));
-        if (i < SKILL.length - 1) {
-          stats.append(",");
-        }
-      }
-      URL url =
-          new URL(
-              "https://example.com/submit"
-                  + "?name="
-                  + URLEncoder.encode("blood", "UTF-8")
-                  + "&skills="
-                  + URLEncoder.encode(stats.toString(), "UTF-8"));
-
-      URLConnection conn = url.openConnection();
-      conn.setConnectTimeout(5000);
-      conn.setReadTimeout(5000);
-      conn.getInputStream();
-      System.out.println("Done.");
-    } catch (NoRouteToHostException | SocketTimeoutException e) {
-      System.out.println("Failed.");
-      return 1000;
-    } catch (IOException ioe) {
-      System.out.println("Failed.");
-    }
-    checkin = now;
-    return 0;
-  }
-
-  private class Potion {
-    public String potion_name;
-    public String herb_name;
-    public int level;
-    public double xp;
-    public int grimy;
-    public double grimy_xp;
-    public int clean;
-    public int secondary;
-    public int unfinished;
-    public int finished;
+  */
+  private static class Potion {
+    public final String potion_name;
+    public final String herb_name;
+    public final int level;
+    public final double xp;
+    public final int grimy;
+    public final double grimy_xp;
+    public final int clean;
+    public final int secondary;
+    public final int unfinished;
+    public final int finished;
 
     public Potion(
         String potion_name,

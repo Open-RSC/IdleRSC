@@ -17,10 +17,12 @@ import javax.swing.JTextArea;
  */
 public class WindowListener implements Runnable {
 
-  JFrame rscFrame, botFrame, consoleFrame;
+  final JFrame rscFrame;
+  final JFrame botFrame;
+  final JFrame consoleFrame;
   JScrollPane scroller;
-  JTextArea logArea;
-  Controller controller;
+  final JTextArea logArea;
+  final Controller controller;
 
   public WindowListener(
       JFrame _botFrame,

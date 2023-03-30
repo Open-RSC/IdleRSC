@@ -94,7 +94,6 @@ public final class S_BankBury extends Script {
       drawString("Buried " + bury_count + " bones (" + total_xp + " xp)", x + 10, y, 1, white);
       y += 15;
       drawString(per_hour(total_xp) + " XP per hour", x + 10, y, 1, white);
-      y += 15;
     }
   }
 

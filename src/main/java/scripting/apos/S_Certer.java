@@ -35,7 +35,7 @@ public final class S_Certer extends Script implements ActionListener {
   private int items_certed;
   private double transfer_rate;
   private final DecimalFormat iformat = new DecimalFormat("#,##0");
-  private Point last_pos = new Point(-1, -1);
+  private final Point last_pos = new Point(-1, -1);
   private static boolean abort;
 
   public S_Certer(String ex) {
@@ -684,11 +684,7 @@ public final class S_Certer extends Script implements ActionListener {
         break;
     }
     String str =
-        new StringBuilder()
-            .append(uncert ? "Uncerting " : "Certing ")
-            .append(item.getItemName().toLowerCase(Locale.ENGLISH))
-            .append(".")
-            .toString();
+        (uncert ? "Uncerting " : "Certing ") + item.getItemName().toLowerCase(Locale.ENGLISH) + ".";
     System.out.println(str);
     frame.setVisible(false);
   }

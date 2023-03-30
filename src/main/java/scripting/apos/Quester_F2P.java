@@ -5,11 +5,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
+import java.util.Objects;
 
 public class Quester_F2P extends Script implements ActionListener {
 
   private IQuest selectedQuest;
-  private String extension;
+  private final String extension;
   private long startTime = -1;
   private boolean didInit = false;
 
@@ -216,7 +217,8 @@ public class Quester_F2P extends Script implements ActionListener {
     y += 13;
     drawString("Quest: " + getQuestName(selectedQuest.GetQuestId()), 25, y, 1, 0xFFFFFF);
     y += 13;
-    if (selectedQuest.GetQuestStatus() != null && selectedQuest.GetQuestStatus() != "") {
+    if (selectedQuest.GetQuestStatus() != null
+        && !Objects.equals(selectedQuest.GetQuestStatus(), "")) {
       drawString("Status: " + selectedQuest.GetQuestStatus(), 25, y, 1, 0xFFFFFF);
     }
   }
@@ -230,9 +232,9 @@ public class Quester_F2P extends Script implements ActionListener {
   MODELS BELOW
    */
   public static class SkillRequirement {
-    public Skills Skill;
-    public int Level;
-    public boolean Boostable;
+    public final Skills Skill;
+    public final int Level;
+    public final boolean Boostable;
 
     public SkillRequirement(Skills skill, int level, boolean boostable) {
       Skill = skill;
@@ -248,8 +250,8 @@ public class Quester_F2P extends Script implements ActionListener {
   }
 
   public static class ItemRequirement {
-    public int[] ItemId;
-    public int Quantity;
+    public final int[] ItemId;
+    public final int Quantity;
 
     public ItemRequirement(int[] id, int qty) {
       ItemId = id;
@@ -258,7 +260,7 @@ public class Quester_F2P extends Script implements ActionListener {
   }
 
   public static class QuestRequirement {
-    public Quests Quest;
+    public final Quests Quest;
 
     public QuestRequirement(Quests quest) {
       Quest = quest;
@@ -286,7 +288,7 @@ public class Quester_F2P extends Script implements ActionListener {
     MINING,
     HERBLAW,
     AGILITY,
-    THIEVING;
+    THIEVING
   }
 
   public enum Quests {
@@ -308,7 +310,7 @@ public class Quester_F2P extends Script implements ActionListener {
     WITCHS_POTION(15),
     DRAGON_SLAYER(16);
 
-    public int Id;
+    public final int Id;
 
     Quests(int questId) {
       this.Id = questId;
@@ -446,7 +448,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class BlackKnightsFortress extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1, waitForQuestMenuTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SLEEPING_BAG = 1263,
@@ -840,7 +842,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class RomeoAndJuliet extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int ROMEO = 30,
@@ -860,7 +862,7 @@ public class Quester_F2P extends Script implements ActionListener {
     public ItemRequirement[] ItemRequirements;
     public QuestRequirement[] QuestRequirements;
     public int FreeInventoryRequired;
-    public int QuestPointsRequired = 0;
+    public final int QuestPointsRequired = 0;
     public Stage CurrentStage;
 
     public RomeoAndJuliet(String ex) {
@@ -1132,7 +1134,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class CooksAssistant extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SLEEPING_BAG = 1263,
@@ -1362,7 +1364,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class SheepShearer extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SHEEP = 2,
@@ -1639,7 +1641,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class DoricsQuest extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private int[] currentRocks;
     private String questStatus;
 
@@ -1826,7 +1828,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class RestlessGhost extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SLEEPING_BAG = 1263,
@@ -2090,7 +2092,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class ErnestTheChicken extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private boolean questComplete = false;
     private String questStatus;
 
@@ -2555,7 +2557,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class WitchsPotion extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SLEEPING_BAG = 1263,
@@ -2846,7 +2848,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class GoblinDiplomacy extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private Point GOBLIN_LOC;
     private String questStatus;
 
@@ -3172,7 +3174,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class PiratesTreasure extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private boolean doStore = false;
     private String questStatus;
 
@@ -3588,7 +3590,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private long talkToNpcTimer = -1;
     private long equipStakeTimer = -1;
     private int combatTimeToEquipStake = 0;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SLEEPING_BAG = 1263,
@@ -3919,7 +3921,7 @@ public class Quester_F2P extends Script implements ActionListener {
 
   private static class ImpCatcher extends Quester_F2P implements IQuest {
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SLEEPING_BAG = 1263,
@@ -4240,7 +4242,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class ShieldOfArrav extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private boolean getBook = false;
     private boolean isPhoenix = true;
     private String questStatus;
@@ -4261,7 +4263,7 @@ public class Quester_F2P extends Script implements ActionListener {
         KATRINE = 27,
         CROSSBOW = 59,
         CURATOR = 39,
-        CERTIFICATE = 61;;
+        CERTIFICATE = 61;
     private static final Point RELDO_LOC = new Point(128, 458),
         BARAEK_LOC = new Point(128, 505),
         JOHNNY_LOC = new Point(122, 524),
@@ -4739,7 +4741,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private long talkToNpcTimer = -1, questMenuTimer = -1;
     private boolean didDrain = false;
     private int bonesRequired = 25;
-    private PathWalker pw;
+    private final PathWalker pw;
     private String questStatus;
 
     private static final int SLEEPING_BAG = 1263,
@@ -5190,7 +5192,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class PrinceAliRescue extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1, questMenuTimer = -1, fireTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private boolean tieUp = false;
     private String questStatus;
 
@@ -5233,7 +5235,7 @@ public class Quester_F2P extends Script implements ActionListener {
         KELI = 123,
         JOE = 121,
         ALI = 118,
-        KEY = 242;;
+        KEY = 242;
     private static final int[] PICKAXES = new int[] {1262, 1261, 1260, 1259, 1258, 156},
         AXES = new int[] {87, 12, 88, 203, 204, 405};
     private static final Point THESSALIA_LOC = new Point(137, 515),
@@ -5842,7 +5844,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class KnightsSword extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1, questMenuTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private int pieAttempts = 3;
     private String questStatus;
 
@@ -6381,7 +6383,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private static class DragonSlayer extends Quester_F2P implements IQuest {
 
     private long talkToNpcTimer = -1, questMenuTimer = -1;
-    private PathWalker pw;
+    private final PathWalker pw;
     private boolean withdrawBowl = false,
         withdrawWmb = false,
         withdrawLobPot = false,

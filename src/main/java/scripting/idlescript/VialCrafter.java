@@ -5,9 +5,9 @@ public class VialCrafter extends IdleScript {
   Integer vials = 0;
   Integer buckets = 0;
   Boolean stopped = false;
-  Integer coords[] = {0, 0};
+  final Integer[] coords = {0, 0};
 
-  public int start(String param[]) {
+  public int start(String[] param) {
     vials = controller.getInventoryItemCount(465);
     // Check for required levels
     if (controller.getBaseStat(controller.getStatId("Harvesting")) < 23
@@ -105,7 +105,7 @@ public class VialCrafter extends IdleScript {
       // Finds and harvests nearest seaweed plant
       if (controller.getInventoryItemCount(622) < controller.getInventoryItemCount(625)) {
         try {
-          int plantCoords[] = controller.getNearestObjectById(1280);
+          int[] plantCoords = controller.getNearestObjectById(1280);
           coords[0] = plantCoords[0];
           coords[1] = plantCoords[1];
         } catch (Exception e) {

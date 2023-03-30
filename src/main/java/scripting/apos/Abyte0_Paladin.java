@@ -10,9 +10,9 @@ import compatibility.apos.Script;
 public class Abyte0_Paladin extends Script {
   int fightMode = 3;
   boolean chestReady = true;
-  int[] npcID = new int[] {323};
-  int mithBar = 173;
-  boolean eatFoodToPickMithBar = false;
+  final int[] npcID = new int[] {323};
+  final int mithBar = 173;
+  final boolean eatFoodToPickMithBar = false;
   int[] foodIDs = new int[] {330, 333, 335, 895, 897, 138, 142, 373};
 
   public Abyte0_Paladin(String var1) {
@@ -47,32 +47,32 @@ public class Abyte0_Paladin extends Script {
       this.useSleepingBag();
       return 1000;
     } else if (this.isBanking()) {
-      if (this.getInventoryCount(new int[] {10}) > 1) {
-        this.deposit(10, this.getInventoryCount(new int[] {10}) - 1);
+      if (this.getInventoryCount(10) > 1) {
+        this.deposit(10, this.getInventoryCount(10) - 1);
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {10}) < 1) {
+      } else if (this.getInventoryCount(10) < 1) {
         this.withdraw(10, 1);
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {41}) > 1) {
-        this.deposit(41, this.getInventoryCount(new int[] {41}) - 1);
+      } else if (this.getInventoryCount(41) > 1) {
+        this.deposit(41, this.getInventoryCount(41) - 1);
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {41}) < 1) {
+      } else if (this.getInventoryCount(41) < 1) {
         this.withdraw(41, 1);
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {427}) > 0) {
-        this.deposit(427, this.getInventoryCount(new int[] {427}));
+      } else if (this.getInventoryCount(427) > 0) {
+        this.deposit(427, this.getInventoryCount(427));
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {545}) > 0) {
-        this.deposit(545, this.getInventoryCount(new int[] {545}));
+      } else if (this.getInventoryCount(545) > 0) {
+        this.deposit(545, this.getInventoryCount(545));
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {160}) > 0) {
-        this.deposit(160, this.getInventoryCount(new int[] {160}));
+      } else if (this.getInventoryCount(160) > 0) {
+        this.deposit(160, this.getInventoryCount(160));
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {154}) > 0) {
-        this.deposit(154, this.getInventoryCount(new int[] {154}));
+      } else if (this.getInventoryCount(154) > 0) {
+        this.deposit(154, this.getInventoryCount(154));
         return random(500, 600);
-      } else if (this.getInventoryCount(new int[] {this.mithBar}) > 0) {
-        this.deposit(this.mithBar, this.getInventoryCount(new int[] {this.mithBar}));
+      } else if (this.getInventoryCount(this.mithBar) > 0) {
+        this.deposit(this.mithBar, this.getInventoryCount(this.mithBar));
         return random(500, 600);
       } else if (this.getInventoryCount() == 30) {
         this.closeBank();
@@ -94,7 +94,7 @@ public class Abyte0_Paladin extends Script {
         } else {
           if (this.getX() >= 602 && this.getX() <= 615 && this.getY() >= 1548) {
             if (this.getInventoryCount() < 30) {
-              var1 = this.getItemById(new int[] {this.mithBar});
+              var1 = this.getItemById(this.mithBar);
               if (var1[0] != -1) {
                 this.pickupItem(var1[0], var1[1], var1[2]);
                 return random(1000, 1500);
@@ -111,7 +111,7 @@ public class Abyte0_Paladin extends Script {
             }
           } else {
             if (this.getX() == 551 && this.getY() == 612) {
-              var2 = this.getObjectById(new int[] {64});
+              var2 = this.getObjectById(64);
               if (var2[0] != -1) {
                 this.atObject(var2[1], var2[2]);
                 return random(1000, 1200);
@@ -122,7 +122,7 @@ public class Abyte0_Paladin extends Script {
             }
 
             if (this.getX() == 613 && this.getY() == 601) {
-              var2 = this.getObjectById(new int[] {342});
+              var2 = this.getObjectById(342);
               if (var2[0] != -1) {
                 this.atObject(var2[1], var2[2]);
                 return random(1500, 3200);
@@ -146,7 +146,7 @@ public class Abyte0_Paladin extends Script {
                 && this.getX() <= 615
                 && this.getY() > 1500
                 && this.getY() < 1548) {
-              var3 = this.getWallObjectById(new int[] {97});
+              var3 = this.getWallObjectById(97);
               if (var3[0] != -1 && this.isAtApproxCoords(var3[1], var3[2], 5)) {
                 this.atWallObject2(var3[1], var3[2]);
                 return random(1000, 1500);
@@ -169,7 +169,7 @@ public class Abyte0_Paladin extends Script {
             }
 
             if (this.getX() < 599) {
-              var2 = this.getObjectById(new int[] {57});
+              var2 = this.getObjectById(57);
               if (var2[0] != -1 && this.isAtApproxCoords(var2[1], var2[2], 10)) {
                 this.atObject(var2[1], var2[2]);
                 return random(800, 1000);
@@ -180,7 +180,7 @@ public class Abyte0_Paladin extends Script {
             }
 
             if (this.getX() < 608) {
-              var2 = this.getObjectById(new int[] {64});
+              var2 = this.getObjectById(64);
               if (var2[0] != -1
                   && var2[1] >= 605
                   && var2[1] <= 610
@@ -202,13 +202,13 @@ public class Abyte0_Paladin extends Script {
           && this.getY() >= 1548
           && this.getY() <= 1648) {
         if (this.chestReady) {
-          var2 = this.getObjectById(new int[] {5});
+          var2 = this.getObjectById(5);
           if (var2[0] != -1 && this.isAtApproxCoords(var2[1], var2[2], 10)) {
             this.atObject(var2[1], var2[2]);
             return random(1500, 3200);
           }
         } else {
-          var1 = this.getWallObjectById(new int[] {97});
+          var1 = this.getWallObjectById(97);
           if (var1[0] != -1 && this.isAtApproxCoords(var1[1], var1[2], 10)) {
             this.atWallObject(var1[1], var1[2]);
             return random(1000, 1200);
@@ -217,7 +217,7 @@ public class Abyte0_Paladin extends Script {
 
         return random(800, 900);
       } else if (this.getX() == 550) {
-        var2 = this.getObjectById(new int[] {64});
+        var2 = this.getObjectById(64);
         if (var2[0] != -1 && this.isAtApproxCoords(var2[1], var2[2], 5)) {
           this.atObject(var2[1], var2[2]);
           return random(1000, 1200);
@@ -235,7 +235,7 @@ public class Abyte0_Paladin extends Script {
         }
 
         if (this.isAtApproxCoords(611, 2491, 10)) {
-          var3 = this.getItemById(new int[] {427});
+          var3 = this.getItemById(427);
           if (var3[0] != -1) {
             this.pickupItem(var3[0], var3[1], var3[2]);
             return random(1000, 1500);
@@ -248,7 +248,7 @@ public class Abyte0_Paladin extends Script {
           }
 
           this.chestReady = false;
-          var2 = this.getObjectById(new int[] {6});
+          var2 = this.getObjectById(6);
           if (var2[0] != -1) {
             this.atObject(var2[1], var2[2]);
             return random(1000, 1200);
@@ -256,7 +256,7 @@ public class Abyte0_Paladin extends Script {
         }
 
         if (this.getX() >= 602 && this.getX() <= 615 && this.getY() > 1500 && this.getY() < 1548) {
-          var2 = this.getObjectById(new int[] {44});
+          var2 = this.getObjectById(44);
           if (var2[0] != -1) {
             this.atObject(var2[1], var2[2]);
             return random(1000, 1200);
@@ -264,7 +264,7 @@ public class Abyte0_Paladin extends Script {
         }
 
         if (this.getX() >= 608 && this.getY() >= 597 && this.getY() <= 609) {
-          var2 = this.getObjectById(new int[] {64});
+          var2 = this.getObjectById(64);
           if (var2[0] != -1 && this.isAtApproxCoords(var2[1], var2[2], 5)) {
             this.atObject(var2[1], var2[2]);
             return random(800, 1000);
@@ -273,7 +273,7 @@ public class Abyte0_Paladin extends Script {
             return random(500, 1000);
           }
         } else if (this.getX() >= 599) {
-          var2 = this.getObjectById(new int[] {57});
+          var2 = this.getObjectById(57);
           if (var2[0] != -1 && this.isAtApproxCoords(var2[1], var2[2], 10)) {
             this.atObject(var2[1], var2[2]);
             return random(800, 1000);

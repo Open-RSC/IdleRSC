@@ -48,7 +48,7 @@ public class J_Quester extends Script implements ActionListener {
   private boolean quest_started = false;
   private boolean quest_complete = false;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path cur_path;
 
   @Override
@@ -98,11 +98,11 @@ public class J_Quester extends Script implements ActionListener {
     pw.init(null);
   }
 
-  private Quests[] quests = {new DruidicRitual(), new Barcrawl()};
+  private final Quests[] quests = {new DruidicRitual(), new Barcrawl()};
 
   private Quests quest;
 
-  private class Quests {
+  private static class Quests {
     // return -1 (to continue) or wait value
 
     public int doQuest() {
@@ -157,10 +157,7 @@ public class J_Quester extends Script implements ActionListener {
     private boolean finishing = false;
 
     private boolean camelotTelespot(int x, int y) {
-      if (y > 453 && y < 461 && x > 455 && x < 463) {
-        return true;
-      }
-      return false;
+      return y > 453 && y < 461 && x > 455 && x < 463;
     }
 
     @Override
@@ -515,7 +512,7 @@ public class J_Quester extends Script implements ActionListener {
     private final int KAQE = 204;
     private final int SAN = 205;
 
-    private int[] DUNGEON_PATH = {
+    private final int[] DUNGEON_PATH = {
       376, 3351, 376, 3344, 376, 3337, 376, 3327, 371, 3321, 363, 3321, 360, 3330, 366, 3332
     };
 
@@ -613,10 +610,7 @@ public class J_Quester extends Script implements ActionListener {
     }
 
     private boolean insideShop(int x, int y) {
-      if (y > 485 && y < 490 && x > 376 && x < 382) {
-        return true;
-      }
-      return false;
+      return y > 485 && y < 490 && x > 376 && x < 382;
     }
 
     @Override
@@ -1007,11 +1001,7 @@ public class J_Quester extends Script implements ActionListener {
   }
 
   private boolean check_inventory(int item) {
-    if (hasInventoryItem(item)) {
-      return true;
-    } else {
-      return false;
-    }
+    return hasInventoryItem(item);
   }
 
   private int take_item(int spawn_x, int spawn_y, int item_id) {
@@ -1038,7 +1028,6 @@ public class J_Quester extends Script implements ActionListener {
         int y = getItemY(i);
         if (!isReachable(x, y)) continue;
         if (distanceTo(x, y, spawn_x, spawn_y) > 30) {
-          continue;
         } else {
           int dist = distanceTo(x, y, getX(), getY());
           if (dist < max_dist) {

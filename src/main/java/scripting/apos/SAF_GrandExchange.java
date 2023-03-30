@@ -21,13 +21,13 @@ import javax.swing.BoxLayout;
 public final class SAF_GrandExchange extends Script implements ActionListener {
 
   private long time = 0, delayStart = 0;
-  private int itemAmount = 0,
-      tradeAmount = 0,
-      chatDelay = 29,
-      itemPrice = 1500,
-      coinsOffered = 0,
-      merchantMode = 0,
-      fightMode = 1;
+  private int itemAmount = 0;
+  private final int tradeAmount = 0;
+  private int chatDelay = 29;
+  private int itemPrice = 1500;
+  private int coinsOffered = 0;
+  private int merchantMode = 0;
+  private int fightMode = 1;
   private final int ITEM_SUPER_ATTACK_POTION = 486,
       ITEM_SUPER_DEFENCE_POTION = 492,
       ITEM_SUPER_STRENGTH_POTION = 495,
@@ -43,12 +43,13 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
 
   private String itemName;
 
-  private boolean init = false, banking = true;
+  private final boolean init = false;
+  private boolean banking = true;
   private final String[] fightModeStrings = {"Strength", "Attack", "Defense"},
       merchantModeStrings = {"Selling", "Buying"};
 
-  private ArrayList<Integer> offeredAmount = new ArrayList<Integer>();
-  private ArrayList<Integer> itemID = new ArrayList<Integer>();
+  private final ArrayList<Integer> offeredAmount = new ArrayList<>();
+  private final ArrayList<Integer> itemID = new ArrayList<>();
 
   private Frame frame;
 
@@ -140,11 +141,11 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
     }
     // Banking
     if (banking) {
-      int banker[] = getNpcByIdNotTalk(NPC_BANKER);
+      int[] banker = getNpcByIdNotTalk(NPC_BANKER);
 
       if (merchantMode == 0) {
-        for (int i = 0; i < itemID.size(); ++i) {
-          if (getInventoryCount(itemID.get(i)) > 0) {
+        for (Integer integer : itemID) {
+          if (getInventoryCount(integer) > 0) {
             banking = false;
             return random(1000, 1500);
           }
@@ -464,7 +465,6 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
     final boolean stacks = isItemStackableId(id);
     for (int i = 0; i < count; i++) {
       if (getRemoteTradeItemId(i) != id) {
-        continue;
       } else {
         if (stacks) {
           return getRemoteTradeItemStack(i) >= amount;
@@ -473,11 +473,7 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
         }
       }
     }
-    if (traded_count >= amount) {
-      return true;
-    } else {
-      return false;
-    }
+    return traded_count >= amount;
   }
 
   public int hasOtherTradedAmountInt(int id) {
@@ -486,7 +482,6 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
     final boolean stacks = isItemStackableId(id);
     for (int i = 0; i < count; i++) {
       if (getRemoteTradeItemId(i) != id) {
-        continue;
       } else {
         if (stacks) {
           traded_count = getRemoteTradeItemStack(i);
@@ -567,15 +562,15 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
   private String getTimeRunning() {
     long time = ((System.currentTimeMillis() - this.time) / 1000);
     if (time >= 7200) {
-      return new String((time / 3600) + " hours, " + ((time % 3600) / 60) + " minutes");
+      return (time / 3600) + " hours, " + ((time % 3600) / 60) + " minutes";
     }
     if (time >= 3600 && time < 7200) {
-      return new String((time / 3600) + " hour, " + ((time % 3600) / 60) + " minutes");
+      return (time / 3600) + " hour, " + ((time % 3600) / 60) + " minutes";
     }
     if (time >= 60) {
-      return new String(time / 60 + " minutes, " + (time % 60) + " seconds");
+      return time / 60 + " minutes, " + (time % 60) + " seconds";
     }
-    return new String(time + " seconds");
+    return time + " seconds";
   }
 
   private void _walkApprox(int nx, int ny, int range) {

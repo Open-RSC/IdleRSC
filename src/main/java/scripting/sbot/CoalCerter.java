@@ -7,11 +7,11 @@ public class CoalCerter extends Script {
     return new String[] {"certcoal"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
 
     DisplayMessage("@blu@SBoT: @red@Certing Coal - Vegunks", 3);
     while (Running()) {
-      while (QuestMenu() == false) {
+      while (!QuestMenu()) {
         int CerterID = GetNearestNPC(225);
         TalkToNPC(CerterID);
         Wait(2000);
@@ -26,14 +26,14 @@ public class CoalCerter extends Script {
 
       Walk(224, 632);
 
-      while (QuestMenu() == false) {
+      while (!QuestMenu()) {
         int BankerID = GetNearestNPC(95);
         TalkToNPC(BankerID);
-        while (QuestMenu() == true) ;
+        while (QuestMenu()) ;
         Wait(1500);
       }
       Answer(0);
-      while (Bank() == false) Wait(1500);
+      while (!Bank()) Wait(1500);
       while (InvCount(155) < 25) {
         Withdraw(155, 1);
         Wait(200);

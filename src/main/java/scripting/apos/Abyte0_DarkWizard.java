@@ -2,8 +2,6 @@ package scripting.apos;
 
 import compatibility.apos.Script;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import javax.swing.*;
 
 /*
@@ -16,30 +14,30 @@ import javax.swing.*;
 
 public class Abyte0_DarkWizard extends Script {
   int fMode = 2; // default attack
-  int Darkwizard[] = {60, 57}; // 60 = lvl25; 57 = lvl13
+  final int[] Darkwizard = {60, 57}; // 60 = lvl25; 57 = lvl13
 
-  int[] room0 = {362, 570};
-  int[] room1 = {362, 1514};
-  int[] room2 = {362, 2458};
+  final int[] room0 = {362, 570};
+  final int[] room1 = {362, 1514};
+  final int[] room2 = {362, 2458};
 
   // ------------- ITEMS
-  int halfKey1 = 526;
-  int halfKey2 = 527;
+  final int halfKey1 = 526;
+  final int halfKey2 = 527;
 
-  int FireRune = 31;
-  int WaterRune = 32;
-  int AirRune = 33;
-  int EarthRune = 34;
-  int mindRunes = 35;
-  int deathRunes = 38;
-  int blood = 619;
-  int nature = 40;
-  int chaosRunes = 41;
-  int law = 42;
-  int CosmicRune = 46;
+  final int FireRune = 31;
+  final int WaterRune = 32;
+  final int AirRune = 33;
+  final int EarthRune = 34;
+  final int mindRunes = 35;
+  final int deathRunes = 38;
+  final int blood = 619;
+  final int nature = 40;
+  final int chaosRunes = 41;
+  final int law = 42;
+  final int CosmicRune = 46;
   // -------------------------
 
-  int[] items = {
+  final int[] items = {
     halfKey1,
     halfKey2,
     law,
@@ -57,8 +55,8 @@ public class Abyte0_DarkWizard extends Script {
 
   int side = 0;
 
-  String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
-  int[] fModeIdList = {2, 3, 1, 0};
+  final String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
+  final int[] fModeIdList = {2, 3, 1, 0};
 
   public void print(String txt) {
     System.out.println(txt);
@@ -126,10 +124,10 @@ public class Abyte0_DarkWizard extends Script {
         }
       }
       // We need to Pick Up the Item if any on floor
-      for (int h = 0; h < items.length; h++) {
-        int[] groundItems = getItemById(items[h]);
+      for (int item : items) {
+        int[] groundItems = getItemById(item);
         if (groundItems[0] != -1) {
-          // if in combat we run else we pickup
+          // if in combat we run else we pick up loot
           if (inCombat()) {
             RunFromCombat();
             return random(500, 800);

@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -23,18 +21,18 @@ public class AIOThiever extends IdleScript {
   boolean guiSetup = false;
   boolean scriptStarted = false;
 
-  int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
+  final int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
   int[] doorObjectIds = {60, 64};
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
   int failure = 0;
 
-  class ThievingObject {
-    String name;
-    int id;
-    boolean isNpc;
-    boolean isObject;
+  static class ThievingObject {
+    final String name;
+    final int id;
+    final boolean isNpc;
+    final boolean isObject;
 
     public ThievingObject(String _name, int _id, boolean _isNpc, boolean _isObject) {
       name = _name;
@@ -46,9 +44,7 @@ public class AIOThiever extends IdleScript {
     @Override
     public boolean equals(Object o) {
       if (o instanceof ThievingObject) {
-        if (((ThievingObject) o).name.equals(this.name)) {
-          return true;
-        }
+        return ((ThievingObject) o).name.equals(this.name);
       }
 
       return false;
@@ -61,7 +57,7 @@ public class AIOThiever extends IdleScript {
   boolean doBank = false;
   int foodWithdrawAmount = 0;
 
-  ArrayList<ThievingObject> objects =
+  final ArrayList<ThievingObject> objects =
       new ArrayList<ThievingObject>() {
         {
           add(new ThievingObject("Man", 11, true, false));
@@ -94,7 +90,7 @@ public class AIOThiever extends IdleScript {
         }
       };
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (scriptStarted) {
       scriptStart();
     } else {
@@ -160,7 +156,7 @@ public class AIOThiever extends IdleScript {
       while (controller.isBatching()) controller.sleep(10);
 
       if (!controller.isInCombat()) {
-        if (target.isNpc == true) {
+        if (target.isNpc) {
           controller.sleepHandler(98, true);
           ORSCharacter npc = controller.getNearestNpcById(target.id, false);
           if (npc != null && npc.serverIndex > 0) {
@@ -217,7 +213,7 @@ public class AIOThiever extends IdleScript {
           }
 
         } else { // we are not banking
-          if (target.isObject == true) {
+          if (target.isObject) {
             int[] coords = controller.getNearestObjectById(target.id);
             if (coords != null) {
               controller.setStatus("@red@Stealing..");
@@ -297,11 +293,11 @@ public class AIOThiever extends IdleScript {
   public void setupGUI() {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
-        new JComboBox<String>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+        new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
     JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
     JTextField eatAtHpField =
         new JTextField(String.valueOf(controller.getBaseStat(controller.getStatId("Hits")) / 2));
-    JComboBox<String> targetField = new JComboBox<String>();
+    JComboBox<String> targetField = new JComboBox<>();
     JCheckBox doBankCheckbox = new JCheckBox("Bank? (Ardougne Square only)");
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (Ardougne Square only)");
     JTextField foodWithdrawAmountField = new JTextField();
@@ -312,23 +308,20 @@ public class AIOThiever extends IdleScript {
     }
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            fightMode = fightModeField.getSelectedIndex();
-            eatingHealth = Integer.parseInt(eatAtHpField.getText());
-            target = objects.get(targetField.getSelectedIndex());
-            doBank = doBankCheckbox.isSelected();
+        e -> {
+          fightMode = fightModeField.getSelectedIndex();
+          eatingHealth = Integer.parseInt(eatAtHpField.getText());
+          target = objects.get(targetField.getSelectedIndex());
+          doBank = doBankCheckbox.isSelected();
 
-            if (!foodWithdrawAmountField.getText().equals(""))
-              foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          if (!foodWithdrawAmountField.getText().equals(""))
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
 
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
 
-            controller.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
-          }
+          controller.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
         });
 
     scriptFrame = new JFrame(controller.getPlayerName() + " - options");
@@ -370,8 +363,9 @@ public class AIOThiever extends IdleScript {
 
       int successPerHr = 0;
       float ratio = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (success * scale);
         ratio = (float) success / (float) failure;

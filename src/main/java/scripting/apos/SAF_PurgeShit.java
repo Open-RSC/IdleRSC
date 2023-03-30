@@ -19,19 +19,24 @@ import javax.swing.BoxLayout;
 
 public final class SAF_PurgeShit extends Script implements ActionListener {
 
-  private long time = 0, delayStart = 0;
-  private int currentItem = 0, amountTraded = 0, giveOrTake = 0, fightMode = 1;
+  private long time = 0;
+  private final long delayStart = 0;
+  private int currentItem = 0;
+  private final int amountTraded = 0;
+  private final int giveOrTake = 0;
+  private int fightMode = 1;
 
   private final int NPC_BANKER = 95;
 
-  private boolean init = false, banking = true;
+  private final boolean init = false;
+  private boolean banking = true;
 
   private String playerName;
 
   private final String[] fightModeStrings = {"Strength", "Attack", "Defense"},
       giveOrTakeStrings = {"Giver", "Taker"};
 
-  private ArrayList<Integer> ids = new ArrayList<Integer>();
+  private final ArrayList<Integer> ids = new ArrayList<>();
 
   private Frame frame;
 
@@ -112,7 +117,7 @@ public final class SAF_PurgeShit extends Script implements ActionListener {
     }
     // Banking
     if (banking) {
-      int banker[] = getNpcByIdNotTalk(NPC_BANKER);
+      int[] banker = getNpcByIdNotTalk(NPC_BANKER);
 
       if (!isBanking()) {
         if (isQuestMenu()) {
@@ -169,11 +174,7 @@ public final class SAF_PurgeShit extends Script implements ActionListener {
           }
         }
 
-        if (getInventoryCount() < 1) {
-          banking = true;
-        } else {
-          banking = false;
-        }
+        banking = getInventoryCount() < 1;
       } catch (Throwable t) {
         System.out.println("Error parsing field. Script cannot start. Check your inputs.");
       }
@@ -184,15 +185,15 @@ public final class SAF_PurgeShit extends Script implements ActionListener {
   private String getTimeRunning() {
     long time = ((System.currentTimeMillis() - this.time) / 1000);
     if (time >= 7200) {
-      return new String((time / 3600) + " hours, " + ((time % 3600) / 60) + " minutes");
+      return (time / 3600) + " hours, " + ((time % 3600) / 60) + " minutes";
     }
     if (time >= 3600 && time < 7200) {
-      return new String((time / 3600) + " hour, " + ((time % 3600) / 60) + " minutes");
+      return (time / 3600) + " hour, " + ((time % 3600) / 60) + " minutes";
     }
     if (time >= 60) {
-      return new String(time / 60 + " minutes, " + (time % 60) + " seconds");
+      return time / 60 + " minutes, " + (time % 60) + " seconds";
     }
-    return new String(time + " seconds");
+    return time + " seconds";
   }
 
   private void _walkApprox(int nx, int ny, int range) {

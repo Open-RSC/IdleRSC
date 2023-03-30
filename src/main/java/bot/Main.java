@@ -6,10 +6,9 @@ import static org.reflections.util.ClasspathHelper.forJavaClassPath;
 
 import bot.debugger.Debugger;
 import callbacks.DrawCallback;
+import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
@@ -87,9 +86,9 @@ public class Main {
   private static Debugger debugger = null;
 
   private static Thread loginListener = null; // see LoginListener.java
-  private static Thread positionListener = null; // see PositionListener.java
+  private static final Thread positionListener = null; // see PositionListener.java
   private static Thread windowListener = null; // see WindowListener.java
-  private static Thread messageListener = null; // see MessageListener.java
+  private static final Thread messageListener = null; // see MessageListener.java
   private static Thread debuggerThread = null;
 
   private static Controller controller =
@@ -154,7 +153,7 @@ public class Main {
   public static void setRunning(boolean b) {
     isRunning = b;
 
-    if (isRunning == true) {
+    if (isRunning) {
       startStopButton.setText("Stop");
     } else {
       startStopButton.setText("Start");
@@ -200,7 +199,13 @@ public class Main {
     botFrame = new JFrame("Bot Pane");
     consoleFrame = new JFrame("Bot Console");
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
-    scriptFrame = new JFrame("Script Selector");
+    if (config.getUsername() != null) {
+      scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
+    } else if (controller.getPlayerName() != null) {
+      scriptFrame = new JFrame(controller.getPlayerName() + "'s Script Selector");
+    } else {
+      scriptFrame = new JFrame("Script Selector");
+    }
 
     initializeBotFrame(botFrame);
     initializeConsoleFrame(consoleFrame);
@@ -229,6 +234,12 @@ public class Main {
     }
     if (graphicsCheckbox.isSelected() != config.getEnablegfx()) {
       graphicsCheckbox.doClick();
+    }
+    if (config.getEnableInterlace()) {
+      controller.setInterlacer(config.getEnableInterlace());
+    }
+    if (config.getOpenSelector()) {
+      showLoadScript();
     }
 
     if (!config.getScriptName().equals("")) {
@@ -295,7 +306,7 @@ public class Main {
               }
 
               if (!aposInitCalled) {
-                ((compatibility.apos.Script) currentRunningScript).setController(controller);
+                Script.setController(controller);
                 ((compatibility.apos.Script) currentRunningScript).init(params);
                 aposInitCalled = true;
               }
@@ -386,88 +397,45 @@ public class Main {
     resetXpButton = new JButton("Reset XP");
 
     startStopButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            isRunning = !isRunning;
+        e -> {
+          isRunning = !isRunning;
 
-            if (isRunning) {
-              startStopButton.setText("Stop");
-            } else {
-              startStopButton.setText("Start");
-            }
+          if (isRunning) {
+            startStopButton.setText("Stop");
+          } else {
+            startStopButton.setText("Start");
           }
         });
 
-    loadScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            showLoadScript();
-          }
-        });
+    loadScriptButton.addActionListener(e -> showLoadScript());
 
     pathwalkerButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            if (!isRunning) {
-              loadAndRunScript("PathWalker");
-              config.setScriptArguments(new String[] {""});
-              isRunning = true;
-              startStopButton.setText("Stop");
-            } else {
-              JOptionPane.showMessageDialog(null, "Stop the current script first.");
-            }
+        e -> {
+          if (!isRunning) {
+            loadAndRunScript("PathWalker");
+            config.setScriptArguments(new String[] {""});
+            isRunning = true;
+            startStopButton.setText("Stop");
+          } else {
+            JOptionPane.showMessageDialog(null, "Stop the current script first.");
           }
         });
 
-    openDebuggerButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            debugger.open();
-          }
-        });
+    openDebuggerButton.addActionListener(e -> debugger.open());
 
     hideButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            controller.displayMessage(
-                "@red@IdleRSC@yel@: Type '::show' to bring back the sidepane.");
-            botFrame.setVisible(false);
-          }
+        e -> {
+          controller.displayMessage("@red@IdleRSC@yel@: Type '::show' to bring back the sidepane.");
+          botFrame.setVisible(false);
         });
 
-    resetXpButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            DrawCallback.resetXpCounter();
-          }
-        });
-    showIdButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            controller.fakeDeveloper();
-          }
-        });
-    takeScreenshotButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            controller.takeScreenshot("");
-          }
-        });
+    resetXpButton.addActionListener(e -> DrawCallback.resetXpCounter());
+    showIdButton.addActionListener(e -> controller.toggleViewId());
+    takeScreenshotButton.addActionListener(e -> controller.takeScreenshot(""));
     graphicsCheckbox.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            if (controller != null) {
-              controller.setDrawing(graphicsCheckbox.isSelected());
-            }
+        e -> {
+          if (controller != null) {
+            controller.setDrawing(graphicsCheckbox.isSelected());
           }
         });
 
@@ -669,7 +637,7 @@ public class Main {
               }
 
               public void filter() {
-                if (shouldFilter == false) {
+                if (!shouldFilter) {
                   return;
                 }
 
@@ -685,27 +653,24 @@ public class Main {
     final JButton scriptButton = new JButton("Run");
     scriptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     scriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            int selectedRowIndex = scriptTable.getSelectedRow();
-            if (selectedRowIndex > -1) {
-              String scriptName =
-                  (String)
-                      scriptTable
-                          .getModel()
-                          .getValueAt(scriptTable.convertRowIndexToModel(selectedRowIndex), 0);
+        e -> {
+          int selectedRowIndex = scriptTable.getSelectedRow();
+          if (selectedRowIndex > -1) {
+            String scriptName =
+                (String)
+                    scriptTable
+                        .getModel()
+                        .getValueAt(scriptTable.convertRowIndexToModel(selectedRowIndex), 0);
 
-              if (loadAndRunScript(scriptName)) {
-                if (scriptArgs.getText().equals(scriptArgsPlaceholder)) {
-                  scriptArgs.setText("");
-                }
-
-                config.setScriptArguments(scriptArgs.getText().split(" "));
-                isRunning = true;
-                startStopButton.setText("Stop");
-                scriptFrame.setVisible(false);
+            if (loadAndRunScript(scriptName)) {
+              if (scriptArgs.getText().equals(scriptArgsPlaceholder)) {
+                scriptArgs.setText("");
               }
+
+              config.setScriptArguments(scriptArgs.getText().split(" "));
+              isRunning = true;
+              startStopButton.setText("Stop");
+              scriptFrame.setVisible(false);
             }
           }
         });
@@ -727,7 +692,7 @@ public class Main {
       @Override
       public void focusGained(FocusEvent e) {
         if (textField.getText().equals(placeholderText)) {
-          if (disableFilter == true) {
+          if (disableFilter) {
             shouldFilter = false;
           }
 
@@ -740,7 +705,7 @@ public class Main {
       @Override
       public void focusLost(FocusEvent e) {
         if (textField.getText().isEmpty()) {
-          if (disableFilter == true) {
+          if (disableFilter) {
             shouldFilter = false;
           }
 
@@ -817,7 +782,7 @@ public class Main {
     cacheFrame.setLocationRelativeTo(null);
     cacheFrame.setVisible(true);
 
-    while (cacheDirectory.exists() == false) {
+    while (!cacheDirectory.exists()) {
 
       try {
         Thread.sleep(100);

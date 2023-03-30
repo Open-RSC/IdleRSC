@@ -3,9 +3,6 @@ package scripting.idlescript;
 import bot.Main;
 import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -17,39 +14,51 @@ import orsc.ORSCharacter;
  *
  * <p>Start in any bank with knife in inventory
  *
- * <p>todo Add autostart sequence from fastPlate and change variables
- *
- * <p>Author - Kaila
+ * <p>@Author ~ Kaila
+ */
+/*
+ *      todo
+ *          Add autostart sequence from fastPlate and change variables
  */
 public class K_FastBowFletcher extends IdleScript {
-  Controller c = Main.getController();
-  JFrame scriptFrame = null;
-  int logId = -1;
-  int[] logIds = {14, 632, 633, 634, 635, 636};
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int logsInBank = 0;
-  int totalBows = 0;
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int logId = -1;
+  private static final int[] logIds = {
+    14, // normal logs
+    632, // oak logs
+    633, // willow logs
+    634, // maple logs
+    635, // yew logs
+    636 // magic logs
+  };
+  private static int logsInBank = 0;
+  private static int totalBows = 0;
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  public int start(String[] parameters) {
+    c.quitIfAuthentic();
+    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    if (scriptStarted) {
+      c.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " ~ by Kaila");
+      c.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
+      c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
 
-  public int start(String parameters[]) {
-    if (!guiSetup) {
+      if (c.isInBank()) c.closeBank();
+      startTime = System.currentTimeMillis();
+      scriptStart();
+    }
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }
-    if (scriptStarted) {
-      if (c.isInBank() == true) {
-        c.closeBank();
-      }
-      c.quitIfAuthentic();
-      scriptStart();
-    }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
+  private void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount(logId) < 1) {
         if (!c.isInBank()) {
@@ -68,18 +77,22 @@ public class K_FastBowFletcher extends IdleScript {
         bank();
       }
       if (c.getInventoryItemCount(logId) > 0) {
-        c.displayMessage("@gre@Fletching..");
-        c.setStatus("@gre@Fletching..");
-        c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(13), c.getInventoryItemSlotIndex(logId));
-        c.sleep(1200);
-        c.optionAnswer(2);
-        while (c.isBatching()) c.sleep(1000);
+        fletchingScript();
       }
       c.sleep(320);
     }
   }
 
-  public void bank() {
+  private void fletchingScript() {
+    c.displayMessage("@gre@Fletching..");
+    c.setStatus("@gre@Fletching..");
+    c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(13), c.getInventoryItemSlotIndex(logId));
+    c.sleep(1200);
+    c.optionAnswer(2);
+    while (c.isBatching()) c.sleep(1000);
+  }
+
+  private void bank() {
 
     c.setStatus("@gre@Banking..");
     c.displayMessage("@gre@Banking..");
@@ -97,7 +110,6 @@ public class K_FastBowFletcher extends IdleScript {
         c.logout();
         if (!c.isLoggedIn()) {
           c.stop();
-          return;
         }
       }
       if (c.getInventoryItemCount() > 0) {
@@ -123,30 +135,22 @@ public class K_FastBowFletcher extends IdleScript {
   }
 
   // GUI stuff below (icky)
-  public void setupGUI() {
-    JLabel header = new JLabel("Unstrung Longbow Maker - Kaila");
+  private void setupGUI() {
+    JLabel header = new JLabel("Unstrung Longbow Maker ~ Kaila");
     JLabel knifeLabel = new JLabel("Start with Knife in Inv!");
     JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures 29 Items are made per Menu Cycle.");
     JLabel logLabel = new JLabel("Log Type:");
     JComboBox<String> logField =
-        new JComboBox<String>(new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"});
+        new JComboBox<>(new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"});
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            logId = logIds[logField.getSelectedIndex()];
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-            c.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " - by Kaila");
-            c.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
-            c.displayMessage(
-                "@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
-          }
+        e -> {
+          logId = logIds[logField.getSelectedIndex()];
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -160,66 +164,46 @@ public class K_FastBowFletcher extends IdleScript {
     scriptFrame.add(logLabel);
     scriptFrame.add(logField);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-  /** credit to chomp for toTimeToCompletion (from AA_Script) (totalBars, barsInBank, startTime) */
-  public static String toTimeToCompletion(
-      final int processed, final int remaining, final long time) {
-    if (processed == 0) {
-      return "0:00:00";
-    }
-
-    final double seconds = (System.currentTimeMillis() - time) / 1000.0;
-    final double secondsPerItem = seconds / processed;
-    final long ttl = (long) (secondsPerItem * remaining);
-    return String.format("%d:%02d:%02d", ttl / 3600, (ttl % 3600) / 60, (ttl % 60));
-  }
-
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = controller.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
+      long timeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalBows * scale);
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Fast Bow Fletcher @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
-      c.drawString(
-          "@whi@Logs In bank: @yel@" + String.valueOf(this.logsInBank), 350, 62, 0xFFFFFF, 1);
-      c.drawString(
-          "@whi@Longbows Made: @yel@" + String.valueOf(this.totalBows), 350, 76, 0xFFFFFF, 1);
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@Fast Bow Fletcher @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString("@whi@Logs In bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString("@whi@Longbows Made: @yel@" + totalBows, x, y + (14 * 2), 0xFFFFFF, 1);
       c.drawString(
           "@whi@Longbows Per Hr: @yel@" + String.format("%,d", successPerHr) + "@yel@/@whi@hr",
-          350,
-          90,
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Time Remaining: " + toTimeToCompletion(totalBows, logsInBank, startTime),
-          350,
-          104,
+          "@whi@Time Remaining: " + controller.timeToCompletion(totalBows, logsInBank, startTime),
+          x,
+          y + (14 * 4),
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, 350, 104 + 14, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
     }
   }
 }

@@ -1,53 +1,75 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.*;
-import javax.swing.JCheckBox;
 import orsc.ORSCharacter;
 
 /**
- * Ice Dungeon Hob/Pirate Killer - By Kaila
+ * Ice Dungeon Hob/Pirate Killer
  *
- * <p>Start in Fally East bank or In Ice Cave. Sharks IN BANK REQUIRED (pots optional). Use regular
- * Atk/Str Pots Option. Food Withdraw amount Selection.
+ * <p>
  *
- * <p>Author - Kaila
+ * <p>Start in Fally East bank or in Ice Cave.
+ *
+ * <p>Food in bank required. (pots optional).
+ *
+ * <p>Use regular Atk/Str Pots Option.
+ *
+ * <p>Food Withdraw amount Selection.
+ *
+ * @author Kaila
  */
 public class K_AsgarnianPirateHobs extends IdleScript {
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static boolean potUp = false;
 
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  boolean potUp = true;
+  private static boolean isWithinLootzone(int x, int y) {
+    return c.distance(282, 3522, x, y) <= 14; // center of lootzone
+  }
 
-  int totalGuam = 0;
-  int totalMar = 0;
-  int totalTar = 0;
-  int totalHar = 0;
-  int totalRan = 0;
-  int totalIrit = 0;
-  int totalAva = 0;
-  int totalKwuarm = 0;
-  int totalCada = 0;
-  int totalDwarf = 0;
-  int totalLaw = 0;
-  int totalNat = 0;
-  int totalLoop = 0;
-  int totalTooth = 0;
-  int totalLeft = 0;
-  int totalSpear = 0;
-  int totalGems = 0;
-  int totalTrips = 0;
-  int foodWithdrawAmount = 1;
-
-  int[] bones = {20, 413, 604, 814};
-  int[] attackPot = {476, 475, 474}; // reg attack pot
-  int[] strPot = {224, 223, 222}; // reg str pot
-
-  int[] loot = {
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int totalGuam = 0;
+  private static int totalMar = 0;
+  private static int totalTar = 0;
+  private static int totalHar = 0;
+  private static int totalRan = 0;
+  private static int totalIrit = 0;
+  private static int totalAva = 0;
+  private static int totalKwuarm = 0;
+  private static int totalCada = 0;
+  private static int totalDwarf = 0;
+  private static int totalLaw = 0;
+  private static int totalNat = 0;
+  private static int totalLoop = 0;
+  private static int totalTooth = 0;
+  private static int totalLeft = 0;
+  private static int totalSpear = 0;
+  private static int totalGems = 0;
+  private static int totalTrips = 0;
+  private static int foodWithdrawAmount = 1;
+  private static final int[] bones = {
+    20, // regular bones
+    413, // big bones
+    604, // bat bones
+    814 // dragon bones
+  };
+  private static final int[] attackPot = {
+    476, // reg attack pot (1)
+    475, // reg attack pot (2)
+    474 // reg attack pot (3)
+  };
+  private static final int[] strPot = {
+    224, // reg str pot (1)
+    223, // reg str pot (2)
+    222 // reg str pot (3)
+  };
+  private static final int[] loot = {
     526, // tooth half
     527, // loop half
     1277, // shield (left) half
@@ -83,361 +105,328 @@ public class K_AsgarnianPirateHobs extends IdleScript {
     443 // Grimy dwu
   };
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public boolean isWithinLootzone(int x, int y) {
-    return controller.distance(282, 3522, x, y) <= 14; // center of lootzone
-  }
-
-  public int start(String parameters[]) {
-
+  public int start(String[] parameters) {
+    if (parameters[0].toLowerCase().startsWith("auto")) {
+      c.displayMessage("Got Autostart, using 1 Shark, yes pots", 0);
+      System.out.println("Got Autostart, using 1 Shark, yes pots");
+      foodWithdrawAmount = 1;
+      potUp = true;
+      scriptStart();
+    }
     if (scriptStarted) {
-      controller.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
-      controller.displayMessage("@red@Start in Fally East bank with Armor");
-      controller.displayMessage("@red@Sharks IN BANK REQUIRED");
-      if (controller.isInBank()) {
-        controller.closeBank();
+      c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
+      c.displayMessage("@red@Start in Fally East bank with Armor");
+      c.displayMessage("@red@Sharks IN BANK REQUIRED");
+      if (c.isInBank()) {
+        c.closeBank();
       }
-      if (controller.currentY() < 3000) {
+      if (c.currentY() < 3000) {
         bank();
         BankToIce();
-        controller.sleep(1380);
+        c.sleep(1380);
       }
       scriptStart();
-    } else {
-      if (parameters[0].equals("")) {
-        if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-        }
-      } else {
-        try {
-          foodWithdrawAmount = Integer.parseInt(parameters[0]);
-        } catch (Exception e) {
-          System.out.println("Could not parse parameters!");
-          controller.displayMessage("@red@Could not parse parameters!");
-          controller.stop();
-        }
-      }
     }
-    return 1000; // start() must return a int value now.
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
 
       eat();
       buryBones();
 
-      if (controller.getInventoryItemCount() < 30) {
-
-        boolean lootPickedUp = false;
-        for (int lootId : loot) {
-          int[] coords = controller.getNearestItemById(lootId);
-          if (coords != null && this.isWithinLootzone(coords[0], coords[1])) {
-            controller.setStatus("@yel@Looting..");
-            controller.walkTo(coords[0], coords[1]);
-            controller.pickupItem(coords[0], coords[1], lootId, true, true);
-            controller.sleep(618);
-          }
-        }
-        if (lootPickedUp) // we don't want to start to pickup loot then immediately attack a npc
-        continue;
-
-        if (potUp == true) {
-          if (controller.getCurrentStat(controller.getStatId("Attack"))
-              == controller.getBaseStat(controller.getStatId("Attack"))) {
-            if (controller.getInventoryItemCount(attackPot[0]) > 0
-                || controller.getInventoryItemCount(attackPot[1]) > 0
-                || controller.getInventoryItemCount(attackPot[2]) > 0) {
+      if (c.getInventoryItemCount() < 30) {
+        lootScript();
+        if (potUp) {
+          if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
+            if (c.getInventoryItemCount(attackPot[0]) > 0
+                || c.getInventoryItemCount(attackPot[1]) > 0
+                || c.getInventoryItemCount(attackPot[2]) > 0) {
               attackBoost();
             }
           }
-          if (controller.getCurrentStat(controller.getStatId("Strength"))
-              == controller.getBaseStat(controller.getStatId("Strength"))) {
-            if (controller.getInventoryItemCount(strPot[0]) > 0
-                || controller.getInventoryItemCount(strPot[1]) > 0
-                || controller.getInventoryItemCount(strPot[2]) > 0) {
+          if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
+            if (c.getInventoryItemCount(strPot[0]) > 0
+                || c.getInventoryItemCount(strPot[1]) > 0
+                || c.getInventoryItemCount(strPot[2]) > 0) {
               strengthBoost();
             }
           }
         }
-        if (controller.currentX() > 295 && controller.currentY() > 3000) {
-          controller.setStatus("@yel@Too far West, walking back..");
-          controller.walkTo(283, 3521);
-          controller.sleep(1000);
+        if (c.currentX() > 295 && c.currentY() > 3000) {
+          c.setStatus("@yel@Too far West, walking back..");
+          c.walkTo(283, 3521);
+          c.sleep(1000);
         }
-        if (!controller.isInCombat()) {
+        if (!c.isInCombat()) {
           int[] npcIds = {67, 137};
-          ORSCharacter npc = controller.getNearestNpcByIds(npcIds, false);
+          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
           if (npc != null) {
-            controller.setStatus("@yel@Attacking..");
-            // controller.walktoNPC(npc.serverIndex,1);
-            controller.attackNpc(npc.serverIndex);
-            controller.sleep(1000);
+            c.setStatus("@yel@Attacking..");
+            // c.walktoNPC(npc.serverIndex,1);
+            c.attackNpc(npc.serverIndex);
+            c.sleep(1000);
           } else {
-            controller.sleep(1000);
-            if (controller.currentX() != 283 || controller.currentY() != 3521) {
-              controller.walkTo(283, 3521);
-              controller.sleep(1000);
+            c.sleep(1000);
+            if (c.currentX() != 283 || c.currentY() != 3521) {
+              c.walkTo(283, 3521);
+              c.sleep(1000);
             }
           }
         }
-        controller.sleep(320);
+        c.sleep(320);
       }
-      if (controller.getInventoryItemCount() > 29 || controller.getInventoryItemCount(546) == 0) {
-        controller.setStatus("@yel@Banking..");
+      if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@yel@Banking..");
         IceToBank();
         bank();
         BankToIce();
-        controller.sleep(618);
+        c.sleep(618);
       }
     }
   }
 
-  public void bank() {
+  private void lootScript() {
+    for (int lootId : loot) {
+      int[] coords = c.getNearestItemById(lootId);
+      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+        c.setStatus("@yel@Looting..");
+        c.walkTo(coords[0], coords[1]);
+        c.pickupItem(coords[0], coords[1], lootId, true, true);
+        c.sleep(618);
+      }
+    }
+  }
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+  private void bank() {
 
-    if (controller.isInBank()) {
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-      totalGuam = totalGuam + controller.getInventoryItemCount(165);
-      totalMar = totalMar + controller.getInventoryItemCount(435);
-      totalTar = totalTar + controller.getInventoryItemCount(436);
-      totalHar = totalHar + controller.getInventoryItemCount(437);
-      totalRan = totalRan + controller.getInventoryItemCount(438);
-      totalIrit = totalIrit + controller.getInventoryItemCount(439);
-      totalAva = totalAva + controller.getInventoryItemCount(440);
-      totalKwuarm = totalKwuarm + controller.getInventoryItemCount(441);
-      totalCada = totalCada + controller.getInventoryItemCount(442);
-      totalDwarf = totalDwarf + controller.getInventoryItemCount(443);
-      totalLaw = totalLaw + controller.getInventoryItemCount(42);
-      totalNat = totalNat + controller.getInventoryItemCount(40);
-      totalLoop = totalLoop + controller.getInventoryItemCount(527);
-      totalTooth = totalTooth + controller.getInventoryItemCount(526);
-      totalLeft = totalLeft + controller.getInventoryItemCount(1277);
-      totalSpear = totalSpear + controller.getInventoryItemCount(1092);
+    if (c.isInBank()) {
+
+      totalGuam = totalGuam + c.getInventoryItemCount(165);
+      totalMar = totalMar + c.getInventoryItemCount(435);
+      totalTar = totalTar + c.getInventoryItemCount(436);
+      totalHar = totalHar + c.getInventoryItemCount(437);
+      totalRan = totalRan + c.getInventoryItemCount(438);
+      totalIrit = totalIrit + c.getInventoryItemCount(439);
+      totalAva = totalAva + c.getInventoryItemCount(440);
+      totalKwuarm = totalKwuarm + c.getInventoryItemCount(441);
+      totalCada = totalCada + c.getInventoryItemCount(442);
+      totalDwarf = totalDwarf + c.getInventoryItemCount(443);
+      totalLaw = totalLaw + c.getInventoryItemCount(42);
+      totalNat = totalNat + c.getInventoryItemCount(40);
+      totalLoop = totalLoop + c.getInventoryItemCount(527);
+      totalTooth = totalTooth + c.getInventoryItemCount(526);
+      totalLeft = totalLeft + c.getInventoryItemCount(1277);
+      totalSpear = totalSpear + c.getInventoryItemCount(1092);
       totalGems =
           totalGems
-              + controller.getInventoryItemCount(160)
-              + controller.getInventoryItemCount(159)
-              + controller.getInventoryItemCount(158)
-              + controller.getInventoryItemCount(157);
+              + c.getInventoryItemCount(160)
+              + c.getInventoryItemCount(159)
+              + c.getInventoryItemCount(158)
+              + c.getInventoryItemCount(157);
 
-      if (controller.getInventoryItemCount() > 2) {
-        for (int itemId : controller.getInventoryItemIds()) {
+      if (c.getInventoryItemCount() > 2) {
+        for (int itemId : c.getInventoryItemIds()) {
           if (itemId != 476
               && itemId != 475
               && itemId != 224
               && itemId != 223) { // dont deposit partial potions!
-            controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+            c.depositItem(itemId, c.getInventoryItemCount(itemId));
           }
         }
       }
-      controller.sleep(640);
-      if (potUp == true) {
-        if (controller.getInventoryItemCount(attackPot[0]) < 1
-            && controller.getInventoryItemCount(attackPot[1]) < 1
-            && controller.getInventoryItemCount(attackPot[2]) < 1) { // withdraw 10 shark if needed
-          controller.withdrawItem(attackPot[2], 1);
-          controller.sleep(340);
+      c.sleep(640);
+      if (potUp) {
+        if (c.getInventoryItemCount(attackPot[0]) < 1
+            && c.getInventoryItemCount(attackPot[1]) < 1
+            && c.getInventoryItemCount(attackPot[2]) < 1) { // withdraw 10 shark if needed
+          c.withdrawItem(attackPot[2], 1);
+          c.sleep(340);
         }
-        if (controller.getInventoryItemCount(strPot[0]) < 1
-            && controller.getInventoryItemCount(strPot[1]) < 1
-            && controller.getInventoryItemCount(strPot[2]) < 1) { // withdraw 10 shark if needed
-          controller.withdrawItem(strPot[2], 1);
-          controller.sleep(340);
-        }
-      }
-      if (controller.getInventoryItemCount(546) < foodWithdrawAmount) { // withdraw 20 shark
-        controller.withdrawItem(546, foodWithdrawAmount - controller.getInventoryItemCount(546));
-        controller.sleep(340);
-      }
-      if (controller.getBankItemCount(546) == 0) {
-        controller.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
-        controller.setAutoLogin(false);
-        controller.logout();
-        if (!controller.isLoggedIn()) {
-          controller.stop();
-          return;
+        if (c.getInventoryItemCount(strPot[0]) < 1
+            && c.getInventoryItemCount(strPot[1]) < 1
+            && c.getInventoryItemCount(strPot[2]) < 1) { // withdraw 10 shark if needed
+          c.withdrawItem(strPot[2], 1);
+          c.sleep(340);
         }
       }
-      controller.closeBank();
-      controller.sleep(640);
+      if (c.getInventoryItemCount(546) < foodWithdrawAmount) { // withdraw 20 shark
+        c.withdrawItem(546, foodWithdrawAmount - c.getInventoryItemCount(546));
+        c.sleep(340);
+      }
+      if (c.getBankItemCount(546) == 0) {
+        c.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
+        c.setAutoLogin(false);
+        c.logout();
+        if (!c.isLoggedIn()) {
+          c.stop();
+        }
+      }
+      c.closeBank();
+      c.sleep(640);
     }
   }
 
-  public void buryBones() {
-    if (!controller.isInCombat()) {
+  private void buryBones() {
+    if (!c.isInCombat()) {
       for (int id : bones) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.setStatus("@yel@Burying..");
-          controller.itemCommand(id);
+        if (c.getInventoryItemCount(id) > 0) {
+          c.setStatus("@yel@Burying..");
+          c.itemCommand(id);
 
-          controller.sleep(618);
+          c.sleep(618);
           buryBones();
         }
       }
     }
   }
 
-  public void eat() {
-    int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
+  private void eat() {
+    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-    if (controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
 
       leaveCombat();
-      controller.setStatus("@red@Eating..");
+      c.setStatus("@red@Eating..");
 
       boolean ate = false;
 
-      for (int id : controller.getFoodIds()) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.itemCommand(id);
-          controller.sleep(700);
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.itemCommand(id);
+          c.sleep(700);
           ate = true;
           break;
         }
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-        controller.setStatus("@yel@Banking..");
+        c.setStatus("@yel@Banking..");
         IceToBank();
         bank();
         BankToIce();
-        controller.sleep(618);
+        c.sleep(618);
       }
     }
   }
 
-  public void attackBoost() {
+  private void attackBoost() {
     leaveCombat();
-    if (controller.getInventoryItemCount(attackPot[0]) > 0) {
-      controller.itemCommand(attackPot[0]);
-      controller.sleep(320);
-      return;
-    }
-    if (controller.getInventoryItemCount(attackPot[1]) > 0) {
-      controller.itemCommand(attackPot[1]);
-      controller.sleep(320);
-      return;
-    }
-    if (controller.getInventoryItemCount(attackPot[2]) > 0) {
-      controller.itemCommand(attackPot[2]);
-      controller.sleep(320);
+    if (c.getInventoryItemCount(attackPot[0]) > 0) {
+      c.itemCommand(attackPot[0]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(attackPot[1]) > 0) {
+      c.itemCommand(attackPot[1]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(attackPot[2]) > 0) {
+      c.itemCommand(attackPot[2]);
+      c.sleep(320);
     }
   }
 
-  public void strengthBoost() {
+  private void strengthBoost() {
     leaveCombat();
-    if (controller.getInventoryItemCount(strPot[0]) > 0) {
-      controller.itemCommand(strPot[0]);
-      controller.sleep(320);
-      return;
-    }
-    if (controller.getInventoryItemCount(strPot[1]) > 0) {
-      controller.itemCommand(strPot[1]);
-      controller.sleep(320);
-      return;
-    }
-    if (controller.getInventoryItemCount(strPot[2]) > 0) {
-      controller.itemCommand(strPot[2]);
-      controller.sleep(320);
+    if (c.getInventoryItemCount(strPot[0]) > 0) {
+      c.itemCommand(strPot[0]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(strPot[1]) > 0) {
+      c.itemCommand(strPot[1]);
+      c.sleep(320);
+    } else if (c.getInventoryItemCount(strPot[2]) > 0) {
+      c.itemCommand(strPot[2]);
+      c.sleep(320);
     }
   }
 
-  public void IceToBank() {
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(280, 3521);
-    controller.walkTo(279, 3531);
-    controller.walkTo(279, 3540);
-    controller.walkTo(285, 3544);
-    controller.atObject(285, 3543); // go up ladder
-    controller.sleep(1000);
-    controller.walkTo(287, 711);
-    controller.walkTo(287, 694);
-    controller.walkTo(287, 680);
-    controller.walkTo(287, 673);
-    controller.walkTo(287, 665);
-    controller.walkTo(287, 652);
-    controller.walkTo(289, 650);
-    controller.walkTo(288, 649);
-    controller.walkTo(288, 639);
-    controller.walkTo(288, 629);
-    controller.walkTo(288, 619);
-    controller.walkTo(288, 609);
-    controller.walkTo(290, 607);
-    controller.walkTo(290, 597);
-    controller.walkTo(290, 587);
-    controller.walkTo(290, 577);
-    controller.walkTo(290, 575);
-    controller.walkTo(286, 571);
-    controller.sleep(640);
+  private void IceToBank() {
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(280, 3521);
+    c.walkTo(279, 3531);
+    c.walkTo(279, 3540);
+    c.walkTo(285, 3544);
+    c.atObject(285, 3543); // go up ladder
+    c.sleep(1000);
+    c.walkTo(287, 711);
+    c.walkTo(287, 694);
+    c.walkTo(287, 680);
+    c.walkTo(287, 673);
+    c.walkTo(287, 665);
+    c.walkTo(287, 652);
+    c.walkTo(289, 650);
+    c.walkTo(288, 649);
+    c.walkTo(288, 639);
+    c.walkTo(288, 629);
+    c.walkTo(288, 619);
+    c.walkTo(288, 609);
+    c.walkTo(290, 607);
+    c.walkTo(290, 597);
+    c.walkTo(290, 587);
+    c.walkTo(290, 577);
+    c.walkTo(290, 575);
+    c.walkTo(286, 571);
+    c.sleep(640);
     totalTrips = totalTrips + 1;
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void BankToIce() {
-    controller.setStatus("@gre@Walking to Ice Dungeon..");
-    controller.walkTo(287, 571);
-    controller.walkTo(290, 575);
-    controller.walkTo(290, 577);
-    controller.walkTo(290, 587);
-    controller.walkTo(290, 597);
-    controller.walkTo(290, 607);
-    controller.walkTo(288, 609);
-    controller.walkTo(288, 619);
-    controller.walkTo(288, 629);
-    controller.walkTo(288, 639);
-    controller.walkTo(288, 649);
-    controller.walkTo(289, 650);
-    controller.walkTo(287, 652);
-    controller.walkTo(287, 665);
-    // add pathing??
-    controller.walkTo(287, 673);
-    controller.walkTo(287, 680);
-    controller.walkTo(287, 694);
-    controller.walkTo(287, 711);
-    controller.walkTo(285, 712);
-    controller.atObject(285, 711); // go down ladder
-    controller.sleep(1000);
-    controller.walkTo(282, 3543);
-    controller.walkTo(285, 3544);
-    controller.walkTo(279, 3540);
-    controller.walkTo(279, 3531);
-    controller.walkTo(280, 3521);
-    controller.setStatus("@gre@Done Walking..");
+  private void BankToIce() {
+    c.setStatus("@gre@Walking to Ice Dungeon..");
+    c.walkTo(287, 571);
+    c.walkTo(290, 575);
+    c.walkTo(290, 577);
+    c.walkTo(290, 587);
+    c.walkTo(290, 597);
+    c.walkTo(290, 607);
+    c.walkTo(288, 609);
+    c.walkTo(288, 619);
+    c.walkTo(288, 629);
+    c.walkTo(288, 639);
+    c.walkTo(288, 649);
+    c.walkTo(289, 650);
+    c.walkTo(287, 652);
+    c.walkTo(287, 665);
+    c.walkTo(287, 673);
+    c.walkTo(287, 680);
+    c.walkTo(287, 694);
+    c.walkTo(287, 711);
+    c.walkTo(285, 712);
+    c.atObject(285, 711); // go down ladder
+    c.sleep(1000);
+    c.walkTo(282, 3543);
+    c.walkTo(285, 3544);
+    c.walkTo(279, 3540);
+    c.walkTo(279, 3531);
+    c.walkTo(280, 3521);
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void leaveCombat() {
+  private void leaveCombat() {
     for (int i = 1; i <= 15; i++) {
-      if (controller.isInCombat()) {
-        controller.setStatus("@red@Leaving combat..");
-        controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-        controller.sleep(600);
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat..");
+        c.walkTo(c.currentX(), c.currentY(), 0, true);
+        c.sleep(600);
       } else {
-        controller.setStatus("@red@Done Leaving combat..");
+        c.setStatus("@red@Done Leaving combat..");
         break;
       }
-      controller.sleep(10);
+      c.sleep(10);
     }
   }
 
   // GUI stuff below (icky)
 
-  public void setValuesFromGUI(JCheckBox potUpCheckbox) {
-    if (potUpCheckbox.isSelected()) {
-      potUp = true;
-    } else {
-      potUp = false;
-    }
-  }
-
-  public void setupGUI() {
-    JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer - By Kaila");
+  private void setupGUI() {
+    JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
     JLabel label2 = new JLabel("Sharks IN BANK REQUIRED (pots optional)");
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
@@ -447,20 +436,17 @@ public class K_AsgarnianPirateHobs extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            if (!foodWithdrawAmountField.getText().equals(""))
-              foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-            setValuesFromGUI(potUpCheckbox);
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+        e -> {
+          if (!foodWithdrawAmountField.getText().equals(""))
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          potUp = potUpCheckbox.isSelected();
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -472,29 +458,18 @@ public class K_AsgarnianPirateHobs extends IdleScript {
     scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(blankLabel);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
       int tarSuccessPerHr = 0;
@@ -509,9 +484,10 @@ public class K_AsgarnianPirateHobs extends IdleScript {
       int natSuccessPerHr = 0;
       int GemsSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         guamSuccessPerHr = (int) (totalGuam * scale);
         marSuccessPerHr = (int) (totalMar * scale);
@@ -532,10 +508,10 @@ public class K_AsgarnianPirateHobs extends IdleScript {
         // divide by zero
       }
 
-      controller.drawString("@red@Asgarnian Pirate Hobs @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawString("@red@Asgarnian Pirate Hobs @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Guams: @gre@"
-              + String.valueOf(this.totalGuam)
+              + totalGuam
               + "@yel@ (@whi@"
               + String.format("%,d", guamSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -543,9 +519,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           62,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Marrentills: @gre@"
-              + String.valueOf(this.totalMar)
+              + totalMar
               + "@yel@ (@whi@"
               + String.format("%,d", marSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -553,9 +529,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           76,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Tarromins: @gre@"
-              + String.valueOf(this.totalTar)
+              + totalTar
               + "@yel@ (@whi@"
               + String.format("%,d", tarSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -563,9 +539,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           90,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Harralanders: @gre@"
-              + String.valueOf(this.totalHar)
+              + totalHar
               + "@yel@ (@whi@"
               + String.format("%,d", harSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -573,9 +549,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           104,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Ranarrs: @gre@"
-              + String.valueOf(this.totalRan)
+              + totalRan
               + "@yel@ (@whi@"
               + String.format("%,d", ranSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -583,9 +559,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           118,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Irit Herbs: @gre@"
-              + String.valueOf(this.totalIrit)
+              + totalIrit
               + "@yel@ (@whi@"
               + String.format("%,d", iritSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -593,9 +569,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           132,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Avantoes: @gre@"
-              + String.valueOf(this.totalAva)
+              + totalAva
               + "@yel@ (@whi@"
               + String.format("%,d", avaSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -603,9 +579,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           146,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Kwuarms: @gre@"
-              + String.valueOf(this.totalKwuarm)
+              + totalKwuarm
               + "@yel@ (@whi@"
               + String.format("%,d", kwuSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -613,9 +589,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           160,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Cadantines: @gre@"
-              + String.valueOf(this.totalCada)
+              + totalCada
               + "@yel@ (@whi@"
               + String.format("%,d", cadaSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -623,9 +599,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           174,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Dwarfs: @gre@"
-              + String.valueOf(this.totalDwarf)
+              + totalDwarf
               + "@yel@ (@whi@"
               + String.format("%,d", dwarSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -633,9 +609,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           188,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Laws: @gre@"
-              + String.valueOf(this.totalLaw)
+              + totalLaw
               + "@yel@ (@whi@"
               + String.format("%,d", lawSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -643,9 +619,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           202,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Nats: @gre@"
-              + String.valueOf(this.totalNat)
+              + totalNat
               + "@yel@ (@whi@"
               + String.format("%,d", natSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -653,9 +629,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           216,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Gems: @gre@"
-              + String.valueOf(this.totalGems)
+              + totalGems
               + "@yel@ (@whi@"
               + String.format("%,d", GemsSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -663,27 +639,21 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           230,
           0xFFFFFF,
           1);
-      controller.drawString(
-          "@whi@Tooth: @gre@"
-              + String.valueOf(this.totalTooth)
-              + "@yel@ / @whi@Loop: @gre@"
-              + String.valueOf(this.totalLoop),
+      c.drawString(
+          "@whi@Tooth: @gre@" + totalTooth + "@yel@ / @whi@Loop: @gre@" + totalLoop,
           350,
           244,
           0xFFFFFF,
           1);
-      controller.drawString(
-          "@whi@R.Spear: @gre@"
-              + String.valueOf(this.totalSpear)
-              + "@yel@ / @whi@Shield Half: @gre@"
-              + String.valueOf(this.totalLeft),
+      c.drawString(
+          "@whi@R.Spear: @gre@" + totalSpear + "@yel@ / @whi@Shield Half: @gre@" + totalLeft,
           350,
           258,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -691,7 +661,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
           272,
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 350, 286, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, 350, 286, 0xFFFFFF, 1);
     }
   }
 }

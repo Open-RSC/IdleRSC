@@ -12,26 +12,26 @@ public final class S_EdgevilleGiants extends Script {
 
   // Item IDs to pick up and bank
   // Copied from the other script
-  private int[] pickup = {10, 31, 32, 33, 35, 38, 40, 41, 42, 46, 220, 413, 526, 527, 1277};
+  private final int[] pickup = {10, 31, 32, 33, 35, 38, 40, 41, 42, 46, 220, 413, 526, 527, 1277};
 
   // Food to withdraw
-  private int[] food = {
+  private final int[] food = {
     // Lobs, then swords, then sharks. I got a lot of lobs.
     373, 370, 546, 367
   };
 
   // HP level to eat at
-  private int eat_at = 30;
+  private final int eat_at = 30;
 
   // Fatigue % to sleep at
-  private int sleep_at = 95;
+  private final int sleep_at = 95;
   private int combat_style;
 
   // Food count to withdraw
-  private int w_food_count = 3;
+  private final int w_food_count = 3;
 
   // Bank on full inv?
-  private boolean bank_full = true;
+  private final boolean bank_full = true;
 
   // Bury or bank bones?
   private boolean bury;
@@ -57,7 +57,7 @@ public final class S_EdgevilleGiants extends Script {
   private long menu_time;
   private long move_time;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path path_to_npc;
   private PathWalker.Path path_from_npc;
   private PathWalker.Path path_to_bank;

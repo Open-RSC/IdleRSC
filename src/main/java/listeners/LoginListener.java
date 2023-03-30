@@ -12,7 +12,7 @@ import controller.Controller;
  */
 public class LoginListener implements Runnable {
 
-  private Controller controller;
+  private final Controller controller;
 
   public LoginListener(Controller _controller) {
     controller = _controller;
@@ -28,17 +28,7 @@ public class LoginListener implements Runnable {
             controller.log("Logged out! Logging back in...");
             controller.login();
 
-            int ticks = 0;
-            while (ticks < 50) {
-              if (controller.isLoggedIn()) {
-                controller.hideWelcomeMessage();
-                break;
-              }
-              controller.sleep(100);
-              ticks++;
-            }
-
-            /**
+            /*
              * Math.random returns value between 0.0 and 1.0
              *
              * <p>for the following: (Math.random() * (30000)) + 30000; thus Max Sleep was 60

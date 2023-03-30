@@ -1,9 +1,9 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
+import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,66 +17,74 @@ import javax.swing.JLabel;
  * <p>Author - Kaila
  */
 public class K_SkelliCoal extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int coalInBank = 0;
-  int totalCoal = 0;
-  int totalSap = 0;
-  int totalEme = 0;
-  int totalRub = 0;
-  int totalDia = 0;
-  int totalTrips = 0;
+  private static final Controller c = Main.getController();
+  private static String isMining = "none";
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static int coalInBank = 0;
+  private static int totalCoal = 0;
+  private static int totalSap = 0;
+  private static int totalEme = 0;
+  private static int totalRub = 0;
+  private static int totalDia = 0;
+  private static int totalTrips = 0;
+  private static final Integer[] currentOre = {0, 0};
+  private static final int[] coalIDs = {110, 111};
 
-  Integer currentOre[] = {0, 0};
-  int coalIDs[] = {110, 111};
-  int oreIDs[] = {155};
-  int gemIDs[] = {157, 158, 159, 160};
-  String isMining = "none";
+  private static boolean coalAvailable() {
+    return c.getNearestObjectByIds(coalIDs) != null;
+  }
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public void startSequence() {
-    controller.displayMessage("@red@Skeleton Coal Miner- By Kaila");
-    controller.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
-    if (controller.isInBank() == true) {
-      controller.closeBank();
+  private static boolean rockEmpty() {
+    if (currentOre[0] != 0) {
+      return c.getObjectAtCoord(currentOre[0], currentOre[1]) == 98;
+    } else {
+      return true;
     }
-    if (controller.currentY() > 400) {
+  }
+
+  private void startSequence() {
+    c.displayMessage("@red@Skeleton Coal Miner- By Kaila");
+    c.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
+    if (c.isInBank()) {
+      c.closeBank();
+    }
+    if (c.currentY() > 400) {
       bank();
       eat();
       bankToSkeli();
       eat();
-      controller.sleep(1380);
+      c.sleep(1380);
     }
   }
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
-        controller.displayMessage("Auto-starting, Mining Skelli Coal", 0);
+        c.displayMessage("Auto-starting, Mining Skelli Coal", 0);
         System.out.println("Auto-starting, Mining Skelli Coal");
         parseVariables();
         startSequence();
         scriptStart();
       }
     }
-    if (!guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
     if (scriptStarted) {
       startSequence();
       scriptStart();
     }
-    return 1000; // start() must return a int value now.
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount()
-          == 30) { // controller.getInventoryItemCount(546) == 0 ||
+  private void scriptStart() {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount() == 30) { // c.getInventoryItemCount(546) == 0 ||
 
         goToBank();
 
@@ -86,244 +94,211 @@ public class K_SkelliCoal extends IdleScript {
 
         leaveCombat();
 
-        if (rockEmpty() || !controller.isBatching()) {
+        if (rockEmpty() || !c.isBatching()) {
           isMining = "none";
           currentOre[0] = 0;
           currentOre[1] = 0;
-          controller.sleep(640);
-        } else if (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-          controller.sleep(1000);
+          c.sleep(640);
+        } else if (c.isBatching() && c.getInventoryItemCount() < 30) {
+          c.sleep(1000);
         }
 
-        controller.setStatus("@yel@Mining..");
+        c.setStatus("@yel@Mining..");
 
-        if (!controller.isBatching() && isMining == "none" && rockEmpty()) {
+        if (!c.isBatching() && Objects.equals(isMining, "none") && rockEmpty()) {
           if (coalAvailable()) {
-            mine("coal");
+            int[] oreCoords = c.getNearestObjectByIds(coalIDs);
+            if (oreCoords != null) {
+              isMining = "coal";
+              c.atObject(oreCoords[0], oreCoords[1]);
+              currentOre[0] = oreCoords[0];
+              currentOre[1] = oreCoords[1];
+            }
           }
-          controller.sleep(1280);
-        } else if (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-          controller.sleep(1000);
+          c.sleep(1280);
+        } else if (c.isBatching() && c.getInventoryItemCount() < 30) {
+          c.sleep(1000);
         }
       }
     }
   }
 
-  public void mine(String i) {
-    if (i == "coal") {
-      int oreCoords[] = controller.getNearestObjectByIds(coalIDs);
-      if (oreCoords != null) {
-        isMining = "coal";
-        controller.atObject(oreCoords[0], oreCoords[1]);
-        currentOre[0] = oreCoords[0];
-        currentOre[1] = oreCoords[1];
-      }
-    }
-    controller.sleep(1920);
-  }
+  private void bank() {
 
-  public boolean coalAvailable() {
-    return controller.getNearestObjectByIds(coalIDs) != null;
-  }
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-  public boolean rockEmpty() {
-    if (currentOre[0] != 0) {
-      return controller.getObjectAtCoord(currentOre[0], currentOre[1]) == 98;
-    } else {
-      return true;
-    }
-  }
+    if (c.isInBank()) {
 
-  public void bank() {
+      totalCoal = totalCoal + c.getInventoryItemCount(155);
+      totalSap = totalSap + c.getInventoryItemCount(160);
+      totalEme = totalEme + c.getInventoryItemCount(159);
+      totalRub = totalRub + c.getInventoryItemCount(158);
+      totalDia = totalDia + c.getInventoryItemCount(157);
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
-
-    if (controller.isInBank()) {
-
-      totalCoal = totalCoal + controller.getInventoryItemCount(155);
-      totalSap = totalSap + controller.getInventoryItemCount(160);
-      totalEme = totalEme + controller.getInventoryItemCount(159);
-      totalRub = totalRub + controller.getInventoryItemCount(158);
-      totalDia = totalDia + controller.getInventoryItemCount(157);
-
-      if (controller.getInventoryItemCount() > 0) {
-        for (int itemId : controller.getInventoryItemIds()) {
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+      if (c.getInventoryItemCount() > 0) {
+        for (int itemId : c.getInventoryItemIds()) {
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
-        controller.sleep(1280); // increased sleep here to prevent double banking
+        c.sleep(1280); // increased sleep here to prevent double banking
       }
-      if (controller.getInventoryItemCount(546) < 1) { // withdraw 20 shark
-        controller.withdrawItem(546, 1);
-        controller.sleep(340);
+      if (c.getInventoryItemCount(546) < 1) { // withdraw 20 shark
+        c.withdrawItem(546, 1);
+        c.sleep(340);
       }
-      coalInBank = controller.getBankItemCount(155);
+      coalInBank = c.getBankItemCount(155);
 
-      controller.closeBank();
-      controller.sleep(640);
+      c.closeBank();
+      c.sleep(640);
     }
   }
 
-  public void eat() {
+  private void eat() {
 
-    int eatLvl = controller.getBaseStat(controller.getStatId("Hits")) - 20;
+    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-    if (controller.getCurrentStat(controller.getStatId("Hits")) < eatLvl) {
+    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
 
       leaveCombat();
 
-      controller.setStatus("@red@Eating..");
+      c.setStatus("@red@Eating..");
 
       boolean ate = false;
 
-      for (int id : controller.getFoodIds()) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.itemCommand(id);
-          controller.sleep(700);
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.itemCommand(id);
+          c.sleep(700);
           ate = true;
           break;
         }
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-        controller.setStatus("@red@We've ran out of Food! Teleporting Away!.");
+        c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
         SkeliToBank();
-        controller.sleep(100);
+        c.sleep(100);
 
-        controller.walkTo(120, 644);
-        controller.atObject(119, 642);
-        controller.walkTo(217, 447);
-        controller.sleep(308);
-        controller.setAutoLogin(false);
-        controller.logout();
-        controller.sleep(1000);
+        c.walkTo(120, 644);
+        c.atObject(119, 642);
+        c.walkTo(217, 447);
+        c.sleep(308);
+        c.setAutoLogin(false);
+        c.logout();
+        c.sleep(1000);
 
-        if (!controller.isLoggedIn()) {
-          controller.stop();
-          controller.logout();
-          return;
+        if (!c.isLoggedIn()) {
+          c.stop();
+          c.logout();
         }
       }
     }
   }
 
-  public void goToBank() {
+  private void goToBank() {
     isMining = "none";
     currentOre[0] = 0;
     currentOre[1] = 0;
-    controller.setStatus("@yel@Banking..");
+    c.setStatus("@yel@Banking..");
     SkeliToBank();
     bank();
     bankToSkeli();
-    controller.sleep(618);
+    c.sleep(618);
   }
 
-  public void SkeliToBank() {
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(269, 380);
-    controller.walkTo(265, 384);
-    controller.walkTo(259, 385);
-    controller.walkTo(249, 395);
-    controller.walkTo(247, 399);
-    controller.walkTo(234, 412);
-    controller.walkTo(224, 423);
-    controller.walkTo(220, 427);
-    controller.walkTo(220, 441);
-    controller.walkTo(220, 445);
-    controller.walkTo(217, 448);
+  private void SkeliToBank() {
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(269, 380);
+    c.walkTo(265, 384);
+    c.walkTo(259, 385);
+    c.walkTo(249, 395);
+    c.walkTo(247, 399);
+    c.walkTo(234, 412);
+    c.walkTo(224, 423);
+    c.walkTo(220, 427);
+    c.walkTo(220, 441);
+    c.walkTo(220, 445);
+    c.walkTo(217, 448);
     totalTrips = totalTrips + 1;
-    controller.setStatus("@gre@Done Walking to Bank...");
+    c.setStatus("@gre@Done Walking to Bank...");
   }
 
-  public void bankToSkeli() {
-    controller.setStatus("@gre@Walking to Skelli " + "Mine..");
-    controller.walkTo(217, 448);
-    controller.walkTo(220, 445);
-    controller.walkTo(220, 441);
-    controller.walkTo(220, 427);
-    controller.walkTo(224, 423);
-    controller.walkTo(234, 412);
-    controller.walkTo(247, 399);
-    controller.walkTo(249, 395);
-    controller.walkTo(259, 385);
-    controller.walkTo(265, 384);
-    controller.walkTo(269, 380);
-    controller.setStatus("@gre@Done Walking..");
+  private void bankToSkeli() {
+    c.setStatus("@gre@Walking to Skelli " + "Mine..");
+    c.walkTo(217, 448);
+    c.walkTo(220, 445);
+    c.walkTo(220, 441);
+    c.walkTo(220, 427);
+    c.walkTo(224, 423);
+    c.walkTo(234, 412);
+    c.walkTo(247, 399);
+    c.walkTo(249, 395);
+    c.walkTo(259, 385);
+    c.walkTo(265, 384);
+    c.walkTo(269, 380);
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void leaveCombat() {
+  private void leaveCombat() {
     for (int i = 1; i <= 15; i++) {
-      if (controller.isInCombat()) {
-        controller.setStatus("@red@Leaving combat..");
-        controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-        controller.sleep(600);
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat..");
+        c.walkTo(c.currentX(), c.currentY(), 0, true);
+        c.sleep(600);
       }
-      controller.sleep(50);
+      c.sleep(50);
     }
   }
 
   // GUI stuff below (icky)
 
-  public void parseVariables() {
+  private void parseVariables() {
     startTime = System.currentTimeMillis();
   }
 
-  public void setupGUI() {
-    JLabel header = new JLabel("Skeleton Coal Miner - By Kaila");
+  private void setupGUI() {
+    JLabel header = new JLabel("Skeleton Coal Miner ~ By Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            parseVariables();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          parseVariables();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int coalSuccessPerHr = 0;
       int sapSuccessPerHr = 0;
       int emeSuccessPerHr = 0;
       int rubSuccessPerHr = 0;
       int diaSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         coalSuccessPerHr = (int) (totalCoal * scale);
         sapSuccessPerHr = (int) (totalSap * scale);
@@ -335,70 +310,64 @@ public class K_SkelliCoal extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@Skeli Miner @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@Skeli Miner  @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Coal Mined: @gre@"
-              + String.valueOf(this.totalCoal)
+              + totalCoal
               + "@yel@ (@whi@"
               + String.format("%,d", coalSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          370,
-          62,
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Coal in Bank: @gre@"
+              + coalInBank,
+          x,
+          y + 14,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Sapphires: @gre@"
-              + String.valueOf(this.totalSap)
+              + totalSap
               + "@yel@ (@whi@"
               + String.format("%,d", sapSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          370,
-          76,
-          0xFFFFFF,
-          1);
-      controller.drawString(
-          "@whi@Emeralds: @gre@"
-              + String.valueOf(this.totalEme)
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Emeralds: @gre@"
+              + totalEme
               + "@yel@ (@whi@"
               + String.format("%,d", emeSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          370,
-          90,
+          x,
+          y + (14 * 2),
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Rubys: @gre@"
-              + String.valueOf(this.totalRub)
+              + totalRub
               + "@yel@ (@whi@"
               + String.format("%,d", rubSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          370,
-          104,
-          0xFFFFFF,
-          1);
-      controller.drawString(
-          "@whi@Diamonds: @gre@"
-              + String.valueOf(this.totalDia)
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Diamonds: @gre@"
+              + totalDia
               + "@yel@ (@whi@"
               + String.format("%,d", diaSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          370,
-          118,
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      controller.drawString(
-          "@whi@Coal in Bank: @gre@" + String.valueOf(this.coalInBank), 370, 132, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          370,
-          146,
+          x,
+          y + (14 * 4),
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 370, 160, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
     }
   }
 }

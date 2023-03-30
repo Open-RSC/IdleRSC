@@ -1,29 +1,27 @@
 package scripting.apos;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import javax.swing.*;
 
 public class Abyte0_TraverlyShop extends Abyte0_Script {
   int fMode = 2;
 
-  int idVials = 465;
-  int idEyes = 270;
+  final int idVials = 465;
+  final int idEyes = 270;
 
   int vialsToBuy = 0;
   int eyesToBuy = 0;
 
-  int idVialsWater = 464;
+  final int idVialsWater = 464;
 
-  String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
-  int[] fModeIdList = {2, 3, 1, 0};
+  final String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
+  final int[] fModeIdList = {2, 3, 1, 0};
 
-  String[] cptVialsName = {"0", "5", "10", "14", "15", "19", "24", "29"};
-  int[] cptVialsList = {0, 5, 10, 14, 15, 19, 24, 29};
+  final String[] cptVialsName = {"0", "5", "10", "14", "15", "19", "24", "29"};
+  final int[] cptVialsList = {0, 5, 10, 14, 15, 19, 24, 29};
 
-  String[] cptEyesName = {"0", "5", "10", "14", "15", "19", "24", "29"};
-  int[] cptEyesList = {0, 5, 10, 14, 15, 19, 24, 29};
+  final String[] cptEyesName = {"0", "5", "10", "14", "15", "19", "24", "29"};
+  final int[] cptEyesList = {0, 5, 10, 14, 15, 19, 24, 29};
 
   public Abyte0_TraverlyShop(String e) {
     super(e);
@@ -164,7 +162,7 @@ public class Abyte0_TraverlyShop extends Abyte0_Script {
         // if we not in shop we should talk jatix
         if (!shopWindowOpen()) {
 
-          int shopNpc[] = getNpcByIdNotTalk(new int[] {230});
+          int[] shopNpc = getNpcByIdNotTalk(230);
           if (shopNpc[0] != -1) {
             talkToNpc(shopNpc[0]);
 
@@ -326,7 +324,7 @@ public class Abyte0_TraverlyShop extends Abyte0_Script {
           }
 
           if (!isBanking()) {
-            int banker[] = getNpcByIdNotTalk(new int[] {95});
+            int[] banker = getNpcByIdNotTalk(95);
             if (banker[0] != -1 && !isBanking()) {
               talkToNpc(banker[0]);
               return random(2000, 3000);

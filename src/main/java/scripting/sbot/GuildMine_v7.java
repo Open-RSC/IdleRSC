@@ -41,9 +41,7 @@ public class GuildMine_v7 extends Script {
     if (GetX() >= x1) {
       if (GetX() <= x2) {
         if (GetY() >= y1) {
-          if (GetY() <= y2) {
-            return true;
-          } else return false;
+          return GetY() <= y2;
         } else return false;
       } else return false;
     } else return false;
@@ -79,7 +77,7 @@ public class GuildMine_v7 extends Script {
     }
   }
 
-  public void start(String s, String as[]) {
+  public void start(String s, String[] as) {
     DisplayMessage("@red@GuildMine @ora@>> @whi@Started!", 3);
     while (Running()) {
       while (InvCount() > 2 && GetY() < 3000) {
@@ -161,8 +159,8 @@ public class GuildMine_v7 extends Script {
         }
       }
       while (InvCount() < 30 && GetY() > 3000 && Running()) {
-        int RT[] = {111, 110};
-        int RC[] = GetNearestObject(RT);
+        int[] RT = {111, 110};
+        int[] RC = GetNearestObject(RT);
         if (Fatigue() < 93 && ObjectAt(RC[0], RC[1]) >= 110) {
           BreakWait = false;
           StartedMining = false;
@@ -175,8 +173,8 @@ public class GuildMine_v7 extends Script {
             long l = System.currentTimeMillis();
             while (!BreakWait && System.currentTimeMillis() - l <= 12000) {
               Wait(100);
-              int RT2[] = {111, 110};
-              int RC2[] = GetNearestObject(RT);
+              int[] RT2 = {111, 110};
+              int[] RC2 = GetNearestObject(RT);
               if (RC[0] != RC2[0] && RC[1] != RC2[1]) {
                 BreakWait = true;
               }
@@ -214,8 +212,8 @@ public class GuildMine_v7 extends Script {
                 CurrentX = GetX();
                 CurrentY = GetY();
               }
-              int RT2[] = {111, 110};
-              int RC2[] = GetNearestObject(RT);
+              int[] RT2 = {111, 110};
+              int[] RC2 = GetNearestObject(RT);
               if (RC[0] != RC2[0] && RC[1] != RC2[1]) {
                 BreakWait = true;
               }

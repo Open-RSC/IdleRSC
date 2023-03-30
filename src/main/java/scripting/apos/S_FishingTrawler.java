@@ -24,10 +24,10 @@ import javax.swing.BoxLayout;
 public final class S_FishingTrawler extends Script implements ActionListener {
 
   private static final class TrawlerLoot {
-    private String name;
-    private int id;
+    private final String name;
+    private final int id;
     private int banked_count;
-    private Checkbox drop_cb;
+    private final Checkbox drop_cb;
 
     TrawlerLoot(String name, int id, boolean drop) {
       this.name = name;
@@ -110,7 +110,7 @@ public final class S_FishingTrawler extends Script implements ActionListener {
   // if the catch nets in the docks have been checked this round
   private boolean[] cnets_checked;
 
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path to_bank;
   private PathWalker.Path from_bank;
   private PathWalker.Path tele_to_bank;
@@ -709,8 +709,7 @@ public final class S_FishingTrawler extends Script implements ActionListener {
   private boolean _mustBank() {
     if (bank_run) return true;
     if (out_of_money) return true;
-    if (getInventoryCount() == MAX_INV_SIZE) return true;
-    return false;
+    return getInventoryCount() == MAX_INV_SIZE;
   }
 
   @Override

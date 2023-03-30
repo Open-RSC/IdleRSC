@@ -1,8 +1,6 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,43 +11,41 @@ import javax.swing.JLabel;
 
 public class DamWildyAgility extends IdleScript {
 
-  public boolean started = false, debug = false;
+  public boolean started = false;
+  public final boolean debug = false;
   public String status;
 
-  int[] pipeNW = {305, 120},
-      pipeSE = {292, 123},
-      swingNW = {294, 110},
-      swingSE = {291, 114},
-      rockNW = {294, 98},
-      rockSE = {288, 108},
-      logNW = {298, 105},
-      logSE = {295, 112},
-      vineNW = {310, 111},
-      vineSE = {301, 117},
-      downNW = {303, 2931},
-      downSE = {288, 2947};
+  final int[] pipeNW = {305, 120};
+  final int[] pipeSE = {292, 123};
+  final int[] swingNW = {294, 110};
+  final int[] swingSE = {291, 114};
+  final int[] rockNW = {294, 98};
+  final int[] rockSE = {288, 108};
+  final int[] logNW = {298, 105};
+  final int[] logSE = {295, 112};
+  final int[] vineNW = {310, 111};
+  final int[] vineSE = {301, 117};
+  final int[] downNW = {303, 2931};
+  final int[] downSE = {288, 2947};
   int objectId;
   int totalLaps = 0;
   int totalFood = 0;
   long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
   int foodId = -1;
   int foodInBank = 0;
-  int[] foodIds = {546, 370, 367, 373}; // cooked shark, swordfish, tuna, lobster
+  final int[] foodIds = {546, 370, 367, 373}; // cooked shark, swordfish, tuna, lobster
   JFrame scriptFrame = null;
   boolean guiSetup = false;
 
   public boolean inArea(int[] nwTile, int[] seTile) {
-    if (controller.currentX() <= nwTile[0]
+    return controller.currentX() <= nwTile[0]
         && controller.currentX() >= seTile[0]
         && controller.currentY() >= nwTile[1]
-        && controller.currentY() <= seTile[1]) {
-      return true;
-    }
-    return false;
+        && controller.currentY() <= seTile[1];
   }
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -265,7 +261,7 @@ public class DamWildyAgility extends IdleScript {
     JLabel Label2 = new JLabel("Bring armor, and cooked fish for food!");
     JLabel foodLabel = new JLabel("Type of Food to Withdraw:");
     JComboBox<String> FishField =
-        new JComboBox<String>(new String[] {"Sharks", "Swordfish", "Tuna", "Lobsters"});
+        new JComboBox<>(new String[] {"Sharks", "Swordfish", "Tuna", "Lobsters"});
     JButton startScriptButton = new JButton("Start");
 
     // for (FishObject obj : objects) {
@@ -273,17 +269,14 @@ public class DamWildyAgility extends IdleScript {
     // }
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            controller.displayMessage(
-                "@cya@" + '"' + "Ty for using DamScripts <3" + '"' + " - Damrau & Kaila");
-            foodId = foodIds[FishField.getSelectedIndex()];
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            started = true;
-          }
+        e -> {
+          controller.displayMessage(
+              "@cya@" + '"' + "Ty for using DamScripts <3" + '"' + " - Damrau & Kaila");
+          foodId = foodIds[FishField.getSelectedIndex()];
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          started = true;
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -311,8 +304,7 @@ public class DamWildyAgility extends IdleScript {
     min %= 60;
     DecimalFormat twoDigits = new DecimalFormat("00");
 
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
+    return twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec);
   }
 
   @Override
@@ -323,9 +315,9 @@ public class DamWildyAgility extends IdleScript {
         String runTime = msToString(System.currentTimeMillis() - startTime);
         int LapSuccessPerHr = 0;
         int FoodSuccessPerHr = 0;
-
+        long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
         try {
-          float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+          float timeRan = currentTimeInSeconds - startTimestamp;
           float scale = (60 * 60) / timeRan;
           LapSuccessPerHr = (int) (totalLaps * scale);
           FoodSuccessPerHr = (int) (totalFood * scale);
@@ -335,11 +327,10 @@ public class DamWildyAgility extends IdleScript {
         }
 
         controller.drawString("@cya@DamWildAgility v1.2 - By Damrau & Kaila", 7, 25, 0xFFFFFF, 1);
-        controller.drawString(
-            "@whi@Food in Bank: @gre@" + String.valueOf(this.foodInBank), 7, 39, 0xFFFFFF, 1);
+        controller.drawString("@whi@Food in Bank: @gre@" + this.foodInBank, 7, 39, 0xFFFFFF, 1);
         controller.drawString(
             "@whi@Food Used: @gre@"
-                + String.valueOf(this.totalFood)
+                + this.totalFood
                 + "@yel@ (@whi@"
                 + String.format("%,d", FoodSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)",
@@ -349,7 +340,7 @@ public class DamWildyAgility extends IdleScript {
             1);
         controller.drawString(
             "@whi@Total Laps: @gre@"
-                + String.valueOf(this.totalLaps)
+                + this.totalLaps
                 + "@yel@ (@whi@"
                 + String.format("%,d", LapSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)",

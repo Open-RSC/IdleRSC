@@ -8,9 +8,9 @@ package scripting.idlescript;
 public class HarvesterTrainer extends IdleScript {
 
   int harvested = 0;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.displayMessage("@red@HarvesterTrainer by Dvorak. Let's party like it's 2004!");
     controller.displayMessage("@red@If less than 85 harvesting, start in Draynor/Lumbridge field.");
     controller.displayMessage("@red@If >85 harvesting, start in Ardougne field.");
@@ -56,8 +56,9 @@ public class HarvesterTrainer extends IdleScript {
     if (controller != null) {
 
       int harvestedPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         harvestedPerHr = (int) (harvested * scale);
       } catch (Exception e) {

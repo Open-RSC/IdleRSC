@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
@@ -22,57 +24,55 @@ import orsc.ORSCharacter;
  * <p>Author - Kaila.
  */
 public class K_PresentGiver extends IdleScript {
+  private static final Controller c = Main.getController();
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  public int start(String[] parameters) {
+    c.displayMessage("@red@present GIVER! Let's party like it's 2004! ~ Kaila");
+    c.displayMessage("@red@Directions inside K_PresentGiver.java file");
+    c.displayMessage("@red@Ideal location is Draynor Bank!");
 
-  public int start(String parameters[]) {
-    controller.displayMessage("@red@present GIVER! Let's party like it's 2004!");
-    controller.displayMessage("@red@Directions inside K_PresentGiver.java file");
-    controller.displayMessage("@red@Ideal location is Draynor Bank!");
-
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount(980) < 2) {
-        controller.setStatus("@gre@Banking.");
-        if (!controller.isInBank()) {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount(980) < 2) {
+        c.setStatus("@gre@Banking.");
+        if (!c.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
-          ORSCharacter npc = controller.getNearestNpcByIds(bankerIds, false);
+          ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
-            controller.setStatus("@yel@Walking to Banker..");
-            controller.displayMessage("@yel@Walking to Banker..");
-            controller.walktoNPCAsync(npc.serverIndex);
-            controller.sleep(200);
+            c.setStatus("@yel@Walking to Banker..");
+            c.displayMessage("@yel@Walking to Banker..");
+            c.walktoNPCAsync(npc.serverIndex);
+            c.sleep(200);
           } else {
-            controller.log("@red@Error..");
-            controller.sleep(1000);
+            c.log("@red@Error..");
+            c.sleep(1000);
           }
         }
         bank();
       }
-      if (controller.getInventoryItemCount(980) > 1) {
-        controller.useItemOnPlayer(
-            1,
-            controller.getPlayerServerIndexByName("ExampleAccountName")); // replace the player name
-        controller.sleep(640);
+      if (c.getInventoryItemCount(980) > 1) {
+        c.useItemOnPlayer(
+            1, c.getPlayerServerIndexByName("ExampleAccountName")); // replace the player name
+        c.sleep(640);
       }
     }
 
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
-      if (controller.getInventoryItemCount(980) < 2) {
-        controller.withdrawItem(980, 30);
-        controller.sleep(1280);
+    if (c.isInBank()) {
+      if (c.getInventoryItemCount(980) < 2) {
+        c.withdrawItem(980, 30);
+        c.sleep(1280);
       }
-      controller.closeBank();
-      controller.setStatus("@gre@Opening.");
-      controller.sleep(1000);
+      c.closeBank();
+      c.setStatus("@gre@Opening.");
+      c.sleep(1000);
     }
   }
 }

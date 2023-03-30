@@ -7,7 +7,7 @@ public class CleanAllHerbs extends Script {
 
   private final int[] HERB_IDS = {165, 435, 436, 437, 438, 439, 440, 441, 442, 443};
   private final int[] CLEAN_IDS = {444, 445, 446, 447, 448, 449, 450, 451, 452, 453};
-  private Point BANK_CHEST = new Point(58, 731);
+  private final Point BANK_CHEST = new Point(58, 731);
 
   private boolean needToMove;
   private int cleanedCount = 0;

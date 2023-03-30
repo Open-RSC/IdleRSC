@@ -7,7 +7,7 @@ public class WallJumper extends Script {
     return new String[] {"jumpwall"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage(
         "@ran@=@ran@=@ran@=@ran@=@ran@= @whi@Low Wall Jumper Activated! @ran@=@ran@=@ran@=@ran@=@ran@=",
         3);
@@ -15,12 +15,12 @@ public class WallJumper extends Script {
         "@ran@=@ran@=@ran@=@ran@=@ran@= @whi@Created by SaladFork! @ran@=@ran@=@ran@=@ran@=@ran@=",
         3);
     while (Running()) {
-      if (Fatigue() >= 95 && Running() == true) {
-        while (Sleeping() == false && Running() == true) {
+      if (Fatigue() >= 95 && Running()) {
+        while (!Sleeping() && Running()) {
           Use(FindInv(1263));
           Wait(2500);
         }
-        while (Sleeping() == true && Running() == true) Wait(100);
+        while (Sleeping() && Running()) Wait(100);
       }
       OpenDoor(495, 558, 1);
       Wait(2000);

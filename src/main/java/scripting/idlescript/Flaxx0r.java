@@ -10,11 +10,11 @@ public class Flaxx0r extends IdleScript {
   long flaxBanked = 0;
   int modifier = 128;
 
-  int[] bankPath = {501, 454, 501, 463, 501, 467, 501, 471, 501, 478, 496, 482, 490, 486};
+  final int[] bankPath = {501, 454, 501, 463, 501, 467, 501, 471, 501, 478, 496, 482, 490, 486};
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     while (controller.isRunning()) {
       if (controller.getInventoryItemCount() < 30) {
         if (controller.currentY() < 454) {
@@ -67,8 +67,9 @@ public class Flaxx0r extends IdleScript {
   public void paintInterrupt() {
     if (controller != null) {
       int flaxPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         flaxPerHr = (int) (flaxPicked * scale);
       } catch (Exception e) {

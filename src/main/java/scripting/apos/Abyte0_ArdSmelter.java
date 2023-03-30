@@ -6,16 +6,16 @@ public class Abyte0_ArdSmelter extends Abyte0_Script {
   // int[] barAddy;
   // int[] barRune;
 
-  int oreTin = 202;
-  int oreCopper = 150;
-  int oreIron = 151; // Iron ore
-  int oreMith = 153; // Mith ore
-  int oreAddy = 154; // Addy ore
-  int oreRune = 409; // Rune ore
-  int oreCoal = 155; // Coal ore
-  int oreGold = 152;
+  final int oreTin = 202;
+  final int oreCopper = 150;
+  final int oreIron = 151; // Iron ore
+  final int oreMith = 153; // Mith ore
+  final int oreAddy = 154; // Addy ore
+  final int oreRune = 409; // Rune ore
+  final int oreCoal = 155; // Coal ore
+  final int oreGold = 152;
 
-  int gnomeBall = 981;
+  final int gnomeBall = 981;
 
   // int barSteel = 171;//Steel bars
 
@@ -34,17 +34,33 @@ public class Abyte0_ArdSmelter extends Abyte0_Script {
     // print("No param = Steel Bars...");
     print("Version 2.1 - Added Bronze and Gold");
 
-    if (params.equals("b")) mix = new int[] {169, 14, oreTin, 14, oreCopper, 14};
-    else if (params.equals("i")) mix = new int[] {170, -1, oreIron, 29, oreCoal, 0};
-    else if (params.equals("s")) mix = new int[] {171, 9, oreIron, 9, oreCoal, 18};
-    else if (params.equals("g")) mix = new int[] {172, -1, oreGold, 29, oreCoal, 0};
-    else if (params.equals("m")) mix = new int[] {173, 5, oreMith, 5, oreCoal, 20};
-    else if (params.equals("a")) mix = new int[] {174, 4, oreAddy, 4, oreCoal, 24};
-    else if (params.equals("r")) mix = new int[] {408, 3, oreRune, 3, oreCoal, 24};
-    else {
-      print(
-          "Sorry Param B = bronze, I = Iron, S = steel, G = Gold, M = mith , A = addy, R = runite");
-      stopScript();
+    switch (params) {
+      case "b":
+        mix = new int[] {169, 14, oreTin, 14, oreCopper, 14};
+        break;
+      case "i":
+        mix = new int[] {170, -1, oreIron, 29, oreCoal, 0};
+        break;
+      case "s":
+        mix = new int[] {171, 9, oreIron, 9, oreCoal, 18};
+        break;
+      case "g":
+        mix = new int[] {172, -1, oreGold, 29, oreCoal, 0};
+        break;
+      case "m":
+        mix = new int[] {173, 5, oreMith, 5, oreCoal, 20};
+        break;
+      case "a":
+        mix = new int[] {174, 4, oreAddy, 4, oreCoal, 24};
+        break;
+      case "r":
+        mix = new int[] {408, 3, oreRune, 3, oreCoal, 24};
+        break;
+      default:
+        print(
+            "Sorry Param B = bronze, I = Iron, S = steel, G = Gold, M = mith , A = addy, R = runite");
+        stopScript();
+        break;
     }
 
     barType = params;
@@ -85,7 +101,7 @@ public class Abyte0_ArdSmelter extends Abyte0_Script {
         return 1000 + random(10, 500);
       } else if (getInventoryCount(mix[4]) == 0 && mix[0] != 170) {
         withdraw(mix[4], mix[5]);
-        // withdraw(oreCoal,8);//18 only take out 10 so i try 10 then 8 after...
+        // withdraw(oreCoal,8);//18 only take out 10 so I try 10 then 8 after...
         return 1000 + random(10, 500);
       } else if (getInventoryCount(mix[2]) == mix[3]
           && getInventoryCount(mix[4]) == mix[5]
@@ -108,7 +124,7 @@ public class Abyte0_ArdSmelter extends Abyte0_Script {
       if (getInventoryCount(mix[2]) != mix[3] || getInventoryCount(mix[4]) != mix[5]) {
         print("Talking to Banker");
         if (!isBanking()) {
-          int banker[] = getNpcByIdNotTalk(new int[] {95});
+          int[] banker = getNpcByIdNotTalk(95);
           if (banker[0] != -1 && !isBanking()) {
             print("Hello you Banker!");
             talkToNpc(banker[0]);

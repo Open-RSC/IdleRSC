@@ -7,7 +7,7 @@ public class Flax22k extends Script {
     return new String[] {"flax22k"};
   }
 
-  public long StartS = (long) ((int) (System.currentTimeMillis() / 1000));
+  public final long StartS = (int) (System.currentTimeMillis() / 1000);
   public int Trips = 0;
   public int EXP = 0;
   public int LVL = 0;
@@ -39,8 +39,8 @@ public class Flax22k extends Script {
   public void KeyPressed(int id) {
     if (id == 1012) {
       id = 0;
-      float Minutes = (float) ((((float) System.currentTimeMillis() / 1000) - (float) StartS) / 60);
-      float EXPHour = (float) ((float) EXP / ((float) Minutes / 60));
+      float Minutes = (((float) System.currentTimeMillis() / 1000) - (float) StartS) / 60;
+      float EXPHour = (float) EXP / (Minutes / 60);
       for (int i = 0; i < 25; i++) System.out.println();
       Println("------------------------");
       Println("Status Report: Flax Crafter");
@@ -53,7 +53,7 @@ public class Flax22k extends Script {
     }
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@gre@Jake: @whi@Flax Crafter", 3);
     while (Running()) {
 
@@ -93,8 +93,8 @@ public class Flax22k extends Script {
       }
       DownX = false;
     }
-    float Minutes = (float) ((((float) System.currentTimeMillis() / 1000) - (float) StartS) / 60);
-    float EXPHour = (float) ((float) EXP / ((float) Minutes / 60));
+    float Minutes = (((float) System.currentTimeMillis() / 1000) - (float) StartS) / 60;
+    float EXPHour = (float) EXP / (Minutes / 60);
     for (int i = 0; i < 25; i++) System.out.println();
     Println("------------------------");
     Println("Status Report: Flax Crafter");

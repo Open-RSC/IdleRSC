@@ -3,7 +3,7 @@ package scripting.apos;
 import compatibility.apos.Script;
 
 public class SleepingBag extends Script {
-  private PathWalker pw;
+  private final PathWalker pw;
   private PathWalker.Path walkingPath;
 
   public SleepingBag(String ex) {

@@ -1,83 +1,86 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
+
 /**
  * This is a basic script that picks flax, optionally spins it, in Tree Stronghold.
  *
  * @author Dvorak
- *     <p>bugfixes and rewrite by Kaila
+ *     <p>Kaila - bugfixes and rewrite
  */
 public class GnomeFlaxx0r extends IdleScript {
+  final Controller c = Main.getController();
   boolean spin = false;
-
   long flaxPicked = 0;
   long flaxBanked = 0;
+  final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  public int start(String[] parameters) {
 
-  public int start(String parameters[]) {
-
-    controller.displayMessage(
+    c.displayMessage(
         "@red@Put true or false in Params. True to spin & bank flax, false to pick & bank flax.");
-    controller.displayMessage("@red@Bot will Pick & Bank by Default!");
+    c.displayMessage("@red@Bot will Pick & Bank by Default!");
 
-    if (controller.isInBank() == true) {
-      controller.closeBank();
+    if (c.isInBank()) {
+      c.closeBank();
     }
-    if (controller.currentY() > 1000) {
+    if (c.currentY() > 1000) {
       bank();
       goToFlax();
-      controller.sleep(1380);
+      c.sleep(1380);
     }
     if (parameters.length != 1) {
-      controller.displayMessage(
+      c.displayMessage(
           "@red@Put true or false in Params. True to spin & bank flax, false to pick & bank flax.");
-      controller.displayMessage("@red@Bot will Pick & Bank by Default!");
-      controller.stop();
+      c.displayMessage("@red@Bot will Pick & Bank by Default!");
+      c.stop();
     } else {
-      spin = Boolean.valueOf(parameters[0]);
+      spin = Boolean.parseBoolean(parameters[0]);
     }
+    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
 
-    while (controller.isRunning()) {
+    while (c.isRunning()) {
 
       if (spin) {
-        if (controller.getInventoryItemCount() < 30) {
-          controller.setStatus("@cya@Walking to the flax...");
+        if (c.getInventoryItemCount() < 30) {
+          c.setStatus("@cya@Walking to the flax...");
           goToWheelFlax();
 
-          // if (controller.getInventoryItemCount() < 30) {
-          controller.setStatus("@cya@Picking flax!");
-          controller.atObject(693, 517);
-          if (!controller.isAuthentic()) {
-            controller.sleep(2000);
-            while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-              controller.sleep(640); // added batching - kaila
+          // if (c.getInventoryItemCount() < 30) {
+          c.setStatus("@cya@Picking flax!");
+          c.atObject(693, 517);
+          if (!c.isAuthentic()) {
+            c.sleep(2000);
+            while (c.isBatching() && c.getInventoryItemCount() < 30) {
+              c.sleep(640); // added batching - kaila
             }
           } else {
-            controller.sleep(150);
+            c.sleep(150);
           }
           // }
         }
 
-        if (controller.getInventoryItemCount(675) > 0) {
+        if (c.getInventoryItemCount(675) > 0) {
 
-          controller.setStatus("@cya@Spinnin' flax!");
-          controller.sleepHandler(98, true);
+          c.setStatus("@cya@Spinnin' flax!");
+          c.sleepHandler(98, true);
           goToWheel();
 
-          controller.useItemIdOnObject(693, 1459, 675);
-          if (!controller.isAuthentic()) {
-            controller.sleep(2000);
-            while (controller.isBatching()) {
-              controller.sleep(640); // added batching - kaila
+          c.useItemIdOnObject(693, 1459, 675);
+          if (!c.isAuthentic()) {
+            c.sleep(2000);
+            while (c.isBatching()) {
+              c.sleep(640); // added batching - kaila
             }
           } else {
-            controller.sleep(500);
+            c.sleep(500);
           }
         }
-        if (controller.getInventoryItemCount(676) > 0 && controller.currentY() > 1000) {
+        if (c.getInventoryItemCount(676) > 0 && c.currentY() > 1000) {
 
-          controller.atObject(691, 1459);
-          controller.sleep(1240);
+          c.atObject(691, 1459);
+          c.sleep(1240);
           goToBankFlax();
           goToBank();
           bank();
@@ -85,16 +88,16 @@ public class GnomeFlaxx0r extends IdleScript {
         }
       } else { // else if !spin just pick
 
-        if (controller.getInventoryItemCount() < 30) {
-          controller.setStatus("@cya@Picking flax!");
-          controller.atObject(712, 517);
-          if (!controller.isAuthentic()) {
-            controller.sleep(2000);
-            while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-              controller.sleep(640); // added batching - kaila
+        if (c.getInventoryItemCount() < 30) {
+          c.setStatus("@cya@Picking flax!");
+          c.atObject(712, 517);
+          if (!c.isAuthentic()) {
+            c.sleep(2000);
+            while (c.isBatching() && c.getInventoryItemCount() < 30) {
+              c.sleep(640); // added batching - kaila
             }
           } else {
-            controller.sleep(150);
+            c.sleep(150);
           }
         } else {
           goToBank();
@@ -103,89 +106,89 @@ public class GnomeFlaxx0r extends IdleScript {
         }
       }
     }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
   public void goToWheel() {
 
-    controller.setStatus("@cya@Going back to wheel..");
-    controller.walkTo(692, 515);
-    controller.atObject(691, 515);
-    controller.sleep(1000);
-    controller.walkTo(692, 1459);
+    c.setStatus("@cya@Going back to wheel..");
+    c.walkTo(692, 515);
+    c.atObject(691, 515);
+    c.sleep(1000);
+    c.walkTo(692, 1459);
   }
 
   public void goToWheelFlax() {
 
-    controller.setStatus("@cya@Going back to flax..");
-    controller.walkTo(703, 516);
-    controller.walkTo(693, 516);
-    controller.sleep(340);
+    c.setStatus("@cya@Going back to flax..");
+    c.walkTo(703, 516);
+    c.walkTo(693, 516);
+    c.sleep(340);
   }
 
   public void goToBankFlax() {
 
-    controller.setStatus("@cya@Walking to the bank.");
-    controller.walkTo(693, 516);
-    controller.walkTo(703, 516);
-    controller.walkTo(709, 518);
-    controller.sleep(340);
+    c.setStatus("@cya@Walking to the bank.");
+    c.walkTo(693, 516);
+    c.walkTo(703, 516);
+    c.walkTo(709, 518);
+    c.sleep(340);
   }
 
   public void goToBank() {
 
-    controller.setStatus("@cya@Walking to the bank.");
-    controller.walkTo(713, 516);
-    controller.sleep(100);
-    controller.atObject(714, 516); // go up ladder
-    controller.sleep(1000);
-    controller.walkTo(714, 1458);
-    controller.walkTo(714, 1454);
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@cya@Walking to the bank.");
+    c.walkTo(713, 516);
+    c.sleep(100);
+    c.atObject(714, 516); // go up ladder
+    c.sleep(1000);
+    c.walkTo(714, 1458);
+    c.walkTo(714, 1454);
+    c.setStatus("@gre@Done Walking..");
   }
 
   public void goToFlax() {
 
-    controller.setStatus("@cya@Going back to flax..");
-    controller.walkTo(714, 1454);
-    controller.walkTo(714, 1459);
-    controller.sleep(100);
-    controller.atObject(714, 1460);
-    controller.sleep(1000);
-    controller.walkTo(712, 516);
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@cya@Going back to flax..");
+    c.walkTo(714, 1454);
+    c.walkTo(714, 1459);
+    c.sleep(100);
+    c.atObject(714, 1460);
+    c.sleep(1000);
+    c.walkTo(712, 516);
+    c.setStatus("@gre@Done Walking..");
   }
 
   public void bank() {
 
-    controller.setStatus("@cya@Banking...");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@cya@Banking...");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
-      if (controller.getInventoryItemCount(675) > 0) { // changed to if
-        controller.depositItem(675, 30);
-        controller.sleep(340);
+    if (c.isInBank()) {
+      if (c.getInventoryItemCount(675) > 0) { // changed to if
+        c.depositItem(675, 30);
+        c.sleep(340);
       }
-      if (controller.getInventoryItemCount(676) > 0) { // changed to if
-        controller.depositItem(676, 30);
-        controller.sleep(340);
+      if (c.getInventoryItemCount(676) > 0) { // changed to if
+        c.depositItem(676, 30);
+        c.sleep(340);
       }
       if (spin) {
-        flaxBanked = controller.getBankItemCount(676);
+        flaxBanked = c.getBankItemCount(676);
       } else {
-        flaxBanked = controller.getBankItemCount(675);
+        flaxBanked = c.getBankItemCount(675);
       }
-      controller.closeBank();
-      controller.sleep(640);
+      c.closeBank();
+      c.sleep(640);
     }
   }
 
   public void openDoor() {
-    while (controller.getObjectAtCoord(500, 454) == 64) {
-      controller.setStatus("@cya@Opening bank door...");
-      controller.atObject(500, 454);
-      controller.sleep(618);
+    while (c.getObjectAtCoord(500, 454) == 64) {
+      c.setStatus("@cya@Opening bank door...");
+      c.atObject(500, 454);
+      c.sleep(618);
     }
   }
 
@@ -196,20 +199,21 @@ public class GnomeFlaxx0r extends IdleScript {
 
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
       int flaxPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         flaxPerHr = (int) (flaxPicked * scale);
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawBoxAlpha(7, 7, 185, 21 + 14 + 14, 0x00FFFF, 128);
-      controller.drawString(
+      c.drawBoxAlpha(7, 7, 185, 21 + 14 + 14, 0x00FFFF, 128);
+      c.drawString(
           "@dgr@Gnome@cya@Flaxx0r @whi@by @red@Dvorak @whi@& @red@Kaila", 10, 21, 0xFFFFFF, 1);
       if (spin) {
-        controller.drawString(
+        c.drawString(
             "@dgr@Strings strung: @cya@"
                 + String.format("%,d", flaxPicked)
                 + " @gre@(@cya@"
@@ -219,14 +223,14 @@ public class GnomeFlaxx0r extends IdleScript {
             21 + 14,
             0xFFFFFF,
             1);
-        controller.drawString(
+        c.drawString(
             "@dgr@Strings in bank: @cya@" + String.format("%,d", flaxBanked),
             10,
             21 + 14 + 14,
             0xFFFFFF,
             1);
       } else {
-        controller.drawString(
+        c.drawString(
             "@dgr@Flax picked: @cya@"
                 + String.format("%,d", flaxPicked)
                 + " @gre@(@cya@"
@@ -236,7 +240,7 @@ public class GnomeFlaxx0r extends IdleScript {
             21 + 14,
             0xFFFFFF,
             1);
-        controller.drawString(
+        c.drawString(
             "@dgr@Flax in bank: @cya@" + String.format("%,d", flaxBanked),
             10,
             21 + 14 + 14,

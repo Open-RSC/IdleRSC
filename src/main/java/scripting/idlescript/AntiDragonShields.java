@@ -11,7 +11,7 @@ public class AntiDragonShields extends IdleScript {
   long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
 
-  int[] bankPath = {
+  final int[] bankPath = {
     128, 659,
     122, 659,
     116, 656,
@@ -23,7 +23,7 @@ public class AntiDragonShields extends IdleScript {
     220, 633
   };
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.displayMessage("@red@AntiDragonShields by Dvorak, Fixes by Kaila");
     controller.displayMessage("@red@Start near Duke of Lumbridge");
 
@@ -36,12 +36,7 @@ public class AntiDragonShields extends IdleScript {
         int totalCount =
             controller.getGroundItemAmount(420, 133, 1603) + controller.getInventoryItemCount(420);
 
-        controller.displayMessage(
-            "@red@"
-                + String.valueOf(totalCount)
-                + " of "
-                + String.valueOf(targetAmount)
-                + " collected");
+        controller.displayMessage("@red@" + totalCount + " of " + targetAmount + " collected");
 
         if (controller.isAuthentic()) {
           if (controller.getGroundItemAmount(420, 133, 1603) == 5
@@ -84,7 +79,7 @@ public class AntiDragonShields extends IdleScript {
           controller.talkToNpc(npc.serverIndex);
           controller.sleep(4000);
 
-          if (controller.isInOptionMenu() == false) continue;
+          if (!controller.isInOptionMenu()) continue;
 
           controller.optionAnswer(0);
           controller.sleep(7000);

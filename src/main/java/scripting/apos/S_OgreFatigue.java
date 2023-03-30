@@ -28,7 +28,7 @@ public final class S_OgreFatigue extends Script {
   private PathWalker.Path to_bank;
   private PathWalker.Path from_bank;
   private long click_time, bank_time, menu_time, start_time;
-  private int[] start_xp = new int[4];
+  private final int[] start_xp = new int[4];
   private final DecimalFormat iformat = new DecimalFormat("#,##0");
   private boolean lighting;
 
@@ -330,8 +330,7 @@ public final class S_OgreFatigue extends Script {
     int walk_y = 0;
     int best_dist = Integer.MAX_VALUE;
 
-    for (int i = 0; i < trees.length; ++i) {
-      int[] t = trees[i];
+    for (int[] t : trees) {
       // skip stumps
       if (getObjectIdFromCoords(t[0], t[1]) == 4) {
         continue;

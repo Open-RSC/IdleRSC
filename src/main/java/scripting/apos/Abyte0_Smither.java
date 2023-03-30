@@ -7,7 +7,7 @@ public class Abyte0_Smither extends Abyte0_Script {
   int nbBars = 25;
   int nbBarsParItems = 5;
 
-  int[] itemToDeposit =
+  final int[] itemToDeposit =
       new int[] {
         63, 67, 72, 78, 84, 88, 90, 95, 105, 109, 114, 118, 121, 125, 129, 225, 309, 1024, 1064,
         1077
@@ -15,7 +15,7 @@ public class Abyte0_Smither extends Abyte0_Script {
 
   int reponse1 = 1, reponse2 = 2, reponse3 = 1, nbReponses = 3;
 
-  int fmode = 2;
+  final int fmode = 2;
 
   int cptReponseActuel = 0;
 
@@ -147,7 +147,7 @@ public class Abyte0_Smither extends Abyte0_Script {
       }
       if (getX() >= 498 && getX() <= 504 && getY() >= 447 && getY() <= 453) {
         // Si dans la banque
-        int banker[] = getNpcByIdNotTalk(new int[] {95});
+        int[] banker = getNpcByIdNotTalk(95);
         if (banker[0] != -1 && !isBanking()) talkToNpc(banker[0]);
         else print("No banker!");
         return random(240, 2500);

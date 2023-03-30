@@ -11,7 +11,7 @@ public class PowercraftTalisman extends IdleScript {
   boolean dropping = false;
   long dropTimer;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (a == 0) {
       controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
       a = 1;
@@ -84,9 +84,7 @@ public class PowercraftTalisman extends IdleScript {
         }
       }
       while (controller.getInventoryItemCount(1299) >= 1 && !controller.isBatching()
-          || controller.getInventoryItemCount(1385) >= 1
-              && !controller.isBatching()
-              && dropping == false) {
+          || controller.getInventoryItemCount(1385) >= 1 && !controller.isBatching() && !dropping) {
         controller.setStatus("Crafting");
         controller.useItemOnItemBySlot(
             controller.getInventoryItemSlotIndex(167), controller.getInventoryItemSlotIndex(1299));
@@ -94,7 +92,7 @@ public class PowercraftTalisman extends IdleScript {
         controller.sleep(1200);
         if (controller.getInventoryItemCount(1385) > 0
             && controller.getInventoryItemCount(1299) < 1
-            && dropping == false) {
+            && !dropping) {
           controller.setStatus("Dropping");
           controller.dropItem(controller.getInventoryItemSlotIndex(1385));
           dropTimer = System.currentTimeMillis() + 15000;

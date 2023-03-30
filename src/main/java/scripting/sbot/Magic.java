@@ -7,11 +7,11 @@ public class Magic extends Script {
     return new String[] {"startmagic"};
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@gre@STARTED", 3);
     while (Running()) {
 
-      if (Fatigue() > 90 && Sleeping() == false) {
+      if (Fatigue() > 90 && !Sleeping()) {
         DisplayMessage("@blu@SBoT: @red@Sleeping", 3);
         Use(FindInv(1263));
         Wait(9000);

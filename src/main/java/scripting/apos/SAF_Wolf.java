@@ -94,7 +94,7 @@ public class SAF_Wolf extends Script {
 
   @Override
   public int main() {
-    /** Path walker handling. */
+    /* Path walker handling. */
     if (pw.walkPath()) {
       return 100;
     }
@@ -116,7 +116,7 @@ public class SAF_Wolf extends Script {
       pw.setPath(moss);
       return 1000;
     }
-    /** Inside of ardy bank. */
+    /* Inside of ardy bank. */
     if (isAtApproxCoords(BANK[0], BANK[1], 5)) {
       if (isQuestMenu()) {
         answer(0);
@@ -230,27 +230,25 @@ public class SAF_Wolf extends Script {
   private String getTimeRunning() {
     long time = ((System.currentTimeMillis() - this.time) / 1000);
     if (time >= 7200) {
-      return new String(
-          (time / 3600)
-              + " hours, "
-              + ((time % 3600) / 60)
-              + " minutes, "
-              + (time % 60)
-              + " seconds.");
+      return (time / 3600)
+          + " hours, "
+          + ((time % 3600) / 60)
+          + " minutes, "
+          + (time % 60)
+          + " seconds.";
     }
     if (time >= 3600 && time < 7200) {
-      return new String(
-          (time / 3600)
-              + " hour, "
-              + ((time % 3600) / 60)
-              + " minutes, "
-              + (time % 60)
-              + " seconds.");
+      return (time / 3600)
+          + " hour, "
+          + ((time % 3600) / 60)
+          + " minutes, "
+          + (time % 60)
+          + " seconds.";
     }
     if (time >= 60) {
-      return new String(time / 60 + " minutes, " + (time % 60) + " seconds.");
+      return time / 60 + " minutes, " + (time % 60) + " seconds.";
     }
-    return new String(time + " seconds.");
+    return time + " seconds.";
   }
 
   private void _walkApprox(int nx, int ny, int range) {

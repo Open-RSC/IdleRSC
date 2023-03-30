@@ -10,7 +10,7 @@ package scripting.apos;
 public class Abyte0_CatherbyFisher extends Abyte0_Script {
   int sleepAt = 80;
   int FishType = 372;
-  int FishType2 = 369;
+  final int FishType2 = 369;
   boolean isDoingShark = false;
   int cptTry = 0;
 
@@ -87,7 +87,7 @@ public class Abyte0_CatherbyFisher extends Abyte0_Script {
         cptTry = 0;
         return random(100, 1500);
       }
-      int banker[] = getNpcByIdNotTalk(BANKERS);
+      int[] banker = getNpcByIdNotTalk(BANKERS);
       if (banker[0] != -1) {
         talkToNpc(banker[0]);
         return 1000 + random(1423, 1501);
@@ -127,7 +127,7 @@ public class Abyte0_CatherbyFisher extends Abyte0_Script {
           return random(1003, 4221);
         }
         if (isAtApproxCoords(406, 504, 10) && getInventoryCount() != 30) {
-          int[] fish = getObjectById(new int[] {261});
+          int[] fish = getObjectById(261);
           if (fish[0] != -1) {
             atObject2(fish[1], fish[2]);
             return random(403, 1721);
@@ -149,7 +149,7 @@ public class Abyte0_CatherbyFisher extends Abyte0_Script {
           return random(1003, 4221);
         }
         if (isAtApproxCoords(409, 503, 10) && getInventoryCount() != 30) {
-          int[] fish = getObjectById(new int[] {194});
+          int[] fish = getObjectById(194);
           if (fish[0] != -1) {
             if (FishType == 372) atObject2(fish[1], fish[2]);
             else atObject(fish[1], fish[2]);

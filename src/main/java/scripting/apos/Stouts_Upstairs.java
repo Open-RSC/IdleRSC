@@ -41,15 +41,15 @@ public class Stouts_Upstairs extends Script {
 
   */
 
-  int drinkID = 267;
+  final int drinkID = 267;
 
-  int glassID = 620;
+  final int glassID = 620;
 
   /////
 
   boolean train = true;
 
-  boolean upstairs = true;
+  final boolean upstairs = true;
 
   int[] bankArea = new int[2];
 
@@ -175,7 +175,7 @@ public class Stouts_Upstairs extends Script {
 
       if (distanceTo(bankArea[0], bankArea[1]) < 10) {
 
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
 
         if (banker[0] != -1) {
 
@@ -208,7 +208,7 @@ public class Stouts_Upstairs extends Script {
 
     if (distanceTo(actArea[0], actArea[1]) < 10) {
 
-      int barmaid[] = getNpcByIdNotTalk(142);
+      int[] barmaid = getNpcByIdNotTalk(142);
 
       if (barmaid[0] != -1) {
 
@@ -312,7 +312,7 @@ public class Stouts_Upstairs extends Script {
 
       if (distanceTo(bankArea[0], bankArea[1]) < 10) {
 
-        int banker[] = getNpcByIdNotTalk(95);
+        int[] banker = getNpcByIdNotTalk(95);
 
         if (banker[0] != -1) talkToNpc(banker[0]);
 

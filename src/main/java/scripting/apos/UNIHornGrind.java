@@ -29,7 +29,7 @@ public class UNIHornGrind extends Script {
         }
       }
       // Talk To Banker
-      int Banker[] = getNpcByIdNotTalk(BANKERS);
+      int[] Banker = getNpcByIdNotTalk(BANKERS);
       if (Banker[0] != -1 && !isBanking()) {
         talkToNpc(Banker[0]);
         return random(3250, 3500);

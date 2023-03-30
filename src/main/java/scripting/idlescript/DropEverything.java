@@ -7,7 +7,7 @@ package scripting.idlescript;
  */
 public class DropEverything extends IdleScript {
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     controller.displayMessage("@red@DropEverything by Dvorak. Let's party like it's 2018!");
     controller.displayMessage("Dropping everything in inventory...");
 

@@ -30,7 +30,7 @@ public class walker extends Script {
     };
   }
 
-  public void start(String command, String parameter[]) {
+  public void start(String command, String[] parameter) {
     DisplayMessage("@gre@Sbot: @ora@ L33et Walker By @red@Saron", 3);
 
     command = parameter[0]; // Fixing for IdleRSC

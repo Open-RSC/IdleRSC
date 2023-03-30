@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,193 +14,189 @@ import javax.swing.JLabel;
  * <p>Author - Kaila
  */
 public class K_TeleWines extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int WinezInBank = 0;
-  int totalWinez = 0;
-  int totalTrips = 0;
+  private static final Controller c = Main.getController();
+  private static JFrame scriptFrame = null;
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static int WinezInBank = 0;
+  private static int totalWinez = 0;
+  private static int totalTrips = 0;
 
-  long startTime;
-  long startTimestamp = System.currentTimeMillis() / 1000L;
+  private static long startTime;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  public int start(String parameters[]) {
+  public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
     if (scriptStarted) {
-      controller.displayMessage("@red@Wine Picker - By Kaila");
-      controller.displayMessage("@red@Start in Fally West Bank");
-      controller.displayMessage("@red@Laws IN BANK REQUIRED");
-      if (controller.isInBank() == true) {
-        controller.closeBank();
+      c.displayMessage("@cya@Wine Telegrab @mag@~ By Kaila");
+      c.displayMessage("@cya@Start in Edge Bank");
+      c.displayMessage("@cya@Laws, Air staff required");
+      c.displayMessage("@red@Recommend using grape harvester for coleslaw wines!!!!");
+      if (c.isInBank()) {
+        c.closeBank();
       }
-      if (controller.currentY() > 450) {
+      if (c.currentY() > 450) {
         bank();
         BankToWine();
-        controller.sleep(1380);
+        c.sleep(1380);
       }
       scriptStart();
     }
-    return 1000; // start() must return a int value now.
+    return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
-    while (controller.isRunning()) {
+  private void scriptStart() {
+    while (c.isRunning()) {
 
-      if (controller.getInventoryItemCount() == 30) {
-        controller.setStatus("@red@Banking..");
+      if (c.getInventoryItemCount() == 30) {
+        c.setStatus("@red@Banking..");
         WineToBank();
         bank();
         BankToWine();
-        controller.sleep(618);
+        c.sleep(618);
       }
 
-      controller.setStatus("@yel@Picking Wines..");
-      int[] coords = controller.getNearestItemById(501);
+      c.setStatus("@yel@Picking Wines..");
+      int[] coords = c.getNearestItemById(501);
 
       if (coords != null) {
-        controller.castSpellOnGroundItem(
-            controller.getSpellIdFromName("Telekinetic grab"), 501, 333, 434);
-        controller.sleep(1500);
-        controller.walkTo(331, 434);
-        controller.sleep(100);
-        controller.walkTo(332, 434);
-        controller.sleep(100);
+        c.castSpellOnGroundItem(c.getSpellIdFromName("Telekinetic grab"), 501, 333, 434);
+        c.sleep(1500);
+        c.walkTo(331, 434);
+        c.sleep(100);
+        c.walkTo(332, 434);
+        c.sleep(100);
       } else {
-        controller.sleep(1500);
+        c.sleep(1500);
       }
     }
   }
 
-  public void bank() {
+  private void bank() {
 
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
+    c.setStatus("@yel@Banking..");
+    c.openBank();
+    c.sleep(640);
 
-    if (controller.isInBank()) {
+    if (c.isInBank()) {
 
-      totalWinez = totalWinez + controller.getInventoryItemCount(501);
+      totalWinez = totalWinez + c.getInventoryItemCount(501);
 
-      if (controller.getInventoryItemCount(501) > 0) { // deposit the Wines
-        controller.depositItem(501, controller.getInventoryItemCount(501));
-        controller.sleep(1380);
+      if (c.getInventoryItemCount(501) > 0) { // deposit the Wines
+        c.depositItem(501, c.getInventoryItemCount(501));
+        c.sleep(1380);
       }
 
-      WinezInBank = controller.getBankItemCount(501);
+      WinezInBank = c.getBankItemCount(501);
 
-      if (controller.getInventoryItemCount(42) < 30) { // withdraw 30 law
-        controller.withdrawItem(42, 30 - controller.getInventoryItemCount(42));
-        controller.sleep(340);
+      if (c.getInventoryItemCount(42) < 30) { // withdraw 30 law
+        c.withdrawItem(42, 30 - c.getInventoryItemCount(42));
+        c.sleep(340);
       }
-      if (!controller.isItemIdEquipped(101)
-          && !controller.isItemIdEquipped(617)
-          && !controller.isItemIdEquipped(684)) { // check air staff!
-        controller.displayMessage("@red@NO Air staff, attempting to Equip!");
-        if (controller.getBankItemCount(101) > 0) {
-          controller.withdrawItem(101, 1);
-          controller.closeBank();
-          controller.equipItem(controller.getInventoryItemSlotIndex(101));
-          controller.sleep(340);
-          return;
-        } else if (controller.getBankItemCount(617) > 0) {
-          controller.withdrawItem(617, 1);
-          controller.closeBank();
-          controller.equipItem(controller.getInventoryItemSlotIndex(617));
-          controller.sleep(340);
-          return;
-        } else if (controller.getBankItemCount(684) > 0) {
-          controller.withdrawItem(684, 1);
-          controller.closeBank();
-          controller.equipItem(controller.getInventoryItemSlotIndex(684));
-          controller.sleep(340);
-          return;
-        } else if (controller.getBankItemCount(101) == 0
-            && controller.getBankItemCount(617) == 0
-            && controller.getBankItemCount(684) == 0)
-          controller.displayMessage("@red@NO Air staff, ending script");
-        controller.setAutoLogin(false);
-        controller.logout();
-        if (!controller.isLoggedIn()) {
-          controller.stop();
-          return;
+      if (!c.isItemIdEquipped(101)
+          && !c.isItemIdEquipped(617)
+          && !c.isItemIdEquipped(684)) { // check air staff!
+        c.displayMessage("@red@NO Air staff, attempting to Equip!");
+        if (c.getBankItemCount(101) > 0) {
+          c.withdrawItem(101, 1);
+          c.closeBank();
+          c.equipItem(c.getInventoryItemSlotIndex(101));
+          c.sleep(340);
+        } else if (c.getBankItemCount(617) > 0) {
+          c.withdrawItem(617, 1);
+          c.closeBank();
+          c.equipItem(c.getInventoryItemSlotIndex(617));
+          c.sleep(340);
+        } else if (c.getBankItemCount(684) > 0) {
+          c.withdrawItem(684, 1);
+          c.closeBank();
+          c.equipItem(c.getInventoryItemSlotIndex(684));
+          c.sleep(340);
+        } else if (c.getBankItemCount(101) == 0
+            && c.getBankItemCount(617) == 0
+            && c.getBankItemCount(684) == 0) c.displayMessage("@red@NO Air staff, ending script");
+        c.setAutoLogin(false);
+        c.logout();
+        if (!c.isLoggedIn()) {
+          c.stop();
         }
       }
-      controller.closeBank();
-      controller.sleep(640);
+      if (c.isInBank()) {
+        c.closeBank();
+      }
+      c.sleep(640);
     }
   }
 
-  public void WineToBank() { // replace
-    controller.setStatus("@gre@Walking to Bank..");
-    controller.walkTo(332, 434);
-    controller.walkTo(327, 435);
-    controller.walkTo(310, 435);
-    controller.walkTo(299, 446);
-    controller.walkTo(309, 456);
-    controller.walkTo(309, 468);
-    controller.walkTo(310, 468);
-    controller.walkTo(310, 478);
-    controller.walkTo(311, 479);
-    controller.walkTo(311, 488);
-    controller.walkTo(305, 494);
-    controller.walkTo(305, 496);
-    controller.walkTo(298, 503);
-    controller.walkTo(312, 517);
-    controller.walkTo(312, 518);
-    controller.walkTo(324, 530);
-    controller.walkTo(324, 549);
-    controller.walkTo(327, 552);
+  private void WineToBank() { // replace
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(332, 434);
+    c.walkTo(327, 435);
+    c.walkTo(310, 435);
+    c.walkTo(299, 446);
+    c.walkTo(309, 456);
+    c.walkTo(309, 468);
+    c.walkTo(310, 468);
+    c.walkTo(310, 478);
+    c.walkTo(311, 479);
+    c.walkTo(311, 488);
+    c.walkTo(305, 494);
+    c.walkTo(305, 496);
+    c.walkTo(298, 503);
+    c.walkTo(312, 517);
+    c.walkTo(312, 518);
+    c.walkTo(324, 530);
+    c.walkTo(324, 549);
+    c.walkTo(327, 552);
     totalTrips = totalTrips + 1;
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
-  public void BankToWine() {
-    controller.setStatus("@gre@Walking to Wines..");
-    controller.walkTo(327, 552);
-    controller.walkTo(324, 549);
-    controller.walkTo(324, 530);
-    controller.walkTo(312, 518);
-    controller.walkTo(312, 517);
-    controller.walkTo(298, 503);
-    controller.walkTo(305, 496);
-    controller.walkTo(305, 494);
-    controller.walkTo(311, 488);
-    controller.walkTo(311, 479);
-    controller.walkTo(310, 478);
-    controller.walkTo(310, 468);
-    controller.walkTo(309, 468);
-    controller.walkTo(309, 456);
-    controller.walkTo(299, 446);
-    controller.walkTo(310, 435);
-    controller.walkTo(327, 435);
-    controller.walkTo(332, 434);
+  private void BankToWine() {
+    c.setStatus("@gre@Walking to Wines..");
+    c.walkTo(327, 552);
+    c.walkTo(324, 549);
+    c.walkTo(324, 530);
+    c.walkTo(312, 518);
+    c.walkTo(312, 517);
+    c.walkTo(298, 503);
+    c.walkTo(305, 496);
+    c.walkTo(305, 494);
+    c.walkTo(311, 488);
+    c.walkTo(311, 479);
+    c.walkTo(310, 478);
+    c.walkTo(310, 468);
+    c.walkTo(309, 468);
+    c.walkTo(309, 456);
+    c.walkTo(299, 446);
+    c.walkTo(310, 435);
+    c.walkTo(327, 435);
+    c.walkTo(332, 434);
     // next to wine now)
-    controller.setStatus("@gre@Done Walking..");
+    c.setStatus("@gre@Done Walking..");
   }
 
   // GUI stuff below (icky)
-  public void setupGUI() {
-    JLabel header = new JLabel("Zammy Wine Picker - By Kaila");
-    JLabel label1 = new JLabel("Start in Fally West Bank");
+  private void setupGUI() {
+    JLabel header = new JLabel("Zammy Wine Tele Grabber@mag@~ by Kaila");
+    JLabel label1 = new JLabel("Start in Edge Bank");
     JLabel label2 = new JLabel("Air Staff/Bstaff/etc MUST be Equipped");
-    JLabel label3 = new JLabel("Laws in the bank required!");
+    JLabel label3 = new JLabel("Laws in the inv required!");
+    JLabel label4 = new JLabel("Recommend using grape harvester for coleslaw wines!!!!");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            startTime = System.currentTimeMillis();
-            scriptStarted = true;
-          }
+        e -> {
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          startTime = System.currentTimeMillis();
+          scriptStarted = true;
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -209,35 +204,25 @@ public class K_TeleWines extends IdleScript {
     scriptFrame.add(label1);
     scriptFrame.add(label2);
     scriptFrame.add(label3);
+    scriptFrame.add(label4);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
 
-  public static String msToString(long milliseconds) {
-    long sec = milliseconds / 1000;
-    long min = sec / 60;
-    long hour = min / 60;
-    sec %= 60;
-    min %= 60;
-    DecimalFormat twoDigits = new DecimalFormat("00");
-
-    return new String(
-        twoDigits.format(hour) + ":" + twoDigits.format(min) + ":" + twoDigits.format(sec));
-  }
-
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
-      String runTime = msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
-
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
-        float timeRan = (System.currentTimeMillis() / 1000L) - startTimestamp;
+        float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalWinez * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
@@ -245,30 +230,33 @@ public class K_TeleWines extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-      controller.drawString("@red@Zammy Winez @gre@by Kaila", 350, 48, 0xFFFFFF, 1);
-      controller.drawString(
-          "@whi@Wines in Bank: @gre@" + String.valueOf(this.WinezInBank), 350, 62, 0xFFFFFF, 1);
-      controller.drawString(
+      int x = 6;
+      int y = 21;
+      c.drawString("@red@Zammy Winez @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      c.drawString("@whi@Wines in Bank: @gre@" + WinezInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Wines Picked: @gre@"
-              + String.valueOf(this.totalWinez)
+              + totalWinez
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          76,
+          x,
+          y + (14 * 2),
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@whi@Total Trips: @gre@"
-              + String.valueOf(this.totalTrips)
+              + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          90,
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      controller.drawString("@whi@Runtime: " + runTime, 350, 104, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

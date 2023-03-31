@@ -49,14 +49,13 @@ build:
   artifacts:
     paths:
       - ./*.zip
-    expire_in: 1 week
 
 # Upload Javadoc API documentation to Gitlab pages.
 pages:
   stage: pages
   script: 
-    - ./gradlew --build-cache updateDocumentation
-    - cp -r doc public
+    - ./gradlew --build-cache javadoc
+    - cp -r build/docs/javadoc public
   artifacts:
     paths:
       - public

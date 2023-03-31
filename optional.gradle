@@ -25,19 +25,6 @@ tasks.register('release', Exec) {
   }
 }
 
-tasks.register('updateDocumentation', Copy) {
-  group 'Documentation'
-  description 'Update documentation stored in the repository under doc/.'
-  dependsOn javadoc
-
-  doLast {
-    delete './doc'
-
-    from './build/docs/javadoc'
-    into './doc'
-  }
-}
-
 // Obtain current commit hash
 ext.commitHash = { ->
   try {

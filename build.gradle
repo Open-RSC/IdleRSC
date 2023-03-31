@@ -22,6 +22,9 @@ dependencies {
   implementation files('patched_client.jar')
   // Used to find/populate scripts
   implementation libs.reflections
+  // Dependency of reflections spits out an error when it is not included in the jar.
+  // https://www.slf4j.org/codes.html#StaticLoggerBinder
+  implementation libs.slf4j.nop
 }
 
 // Moves the compiled jar to the root folder
@@ -47,6 +50,10 @@ tasks.named('jar') {
       it.isDirectory() ? it : zipTree(it)
     }
   }
+
+  // Fix for FTBFS error below:
+  // Entry module-info.class is a duplicate but no duplicate handling strategy has been set.
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 // Additional files to clean

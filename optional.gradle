@@ -16,6 +16,7 @@ tasks.register('release', Exec) {
     'run_linux.sh',
     'run_windows.bat',
     'README.md',
+    'doc/',
     '--output',
     "${releaseName}.zip"
   )

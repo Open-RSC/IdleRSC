@@ -392,7 +392,7 @@ public class Main {
 
     takeScreenshotButton = new JButton("Screenshot");
     showIdButton = new JButton("Show ID's");
-    openDebuggerButton = new JButton("Open Debugg");
+    openDebuggerButton = new JButton("Open Debugger");
     hideButton = new JButton("Hide Sidepane");
     resetXpButton = new JButton("Reset XP");
 

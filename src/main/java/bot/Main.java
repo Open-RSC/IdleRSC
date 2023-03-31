@@ -4,6 +4,8 @@ import static org.reflections.scanners.Scanners.Resources;
 import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.util.ClasspathHelper.forJavaClassPath;
 
+import bot.cli.CLIParser;
+import bot.cli.ParseResult;
 import bot.debugger.Debugger;
 import callbacks.DrawCallback;
 import compatibility.apos.Script;
@@ -33,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import listeners.LoginListener;
 import listeners.WindowListener;
+import org.apache.commons.cli.ParseException;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -48,7 +51,7 @@ import utils.Extractor;
  * @author Dvorak
  */
 public class Main {
-  public static Config config;
+  public static Config config = new Config();
   private static final Reflections reflections =
       new Reflections(
           new ConfigurationBuilder()
@@ -183,7 +186,23 @@ public class Main {
       throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
           SecurityException, InstantiationException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, InterruptedException {
-    config = new Config(args);
+    CLIParser parser = new CLIParser();
+    ParseResult parseResult = null;
+
+    try {
+      parseResult = parser.parse(args);
+    } catch (ParseException e) {
+      System.err.println(e.getMessage() + "\n");
+      parser.printHelp();
+      System.exit(1);
+    }
+
+    if (parseResult.isHelp()) {
+      parser.printHelp();
+      System.exit(0);
+    }
+
+    config.absorb(parseResult);
     handleCache(config);
 
     Reflector reflector = new Reflector(); // start up our reflector helper
@@ -211,8 +230,8 @@ public class Main {
     initializeConsoleFrame(consoleFrame);
     initializeScriptFrame(scriptFrame);
 
-    if (config.getHidesidepanel()) {
-      botFrame.setVisible(false);
+    if (config.isSidePanelVisible()) {
+      botFrame.setVisible(true);
     }
 
     log("IdleRSC initialized.");
@@ -220,25 +239,26 @@ public class Main {
     // don't do anything until RSC is loaded.
     while (!controller.isLoaded()) controller.sleep(1);
 
-    if (autoLoginCheckbox.isSelected() != config.getAutologin()) {
+    if (autoLoginCheckbox.isSelected() != config.isAutoLogin()) {
       autoLoginCheckbox.doClick();
     }
-    if (logWindowCheckbox.isSelected() != config.getLogwindow()) {
+    if (logWindowCheckbox.isSelected() != config.isLogWindowVisible()) {
       logWindowCheckbox.doClick();
     }
-    if (unstickCheckbox.isSelected() != config.getUnstick()) {
+    if (!unstickCheckbox.isSelected() != config.isSidePanelSticky()) {
       unstickCheckbox.doClick();
     }
-    if (debugCheckbox.isSelected() != config.getDebug()) {
+    if (debugCheckbox.isSelected() != config.isDebug()) {
       debugCheckbox.doClick();
     }
-    if (graphicsCheckbox.isSelected() != config.getEnablegfx()) {
+    if (graphicsCheckbox.isSelected() != config.isGraphicsEnabled()) {
       graphicsCheckbox.doClick();
     }
-    if (config.getEnableInterlace()) {
-      controller.setInterlacer(config.getEnableInterlace());
+
+    if (config.isGraphicsInterlacingEnabled()) {
+      controller.setInterlacer(config.isGraphicsInterlacingEnabled());
     }
-    if (config.getOpenSelector()) {
+    if (config.isScriptSelectorWindowVisible()) {
       showLoadScript();
     }
 

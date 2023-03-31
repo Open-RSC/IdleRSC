@@ -25,6 +25,8 @@ dependencies {
   // Dependency of reflections spits out an error when it is not included in the jar.
   // https://www.slf4j.org/codes.html#StaticLoggerBinder
   implementation libs.slf4j.nop
+  // Used to parse/validate CLI arguments
+  implementation libs.commons.cli
 }
 
 // Moves the compiled jar to the root folder

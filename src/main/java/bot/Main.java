@@ -44,6 +44,7 @@ import orsc.mudclient;
 import reflector.Reflector;
 import scripting.idlescript.IdleScript;
 import utils.Extractor;
+import utils.Version;
 
 /**
  * This is the starting class of the entire IdleRSC project.
@@ -188,6 +189,7 @@ public class Main {
           IllegalArgumentException, InvocationTargetException, InterruptedException {
     CLIParser parser = new CLIParser();
     ParseResult parseResult = null;
+    Version version = new Version();
 
     try {
       parseResult = parser.parse(args);
@@ -199,6 +201,18 @@ public class Main {
 
     if (parseResult.isHelp()) {
       parser.printHelp();
+      System.exit(0);
+    }
+
+    if (parseResult.isVersion()) {
+      System.out.println(
+          "IdleRSC version "
+              + version.getCommitDate()
+              + "-"
+              + version.getCommitCount()
+              + "-"
+              + version.getCommitHash());
+      System.out.println("Built with JDK " + version.getBuildJDK());
       System.exit(0);
     }
 

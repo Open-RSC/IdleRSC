@@ -253,21 +253,12 @@ public class Main {
     // don't do anything until RSC is loaded.
     while (!controller.isLoaded()) controller.sleep(1);
 
-    if (autoLoginCheckbox.isSelected() != config.isAutoLogin()) {
-      autoLoginCheckbox.doClick();
-    }
-    if (logWindowCheckbox.isSelected() != config.isLogWindowVisible()) {
-      logWindowCheckbox.doClick();
-    }
-    if (!unstickCheckbox.isSelected() != config.isSidePanelSticky()) {
-      unstickCheckbox.doClick();
-    }
-    if (debugCheckbox.isSelected() != config.isDebug()) {
-      debugCheckbox.doClick();
-    }
-    if (graphicsCheckbox.isSelected() != config.isGraphicsEnabled()) {
-      graphicsCheckbox.doClick();
-    }
+    // Set checkboxes on side panel
+    autoLoginCheckbox.setSelected(config.isAutoLogin());
+    logWindowCheckbox.setSelected(config.isLogWindowVisible());
+    unstickCheckbox.setSelected(!config.isSidePanelSticky()); // this one is a double negative :(
+    debugCheckbox.setSelected(config.isDebug());
+    graphicsCheckbox.setSelected(config.isGraphicsEnabled());
 
     if (config.isGraphicsInterlacingEnabled()) {
       controller.setInterlacer(config.isGraphicsInterlacingEnabled());

@@ -54,7 +54,7 @@ public class Debugger implements Runnable {
   private JCheckBox refreshCheckbox = null;
   private JButton clearButton = null;
   private JButton refreshButton = null;
-  private JComboBox sectionDropdown = null;
+  private JComboBox<Object> sectionDropdown = null;
   private JButton closeButton = null;
 
   public Debugger(Reflector reflector, OpenRSC client, mudclient mud, Controller controller) {
@@ -292,7 +292,7 @@ public class Debugger implements Runnable {
     this.sections.add(localTradeSection);
     this.sections.add(remoteTradeSection);
 
-    this.sectionDropdown = new JComboBox(this.sections.toArray());
+    this.sectionDropdown = new JComboBox<>(this.sections.toArray());
     this.sectionDropdown.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     DebuggerSection selectedSection = (DebuggerSection) this.sectionDropdown.getSelectedItem();

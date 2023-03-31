@@ -338,7 +338,7 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
         // If merchantMode != 0 then we are in buying mode
         else {
           // If they have offered an item then we can proceed
-          if (getTheirTradedItemCount() > 0) {
+          if (getRemoteTradeItemCount() > 0) {
             // For each item we are buying we will check for it
             for (int i = 0; i < itemID.size(); ++i) {
               // If that item is stackable we will need to find the count
@@ -412,7 +412,7 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
           coinsOffered = getRemoteTradeItemStack(0);
 
           // If that equals itemPrice * offeredAmount and they only traded coins then we can confirm
-          if (coinsOffered == itemPrice * offeredAmount.get(0) && getTheirTradedItemCount() == 1) {
+          if (coinsOffered == itemPrice * offeredAmount.get(0) && getRemoteTradeItemCount() == 1) {
             confirmTrade();
             return random(4000, 6000);
           }

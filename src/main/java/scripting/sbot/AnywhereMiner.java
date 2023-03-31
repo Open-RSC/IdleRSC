@@ -14,8 +14,8 @@ public class AnywhereMiner extends Script implements ActionListener {
   JLabel lblMine;
   JLabel lblOre;
   JLabel lblFatigue;
-  JComboBox cmbMineType;
-  JComboBox cmbOreType;
+  JComboBox<String> cmbMineType;
+  JComboBox<String> cmbOreType;
   JTextField txtFatigue;
   JButton cmdStart;
   JButton cmdCancel;
@@ -96,9 +96,9 @@ public class AnywhereMiner extends Script implements ActionListener {
     lblMine = new JLabel("Mine type:");
     lblOre = new JLabel("Ore type:");
     lblFatigue = new JLabel("Fatigue level:");
-    cmbMineType = new JComboBox(new String[] {"PowerMine", "Mine+Bank"});
+    cmbMineType = new JComboBox<>(new String[] {"PowerMine", "Mine+Bank"});
     cmbOreType =
-        new JComboBox(
+        new JComboBox<>(
             new String[] {
               "Clay", "Tin", "Copper", "Iron", "Coal", "Mithril", "Adamantite", "Gold", "Silver"
             });

@@ -571,7 +571,7 @@ public class Main {
                     try {
                       return clazz.getSuperclass().equals(compatibility.apos.Script.class)
                           ? clazz.getDeclaredConstructor(String.class).newInstance("")
-                          : clazz.newInstance();
+                          : clazz.getDeclaredConstructor().newInstance();
                     } catch (InstantiationException
                         | IllegalAccessException
                         | NoSuchMethodException

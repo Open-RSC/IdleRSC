@@ -4,19 +4,15 @@ import compatibility.sbot.Script;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.*;
+import java.time.LocalDateTime;
 import javax.swing.*;
 
 // Ty to Exemplar for teaching me how to integrate gui into script
 public class GuildFisher2 extends Script implements ActionListener {
-  boolean Running = true;
-  Thread reportThread;
-  Graphics g;
   public boolean sleep = false;
   public int fishes = 0;
   public String fishtype = "bruncle";
   public long starttime, minutes;
-  public String[] preferences = new String[2];
   public int slept = 0;
   public int startexp = 0;
   public int expgained = 0;
@@ -28,7 +24,8 @@ public class GuildFisher2 extends Script implements ActionListener {
   JPanel fishPanel, reportPanel;
   JLabel fishModeLabel, fishLabel, emptylabel1, pMode, pMins, pExp, pFished, pLevels, pSlept, empty;
   JButton save;
-  JComboBox fishMode, fish;
+  JComboBox<String> fishMode;
+  JComboBox<String> fish;
 
   public String[] getCommands() {
     return new String[] {"guildfish"};
@@ -44,7 +41,7 @@ public class GuildFisher2 extends Script implements ActionListener {
   }
 
   public void start(String command, String[] parameter) {
-    javax.swing.SwingUtilities.invokeLater(() -> addWidgets());
+    javax.swing.SwingUtilities.invokeLater(this::addWidgets);
     while (!run_script && Running()) Wait(100);
     if (run_script) RunScipt();
   }
@@ -124,9 +121,9 @@ public class GuildFisher2 extends Script implements ActionListener {
 
     emptylabel1 = new JLabel("");
     fishLabel = new JLabel("Fish what?", SwingConstants.LEFT);
-    fishMode = new JComboBox(fishModes);
+    fishMode = new JComboBox<>(fishModes);
     save = new JButton("Save choices");
-    fish = new JComboBox(fishs);
+    fish = new JComboBox<>(fishs);
     save.addActionListener(this);
 
     fishPanel.add(fishModeLabel);
@@ -455,17 +452,14 @@ public class GuildFisher2 extends Script implements ActionListener {
   }
 
   public void Report() {
-    Date date;
-    date = new Date();
-    ctime = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    LocalDateTime date = LocalDateTime.now();
+    ctime = date.getHour() + ":" + date.getMinute() + ":" + date.getSecond();
+
     minutes = (System.currentTimeMillis() - starttime) / 60000;
-    FileOutputStream output;
-    PrintStream P;
     System.out.println("Writing Report..");
     expgained = (GetExperience(10) - startexp);
     try {
-      BufferedWriter out = null;
-      out = new BufferedWriter(new FileWriter("guildfisher.txt", true));
+      BufferedWriter out = new BufferedWriter(new FileWriter("guildfisher.txt", true));
       out.write("^^PrOgReSs RePoRt @ " + ctime + "..");
       out.newLine();
       out.write("After " + minutes + " minutes:");
@@ -520,7 +514,7 @@ public class GuildFisher2 extends Script implements ActionListener {
     }
     try {
       FileInputStream fstream2 = new FileInputStream("guildfisher.txt");
-      DataInputStream in2 = new DataInputStream(fstream2);
+      BufferedReader in2 = new BufferedReader(new InputStreamReader(fstream2));
       while (cline != (line - 5)) {
         in2.readLine();
         cline++;

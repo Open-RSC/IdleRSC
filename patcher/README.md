@@ -14,7 +14,7 @@ Run the gradle task `build` via the top-level wrapper or system gradle.
 
 ## How To Run
 
-Run the patcher.jar via `java -jar source.jar destination.jar`, where
+Run `patcher.jar` via `java -jar patcher.jar source.jar destination.jar`, where
 `source.jar` is the unpatched Open RSC client jar archive and `destination.jar`
 is the location to place the patched jar archive.
 

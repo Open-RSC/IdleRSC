@@ -54,8 +54,8 @@ build:
 pages:
   stage: pages
   script: 
-    - ./gradlew --build-cache javadoc
-    - cp -r build/docs/javadoc public
+    - ./gradlew --build-cache app:javadoc
+    - cp -r app/build/docs/javadoc public
   artifacts:
     paths:
       - public

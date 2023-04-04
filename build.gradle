@@ -1,6 +1,8 @@
 plugins {
   // Use metadata from git
   id 'git-metadata'
+  // Ensure archives are reproducible
+  id 'reproducible-archives'
 }
 
 ext.releaseName = { ->
@@ -68,6 +70,7 @@ tasks.register('release', Zip) {
 
   destinationDirectory = rootProject.getProjectDir()
 
-  from "build/${releaseName()}"
-  include '**/*'
+  from('build') {
+    include "${releaseName()}/**/*" 
+  }
 }

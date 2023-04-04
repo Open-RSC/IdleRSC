@@ -9,11 +9,11 @@ RST?=$(shell tput sgr0)
 ##@ Build
 .PHONY: build
 build: ## Build the project
-	./gradlew build
+	./gradlew --build-cache build
 
 .PHONY: release
 release: ## Create a release archive
-	./gradlew release
+	./gradlew --build-cache release
 
 .PHONY: clean
 clean: ## Clean everything up

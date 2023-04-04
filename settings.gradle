@@ -1,1 +1,5 @@
-rootProject.name = 'IdleRSC'
+rootProject.name = "IdleRSC"
+
+include "client"
+include "patcher"
+include "app"

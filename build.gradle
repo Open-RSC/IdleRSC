@@ -1,100 +1,73 @@
 plugins {
-  // Facilitates Java compilation
-  id 'java'
-  // Move compiled jar to root folder
-  id 'base'
-  // For formatting source-code
-  alias(libs.plugins.spotless)
   // Use metadata from git
   id 'git-metadata'
 }
 
-// Tasks not related to build are split out into their own gradle scripts
-// in order to keep build.gradle as compact as possible.
-apply from: "$project.rootDir/spotless.gradle"
-apply from: "$project.rootDir/optional.gradle"
-
-// Where dependencies are fetched from
-repositories {
-  mavenCentral()
+ext.releaseName = { ->
+  return "${rootProject.getName()}-${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}"
 }
 
-dependencies {
-  // Ensure gradle is aware of the patched_client.jar dependency
-  implementation files('patched_client.jar')
-  // Used to find/populate scripts
-  implementation libs.reflections
-  // Dependency of reflections spits out an error when it is not included in the jar.
-  // https://www.slf4j.org/codes.html#StaticLoggerBinder
-  implementation libs.slf4j.nop
-  // Used to parse/validate CLI arguments
-  implementation libs.commons.cli
-}
+tasks.register('buildPatchedClient', JavaExec) {
+  group 'build'
+  description 'Create patched client jar archive.'
+  dependsOn ':client:build', ':patcher:build'
 
-// Moves the compiled jar to the root folder
-base {
-    libsDirectory = getProjectDir()
-}
+  File patcherJar = new File(project(':patcher').getBuildDir(), "libs/${project(':patcher').getName()}.jar")
+  File clientJar = new File(project(':client').getBuildDir(), "libs/${project(':client').getName()}.jar")
+  File patchedClientJar = new File(project(':patcher').getBuildDir(), 'libs/patched_client.jar')
 
-tasks.named('compileJava') {
-  // Run spotlessApply after successful compilation rather than before, so
-  // that any developer errors can be dealt with prior to formatting
-  finalizedBy spotlessApply
+  classpath = files(patcherJar)
+  args clientJar, patchedClientJar
 
-  options.compilerArgs += [
-    '-Xlint:deprecation',
-    '-Xlint:unchecked',
-  ]
-}
-
-tasks.named('jar') {
-  manifest {
-    attributes(
-      // Define entry point for application
-      'Main-Class': 'bot.Main',
-      // Embed version/build information in application
-      'Build-Commit-Hash': "${gitCommitHash()}",
-      'Build-Commit-Date': "${gitCommitDate()}",
-      'Build-Commit-Count': "${gitCommitCount()}",
-      'Build-Jdk' : "${System.properties['java.version']}",
-    )
+  outputs.upToDateWhen {
+    patchedClientJar.exists()
   }
-
-  // Modify jar task to include all dependencies (a.k.a. create a fat jar)
-  from {
-    configurations.runtimeClasspath.collect {
-      it.isDirectory() ? it : zipTree(it)
-    }
-  }
-
-  // Fix for FTBFS error below:
-  // Entry module-info.class is a duplicate but no duplicate handling strategy has been set.
-  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-}
-
-// Additional files to clean
-tasks.named('clean') {
-  delete 'src/main/resources/cache'
-  delete "${project.name}.jar"
-  delete "${project.name}-${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}.zip"
-}
-
-// ensure builds are reproducible
-// ref: https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
-tasks.withType(AbstractArchiveTask).configureEach {
-  preserveFileTimestamps = false
-  reproducibleFileOrder = true
 }
 
 tasks.register('createClientCache', Zip) {
   group 'build'
   description 'Create client cache for inclusion in the jar archive.'
-
   archiveFileName = 'ZipCache.zip'
-  destinationDirectory = file('src/main/resources/cache/')
-  from 'ClientCache/'
+  destinationDirectory = project(':app').file('src/main/resources/cache/')
+  from 'assets/cache/'
   include '**/*'
 }
 
-// Create client cache before processResources runs
-processResources.dependsOn(createClientCache)
+tasks.register('copyMapData', Copy) {
+  group 'build'
+  description 'Copy map data for inclusion in the jar archive.'
+  from 'assets/map'
+  into project(':app').file('src/main/resources/map')
+}
+
+tasks.register('prepareRelease', Copy) {
+  group 'Distribution'
+  description 'Prepare files for release zip.'
+  dependsOn ':app:build'
+
+  // Final JAR
+  from("${project(':app').getBuildDir()}/libs") {
+    rename 'app.jar', "${rootProject.name}.jar"
+  }
+
+  // documentation
+  from ("${rootProject.projectDir}") {
+    include 'doc/*'
+    include 'README.md', 'LICENSE'
+  }
+
+  into "build/${releaseName()}"
+}
+
+tasks.register('release', Zip) {
+  group 'Distribution'
+  description 'Create release zip for end-users.'
+  dependsOn prepareRelease
+
+  archiveFileName = "${releaseName()}.zip"
+
+  destinationDirectory = rootProject.getProjectDir()
+
+  from "build/${releaseName()}"
+  include '**/*'
+}

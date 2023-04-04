@@ -34,7 +34,7 @@ public class JARManipulator {
           new ZipOutputStream(new FileOutputStream(destinationArchive));
       Files.walkFileTree(
           sourceDir,
-          new SimpleFileVisitor<>() {
+          new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
               try {

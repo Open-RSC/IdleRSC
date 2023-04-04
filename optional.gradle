@@ -3,7 +3,7 @@ tasks.register('release', Exec) {
   description 'Create release zip for end-users.'
   dependsOn build
 
-  def releaseName = "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}"
+  def releaseName = "${project.name}-${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}"
 
   executable('git')
   args(
@@ -13,8 +13,6 @@ tasks.register('release', Exec) {
     'HEAD',
     '--add-file',
     "${project.name}.jar",
-    'run_linux.sh',
-    'run_windows.bat',
     'README.md',
     'doc/',
     '--output',
@@ -23,66 +21,5 @@ tasks.register('release', Exec) {
 
   doLast {
     println "Archive saved to ${releaseName}.zip"
-  }
-}
-
-// Obtain current commit hash
-ext.commitHash = { ->
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      executable('git')
-      args(
-        'rev-parse',
-        '--short',
-        'HEAD'
-      )
-      standardOutput = stdout
-    }
-    return stdout.toString().trim()
-  }
-  catch (ignored) {
-    return 'dev'
-  }
-}
-
-// Obtain current commit date
-ext.commitDate = { ->
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      executable('git')
-      args(
-        'show',
-        '--no-patch',
-        '--format=%cd',
-        '--date=format:%Y.%m.%d'
-      )
-      standardOutput = stdout
-    }
-    return stdout.toString().trim()
-  }
-  catch (ignored) {
-    return '2001.01.04'
-  }
-}
-
-// Obtain current commit count
-ext.commitCount = { ->
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      executable('git')
-      args(
-        'rev-list',
-        '--count',
-        'HEAD'
-      )
-      standardOutput = stdout
-    }
-    return stdout.toString().trim()
-  }
-  catch (ignored) {
-    return '1'
   }
 }

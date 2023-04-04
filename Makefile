@@ -24,6 +24,10 @@ clean: ## Clean everything up
 compare-cache: ## Compare cache contents
 	@scripts/compare-cache.sh
 
+.PHONY: compare-client
+compare-client: ## Compare client contents
+	@scripts/compare-client.sh
+
 .PHONY: update-cache
 update-cache: ## Update client cache
 	@scripts/update-cache.sh

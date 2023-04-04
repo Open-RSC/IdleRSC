@@ -1,9 +1,9 @@
-# Use OpenJDK 8 provided by Eclipse Temurin since the main jdk images have been
-# deprecated for a while now. Let's also use Ubuntu Jammy (22.04), which is the
-# most recent LTS release.
+# Use OpenJDK 11 provided by Eclipse Temurin since the main jdk images have
+# been deprecated for a while now. Let's also use Ubuntu Jammy (22.04), which
+# is the most recent LTS release.
 # Upstream reference: https://github.com/adoptium/containers
 default:
-  image: eclipse-temurin:8-jdk-jammy
+  image: eclipse-temurin:11-jdk-jammy
 
 stages:
   - format

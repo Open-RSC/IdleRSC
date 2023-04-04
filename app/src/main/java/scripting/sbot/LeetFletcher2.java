@@ -568,70 +568,80 @@ public class LeetFletcher2 extends Script {
   }
 
   public void BankBows() {
-    while (InvCount(648) > 0) ;
+    while (InvCount(648) > 0)
+      ;
     {
       Deposit(648, 25);
       Deposit(648, 1);
       Deposit(648, 1);
       Wait(500);
     }
-    while (InvCount(649) > 0) ;
+    while (InvCount(649) > 0)
+      ;
     {
       Deposit(649, 25);
       Deposit(649, 1);
       Deposit(649, 1);
       Wait(500);
     }
-    while (InvCount(650) > 0) ;
+    while (InvCount(650) > 0)
+      ;
     {
       Deposit(650, 25);
       Deposit(650, 1);
       Deposit(650, 1);
       Wait(500);
     }
-    while (InvCount(651) > 0) ;
+    while (InvCount(651) > 0)
+      ;
     {
       Deposit(651, 25);
       Deposit(651, 1);
       Deposit(651, 1);
       Wait(500);
     }
-    while (InvCount(652) > 0) ;
+    while (InvCount(652) > 0)
+      ;
     {
       Deposit(652, 25);
       Deposit(652, 1);
       Deposit(652, 1);
       Wait(500);
     }
-    while (InvCount(653) > 0) ;
+    while (InvCount(653) > 0)
+      ;
     {
       Deposit(653, 25);
       Deposit(653, 1);
       Deposit(653, 1);
       Wait(500);
     }
-    while (InvCount(654) > 0) ;
+    while (InvCount(654) > 0)
+      ;
     {
       Deposit(654, 25);
       Deposit(654, 1);
       Deposit(654, 1);
       Wait(500);
     }
-    while (InvCount(655) > 0) ;
+    while (InvCount(655) > 0)
+      ;
     {
       Deposit(655, 25);
       Deposit(655, 1);
       Deposit(655, 1);
       Wait(500);
     }
-    while (InvCount(656) > 0) ;
+    while (InvCount(656) > 0)
+      ;
     {
       Deposit(656, 25);
       Deposit(656, 1);
       Deposit(656, 1);
       Wait(500);
     }
-    while (InvCount(657) > 0) ;
+    while (InvCount(657) > 0)
+      ;
     {
       Deposit(657, 25);
       Deposit(657, 1);
@@ -642,70 +652,80 @@ public class LeetFletcher2 extends Script {
   }
 
   public void BankUnstrungBows() {
-    while (InvCount(658) > 0) ;
+    while (InvCount(658) > 0)
+      ;
     {
       Deposit(658, 25);
       Deposit(658, 1);
       Deposit(658, 1);
       Wait(500);
     }
-    while (InvCount(659) > 0) ;
+    while (InvCount(659) > 0)
+      ;
     {
       Deposit(659, 25);
       Deposit(659, 1);
       Deposit(659, 1);
       Wait(500);
     }
-    while (InvCount(660) > 0) ;
+    while (InvCount(660) > 0)
+      ;
     {
       Deposit(660, 25);
       Deposit(660, 1);
       Deposit(660, 1);
       Wait(500);
     }
-    while (InvCount(661) > 0) ;
+    while (InvCount(661) > 0)
+      ;
     {
       Deposit(661, 25);
       Deposit(661, 1);
       Deposit(661, 1);
       Wait(500);
     }
-    while (InvCount(662) > 0) ;
+    while (InvCount(662) > 0)
+      ;
     {
       Deposit(662, 25);
       Deposit(662, 1);
       Deposit(662, 1);
       Wait(500);
     }
-    while (InvCount(663) > 0) ;
+    while (InvCount(663) > 0)
+      ;
     {
       Deposit(663, 25);
       Deposit(663, 1);
       Deposit(663, 1);
       Wait(500);
     }
-    while (InvCount(664) > 0) ;
+    while (InvCount(664) > 0)
+      ;
     {
       Deposit(664, 25);
       Deposit(664, 1);
       Deposit(664, 1);
       Wait(500);
     }
-    while (InvCount(665) > 0) ;
+    while (InvCount(665) > 0)
+      ;
     {
       Deposit(665, 25);
       Deposit(665, 1);
       Deposit(665, 1);
       Wait(500);
     }
-    while (InvCount(666) > 0) ;
+    while (InvCount(666) > 0)
+      ;
     {
       Deposit(666, 25);
       Deposit(666, 1);
       Deposit(666, 1);
       Wait(500);
     }
-    while (InvCount(667) > 0) ;
+    while (InvCount(667) > 0)
+      ;
     {
       Deposit(667, 25);
       Deposit(667, 1);

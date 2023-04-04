@@ -212,10 +212,12 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
         if ((System.currentTimeMillis() - delayStart) / 1000L > chatDelay) {
           if (merchantMode == 0) {
             setTypeLine("Selling " + itemName + " for " + int_format(itemPrice) + "ea!");
-            while (!next()) ;
+            while (!next())
+              ;
           } else {
             setTypeLine("Buying " + itemName + " for " + int_format(itemPrice) + " ea!");
-            while (!next()) ;
+            while (!next())
+              ;
           }
           delayStart = System.currentTimeMillis();
         }
@@ -247,7 +249,8 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
                 if (maxStack < itemAmount && i == 0) {
                   itemAmount = maxStack;
                   setTypeLine("I only have " + maxStack + " left, sorry!");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
               } else {
@@ -257,37 +260,43 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
                 if (itemID.size() == 1 && itemAmount > 12) {
                   itemAmount = 12;
                   setTypeLine("I can only trade 12 at a time.");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
                 if (itemID.size() == 2 && itemAmount > 6) {
                   itemAmount = 6;
                   setTypeLine("I can only trade 6 sets at a time.");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
                 if (itemID.size() == 3 && itemAmount > 4) {
                   itemAmount = 4;
                   setTypeLine("I can only trade 4 sets at a time.");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
                 if (itemID.size() == 4 && itemAmount > 3) {
                   itemAmount = 3;
                   setTypeLine("I can only trade 3 sets at a time.");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
                 if (itemID.size() > 4 && itemID.size() < 12 && itemAmount > 2) {
                   itemAmount = 2;
                   setTypeLine("I can only trade 2 sets at a time.");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
                 if (itemID.size() == 12 && itemAmount > 1) {
                   itemAmount = 1;
                   setTypeLine("I can only trade 1 sets at a time.");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
               }
@@ -301,7 +310,8 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
               // If they remove money and want to buy less then we need to start over
               else {
                 setTypeLine("Sorry, I cannot remove items and we need to start over.");
-                while (!next()) ;
+                while (!next())
+                  ;
                 declineTrade();
                 return random(4000, 6000);
               }
@@ -323,13 +333,15 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
                   "I am selling them for "
                       + itemPrice
                       + "ea, please enter the exact number of coins.");
-              while (!next()) ;
+              while (!next())
+                ;
               return random(4000, 6000);
             }
             // Otherwise we want to start over because we cannot remove offered items
             else {
               setTypeLine("Sorry, I cannot remove items and we need to start over.");
-              while (!next()) ;
+              while (!next())
+                ;
               declineTrade();
               return random(4000, 6000);
             }
@@ -350,7 +362,8 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
                 if (maxStack < itemAmount && i == 0) {
                   itemAmount = maxStack;
                   setTypeLine("I only have enough to buy " + itemAmount + ".");
-                  while (!next()) ;
+                  while (!next())
+                    ;
                   return random(4000, 6000);
                 }
 
@@ -375,7 +388,8 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
               // Otherwise we decline because we cannot remove offered items
               else {
                 setTypeLine("Sorry, I cannot remove items and we need to start over.");
-                while (!next()) ;
+                while (!next())
+                  ;
                 declineTrade();
                 return random(4000, 6000);
               }
@@ -390,13 +404,15 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
             // If we have not offered coins yet then we should inform them what to do
             if (coinsOffered < 1) {
               setTypeLine("Please add the item I am trying to buy to the trade screen");
-              while (!next()) ;
+              while (!next())
+                ;
               return random(2000, 3000);
             }
             // Otherwise delcine because we cannot remove offered items
             else {
               setTypeLine("Sorry, I cannot remove items and we need to start over.");
-              while (!next()) ;
+              while (!next())
+                ;
               declineTrade();
               return random(2000, 3000);
             }
@@ -419,7 +435,8 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
           // Otherwise delince
           else {
             setTypeLine("Exact ammount of gold pieces only please");
-            while (!next()) ;
+            while (!next())
+              ;
             declineTrade();
             return random(4000, 6000);
           }
@@ -433,7 +450,8 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
               if (itemAmount != getRemoteTradeItemStack(getRemoteTradeItemIndex(i))) {
                 // Decline if something is off
                 setTypeLine("Numbers do not match lets restart.");
-                while (!next()) ;
+                while (!next())
+                  ;
                 declineTrade();
                 return random(4000, 6000);
               }
@@ -443,7 +461,8 @@ public final class SAF_GrandExchange extends Script implements ActionListener {
               if (itemAmount != hasOtherTradedAmountInt(itemID.get(i))) {
                 // Decline if something is off
                 setTypeLine("Numbers do not match lets restart.");
-                while (!next()) ;
+                while (!next())
+                  ;
                 declineTrade();
                 return random(4000, 6000);
               }

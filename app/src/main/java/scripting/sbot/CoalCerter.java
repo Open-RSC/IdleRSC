@@ -16,11 +16,14 @@ public class CoalCerter extends Script {
         TalkToNPC(CerterID);
         Wait(2000);
       }
-      for (; !QuestMenu(); Wait(25)) ;
+      for (; !QuestMenu(); Wait(25))
+        ;
       Answer(1);
-      for (; !QuestMenu(); Wait(25)) ;
+      for (; !QuestMenu(); Wait(25))
+        ;
       Answer(1);
-      for (; !QuestMenu(); Wait(25)) ;
+      for (; !QuestMenu(); Wait(25))
+        ;
       Answer(4);
       Wait(1000);
 
@@ -29,7 +32,8 @@ public class CoalCerter extends Script {
       while (!QuestMenu()) {
         int BankerID = GetNearestNPC(95);
         TalkToNPC(BankerID);
-        while (QuestMenu()) ;
+        while (QuestMenu())
+          ;
         Wait(1500);
       }
       Answer(0);

@@ -78,7 +78,8 @@ public class SAF_Market extends Script {
     }
     if (control == 1 && !isInTradeOffer() && !isInTradeConfirm()) {
       traded_ammount = 0;
-      while (!next()) ;
+      while (!next())
+        ;
       control = 0;
       return 7500;
     }
@@ -97,13 +98,15 @@ public class SAF_Market extends Script {
           if (max_stack < item_ammount) {
             item_ammount = max_stack;
             setTypeLine("This is all I have left.");
-            while (!next()) ;
+            while (!next())
+              ;
           }
         } else {
           if (gp_count / selling_ammount > 12) {
             item_ammount = 12;
             setTypeLine("I can only trade 12 at a time.");
-            while (!next()) ;
+            while (!next())
+              ;
           } else {
             item_ammount = gp_count / selling_ammount;
           }
@@ -127,11 +130,13 @@ public class SAF_Market extends Script {
         traded_ammount = 0;
         confirmTrade();
         setTypeLine("Thank you for your business!");
-        while (!next()) ;
+        while (!next())
+          ;
         return 5000;
       } else {
         setTypeLine("Exact ammount of gold pieces only please");
-        while (!next()) ;
+        while (!next())
+          ;
         traded_ammount = 0;
         declineTrade();
         return 5000;

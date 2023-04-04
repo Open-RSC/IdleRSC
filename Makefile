@@ -9,15 +9,15 @@ RST?=$(shell tput sgr0)
 ##@ Build
 .PHONY: build
 build: ## Build the project
-	./gradlew --build-cache build
+	./gradlew --build-cache --parallel build
 
 .PHONY: release
 release: ## Create a release archive
-	./gradlew --build-cache release
+	./gradlew --build-cache --parallel release
 
 .PHONY: clean
 clean: ## Clean everything up
-	./gradlew clean
+	./gradlew --parallel clean
 
 ##@ Maintenance
 .PHONY: compare-cache

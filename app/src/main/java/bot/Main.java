@@ -760,6 +760,7 @@ public class Main {
   private static void handleCache(Config config) {
     final int COLESLAW_PORT = 43599;
     final int URANIUM_PORT = 43235;
+
     // Does the directory exist?
     File cacheDirectory = new File("Cache/");
 
@@ -823,6 +824,8 @@ public class Main {
   }
 
   private static void createCache(int ServerPort) {
+    final String GAME_IP = "game.openrsc.com";
+
     // Create Cache directory
     File dir = new File("." + File.separator + "Cache");
     dir.mkdirs();
@@ -834,11 +837,15 @@ public class Main {
       System.out.print(ignored);
     }
 
-    // Add port to client cache
+    // Add ip & port to client cache
     try {
       FileWriter portFile = new FileWriter("Cache/port.txt");
       portFile.write(Integer.toString(ServerPort));
       portFile.close();
+
+      FileWriter ipFile = new FileWriter("Cache/ip.txt");
+      ipFile.write(GAME_IP);
+      ipFile.close();
     } catch (IOException ignored) {
       System.out.print(ignored);
     }

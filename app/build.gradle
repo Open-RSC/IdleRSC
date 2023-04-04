@@ -9,6 +9,8 @@ plugins {
   id 'bundle-dependencies'
   // Use metadata from git
   id 'git-metadata'
+  // Enable additional compiler warnings
+  id 'compiler-warnings'
 }
 
 // Tasks not related to build are split out into their own gradle scripts
@@ -39,11 +41,6 @@ tasks.named('compileJava') {
   // Run spotlessApply after successful compilation rather than before, so
   // that any developer errors can be dealt with prior to formatting
   finalizedBy spotlessApply
-
-  options.compilerArgs += [
-    '-Xlint:deprecation',
-    '-Xlint:unchecked',
-  ]
 }
 
 tasks.named('jar') {

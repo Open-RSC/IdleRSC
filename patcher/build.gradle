@@ -7,6 +7,8 @@ plugins {
   id 'reproducible-archives'
   // Bundle all dependencies (a.k.a. create a fat jar)
   id 'bundle-dependencies'
+  // Enable additional compiler warnings
+  id 'compiler-warnings'
 }
 
 // Tasks not related to build are split out into their own gradle scripts

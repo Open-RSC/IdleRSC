@@ -13,3 +13,13 @@ export CORE_REPOSITORY_DIR="${ASSET_DIR}/${CORE_REPOSITORY_NAME}"
 export CLIENT_BASE_DIR="${CORE_REPOSITORY_DIR}/Client_Base"
 export PC_CLIENT_DIR="${CORE_REPOSITORY_DIR}/PC_Client"
 
+hashdir() {
+  find \
+    . \
+    -type f \
+    -not -path '*/\.git/*' \
+    -exec sha256sum {} + | \
+    LC_ALL=C sort | \
+    sha256sum | \
+    cut -d ' ' -f 1
+}

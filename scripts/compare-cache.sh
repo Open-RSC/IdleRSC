@@ -7,17 +7,6 @@ fi
 
 source scripts/variables.sh
 
-hashdir() {
-  find \
-    . \
-    -type f \
-    -not -path '*/\.git/*' \
-    -exec sha256sum {} + | \
-    LC_ALL=C sort | \
-    sha256sum | \
-    cut -d ' ' -f 1
-}
-
 TMP_HASHDIR="$(mktemp --tmpdir --directory cache-hash.XXXXXXXXXX)"
 
 # assets hash

@@ -13,7 +13,7 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - apt-get update --quiet --assume-yes
-  - apt-get install --quiet --assume-yes git
+  - apt-get install --quiet --assume-yes git make
 
 # git rev-list --count does not work correctly with the default settings.
 variables:

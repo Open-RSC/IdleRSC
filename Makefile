@@ -9,15 +9,15 @@ RST?=$(shell tput sgr0)
 ##@ Build
 .PHONY: build
 build: ## Build the project
-	./gradlew build
+	@./gradlew build
 
 .PHONY: release
 release: ## Create a release archive
-	./gradlew release
+	@./gradlew release
 
 .PHONY: clean
 clean: ## Clean everything up
-	./gradlew clean
+	@./gradlew clean
 
 ##@ Maintenance
 .PHONY: compare-cache
@@ -48,9 +48,13 @@ help: ## Display this help
 
 .PHONY: build-javadoc
 build-javadoc: ## Build API documentation
-	./gradlew app:javadoc
-	cp -r app/build/docs/javadoc public
+	@./gradlew app:javadoc
+	@cp -r app/build/docs/javadoc public
 
 .PHONY: check-format
 check-format: ## Check if source code is properly formatted
-	./gradlew spotlessCheck
+	@./gradlew spotlessCheck
+
+.PHONY: format
+format: ## Format source code
+	@./gradlew spotlessApply

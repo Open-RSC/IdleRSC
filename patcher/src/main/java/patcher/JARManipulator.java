@@ -1,59 +1,46 @@
 package patcher;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class JARManipulator {
-  // https://github.com/gradle/gradle/blob/b9d0cd50ede118abc09ccb3a43c452a8e22a33f5/subprojects/core/src/main/java/org/gradle/api/internal/file/archive/ZipCopyAction.java#L56
-  private static final LocalDateTime CONSTANT_TIME_FOR_ZIP_ENTRIES =
-      new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
-          .toZonedDateTime()
-          .toLocalDateTime();
+  private static final int BUFFER_SIZE = 4096;
 
   /**
-   * Creates a compressed archive that is reproducible (via static timestamps). TODO: throw
-   * Exceptions
+   * Creates a compressed archive that is reproducible (via static timestamps).
    *
    * @param sourceDirectory Directory to pack up into an archive.
    * @param destinationArchive Resultant archive.
    */
-  public static void compress(String sourceDirectory, String destinationArchive) {
-    final Path sourceDir = Paths.get(sourceDirectory);
-    try {
-      final ZipOutputStream outputStream =
-          new ZipOutputStream(new FileOutputStream(destinationArchive));
-      Files.walkFileTree(
-          sourceDir,
-          new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
-              try {
-                Path targetFile = sourceDir.relativize(file);
-                ZipEntry newEntry = new ZipEntry(targetFile.toString());
-                newEntry.setTimeLocal(CONSTANT_TIME_FOR_ZIP_ENTRIES);
-                outputStream.putNextEntry(newEntry);
-                byte[] bytes = Files.readAllBytes(file);
-                outputStream.write(bytes, 0, bytes.length);
-                outputStream.closeEntry();
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-              return FileVisitResult.CONTINUE;
-            }
-          });
-      outputStream.close();
-    } catch (IOException e) {
-      e.printStackTrace();
+  public static void compress(String sourceDirectory, String destinationArchive)
+      throws IOException {
+    File directory = new File(sourceDirectory);
+    Path zipPath = Paths.get(destinationArchive);
+    try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipPath))) {
+      Files.walk(directory.toPath())
+          .filter(path -> !Files.isDirectory(path))
+          .forEach(
+              path -> {
+                try {
+                  String relativePath = directory.toPath().relativize(path).toString();
+                  ZipEntry entry = new ZipEntry(relativePath);
+                  zos.putNextEntry(entry);
+                  BufferedInputStream bis =
+                      new BufferedInputStream(Files.newInputStream(path.toFile().toPath()));
+                  byte[] bytesIn = new byte[BUFFER_SIZE];
+                  int read;
+                  while ((read = bis.read(bytesIn)) != -1) {
+                    zos.write(bytesIn, 0, read);
+                  }
+                  bis.close();
+                  zos.closeEntry();
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+              });
     }
   }
 
@@ -68,7 +55,7 @@ public class JARManipulator {
       throws IOException {
     File destDir = new File(destinationDirectory);
     byte[] buffer = new byte[1024];
-    ZipInputStream zin = new ZipInputStream(new FileInputStream(archiveFile));
+    ZipInputStream zin = new ZipInputStream(Files.newInputStream(Paths.get(archiveFile)));
     ZipEntry zipEntry = zin.getNextEntry();
 
     while (zipEntry != null) {

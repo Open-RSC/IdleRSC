@@ -56,6 +56,12 @@ tasks.register('prepareRelease', Copy) {
   from ("${rootProject.projectDir}") {
     include 'doc/*'
     include 'README.md', 'LICENSE'
+    exclude 'doc/run_*'
+  }
+
+  // run_* scripts
+  from ("${rootProject.projectDir}/doc") {
+    include 'run_*'
   }
 
   into "build/${releaseName()}"
@@ -71,6 +77,6 @@ tasks.register('release', Zip) {
   destinationDirectory = rootProject.getProjectDir()
 
   from('build') {
-    include "${releaseName()}/**/*" 
+    include "${releaseName()}/**/*"
   }
 }

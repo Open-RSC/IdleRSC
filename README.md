@@ -51,7 +51,7 @@ Releases are automatically generated upon every commit to the GitLab
 
 The client provided by Open RSC has an alternate UI that can be toggled by
 opening `Cache/config.txt` and changing the number on the `Menu:` line to
-0 (classic) or 1 (alternate).
+`0` (classic) or `1` (alternate).
 
 ### Stake Switcher
 

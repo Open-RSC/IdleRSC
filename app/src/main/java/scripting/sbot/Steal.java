@@ -17,8 +17,7 @@ public class Steal extends Script {
         if (Fatigue() >= 95 && Running()) {
           for (; !Sleeping() && Running(); Wait(2500)) Use(FindInv(1263));
 
-          for (; Sleeping() && Running(); Wait(100))
-            ;
+          for (; Sleeping() && Running(); Wait(100)) ;
         }
       }
     }

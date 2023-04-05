@@ -184,15 +184,9 @@ public class Main {
 
   /** The initial program entrypoint for IdleRSC. */
   public static void main(String[] args)
-      throws MalformedURLException,
-          ClassNotFoundException,
-          NoSuchMethodException,
-          SecurityException,
-          InstantiationException,
-          IllegalAccessException,
-          IllegalArgumentException,
-          InvocationTargetException,
-          InterruptedException {
+      throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
+          SecurityException, InstantiationException, IllegalAccessException,
+          IllegalArgumentException, InvocationTargetException, InterruptedException {
     CLIParser parser = new CLIParser();
     ParseResult parseResult = null;
     Version version = new Version();

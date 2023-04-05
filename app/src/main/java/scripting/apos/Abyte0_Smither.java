@@ -91,8 +91,7 @@ public class Abyte0_Smither extends Abyte0_Script {
       // si devant porte on ouvre et on entre dans la house
       int[] doorObj = getWallObjectById(2);
       if (doorObj[0] != -1) {
-        if (isAtApproxCoords(doorObj[1], doorObj[2], 5))
-          ;
+        if (isAtApproxCoords(doorObj[1], doorObj[2], 5)) ;
         atWallObject(doorObj[1], doorObj[2]);
       }
       // atWallObject(514,454);
@@ -103,8 +102,7 @@ public class Abyte0_Smither extends Abyte0_Script {
       // si devant porte on ouvre et on sort de la house
       int[] doorObj = getWallObjectById(2);
       if (doorObj[0] != -1) {
-        if (isAtApproxCoords(doorObj[1], doorObj[2], 5))
-          ;
+        if (isAtApproxCoords(doorObj[1], doorObj[2], 5)) ;
         atWallObject(doorObj[1], doorObj[2]);
       }
       // atWallObject(514,454);

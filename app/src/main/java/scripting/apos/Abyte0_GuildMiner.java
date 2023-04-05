@@ -113,8 +113,7 @@ public class Abyte0_GuildMiner extends Abyte0_Script {
           // Si a lexterieur de la House
           doorObj = getWallObjectById(2);
           if (doorObj[0] != -1) {
-            if (isAtApproxCoords(doorObj[1], doorObj[2], 5))
-              ;
+            if (isAtApproxCoords(doorObj[1], doorObj[2], 5)) ;
             atWallObject(doorObj[1], doorObj[2]);
           }
           print("Step Inside House");
@@ -163,8 +162,7 @@ public class Abyte0_GuildMiner extends Abyte0_Script {
         print("Step Outside House");
         doorObj = getWallObjectById(2);
         if (doorObj[0] != -1) {
-          if (isAtApproxCoords(doorObj[1], doorObj[2], 5))
-            ;
+          if (isAtApproxCoords(doorObj[1], doorObj[2], 5)) ;
           atWallObject(doorObj[1], doorObj[2]);
         }
         walkTo(274, 562);

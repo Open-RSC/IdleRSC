@@ -182,8 +182,7 @@ public class HerberTaverly extends Script {
               AttackNPC(k);
               for (;
                   System.currentTimeMillis() - l <= (long) j && !InCombat() && Running();
-                  Wait(1))
-                ;
+                  Wait(1)) ;
             }
             if (LastChatMessage() != null) {
               T = LastChatMessage();
@@ -233,8 +232,7 @@ public class HerberTaverly extends Script {
     Answer(0);
     Wait(500);
     Answer(0);
-    for (; !Bank(); Wait(100))
-      ;
+    for (; !Bank(); Wait(100)) ;
     for (; Bank(); CloseBank()) {
       for (; InvCount(165) > 0; Wait(200)) Deposit(165, 1);
 

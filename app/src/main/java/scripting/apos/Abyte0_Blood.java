@@ -164,8 +164,7 @@ public class Abyte0_Blood extends Abyte0_Script {
       print("Step Outside House");
       int[] doorObj = getWallObjectById(2);
       if (doorObj[0] != -1) {
-        if (isAtApproxCoords(doorObj[1], doorObj[2], 5))
-          ;
+        if (isAtApproxCoords(doorObj[1], doorObj[2], 5)) ;
         atWallObject(doorObj[1], doorObj[2]);
       }
       walkTo(612, 573);

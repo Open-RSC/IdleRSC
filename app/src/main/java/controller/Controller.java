@@ -91,9 +91,7 @@ public class Controller {
     mud = _mud;
   }
 
-  /**
-   * @return Whether or not a script is currently running.
-   */
+  /** @return Whether or not a script is currently running. */
   public boolean isRunning() {
     return Main.isRunning();
   }
@@ -103,9 +101,7 @@ public class Controller {
     Main.setRunning(false);
   }
 
-  /**
-   * @param ms Sleeps for the specified amount of milliseconds.
-   */
+  /** @param ms Sleeps for the specified amount of milliseconds. */
   public void sleep(int ms) {
     try {
       Thread.sleep(ms);
@@ -142,9 +138,7 @@ public class Controller {
     client.keyPressed(new KeyEvent(client, 1, 20, 1, 10, key));
   }
 
-  /**
-   * @param rstext Sends the specified message via chat. Y ou may use @col@ colors here.
-   */
+  /** @param rstext Sends the specified message via chat. Y ou may use @col@ colors here. */
   public void chatMessage(String rstext) {
     for (char c : rstext.toCharArray()) {
       typeKey(c);
@@ -152,9 +146,7 @@ public class Controller {
     typeKey('\n');
   }
 
-  /**
-   * @param mode Sets the fight mode.
-   */
+  /** @param mode Sets the fight mode. */
   public void setFightMode(int mode) {
     mud.setCombatStyle(mode);
 

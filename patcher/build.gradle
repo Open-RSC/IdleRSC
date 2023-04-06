@@ -29,7 +29,6 @@ tasks.named('jar') {
     attributes 'Main-Class': 'patcher.Main'
   }
 
-  // fix error:
-  // Entry module-info.class is a duplicate but no duplicate handling strategy has been set.
+  // FTBFS: Set duplicate handling strategy for module-info.class.
   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }

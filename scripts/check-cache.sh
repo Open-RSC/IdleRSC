@@ -21,9 +21,14 @@ pushd "${TMP_HASHDIR}" &>/dev/null || exit 1
 popd &>/dev/null || exit 1
 
 if [ "${ASSETS_HASH}" = "${CORE_HASH}" ]; then
-  echo "Cache does not need to be updated"
+  echo "Cache does not need to be updated!"
 else
-  echo "Cache needs to be updated!"
+  echo "Updating cache…"
+  # clean cache directory
+  rm -rf "${ASSET_DIR}/cache"
+
+  # update cache
+  mv "${TMP_HASHDIR}" "${ASSET_DIR}/cache"
 fi
 
 # remove temporary directory on exit

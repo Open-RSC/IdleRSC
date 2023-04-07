@@ -20,17 +20,13 @@ clean: ## Clean everything up
 	@./gradlew clean
 
 ##@ Maintenance
-.PHONY: compare-cache
-compare-cache: ## Compare cache contents
-	@scripts/compare-cache.sh
+.PHONY: check-cache
+check-cache: ## Check cache contents and update if necessary
+	@scripts/check-cache.sh
 
 .PHONY: compare-client
 compare-client: ## Compare client contents
 	@scripts/compare-client.sh
-
-.PHONY: update-cache
-update-cache: ## Update client cache
-	@scripts/update-cache.sh
 
 .PHONY: update-client
 update-client: ## Update client source

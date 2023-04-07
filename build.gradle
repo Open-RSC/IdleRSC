@@ -9,6 +9,16 @@ ext.releaseName = { ->
   return "${rootProject.getName()}-${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}"
 }
 
+tasks.register('run', JavaExec) {
+  group 'build'
+  description 'Run IdleRSC.'
+  dependsOn ':app:build'
+
+  File appJar = new File(project(':app').getBuildDir(), "libs/${project(':app').getName()}.jar")
+
+  classpath = files(appJar)
+}
+
 tasks.register('buildPatchedClient', JavaExec) {
   group 'build'
   description 'Create patched client jar archive.'

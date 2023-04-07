@@ -34,9 +34,10 @@ update-core: ## Update core repository
 
 ##@ Utility/CI
 .DEFAULT_GOAL = help
-.PHONY: help
-help: ## Display this help
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  $(YELLOW)make$(RST) $(BLUE)command$(RST)\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  $(BLUE)%-15s$(RST) %s\n", $$1, $$2 } /^##@/ { printf "\n$(BOLD)%s$(RST)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+.PHONY: run
+run: ## Compile & run the project
+	@./gradlew run
 
 .PHONY: build-javadoc
 build-javadoc: ## Build API documentation
@@ -50,3 +51,7 @@ check-format: ## Check if source code is properly formatted
 .PHONY: format
 format: ## Format source code
 	@./gradlew spotlessApply
+
+.PHONY: help
+help: ## Display this help
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  $(YELLOW)make$(RST) $(BLUE)command$(RST)\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  $(BLUE)%-15s$(RST) %s\n", $$1, $$2 } /^##@/ { printf "\n$(BOLD)%s$(RST)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)

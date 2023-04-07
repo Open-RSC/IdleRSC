@@ -807,6 +807,7 @@ public class Main {
     cacheFrame.pack();
     cacheFrame.setLocationRelativeTo(null);
     cacheFrame.setVisible(true);
+    cacheFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     while (!cacheDirectory.exists()) {
 

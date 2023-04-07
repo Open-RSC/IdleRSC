@@ -13,6 +13,7 @@ export CORE_REPOSITORY_DIR="${ASSET_DIR}/${CORE_REPOSITORY_NAME}"
 export CLIENT_BASE_DIR="${CORE_REPOSITORY_DIR}/Client_Base"
 export PC_CLIENT_DIR="${CORE_REPOSITORY_DIR}/PC_Client"
 
+# creates a deterministic hash of the current directory
 hashdir() {
   find \
     . \
@@ -22,4 +23,13 @@ hashdir() {
     LC_ALL=C sort | \
     sha256sum | \
     cut -d ' ' -f 1
+}
+
+# checks if the core repository exists
+core_repository_exists() {
+  if [ ! -d "${CORE_REPOSITORY_DIR}" ]; then
+    return 1
+  else
+    return 0
+  fi
 }

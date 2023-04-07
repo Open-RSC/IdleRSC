@@ -25,9 +25,15 @@ pushd "${TMP_HASHDIR}" &>/dev/null || exit 1
 popd &>/dev/null || exit 1
 
 if [ "${CLIENT_HASH}" = "${CORE_HASH}" ]; then
-  echo "Client does not need to be updated"
+  echo "Client does not need to be updated!"
 else
-  echo "Client needs to be updated!"
+  echo "Updating client…"
+
+  # clean client directory
+  rm -rf "${CLIENT_DIR:?}/src"
+
+  # update client
+  mv "${TMP_HASHDIR}/src" "${CLIENT_DIR}/src"
 fi
 
 # remove temporary directory on exit

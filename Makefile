@@ -24,13 +24,9 @@ clean: ## Clean everything up
 check-cache: ## Check cache contents and update if necessary
 	@scripts/check-cache.sh
 
-.PHONY: compare-client
-compare-client: ## Compare client contents
-	@scripts/compare-client.sh
-
-.PHONY: update-client
-update-client: ## Update client source
-	@scripts/update-client.sh
+.PHONY: check-client
+check-client: ## Check client contents and update if necessary
+	@scripts/check-client.sh
 
 .PHONY: update-core
 update-core: ## Update core repository

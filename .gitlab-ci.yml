@@ -13,7 +13,7 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - apt-get update --quiet --assume-yes
-  - apt-get install --quiet --assume-yes git
+  - apt-get install --quiet --assume-yes git make
 
 # git rev-list --count does not work correctly with the default settings.
 variables:
@@ -37,7 +37,7 @@ cache:
 format:
   stage: format
   script:
-    - ./gradlew --build-cache spotlessCheck
+    - make check-format
 
 # Explicitly state to gradle wrapper that we want the cache to be enabled,
 # build a release zip, then upload the zip artifact to Gitlab CI for end-users
@@ -45,18 +45,16 @@ format:
 build:
   stage: build
   script: 
-    - ./gradlew --build-cache release
+    - make release
   artifacts:
     paths:
       - ./*.zip
-    expire_in: 1 week
 
 # Upload Javadoc API documentation to Gitlab pages.
 pages:
   stage: pages
   script: 
-    - ./gradlew --build-cache updateDocumentation
-    - cp -r doc public
+    - make build-javadoc
   artifacts:
     paths:
       - public

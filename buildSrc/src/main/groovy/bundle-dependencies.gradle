@@ -1,0 +1,8 @@
+// Modify jar task to include all dependencies (a.k.a. create a fat jar)
+tasks.named('jar') {
+  from {
+    configurations.runtimeClasspath.collect {
+      it.isDirectory() ? it : zipTree(it)
+    }
+  }
+}

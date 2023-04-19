@@ -1,0 +1,570 @@
+MAY 05 2021 
+	It's been a while! IdleRSC has been updated to support new sprites.
+
+DEC 23 2021 -- XMAS RELEASE
+
+	New JAR release for Coleslaw update.
+
+	API Changes
+		*** logout() will no longer set auto login to false. Use setAutoLogin instead.***
+		 
+	New Scripts:
+		FarmGetInventoryItems -- prints items in the account.
+		
+
+	Bugfixes:
+		SmithingVarrock had a glitch which caused it not to bank.
+		AIOCooker bugfix
+
+OCT 31 2021
+	Client update.
+	
+	New Scripts:
+		FarmBankEverything -- Banks everything on the account then quits client.
+		BankGetBankItems -- Prints what is inside the bank then quits client.
+		FarmMassAcceptShantay -- Accepts all items at Shantay and then banks them. Waits for a trade.
+		FarmTradeEverything -- Opens bank and trades everything inside bank to account specified in arguments. To be used with FarmMassAcceptShantay.
+	
+	Bugfixes:
+		Coleslaw flickering fix.
+		Trade interrupts were broken somehow, now they're fixed.
+		S_Certer now properly handles bars in Draynor.
+		controller.log() now doesn't print twice to stdout
+		
+
+OCT 25 2021 -- *** Staking Pumpkins Edition ***
+	Player HP indicators added!
+	Item switcher added!
+		F5 => Attack
+		F6 => Strength
+		F7 => Defence
+		
+		Set via command line in your bat/sh file:
+			--attack-items 123,456
+			--strength-items 123,456
+			--defence-items 123,456
+	Spell caster added!
+		F8 to cast. 
+		
+		Set via command line in your bat/sh file:
+			--spell-id 2
+			
+	
+	Objects and NPCs will now show their IDs upon right clicking.
+	The inert "Settings" button has been replaced with a "PathWalker" button. This button conveniently launches PathWalker for manual playing!
+	
+	Bugfixes:
+		Last release broke running PathWalker. Sorry about that!
+		getPlayerAtCoord(x,y) no longer returns the local player.
+
+OCT 24 2021
+	Script breaks:
+		Should be no breaks this update, if there are any, please let me know!
+
+	APOS Scripts:
+		Quester_F2P -- Bugs ironed out, script is ready! Thanks Cleaned!
+		Updated PathWalker to Kristof's gate edits.
+		
+	New IdleRSC API calls:
+		atWallObject and atWallObject2, in case your script needs functionality which is not openDoor(x,y) friendly.
+			If you can, try to add it to openDoor(x,y) and submit a pull request, would appreciate it. It's much nicer to script with!
+		
+	Bugfixes:
+		APOS compatibility
+			useOnNpc now will use correct pathfinding when using item on an npc. Before, it would get stuck on walls.
+			Doors are now handled correctly.
+			getBankId array exception fix.
+			probable getQuestMenuOption NPE fix.
+			
+		Controller API
+			useItemOnWall now correctly uses direction in packet.
+			pickupItem now correctly will walk to the tile the item is on, as opposed to within 1 tile of the object.
+
+OCT 21 2021
+	Gradle job fixed to support newer versions of Gradle.
+	IdleRSC patcher made simpler (see other repository.)
+
+OCT 20 2021
+	New scripts pulled from APOS repository:
+		Abyte0_ArdMiner.java
+		Abyte0_ArdSmelter.java
+		Abyte0_ArdThiever.java
+		Abyte0_Blood.java
+		Abyte0_CatherbyCooker.java
+		Abyte0_CatherbyFisher.java
+		Abyte0_FallyMiner.java
+		Abyte0_Firemaking.java
+		Abyte0_GetSnape.java
+		Abyte0_GuildMiner.java
+		Abyte0_MagicSmelter.java
+		Abyte0_PowerWc.java
+		Abyte0_SAF.java
+		Abyte0_Script.java
+		Abyte0_Shaft.java
+		Abyte0_Sinister.java
+		Abyte0_Smither.java
+		Abyte0_SwampMiner.java
+		Abyte0_TraverlyShop.java
+		AlchWheat.java
+		B_Smithy.java
+		flax.java
+		GnomeAgility.java
+		PathWalker_Wild.java
+		rena_rdkpro.java
+		S_HighAlcher.java
+		S_TradeGiver.java
+		Shrimp.java
+		Storm_Script.java
+		YanilleLedge.java
+		
+	General bugfixes:
+		IdleRSC Sleeper will no longer type messages into the chat.
+
+MAY 5 2021
+	Client update
+	
+	New scripts to aid with farms:
+		SkipTutorialIsland -- skips tutorial island. After skipping, the bot will exit the process.
+		ObtainSleepingBag -- assuming the account is in lumbridge, trades "bilbo baggin" in Lumbridge. Upon receiving a sleeping bag, the bot will exit the process. 
+		BronzePickaxe -- walks to Barbarian village and picks up a bronze pickaxe. After picking up the pickaxe, the bot will exit the process. 
+		FarmPathWalkerArgs -- given x,y CLI args, walks to the coords. Upon reaching the specified coords, the bot will exit the process. 
+		FarmMassGive -- trades every user in a list and gives them the specified id, amount in the parameters.
+		FarmMassTake -- trades a user and accepts anything they give. (To be used with FarmMassGive)
+		FarmDropItemById -- drops all of the specified item ID in command line args. After dropping, the bot will exit the process.
+		FarmFollow -- follows the username specified in cli args. 
+		FarmLogout -- just logs out. After logging out, the bot will exit the process. Useful for creating accounts on tutorial island, during the creation screen.
+	
+	New API Call:
+		added getNearestObjectByIds -- not sure how i missed this one, but it's been added.
+		
+	General bugfixes:
+		Fixed compile_windows.bat (thanks Cleaned)
+		setTradeItems was broken due to a protocol change, it has been fixed
+		sleepHandler() now disables autologin
+
+	APOS Bugfixes:
+		NPE fix, accidentally used getNpcCount(), but getPlayerCount() should have been used instead.
+		NPE fix for getPlayerServerIndexFromLocalIndex(int local_index), which fixes S_Miner
+		NPE fix for getPlayerCoordsByServerIndex, which fixes S_Miner
+		getNpcByIdNotTalk and getNpcInExtendedRadius now correctly grab the nearest npc
+		getObjectById now returns the nearest object.
+		Naughty scripts which sleep for 0ms will be forced to sleep at least 1ms to reduce CPU usage.
+		getXpForLevel(statId) now uses the correct IdleRSC function
+	
+APR 15 2021 (again)
+	API Changes:
+		Similar to APOS, you can now code IdleRSC in an asynchronous fashion. This is not a requirement. 
+			For example; if you return 500, it will sleep for 500ms.  
+		**Script breaking change**: change the return type of start() to int. Return some int value at the end of your script.
+		useItemOnWall should work now.
+		
+	New scripts:
+		AntiDragonShields -- grabs shields from duke, banks in dray. Requires you to be at least that far in the quest, or quest completed. (Broken until invisible tile fix.)
+		CatherbyFishFarm -- fishes shrimps/anchovies and tuna/swords in Catherby. Automagically switches from net to harpoon when the time comes. Must start with both net and harpoon in inventory.
+		Wildberries -- gathers whiteberries in the wilderness. Requires antidragon shield and cooked sharks in the bank. Start in V East. **Will crash if you die. Have fun.**
+		Added a few of Cleaned's APOS scripts
+
+
+	APOS Bugfixes:
+		S_TavBlueDragons did not work on the members gate (the gate coords is not authentic.)
+		A few function calls which relied on getGroundItemsX/Y() were broken. They have been fixed.
+		APOS withdrawItem did not act correctly
+		
+
+APR 15 2021
+	New scripts:
+		Follow -- follows the username specified in command line args
+		Ledger -- does yanille ledge. Not death safe for the most part. Will withdraw food from bank if you fail. Start in Yanille dungeon.
+		
+	New IdleScript API calls:
+		getBlockingNpcServerIndex(int npcId) -- returns the server index of the specified NPC id, if it is blocking the bot from proceeding. (Not perfect yet, but better than nothing. Good script optimization.)
+		getNpcAtCoords(int x, int y) -- returns the server index of whatever NPC is currently on that tile. Good for preventing NPCs from blocking.
+		
+		
+		 
+	APOS conversions:
+		APOS constructors are now called at the correct time. This should fix several scripts. 
+		
+		S_EdgevilleDruids confirmed working
+		
+		S_Barbarian now works
+		S_Certer now works
+		S_EdgeGiants now works
+		
+		J_Quester confirmed broken
+		
+		YanilleLedge removed, crappy script, replaced by Ledger
+		
+	API Bugfixes:
+		walkPathReverse() will now actually walk the very last tile.
+		getGroundItemsX() and getGroundItemsY() now return coordinates with appropriate offsets.
+		
+	
+
+APR 14 2021
+	**APOS compatibility layer implemented!**
+	
+	Tested and verified scripts:
+		AByte0_DarkWizard
+		AByte0_Paladin
+		AlchWheatApos
+		ASCGiants
+		BankDepositAll
+		PathWalker
+		S_Catherby
+		S_Miner
+		S_Pickpocket
+		S_LowWall
+		S_Teleporter
+		SAF_Herblaw
+		
+	Please report any other scripts which have crashes. I am tracking them in a spreadsheet to fix them. **There WILL be broken scripts, but it will be better than the SBot trials we had.**
+	
+	APOS Compatibility limitations:
+		A small handful of non-critical functions are not implemented. Scripts should be able to work without these. If not, please let me know.
+		 
+		**Fatiguing scripts are not recommended to be ran at this time.**
+		 
+		The below scripts were removed because they use JSONgui or FieldPair: (they can probably be converted to not use these fairly easily.)
+			S_HeroesBlueDragon
+			S_ShieldCollector
+			S_TreeFletch
+			
+		The below scripts were removed because they have dependencies which are not implemented in IdleRSC:
+			JSONgui
+			JSON_Fighter
+			
+		**APOS is not aware of batching. Please update scripts with Script.isBatching().**
+			
+	Bug Fixes:
+		openDoor(x,y) now handles the Paladin tower door and cooking guild.
+		Assuming scripts are coded correctly, they should now actually 'stop'. (If they do not stop, it is because you have a loop which does not check for isRunning())
+
+	Other changes:		
+		**Potentially script breaking change**: openDoor(x,y) no longer "keeps trying" to open the door, please update your scripts if they need to 'keep trying.' (i.e. it is now non-blocking.)
+		In coding the APOS compatibility layer, a lot of Controller functions have been added, too many to list here.
+		
+APR 13 2021
+	Sleeping on a few SBot scripts should be fixed now.
+	Sleeper implemented. CAPTCHAs are solved by the idlersc.com:8080 server. If you would like to run a local OCR, specify "--localOCR true" on the command line.
+	Welcome screen is now automatically hidden (assuming the bot logs you in.)
+
+APR 11 2021
+	Added fatigueHook which tells the client what the current fatigue% is during sleep.
+	Fixed glitch where sleeping was causing client to break.
+
+APR 4 2021
+	Forgot to update sprites for Easter.
+	
+APR 3 2021
+	Client update
+
+MAR 27 2021
+	Added Seatta's VialCrafter bug fix for people getting stuck on seaweed spawns
+
+MAR 25 2021
+	Added Seatta's PotionMaker
+
+MAR 24 2021
+	Added Seatta's VialCrafter script
+	Added CatherbyLobs and VarrockRuneBuyer (untested)
+
+MAR 14 2021
+	Client break, fixed.
+	Seatta's MiningGuild script updated to be more stable
+
+MAR 9 2021
+	AIOCooker now has CLI parameters added by Red 
+	ArrowMaker now will stop after running out of arrows
+	Added Seatta's MiningGuild native script
+	My Valheim addiction continues to consume my soul
+	
+FEB 28 2021
+	SBot scripts no longer crash when getting in combat.
+	The prayer indicator on Uranium now correctly displays your max prayer.
+	Searos' ArrowMaker now correctly handles headless arrows
+	Damrau's DamRc now more reliable
+	
+
+FEB 25 2021
+	Command line parameters have been changed, see updated run bat/sh scripts. This will allow us to customize configs for the clients later on, such as disabling graphics on startup -- Red Bracket
+	Cloud botting tutorial using Google Cloud added to Guides -- Red Bracket
+	ColeslawGuildFisher parameter bugfix -- Red Bracket
+	Updated documentation 
+
+FEB 24 2021
+    New features:
+        Reset XP counter button added to sidepane
+        ::bothelp command added
+        SleepListener has been replaced with SleepCallback. This will increase performance, since one less thread will be
+            running and monitoring for packets every 10ms.
+        KeyListener has been added. This allows for scripts to implement actions on key presses.
+        Pressing F12 will show ::bothelp
+        Pressing F11 will stop the current running script and open the load script window.
+        Anti logout -- when the 'standing in one spot for too long' message comes up, your character will move.
+        Zoom out limit extended
+
+    API Changes:
+        New IdleScript interrupt - keyPressInterrupt
+        Implemented SBot function - KeyPress(int keycode)
+
+        Controller.openNearbyDoor(radius) -- opens any door within specific radius, if a closed door is found.
+        Controller.getNearestWallObjectById(id)
+
+	Bug fixes:
+	    Bot paint is no longer drawn over existing UI windows.
+	    package-info no longer shows in script loader.
+	    AIOSmelter will now run with no parameters, as before.
+	    XP drops no longer queue when graphics are turned off.
+	    Client updated. 
+
+	Bugs added:
+	    Who knows? :)
+
+
+FEB 23 2021 (again)
+    Graphics can now be enabled or disabled via the bot sidepane!
+	Hits, prayer, fatigue now displayed on Uranium
+	Fixed isAuthentic() returning true on Uranium for some reason.
+
+	Hitsplat interrupts have been added -- scripts will now be able to detect when a hitsplat occurs by overriding
+	    npcDamagedInterrupt(int, int) or playerDamagedInterrupt(int, int).
+    "::command" interrupts have been added -- scripts will now be able to detect and parse these commands by overriding
+        chatCommandInterrupt(String).
+
+	::show command added -- this unhides the bot sidepane if you've hidden it.
+	::hidepaint -- hides any paint from scripts etc
+	::showpaint -- shows any paint from scripts etc if previously hidden
+
+
+
+FEB 23 2021
+	XP counter now works on Uranium
+	Improved Uranium banking performance
+	GnomeFlaxx0r -- picks flax, optionally strings, in Gnome Stronghold
+	TaverlyBuyer script added -- buys vials and newts
+	VialFiller script added -- fills vials in Falador
+	Monkz -- basic script that kills monks in the lower level of the monastery. supports bone burying and prayer, with recharging at altar. 
+	Updated Searos' SpinStrings to work on Uranium
+	Updated PowerFletcha to use better tree id for normal trees
+	Searos' ArrowMaker now supports headless arrows
+	
+FEB 20 2021
+	AIOSmelter no longer tries to use "perfect gold bar" instead of "gold bar" for crafting jewelry
+	AIOMagic now has quicker wait times, leading to increased casts per hr. 
+	Controller.openBank() will now immediately return within ~10ms of the bank opening, leading to MUCH faster banking times for scripts that use it.
+
+
+FEB 19 2021
+	AIOSmelter now supports silver, gold, and gem furnace crafting items
+	AIOSmelter now supports command line arguments
+	Updated README.md to include OpenRSC Discord and IdleRSC donation link 
+	Added castSpellOnSelf to IdleRSC and SBot
+	Added AlchWheat for high/low alchemy training
+	AIOMagic -- handles magic bank spells (alching, enchanting, superheat) and teleporting.
+
+FEB 18 2021
+	You no longer have to create the Cache folder. Upon starting the bot for the first time, you can select Uranium or Coleslaw via a popup GUI.  
+	Screenshots are now output as PNG, not BMP.
+	Screenshots are now saved to the "Screenshots/" folder.
+	
+	AIOSmelter's goldsmithing gauntlets bug fixed.
+	AIOFighter now no longer freezes the whole client when unable to mage monsters. 
+	AIOFighter now will no longer logout if you equip arrows on Coleslaw.
+	AIOThiever will now walk outside after banking, instead of waiting for an NPC to become visible.
+	HerbHarvester and LimpySnapez should not get stuck on the Taverly gate if someone else walks through it. 
+	AIOCooker now has paint.
+	
+	New Controller method: getInventoryUniqueItemIds(). Useful for banking.
+	New Controller method: withdrawItemAsNote(id, amount). Only works on Coleslaw.
+	New Controller method: isItemIdEquipped(itemId). Required for Coleslaw support, since when you equip an item in Coleslaw, it is removed from your inventory.
+	New Controller method: quitIfAuthentic(). For scripts which are designed to only work on Coleslaw.
+	
+	
+
+FEB 17 2021
+	Minor Controller refactoring which does not break scripts. This is to make the javadoc more readable.
+	Controller now allows you to enable/disable bot paint (i.e. progress reports), bot status, bot coords, and bot xp counter.
+	Controller is now completely documented. Phew. 
+	Added documentation in most areas with public methods.  
+	Deleted CommandListener because it was useless. 
+	General code cleanup -- removing commnets which are no longer pertinent, etc.
+	Generic item data lookup calls will no longer return null if you lookup an item which does not exist.
+	
+	*** SCRIPT BREAKING CHANGES ***
+	currentZ() has been renamed to currentY().
+	objectAt() has been refactored. Direction and object ID are no longer needed.
+	getInventoryItemIdSlot(int itemId) renamed to getInventoryItemSlotIndex(int itemId).
+	shopItemCount(int itemId) renamed to getShopItemCount(int itemId)
+	shopItemPrice(int itemId) renamed to getShopItemPrice(int itemId)
+	optionsMenuText(int i) renamed to getOptionsMenuText(int i)
+	optionMenuCount() renamed to getOptionMenuCount()
+	createAccount() method deleted. createAccount(email) and createAccount(email, username, password) still remain.
+	
+
+FEB 16 2021
+	Global XP/hr calculation is now accurate.
+	AIOFighter, AIOThiever, LimpySnapez, GetMeToArdougne, HarvesterTrainer, HerbHarvester, HerbIdentifier, PowerFletcha now have paint progress reports. 
+	Flaxx0r now tracks flax per hour.
+	Searos updated Controller isDoorOpen to work on the crafting guild door.
+	Searos updated many of his scripts to support Paint
+	isInCombat() and isNpcInCombat() are now realtime and do not work based off the health bar. Thieving and fighting are _much_ more efficient!
+	Added DamRc by Damrau
+	
+FEB 15 2021
+    The client now has a patcher for patching the JAR for callbacks, see updated readme and https://gitlab.com/idlersc/idlersc_patcher
+    The client now shows status, coordinates, and XP gained on the main client window via the DrawCallback class.
+    paintInterrupt() is now available to scripts. This is how you paint on the screen -- see AKMiner for an example.
+    AKMiner now has a basic paint progress report.
+    PositionListener, MessageListener axed
+    MessageListener replaced with MessageCallback
+    Fixed NPE in openBank() caused by no teller or bank chest around.
+    Fixed annoying bug in walkPath()
+    Scripts can now modify the status text via Controller.setStatus();
+    "npcMessage" has been changed to "questMessage" to be more consistent
+    Flaxx0r script released! Picks and banks flax in Seers Village.
+    Added Searos' ArrowMaker script
+    Updated Searos' BuyFromShop -- now supports non-stackables via banking
+    Updated Searos' SellToShop -- now banks if it runs out
+    Updated Controller.getNearestBank() to find Falador West (Searos)
+    Added STS style level up message and screenshot. 
+
+FEB 12 2021
+	getDirection(x, y) will no longer return null if standing on x,y
+	atObject2 now uses getDirection(x,y)
+	isDoorOpen(x,y) will now say that barbarian walls are closed
+	openDoor(x,y) will now properly handle barbarian walls
+	getWallObjectIdAtCoord(x,y) added to controller
+	Added random offset to autologin to avoid flooding login
+	Updated Searos' scripts -- no longer deposit sleeping bags and other updates
+	New Searos script added: MineGoldCraftingGuild (Coleslaw only)
+	New Searos script added: SmithGearSet
+	SBot script arguments fixed again
+	HerberTaverly SBot script added
+	AIOFighter will now walk back to the starting tile if no NPCs are found
+	AIOThiever will now act less dumb when it comes to eating and logging out
+	GetMeToArdougne script released. Start in Lumbridge with no GP. Warning, the script is not death, skiller, or pure safe.
+	Increased sleep times on GetMeToArdougne
+
+
+FEB 11 2021
+	SBot scripts parameters now function as expected. (If your script no longer functions, please let me know which script.)
+	Controller's foodIds now includes new harvesting items. 
+	HerbIdentifier script added. This script will identify all herbs in your bank, starting with the highest level you can identify. 
+	LimpySnapez script added. This script will harvest snape grass and limpwurt roots in Taverly. Start in Taverly with herb clippers. 
+	Updated to latest client JAR (twice)
+
+FEB 10 2021
+	AutoLogin now works as expected, regardless of the cause of logout.
+
+FEB 9 2021
+	Fixed bug where accounts were getting logged out on Coleslaw for not having a sleeping bag.
+	Scripts on uranium will no longer get caught in an infinite loop if you do not have a sleeping bag and do not want to logout.
+	logout() will now turn off auto login.
+	Implemented Tyler's debugger. You can now see the ids of all objects in the game! Awesome change!
+
+FEB 8 2021
+    useItemOnNpc now correctly uses itemId instead of slotId -- if you had a script break this release, it may have been this!
+    SleepListener is now fully implemented. When slword.txt is updated by an OCR (likely FOCR), it will now input it into the sleep input box.
+    Searos' SmithingVarrock now supports arrowheads.
+    Searos' SpinStrings now uses walkToAsync and less likely to break from relogging
+    Searos' EssenceMiner now uses walkToAsync so it is less likely to get stuck
+    Searos' Woodcutting now uses walkToAsync so it is less likely to get stuck
+    Added Searos' ShearSheep, which banks wool from sheep in multiple areas. 
+    Added Searos' SelltoShop, which allows you to sell items to shops at a rate beneficial for income.
+    Searos' getNearestBank() added to Controller. This function returns the coords of the closest bank.
+    Searos' updated shopBuy/shopSell functions to handle multiple item amounts.
+
+	IdleRSC will now sleep on Uranium provided you are running FOCR: https://gitlab.com/idlersc/focr-resurrection
+
+FEB 6 2021
+	Merged Red's login fixes -- huge thanks to him for this! Now bots will attempt to re-login when DCed.
+	Merged Red's scrollbar fixes on logger -- thanks! Now maybe I'll use logger in my scripts...
+	Merged Red's createAccount call -- will be interesting to see what people will do with this.
+	Merged Red's guild fisher for coleslaw. 
+	Merged Searos' EssenceMiner
+	Merged Searos' AIOSmelter new support for Al-Kharid
+	Merged Searos' VarrockSmither
+	Merged Searos' FletchnBankBows update
+	Fixed shopItemID bug in Controller shop methods 
+	Merged Red's IntelliJ/gradle support
+	Merged Searos' Woodcutter update -- improved pathfinding, ability to stop added. 
+	Merged Searos' SpinStrings
+	HerbHarvester crashing fixed.
+	SleepListener added. When sleep is detected, image will be saved as hc.bmp.
+	
+	
+FEB 4 2021
+	Rearranged foodIds so that cake slices get aten before whole cakes.
+	getBankItemCount() works again.
+	AIOThiever now supports banking in Ardougne Square.
+	AIOThiever now supports command line arguments.
+	AIOThiever will now properly keep trying to logout.
+	AKMiner will now properly bank silver.
+	Added Searos' new script: FletchnBankBows
+	Added Searos' updated PowercraftTalisman
+	Added ceikry's ceikplates (SBot)
+	Added Gah's GuildMine_v7 (SBot) 
+	AIOCooker will now properly bank anchovies.
+	
+	
+FEB 2 2021
+	You can now run scripts from the command line! If it cannot find the script, it will immediately terminate and return 1.
+	Added dropItem(id, amt) to Controller
+	Added Searos' Woodcutting and PowercraftTalisman scripts. Very cool stuff!!!
+	Added Gah's fixed SBot scripts: YanilleIron and drayfish
+
+FEB 1 2021
+	Fixed GuildFish2 not handling sharks correctly.
+	Removed GuildFish to reduce confusion with GuildFish2. It also is a bad script compared to GuildFish2.
+	Batching support added to GuildFish2. 
+	AIOCooker properly exported, users should see it now in their listing.
+	AIOSmelter will now properly work on worlds where there is no right click bank option.
+	AIOSmelter will now not take forever to deposit items.
+	AIOSmelter now supports batching.
+	Added note about PowerTuna being used in Karamja, not Catherby.
+	AKMiner, AIOCooker and AIOSmelter will now keep trying to talk to a banker.
+	AIOFighter acts a little less dumb. It's still dumb though.
+	AIOFighter will no longer crash if no monsters are around while you are maging.
+	AIOFighter will mage monsters like it is supposed to now. 
+	AIOFighter will now logout when out of arrows.
+	Removed batching from GuildFisher2 because it was causing issues. Needs better fix + actual testing.
+	Fixed banking and batching on AIOCooker, AIOSmelter, AKMiner, GuildFisher2
+	Implemented gate/door object opening on AIOFighter. Still needs wall object opening.
+	Cleaned showed me what was wrong with walkToNpcAsync(...)! WOOHOO!
+	AIOFighter will now handle gates. Doors are TBD.
+	AIOCooker will no longer accidentally drop cooked food.
+	HarvesterTrainer script added!
+	HerbHarvester script added!
+	
+JAN 31 2021
+	Tyler added alphabetical sorting to the script launcher
+	Updated AIOFighter to no longer attempt to pickup loot outside of range. It will still attempt to attack NPCs out of range, if that is the case, you need to increase your wander distance.
+	Updated AIOFighter to no longer get stuck burying bones in combat
+	Updated PowerFletcha to work better with batching
+	Dan renamed PreservationCache to UraniumCache to be much more user friendly and updated documentation.
+	Tyler made the script selector look amazing!
+	Tyler moved the SBot script folder to a much more friendly location for SBot script development.
+	Updated README to reflect new changes regarding the src script folder change.
+	Instead of compiling classes, users will now compile the entire JAR. This fixes a large issue we had with users not being able to run their own SBot scripts after the last Script Loader change.
+	AIOCooker script added!
+	SBot's UseOnObject call has been fixed. This means Flax22k and BarbFisher2 now work. Getting closer to 100% SBot compatability!
+	BarbFisher2 added to project. 
+	AIOFighter updated to act less dumb when dealing with a lot of bones or loot. 
+
+JAN 30 2021
+	Fixed client crashes caused by improper cache files.
+	AIOThiever script added.
+	Fixed bug where bot was attempting to thieve / fight NPCs which were already in combat.
+	PowerFletcha script was added.
+	AKMiner script was added.
+	Tyler fixed Controller.dropItems(int)
+	Tyler added Controller.isBatching
+	PowerFletcha script was fixed to work properly on Coleslaw.
+	isBatching support added to Dvorak's scripts
+	New SBot function added for batching support: WaitForBatchFinish()
+	Sbot's TalkToNPC bug fixed.
+
+JAN 29 2021
+	Initial alpha release.
+	setFightMode bug fixed.

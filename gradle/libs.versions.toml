@@ -2,10 +2,6 @@
 spotless = '6.12.0' # maximum version that will work with JDK 8.
 google-java-format = '1.7' # maximum version that will work with JDK 8.
 reflections = '0.10.2'
-asm = '9.5'
-slf4j-nop = '2.0.7'
-commons-cli = '1.5.0'
-discord-rpc = '1.6.2'
 
 [plugins]
 spotless = { id = 'com.diffplug.spotless', version.ref = 'spotless' }
@@ -13,11 +9,3 @@ google-java-format = { id = 'com.google.googlejavaformat', version.ref = 'google
 
 [libraries]
 reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }
-asm-core = { module = 'org.ow2.asm:asm', version.ref = 'asm' }
-asm-util = { module = 'org.ow2.asm:asm-util', version.ref = 'asm' }
-slf4j-nop = { module = 'org.slf4j:slf4j-nop', version.ref = 'slf4j-nop' }
-commons-cli = { module = 'commons-cli:commons-cli', version.ref = 'commons-cli' }
-discord-rpc = { module = 'com.github.Vatuu:discord-rpc', version.ref = 'discord-rpc' }
-
-[bundles]
-asm = [ "asm-core", "asm-util" ]

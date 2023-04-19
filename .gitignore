@@ -23,16 +23,14 @@ gradle-app.setting
 
 # IDE
 .idea/
-*.iml
+IdleRSC.iml
 
 # output
 classes/
 build/
-*.jar
+IdleRSC.jar
 *.zip
-app/src/main/resources
-public/
-assets/core/
+src/main/resources/cache
 
 # User chosen cache
 Cache/

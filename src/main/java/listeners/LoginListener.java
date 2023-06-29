@@ -11,7 +11,7 @@ import controller.Controller;
  * @author Dvorak
  */
 public class LoginListener implements Runnable {
-
+  private static long loginCount = 0;
   private final Controller controller;
 
   public LoginListener(Controller _controller) {
@@ -60,38 +60,32 @@ public class LoginListener implements Runnable {
              * <p>~ Kaila ~
              */
             if (!controller.isLoggedIn()) {
-              for (int i = 1; i <= 240; i++) {
-                if (i < 8) {
-                  if (!controller.isLoggedIn()) {
-                    int sleepTime = (int) (Math.random() * 20000) + 20000;
-                    controller.log(
-                        "Looks like we could not login... trying again in "
-                            + sleepTime
-                            + " seconds...",
-                        "cya");
-                    controller.sleep(sleepTime);
-                  } else {
-                    controller.log("Logged In!");
-                    break;
-                  }
-                } else {
-                  if (!controller.isLoggedIn()) {
-                    int sleepTime =
-                        (int) (Math.random() * 30000) + (((i * 15) / (i + 60)) * 30000) + 30000;
-                    int sleepTimeInSeconds = sleepTime / 1000;
-                    controller.log(
-                        "Looks like we could not login... trying again in "
-                            + sleepTimeInSeconds
-                            + " seconds...",
-                        "cya");
-                    controller.sleep(sleepTime);
-                  } else {
-                    controller.log("Logged In!", "gre");
-                    break;
-                  }
+              // for (int i = 1; i <= 500; i++) {
+              loginCount++;
+              int i = Math.toIntExact(loginCount);
+              if (loginCount <= 10) {
+                int sleepTime = (int) (Math.random() * 20000) + 60000;
+                int sleepTimeInSeconds = sleepTime / 1000;
+                controller.log(
+                    "Looks like we could not login... trying again in "
+                        + sleepTimeInSeconds
+                        + " seconds...",
+                    "cya");
+                controller.sleep(sleepTime);
+              } else {
+                if (!controller.isLoggedIn()) {
+                  int sleepTime =
+                      (int) (Math.random() * 30000) + (((i * 15) / (i + 60)) * 30000) + 60000;
+                  int sleepTimeInSeconds = sleepTime / 1000;
+                  controller.log(
+                      "Looks like we could not login... trying again in "
+                          + sleepTimeInSeconds
+                          + " seconds...",
+                      "cya");
+                  controller.sleep(sleepTime);
                 }
-                controller.sleep(100);
               }
+              controller.sleep(100);
             }
           }
         }
@@ -100,7 +94,9 @@ public class LoginListener implements Runnable {
           moveCharacter();
           controller.charactedMoved();
         }
-
+        if (controller.isLoggedIn() && loginCount > 0) {
+          loginCount = 0;
+        }
         Thread.sleep(1000);
       }
     } catch (InterruptedException e) {

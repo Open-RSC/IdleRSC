@@ -20,6 +20,7 @@ public class Config {
   private boolean enableInterlace = false;
   private boolean openSelector = false;
   private boolean localOCR = false;
+  private boolean botPaint = true;
   private String attackItems = "";
   private String strengthItems = "";
   private String defenceItems = "";
@@ -286,6 +287,10 @@ public class Config {
 
   public boolean getOpenSelector() {
     return openSelector;
+  }
+
+  public boolean getBotPaint() {
+    return botPaint;
   }
 
   public boolean getLocalOCR() {

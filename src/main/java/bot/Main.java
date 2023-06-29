@@ -61,7 +61,6 @@ public class Main {
               new SimpleEntry<>("APOS", reflections.getSubTypesOf(compatibility.apos.Script.class)),
               new SimpleEntry<>("SBot", reflections.getSubTypesOf(compatibility.sbot.Script.class)))
           .collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
-
   private static boolean isRunning =
       false; // this is tied to the start/stop button on the side panel.
   private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; // all the windows.
@@ -69,7 +68,7 @@ public class Main {
       loadScriptButton,
       pathwalkerButton,
       openDebuggerButton,
-      hideButton,
+      // hideButton,
       resetXpButton,
       takeScreenshotButton,
       showIdButton; // all the buttons on the sidepanel.
@@ -78,13 +77,13 @@ public class Main {
       unstickCheckbox,
       debugCheckbox,
       graphicsCheckbox,
+      botPaintCheckbox,
+      interlaceCheckbox,
       autoscrollLogsCheckbox; // all the checkboxes on the sidepanel.
 
   private static JTextArea logArea; // self explanatory
   private static JScrollPane scroller; // this is the main window for the log.
-
   private static Debugger debugger = null;
-
   private static Thread loginListener = null; // see LoginListener.java
   private static final Thread positionListener = null; // see PositionListener.java
   private static Thread windowListener = null; // see WindowListener.java
@@ -235,6 +234,12 @@ public class Main {
     if (graphicsCheckbox.isSelected() != config.getEnablegfx()) {
       graphicsCheckbox.doClick();
     }
+    if (botPaintCheckbox.isSelected() != config.getBotPaint()) {
+      botPaintCheckbox.doClick();
+    }
+    if (interlaceCheckbox.isSelected() != config.getEnableInterlace()) {
+      interlaceCheckbox.doClick();
+    }
     if (config.getEnableInterlace()) {
       controller.setInterlacer(config.getEnableInterlace());
     }
@@ -384,16 +389,18 @@ public class Main {
     loadScriptButton = new JButton("Load Script");
     pathwalkerButton = new JButton("PathWalker");
 
-    autoLoginCheckbox = new JCheckBox("Auto-Login");
+    autoLoginCheckbox = new JCheckBox("Auto-Login", true);
     logWindowCheckbox = new JCheckBox("Log Window");
     unstickCheckbox = new JCheckBox("Unstick");
     debugCheckbox = new JCheckBox("Debug");
-    graphicsCheckbox = new JCheckBox("Graphics");
+    graphicsCheckbox = new JCheckBox("Graphics", true);
+    botPaintCheckbox = new JCheckBox("Bot Paint", true);
+    interlaceCheckbox = new JCheckBox("Interlace", false);
 
     takeScreenshotButton = new JButton("Screenshot");
     showIdButton = new JButton("Show ID's");
     openDebuggerButton = new JButton("Open Debugg");
-    hideButton = new JButton("Hide Sidepane");
+    // hideButton = new JButton("Hide Sidepane");
     resetXpButton = new JButton("Reset XP");
 
     startStopButton.addActionListener(
@@ -423,11 +430,11 @@ public class Main {
 
     openDebuggerButton.addActionListener(e -> debugger.open());
 
-    hideButton.addActionListener(
-        e -> {
-          controller.displayMessage("@red@IdleRSC@yel@: Type '::show' to bring back the sidepane.");
-          botFrame.setVisible(false);
-        });
+    /*hideButton.addActionListener(
+    e -> {
+      controller.displayMessage("@red@IdleRSC@yel@: Type '::show' to bring back the sidepane.");
+      botFrame.setVisible(false);
+    });*/
 
     resetXpButton.addActionListener(e -> DrawCallback.resetXpCounter());
     showIdButton.addActionListener(e -> controller.toggleViewId());
@@ -438,15 +445,28 @@ public class Main {
             controller.setDrawing(graphicsCheckbox.isSelected());
           }
         });
+    botPaintCheckbox.addActionListener(
+        e -> {
+          if (controller != null) {
+            controller.setBotPaint(botPaintCheckbox.isSelected());
+          }
+        });
+    interlaceCheckbox.addActionListener(
+        e -> {
+          if (controller != null) {
+            controller.setInterlacer(interlaceCheckbox.isSelected());
+          }
+        });
 
     Dimension buttonSize = new Dimension(125, 25);
+    Dimension buttonSizeBig = new Dimension(125, 26);
 
     botFrame.add(startStopButton);
-    startStopButton.setMaximumSize(buttonSize);
-    startStopButton.setPreferredSize(buttonSize);
+    startStopButton.setMaximumSize(buttonSizeBig);
+    startStopButton.setPreferredSize(buttonSizeBig);
     botFrame.add(loadScriptButton);
-    loadScriptButton.setMaximumSize(buttonSize);
-    loadScriptButton.setPreferredSize(buttonSize);
+    loadScriptButton.setMaximumSize(buttonSizeBig);
+    loadScriptButton.setPreferredSize(buttonSizeBig);
     botFrame.add(pathwalkerButton);
     pathwalkerButton.setMaximumSize(buttonSize);
     pathwalkerButton.setPreferredSize(buttonSize);
@@ -454,6 +474,8 @@ public class Main {
     botFrame.add(logWindowCheckbox);
     botFrame.add(unstickCheckbox);
     botFrame.add(debugCheckbox);
+    botFrame.add(interlaceCheckbox);
+    botFrame.add(botPaintCheckbox);
     botFrame.add(graphicsCheckbox);
     botFrame.add(takeScreenshotButton);
     takeScreenshotButton.setMaximumSize(buttonSize);
@@ -464,17 +486,14 @@ public class Main {
     botFrame.add(openDebuggerButton);
     openDebuggerButton.setMaximumSize(buttonSize);
     openDebuggerButton.setPreferredSize(buttonSize);
-    hideButton.setPreferredSize(buttonSize);
-    botFrame.add(hideButton);
-    hideButton.setMaximumSize(buttonSize);
-    hideButton.setPreferredSize(buttonSize);
+    // hideButton.setPreferredSize(buttonSize);
+    // botFrame.add(hideButton);
+    // hideButton.setMaximumSize(buttonSize);
+    // hideButton.setPreferredSize(buttonSize);
 
     resetXpButton.setPreferredSize(buttonSize);
     resetXpButton.setMaximumSize(buttonSize);
     botFrame.add(resetXpButton);
-    // abcd
-    autoLoginCheckbox.setSelected(true);
-    graphicsCheckbox.setSelected(true);
 
     botFrame.pack();
     botFrame.setSize(buttonSize.width, botFrame.getHeight());
@@ -489,7 +508,7 @@ public class Main {
    */
   private static void initializeConsoleFrame(JFrame consoleFrame) {
     JButton buttonClear = new JButton("Clear");
-    autoscrollLogsCheckbox = new JCheckBox("Lock scroll to bottom");
+    autoscrollLogsCheckbox = new JCheckBox("Lock scroll to bottom", true);
 
     logArea = new JTextArea(9, 44);
     logArea.setEditable(false);

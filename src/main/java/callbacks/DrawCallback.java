@@ -19,7 +19,8 @@ public class DrawCallback {
   private static long levelUpTextTimeout = 0;
   private static boolean screenshotTaken = false;
   public static boolean toggleOnViewId = false;
-
+  public static long nextRefresh = -1;
+  public static long nextDeRefresh = -1;
   /** The hook called each frame by the patched client. */
   public static void drawHook() {
     Controller c = Main.getController();
@@ -108,7 +109,10 @@ public class DrawCallback {
             1);
       }
     }
-
+    if (System.currentTimeMillis() > nextDeRefresh && nextDeRefresh != -1) {
+      c.setDrawing(false);
+      nextDeRefresh = -1;
+    }
     if (System.currentTimeMillis() / 1000L < levelUpTextTimeout) {
       y += 14;
       c.drawString(levelUpText, 7, y, 0xFFFFFF, 1);

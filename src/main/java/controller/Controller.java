@@ -9,17 +9,22 @@ import com.openrsc.client.entityhandling.defs.ItemDef;
 import com.openrsc.client.entityhandling.defs.SpellDef;
 import com.openrsc.client.entityhandling.instances.Item;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -75,7 +80,7 @@ public class Controller {
     210, 211, 212, 213
   };
 
-  private final int GAME_TICK_COUNT = 640;
+  private final int GAME_TICK = 640;
 
   private boolean showStatus = true;
   private boolean showCoords = true;
@@ -84,6 +89,9 @@ public class Controller {
   private boolean drawing = true;
   private boolean needToMove = false;
   public static boolean temporaryToggleSideMenu = false;
+  public static final int CTRL_DOWN_MASK = 1 << 7;
+  public static final int SHIFT_DOWN_MASK = 1 << 6;
+  static final int JDK_1_3_MODIFIERS = SHIFT_DOWN_MASK - 1;
 
   public Controller(Reflector _reflector, OpenRSC _client, mudclient _mud) {
     reflector = _reflector;
@@ -138,14 +146,38 @@ public class Controller {
     client.keyPressed(new KeyEvent(client, 1, 20, 1, 10, key));
   }
 
-  /** @param rstext Sends the specified message via chat. Y ou may use @col@ colors here. */
+  /** @param rstext Sends the specified message via chat. You may use @col@ colors here. */
   public void chatMessage(String rstext) {
     for (char c : rstext.toCharArray()) {
       typeKey(c);
     }
     typeKey('\n');
   }
+  /** Pastes the contents of the clipboard to the dialog box. You may use @col@ colors here. */
+  public void paste() {
+    if (!isLoggedIn()) {
+      return;
+    }
 
+    final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    final Transferable t = clipboard.getContents(null);
+    final DataFlavor f = DataFlavor.stringFlavor;
+
+    if (!t.isDataFlavorSupported(f)) {
+      return;
+    }
+
+    try {
+      for (final char textData : ((String) t.getTransferData(f)).toCharArray()) {
+        String rstext = String.valueOf(textData);
+        for (char c : rstext.toCharArray()) {
+          typeKey(c);
+        }
+      }
+    } catch (final UnsupportedFlavorException | IOException e) {
+      e.printStackTrace();
+    }
+  }
   /** @param mode Sets the fight mode. */
   public void setFightMode(int mode) {
     mud.setCombatStyle(mode);
@@ -524,7 +556,7 @@ public class Controller {
           y - mud.getMidRegionBaseZ() + fudgeFactor,
           false);
 
-      sleep(250);
+      sleep(1280); // was 250
     }
   }
 
@@ -1335,7 +1367,7 @@ public class Controller {
       mud.packetHandler.getClientStream().bufferBits.putByte(0); // direction
       mud.packetHandler.getClientStream().finishPacket();
 
-      sleep(GAME_TICK_COUNT);
+      sleep(GAME_TICK);
     }
   }
 
@@ -2151,7 +2183,8 @@ public class Controller {
   public boolean takeScreenshot(String filename) {
     boolean temporaryToggledGFX = false;
     boolean temporaryToggledInterlacing = false;
-
+    String dir = "";
+    String saveLocPath = "";
     if (isInterlacing()) {
       setInterlacer(false);
       temporaryToggledInterlacing = true;
@@ -2209,53 +2242,35 @@ public class Controller {
        *
        * <p>~ Kaila ~
        */
-      String dir = "Screenshots/" + playerName + "/";
-      Path screenshotpath = Paths.get(dir);
-      Files.createDirectories(screenshotpath);
-      ImageIO.write(
-          img,
-          "png",
-          new File(
-              "Screenshots/"
-                  + playerName
-                  + "/"
-                  + filename
-                  + playerName
-                  + "_"
-                  + playerTime
-                  + ".png"));
-
-      String saveLocPath =
-          "Screenshots/" + playerName + "/" + filename + playerName + "_" + playerTime + ".png";
-      Path imageSaveLocation = Paths.get(saveLocPath);
-      boolean newImageExists = Files.exists(imageSaveLocation);
-      if (newImageExists) {
-        log(
-            "@cya@Screenshot successfully saved to folder ./IdleRSC/screenshots/"
-                + playerName
-                + "/");
+      if (!Objects.equals(playerName, "")) {
+        dir = "Screenshots/" + playerName + "/";
       } else {
-        log(
-            "@red@Error: @cya@Screenshot not detected in folder ./IdleRSC/screenshots/"
-                + playerName
-                + "/");
+        dir = "Screenshots/";
+      }
+      if (!Objects.equals(filename, "")) {
+        saveLocPath = dir + filename + "_" + playerName + "_" + playerTime + ".png";
+      } else {
+        saveLocPath = dir + playerName + "_" + playerTime + ".png";
+      }
+      Files.createDirectories(Paths.get(dir));
+      ImageIO.write(img, "png", new File(saveLocPath));
+
+      boolean newImageExists = Files.exists(Paths.get(saveLocPath));
+      if (newImageExists) {
+        log("@cya@Screenshot successfully saved to ./IdleRSC/" + saveLocPath);
+      } else {
+        log("@red@Error: @cya@Screenshot not detected at ./IdleRSC/" + saveLocPath);
       }
     } catch (IOException e) {
       System.err.println("Failed to create directory and/or take screenshot!" + e.getMessage());
       e.printStackTrace();
-      if (temporaryToggledInterlacing) {
-        setInterlacer(true);
-      }
-      if (temporaryToggledGFX) {
-        setDrawing(false);
-      }
       return false;
-    }
-    if (temporaryToggledInterlacing) {
-      setInterlacer(true);
     }
     if (temporaryToggledGFX) {
       setDrawing(false);
+    }
+    if (temporaryToggledInterlacing) {
+      setInterlacer(true);
     }
     return true;
   }
@@ -3538,7 +3553,7 @@ public class Controller {
           int bankerIndex = bankerNpc.serverIndex;
           int[] coords = getNpcCoordsByServerIndex(bankerIndex);
 
-          walkToAsync(coords[0], coords[1], 1);
+          walkToAsync(coords[0], coords[1], 0);
 
           while (!isInBank() && Main.isRunning()) {
             if (getNpcCommand1(95).equals("Bank")) { // Can we right click bank? If so, do that.
@@ -4013,11 +4028,6 @@ public class Controller {
 
   /** Toggle draw/graphics. */
   public void setDrawing(boolean b) {
-    // if (!isAuthentic()) {
-    //	Config.C_EXPERIENCE_DROPS = b;  //removed, this was toggling xp drops ON against player will
-    // whenever graphics were toggled in client!!!
-    // }
-
     drawing = b;
   }
 

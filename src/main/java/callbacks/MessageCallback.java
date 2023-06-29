@@ -19,7 +19,7 @@ public class MessageCallback {
   private static String sbotLastChatMessage = "";
   private static String sbotLastNPCMessage = "";
   private static String sbotLastServerMessage = "";
-
+  private static long timeNextLogClear = -1;
   private static final Pattern p =
       Pattern.compile("^(.*) (.*) level!"); // for parsing level up messages
 
@@ -42,7 +42,24 @@ public class MessageCallback {
       int crownID,
       String formerName,
       String colourOverride) {
-
+    Controller cd = Main.getController();
+    if (timeNextLogClear == -1) {
+      timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
+      // cd.log(String.valueOf((timeNextLogClear - System.currentTimeMillis()) / 1000L) + " s");
+    }
+    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > timeNextLogClear)) {
+      Main.clearLog();
+      timeNextLogClear = System.currentTimeMillis() + 86400000L; // add 24 hrs in ms
+    }
+    if (!cd.isDrawEnabled() && (System.currentTimeMillis() > DrawCallback.nextRefresh)) {
+      cd.setDrawing(true);
+      DrawCallback.nextDeRefresh = System.currentTimeMillis() + 20L; // toggle on gfx 1 frame
+      DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L; // wait 1 min for refresh
+      /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
+      System.currentTimeMillis()) / 1000L) + "s");*/
+    } //else if (cd.isDrawEnabled()) {
+     //   DrawCallback.nextRefresh = -1;
+    //}
     if (type == MessageType.GAME) {
       if (message.contains("You just advanced")) {
         handleLevelUp(message);

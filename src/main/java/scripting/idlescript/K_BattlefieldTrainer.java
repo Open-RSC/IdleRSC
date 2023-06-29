@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,18 +14,11 @@ import orsc.ORSCharacter;
 /*
  *   todo add food type selection add maging option
  */
-public class K_BattlefieldTrainer extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int totalTrips = 0;
-
+public class K_BattlefieldTrainer extends K_kailaScript {
   public int start(String[] parameters) {
 
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@red@Battlefield Trainer - By Kaila");
       c.displayMessage("@red@Start in Ardy or at Battlefield");
       c.displayMessage("@red@Sharks in Bank REQUIRED");
@@ -41,7 +32,7 @@ public class K_BattlefieldTrainer extends IdleScript {
       }
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }
@@ -185,17 +176,6 @@ public class K_BattlefieldTrainer extends IdleScript {
     c.walkTo(658, 642);
 
     c.setStatus("@gre@Done Walking..");
-  }
-
-  private void leaveCombat() {
-    for (int i = 1; i <= 10; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(640);
-      }
-      c.sleep(10);
-    }
   }
 
   // GUI stuff below (icky)

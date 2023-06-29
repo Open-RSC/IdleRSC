@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -40,24 +38,11 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_BlackUnicorns extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public class K_BlackUnicorns extends K_kailaScript {
   private static boolean teleportOut = false;
   private static boolean returnEscape = true;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
   private static int uniInBank = 0;
   private static int totalUni = 0;
-  private static int totalTrips = 0;
-  private static final int[] bones = {
-    20, // regular bones
-    413, // big bones
-    604, // bat bones
-    814 // dragon bones
-  };
 
   private void startSequence() {
     c.displayMessage("@red@Black Unicorn Killer ~ By Kaila");
@@ -77,20 +62,22 @@ public class K_BlackUnicorns extends IdleScript {
   }
 
   public int start(String[] parameters) {
-    if (scriptStarted) {
-      startSequence();
-      scriptStart();
-    }
+
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
+        guiSetup = true;
         c.displayMessage("Auto-starting, teleport false, return escape true", 0);
         System.out.println("Auto-starting, teleport false, return escape true");
         teleportOut = false;
         returnEscape = true;
-        startTime = System.currentTimeMillis();
-        startSequence();
-        scriptStart();
+        scriptStarted = true;
       }
+    }
+    if (scriptStarted) {
+      guiSetup = true;
+      startTime = System.currentTimeMillis();
+      startSequence();
+      scriptStart();
     }
     if (!scriptStarted && !guiSetup) {
       setupGUI();
@@ -112,7 +99,7 @@ public class K_BlackUnicorns extends IdleScript {
             c.attackNpc(npc.serverIndex);
             c.sleep(3000);
           } else {
-            boneLootScript();
+            lootBones();
             c.sleep(640);
           }
         }
@@ -129,26 +116,36 @@ public class K_BlackUnicorns extends IdleScript {
     }
   }
 
-  private void boneLootScript() {
+  private void lootBones() {
     for (int lootId : bones) {
-      int[] lootCoord = c.getNearestItemById(lootId);
-      if (lootCoord != null && !c.isInCombat()) {
-        c.setStatus("@red@No NPCs, Picking bones");
-        c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
-        c.sleep(618);
-
-        buryBones();
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && !c.isInCombat()) {
+          c.setStatus("@yel@No NPCs, Picking bones");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+          buryBones();
+        } else {
+          c.sleep(300);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
 
   private void lootScript() {
-    int[] coords = c.getNearestItemById(466);
-    if (coords != null) {
-      c.setStatus("@yel@Looting..");
-      c.walkTo(coords[0], coords[1]);
-      c.pickupItem(coords[0], coords[1], 466, true, true);
-      c.sleep(618);
+    try {
+      int[] coords = c.getNearestItemById(466);
+      if (coords != null) {
+        c.setStatus("@yel@Looting..");
+        c.walkToAsync(coords[0], coords[1], 0);
+        c.pickupItem(coords[0], coords[1], 466, true, false);
+        c.sleep(640);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -198,20 +195,6 @@ public class K_BlackUnicorns extends IdleScript {
       uniInBank = c.getBankItemCount(466);
       c.closeBank();
       c.sleep(640);
-    }
-  }
-
-  private void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@red@Burying bones..");
-          c.itemCommand(id);
-
-          c.sleep(618);
-          buryBones();
-        }
-      }
     }
   }
 
@@ -326,23 +309,6 @@ public class K_BlackUnicorns extends IdleScript {
     }
   }
 
-  private void leaveCombat() {
-    c.setStatus("@red@Leaving combat..");
-    c.walkTo(c.currentX(), c.currentY(), 0, true);
-    c.sleep(600);
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      } else {
-        c.setStatus("@gre@Done Leaving combat..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
-
   private void teleportOut() {
     c.setStatus("@gre@Going to Bank. Casting teleport.");
     c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
@@ -382,7 +348,6 @@ public class K_BlackUnicorns extends IdleScript {
           returnEscape = escapeCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
-          startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
 

@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -15,62 +13,12 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila
  */
-public class K_HobsPeninsula extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static boolean potUp = true;
-
+public class K_HobsPeninsula extends K_kailaScript {
   private static boolean isWithinLootzone(int x, int y) {
     return c.distance(363, 610, x, y) <= 15; // center of lootzone
   }
 
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int totalGuam = 0;
-  private static int totalMar = 0;
-  private static int totalTar = 0;
-  private static int totalHar = 0;
-  private static int totalRan = 0;
-  private static int totalIrit = 0;
-  private static int totalAva = 0;
-  private static int totalKwuarm = 0;
-  private static int totalCada = 0;
-  private static int totalDwarf = 0;
-  private static int totalLaw = 0;
-  private static int totalNat = 0;
-  private static int totalLoop = 0;
-  private static int totalTooth = 0;
-  private static int totalLeft = 0;
-  private static int totalSpear = 0;
-  private static int totalGems = 0;
   private static int totalLimp = 0;
-  private static int totalTrips = 0;
-  private static int foodWithdrawAmount = 1;
-  private static int foodId = -1;
-  private static final int[] bones = {
-    20, // regular bones
-    413, // big bones
-    604, // bat bones
-    814 // dragon bones
-  };
-  private static final int[] attackPot = {
-    476, // reg attack pot (1)
-    475, // reg attack pot (2)
-    474 // reg attack pot (3)
-  };
-  private static final int[] strPot = {
-    224, // reg str pot (1)
-    223, // reg str pot (2)
-    222 // reg str pot (3)
-  };
-  private static final int[] foodIds = {
-    546, // cooked shark
-    370, // cooked swordfish
-    367, // cooked  tuna
-    373 // cooked lobster
-  };
   private static final int[] loot = {
     526, // tooth half
     527, // loop half
@@ -111,8 +59,20 @@ public class K_HobsPeninsula extends IdleScript {
   };
 
   public int start(String[] parameters) {
-
+    if (!parameters[0].equals("")) {
+      try {
+        foodWithdrawAmount = Integer.parseInt(parameters[0]);
+      } catch (Exception e) {
+        System.out.println("Could not parse parameters!");
+        c.displayMessage("@red@Could not parse parameters!");
+        c.stop();
+      }
+      if (foodWithdrawAmount != -1) {
+        scriptStarted = true;
+      }
+    }
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@red@Asgarnian Hobs Peninsula - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor or Hobs Peninsula");
       c.displayMessage("@red@Food in Bank REQUIRED");
@@ -125,22 +85,10 @@ public class K_HobsPeninsula extends IdleScript {
         c.sleep(1380);
       }
       scriptStart();
-    } else {
-      if (parameters[0].equals("")) {
-        if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-        }
-      } else {
-        try {
-          foodWithdrawAmount = Integer.parseInt(parameters[0]);
-
-        } catch (Exception e) {
-          System.out.println("Could not parse parameters!");
-          c.displayMessage("@red@Could not parse parameters!");
-          c.stop();
-        }
-      }
+    }
+    if (!scriptStarted && !guiSetup) {
+      setupGUI();
+      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -149,25 +97,13 @@ public class K_HobsPeninsula extends IdleScript {
     while (c.isRunning()) {
 
       eat();
-      buryBones();
+      // buryBones();
 
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
-          if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
-            if (c.getInventoryItemCount(attackPot[0]) > 0
-                || c.getInventoryItemCount(attackPot[1]) > 0
-                || c.getInventoryItemCount(attackPot[2]) > 0) {
-              attackBoost();
-            }
-          }
-          if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
-            if (c.getInventoryItemCount(strPot[0]) > 0
-                || c.getInventoryItemCount(strPot[1]) > 0
-                || c.getInventoryItemCount(strPot[2]) > 0) {
-              strengthBoost();
-            }
-          }
+          attackBoost();
+          strengthBoost();
         }
         if (!c.isInCombat()) {
           int[] npcIds = {67};
@@ -252,18 +188,8 @@ public class K_HobsPeninsula extends IdleScript {
       }
       c.sleep(640);
       if (potUp) {
-        if (c.getInventoryItemCount(attackPot[0]) < 1
-            && c.getInventoryItemCount(attackPot[1]) < 1
-            && c.getInventoryItemCount(attackPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(attackPot[2], 1);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(strPot[0]) < 1
-            && c.getInventoryItemCount(strPot[1]) < 1
-            && c.getInventoryItemCount(strPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(strPot[2], 1);
-          c.sleep(340);
-        }
+        withdrawAttack(1);
+        withdrawStrength(1);
       }
       if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw foods
         c.withdrawItem(foodId, foodWithdrawAmount);
@@ -279,20 +205,6 @@ public class K_HobsPeninsula extends IdleScript {
       }
       c.closeBank();
       c.sleep(640);
-    }
-  }
-
-  private void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@yel@Burying..");
-          c.itemCommand(id);
-
-          c.sleep(618);
-          buryBones();
-        }
-      }
     }
   }
 
@@ -322,34 +234,6 @@ public class K_HobsPeninsula extends IdleScript {
         BankToPeninsula();
         c.sleep(618);
       }
-    }
-  }
-
-  private void attackBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(attackPot[0]) > 0) {
-      c.itemCommand(attackPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[1]) > 0) {
-      c.itemCommand(attackPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[2]) > 0) {
-      c.itemCommand(attackPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void strengthBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(strPot[0]) > 0) {
-      c.itemCommand(strPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[1]) > 0) {
-      c.itemCommand(strPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[2]) > 0) {
-      c.itemCommand(strPot[2]);
-      c.sleep(320);
     }
   }
 
@@ -391,20 +275,6 @@ public class K_HobsPeninsula extends IdleScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat (n)..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      } else {
-        c.setStatus("@red@Done Leaving combat..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
-
   // GUI stuff below (icky)
 
   private void setupGUI() {
@@ -416,8 +286,7 @@ public class K_HobsPeninsula extends IdleScript {
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     JLabel foodLabel = new JLabel("Type of Food:");
-    JComboBox<String> foodField =
-        new JComboBox<>(new String[] {"Sharks", "Swordfish", "Tuna", "Lobsters"});
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel blankLabel = new JLabel("          ");
     JButton startScriptButton = new JButton("Start");
 

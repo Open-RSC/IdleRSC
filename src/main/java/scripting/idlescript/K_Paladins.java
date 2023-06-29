@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,37 +18,21 @@ import orsc.ORSCharacter;
  *
  * <p>Author ~ Kaila ~
  */
-public class K_Paladins extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static boolean timeToBank = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public class K_Paladins extends K_kailaScript {
   private static int totalCoins = 0;
-  private static int fightMode = 3;
   private static int totalShark = 0; // raw sharks that we pick up
-  private static int totalChaos = 0;
   private static int totalAda = 0;
-  private static int totalSap = 0;
   private static int totalScim = 0;
   private static int coinsInBank = -1;
   private static int chaosInBank = -1;
-  private static int totalTrips = 0;
   private static int invCoins = 0;
   private static int invChaos = 0;
   private static int thieveSuccess = 0;
   private static int openChest = 0;
-  private static int foodInBank = -1;
-  private static int usedFood = 0;
   private static int thieveFailure = 0;
   private static int thieveCapture = 0;
-  private static int foodId = -1;
   private static int startCoins;
   private static int startChaos;
-  // private static  long next_attempt = -1;
-  // private static  final long nineMinsInMillis = 540000L;
   private static final int[] pathToBank = {
     604, 603,
     589, 604,
@@ -86,43 +68,6 @@ public class K_Paladins extends IdleScript {
     112, // rune helm
     315, // defense amulet
   };
-  private static final int[] foodIds = {
-    1191, // cooked Manta Ray
-    1193, // cooked Sea Turtle
-    546, // cooked shark
-    370, // cooked swordfish
-    367, // cooked tuna
-    373, // cooked lobster
-    555, // cooked Bass
-    553, // cooked Mackerel
-    551, // cooked Cod
-    364, // cooked Pike
-    362, // cooked Herring
-    357, // cooked Salmon
-    359, // cooked Trout
-    352, // cooked Anchovies
-    350, // cooked Shrimp
-    132 // cooked Meat
-  };
-  private static final String[] foodTypes =
-      new String[] {
-        "Manta Ray",
-        "Sea Turtle",
-        "Shark",
-        "Swordfish",
-        "Tuna",
-        "Lobster",
-        "Bass",
-        "Mackerel",
-        "Cod",
-        "Pike",
-        "Herring",
-        "Salmon",
-        "Trout",
-        "Anchovies",
-        "Shrimp",
-        "Cooked Meat"
-      };
 
   private void startSequence() {
     for (int i = 1; i <= 240; i++) {
@@ -236,6 +181,7 @@ public class K_Paladins extends IdleScript {
       }
     }
     if (scriptStarted) {
+      guiSetup = true;
       parseVariables();
       startSequence();
       scriptStart();
@@ -302,36 +248,20 @@ public class K_Paladins extends IdleScript {
 
   private void lootScript() {
     for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null) { // Loot
-        c.setStatus("@yel@Looting..");
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(300); // ignore this sleep time
-      } else {
-        c.sleep(5); // this sleep time is important (total of all 3 sleep times should be about
-        // 200-300ms to prevent high cpu usage)
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
-
-  private void endSession() {
-    c.setStatus("@red@NO Food in the bank, Logging Out!.");
-    c.setAutoLogin(false);
-    c.logout();
-    if (!c.isLoggedIn()) {
-      c.stop();
-    }
-  }
   // Important private VOID's below
-  private void leaveCombat() {
-
-    if (c.isInCombat()) {
-      c.setStatus("@red@Leaving combat..");
-      c.walkTo(610, 1549, 0, true);
-      c.sleep(800);
-    }
-  }
-
   private void eat() {
     if (c.isInCombat()) {
       c.setStatus("@red@Leaving combat..");

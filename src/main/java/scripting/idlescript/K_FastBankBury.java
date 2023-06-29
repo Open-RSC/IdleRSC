@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,12 +17,7 @@ import orsc.ORSCharacter;
 /*
  * todo add gui and statistics.
  */
-public class K_FastBankBury extends IdleScript {
-
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public class K_FastBankBury extends K_kailaScript {
   private static int boneId = -1;
   private static final int[] boneIds = {
     20, // regular bones
@@ -34,13 +27,13 @@ public class K_FastBankBury extends IdleScript {
   };
 
   public int start(String[] parameters) {
-    if (!guiSetup) {
+    if (scriptStarted) {
+      guiSetup = true;
+      scriptStart();
+    }
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
-    }
-
-    if (scriptStarted) {
-      scriptStart();
     }
 
     return 1000; // start() must return an int value now.

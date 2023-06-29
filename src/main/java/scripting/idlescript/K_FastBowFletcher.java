@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,29 +18,16 @@ import orsc.ORSCharacter;
  *      todo
  *          Add autostart sequence from fastPlate and change variables
  */
-public class K_FastBowFletcher extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public class K_FastBowFletcher extends K_kailaScript {
   private static int logId = -1;
-  private static final int[] logIds = {
-    14, // normal logs
-    632, // oak logs
-    633, // willow logs
-    634, // maple logs
-    635, // yew logs
-    636 // magic logs
-  };
   private static int logsInBank = 0;
   private static int totalBows = 0;
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    checkBatchBars();
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " ~ by Kaila");
       c.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
       c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");

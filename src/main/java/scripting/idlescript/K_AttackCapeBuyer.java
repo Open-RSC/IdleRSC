@@ -34,6 +34,7 @@ public class K_AttackCapeBuyer extends IdleScript {
 
   public int start(String[] parameters) {
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@red@Attack Cape Buyer - By Kaila");
       c.displayMessage("@red@Start by Rovin or varrock west!");
       c.displayMessage("@red@Need coins in the inventory to buy");
@@ -47,7 +48,7 @@ public class K_AttackCapeBuyer extends IdleScript {
       }
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }

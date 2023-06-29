@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -24,49 +22,19 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_TavBlackDemonPipe extends IdleScript {
-
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public class K_TavBlackDemonPipe extends K_kailaScript {
   private static boolean d2hWield = false;
 
   private static boolean isWithinWander(int x, int y) {
     return c.distance(390, 3371, x, y) <= 10;
   }
 
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int totalGems = 0;
-  private static int totalLaw = 0;
-  private static int totalNat = 0;
-  private static int totalFire = 0;
-  private static int totalLoop = 0;
-  private static int totalTooth = 0;
-  private static int totalLeft = 0;
-  private static int totalSpear = 0;
-  private static int totalHerb = 0;
-  private static int totalBlood = 0;
-  private static int totalChaos = 0;
   private static int totalMed = 0;
   private static int totalDstone = 0;
   private static int totalRbar = 0;
   private static int totalRunestuff = 0;
-  private static int totalTrips = 0;
-  private static int totalDeath = 0;
   private static int totalRchain = 0;
   private static int totalRmed = 0;
-  private static final int[] superAttackPot = {
-    488, // super  attack pot (1)
-    487, // super  attack pot (2)
-    486 // super attack pot (3)
-  };
-  private static final int[] superStrengthPot = {
-    494, // super str pot (1)
-    493, // super str pot (2)
-    492 // super str pot (3)
-  };
   private static final int[] loot = {
     400, // rune chain
     399, // rune med
@@ -110,6 +78,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
   public int start(String[] parameters) {
 
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@red@Taverley Black Demons - By Kaila");
       c.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
@@ -124,7 +93,7 @@ public class K_TavBlackDemonPipe extends IdleScript {
       }
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }
@@ -137,26 +106,13 @@ public class K_TavBlackDemonPipe extends IdleScript {
 
       foodPotCheck();
       eat();
-      drink();
-      pray();
+      drinkPrayerPotion();
+      prayParalyze();
+      superAttackBoost();
+      superStrengthBoost();
 
       if (c.getInventoryItemCount() < 30) {
-        foodPotCheck();
         lootScript();
-        if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
-          if (c.getInventoryItemCount(superAttackPot[0]) > 0
-              || c.getInventoryItemCount(superAttackPot[1]) > 0
-              || c.getInventoryItemCount(superAttackPot[2]) > 0) {
-            attackBoost();
-          }
-        }
-        if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
-          if (c.getInventoryItemCount(superStrengthPot[0]) > 0
-              || c.getInventoryItemCount(superStrengthPot[1]) > 0
-              || c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-            strengthBoost();
-          }
-        }
 
         if (!c.isInCombat()) {
           c.setStatus("@yel@Attacking Demons");
@@ -172,26 +128,13 @@ public class K_TavBlackDemonPipe extends IdleScript {
         c.sleep(1380);
       }
       if (c.getInventoryItemCount() == 30) {
-
-        foodPotCheck();
-
         leaveCombat();
         if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
           c.setStatus("@red@Dropping Vial to Loot..");
           c.dropItem(c.getInventoryItemSlotIndex(465));
           c.sleep(340);
         }
-        eatFoodToLootScript();
-      }
-    }
-  }
-
-  public void eatFoodToLootScript() {
-    for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0 && c.getInventoryItemCount() == 30) {
-        c.setStatus("@red@Eating Food to Loot..");
-        c.itemCommand(id);
-        c.sleep(700);
+        eatFoodToLoot();
       }
     }
   }
@@ -345,58 +288,9 @@ public class K_TavBlackDemonPipe extends IdleScript {
     lawCheck();
   }
 
-  private void lawCheck() {
-    if (c.getInventoryItemCount(42) < 6) { // law
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void waterCheck() {
-    if (c.getInventoryItemCount(32) < 6) { // 2 water
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void airCheck() {
-    if (c.getInventoryItemCount(33) < 18) { // 6 air
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(33, 18 - c.getInventoryItemCount(33));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void pray() {
+  private static void prayParalyze() {
     if (!c.isPrayerOn(c.getPrayerId("Paralyze Monster")) && c.currentY() > 3000) {
       c.enablePrayer(c.getPrayerId("Paralyze Monster"));
-    }
-  }
-
-  private void drink() {
-    if (c.getCurrentStat(c.getStatId("Prayer")) < (c.getBaseStat(c.getStatId("Prayer")) - 31)) {
-      if (c.getInventoryItemCount(485) > 0
-          || c.getInventoryItemCount(484) > 0
-          || c.getInventoryItemCount(483) > 0) {
-        drinkPot();
-      } else {
-        c.sleep(308);
-        demonEscape();
-        DemonsToBank();
-        bank();
-        BankToDemons();
-      }
     }
   }
 
@@ -405,7 +299,6 @@ public class K_TavBlackDemonPipe extends IdleScript {
     int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
     if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-      foodPotCheck();
       leaveCombat();
       c.setStatus("@red@Eating..");
 
@@ -510,10 +403,9 @@ public class K_TavBlackDemonPipe extends IdleScript {
     c.sleep(320);
     c.walkTo(380, 3372);
     c.setStatus("@gre@Done Walking..");
-    foodPotCheck();
     eat();
-    drink();
-    pray();
+    drinkPrayerPotion();
+    prayParalyze();
   }
 
   // BOOST private voids
@@ -529,70 +421,6 @@ public class K_TavBlackDemonPipe extends IdleScript {
     }
   }
 
-  private void attackBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
-      c.itemCommand(superAttackPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superAttackPot[1]) > 0) {
-      c.itemCommand(superAttackPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superAttackPot[2]) > 0) {
-      c.itemCommand(superAttackPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void strengthBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
-      c.itemCommand(superStrengthPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superStrengthPot[1]) > 0) {
-      c.itemCommand(superStrengthPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-      c.itemCommand(superStrengthPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void drinkPot() {
-    foodPotCheck();
-    leaveCombat();
-    if (c.getInventoryItemCount(485) > 0) {
-      c.itemCommand(485);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(484) > 0) {
-      c.itemCommand(484);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(483) > 0) {
-      c.itemCommand(483);
-      c.sleep(320);
-    }
-  }
-
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      }
-      c.sleep(10);
-    }
-  }
-
-  private void tavGateEastToWest() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
-        c.setStatus("@red@Crossing Tav Gate..");
-        c.atObject(341, 487); // gate won't break if someone else opens it
-        c.sleep(800);
-      }
-      c.sleep(10);
-    }
-  }
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Taverley Black Demon (Pipe) - By Kaila");

@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,28 +16,12 @@ import javax.swing.JLabel;
  * todo:
  *   logic to cut same tree as other players.
  */
-public class K_ArdyYewTree extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public class K_ArdyYewTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
-  private static int totalTrips = 0;
-  private static final int[] axeId = {
-    87, // bronze axe
-    12, // iron axe
-    88, // steel axe
-    428, // black axe
-    203, // mith axe
-    204, // addy axe
-    405 // rune axe
-  };
 
   private void startSequence() {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    checkBatchBars();
     c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
     if (c.isInBank()) {
       c.closeBank();
@@ -70,11 +52,12 @@ public class K_ArdyYewTree extends IdleScript {
       }
     }
     if (scriptStarted) {
-      startSequence();
+      guiSetup = true;
       startTime = System.currentTimeMillis();
+      startSequence();
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }

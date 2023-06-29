@@ -9,7 +9,7 @@ import orsc.ORSCharacter;
  *
  * <p>start in any bank. @Author - Kaila
  */
-public class K_IronPresentOpener extends IdleScript {
+public class K_IronPresentOpener extends K_kailaScript {
   private static final Controller c = Main.getController();
 
   public int start(String[] parameters) {

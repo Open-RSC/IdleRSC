@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,29 +14,23 @@ import javax.swing.JLabel;
  * adamantite - makes adamantite platebodies. rune, runite - makes runite platebodies. ~ Author -
  * Kaila
  */
-public class K_FastChainLinks extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public class K_FastChainLinks extends K_kailaScript {
   private static int barsInBank = 0;
   private static int totalBars = 0;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] parameters) {
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@gre@Chain Link Crafter" + '"' + " - by Kaila");
       c.displayMessage("@gre@Start in Fally East");
-
       c.quitIfAuthentic();
       if (c.isInBank()) c.closeBank();
       startTime = System.currentTimeMillis();
+      if (c.currentY() < 3000) {
+        bank();
+        bankToAnvil();
+      }
       scriptStart();
-    }
-    if (c.currentY() < 3000) {
-      bank();
-      bankToAnvil();
     }
     if (!scriptStarted && !guiSetup) {
       setupGUI();

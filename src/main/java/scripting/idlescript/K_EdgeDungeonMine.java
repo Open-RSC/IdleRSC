@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -23,25 +21,8 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_EdgeDungeonMine extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
+public class K_EdgeDungeonMine extends K_kailaScript {
   private static String isMining = "none";
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int coalInBank = 0;
-  private static int mithInBank = 0;
-  private static int addyInBank = 0;
-  private static int totalCoal = 0;
-  private static int totalMith = 0;
-  private static int totalAddy = 0;
-  private static int totalSap = 0;
-  private static int totalEme = 0;
-  private static int totalRub = 0;
-  private static int totalDia = 0;
-  private static int totalTrips = 0;
   private static final int[] currentOre = {0, 0};
   private static final int[] addyIDs = {108, 231, 109};
   private static final int[] mithIDs = {106, 107};
@@ -85,11 +66,12 @@ public class K_EdgeDungeonMine extends IdleScript {
 
   public int start(String[] parameters) {
     if (scriptStarted) {
+      guiSetup = true;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }
@@ -198,7 +180,7 @@ public class K_EdgeDungeonMine extends IdleScript {
       c.closeBank();
       c.sleep(640);
     }
-    dustyKeyCheck();
+    brassKeyCheck();
   }
 
   private void goToBank() {
@@ -212,28 +194,6 @@ public class K_EdgeDungeonMine extends IdleScript {
     c.sleep(618);
   }
 
-  private void dustyGateNorthToSouth() {
-    int dustyKey = 99;
-    for (int i = 1; i <= 10; i++) {
-      if (c.currentX() == 202 && c.currentY() == 484) {
-        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
-        c.sleep(2000);
-      }
-      c.sleep(10);
-    }
-  }
-
-  private void dustyGateSouthToNorth() {
-    int dustyKey = 99;
-    for (int i = 1; i <= 10; i++) {
-      if (c.currentX() == 202 && c.currentY() == 485) {
-        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
-        c.sleep(2000);
-      }
-      c.sleep(10);
-    }
-  }
-
   private void bankToDungeon() {
     c.setStatus("@gre@Walking to Edge Dungeon..");
     c.walkTo(151, 507);
@@ -243,9 +203,9 @@ public class K_EdgeDungeonMine extends IdleScript {
     c.walkTo(192, 497);
     c.walkTo(202, 487);
     c.walkTo(202, 485);
-    dustyKeyCheck();
+    brassKeyCheck();
     c.setStatus("@gre@Crossing Dusty Gate..");
-    dustyGateSouthToNorth();
+    brassDoorSouthToNorth();
     c.setStatus("@gre@Walking to Edge Dungeon..");
     c.walkTo(203, 483);
     c.atObject(203, 482);
@@ -264,9 +224,9 @@ public class K_EdgeDungeonMine extends IdleScript {
     c.atObject(203, 3314);
     c.sleep(2000);
     c.walkTo(202, 484);
-    dustyKeyCheck();
+    brassKeyCheck();
     c.setStatus("@gre@Crossing Dusty Gate..");
-    dustyGateNorthToSouth();
+    brassDoorNorthToSouth();
     c.setStatus("@gre@Walking to Varrock West..");
     c.walkTo(202, 487);
     c.walkTo(192, 497);
@@ -277,31 +237,6 @@ public class K_EdgeDungeonMine extends IdleScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-
-  private void dustyKeyCheck() {
-    if (c.getInventoryItemCount(99) == 0) {
-      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot in 30 Seconds");
-      c.sleep(10000);
-      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot in 20 Seconds");
-      c.sleep(10000);
-      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot in 10 Seconds");
-      c.sleep(5000);
-      c.displayMessage("@red@ERROR - No Dusty Key, shutting down bot");
-      c.sleep(1000);
-      endSession();
-    }
-  }
-
-  private void endSession() {
-    c.setAutoLogin(false);
-    while (c.isLoggedIn()) {
-      c.logout();
-    }
-    if (!c.isLoggedIn()) {
-      c.stop();
-    }
-  }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Edge Dungeon Miner - By Kaila");

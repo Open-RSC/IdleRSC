@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,28 +35,20 @@ import javax.swing.JLabel;
  *
  * <p>@Author ~ Kaila
  */
-public class K_FastPlateSmither extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public class K_FastPlateSmither extends K_kailaScript {
   private static int barId = -1;
-  private static final int[] barIds = {169, 170, 171, 173, 174, 408};
-  private static int barsInBank = 0;
-  private static int totalPlates = 0;
-  private static int totalBars = 0;
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    checkBatchBars();
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
       c.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
       c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
       if (c.isInBank()) c.closeBank();
       startTime = System.currentTimeMillis();
+      next_attempt = System.currentTimeMillis() + 10000L;
       scriptStart();
     }
     if (parameters.length > 0 && !parameters[0].equals("")) {
@@ -121,6 +111,7 @@ public class K_FastPlateSmither extends IdleScript {
         c.setStatus("@gre@Banking..");
         c.displayMessage("@gre@Banking..");
         c.walkTo(150, 507);
+        relog();
         bank();
         c.walkTo(148, 512);
       }
@@ -135,17 +126,64 @@ public class K_FastPlateSmither extends IdleScript {
     c.setStatus("@gre@Smithing..");
     c.displayMessage("@gre@Smithing..");
     c.useItemIdOnObject(148, 513, barId);
-    c.sleep(1000);
+    c.sleep(1280);
     c.optionAnswer(1);
-    c.sleep(500);
+    c.sleep(640);
     c.optionAnswer(2);
-    c.sleep(500);
+    c.sleep(640);
     c.optionAnswer(2);
-    c.sleep(500);
+    c.sleep(640);
     if (!c.isAuthentic()) {
       c.optionAnswer(3);
-      c.sleep(1000); // was 650
-      while (c.isBatching()) c.sleep(200);
+      c.sleep(3000); // was 650
+    }
+    waitForBatching();
+  }
+
+  private void relog() {
+    if (System.currentTimeMillis() > next_attempt) {
+      c.log("@red@Relogging to resync NPC!");
+      c.logout();
+      if (!c.isAutoLogin()) {
+        c.setAutoLogin(true);
+      }
+      c.sleep(640);
+      for (int i = 1; i <= 20; i++) {
+        if (c.isLoggedIn()) {
+          c.sleep(1280);
+        } else {
+          break;
+        }
+      }
+      if (c.isLoggedIn()) c.logout();
+      for (int i = 1; i <= 20; i++) {
+        if (c.isLoggedIn()) {
+          c.sleep(1280);
+        } else {
+          break;
+        }
+      }
+      c.sleep(640);
+      controller.login();
+      for (int i = 1; i <= 20; i++) {
+        if (!c.isLoggedIn()) {
+          c.sleep(1280);
+        } else {
+          break;
+        }
+      }
+      if (!c.isLoggedIn()) c.login();
+      for (int i = 1; i <= 20; i++) {
+        if (!c.isLoggedIn()) {
+          c.sleep(1280);
+        } else {
+          break;
+        }
+      }
+      c.sleep(640);
+      next_attempt = System.currentTimeMillis() + 300000L; //
+      long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
+      c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
     }
   }
 
@@ -154,6 +192,7 @@ public class K_FastPlateSmither extends IdleScript {
     c.setStatus("@gre@Banking..");
     c.openBank();
     c.sleep(2000);
+    waitForBankOpen(); // temporary fix for npc desync issues, redo into better bank wait?
     if (c.isInBank()) {
 
       totalPlates = totalPlates + 5;
@@ -188,6 +227,21 @@ public class K_FastPlateSmither extends IdleScript {
       barsInBank = c.getBankItemCount(barId);
       c.closeBank();
       c.sleep(200);
+    }
+  }
+
+  private static void waitForBankOpen() {
+    for (int i = 1; i <= 15; i++) {
+      try { //    while (!c.isInBank()) c.sleep(1280); // temp fix for npc de-sync issues
+        if (!c.isInBank()) {
+          c.log("waiting");
+          c.sleep(2000);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
   }
   // GUI stuff below (icky)

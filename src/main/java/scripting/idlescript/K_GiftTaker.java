@@ -1,8 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
-
 /**
  * -
  *
@@ -25,9 +22,7 @@ import controller.Controller;
  *
  * <p>Author - Kaila
  */
-public class K_GiftTaker extends IdleScript {
-
-  private static final Controller c = Main.getController();
+public class K_GiftTaker extends K_kailaScript {
 
   public int start(String[] parameters) {
     c.displayMessage("@red@present TAKER! Let's party like it's 2004! ~ by Kaila");
@@ -44,19 +39,11 @@ public class K_GiftTaker extends IdleScript {
         c.sleep(100);
       }
       if (c.getInventoryItemCount() > 19) {
-        depositScript();
+        depositAll();
       }
       c.closeBank();
       c.sleep(1240);
     }
     return 1000; // start() must return an int value now.
-  }
-
-  private void depositScript() {
-    c.sleep(1280);
-    for (int itemId : c.getInventoryItemIds()) {
-      c.depositItem(itemId, c.getInventoryItemCount(itemId));
-    }
-    c.sleep(1280);
   }
 }

@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -23,16 +21,8 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_NatureCrafter extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public class K_NatureCrafter extends K_kailaScript {
   private static boolean lowLevel = false;
-  private static int totalNatz = 0;
-  private static int totalTrips = 0;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   private void startSequence() {
     c.displayMessage("@red@Nature Rune Crafter - By Kaila");
@@ -64,18 +54,18 @@ public class K_NatureCrafter extends IdleScript {
         c.displayMessage("Auto-starting, Crafting Nature Runes", 0);
         System.out.println("Auto-starting, Crafting Nature Runes");
         lowLevel = false;
-        parseVariables();
-        startSequence();
-        scriptStart();
+        scriptStarted = true;
       }
     }
-    if (!guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
     if (scriptStarted) {
+      guiSetup = true;
+      parseVariables();
       startSequence();
       scriptStart();
+    }
+    if (!scriptStarted && !guiSetup) {
+      setupGUI();
+      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -89,10 +79,10 @@ public class K_NatureCrafter extends IdleScript {
         c.setStatus("@red@Crafting..");
         c.atObject(787, 21);
         if (c.getBaseStat(18) < 91) {
-          totalNatz = totalNatz + 26;
+          totalNat = totalNat + 26;
         }
         if (c.getBaseStat(18) > 90) {
-          totalNatz = totalNatz + 52;
+          totalNat = totalNat + 52;
         }
         totalTrips = totalTrips + 1;
         c.sleep(618);
@@ -110,15 +100,10 @@ public class K_NatureCrafter extends IdleScript {
         leaveCombat();
         c.setStatus("@red@We've ran out of Food! Running Away/Logging Out.");
         c.sleep(308);
-        c.setAutoLogin(false);
-        c.logout();
+        endSession();
         BankToNat();
-        c.setAutoLogin(false);
-        c.logout();
-        c.stop();
-        c.logout();
+        endSession();
       }
-      leaveCombat();
     }
   }
 
@@ -264,27 +249,7 @@ public class K_NatureCrafter extends IdleScript {
     }
   }
 
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      } else {
-        c.setStatus("@red@Done Leaving combat..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
-
   // GUI stuff below (icky)
-  private void setValuesFromGUI(JCheckBox lowLevelCheckbox) {
-    if (lowLevelCheckbox.isSelected()) {
-      lowLevel = true;
-    }
-  }
-
   private void parseVariables() {
     startTime = System.currentTimeMillis();
   }
@@ -302,7 +267,9 @@ public class K_NatureCrafter extends IdleScript {
 
     startScriptButton.addActionListener(
         e -> {
-          setValuesFromGUI(lowLevelCheckbox);
+          if (lowLevelCheckbox.isSelected()) {
+            lowLevel = true;
+          }
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           parseVariables();
@@ -333,14 +300,14 @@ public class K_NatureCrafter extends IdleScript {
     if (c != null) {
 
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
-      int NatzSuccessPerHr = 0;
+      int NatSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        NatzSuccessPerHr = (int) (totalNatz * scale);
+        NatSuccessPerHr = (int) (totalNat * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
 
       } catch (Exception e) {
@@ -352,9 +319,9 @@ public class K_NatureCrafter extends IdleScript {
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Natures Crafted: @gre@"
-              + totalNatz
+              + totalNat
               + "@yel@ (@whi@"
-              + String.format("%,d", NatzSuccessPerHr)
+              + String.format("%,d", NatSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
           x,
           y + 14,

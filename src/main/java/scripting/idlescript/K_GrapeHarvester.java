@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -28,16 +26,9 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_GrapeHarvester extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public class K_GrapeHarvester extends K_kailaScript {
   private static int GrapezInBank = 0;
   private static int totalGrapez = 0;
-  private static int totalTrips = 0;
 
   private void startSequence() {
     c.displayMessage("@red@Grape Harvester - By Kaila");
@@ -50,7 +41,7 @@ public class K_GrapeHarvester extends IdleScript {
       BankToGrape();
       c.sleep(1380);
     }
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    checkBatchBars();
   }
 
   public int start(String[] parameters) {
@@ -61,11 +52,13 @@ public class K_GrapeHarvester extends IdleScript {
       }
     }
     if (scriptStarted) {
-      startSequence();
+
+      guiSetup = true;
       startTime = System.currentTimeMillis();
+      startSequence();
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }
@@ -88,20 +81,14 @@ public class K_GrapeHarvester extends IdleScript {
       if (coords != null) {
         c.setStatus("@yel@Harvesting...");
         c.atObject(coords[0], coords[1]);
-        c.sleep(1000);
-        isBatching();
+        c.sleep(2000);
+        waitForBatching();
 
       } else {
         c.setStatus("@yel@Waiting for spawn..");
         c.sleep(1000);
       }
       c.sleep(100);
-    }
-  }
-
-  private void isBatching() {
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
     }
   }
 

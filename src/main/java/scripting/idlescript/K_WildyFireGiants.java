@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,52 +15,17 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_WildyFireGiants extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public class K_WildyFireGiants extends K_kailaScript {
 
   private boolean isWithinLootzone(int x, int y) {
     return c.distance(269, 2949, x, y) <= 10;
   }
 
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
   private static int totalBstaff = 0;
   private static int totalRscim = 0;
   private static int totalRunestuff = 0;
-  private static int totalGems = 0;
-  private static int totalFire = 0;
-  private static int totalLaw = 0;
-  private static int totalNat = 0;
-  private static int totalChaos = 0;
-  private static int totalBlood = 0;
-  private static int totalLoop = 0;
-  private static int totalTooth = 0;
   private static int totalDstone = 0;
-  private static int totalLeft = 0;
-  private static int totalSpear = 0;
   private static int totalMed = 0;
-  private static int totalHerb = 0;
-  private static int totalTrips = 0;
-
-  private final int[] bones = {
-    20, // regular bones
-    413, // big bones
-    604, // bat bones
-    814 // dragon bones
-  };
-  private static final int[] superAttackPot = {
-    488, // super  attack pot (1)
-    487, // super  attack pot (2)
-    486 // super attack pot (3)
-  };
-  private static final int[] superStrengthPot = {
-    494, // super str pot (1)
-    493, // super str pot (2)
-    492 // super str pot (3)
-  };
   private static final int[] loot = {
     // 413,   // big bones //un-comment this to loot and bury dbones, it will reduce Kills per Hr
     // significantly b/c of Shadow Spiders
@@ -120,6 +83,7 @@ public class K_WildyFireGiants extends IdleScript {
   public int start(String[] parameters) {
 
     if (scriptStarted) {
+      guiSetup = true;
       c.displayMessage("@red@Wildy Fire Giant Killer - By Kaila");
       c.displayMessage("@red@Start in Mage bank OR in Giants room");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
@@ -138,7 +102,7 @@ public class K_WildyFireGiants extends IdleScript {
       }
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }
@@ -150,28 +114,13 @@ public class K_WildyFireGiants extends IdleScript {
 
       buryBones();
       eat();
+      lootScript();
+      superAttackBoost();
+      superStrengthBoost();
+      dropVial();
 
-      if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-        c.dropItem(c.getInventoryItemSlotIndex(465));
-      }
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
-          lootScript();
-
-          if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
-            if (c.getInventoryItemCount(superAttackPot[0]) > 0
-                || c.getInventoryItemCount(superAttackPot[1]) > 0
-                || c.getInventoryItemCount(superAttackPot[2]) > 0) {
-              attackBoost();
-            }
-          }
-          if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
-            if (c.getInventoryItemCount(superStrengthPot[0]) > 0
-                || c.getInventoryItemCount(superStrengthPot[1]) > 0
-                || c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-              strengthBoost();
-            }
-          }
           if (!c.isInCombat()) {
             c.setStatus("@yel@Attacking Giants");
             c.sleepHandler(98, true);
@@ -179,15 +128,14 @@ public class K_WildyFireGiants extends IdleScript {
             if (npc != null) {
               c.walktoNPC(npc.serverIndex, 1);
               c.attackNpc(npc.serverIndex);
-              c.sleep(1000);
+              c.sleep(1280);
             } else {
-              c.sleep(1000);
+              c.sleep(640);
             }
           }
-          c.sleep(340);
         }
         if (c.getInventoryItemCount() == 30 && !c.isInCombat()) {
-          eatFoodToLootScript();
+          eatFoodToLoot();
         }
       }
       if (c.getInventoryItemCount(546) == 0
@@ -203,67 +151,19 @@ public class K_WildyFireGiants extends IdleScript {
     }
   }
 
-  public void eatFoodToLootScript() {
-    for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0) c.setStatus("@red@Eating 1 Food to Loot..");
-      {
-        c.itemCommand(id);
-        c.sleep(700);
-      }
-    }
-  }
-
-  public void lootScript() {
+  private void lootScript() {
     for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && this.isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
-      }
-    }
-  }
-
-  private void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@red@Burying bones..");
-          c.itemCommand(id);
-
-          c.sleep(618);
-          buryBones();
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
         }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
-    }
-  }
-
-  private void attackBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
-      c.itemCommand(superAttackPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superAttackPot[1]) > 0) {
-      c.itemCommand(superAttackPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superAttackPot[2]) > 0) {
-      c.itemCommand(superAttackPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void strengthBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
-      c.itemCommand(superStrengthPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superStrengthPot[1]) > 0) {
-      c.itemCommand(superStrengthPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-      c.itemCommand(superStrengthPot[2]);
-      c.sleep(320);
     }
   }
 
@@ -323,18 +223,8 @@ public class K_WildyFireGiants extends IdleScript {
       }
       c.sleep(1280); // keep, important
 
-      if (c.getInventoryItemCount(superAttackPot[0]) < 1
-          && c.getInventoryItemCount(superAttackPot[1]) < 1
-          && c.getInventoryItemCount(superAttackPot[2]) < 1) {
-        c.withdrawItem(superAttackPot[2], 1);
-        c.sleep(340);
-      }
-      if (c.getInventoryItemCount(superStrengthPot[0]) < 1
-          && c.getInventoryItemCount(superStrengthPot[1]) < 1
-          && c.getInventoryItemCount(superStrengthPot[2]) < 1) {
-        c.withdrawItem(superStrengthPot[2], 1);
-        c.sleep(340);
-      }
+      withdrawSuperAttack(1);
+      withdrawSuperStrength(1);
       if (c.getInventoryItemCount(546) < 27) { // withdraw shark //was 27
         c.withdrawItem(546, 27 - c.getInventoryItemCount(546));
         c.sleep(340);
@@ -585,17 +475,6 @@ public class K_WildyFireGiants extends IdleScript {
     }
     c.walkTo(272, 2953);
     c.setStatus("@gre@Done Walking..");
-  }
-
-  private void leaveCombat() {
-    for (int i = 1; i <= 6; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      }
-      c.sleep(500);
-    }
   }
 
   private void goUpStairs() {

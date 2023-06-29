@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,19 +14,11 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila.
  */
-public class K_FastBarbFisher extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public class K_FastBarbFisher extends K_kailaScript {
   private static int troutSuccess = 0;
   private static int salmonSuccess = 0;
   private static int failure = 0;
   private static int invFeathers = 0;
-  private static long next_attempt = -1;
-  private static long startTime;
-  private static final long nineMinutesInMillis = 540000L;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] parameters) {
     if (!parameters[0].equals("")) {
@@ -38,6 +28,7 @@ public class K_FastBarbFisher extends IdleScript {
       }
     }
     if (scriptStarted) {
+      guiSetup = true;
       startTime = System.currentTimeMillis();
       next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@Power fishes trout/salmon in barb village using Batching");
@@ -51,7 +42,7 @@ public class K_FastBarbFisher extends IdleScript {
       }
       scriptStart();
     }
-    if (!guiSetup) {
+    if (!scriptStarted && !guiSetup) {
       setupGUI();
       guiSetup = true;
     }
@@ -65,7 +56,7 @@ public class K_FastBarbFisher extends IdleScript {
       c.sleep(1240);
       c.atObject(spot[0], spot[1]);
       c.sleep(2000);
-      waitForBatchingScript();
+      waitForBatching();
       if (System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
         c.walkTo(c.currentX() + 1, c.currentY(), 0, true);
@@ -79,12 +70,6 @@ public class K_FastBarbFisher extends IdleScript {
         bank();
         bankToFish();
       }
-    }
-  }
-
-  private void waitForBatchingScript() {
-    while (c.isBatching() && System.currentTimeMillis() < next_attempt) {
-      c.sleep(1000);
     }
   }
 
@@ -124,14 +109,6 @@ public class K_FastBarbFisher extends IdleScript {
       }
       c.closeBank();
       c.sleep(1320);
-    }
-  }
-
-  private void endSession() {
-    c.setAutoLogin(false);
-    c.logout();
-    if (!c.isLoggedIn()) {
-      c.stop();
     }
   }
 

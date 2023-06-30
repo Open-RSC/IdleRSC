@@ -82,6 +82,8 @@ public class AIOFighter extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 

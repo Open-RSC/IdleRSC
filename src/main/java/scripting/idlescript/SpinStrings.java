@@ -37,6 +37,8 @@ public class SpinStrings extends IdleScript {
       guiSetup = true;
     }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 

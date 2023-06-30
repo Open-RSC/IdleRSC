@@ -33,7 +33,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   }
 
   private static int totalRdagger = 0;
-  private static int foodWithdrawAmount = 20;
+  private static int foodWithdrawAmount = 16;
   private static final int[] loot = {
     814, // D Bones
     396, // rune dagger

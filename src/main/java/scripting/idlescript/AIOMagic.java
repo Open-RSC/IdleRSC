@@ -68,17 +68,16 @@ public class AIOMagic extends IdleScript {
   boolean guiSetup = false;
 
   public int start(String[] parameters) {
-
-    if (scriptStarted) {
-      scriptStart();
-    } else {
-      if (!guiSetup) {
-        setupGUI();
-        guiSetup = true;
-        controller.setStatus("@blu@Waiting for start..");
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+      controller.setStatus("@blu@Waiting for start..");
     }
-
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      scriptStart();
+    }
     return 1000; // start() must return a int value now.
   }
 

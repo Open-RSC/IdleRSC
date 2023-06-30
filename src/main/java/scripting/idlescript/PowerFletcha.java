@@ -75,6 +75,8 @@ public class PowerFletcha extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
       controller.setStatus("@yel@Waiting for start...");
     }

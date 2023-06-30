@@ -35,7 +35,9 @@ public class BuyFromShop extends IdleScript {
       setupGUI();
       guiSetup = true;
     }
-    while (scriptStarted && controller.isRunning()) {
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 
@@ -84,53 +86,52 @@ public class BuyFromShop extends IdleScript {
   }
 
   public void scriptStart() {
-    while (controller.getInventoryItemCount() < 30) {
-      while (controller.getNearestNpcByIds(npcId, false) == null) {
-        startWalking(startX, startY);
-      }
-      while (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
-        if (npcId[0] != 54) {
-          controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
-          controller.sleep(640);
-        } else {
-          controller.npcCommand2(controller.getNearestNpcByIds(npcId, false).serverIndex);
-          controller.sleep(640);
+    while (controller.isRunning()) {
+      while (controller.getInventoryItemCount() < 30) {
+        while (controller.getNearestNpcByIds(npcId, false) == null) {
+          startWalking(startX, startY);
         }
-      }
-      while (controller.isInShop() && controller.getInventoryItemCount() < 30) {
-        for (int itemId : itemIds) {
-          while (itemId != 0
-              && isSellable(itemId)
-              && controller.getShopItemCount(itemId) > shopNumber
-              && controller.getShopItemCount(itemId) > 0) {
-            controller.shopBuy(itemId, shopNumber - controller.getShopItemCount(itemId));
-            controller.sleep(430);
+        while (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
+          if (npcId[0] != 54) {
+            controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
+            controller.sleep(640);
+          } else {
+            controller.npcCommand2(controller.getNearestNpcByIds(npcId, false).serverIndex);
+            controller.sleep(640);
           }
         }
-        controller.sleep(420);
+        while (controller.isInShop() && controller.getInventoryItemCount() < 30) {
+          for (int itemId : itemIds) {
+            while (itemId != 0
+                && isSellable(itemId)
+                && controller.getShopItemCount(itemId) > shopNumber
+                && controller.getShopItemCount(itemId) > 0) {
+              controller.shopBuy(itemId, shopNumber - controller.getShopItemCount(itemId));
+              controller.sleep(430);
+            }
+          }
+          controller.sleep(420);
+        }
       }
-    }
-    while (controller.getInventoryItemCount() == 30) {
-      startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
-      while (controller.getNearestNpcById(95, false) == null) {
+      while (controller.getInventoryItemCount() == 30) {
         startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
-      }
-      while (!controller.isInBank()) {
-        controller.openBank();
-        controller.sleep(430);
-      }
-      while (controller.isInBank() && controller.getInventoryItemCount() == 30) {
-        for (int itemId : controller.getInventoryItemIds()) {
-          purchased = purchased + controller.getInventoryItemCount(itemId);
-          if (itemId != 0 && itemId != 10) {
-            controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-            controller.sleep(10);
+        while (controller.getNearestNpcById(95, false) == null) {
+          startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
+        }
+        while (!controller.isInBank()) {
+          controller.openBank();
+          controller.sleep(430);
+        }
+        while (controller.isInBank() && controller.getInventoryItemCount() == 30) {
+          for (int itemId : controller.getInventoryItemIds()) {
+            purchased = purchased + controller.getInventoryItemCount(itemId);
+            if (itemId != 0 && itemId != 10) {
+              controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+              controller.sleep(10);
+            }
           }
         }
       }
-    }
-    if (!controller.isRunning()) {
-      guiSetup = false;
     }
   }
 

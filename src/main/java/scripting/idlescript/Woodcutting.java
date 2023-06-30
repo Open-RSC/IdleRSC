@@ -63,6 +63,8 @@ public class Woodcutting extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
       scriptStart();
     }

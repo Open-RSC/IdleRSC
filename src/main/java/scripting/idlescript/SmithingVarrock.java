@@ -35,6 +35,8 @@ public class SmithingVarrock extends IdleScript {
       if (controller.isInBank()) {
         controller.closeBank();
       }
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 

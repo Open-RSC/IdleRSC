@@ -51,6 +51,8 @@ public class DamWildyAgility extends IdleScript {
       guiSetup = true;
     }
     if (started) {
+      guiSetup = false;
+      started = false;
       scriptStart();
     }
     return 1000;

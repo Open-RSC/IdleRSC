@@ -111,7 +111,8 @@ public class DamRc extends IdleScript {
         essValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("ess")) {
         c.displayMessage("Got Autostart, Mine ess - Varrock east", 0);
@@ -120,7 +121,8 @@ public class DamRc extends IdleScript {
         essValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("air")) {
         c.displayMessage("Got Autostart, Air - Fally south", 0);
@@ -129,7 +131,8 @@ public class DamRc extends IdleScript {
         airValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("mind")) {
         c.displayMessage("Got Autostart, Mind - Fally north", 0);
@@ -138,7 +141,8 @@ public class DamRc extends IdleScript {
         mindValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("earth")) {
         c.displayMessage("Got Autostart, Earth - Varrock east", 0);
@@ -147,7 +151,8 @@ public class DamRc extends IdleScript {
         earthValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("water")) {
         c.displayMessage("Got Autostart, Water - Draynor", 0);
@@ -156,7 +161,8 @@ public class DamRc extends IdleScript {
         waterValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("fire")) {
         c.displayMessage("Got Autostart, Fire -  Al Kharid", 0);
@@ -165,7 +171,8 @@ public class DamRc extends IdleScript {
         fireValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("body")) {
         c.displayMessage("Got Autostart, Body - Edge", 0);
@@ -174,7 +181,8 @@ public class DamRc extends IdleScript {
         bodyValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
       if (parameters[0].toLowerCase().startsWith("cosmic")) {
         c.displayMessage("Got Autostart, Cosmic - Zanaris", 0);
@@ -183,7 +191,8 @@ public class DamRc extends IdleScript {
         cosmicValues();
         debug = false;
         crown = false;
-        scriptStart();
+        started = true;
+        guiSetup = true;
       }
     }
     if (!guiSetup) {
@@ -191,6 +200,8 @@ public class DamRc extends IdleScript {
       guiSetup = true;
     }
     if (started) {
+      guiSetup = false;
+      started = false;
       scriptStart();
     }
     return 1000; // start() must return an int value now.

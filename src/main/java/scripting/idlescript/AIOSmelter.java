@@ -109,54 +109,49 @@ public class AIOSmelter extends IdleScript {
   public int start(String[] parameters) {
     c.quitIfAuthentic();
     if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     } else {
-      if (parameters.length == 1) {
-        if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-        }
-        if (scriptStarted) {
-          scriptStart();
-        }
-      } else {
-        try {
-          // example for parameters here: "Al-Kharid" "Steel Bar"
-          for (int i = 0; i < destinations.length; i++) {
-            String option = destinations[i];
+      try {
+        // example for parameters here: "Al-Kharid" "Steel Bar"
+        for (int i = 0; i < destinations.length; i++) {
+          String option = destinations[i];
 
-            if (option.equalsIgnoreCase(parameters[0])) {
-              destinationId = i;
-              break;
-            }
+          if (option.equalsIgnoreCase(parameters[0])) {
+            destinationId = i;
+            break;
           }
-
-          for (int i = 0; i < options.length; i++) {
-            String option = options[i];
-
-            if (option.equalsIgnoreCase(parameters[1])) {
-              barId = barIds[i];
-              ingredients = ingredientsMapping.get(barId);
-              break;
-            }
-          }
-
-          if (barId == -1 || ingredients == null) {
-            throw new Exception("Ingredients not selected!");
-          }
-
-          parseValues(); // has barID set by now
-          if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
-          scriptStarted = true;
-        } catch (Exception e) {
-          System.out.println("Could not parse parameters!");
-          c.displayMessage("@red@Could not parse parameters!");
-          c.stop();
         }
+
+        for (int i = 0; i < options.length; i++) {
+          String option = options[i];
+
+          if (option.equalsIgnoreCase(parameters[1])) {
+            barId = barIds[i];
+            ingredients = ingredientsMapping.get(barId);
+            break;
+          }
+        }
+
+        if (barId == -1 || ingredients == null) {
+          throw new Exception("Ingredients not selected!");
+        }
+
+        parseValues(); // has barID set by now
+        if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+        scriptStarted = true;
+      } catch (Exception e) {
+        System.out.println("Could not parse parameters!");
+        c.displayMessage("@red@Could not parse parameters!");
+        c.stop();
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 

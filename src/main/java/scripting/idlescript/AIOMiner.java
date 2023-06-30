@@ -125,6 +125,8 @@ public class AIOMiner extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       run();
     }
 

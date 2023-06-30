@@ -61,6 +61,8 @@ public class TaverlyBuyer extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       startSequence();
       scriptStart();
     }

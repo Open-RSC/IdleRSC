@@ -39,6 +39,8 @@ public class FletchnBankBows extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 

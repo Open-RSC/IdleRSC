@@ -95,6 +95,8 @@ public class AIOThiever extends IdleScript {
 
   public int start(String[] parameters) {
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     } else {
       if (parameters[0].equals("")) {

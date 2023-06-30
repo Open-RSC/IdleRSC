@@ -16,13 +16,13 @@ import orsc.ORSCharacter;
  */
 public final class K_BattlefieldTrainer extends K_kailaScript {
   public int start(String[] parameters) {
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@red@Battlefield Trainer - By Kaila");
       c.displayMessage("@red@Start in Ardy or at Battlefield");
       c.displayMessage("@red@Sharks in Bank REQUIRED");
@@ -72,11 +72,11 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       if (c.getInventoryItemCount() > 1) {
         for (int itemId : c.getInventoryItemIds()) {

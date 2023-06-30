@@ -87,16 +87,16 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       potUp = false;
       c.displayMessage("Got Autostart Parameter");
       c.log("@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, no pot up", "cya");
-        guiSetup = true;
+      guiSetup = true;
       scriptStarted = true;
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       c.displayMessage("@red@Edge Dungeon Hob\\Skelli\\Zombies ~ Kaila");
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
@@ -235,11 +235,11 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
 
   private void bank() {
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);

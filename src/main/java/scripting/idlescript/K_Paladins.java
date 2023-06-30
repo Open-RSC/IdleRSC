@@ -157,7 +157,7 @@ public final class K_Paladins extends K_kailaScript {
       c.displayMessage("Got Autostart Parameter");
       c.log("@cya@Auto-Starting script using Sharks with a foodID of " + foodId, "cya");
       scriptFrame = null;
-        guiSetup = true;
+      guiSetup = true;
       scriptStarted = true;
     } else if (!parameters[0].equals("")) {
       fightMode = 3;
@@ -175,20 +175,20 @@ public final class K_Paladins extends K_kailaScript {
           throw new Exception("Food Type not selected! Format is \"Lobster\" ");
         }
         c.log("@cya@Starting script using " + parameters[0] + " with a foodID of " + foodId, "cya");
-          guiSetup = true;
+        guiSetup = true;
         scriptStarted = true;
       } catch (Exception e) {
         c.log("@red@Could not parse parameters! Could not parse ", "red");
         c.stop();
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       parseVariables();
       startSequence();
       scriptStart();
@@ -295,11 +295,11 @@ public final class K_Paladins extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       totalCoins = totalCoins + c.getInventoryItemCount(10);
       totalChaos = totalChaos + c.getInventoryItemCount(41);
       totalShark = totalShark + c.getInventoryItemCount(545);

@@ -25,16 +25,16 @@ public final class K_FastBarbFisher extends K_kailaScript {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.log("Got Autostart, Fishing", "@red@");
         scriptStarted = true;
-          guiSetup = true;
+        guiSetup = true;
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@Power fishes trout/salmon in barb village using Batching");
@@ -79,11 +79,11 @@ public final class K_FastBarbFisher extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       int featherId = 381;
       int rodId = 378;
 

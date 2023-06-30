@@ -17,7 +17,7 @@ public class DrawCallback {
   private static String levelUpSkill = "", levelUpLevel = "";
   private static String levelUpText = "";
   private static long levelUpTextTimeout = 0;
-  private static boolean screenshotTaken = false;
+  private static boolean screenshotTaken = true;
   public static boolean toggleOnViewId = false;
   public static long nextRefresh = -1;
   public static long nextDeRefresh = -1;

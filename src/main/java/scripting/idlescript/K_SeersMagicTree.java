@@ -45,16 +45,16 @@ public final class K_SeersMagicTree extends K_kailaScript {
         c.displayMessage("Got Autostart, Cutting Magics", 0);
         System.out.println("Got Autostart, Cutting Magics");
         scriptStarted = true;
-          guiSetup = true;
+        guiSetup = true;
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
@@ -218,11 +218,11 @@ public final class K_SeersMagicTree extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalLog = totalLog + c.getInventoryItemCount(636);
 

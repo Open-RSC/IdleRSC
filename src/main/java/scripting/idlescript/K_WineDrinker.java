@@ -66,11 +66,11 @@ public final class K_WineDrinker extends IdleScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          K_kailaScript.waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      K_kailaScript.waitForBankOpen();
+    } else {
 
       if (c.getInventoryItemCount(140) > 0) {
         c.depositItem(140, c.getInventoryItemCount(140));

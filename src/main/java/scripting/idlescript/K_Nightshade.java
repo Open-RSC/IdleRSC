@@ -19,13 +19,13 @@ public final class K_Nightshade extends K_kailaScript {
   private static int shadeInBank = 0;
 
   public int start(String[] parameters) {
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@red@Nightshade Picker - By Kaila");
       c.displayMessage("@red@Start in Yanille Bank");
       if (c.isInBank()) {
@@ -70,11 +70,11 @@ public final class K_Nightshade extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalShade = totalShade + c.getInventoryItemCount(1086);
 

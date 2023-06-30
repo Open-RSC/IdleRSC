@@ -54,17 +54,17 @@ public final class K_NatureCrafter extends K_kailaScript {
         c.displayMessage("Auto-starting, Crafting Nature Runes", 0);
         System.out.println("Auto-starting, Crafting Nature Runes");
         lowLevel = false;
-          guiSetup = true;
+        guiSetup = true;
         scriptStarted = true;
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       parseVariables();
       startSequence();
       scriptStart();

@@ -82,16 +82,16 @@ public final class K_AsgarnianIce extends K_kailaScript {
       foodId = 373;
       foodWithdrawAmount = 2;
       potUp = true;
-        guiSetup = true;
+      guiSetup = true;
       scriptStarted = true;
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       startSequence();
       scriptStart();
     }
@@ -161,11 +161,11 @@ public final class K_AsgarnianIce extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);

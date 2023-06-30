@@ -23,13 +23,13 @@ public final class K_CrystalKeyChest extends K_kailaScript {
   private static final int[] loot = {542, 408, 526, 527};
 
   public int start(String[] parameters) {
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@gre@Crystal Key Chest Opener - By Kaila");
       c.displayMessage("@gre@Start by Crystal chest or in Catherby Bank!");
       if (c.isInBank()) {
@@ -123,11 +123,11 @@ public final class K_CrystalKeyChest extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalDragonstones = totalDragonstones + c.getInventoryItemCount(542);
 

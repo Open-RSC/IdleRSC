@@ -69,17 +69,17 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         c.stop();
       }
       if (foodWithdrawAmount != -1) {
-          guiSetup = true;
-          scriptStarted = true;
+        guiSetup = true;
+        scriptStarted = true;
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@red@Tavelry Blue Dragons (Pipe) - By Kaila");
       c.displayMessage("@red@Start in Fally west with gear on, or in dragon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");

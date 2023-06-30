@@ -70,17 +70,17 @@ public final class K_BlackUnicorns extends K_kailaScript {
         System.out.println("Auto-starting, teleport false, return escape true");
         teleportOut = false;
         returnEscape = true;
-          guiSetup = true;
+        guiSetup = true;
         scriptStarted = true;
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
@@ -155,11 +155,11 @@ public final class K_BlackUnicorns extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       totalUni = totalUni + c.getInventoryItemCount(466);
 
       if (c.getInventoryItemCount(466) > 0) { // deposit the uni horns

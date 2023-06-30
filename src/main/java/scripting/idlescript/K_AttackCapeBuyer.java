@@ -25,13 +25,13 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
   private static int TopzInBank = 0;
 
   public int start(String[] parameters) {
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@red@Attack Cape Buyer - By Kaila");
       c.displayMessage("@red@Start by Rovin or varrock west!");
       c.displayMessage("@red@Need coins in the inventory to buy");
@@ -79,11 +79,11 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalTopz = totalTopz + c.getInventoryItemCount(1374);
 

@@ -19,13 +19,13 @@ public final class K_FastChainLinks extends K_kailaScript {
   private static int totalBars = 0;
 
   public int start(String[] parameters) {
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@gre@Chain Link Crafter" + '"' + " - by Kaila");
       c.displayMessage("@gre@Start in Fally East");
       c.quitIfAuthentic();
@@ -103,11 +103,11 @@ public final class K_FastChainLinks extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@gre@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalBars = totalBars + 26;
 

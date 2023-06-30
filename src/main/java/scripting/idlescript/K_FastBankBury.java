@@ -27,16 +27,15 @@ public final class K_FastBankBury extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
-
 
     return 1000; // start() must return an int value now.
   }
@@ -75,11 +74,11 @@ public final class K_FastBankBury extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       if (c.getInventoryItemCount(boneId) < 30) {
         c.withdrawItem(boneId, 30);
       }

@@ -57,9 +57,9 @@ public class MessageCallback {
       DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L; // wait 1 min for refresh
       /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
       System.currentTimeMillis()) / 1000L) + "s");*/
-    } //else if (cd.isDrawEnabled()) {
-     //   DrawCallback.nextRefresh = -1;
-    //}
+    } else if (cd.isDrawEnabled()) {
+      DrawCallback.nextRefresh = -1;
+    }
     if (type == MessageType.GAME) {
       if (message.contains("You just advanced")) {
         // handleLevelUp(message);

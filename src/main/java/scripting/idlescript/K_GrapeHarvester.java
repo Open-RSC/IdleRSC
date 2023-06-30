@@ -49,16 +49,16 @@ public final class K_GrapeHarvester extends K_kailaScript {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Auto-starting, Picking Grapes", 0);
         scriptStarted = true;
-          guiSetup = true;
+        guiSetup = true;
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
@@ -97,11 +97,11 @@ public final class K_GrapeHarvester extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalGrapez = totalGrapez + c.getInventoryItemCount(143);
 

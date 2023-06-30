@@ -16,13 +16,13 @@ public final class K_TeleWines extends K_kailaScript {
   private static int totalWinez = 0;
 
   public int start(String[] parameters) {
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@cya@Wine Telegrab @mag@~ By Kaila");
       c.displayMessage("@cya@Start in Edge Bank");
       c.displayMessage("@cya@Laws, Air staff required");
@@ -71,11 +71,11 @@ public final class K_TeleWines extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalWinez = totalWinez + c.getInventoryItemCount(501);
 

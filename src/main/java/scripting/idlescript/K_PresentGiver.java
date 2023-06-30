@@ -59,11 +59,11 @@ public final class K_PresentGiver extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       if (c.getInventoryItemCount(980) < 2) {
         c.withdrawItem(980, 30);
         c.sleep(1280);

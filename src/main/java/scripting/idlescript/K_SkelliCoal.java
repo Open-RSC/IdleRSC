@@ -52,17 +52,17 @@ public final class K_SkelliCoal extends K_kailaScript {
         c.displayMessage("Auto-starting, Mining Skelli Coal", 0);
         System.out.println("Auto-starting, Mining Skelli Coal");
         startSequence();
-          guiSetup = true;
+        guiSetup = true;
         scriptStarted = true;
       }
     }
-      if (!guiSetup) {
-          setupGUI();
-          guiSetup = true;
-      }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
-        guiSetup = false;
-        scriptStarted = false;
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
@@ -115,11 +115,11 @@ public final class K_SkelliCoal extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-      c.openBank();
-      c.sleep(640);
-      if (!c.isInBank()) {
-          waitForBankOpen();
-      } else {
+    c.openBank();
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalSap = totalSap + c.getInventoryItemCount(160);

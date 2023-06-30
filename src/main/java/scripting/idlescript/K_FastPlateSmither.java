@@ -35,12 +35,69 @@ import javax.swing.JLabel;
  *
  * <p>@Author ~ Kaila
  */
-public class K_FastPlateSmither extends K_kailaScript {
+public final class K_FastPlateSmither extends K_kailaScript {
   private static int barId = -1;
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
     checkBatchBars();
+      if (parameters.length > 0 && !parameters[0].equals("")) {
+          if (parameters[0].toLowerCase().startsWith("auto")) {
+              c.displayMessage("Got param " + parameters[0] + ", Auto-starting Steel Plates", 0);
+              System.out.println("Got param" + parameters[0] + ", Auto-starting Steel Plates");
+              barId = 171;
+              guiSetup = true;
+              scriptStarted = true;
+          }
+          if (parameters[0].toLowerCase().startsWith("bronze")) {
+              c.displayMessage("Got param " + parameters[0] + ". Using bronze bars!", 0);
+              System.out.println("Got param" + parameters[0] + ", Using bronze bars");
+              barId = 169;
+              guiSetup = true;
+              scriptStarted = true;
+          }
+          if (parameters[0].toLowerCase().startsWith("iron")) {
+              c.displayMessage("Got param " + parameters[0] + ". Using iron bars!", 0);
+              System.out.println("Got param" + parameters[0] + ", Using iron bars!");
+              barId = 170;
+              guiSetup = true;
+              scriptStarted = true;
+          }
+          if (parameters[0].toLowerCase().startsWith("steel")) {
+              c.displayMessage("Got param " + parameters[0] + ". Using steel bars!", 0);
+              System.out.println("Got param" + parameters[0] + ", Using steel bars!");
+              barId = 171;
+              guiSetup = true;
+              scriptStarted = true;
+          }
+          if (parameters[0].toLowerCase().startsWith("mith")
+                  || parameters[0].toLowerCase().startsWith("mithril")) {
+              c.displayMessage("Got param " + parameters[0] + ". Using mith bars!", 0);
+              System.out.println("Got param" + parameters[0] + ", Using mithril bars!");
+              barId = 173;
+              guiSetup = true;
+              scriptStarted = true;
+          }
+          if (parameters[0].toLowerCase().startsWith("addy")
+                  || parameters[0].toLowerCase().startsWith("adamantite")) {
+              c.displayMessage("Got param " + parameters[0] + ". Using addy bars!", 0);
+              System.out.println("Got param" + parameters[0] + ", Using adamantite bars!");
+              barId = 174;
+              guiSetup = true;
+              scriptStarted = true;
+          }
+          if (parameters[0].toLowerCase().startsWith("rune")
+                  || parameters[0].toLowerCase().startsWith("runite")) {
+              c.displayMessage("Got param " + parameters[0] + ". Using rune bars!", 0);
+              System.out.println("Got param" + parameters[0] + ", Using rune bars!");
+              barId = 408;
+              guiSetup = true;
+              scriptStarted = true;
+          }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
@@ -52,57 +109,9 @@ public class K_FastPlateSmither extends K_kailaScript {
       next_attempt = System.currentTimeMillis() + 10000L;
       scriptStart();
     }
-    if (parameters.length > 0 && !parameters[0].equals("")) {
-      if (parameters[0].toLowerCase().startsWith("auto")) {
-        c.displayMessage("Got param " + parameters[0] + ", Auto-starting Steel Plates", 0);
-        System.out.println("Got param" + parameters[0] + ", Auto-starting Steel Plates");
-        barId = 171;
-        scriptStarted = true;
-      }
-      if (parameters[0].toLowerCase().startsWith("bronze")) {
-        c.displayMessage("Got param " + parameters[0] + ". Using bronze bars!", 0);
-        System.out.println("Got param" + parameters[0] + ", Using bronze bars");
-        barId = 169;
-        scriptStarted = true;
-      }
-      if (parameters[0].toLowerCase().startsWith("iron")) {
-        c.displayMessage("Got param " + parameters[0] + ". Using iron bars!", 0);
-        System.out.println("Got param" + parameters[0] + ", Using iron bars!");
-        barId = 170;
-        scriptStarted = true;
-      }
-      if (parameters[0].toLowerCase().startsWith("steel")) {
-        c.displayMessage("Got param " + parameters[0] + ". Using steel bars!", 0);
-        System.out.println("Got param" + parameters[0] + ", Using steel bars!");
-        barId = 171;
-        scriptStarted = true;
-      }
-      if (parameters[0].toLowerCase().startsWith("mith")
-          || parameters[0].toLowerCase().startsWith("mithril")) {
-        c.displayMessage("Got param " + parameters[0] + ". Using mith bars!", 0);
-        System.out.println("Got param" + parameters[0] + ", Using mithril bars!");
-        barId = 173;
-        scriptStarted = true;
-      }
-      if (parameters[0].toLowerCase().startsWith("addy")
-          || parameters[0].toLowerCase().startsWith("adamantite")) {
-        c.displayMessage("Got param " + parameters[0] + ". Using addy bars!", 0);
-        System.out.println("Got param" + parameters[0] + ", Using adamantite bars!");
-        barId = 174;
-        scriptStarted = true;
-      }
-      if (parameters[0].toLowerCase().startsWith("rune")
-          || parameters[0].toLowerCase().startsWith("runite")) {
-        c.displayMessage("Got param " + parameters[0] + ". Using rune bars!", 0);
-        System.out.println("Got param" + parameters[0] + ", Using rune bars!");
-        barId = 408;
-        scriptStarted = true;
-      }
+
     }
-    if (!guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 

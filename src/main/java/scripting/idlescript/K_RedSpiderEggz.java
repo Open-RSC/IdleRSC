@@ -19,16 +19,20 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_RedSpiderEggz extends K_kailaScript {
+public final class K_RedSpiderEggz extends K_kailaScript {
   private static boolean teleportOut = false;
   private static boolean returnEscape = true;
   private static int eggzInBank = 0;
   private static int totalEggz = 0;
 
   public int start(String[] parameters) {
-
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Red Spider Egg Picker - By Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
       c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
@@ -44,10 +48,7 @@ public class K_RedSpiderEggz extends K_kailaScript {
       }
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -79,10 +80,11 @@ public class K_RedSpiderEggz extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalEggz = totalEggz + c.getInventoryItemCount(219);
 

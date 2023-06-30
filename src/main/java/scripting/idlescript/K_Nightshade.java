@@ -14,14 +14,18 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_Nightshade extends K_kailaScript {
+public final class K_Nightshade extends K_kailaScript {
   private static int totalShade = 0;
   private static int shadeInBank = 0;
 
   public int start(String[] parameters) {
-
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Nightshade Picker - By Kaila");
       c.displayMessage("@red@Start in Yanille Bank");
       if (c.isInBank()) {
@@ -33,10 +37,6 @@ public class K_Nightshade extends K_kailaScript {
         c.sleep(1380);
       }
       scriptStart();
-    }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -70,10 +70,11 @@ public class K_Nightshade extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalShade = totalShade + c.getInventoryItemCount(1086);
 

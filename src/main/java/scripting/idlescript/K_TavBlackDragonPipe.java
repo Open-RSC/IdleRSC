@@ -25,7 +25,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_TavBlackDragonPipe extends K_kailaScript {
+public final class K_TavBlackDragonPipe extends K_kailaScript {
   private boolean isWithinWander(int x, int y) {
     return c.distance(408, 3337, x, y) <= 22;
   }
@@ -69,8 +69,13 @@ public class K_TavBlackDragonPipe extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Tavelry Black Dragons - By Kaila");
       c.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
@@ -86,10 +91,7 @@ public class K_TavBlackDragonPipe extends K_kailaScript {
       c.quitIfAuthentic();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -153,10 +155,11 @@ public class K_TavBlackDragonPipe extends K_kailaScript {
   private void bank() {
     totalTrips = totalTrips + 1;
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalBones = totalBones + c.getInventoryItemCount(814);
       totalGems =

@@ -14,7 +14,7 @@ import javax.swing.JLabel;
  *
  * <p>Author - Kaila
  */
-public class K_SkelliCoal extends K_kailaScript {
+public final class K_SkelliCoal extends K_kailaScript {
   private static String isMining = "none";
   private static final Integer[] currentOre = {0, 0};
   private static final int[] coalIDs = {110, 111};
@@ -52,19 +52,22 @@ public class K_SkelliCoal extends K_kailaScript {
         c.displayMessage("Auto-starting, Mining Skelli Coal", 0);
         System.out.println("Auto-starting, Mining Skelli Coal");
         startSequence();
+          guiSetup = true;
         scriptStarted = true;
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -112,10 +115,11 @@ public class K_SkelliCoal extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalSap = totalSap + c.getInventoryItemCount(160);

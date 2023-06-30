@@ -22,7 +22,7 @@ import orsc.ORSCharacter;
  * regardless of how full your inventory is. items WILL continue to be recieved and extras will drop
  * to the floor and despawn. Always monitor this bot!!! @Author ~ Kaila
  */
-public class K_CrackerGiver extends IdleScript {
+public final class K_CrackerGiver extends IdleScript {
   private static final Controller c = Main.getController();
 
   public int start(String[] parameters) {
@@ -78,10 +78,11 @@ public class K_CrackerGiver extends IdleScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          K_kailaScript.waitForBankOpen();
+      } else {
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));

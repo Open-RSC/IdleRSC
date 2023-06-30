@@ -19,7 +19,7 @@ import orsc.ORSCharacter;
  *
  * @author Kaila
  */
-public class K_AsgarnianPirateHobs extends K_kailaScript {
+public final class K_AsgarnianPirateHobs extends K_kailaScript {
 
   private static boolean isWithinLootzone(int x, int y) {
     return c.distance(282, 3522, x, y) <= 14; // center of lootzone
@@ -67,10 +67,16 @@ public class K_AsgarnianPirateHobs extends K_kailaScript {
       System.out.println("Got Autostart, using 1 Shark, yes pots");
       foodWithdrawAmount = 1;
       potUp = true;
+        guiSetup = true;
       scriptStarted = true;
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
@@ -84,10 +90,7 @@ public class K_AsgarnianPirateHobs extends K_kailaScript {
       }
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -155,10 +158,11 @@ public class K_AsgarnianPirateHobs extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);

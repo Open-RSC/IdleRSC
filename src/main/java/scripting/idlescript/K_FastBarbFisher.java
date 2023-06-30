@@ -14,7 +14,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila.
  */
-public class K_FastBarbFisher extends K_kailaScript {
+public final class K_FastBarbFisher extends K_kailaScript {
   private static int troutSuccess = 0;
   private static int salmonSuccess = 0;
   private static int failure = 0;
@@ -25,10 +25,16 @@ public class K_FastBarbFisher extends K_kailaScript {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.log("Got Autostart, Fishing", "@red@");
         scriptStarted = true;
+          guiSetup = true;
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startTime = System.currentTimeMillis();
       next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@Power fishes trout/salmon in barb village using Batching");
@@ -42,10 +48,7 @@ public class K_FastBarbFisher extends K_kailaScript {
       }
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -76,10 +79,11 @@ public class K_FastBarbFisher extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(800);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
       int featherId = 381;
       int rodId = 378;
 

@@ -15,7 +15,7 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila
  */
-public class K_AsgarnianIce extends K_kailaScript {
+public final class K_AsgarnianIce extends K_kailaScript {
   private static boolean isWithinLootzone(int x, int y) {
     return c.distance(308, 3520, x, y) <= 15; // center of lootzone
   }
@@ -82,17 +82,20 @@ public class K_AsgarnianIce extends K_kailaScript {
       foodId = 373;
       foodWithdrawAmount = 2;
       potUp = true;
+        guiSetup = true;
       scriptStarted = true;
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startSequence();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -158,10 +161,11 @@ public class K_AsgarnianIce extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
@@ -418,7 +422,7 @@ public class K_AsgarnianIce extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      String runTime = controller.msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
       int tarSuccessPerHr = 0;

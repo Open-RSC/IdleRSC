@@ -18,7 +18,7 @@ import orsc.ORSCharacter;
  *
  * <p>Author ~ Kaila ~
  */
-public class K_Paladins extends K_kailaScript {
+public final class K_Paladins extends K_kailaScript {
   private static int totalCoins = 0;
   private static int totalShark = 0; // raw sharks that we pick up
   private static int totalAda = 0;
@@ -94,7 +94,7 @@ public class K_Paladins extends K_kailaScript {
           break;
         }
       }
-      controller.sleep(100);
+      c.sleep(100);
     }
     c.displayMessage("@ran@Paladin Tower - By Kaila.");
     c.displayMessage("@gre@Beginning Startup Sequence.");
@@ -146,7 +146,7 @@ public class K_Paladins extends K_kailaScript {
       BankToPaladins();
       c.sleep(1380);
     }
-    if (orsc.Config.C_BATCH_PROGRESS_BAR) controller.toggleBatchBars();
+    if (orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     c.displayMessage("@gre@Finished Startup Sequence.");
   }
 
@@ -157,6 +157,7 @@ public class K_Paladins extends K_kailaScript {
       c.displayMessage("Got Autostart Parameter");
       c.log("@cya@Auto-Starting script using Sharks with a foodID of " + foodId, "cya");
       scriptFrame = null;
+        guiSetup = true;
       scriptStarted = true;
     } else if (!parameters[0].equals("")) {
       fightMode = 3;
@@ -174,22 +175,25 @@ public class K_Paladins extends K_kailaScript {
           throw new Exception("Food Type not selected! Format is \"Lobster\" ");
         }
         c.log("@cya@Starting script using " + parameters[0] + " with a foodID of " + foodId, "cya");
+          guiSetup = true;
         scriptStarted = true;
       } catch (Exception e) {
         c.log("@red@Could not parse parameters! Could not parse ", "red");
         c.stop();
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       parseVariables();
       startSequence();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -291,10 +295,11 @@ public class K_Paladins extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(800);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
       totalCoins = totalCoins + c.getInventoryItemCount(10);
       totalChaos = totalChaos + c.getInventoryItemCount(41);
       totalShark = totalShark + c.getInventoryItemCount(545);

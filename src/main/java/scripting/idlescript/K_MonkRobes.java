@@ -14,16 +14,20 @@ import javax.swing.JLabel;
  *
  * <p>Author - Kaila
  */
-public class K_MonkRobes extends K_kailaScript {
+public final class K_MonkRobes extends K_kailaScript {
   private static int totalTopz = 0;
   private static int totalBotz = 0;
   private static int TopzInBank = 0;
   private static int BotzInBank = 0;
 
   public int start(String[] parameters) {
-
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Monks Robes Picker - By Kaila");
       c.displayMessage("@red@Start in Edge Bank or upstairs Monestary");
       if (c.isInBank()) {
@@ -44,10 +48,7 @@ public class K_MonkRobes extends K_kailaScript {
       }
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -83,10 +84,11 @@ public class K_MonkRobes extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalTopz = totalTopz + c.getInventoryItemCount(388);
       totalBotz = totalBotz + c.getInventoryItemCount(389);

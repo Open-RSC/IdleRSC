@@ -18,7 +18,7 @@ import orsc.ORSCharacter;
  *      todo
  *          Add autostart sequence from fastPlate and change variables
  */
-public class K_FastBowFletcher extends K_kailaScript {
+public final class K_FastBowFletcher extends K_kailaScript {
   private static int logId = -1;
   private static int logsInBank = 0;
   private static int totalBows = 0;
@@ -26,19 +26,20 @@ public class K_FastBowFletcher extends K_kailaScript {
   public int start(String[] parameters) {
     c.quitIfAuthentic();
     checkBatchBars();
-    if (scriptStarted) {
+    if (!guiSetup) {
+      setupGUI();
       guiSetup = true;
+    }
+    if (scriptStarted) {
       c.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " ~ by Kaila");
       c.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
       c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
 
+      guiSetup = false;
+      scriptStarted = false;
       if (c.isInBank()) c.closeBank();
       startTime = System.currentTimeMillis();
       scriptStart();
-    }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -83,8 +84,9 @@ public class K_FastBowFletcher extends K_kailaScript {
     c.displayMessage("@gre@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalBows = totalBows + 29;
 
@@ -159,7 +161,7 @@ public class K_FastBowFletcher extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      String runTime = controller.msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
       try {
@@ -182,7 +184,7 @@ public class K_FastBowFletcher extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Time Remaining: " + controller.timeToCompletion(totalBows, logsInBank, startTime),
+          "@whi@Time Remaining: " + c.timeToCompletion(totalBows, logsInBank, startTime),
           x,
           y + (14 * 4),
           0xFFFFFF,

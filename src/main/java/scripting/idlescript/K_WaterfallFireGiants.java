@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_WaterfallFireGiants extends K_kailaScript {
+public final class K_WaterfallFireGiants extends K_kailaScript {
   private static int totalBstaff = 0;
   private static int totalRscim = 0;
   private static int totalRunestuff = 0;
@@ -77,8 +77,13 @@ public class K_WaterfallFireGiants extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Waterfall Fire Giant Killer - By Kaila");
       c.displayMessage("@red@Start in Seers bank with gear on, or in fire giant room!");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
@@ -91,10 +96,6 @@ public class K_WaterfallFireGiants extends K_kailaScript {
         c.sleep(1380);
       }
       scriptStart();
-    }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -166,10 +167,11 @@ public class K_WaterfallFireGiants extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalBstaff = totalBstaff + c.getInventoryItemCount(615);
       totalRscim = totalRscim + c.getInventoryItemCount(398);

@@ -21,7 +21,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_NatureCrafter extends K_kailaScript {
+public final class K_NatureCrafter extends K_kailaScript {
   private static boolean lowLevel = false;
 
   private void startSequence() {
@@ -54,19 +54,22 @@ public class K_NatureCrafter extends K_kailaScript {
         c.displayMessage("Auto-starting, Crafting Nature Runes", 0);
         System.out.println("Auto-starting, Crafting Nature Runes");
         lowLevel = false;
+          guiSetup = true;
         scriptStarted = true;
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       parseVariables();
       startSequence();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 

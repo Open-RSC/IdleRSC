@@ -26,7 +26,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_TavBlueDragonPipe extends K_kailaScript {
+public final class K_TavBlueDragonPipe extends K_kailaScript {
   private boolean isWithinLootzone(
       int x, int y) { // FURTHEST LOOT is 376, 3368, go 361, 3353  (15 tiles)
     return c.distance(361, 3353, x, y) <= 15; // center of lootzone
@@ -68,10 +68,18 @@ public class K_TavBlueDragonPipe extends K_kailaScript {
         c.displayMessage("@red@Could not parse parameters!");
         c.stop();
       }
-      if (foodWithdrawAmount != -1) scriptStarted = true;
+      if (foodWithdrawAmount != -1) {
+          guiSetup = true;
+          scriptStarted = true;
+      }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Tavelry Blue Dragons (Pipe) - By Kaila");
       c.displayMessage("@red@Start in Fally west with gear on, or in dragon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
@@ -87,10 +95,7 @@ public class K_TavBlueDragonPipe extends K_kailaScript {
 
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 

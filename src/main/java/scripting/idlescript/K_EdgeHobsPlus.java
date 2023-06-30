@@ -87,10 +87,16 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       potUp = false;
       c.displayMessage("Got Autostart Parameter");
       c.log("@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, no pot up", "cya");
+        guiSetup = true;
       scriptStarted = true;
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startTime = System.currentTimeMillis();
       c.displayMessage("@red@Edge Dungeon Hob\\Skelli\\Zombies ~ Kaila");
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
@@ -107,10 +113,7 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -145,7 +148,7 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
             lootLimp();
           }
           c.setStatus("@yel@Attacking..");
-          ORSCharacter npc = controller.getNearestNpcByIds(npcIds, false);
+          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
@@ -232,10 +235,11 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
 
   private void bank() {
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);

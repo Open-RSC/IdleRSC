@@ -22,7 +22,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_TavBlackDemonPipe extends K_kailaScript {
+public final class K_TavBlackDemonPipe extends K_kailaScript {
   private static boolean d2hWield = false;
 
   private static boolean isWithinWander(int x, int y) {
@@ -76,9 +76,13 @@ public class K_TavBlackDemonPipe extends K_kailaScript {
 
   // STARTing script
   public int start(String[] parameters) {
-
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Taverley Black Demons - By Kaila");
       c.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
@@ -93,10 +97,7 @@ public class K_TavBlackDemonPipe extends K_kailaScript {
       }
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -155,10 +156,11 @@ public class K_TavBlackDemonPipe extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalRunestuff =
           totalRunestuff

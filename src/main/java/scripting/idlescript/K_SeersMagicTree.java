@@ -15,7 +15,7 @@ import javax.swing.JLabel;
  *   reduce walking between locations - pause at each side.
  *   logic to cut same tree as other players.
  */
-public class K_SeersMagicTree extends K_kailaScript {
+public final class K_SeersMagicTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
 
@@ -45,18 +45,21 @@ public class K_SeersMagicTree extends K_kailaScript {
         c.displayMessage("Got Autostart, Cutting Magics", 0);
         System.out.println("Got Autostart, Cutting Magics");
         scriptStarted = true;
+          guiSetup = true;
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -215,10 +218,11 @@ public class K_SeersMagicTree extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalLog = totalLog + c.getInventoryItemCount(636);
 

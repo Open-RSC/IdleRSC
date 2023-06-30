@@ -26,7 +26,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_GrapeHarvester extends K_kailaScript {
+public final class K_GrapeHarvester extends K_kailaScript {
   private static int GrapezInBank = 0;
   private static int totalGrapez = 0;
 
@@ -49,19 +49,21 @@ public class K_GrapeHarvester extends K_kailaScript {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Auto-starting, Picking Grapes", 0);
         scriptStarted = true;
+          guiSetup = true;
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -95,10 +97,11 @@ public class K_GrapeHarvester extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalGrapez = totalGrapez + c.getInventoryItemCount(143);
 

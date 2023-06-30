@@ -15,7 +15,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_WildyFireGiants extends K_kailaScript {
+public final class K_WildyFireGiants extends K_kailaScript {
 
   private boolean isWithinLootzone(int x, int y) {
     return c.distance(269, 2949, x, y) <= 10;
@@ -81,9 +81,13 @@ public class K_WildyFireGiants extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
-
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Wildy Fire Giant Killer - By Kaila");
       c.displayMessage("@red@Start in Mage bank OR in Giants room");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
@@ -102,10 +106,7 @@ public class K_WildyFireGiants extends K_kailaScript {
       }
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -170,10 +171,11 @@ public class K_WildyFireGiants extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalBstaff = totalBstaff + c.getInventoryItemCount(615);
       totalRscim = totalRscim + c.getInventoryItemCount(398);

@@ -14,11 +14,15 @@ import orsc.ORSCharacter;
 /*
  *   todo add food type selection add maging option
  */
-public class K_BattlefieldTrainer extends K_kailaScript {
+public final class K_BattlefieldTrainer extends K_kailaScript {
   public int start(String[] parameters) {
-
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Battlefield Trainer - By Kaila");
       c.displayMessage("@red@Start in Ardy or at Battlefield");
       c.displayMessage("@red@Sharks in Bank REQUIRED");
@@ -31,10 +35,6 @@ public class K_BattlefieldTrainer extends K_kailaScript {
         c.sleep(1380);
       }
       scriptStart();
-    }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -72,10 +72,11 @@ public class K_BattlefieldTrainer extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       if (c.getInventoryItemCount() > 1) {
         for (int itemId : c.getInventoryItemIds()) {

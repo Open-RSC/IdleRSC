@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
@@ -9,8 +7,7 @@ import orsc.ORSCharacter;
  *
  * <p>start in any bank. @Author - Kaila
  */
-public class K_IronPresentOpener extends K_kailaScript {
-  private static final Controller c = Main.getController();
+public final class K_IronPresentOpener extends K_kailaScript {
 
   public int start(String[] parameters) {
     c.displayMessage("@ran@Iron Present Opener! Let's party like it's 2004!");
@@ -45,10 +42,11 @@ public class K_IronPresentOpener extends K_kailaScript {
 
   public void bank() {
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {

@@ -21,7 +21,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_EdgeDungeonMine extends K_kailaScript {
+public final class K_EdgeDungeonMine extends K_kailaScript {
   private static String isMining = "none";
   private static final int[] currentOre = {0, 0};
   private static final int[] addyIDs = {108, 231, 109};
@@ -65,15 +65,16 @@ public class K_EdgeDungeonMine extends K_kailaScript {
   }
 
   public int start(String[] parameters) {
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
-    }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -151,10 +152,11 @@ public class K_EdgeDungeonMine extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalMith = totalMith + c.getInventoryItemCount(153);
@@ -170,9 +172,9 @@ public class K_EdgeDungeonMine extends K_kailaScript {
         }
       }
       c.sleep(1240);
-      if (controller.getInventoryItemCount(99) < 1) { // withdraw brass key
-        controller.withdrawItem(99, 1);
-        controller.sleep(640);
+      if (c.getInventoryItemCount(99) < 1) { // withdraw brass key
+        c.withdrawItem(99, 1);
+        c.sleep(640);
       }
       coalInBank = c.getBankItemCount(155);
       mithInBank = c.getBankItemCount(153);

@@ -22,7 +22,7 @@ package scripting.idlescript;
  *
  * <p>Author - Kaila
  */
-public class K_GiftTaker extends K_kailaScript {
+public final class K_GiftTaker extends K_kailaScript {
 
   public int start(String[] parameters) {
     c.displayMessage("@red@present TAKER! Let's party like it's 2004! ~ by Kaila");

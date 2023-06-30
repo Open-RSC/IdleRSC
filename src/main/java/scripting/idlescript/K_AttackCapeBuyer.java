@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,20 +19,19 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila.
  */
-public class K_AttackCapeBuyer extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public final class K_AttackCapeBuyer extends K_kailaScript {
   private static int totalTopz = 0;
   private static int totalTrips = 0;
   private static int TopzInBank = 0;
 
   public int start(String[] parameters) {
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Attack Cape Buyer - By Kaila");
       c.displayMessage("@red@Start by Rovin or varrock west!");
       c.displayMessage("@red@Need coins in the inventory to buy");
@@ -48,10 +45,7 @@ public class K_AttackCapeBuyer extends IdleScript {
       }
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -85,10 +79,11 @@ public class K_AttackCapeBuyer extends IdleScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalTopz = totalTopz + c.getInventoryItemCount(1374);
 

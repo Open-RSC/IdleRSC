@@ -13,7 +13,7 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila
  */
-public class K_HobsPeninsula extends K_kailaScript {
+public final class K_HobsPeninsula extends K_kailaScript {
   private static boolean isWithinLootzone(int x, int y) {
     return c.distance(363, 610, x, y) <= 15; // center of lootzone
   }
@@ -68,11 +68,17 @@ public class K_HobsPeninsula extends K_kailaScript {
         c.stop();
       }
       if (foodWithdrawAmount != -1) {
+          guiSetup = true;
         scriptStarted = true;
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       c.displayMessage("@red@Asgarnian Hobs Peninsula - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor or Hobs Peninsula");
       c.displayMessage("@red@Food in Bank REQUIRED");
@@ -85,10 +91,6 @@ public class K_HobsPeninsula extends K_kailaScript {
         c.sleep(1380);
       }
       scriptStart();
-    }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
     }
     return 1000; // start() must return an int value now.
   }
@@ -147,10 +149,11 @@ public class K_HobsPeninsula extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(640);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);

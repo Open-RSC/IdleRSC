@@ -46,7 +46,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_HobsMiner extends K_kailaScript {
+public final class K_HobsMiner extends K_kailaScript {
   private static String isMining = "none";
   private static boolean teleportOut = false;
   private static boolean returnEscape = true;
@@ -145,19 +145,22 @@ public class K_HobsMiner extends K_kailaScript {
         System.out.println("Auto-starting, teleport false, return escape true");
         teleportOut = false;
         returnEscape = true;
+          guiSetup = true;
         scriptStarted = true;
       }
     }
+      if (!guiSetup) {
+          setupGUI();
+          guiSetup = true;
+      }
     if (scriptStarted) {
-      guiSetup = true;
+        guiSetup = false;
+        scriptStarted = false;
       startTime = System.currentTimeMillis();
       startSequence();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -274,10 +277,11 @@ public class K_HobsMiner extends K_kailaScript {
   private void bank() {
 
     c.setStatus("@yel@Banking..");
-    c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+          waitForBankOpen();
+      } else {
 
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalMith = totalMith + c.getInventoryItemCount(153);

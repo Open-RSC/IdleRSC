@@ -62,7 +62,7 @@ public class MessageCallback {
     //}
     if (type == MessageType.GAME) {
       if (message.contains("You just advanced")) {
-        handleLevelUp(message);
+        // handleLevelUp(message);
       } else if (message.contains("You have been standing here for")) {
         Controller c = Main.getController();
         System.out.println("got standing message!");

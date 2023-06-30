@@ -713,6 +713,21 @@ public class K_kailaScript extends IdleScript {
    *
    *      Magic/Other Methods
    */
+  public static void waitForBankOpen() {
+    for (int i = 1; i <= 15; i++) {
+      try {
+        if (!c.isInBank()) {
+          // c.log("waiting for bank");
+          c.sleep(1280);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
   public static void brassKeyCheck() {
     if (c.getInventoryItemCount(99) == 0) {
       c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 30 Seconds");

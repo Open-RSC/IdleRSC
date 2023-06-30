@@ -40,7 +40,7 @@ import javax.swing.JLabel;
  *      Fix script selector/cli parameters to work properly
  */
 public class AIOSmelter extends IdleScript {
-  final Controller c = Main.getController();
+  private static final Controller c = Main.getController();
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
@@ -161,97 +161,107 @@ public class AIOSmelter extends IdleScript {
   }
 
   public void scriptStart() {
-    if (isEnoughOre()) {
-      if (c.getNearestObjectById(118) == null) {
-        c.setStatus("Walking to furnace..");
+    while (c.isRunning()) {
+      if (isEnoughOre()) {
+        if (c.getNearestObjectById(118) == null) {
+          c.setStatus("Walking to furnace..");
+          if (destinationId == 0) {
+            c.walkTo(318, 551, 0, true);
+            c.walkTo(311, 545, 0, true);
+          }
+          if (destinationId == 1) {
+            c.walkTo(84, 679, 0, true);
+          }
+        }
+        Iterator<Entry<Integer, Integer>> iterator = ingredients.entrySet().iterator();
+        int oreId = iterator.next().getKey();
+        int mouldAnswer = -1;
+        int gemAnswer = 0;
+
+        if (oreId == 1057) { // do not use the cannonball mold on the furnace!
+          oreId = 171;
+        } else if (c.getInventoryItemCount(293) > 0) {
+          oreId = 172;
+          mouldAnswer = 0;
+        } else if (c.getInventoryItemCount(295) > 0) {
+          oreId = 172;
+          mouldAnswer = 0; // was 1, Fixes menuing after crafting update
+        } else if (c.getInventoryItemCount(294) > 0) {
+          oreId = 172;
+          mouldAnswer = 0; // was 2, Fixes menuing after crafting update
+        } else if (c.getInventoryItemCount(1502) > 0) {
+          oreId = 172;
+          mouldAnswer = 0;
+        }
+
+        if (c.isAuthentic()) { // for uranium only
+          if (c.getInventoryItemCount(164) > 0) gemAnswer = 1;
+          if (c.getInventoryItemCount(163) > 0) gemAnswer = 2;
+          if (c.getInventoryItemCount(162) > 0) gemAnswer = 3;
+          if (c.getInventoryItemCount(161) > 0) gemAnswer = 4;
+          if (c.getInventoryItemCount(523) > 0) gemAnswer = 5;
+        }
+        if (c.getInventoryItemCount(oreId) > 0 && c.getNearestObjectById(118) != null) {
+
+          while (c.isBatching()) c.sleep(640);
+          if (c.getInventoryItemCount(699) > 0) { // wield gauntlets
+            c.setStatus("Wielding gauntlets..");
+            c.equipItem(c.getInventoryItemSlotIndex(699));
+            c.sleep(618);
+          }
+          c.setStatus("Smelting!");
+          c.sleepHandler(98, true);
+          // if (c.isBatching() == false) {
+          c.useItemIdOnObject(
+              c.getNearestObjectById(118)[0], c.getNearestObjectById(118)[1], oreId);
+          // }
+          if (oreId == 171) {
+            c.sleep(
+                3000); // cannonballs take way longer and can be interrupted by starting another one
+          } else if (oreId == 172) {
+            c.sleep(800);
+            c.optionAnswer(mouldAnswer);
+            c.sleep(800);
+            c.optionAnswer(gemAnswer);
+            c.sleep(600);
+            if (!c.isAuthentic()) {
+              while (c.isBatching()) {
+                c.sleep(600);
+              }
+            }
+          } else {
+            c.sleep(618);
+          }
+
+          while (c.isBatching()) c.sleep(340);
+        }
+
+      } else {
+        c.setStatus("Banking..");
         if (destinationId == 0) {
           c.walkTo(318, 551, 0, true);
-          c.walkTo(311, 545, 0, true);
+          c.walkTo(329, 553, 0, true);
         }
         if (destinationId == 1) {
-          c.walkTo(84, 679, 0, true);
+          c.walkTo(87, 694, 0, true);
         }
+        bank();
       }
-      Iterator<Entry<Integer, Integer>> iterator = ingredients.entrySet().iterator();
-      int oreId = iterator.next().getKey();
-      int mouldAnswer = -1;
-      int gemAnswer = 0;
+    }
+  }
 
-      if (oreId == 1057) { // do not use the cannonball mold on the furnace!
-        oreId = 171;
-      } else if (c.getInventoryItemCount(293) > 0) {
-        oreId = 172;
-        mouldAnswer = 0;
-      } else if (c.getInventoryItemCount(295) > 0) {
-        oreId = 172;
-        mouldAnswer = 0; // was 1, Fixes menuing after crafting update
-      } else if (c.getInventoryItemCount(294) > 0) {
-        oreId = 172;
-        mouldAnswer = 0; // was 2, Fixes menuing after crafting update
-      } else if (c.getInventoryItemCount(1502) > 0) {
-        oreId = 172;
-        mouldAnswer = 0;
-      }
-
-      if (c.isAuthentic()) { // for uranium only
-        if (c.getInventoryItemCount(164) > 0) gemAnswer = 1;
-        if (c.getInventoryItemCount(163) > 0) gemAnswer = 2;
-        if (c.getInventoryItemCount(162) > 0) gemAnswer = 3;
-        if (c.getInventoryItemCount(161) > 0) gemAnswer = 4;
-        if (c.getInventoryItemCount(523) > 0) gemAnswer = 5;
-      }
-      if (c.getInventoryItemCount(oreId) > 0 && c.getNearestObjectById(118) != null) {
-
-        while (c.isBatching()) c.sleep(640);
-        if (c.getInventoryItemCount(699) > 0) { // wield gauntlets
-          c.setStatus("Wielding gauntlets..");
-          c.equipItem(c.getInventoryItemSlotIndex(699));
-          c.sleep(618);
-        }
-        c.setStatus("Smelting!");
-        c.sleepHandler(98, true);
-        // if (c.isBatching() == false) {
-        c.useItemIdOnObject(c.getNearestObjectById(118)[0], c.getNearestObjectById(118)[1], oreId);
-        // }
-        if (oreId == 171) {
-          c.sleep(
-              3000); // cannonballs take way longer and can be interrupted by starting another one
-        } else if (oreId == 172) {
-          c.sleep(800);
-          c.optionAnswer(mouldAnswer);
-          c.sleep(800);
-          c.optionAnswer(gemAnswer);
-          c.sleep(600);
-          if (!c.isAuthentic()) {
-            while (c.isBatching()) {
-              c.sleep(600);
-            }
-          }
-        } else {
-          c.sleep(618);
-        }
-
-        while (c.isBatching()) c.sleep(340);
-      }
-
-    } else {
-      c.setStatus("Banking..");
-      if (destinationId == 0) {
-        c.walkTo(318, 551, 0, true);
-        c.walkTo(329, 553, 0, true);
-      }
-      if (destinationId == 1) {
-        c.walkTo(87, 694, 0, true);
-      }
-      c.openBank();
-
+  private void bank() {
+    c.setStatus("@gre@Banking..");
+    c.openBank();
+    c.sleep(2000);
+    if (c.isInBank()) {
       for (int itemId : c.getInventoryUniqueItemIds()) {
         if (itemId != 0 && itemId != 1263 && itemId != 1057) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
           c.sleep(618);
         }
       }
-
+      c.sleep(1280);
       for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
         if (entry.getKey() == 699) continue;
 
@@ -268,6 +278,8 @@ public class AIOSmelter extends IdleScript {
       primaryOreInBank = c.getBankItemCount(primaryOreId);
       secondaryOreInBank = c.getBankItemCount(secondaryOreId);
       barsInBank = c.getBankItemCount(barId);
+      c.closeBank();
+      c.sleep(1280);
     }
   }
 

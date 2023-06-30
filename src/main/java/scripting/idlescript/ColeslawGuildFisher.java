@@ -15,6 +15,8 @@ public class ColeslawGuildFisher extends IdleScript {
   int spotId = SHARK_FISH_SPOT;
 
   public int start(String[] parameters) {
+    if (!controller.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR)
+      controller.toggleBatchBars();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("lobster")) {
         controller.displayMessage("Got param " + parameters[0] + ". Fishing Lobsters!", 0);

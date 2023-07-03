@@ -23,6 +23,8 @@ import javax.swing.*;
  *          waitForBankOpen(); //temporary fix for npc desync issues,
  *              redo into better bank wait, using less sleep
  *
+ * todo add int param to select how far above base to use boost potion
+ *
  */
 public class K_kailaScript extends IdleScript {
   public static final Controller c = Main.getController();
@@ -119,42 +121,92 @@ public class K_kailaScript extends IdleScript {
    *
    *      int[]
    */
+  /**<pre>
+   * int[] array of bone id's
+   *
+   * [regular,big,bat,dragon]
+   */
   public static final int[] bones = {
     20, // regular
     413, // big
     604, // bat?
     814 // dragon
   };
+  /**<pre>
+   * int[] array of regular attack potion
+   *
+   * [1,2,3] doses
+   */
   public static final int[] attackPot = {
     476, // reg attack pot (1)
     475, // reg attack pot (2)
     474 // reg attack pot (3)
   };
+  /**<pre>
+   * int[] array of regular strength potion
+   *
+   * [1,2,3] doses
+   */
   public static final int[] strengthPot = {
     224, // reg str pot (1)
     223, // reg str pot (2)
     222 // reg str pot (3)
   };
+  /**<pre>
+   * int[] array of super attack potion
+   *
+   * [1,2,3] doses
+   */
   public static final int[] superAttackPot = {
     488, // super  attack pot (1)
     487, // super  attack pot (2)
     486 // super attack pot (3)
   };
+  /**<pre>
+   * int[] array of super strength potion
+   *
+   * [1,2,3] doses
+   */
   public static final int[] superStrengthPot = {
     494, // super str pot (1)
     493, // super str pot (2)
     492 // super str pot (3)
   };
+  /**<pre>
+   * int[] array of super defense potion
+   *
+   * [1,2,3] doses
+   * */
   public static final int[] superDefensePot = {
     497, // super defense pot (1)
     496, // super defense pot (2)
     495 // super defense pot (3)
   };
-  public static final int[] antiPot = { // antidote
+  /**<pre>
+   * int[] array of prayer potion
+   *
+   * [1,2,3] doses
+   * */
+  public static final int[] prayerPot = {
+    485, // prayer potion (1)
+    484, // prayer potion (2)
+    483 // prayer potion (3)
+  };
+  /**<pre>
+   * int[] array of antidote (the red one)
+   *
+   * [1,2,3] doses
+   */
+  public static final int[] antiPot = {
     571, // 1 dose
     570, // 2 dose
     569 // 3 dose
   };
+  /**<pre>
+   *  int[] array of axe Id's
+   *
+   *  [bronze,iron,steel,black,mith,addy,rune]
+   */
   public static final int[] axeId = {
     87, // bronze axe
     12, // iron axe
@@ -164,6 +216,11 @@ public class K_kailaScript extends IdleScript {
     204, // addy axe
     405 // rune axe
   };
+  /**<pre>
+   * int[] array of bar Ids
+   *
+   * [1,2,3] doses
+   */
   public static final int[] barIds = {
     169, // bronze bar
     170, // iron bar
@@ -172,6 +229,11 @@ public class K_kailaScript extends IdleScript {
     174, // adamantite bar
     408 // runite bar
   };
+  /**<pre>
+   * int[] array of log Ids
+   *
+   * [normal,oak,willow,maple,yew,magic]
+   */
   public static final int[] logIds = {
     14, // normal logs
     632, // oak logs
@@ -180,6 +242,12 @@ public class K_kailaScript extends IdleScript {
     635, // yew logs
     636 // magic logs
   };
+  /**<pre>
+   * int[] array of cooked food IDS
+   *
+   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
+   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
+   */
   public static final int[] foodIds = {
     1191, // cooked Manta Ray
     1193, // cooked Sea Turtle
@@ -198,6 +266,12 @@ public class K_kailaScript extends IdleScript {
     350, // cooked Shrimp
     132 // cooked Meat
   };
+  /**<pre>
+   * String[] array of cooked food NAMES
+   *
+   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
+   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
+   */
   public static final String[] foodTypes =
       new String[] {
         "Manta Ray",
@@ -217,7 +291,12 @@ public class K_kailaScript extends IdleScript {
         "Shrimp",
         "Cooked Meat"
       };
-
+  /**<pre>
+   * sets foodName string to the name for the current foodId
+   */
+  /*
+   *  todo refactor to input foodId, output foodName
+   */
   public static void whatIsFoodName() {
     if (foodId == 1191) {
       foodName = "Manta Ray";
@@ -262,22 +341,28 @@ public class K_kailaScript extends IdleScript {
    *
    *          Main (useful) methods
    */
+
+  /** Drops vials if not in combat, skips if currently in combat. */
   public static void dropVial() {
     if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
       c.dropItem(c.getInventoryItemSlotIndex(465));
     }
   }
-
+  /** If on coleslaw and batch bars are off, it will toggle ON batch bars */
   public static void checkBatchBars() {
     if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
   }
-
-  public void waitForBatching() {
-    while (c.isBatching() && System.currentTimeMillis() < next_attempt) {
+  /** while batching, sleep 1000. Unless next_attempt timestamp (triggers autowalk) */
+  public static void waitForBatching() {
+    while (c.isBatching() && System.currentTimeMillis() < next_attempt && next_attempt != -1) {
       c.sleep(1000);
     }
   }
-
+  /** <pre>
+   * Set autologin false,
+   * WHILE logged in attempt to log out,
+   * when not logged in then stop script
+   *  */
   public static void endSession() {
     c.setAutoLogin(false);
     while (c.isLoggedIn()) {
@@ -287,14 +372,18 @@ public class K_kailaScript extends IdleScript {
       c.stop();
     }
   }
-
+  /** for each itemId in the inventory, deposit all the items. */
   public static void depositAll() {
     for (int itemId : c.getInventoryItemIds()) {
       c.depositItem(itemId, c.getInventoryItemCount(itemId));
     }
-    c.sleep(1280);
+    c.sleep(650);
   }
-
+  /**<pre>
+   * for all boneIds, attempt to bury bones
+   *
+   * will leave combat to bury bones
+   */
   public static void buryBones() {
     for (int id : bones) {
       try {
@@ -309,9 +398,12 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** <pre>
+   * attempt to leave combat once per tick for 30 ticks
+   * walks to current tile (async non-blocking) radius 1.
+   */
   public static void leaveCombat() {
-    for (int i = 1; i <= 20; i++) {
+    for (int i = 0; i <= 30; i++) {
       try {
         if (c.isInCombat()) {
           c.setStatus("@red@Leaving combat..");
@@ -325,7 +417,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** if full inventory, leave combat, eat 1 food to make inventory space. */
   public static void eatFoodToLoot() {
     for (int id : c.getFoodIds()) {
       try {
@@ -356,7 +448,7 @@ public class K_kailaScript extends IdleScript {
    */
 
   /**
-   * Will withdraw provided foodId, unless out, it will then attempt to withdraw any other foods
+   * Withdraw provided foodId, unless out, then attempt to withdraw any other foods
    *
    * @param foodId int
    * @param foodWithdrawAmount int
@@ -377,7 +469,14 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Withdraw attack potions (checks for and uses 1 and 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
+  /*
+   * todo make it withdraw one 2 dose and one 1 dose instead of 3 dose?
+   */
   public static void withdrawAttack(int withdrawAmount) {
     int attackPotCount =
         c.getInventoryItemCount(attackPot[0])
@@ -397,6 +496,11 @@ public class K_kailaScript extends IdleScript {
     }
   }
 
+  /**
+   * Withdraw strength potions (checks for and uses 1 and 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
   public static void withdrawStrength(int withdrawAmount) {
     int strengthPotCount =
         c.getInventoryItemCount(strengthPot[0])
@@ -415,7 +519,11 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Withdraw super attack potions (checks for and uses 1 and 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
   public static void withdrawSuperAttack(int withdrawAmount) {
     int superAttackPotCount =
         c.getInventoryItemCount(superAttackPot[0])
@@ -434,7 +542,11 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Withdraw super strength potions (checks for and uses 1 and 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
   public static void withdrawSuperStrength(int withdrawAmount) {
     int superStrengthPotCount =
         c.getInventoryItemCount(superStrengthPot[0])
@@ -453,7 +565,11 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Withdraw super defense potions (checks for and uses 1 and 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
   public static void withdrawSuperDefense(int withdrawAmount) {
     int superDefensePotCount =
         c.getInventoryItemCount(superDefensePot[0])
@@ -472,7 +588,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
   public static void withdrawAntidote() {
     if (c.getInventoryItemCount(antiPot[0]) < 1
         && c.getInventoryItemCount(antiPot[1]) < 1
@@ -489,7 +605,12 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with reg attack potions, leaving combat. (checks for and uses 1 and 2 dose potions first)
+   */
+  /*
+   * todo add int param to select how far above base to use boost potion
+   */
   public static void attackBoost() {
     if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
       int attackPotCount =
@@ -511,7 +632,13 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with reg strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
+   * first)
+   */
+  /*
+   * todo add int param to select how far above base to use boost potion
+   */
   public static void strengthBoost() {
     if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
       int strengthPotCount =
@@ -533,7 +660,10 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with super attack potions, leaving combat. (checks for and uses 1 and 2 dose potions
+   * first)
+   */
   public static void superAttackBoost() {
     if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
       int superAttackPotCount =
@@ -555,7 +685,10 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with super strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
+   * first)
+   */
   public static void superStrengthBoost() {
     if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
       int superStrengthPotCount =
@@ -577,7 +710,10 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with super defense potions, leaving combat. (checks for and uses 1 and 2 dose potions
+   * first)
+   */
   public static void superDefenseBoost() {
     if (c.getCurrentStat(c.getStatId("Defense")) == c.getBaseStat(c.getStatId("Defense"))) {
       int superDefensePotCount =
@@ -599,7 +735,12 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with super attack potions, leaving combat. (checks for and uses 1 and 2 dose potions
+   * first)
+   *
+   * @param boostAt int attack level to boost at
+   */
   public static void superAttackBoostCustom(int boostAt) {
     if (c.getCurrentStat(c.getStatId("Attack")) == boostAt) {
       int superAttackPotCount =
@@ -621,7 +762,12 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with super strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
+   * first)
+   *
+   * @param boostAt int attack level to boost at
+   */
   public static void superStrengthBoostCustom(int boostAt) {
     if (c.getCurrentStat(c.getStatId("Strength")) == boostAt) {
       int superStrengthPotCount =
@@ -643,7 +789,11 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Boost with super defense potions (checks for and uses 1 and 2 dose potions first)
+   *
+   * @param boostAt int attack level to boost at
+   */
   public static void superDefenseBoostCustom(int boostAt) {
     if (c.getCurrentStat(c.getStatId("Defense")) == boostAt) {
       int superDefensePotCount =
@@ -665,26 +815,33 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * drinks prayer potions when 31 points below base stat level, leaving combat. (checks for and
+   * uses 1 and 2 dose potions first)
+   */
+  /*
+   * todo add int param to select how far above base to use boost potion
+   */
   public static void drinkPrayerPotion() {
     if (c.getCurrentStat(c.getStatId("Prayer")) < (c.getBaseStat(c.getStatId("Prayer")) - 31)) {
-      if (c.getInventoryItemCount(485) > 0
-          || c.getInventoryItemCount(484) > 0
-          || c.getInventoryItemCount(483) > 0) {
-        if (c.getInventoryItemCount(485) > 0) {
-          c.itemCommand(485);
+      if (c.getInventoryItemCount(prayerPot[0]) > 0
+          || c.getInventoryItemCount(prayerPot[1]) > 0
+          || c.getInventoryItemCount(prayerPot[2]) > 0) {
+        if (c.isInCombat()) leaveCombat();
+        if (c.getInventoryItemCount(prayerPot[0]) > 0) {
+          c.itemCommand(prayerPot[0]);
           c.sleep(320);
-        } else if (c.getInventoryItemCount(484) > 0) {
-          c.itemCommand(484);
+        } else if (c.getInventoryItemCount(prayerPot[1]) > 0) {
+          c.itemCommand(prayerPot[1]);
           c.sleep(320);
-        } else if (c.getInventoryItemCount(483) > 0) {
-          c.itemCommand(483);
+        } else if (c.getInventoryItemCount(prayerPot[2]) > 0) {
+          c.itemCommand(prayerPot[2]);
           c.sleep(320);
         }
       }
     }
   }
-
+  /** drinks antidote potion, leaving combat. (checks for and uses 1 and 2 dose potions first) */
   public static void drinkAntidote() {
     if (c.isInCombat()) leaveCombat();
     if (c.getInventoryItemCount(antiPot[0]) > 0) {
@@ -713,8 +870,9 @@ public class K_kailaScript extends IdleScript {
    *
    *      Magic/Other Methods
    */
+  /** if bank is not open, wait 2 ticks, repeat check. repeats 16 times. */
   public static void waitForBankOpen() {
-    for (int i = 1; i <= 15; i++) {
+    for (int i = 0; i <= 15; i++) {
       try {
         if (!c.isInBank()) {
           // c.log("waiting for bank");
@@ -727,7 +885,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** checks if brass key is in inventory, if not, sets warning message, and shuts down bot. */
   public static void brassKeyCheck() {
     if (c.getInventoryItemCount(99) == 0) {
       c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 30 Seconds");
@@ -741,7 +899,10 @@ public class K_kailaScript extends IdleScript {
       endSession();
     }
   }
-
+  /** <pre>
+   * (depreciated) while in KBD lair attempt to tele to lumbridge
+   * todo change to "while NOT in lumbridge, attempt to teleport"
+   *  */
   public static void teleportOutLumbridge() {
     for (int i = 1; i <= 8; i++) {
       try {
@@ -757,7 +918,10 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** <pre>
+   * (depreciated) while in tav dungeon attempt to tele to falador
+   * todo change to "while NOT in location, then attempt to teleport"
+   *  */
   public static void teleportOutFalador() {
     for (int i = 1; i <= 8; i++) {
       try {
@@ -773,7 +937,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** checks inventory for (teleport) water runes, if too few opens banks and withdraws more */
   public static void waterCheck() {
     if (c.getInventoryItemCount(32) < 6) { // 2 water
       c.openBank();
@@ -784,7 +948,7 @@ public class K_kailaScript extends IdleScript {
       c.sleep(1000);
     }
   }
-
+  /** checks inventory for (teleport) law runes, if too few opens banks and withdraws more */
   public static void lawCheck() {
     if (c.getInventoryItemCount(42) < 2) { // law
       c.openBank();
@@ -795,7 +959,7 @@ public class K_kailaScript extends IdleScript {
       c.sleep(1000);
     }
   }
-
+  /** checks inventory for (teleport) earth runes, if too few opens banks and withdraws more */
   public static void earthCheck() {
     if (c.getInventoryItemCount(34) < 2) { // earth
       c.openBank();
@@ -806,7 +970,7 @@ public class K_kailaScript extends IdleScript {
       c.sleep(1000);
     }
   }
-
+  /** checks inventory for (teleport) air runes, if too few opens banks and withdraws more */
   public static void airCheck() {
     if (c.getInventoryItemCount(33) < 6) { // air
       c.openBank();
@@ -834,6 +998,7 @@ public class K_kailaScript extends IdleScript {
    *
    *      Gate Methods
    */
+  /** opens wall door in edgeville dungeon that goes to the wilderness tunnel shortcut */
   public static void edgeWallGate() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -849,7 +1014,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** goes through the wilderness tunnel shortcut */
   public static void edgeShortcut() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -866,7 +1031,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed gate leading to Tav. (going from east to west) */
   public static void tavGateEastToWest() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -882,7 +1047,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed gate leading to Tav. (going from west to east) */
   public static void tavGateWestToEast() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -897,7 +1062,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed gate in Yanille dungeon (north to south) */
   public static void yanilleDungeonDoorExiting() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -913,7 +1078,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed gate in Yanille dungeon (south to north) */
   public static void yanilleDungeonDoorEntering() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -929,7 +1094,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed gate in Edge dungeon leading to wilderness area (north to south) */
   public static void openEdgeDungGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -946,7 +1111,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** * Goes through the fixed gate in Edge dungeon leading to wilderness area (south to north) */
   public void openEdgeDungSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -963,7 +1128,10 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Goes through the fixed door west of varrock (brass key) leading to edge dungeon. Exiting (north
+   * to south)
+   */
   public void brassDoorNorthToSouth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
@@ -979,7 +1147,10 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /**
+   * Goes through the fixed door west of varrock (brass key) leading to edge dungeon. Entering
+   * (south to north)
+   */
   public void brassDoorSouthToNorth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
@@ -995,7 +1166,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed door leading into the druid tower. Exiting (north to south) */
   public static void openDruidTowerNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -1012,7 +1183,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed door leading into the druid tower. Entering (south to north) */
   public static void openDruidTowerSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -1029,7 +1200,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed gate leading into red dragon isle. Existing (South to North) */
   public static void redDragGateSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
       try {
@@ -1046,7 +1217,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-
+  /** Goes through the fixed gate leading into red dragon isle. Entering (North to South) */
   public static void redDragGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
       try {

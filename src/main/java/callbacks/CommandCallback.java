@@ -9,7 +9,7 @@ public class CommandCallback {
   private static final String helpMessageText =
       "@cya@IdleRSC Help Menu:"
           + " %@red@::bothelp - @yel@Shows this help menu"
-          + " %@red@::show - @yel@Unhides/focuses the bot sidepane"
+          + " %@red@::hide or ::show - @yel@Hides/Unhides the bot side panel"
           + " %@red@::gfx - @yel@toggle graphic rendering"
           + " %@red@::screenshot - @yel@Take a Screenshot"
           + " %@red@::hidepaint or ::showpaint - @yel@Toggle Paint Left-Side Menu"
@@ -33,6 +33,9 @@ public class CommandCallback {
     switch (command) {
       case "show":
         Main.showBot();
+        break;
+      case "hide":
+        Main.hideBot();
         break;
       case "hidepaint":
         if (c != null) {

@@ -740,7 +740,10 @@ public class Main {
   public static void showBot() {
     botFrame.setVisible(true);
   }
-
+  /** hides the bot sidepanel. */
+  public static void hideBot() {
+    botFrame.setVisible(false);
+  }
   /**
    * Returns the global Controller instance.
    *

@@ -121,10 +121,13 @@ public class K_kailaScript extends IdleScript {
    *
    *      int[]
    */
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of bone id's
    *
-   * [regular,big,bat,dragon]
+   * [regular,big,bat,dragon] </pre>
    */
   public static final int[] bones = {
     20, // regular
@@ -132,80 +135,104 @@ public class K_kailaScript extends IdleScript {
     604, // bat?
     814 // dragon
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of regular attack potion
    *
-   * [1,2,3] doses
+   * [1,2,3] doses </pre>
    */
   public static final int[] attackPot = {
     476, // reg attack pot (1)
     475, // reg attack pot (2)
     474 // reg attack pot (3)
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of regular strength potion
    *
-   * [1,2,3] doses
+   * [1,2,3] doses </pre>
    */
   public static final int[] strengthPot = {
     224, // reg str pot (1)
     223, // reg str pot (2)
     222 // reg str pot (3)
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of super attack potion
    *
-   * [1,2,3] doses
+   * [1,2,3] doses </pre>
    */
   public static final int[] superAttackPot = {
     488, // super  attack pot (1)
     487, // super  attack pot (2)
     486 // super attack pot (3)
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of super strength potion
    *
-   * [1,2,3] doses
+   * [1,2,3] doses </pre>
    */
   public static final int[] superStrengthPot = {
     494, // super str pot (1)
     493, // super str pot (2)
     492 // super str pot (3)
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of super defense potion
    *
-   * [1,2,3] doses
-   * */
+   * [1,2,3] doses </pre>
+   */
   public static final int[] superDefensePot = {
     497, // super defense pot (1)
     496, // super defense pot (2)
     495 // super defense pot (3)
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of prayer potion
    *
-   * [1,2,3] doses
-   * */
+   * [1,2,3] doses </pre>
+   */
   public static final int[] prayerPot = {
     485, // prayer potion (1)
     484, // prayer potion (2)
     483 // prayer potion (3)
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of antidote (the red one)
    *
-   * [1,2,3] doses
+   * [1,2,3] doses </pre>
    */
   public static final int[] antiPot = {
     571, // 1 dose
     570, // 2 dose
     569 // 3 dose
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    *  int[] array of axe Id's
    *
-   *  [bronze,iron,steel,black,mith,addy,rune]
+   *  [bronze,iron,steel,black,mith,addy,rune] </pre>
    */
   public static final int[] axeId = {
     87, // bronze axe
@@ -216,10 +243,13 @@ public class K_kailaScript extends IdleScript {
     204, // addy axe
     405 // rune axe
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of bar Ids
    *
-   * [1,2,3] doses
+   * [1,2,3] doses </pre>
    */
   public static final int[] barIds = {
     169, // bronze bar
@@ -229,10 +259,13 @@ public class K_kailaScript extends IdleScript {
     174, // adamantite bar
     408 // runite bar
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of log Ids
    *
-   * [normal,oak,willow,maple,yew,magic]
+   * [normal,oak,willow,maple,yew,magic] </pre>
    */
   public static final int[] logIds = {
     14, // normal logs
@@ -242,11 +275,14 @@ public class K_kailaScript extends IdleScript {
     635, // yew logs
     636 // magic logs
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * int[] array of cooked food IDS
    *
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
-   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
+   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
    */
   public static final int[] foodIds = {
     1191, // cooked Manta Ray
@@ -266,11 +302,14 @@ public class K_kailaScript extends IdleScript {
     350, // cooked Shrimp
     132 // cooked Meat
   };
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * String[] array of cooked food NAMES
    *
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
-   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
+   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
    */
   public static final String[] foodTypes =
       new String[] {
@@ -291,8 +330,11 @@ public class K_kailaScript extends IdleScript {
         "Shrimp",
         "Cooked Meat"
       };
-  /**<pre>
-   * sets foodName string to the name for the current foodId
+  /**
+   *
+   *
+   * <pre>
+   * sets foodName string to the name for the current foodId </pre>
    */
   /*
    *  todo refactor to input foodId, output foodName
@@ -358,11 +400,14 @@ public class K_kailaScript extends IdleScript {
       c.sleep(1000);
     }
   }
-  /** <pre>
+  /**
+   *
+   *
+   * <pre>
    * Set autologin false,
    * WHILE logged in attempt to log out,
-   * when not logged in then stop script
-   *  */
+   * when not logged in then stop script </pre>
+   */
   public static void endSession() {
     c.setAutoLogin(false);
     while (c.isLoggedIn()) {
@@ -379,10 +424,13 @@ public class K_kailaScript extends IdleScript {
     }
     c.sleep(650);
   }
-  /**<pre>
+  /**
+   *
+   *
+   * <pre>
    * for all boneIds, attempt to bury bones
    *
-   * will leave combat to bury bones
+   * will leave combat to bury bones </pre>
    */
   public static void buryBones() {
     for (int id : bones) {
@@ -398,9 +446,12 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /** <pre>
+  /**
+   *
+   *
+   * <pre>
    * attempt to leave combat once per tick for 30 ticks
-   * walks to current tile (async non-blocking) radius 1.
+   * walks to current tile (async non-blocking) radius 1. </pre>
    */
   public static void leaveCombat() {
     for (int i = 0; i <= 30; i++) {
@@ -899,10 +950,14 @@ public class K_kailaScript extends IdleScript {
       endSession();
     }
   }
-  /** <pre>
-   * (depreciated) while in KBD lair attempt to tele to lumbridge
+  /**
+   *
+   *
+   * <pre>
+   * (depreciated) while in KBD lair attempt to tele to lumbridge </pre>
+   *
    * todo change to "while NOT in lumbridge, attempt to teleport"
-   *  */
+   */
   public static void teleportOutLumbridge() {
     for (int i = 1; i <= 8; i++) {
       try {
@@ -918,10 +973,14 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /** <pre>
-   * (depreciated) while in tav dungeon attempt to tele to falador
+  /**
+   *
+   *
+   * <pre>
+   * (depreciated) while in tav dungeon attempt to tele to falador </pre>
+   *
    * todo change to "while NOT in location, then attempt to teleport"
-   *  */
+   */
   public static void teleportOutFalador() {
     for (int i = 1; i <= 8; i++) {
       try {

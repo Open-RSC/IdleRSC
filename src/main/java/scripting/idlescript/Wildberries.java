@@ -70,6 +70,8 @@ public class Wildberries extends IdleScript {
 
   public int start(String[] parameters) {
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       controller.displayMessage("@red@Wildberries by Dvorak. Rewritten by Kaila");
       controller.displayMessage(
           "@red@Start in Varrock East bank! You need antidragon shields in the bank!");

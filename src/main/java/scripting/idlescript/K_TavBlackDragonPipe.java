@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,52 +25,14 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public class K_TavBlackDragonPipe extends IdleScript {
-
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-
+public final class K_TavBlackDragonPipe extends K_kailaScript {
   private boolean isWithinWander(int x, int y) {
     return c.distance(408, 3337, x, y) <= 22;
   }
 
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int totalDbones = 0;
-  private static int totalGems = 0;
-  private static int totalLaw = 0;
-  private static int totalNat = 0;
-  private static int totalFire = 0;
-  private static int totalAddy = 0;
-  private static int totalLoop = 0;
-  private static int totalTooth = 0;
-  private static int totalLeft = 0;
   private static int totalRlong = 0;
-  private static int totalSpear = 0;
-  private static int totalHerb = 0;
-  private static int bankDbones = 0;
-  private static int totalBlood = 0;
   private static int totalMed = 0;
   private static int totalDstone = 0;
-  private static int totalTrips = 0;
-  private static int totalDeath = 0;
-  private static final int[] superAttackPot = {
-    488, // super  attack pot (1)
-    487, // super  attack pot (2)
-    486 // super attack pot (3)
-  };
-  private static final int[] superStrengthPot = {
-    494, // super str pot (1)
-    493, // super str pot (2)
-    492 // super str pot (3)
-  };
-  private static final int[] antiPot = {
-    571, // 1 dose
-    570, // 2 dose
-    569 // 3 dose
-  };
   private static final int[] loot = {
     814, // D Bones
     75, // rune long
@@ -109,7 +69,13 @@ public class K_TavBlackDragonPipe extends IdleScript {
   };
 
   public int start(String[] parameters) {
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
+    }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@red@Tavelry Black Dragons - By Kaila");
       c.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
@@ -125,10 +91,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
       c.quitIfAuthentic();
       scriptStart();
     }
-    if (!guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -136,32 +99,17 @@ public class K_TavBlackDragonPipe extends IdleScript {
     while (c.isRunning()) {
 
       ppotCheck();
-      drink();
+      drinkPrayerPotion();
       pray();
       foodCheck();
       eat();
-
-      if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-        c.dropItem(c.getInventoryItemSlotIndex(465));
-      }
-      dropToLootScript();
+      superAttackBoost();
+      superStrengthBoost();
+      eatFoodToLoot();
       lootScript();
-      if (c.getInventoryItemCount() < 30) {
+      dropVial();
 
-        if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
-          if (c.getInventoryItemCount(superAttackPot[0]) > 0
-              || c.getInventoryItemCount(superAttackPot[1]) > 0
-              || c.getInventoryItemCount(superAttackPot[2]) > 0) {
-            attackBoost();
-          }
-        }
-        if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
-          if (c.getInventoryItemCount(superStrengthPot[0]) > 0
-              || c.getInventoryItemCount(superStrengthPot[1]) > 0
-              || c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-            strengthBoost();
-          }
-        }
+      if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
           c.setStatus("@yel@Attacking Dragons");
           ORSCharacter npc = c.getNearestNpcById(291, false);
@@ -188,24 +136,18 @@ public class K_TavBlackDragonPipe extends IdleScript {
     }
   }
 
-  private void dropToLootScript() {
-    for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0 && c.getInventoryItemCount() == 30) {
-        c.setStatus("@red@Eating Food to Loot..");
-        c.itemCommand(id);
-        c.sleep(700);
-      }
-    }
-  }
-
   private void lootScript() {
     for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && this.isWithinWander(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && isWithinWander(coords[0], coords[1])) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
@@ -214,11 +156,12 @@ public class K_TavBlackDragonPipe extends IdleScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@yel@Banking..");
     c.openBank();
-    c.sleep(1200);
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
-    if (c.isInBank()) {
-
-      totalDbones = totalDbones + c.getInventoryItemCount(814);
+      totalBones = totalBones + c.getInventoryItemCount(814);
       totalGems =
           totalGems
               + c.getInventoryItemCount(160)
@@ -281,34 +224,9 @@ public class K_TavBlackDragonPipe extends IdleScript {
         c.sleep(1000);
       }
       c.sleep(640); // leave in
-      if (c.getInventoryItemCount(superAttackPot[0]) < 1
-          && c.getInventoryItemCount(superAttackPot[1]) < 1
-          && c.getInventoryItemCount(superAttackPot[2]) < 1) { // withdraw 10 shark if needed
-        c.withdrawItem(superAttackPot[2], 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(antiPot[0]) < 1
-          && c.getInventoryItemCount(antiPot[1]) < 1
-          && c.getInventoryItemCount(antiPot[2]) < 1) { // withdraw 10 shark if needed
-        if (c.getBankItemCount(antiPot[0]) > 0) {
-          c.withdrawItem(antiPot[0], 1);
-          c.sleep(640);
-        }
-      }
-      if (c.getInventoryItemCount(superStrengthPot[0]) < 1
-          && c.getInventoryItemCount(superStrengthPot[1]) < 1
-          && c.getInventoryItemCount(superStrengthPot[2]) < 1) { // withdraw 10 shark if needed
-        c.withdrawItem(superStrengthPot[2], 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(antiPot[0]) < 1
-          && c.getInventoryItemCount(antiPot[1]) < 1
-          && c.getInventoryItemCount(antiPot[2]) < 1) {
-        if (c.getBankItemCount(antiPot[1]) > 0) {
-          c.withdrawItem(antiPot[1], 1);
-          c.sleep(640);
-        }
-      }
+      withdrawSuperAttack(1);
+      withdrawSuperStrength(1);
+      withdrawAntidote();
       if (c.getInventoryItemCount(483) < 6) { // withdraw 5 ppot
         c.withdrawItem(
             483,
@@ -317,14 +235,6 @@ public class K_TavBlackDragonPipe extends IdleScript {
                     + c.getInventoryItemCount(484)
                     + c.getInventoryItemCount(485))); // minus ppot count
         c.sleep(640);
-      }
-      if (c.getInventoryItemCount(antiPot[0]) < 1
-          && c.getInventoryItemCount(antiPot[1]) < 1
-          && c.getInventoryItemCount(antiPot[2]) < 1) {
-        if (c.getBankItemCount(antiPot[2]) > 0) {
-          c.withdrawItem(antiPot[2], 1);
-          c.sleep(640);
-        }
       }
       if (c.getInventoryItemCount(546) < 4) { // withdraw 2 shark
         c.withdrawItem(546, 4 - c.getInventoryItemCount(546));
@@ -342,7 +252,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
         c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
         c.sleep(1000);
       }
-      bankDbones = c.getBankItemCount(814);
+      bankBones = c.getBankItemCount(814);
       if (c.getBankItemCount(546) < 4
           || c.getBankItemCount(569) < 1
           || c.getBankItemCount(483) < 6
@@ -372,58 +282,9 @@ public class K_TavBlackDragonPipe extends IdleScript {
     lawCheck();
   }
 
-  private void lawCheck() {
-    if (c.getInventoryItemCount(42) < 6) { // law
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void waterCheck() {
-    if (c.getInventoryItemCount(32) < 6) { // 2 water
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void airCheck() {
-    if (c.getInventoryItemCount(33) < 18) { // 6 air
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(33, 18 - c.getInventoryItemCount(33));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
   private void pray() {
     if (!c.isPrayerOn(c.getPrayerId("Paralyze Monster")) && c.currentY() > 3000) {
       c.enablePrayer(c.getPrayerId("Paralyze Monster"));
-    }
-  }
-
-  private void drink() {
-    if (c.getCurrentStat(c.getStatId("Prayer")) < (c.getBaseStat(c.getStatId("Prayer")) - 31)) {
-      if (c.getInventoryItemCount(485) > 0
-          || c.getInventoryItemCount(484) > 0
-          || c.getInventoryItemCount(483) > 0) {
-        drinkPot();
-      } else {
-        c.sleep(308);
-        dragonEscape();
-        DragonsToBank();
-        bank();
-        BankToDragons();
-      }
     }
   }
 
@@ -474,6 +335,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
     c.walkTo(317, 523);
     c.walkTo(317, 516);
     c.walkTo(327, 506);
+    c.walkTo(327, 506);
     c.walkTo(337, 496);
     c.walkTo(337, 492);
     c.walkTo(341, 488);
@@ -508,7 +370,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
     c.walkTo(380, 3372);
     eat();
     ppotCheck();
-    drink();
+    drinkPrayerPotion();
     pray();
     c.walkTo(386, 3371);
     c.walkTo(388, 3360);
@@ -516,11 +378,11 @@ public class K_TavBlackDragonPipe extends IdleScript {
     c.walkTo(397, 3343);
     c.walkTo(403, 3346);
     c.walkTo(408, 3344);
-    antiBoost();
+    drinkAntidote();
     c.walkTo(409, 3338);
     eat();
     ppotCheck();
-    drink();
+    drinkPrayerPotion();
     pray();
     c.setStatus("@gre@Done Walking..");
   }
@@ -547,63 +409,6 @@ public class K_TavBlackDragonPipe extends IdleScript {
     }
   }
 
-  private void attackBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
-      c.itemCommand(superAttackPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superAttackPot[1]) > 0) {
-      c.itemCommand(superAttackPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superAttackPot[2]) > 0) {
-      c.itemCommand(superAttackPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void strengthBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
-      c.itemCommand(superStrengthPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superStrengthPot[1]) > 0) {
-      c.itemCommand(superStrengthPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-      c.itemCommand(superStrengthPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void drinkPot() {
-    ppotCheck();
-    leaveCombat();
-    if (c.getInventoryItemCount(485) > 0) {
-      c.itemCommand(485);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(484) > 0) {
-      c.itemCommand(484);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(483) > 0) {
-      c.itemCommand(483);
-      c.sleep(320);
-    }
-  }
-
-  private void antiBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(antiPot[0]) > 0) {
-      c.itemCommand(antiPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(antiPot[1]) > 0) {
-      c.itemCommand(antiPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(antiPot[2]) > 0) {
-      c.itemCommand(antiPot[2]);
-      c.sleep(320);
-    }
-  }
-
   private void DragonsToBank() {
     c.setStatus("@gre@Going to Bank. Casting 1st teleport.");
     c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
@@ -622,27 +427,6 @@ public class K_TavBlackDragonPipe extends IdleScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      }
-      c.sleep(10);
-    }
-  }
-
-  private void tavGateEastToWest() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
-        c.setStatus("@red@Crossing Tav Gate..");
-        c.atObject(341, 487); // gate won't break if someone else opens it
-        c.sleep(800);
-      }
-      c.sleep(10);
-    }
-  }
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Tavelry Black Dragons (Pipe) - By Kaila");
@@ -696,7 +480,7 @@ public class K_TavBlackDragonPipe extends IdleScript {
       try {
         float timeRan = (timeRanInSeconds) - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        DbonesSuccessPerHr = (int) (totalDbones * scale);
+        DbonesSuccessPerHr = (int) (totalBones * scale);
         RdaggerSuccessPerHr = (int) (totalRlong * scale);
         GemsSuccessPerHr = (int) (totalGems * scale);
         FireSuccessPerHr = (int) (totalFire * scale);
@@ -716,12 +500,12 @@ public class K_TavBlackDragonPipe extends IdleScript {
       c.drawString("@whi@______________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Gathered D.Bones: @gre@"
-              + totalDbones
+              + totalBones
               + "@yel@ (@whi@"
               + String.format("%,d", DbonesSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@D.Bones in Bank: @gre@"
-              + bankDbones,
+              + bankBones,
           x,
           y + 14,
           0xFFFFFF,

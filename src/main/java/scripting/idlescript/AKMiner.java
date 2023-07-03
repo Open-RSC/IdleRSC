@@ -68,6 +68,8 @@ public class AKMiner extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 

@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -21,19 +19,11 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_RedSpiderEggz extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public final class K_RedSpiderEggz extends K_kailaScript {
   private static boolean teleportOut = false;
   private static boolean returnEscape = true;
   private static int eggzInBank = 0;
   private static int totalEggz = 0;
-  private static int totalTrips = 0;
-
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] parameters) {
     if (!guiSetup) {
@@ -41,6 +31,8 @@ public class K_RedSpiderEggz extends IdleScript {
       guiSetup = true;
     }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@red@Red Spider Egg Picker - By Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
       c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
@@ -56,6 +48,7 @@ public class K_RedSpiderEggz extends IdleScript {
       }
       scriptStart();
     }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -64,7 +57,6 @@ public class K_RedSpiderEggz extends IdleScript {
 
       eat();
       leaveCombat();
-      c.setStatus("@yel@Picking Eggs..");
 
       if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(546) == 0) {
         c.setStatus("@red@Banking..");
@@ -74,11 +66,13 @@ public class K_RedSpiderEggz extends IdleScript {
         c.sleep(618);
       }
       if (c.getNearestItemById(219) != null) {
+        c.setStatus("@yel@Picking Eggs..");
         int[] coords = c.getNearestItemById(219);
-        c.pickupItem(coords[0], coords[1], 219, true, true);
-        c.sleep(1000);
-      } else { // fixed cpu overrun issue
-        c.sleep(1000); // fixed cpu overrun issue
+        c.walkToAsync(coords[0], coords[1], 0);
+        c.pickupItem(coords[0], coords[1], 219, true, false);
+        c.sleep(1280);
+      } else {
+        c.sleep(1280);
       }
     }
   }
@@ -87,9 +81,10 @@ public class K_RedSpiderEggz extends IdleScript {
 
     c.setStatus("@yel@Banking..");
     c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalEggz = totalEggz + c.getInventoryItemCount(219);
 
@@ -207,7 +202,7 @@ public class K_RedSpiderEggz extends IdleScript {
     c.setStatus("@gre@Opening Wildy Gate North to South(1)..");
     c.atObject(196, 3266);
     c.sleep(640);
-    openGateNorthToSouth();
+    openEdgeDungGateNorthToSouth();
     c.walkTo(197, 3266);
     c.walkTo(204, 3272);
     c.walkTo(210, 3273);
@@ -253,52 +248,10 @@ public class K_RedSpiderEggz extends IdleScript {
     c.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
     c.atObject(196, 3266);
     c.sleep(640);
-    openGateSouthToNorth();
+    openEdgeDungSouthToNorth();
     c.walkTo(197, 3244);
     c.walkTo(208, 3240);
     c.setStatus("@gre@Done Walking..");
-  }
-
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat (n)..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      } else {
-        c.setStatus("@red@Done Leaving combat..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
-
-  private void openGateNorthToSouth() {
-    for (int i = 1; i <= 25; i++) {
-      if (c.currentY() == 3265) {
-        c.setStatus("@gre@Opening Wildy Gate..");
-        c.atObject(196, 3266);
-        c.sleep(640);
-      } else {
-        c.setStatus("@red@Done Opening Wildy Gate..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
-
-  private void openGateSouthToNorth() {
-    for (int i = 1; i <= 25; i++) {
-      if (c.currentY() == 3266) {
-        c.setStatus("@gre@Opening Wildy Gate..");
-        c.atObject(196, 3266);
-        c.sleep(640);
-      } else {
-        c.setStatus("@red@Done Opening Wildy Gate..");
-        break;
-      }
-      c.sleep(10);
-    }
   }
 
   // GUI stuff below (icky)

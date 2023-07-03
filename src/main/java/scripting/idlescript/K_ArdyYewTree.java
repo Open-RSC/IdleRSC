@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,28 +16,12 @@ import javax.swing.JLabel;
  * todo:
  *   logic to cut same tree as other players.
  */
-public class K_ArdyYewTree extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public final class K_ArdyYewTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
-  private static int totalTrips = 0;
-  private static final int[] axeId = {
-    87, // bronze axe
-    12, // iron axe
-    88, // steel axe
-    428, // black axe
-    203, // mith axe
-    204, // addy axe
-    405 // rune axe
-  };
 
   private void startSequence() {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    checkBatchBars();
     c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
     if (c.isInBank()) {
       c.closeBank();
@@ -67,17 +49,21 @@ public class K_ArdyYewTree extends IdleScript {
         c.displayMessage("Got Autostart, Cutting Yews", 0);
         System.out.println("Got Autostart, Cutting Yews");
         scriptStarted = true;
+        guiSetup = true;
       }
-    }
-    if (scriptStarted) {
-      startSequence();
-      startTime = System.currentTimeMillis();
-      scriptStart();
     }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      startTime = System.currentTimeMillis();
+      startSequence();
+      scriptStart();
+    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -205,8 +191,9 @@ public class K_ArdyYewTree extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalLog = totalLog + c.getInventoryItemCount(635);
 

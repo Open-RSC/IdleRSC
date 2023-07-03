@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -16,21 +14,8 @@ import javax.swing.JLabel;
  *
  * <p>Author - Kaila
  */
-public class K_SkelliCoal extends IdleScript {
-  private static final Controller c = Main.getController();
+public final class K_SkelliCoal extends K_kailaScript {
   private static String isMining = "none";
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int coalInBank = 0;
-  private static int totalCoal = 0;
-  private static int totalSap = 0;
-  private static int totalEme = 0;
-  private static int totalRub = 0;
-  private static int totalDia = 0;
-  private static int totalTrips = 0;
   private static final Integer[] currentOre = {0, 0};
   private static final int[] coalIDs = {110, 111};
 
@@ -66,19 +51,23 @@ public class K_SkelliCoal extends IdleScript {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Auto-starting, Mining Skelli Coal", 0);
         System.out.println("Auto-starting, Mining Skelli Coal");
-        parseVariables();
         startSequence();
-        scriptStart();
+        guiSetup = true;
+        scriptStarted = true;
       }
-    }
-    if (scriptStarted) {
-      startSequence();
-      scriptStart();
     }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      startTime = System.currentTimeMillis();
+      startSequence();
+      scriptStart();
+    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -128,8 +117,9 @@ public class K_SkelliCoal extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalSap = totalSap + c.getInventoryItemCount(160);
@@ -240,22 +230,7 @@ public class K_SkelliCoal extends IdleScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      }
-      c.sleep(50);
-    }
-  }
-
   // GUI stuff below (icky)
-
-  private void parseVariables() {
-    startTime = System.currentTimeMillis();
-  }
 
   private void setupGUI() {
     JLabel header = new JLabel("Skeleton Coal Miner ~ By Kaila");
@@ -266,7 +241,6 @@ public class K_SkelliCoal extends IdleScript {
         e -> {
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
-          parseVariables();
           scriptStarted = true;
         });
 

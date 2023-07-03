@@ -40,6 +40,8 @@ public class MiningGuild extends IdleScript {
       guiSetup = true;
     }
     while (controller.isRunning() && setupCompleted) {
+      guiSetup = false;
+      setupCompleted = false;
       String x = param[0].toLowerCase();
       if (!runiteCheck.isSelected()
           && !adamantiteCheck.isSelected()
@@ -59,6 +61,7 @@ public class MiningGuild extends IdleScript {
       if (coalCheck.isSelected()) {
         mineCoal = true;
       }
+
       run();
     }
 

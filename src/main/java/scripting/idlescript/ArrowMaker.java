@@ -32,9 +32,9 @@ public class ArrowMaker extends IdleScript {
     }
 
     if (scriptStarted) {
-      while (controller.isRunning()) {
-        scriptStart();
-      }
+      guiSetup = false;
+      scriptStarted = false;
+      scriptStart();
     }
 
     return 1000; // start() must return a int value now.

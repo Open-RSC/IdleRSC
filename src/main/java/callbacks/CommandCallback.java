@@ -9,7 +9,7 @@ public class CommandCallback {
   private static final String helpMessageText =
       "@cya@IdleRSC Help Menu:"
           + " %@red@::bothelp - @yel@Shows this help menu"
-          + " %@red@::show - @yel@Unhides the bot sidepane"
+          + " %@red@::hide or ::show - @yel@Hides/Unhides the bot side panel"
           + " %@red@::gfx - @yel@toggle graphic rendering"
           + " %@red@::screenshot - @yel@Take a Screenshot"
           + " %@red@::hidepaint or ::showpaint - @yel@Toggle Paint Left-Side Menu"
@@ -19,10 +19,10 @@ public class CommandCallback {
           + " %@red@F2  - @yel@Toggle Openrsc Left-Side Sub Menu"
           + " %@red@F3  - @yel@Returns Camera Zoom to Default level"
           + " %@red@F4  - @yel@Toggles 1st/3rd Person Perspective"
-          + " %@red@F5/F6/F7 - @yel@Attack, Strength, Defense Item Swapping. See Readme."
+          + " %@red@F5/F6/F7 - @yel@Atk, Str, Def Item Swapping, see Readme."
           + " %@red@F8 - @yel@Spell ID casting. See Readme for Instructions"
-          + " %@red@F9 - @yel@Take a Screenshot, saved to ./IdleRSC/Screenshots/accountName"
-          + " %@red@F10 - @yel@Lock the client's camera position till F10 or mouse click."
+          + " %@red@F9 - @yel@Take a screenshot saved to ./IdleRSC/screenshots/accountName/"
+          + " %@red@F10 - @yel@Lock the client's camera position till F10 or click"
           + " %@red@F11 - @yel@Stop the current script and load a new one"
           + " %@red@F12 - @yel@Show this help menu";
 
@@ -33,6 +33,9 @@ public class CommandCallback {
     switch (command) {
       case "show":
         Main.showBot();
+        break;
+      case "hide":
+        Main.hideBot();
         break;
       case "hidepaint":
         if (c != null) {

@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -21,54 +19,12 @@ import orsc.ORSCharacter;
  *
  * @author Kaila
  */
-public class K_AsgarnianPirateHobs extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static boolean potUp = false;
+public final class K_AsgarnianPirateHobs extends K_kailaScript {
 
   private static boolean isWithinLootzone(int x, int y) {
     return c.distance(282, 3522, x, y) <= 14; // center of lootzone
   }
 
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int totalGuam = 0;
-  private static int totalMar = 0;
-  private static int totalTar = 0;
-  private static int totalHar = 0;
-  private static int totalRan = 0;
-  private static int totalIrit = 0;
-  private static int totalAva = 0;
-  private static int totalKwuarm = 0;
-  private static int totalCada = 0;
-  private static int totalDwarf = 0;
-  private static int totalLaw = 0;
-  private static int totalNat = 0;
-  private static int totalLoop = 0;
-  private static int totalTooth = 0;
-  private static int totalLeft = 0;
-  private static int totalSpear = 0;
-  private static int totalGems = 0;
-  private static int totalTrips = 0;
-  private static int foodWithdrawAmount = 1;
-  private static final int[] bones = {
-    20, // regular bones
-    413, // big bones
-    604, // bat bones
-    814 // dragon bones
-  };
-  private static final int[] attackPot = {
-    476, // reg attack pot (1)
-    475, // reg attack pot (2)
-    474 // reg attack pot (3)
-  };
-  private static final int[] strPot = {
-    224, // reg str pot (1)
-    223, // reg str pot (2)
-    222 // reg str pot (3)
-  };
   private static final int[] loot = {
     526, // tooth half
     527, // loop half
@@ -111,9 +67,16 @@ public class K_AsgarnianPirateHobs extends IdleScript {
       System.out.println("Got Autostart, using 1 Shark, yes pots");
       foodWithdrawAmount = 1;
       potUp = true;
-      scriptStart();
+      guiSetup = true;
+      scriptStarted = true;
+    }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
     }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
@@ -127,10 +90,7 @@ public class K_AsgarnianPirateHobs extends IdleScript {
       }
       scriptStart();
     }
-    if (!guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -143,20 +103,8 @@ public class K_AsgarnianPirateHobs extends IdleScript {
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
-          if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
-            if (c.getInventoryItemCount(attackPot[0]) > 0
-                || c.getInventoryItemCount(attackPot[1]) > 0
-                || c.getInventoryItemCount(attackPot[2]) > 0) {
-              attackBoost();
-            }
-          }
-          if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
-            if (c.getInventoryItemCount(strPot[0]) > 0
-                || c.getInventoryItemCount(strPot[1]) > 0
-                || c.getInventoryItemCount(strPot[2]) > 0) {
-              strengthBoost();
-            }
-          }
+          attackBoost();
+          strengthBoost();
         }
         if (c.currentX() > 295 && c.currentY() > 3000) {
           c.setStatus("@yel@Too far West, walking back..");
@@ -193,12 +141,16 @@ public class K_AsgarnianPirateHobs extends IdleScript {
 
   private void lootScript() {
     for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
@@ -208,8 +160,9 @@ public class K_AsgarnianPirateHobs extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
@@ -246,18 +199,8 @@ public class K_AsgarnianPirateHobs extends IdleScript {
       }
       c.sleep(640);
       if (potUp) {
-        if (c.getInventoryItemCount(attackPot[0]) < 1
-            && c.getInventoryItemCount(attackPot[1]) < 1
-            && c.getInventoryItemCount(attackPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(attackPot[2], 1);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(strPot[0]) < 1
-            && c.getInventoryItemCount(strPot[1]) < 1
-            && c.getInventoryItemCount(strPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(strPot[2], 1);
-          c.sleep(340);
-        }
+        withdrawAttack(1);
+        withdrawStrength(1);
       }
       if (c.getInventoryItemCount(546) < foodWithdrawAmount) { // withdraw 20 shark
         c.withdrawItem(546, foodWithdrawAmount - c.getInventoryItemCount(546));
@@ -273,20 +216,6 @@ public class K_AsgarnianPirateHobs extends IdleScript {
       }
       c.closeBank();
       c.sleep(640);
-    }
-  }
-
-  private void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@yel@Burying..");
-          c.itemCommand(id);
-
-          c.sleep(618);
-          buryBones();
-        }
-      }
     }
   }
 
@@ -316,34 +245,6 @@ public class K_AsgarnianPirateHobs extends IdleScript {
         BankToIce();
         c.sleep(618);
       }
-    }
-  }
-
-  private void attackBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(attackPot[0]) > 0) {
-      c.itemCommand(attackPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[1]) > 0) {
-      c.itemCommand(attackPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[2]) > 0) {
-      c.itemCommand(attackPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void strengthBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(strPot[0]) > 0) {
-      c.itemCommand(strPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[1]) > 0) {
-      c.itemCommand(strPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[2]) > 0) {
-      c.itemCommand(strPot[2]);
-      c.sleep(320);
     }
   }
 
@@ -407,20 +308,6 @@ public class K_AsgarnianPirateHobs extends IdleScript {
     c.walkTo(279, 3531);
     c.walkTo(280, 3521);
     c.setStatus("@gre@Done Walking..");
-  }
-
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      } else {
-        c.setStatus("@red@Done Leaving combat..");
-        break;
-      }
-      c.sleep(10);
-    }
   }
 
   // GUI stuff below (icky)

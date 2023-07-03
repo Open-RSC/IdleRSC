@@ -81,8 +81,9 @@ public class K_TrickGiver extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      K_kailaScript.waitForBankOpen();
+    } else {
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));

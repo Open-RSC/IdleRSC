@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,17 +11,9 @@ import javax.swing.JLabel;
  *
  * <p>Author - Kaila
  */
-public class K_TeleWines extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public final class K_TeleWines extends K_kailaScript {
   private static int WinezInBank = 0;
   private static int totalWinez = 0;
-  private static int totalTrips = 0;
-
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] parameters) {
     if (!guiSetup) {
@@ -31,6 +21,8 @@ public class K_TeleWines extends IdleScript {
       guiSetup = true;
     }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@cya@Wine Telegrab @mag@~ By Kaila");
       c.displayMessage("@cya@Start in Edge Bank");
       c.displayMessage("@cya@Laws, Air staff required");
@@ -45,6 +37,7 @@ public class K_TeleWines extends IdleScript {
       }
       scriptStart();
     }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -80,8 +73,9 @@ public class K_TeleWines extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalWinez = totalWinez + c.getInventoryItemCount(501);
 

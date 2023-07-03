@@ -121,6 +121,10 @@ public class KeyCallback {
       if (c != null) {
         c.chatMessage("::bothelp");
       }
+    } else if (keycode == KeyEvent.VK_V) {
+      if ((key.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+        c.paste();
+      }
     } else {
       if (c != null
           && c.getShowBotPaint()

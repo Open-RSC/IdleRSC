@@ -54,13 +54,15 @@ public class PotionMaker extends IdleScript {
 
   public int start(String[] parameters) {
     if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
-    if (scriptStarted) {
-      scriptStart();
-    }
     if (!guiSetup) {
       c.setStatus("@cya@Setting up script");
       setupGUI();
       guiSetup = true;
+    }
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      scriptStart();
     }
     return 1000; // start() must return an int value now.
   }

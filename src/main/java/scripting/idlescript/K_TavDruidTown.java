@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -19,64 +17,11 @@ import orsc.ORSCharacter;
  *       todo
  *        Door support to prevent trapping. Not a hurry.
  */
-public final class K_TavDruidTown extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static String foodName = "";
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static boolean timeToBank = false;
-  private static boolean timeToBankStay = false;
-  private static boolean lootLowLevel = true;
-  private static boolean lootBones = true;
-  private static boolean potUp = false;
-
+public final class K_TavDruidTown extends K_kailaScript {
   private static boolean isWithinLootzone(int x, int y) {
     return c.distance(371, 490, x, y) <= 14; // center of lootzone
   }
 
-  private static int totalGuam = 0;
-  private static int totalMar = 0;
-  private static int totalTar = 0;
-  private static int totalHar = 0;
-  private static int totalRan = 0;
-  private static int totalIrit = 0;
-  private static int totalAva = 0;
-  private static int totalKwuarm = 0;
-  private static int totalCada = 0;
-  private static int totalDwarf = 0;
-  private static int totalLaw = 0;
-  private static int totalNat = 0;
-  private static int totalFire = 0;
-  private static int totalWater = 0;
-  private static int totalEarth = 0;
-  private static int totalChaos = 0;
-  private static int totalRunes = 0;
-  private static int totalHerbs = 0;
-  private static int totalTrips = 0;
-  private static int foodInBank = -1;
-  private static int usedFood = 0;
-  private static int foodWithdrawAmount = 1;
-  private static int fightMode = 0;
-  private static int foodId = -1;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static final int[] bones = {
-    20, // regular
-    413, // big
-    604, // bat?
-    814 // dragon
-  };
-  private static final int[] attackPot = {
-    476, // reg attack pot (1)
-    475, // reg attack pot (2)
-    474 // reg attack pot (3)
-  };
-  private static final int[] strPot = {
-    224, // reg str pot (1)
-    223, // reg str pot (2)
-    222 // reg str pot (3)
-  };
   private static final int[] lowLevelLoot = {
     165, // Grimy Guam
     435, // Grimy mar
@@ -107,79 +52,6 @@ public final class K_TavDruidTown extends IdleScript {
     31, // fire rune
     41 // chaos rune
   };
-  private static final int[] foodIds = {
-    1191, // cooked Manta Ray
-    1193, // cooked Sea Turtle
-    546, // cooked shark
-    370, // cooked swordfish
-    367, // cooked tuna
-    373, // cooked lobster
-    555, // cooked Bass
-    553, // cooked Mackerel
-    551, // cooked Cod
-    364, // cooked Pike
-    362, // cooked Herring
-    357, // cooked Salmon
-    359, // cooked Trout
-    352, // cooked Anchovies
-    350, // cooked Shrimp
-    132 // cooked Meat
-  };
-  private static final String[] foodTypes =
-      new String[] {
-        "Manta Ray",
-        "Sea Turtle",
-        "Shark",
-        "Swordfish",
-        "Tuna",
-        "Lobster",
-        "Bass",
-        "Mackerel",
-        "Cod",
-        "Pike",
-        "Herring",
-        "Salmon",
-        "Trout",
-        "Anchovies",
-        "Shrimp",
-        "Cooked Meat"
-      };
-
-  private void whatIsFoodName() {
-    if (foodId == 1191) {
-      foodName = "Manta Ray";
-    } else if (foodId == 1193) {
-      foodName = "Sea Turtle";
-    } else if (foodId == 546) {
-      foodName = "Shark";
-    } else if (foodId == 370) {
-      foodName = "Swordfish";
-    } else if (foodId == 367) {
-      foodName = "Tuna";
-    } else if (foodId == 373) {
-      foodName = "Lobster";
-    } else if (foodId == 555) {
-      foodName = "Bass";
-    } else if (foodId == 553) {
-      foodName = "Mackerel";
-    } else if (foodId == 551) {
-      foodName = "Cod";
-    } else if (foodId == 364) {
-      foodName = "Pike";
-    } else if (foodId == 362) {
-      foodName = "Herring";
-    } else if (foodId == 357) {
-      foodName = "Salmon";
-    } else if (foodId == 359) {
-      foodName = "Trout";
-    } else if (foodId == 352) {
-      foodName = "Anchovies";
-    } else if (foodId == 350) {
-      foodName = "Shrimp";
-    } else if (foodId == 132) {
-      foodName = "Cooked Meat";
-    }
-  }
 
   public int start(String[] parameters) {
     if (parameters[0].toLowerCase().startsWith("auto")) {
@@ -194,8 +66,15 @@ public final class K_TavDruidTown extends IdleScript {
           "@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, Loot Bones, no pot up, yes prayer boosting",
           "cya");
       scriptStarted = true;
+      guiSetup = true;
+    }
+    if (!guiSetup) {
+      setupGUI();
+      guiSetup = true;
     }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       c.displayMessage("@red@Tav Druid Circle - By Kaila");
       c.displayMessage("@red@Start in Fally west or druid Circle");
@@ -212,10 +91,7 @@ public final class K_TavDruidTown extends IdleScript {
       whatIsFoodName();
       scriptStart();
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -237,20 +113,8 @@ public final class K_TavDruidTown extends IdleScript {
         c.setFightMode(fightMode);
       }
       if (potUp && !c.isInCombat()) {
-        if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
-          if (c.getInventoryItemCount(attackPot[0]) > 0
-              || c.getInventoryItemCount(attackPot[1]) > 0
-              || c.getInventoryItemCount(attackPot[2]) > 0) {
-            attackBoost();
-          }
-        }
-        if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
-          if (c.getInventoryItemCount(strPot[0]) > 0
-              || c.getInventoryItemCount(strPot[1]) > 0
-              || c.getInventoryItemCount(strPot[2]) > 0) {
-            strengthBoost();
-          }
-        }
+        attackBoost();
+        strengthBoost();
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
@@ -279,6 +143,7 @@ public final class K_TavDruidTown extends IdleScript {
             }
             c.sleep(100);
           }
+          c.sleep(640);
         } else {
           c.sleep(640);
         }
@@ -308,39 +173,51 @@ public final class K_TavDruidTown extends IdleScript {
 
   private void lootBones() {
     for (int lootId : bones) {
-      int[] lootCoord = c.getNearestItemById(lootId);
-      if (lootCoord != null && !c.isInCombat() && isWithinLootzone(lootCoord[0], lootCoord[1])) {
-        c.setStatus("@red@No NPCs, Picking bones");
-        c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
-        c.sleep(618);
-        buryBones();
-      } else {
-        buryBones();
-        c.sleep(100);
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@No NPCs, Picking bones");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+          buryBones();
+        } else {
+          c.sleep(300);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
 
   private void highLevelLooting() {
     for (int lootId : highLevelLoot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
 
   private void lowLevelLooting() {
     for (int lootId : lowLevelLoot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
@@ -348,9 +225,11 @@ public final class K_TavDruidTown extends IdleScript {
   private void bank() {
     c.setStatus("@yel@Banking..");
     c.openBank();
-    c.sleep(1200);
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
-    if (c.isInBank()) {
       //       32,      //water rune
       // 34, 	 //Earth rune
       // 31,      //fire rune  +total runes
@@ -385,59 +264,19 @@ public final class K_TavDruidTown extends IdleScript {
               + totalCada
               + totalDwarf;
 
-      for (int itemId : c.getInventoryItemIds()) {
-        c.depositItem(itemId, c.getInventoryItemCount(itemId));
-      }
-
-      c.sleep(1240); // Important, leave in
-
+      depositAll();
       if (potUp) {
-        if (c.getInventoryItemCount(attackPot[0]) < 1
-            && c.getInventoryItemCount(attackPot[1]) < 1
-            && c.getInventoryItemCount(attackPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(attackPot[2], 1);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(strPot[0]) < 1
-            && c.getInventoryItemCount(strPot[1]) < 1
-            && c.getInventoryItemCount(strPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(strPot[2], 1);
-          c.sleep(340);
-        }
+        withdrawAttack(1);
+        withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(foodId) > foodWithdrawAmount) { // deposit extra shark
-        c.depositItem(foodId, c.getInventoryItemCount(foodId) - foodWithdrawAmount);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw 1 shark
-        c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
-        c.sleep(640);
-      }
+      withdrawFood(foodId, foodWithdrawAmount);
       if (c.getBankItemCount(foodId) == 0) {
         c.setStatus("@red@NO foodId in the bank, Logging Out!.");
         c.sleep(3000);
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
+        endSession();
       }
       c.closeBank();
       c.sleep(1000);
-    }
-  }
-
-  private void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@red@Burying bones..");
-          c.itemCommand(id);
-
-          c.sleep(618);
-          buryBones();
-        }
-      }
     }
   }
 
@@ -462,69 +301,6 @@ public final class K_TavDruidTown extends IdleScript {
       bank();
       BankToDruid();
       c.sleep(618);
-    }
-  }
-
-  private void leaveCombat() {
-    c.setStatus("@red@Leaving combat..");
-    c.walkTo(c.currentX(), c.currentY(), 0, true);
-    c.sleep(600);
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      }
-      c.sleep(100);
-    }
-    c.setStatus("@gre@Done Leaving combat..");
-  }
-
-  private void attackBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(attackPot[0]) > 0) {
-      c.itemCommand(attackPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[1]) > 0) {
-      c.itemCommand(attackPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[2]) > 0) {
-      c.itemCommand(attackPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void strengthBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(strPot[0]) > 0) {
-      c.itemCommand(strPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[1]) > 0) {
-      c.itemCommand(strPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[2]) > 0) {
-      c.itemCommand(strPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void tavGateEastToWest() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
-        c.atObject(341, 487); // gate won't break if someone else opens it
-        c.sleep(800);
-      }
-      c.sleep(10);
-    }
-  }
-
-  private void tavGateWestToEast() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.currentX() == 342 && c.currentY() < 489 && c.currentY() > 486) {
-        c.atObject(341, 487); // gate won't break if someone else opens it
-        c.sleep(800);
-      }
-      c.sleep(10);
     }
   }
 

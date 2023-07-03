@@ -12,7 +12,7 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila
  */
-public class K_WineDrinker extends IdleScript {
+public final class K_WineDrinker extends IdleScript {
   private static final Controller c = Main.getController();
   private static final long nineMinutesInMillis = 540000L;
 
@@ -68,8 +68,9 @@ public class K_WineDrinker extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      K_kailaScript.waitForBankOpen();
+    } else {
 
       if (c.getInventoryItemCount(140) > 0) {
         c.depositItem(140, c.getInventoryItemCount(140));

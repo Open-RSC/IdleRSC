@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,53 +35,39 @@ import javax.swing.JLabel;
  *
  * <p>@Author ~ Kaila
  */
-public class K_FastPlateSmither extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public final class K_FastPlateSmither extends K_kailaScript {
   private static int barId = -1;
-  private static final int[] barIds = {169, 170, 171, 173, 174, 408};
-  private static int barsInBank = 0;
-  private static int totalPlates = 0;
-  private static int totalBars = 0;
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
-    if (scriptStarted) {
-      c.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
-      c.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
-      c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
-      if (c.isInBank()) c.closeBank();
-      startTime = System.currentTimeMillis();
-      scriptStart();
-    }
+    checkBatchBars();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got param " + parameters[0] + ", Auto-starting Steel Plates", 0);
         System.out.println("Got param" + parameters[0] + ", Auto-starting Steel Plates");
         barId = 171;
+        guiSetup = true;
         scriptStarted = true;
       }
       if (parameters[0].toLowerCase().startsWith("bronze")) {
         c.displayMessage("Got param " + parameters[0] + ". Using bronze bars!", 0);
         System.out.println("Got param" + parameters[0] + ", Using bronze bars");
         barId = 169;
+        guiSetup = true;
         scriptStarted = true;
       }
       if (parameters[0].toLowerCase().startsWith("iron")) {
         c.displayMessage("Got param " + parameters[0] + ". Using iron bars!", 0);
         System.out.println("Got param" + parameters[0] + ", Using iron bars!");
         barId = 170;
+        guiSetup = true;
         scriptStarted = true;
       }
       if (parameters[0].toLowerCase().startsWith("steel")) {
         c.displayMessage("Got param " + parameters[0] + ". Using steel bars!", 0);
         System.out.println("Got param" + parameters[0] + ", Using steel bars!");
         barId = 171;
+        guiSetup = true;
         scriptStarted = true;
       }
       if (parameters[0].toLowerCase().startsWith("mith")
@@ -91,6 +75,7 @@ public class K_FastPlateSmither extends IdleScript {
         c.displayMessage("Got param " + parameters[0] + ". Using mith bars!", 0);
         System.out.println("Got param" + parameters[0] + ", Using mithril bars!");
         barId = 173;
+        guiSetup = true;
         scriptStarted = true;
       }
       if (parameters[0].toLowerCase().startsWith("addy")
@@ -98,6 +83,7 @@ public class K_FastPlateSmither extends IdleScript {
         c.displayMessage("Got param " + parameters[0] + ". Using addy bars!", 0);
         System.out.println("Got param" + parameters[0] + ", Using adamantite bars!");
         barId = 174;
+        guiSetup = true;
         scriptStarted = true;
       }
       if (parameters[0].toLowerCase().startsWith("rune")
@@ -105,13 +91,26 @@ public class K_FastPlateSmither extends IdleScript {
         c.displayMessage("Got param " + parameters[0] + ". Using rune bars!", 0);
         System.out.println("Got param" + parameters[0] + ", Using rune bars!");
         barId = 408;
+        guiSetup = true;
         scriptStarted = true;
       }
+      if (!guiSetup) {
+        setupGUI();
+        guiSetup = true;
+      }
+      if (scriptStarted) {
+        guiSetup = false;
+        scriptStarted = false;
+        c.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
+        c.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
+        c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
+        if (c.isInBank()) c.closeBank();
+        startTime = System.currentTimeMillis();
+        next_attempt = System.currentTimeMillis() + 10000L;
+        scriptStart();
+      }
     }
-    if (!scriptStarted && !guiSetup) {
-      setupGUI();
-      guiSetup = true;
-    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -135,27 +134,28 @@ public class K_FastPlateSmither extends IdleScript {
     c.setStatus("@gre@Smithing..");
     c.displayMessage("@gre@Smithing..");
     c.useItemIdOnObject(148, 513, barId);
-    c.sleep(1000);
+    c.sleep(1280);
     c.optionAnswer(1);
-    c.sleep(500);
+    c.sleep(640);
     c.optionAnswer(2);
-    c.sleep(500);
+    c.sleep(640);
     c.optionAnswer(2);
-    c.sleep(500);
+    c.sleep(640);
     if (!c.isAuthentic()) {
       c.optionAnswer(3);
-      c.sleep(1000); // was 650
-      while (c.isBatching()) c.sleep(200);
+      c.sleep(3000); // was 650
     }
+    waitForBatching();
   }
 
   private void bank() {
 
     c.setStatus("@gre@Banking..");
     c.openBank();
-    c.sleep(2000);
-    if (c.isInBank()) {
-
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       totalPlates = totalPlates + 5;
       totalBars = totalBars + 25;
 

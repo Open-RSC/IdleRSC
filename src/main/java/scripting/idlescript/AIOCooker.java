@@ -101,6 +101,8 @@ public class AIOCooker extends IdleScript {
       }
 
       if (scriptStarted) {
+        guiSetup = false;
+        scriptStarted = false;
         log("Equivalent parameters: ");
         log(target.name + " " + dropBurnt + " " + gauntlets);
         scriptStart();

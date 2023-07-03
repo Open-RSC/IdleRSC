@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,25 +15,9 @@ import javax.swing.JLabel;
  *   reduce walking between locations - pause at each side.
  *   logic to cut same tree as other players.
  */
-public class K_SeersMagicTree extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public final class K_SeersMagicTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
-  private static int totalTrips = 0;
-  private static final int[] axeId = {
-    87, // bronze axe
-    12, // iron axe
-    88, // steel axe
-    428, // black axe
-    203, // mith axe
-    204, // addy axe
-    405 // rune axe
-  };
 
   private void startSequence() {
     c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
@@ -62,19 +44,22 @@ public class K_SeersMagicTree extends IdleScript {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Magics", 0);
         System.out.println("Got Autostart, Cutting Magics");
-        parseVariables();
-        startSequence();
-        scriptStart();
+        scriptStarted = true;
+        guiSetup = true;
       }
-    }
-    if (scriptStarted) {
-      startSequence();
-      scriptStart();
     }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      startTime = System.currentTimeMillis();
+      startSequence();
+      scriptStart();
+    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -235,8 +220,9 @@ public class K_SeersMagicTree extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalLog = totalLog + c.getInventoryItemCount(636);
 
@@ -259,10 +245,6 @@ public class K_SeersMagicTree extends IdleScript {
   }
   // GUI stuff below (icky)
 
-  private void parseVariables() {
-    startTime = System.currentTimeMillis();
-  }
-
   private void setupGUI() {
     JLabel header = new JLabel("Seers Magic Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
@@ -273,7 +255,6 @@ public class K_SeersMagicTree extends IdleScript {
         e -> {
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
-          parseVariables();
           scriptStarted = true;
         });
 

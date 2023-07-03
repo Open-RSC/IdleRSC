@@ -42,7 +42,9 @@ public class SmithGearSet extends IdleScript {
       setupGUI();
       guiSetup = true;
     }
-    while (controller.isRunning() && scriptStarted) {
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 

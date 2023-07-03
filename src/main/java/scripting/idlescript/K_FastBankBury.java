@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,12 +17,7 @@ import orsc.ORSCharacter;
 /*
  * todo add gui and statistics.
  */
-public class K_FastBankBury extends IdleScript {
-
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public final class K_FastBankBury extends K_kailaScript {
   private static int boneId = -1;
   private static final int[] boneIds = {
     20, // regular bones
@@ -38,8 +31,9 @@ public class K_FastBankBury extends IdleScript {
       setupGUI();
       guiSetup = true;
     }
-
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 
@@ -82,8 +76,9 @@ public class K_FastBankBury extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       if (c.getInventoryItemCount(boneId) < 30) {
         c.withdrawItem(boneId, 30);
       }

@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -48,28 +46,10 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public class K_HobsMiner extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
+public final class K_HobsMiner extends K_kailaScript {
   private static String isMining = "none";
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
   private static boolean teleportOut = false;
   private static boolean returnEscape = true;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int coalInBank = 0;
-  private static int mithInBank = 0;
-  private static int addyInBank = 0;
-  private static int totalCoal = 0;
-  private static int totalMith = 0;
-  private static int totalAddy = 0;
-  private static int totalSap = 0;
-  private static int totalEme = 0;
-  private static int totalRub = 0;
-  private static int totalDia = 0;
-  private static int totalTrips = 0;
-
   private static final int[] currentOre = {0, 0};
   private static final int[] addyIDs = {
     108, 231, 109
@@ -165,18 +145,22 @@ public class K_HobsMiner extends IdleScript {
         System.out.println("Auto-starting, teleport false, return escape true");
         teleportOut = false;
         returnEscape = true;
+        guiSetup = true;
         scriptStarted = true;
       }
-    }
-    if (scriptStarted) {
-      startTime = System.currentTimeMillis();
-      startSequence();
-      scriptStart();
     }
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      startTime = System.currentTimeMillis();
+      startSequence();
+      scriptStart();
+    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -247,12 +231,16 @@ public class K_HobsMiner extends IdleScript {
 
   private void lootScript() {
     for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
@@ -290,9 +278,10 @@ public class K_HobsMiner extends IdleScript {
 
     c.setStatus("@yel@Banking..");
     c.openBank();
-    c.sleep(1200);
-
-    if (c.isInBank()) {
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalMith = totalMith + c.getInventoryItemCount(153);
@@ -494,50 +483,6 @@ public class K_HobsMiner extends IdleScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void lawCheck() {
-    if (c.getInventoryItemCount(42) < 1) { // law
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(42, 1);
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void earthCheck() {
-    if (c.getInventoryItemCount(34) < 1) { // earth
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(34, 1);
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void airCheck() {
-    if (c.getInventoryItemCount(33) < 3) { // air
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(33, 3 - c.getInventoryItemCount(33));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-
-  private void leaveCombat() {
-    for (int i = 1; i <= 10; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(640);
-      }
-      c.sleep(10);
-    }
-  }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Hobs Miner - By Kaila");
@@ -619,7 +564,7 @@ public class K_HobsMiner extends IdleScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Edge Dungeon Miner @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Hobs Miner @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Coal Mined: @gre@"

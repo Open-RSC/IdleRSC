@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -17,59 +15,11 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila
  */
-public class K_AsgarnianIce extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static boolean potUp = true;
-  private static boolean timeToBank = false;
-
+public final class K_AsgarnianIce extends K_kailaScript {
   private static boolean isWithinLootzone(int x, int y) {
     return c.distance(308, 3520, x, y) <= 15; // center of lootzone
   }
 
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static int totalGuam = 0;
-  private static int totalMar = 0;
-  private static int totalTar = 0;
-  private static int totalHar = 0;
-  private static int totalRan = 0;
-  private static int totalIrit = 0;
-  private static int totalAva = 0;
-  private static int totalKwuarm = 0;
-  private static int totalCada = 0;
-  private static int totalDwarf = 0;
-  private static int totalLaw = 0;
-  private static int totalNat = 0;
-  private static int totalDeath = 0;
-  private static int totalBlood = 0;
-  private static int totalLoop = 0;
-  private static int totalTooth = 0;
-  private static int totalLeft = 0;
-  private static int totalSpear = 0;
-  private static int totalGems = 0;
-  private static int totalTrips = 0;
-  private static int fightMode = 3;
-  private static int foodId = -1;
-  private static int foodWithdrawAmount = 0;
-  private static final int[] bones = {
-    20, // regular
-    413, // big
-    604, // bat?
-    814
-  }; // dragon
-  private static final int[] attackPot = {
-    476, // reg attack pot (1)
-    475, // reg attack pot (2)
-    474 // reg attack pot (3)
-  };
-  private static final int[] strPot = {
-    224, // reg str pot (1)
-    223, // reg str pot (2)
-    222 // reg str pot (3)
-  };
   private static final int[] loot = {
     526, // tooth half
     527, // loop half
@@ -109,42 +59,6 @@ public class K_AsgarnianIce extends IdleScript {
     413, // Big bones
     20 // bones
   };
-  private static final int[] foodIds = {
-    1191, // cooked Manta Ray
-    1193, // cooked Sea Turtle
-    546, // cooked shark
-    370, // cooked swordfish
-    367, // cooked tuna
-    373, // cooked lobster
-    555, // cooked Bass
-    553, // cooked Mackerel
-    551, // cooked Cod
-    364, // cooked Pike
-    362, // cooked Herring
-    357, // cooked Salmon
-    352, // cooked Trout
-    350, // cooked Anchovies
-    132 // cooked Chicken
-  };
-  private static final String[] foodTypes =
-      new String[] {
-        "Manta Ray",
-        "Sea Turtle",
-        "Shark",
-        "Swordfish",
-        "Tuna",
-        "Lobster",
-        "Bass",
-        "Mackerel",
-        "Cod",
-        "Pike",
-        "Herring",
-        "Salmon",
-        "Trout",
-        "Anchovies",
-        "Shrimp",
-        "Chicken"
-      };
 
   private void startSequence() {
     c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
@@ -168,17 +82,20 @@ public class K_AsgarnianIce extends IdleScript {
       foodId = 373;
       foodWithdrawAmount = 2;
       potUp = true;
-      startSequence();
-      scriptStart();
+      guiSetup = true;
+      scriptStarted = true;
     }
-    if (scriptStarted) {
-      startSequence();
-      scriptStart();
-    }
-    if (!scriptStarted && !guiSetup) {
+    if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      startSequence();
+      scriptStart();
+    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -194,20 +111,8 @@ public class K_AsgarnianIce extends IdleScript {
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
-          if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
-            if (c.getInventoryItemCount(attackPot[0]) > 0
-                || c.getInventoryItemCount(attackPot[1]) > 0
-                || c.getInventoryItemCount(attackPot[2]) > 0) {
-              attackBoost();
-            }
-          }
-          if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
-            if (c.getInventoryItemCount(strPot[0]) > 0
-                || c.getInventoryItemCount(strPot[1]) > 0
-                || c.getInventoryItemCount(strPot[2]) > 0) {
-              strengthBoost();
-            }
-          }
+          attackBoost();
+          strengthBoost();
         }
         if (!c.isInCombat()) {
           int[] npcIds = {135, 158};
@@ -239,12 +144,16 @@ public class K_AsgarnianIce extends IdleScript {
 
   private void lootScript() {
     for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@Looting..");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }
@@ -254,8 +163,9 @@ public class K_AsgarnianIce extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
@@ -293,18 +203,8 @@ public class K_AsgarnianIce extends IdleScript {
       }
       c.sleep(640);
       if (potUp) {
-        if (c.getInventoryItemCount(attackPot[0]) < 1
-            && c.getInventoryItemCount(attackPot[1]) < 1
-            && c.getInventoryItemCount(attackPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(attackPot[2], 1);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(strPot[0]) < 1
-            && c.getInventoryItemCount(strPot[1]) < 1
-            && c.getInventoryItemCount(strPot[2]) < 1) { // withdraw 10 shark if needed
-          c.withdrawItem(strPot[2], 1);
-          c.sleep(340);
-        }
+        withdrawAttack(1);
+        withdrawStrength(1);
       }
       if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw 20 shark
         c.withdrawItem(foodId, foodWithdrawAmount);
@@ -320,20 +220,6 @@ public class K_AsgarnianIce extends IdleScript {
       }
       c.closeBank();
       c.sleep(640);
-    }
-  }
-
-  private void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@yel@Burying..");
-          c.itemCommand(id);
-
-          c.sleep(618);
-          buryBones();
-        }
-      }
     }
   }
 
@@ -360,34 +246,6 @@ public class K_AsgarnianIce extends IdleScript {
         BankToIce();
         c.sleep(618);
       }
-    }
-  }
-
-  private void attackBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(attackPot[0]) > 0) {
-      c.itemCommand(attackPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[1]) > 0) {
-      c.itemCommand(attackPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(attackPot[2]) > 0) {
-      c.itemCommand(attackPot[2]);
-      c.sleep(320);
-    }
-  }
-
-  private void strengthBoost() {
-    leaveCombat();
-    if (c.getInventoryItemCount(strPot[0]) > 0) {
-      c.itemCommand(strPot[0]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[1]) > 0) {
-      c.itemCommand(strPot[1]);
-      c.sleep(320);
-    } else if (c.getInventoryItemCount(strPot[2]) > 0) {
-      c.itemCommand(strPot[2]);
-      c.sleep(320);
     }
   }
 
@@ -460,21 +318,6 @@ public class K_AsgarnianIce extends IdleScript {
     c.walkTo(305, 3522);
     c.setStatus("@gre@Done Walking..");
   }
-
-  private void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
-        c.sleep(600);
-      } else {
-        c.setStatus("@red@Done Leaving combat..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
-
   // GUI stuff below (icky)
 
   private void setupGUI() {
@@ -491,7 +334,7 @@ public class K_AsgarnianIce extends IdleScript {
     JLabel label8 = new JLabel("\"autostart\": uses lobsters,5,true");
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(6));
+    JTextField foodWithdrawAmountField = new JTextField("6");
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -579,7 +422,7 @@ public class K_AsgarnianIce extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      String runTime = controller.msToString(System.currentTimeMillis() - startTime);
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
       int tarSuccessPerHr = 0;

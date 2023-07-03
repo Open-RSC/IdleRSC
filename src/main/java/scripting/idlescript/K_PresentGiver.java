@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
@@ -23,8 +21,7 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila.
  */
-public class K_PresentGiver extends IdleScript {
-  private static final Controller c = Main.getController();
+public final class K_PresentGiver extends K_kailaScript {
 
   public int start(String[] parameters) {
     c.displayMessage("@red@present GIVER! Let's party like it's 2004! ~ Kaila");
@@ -64,8 +61,9 @@ public class K_PresentGiver extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
       if (c.getInventoryItemCount(980) < 2) {
         c.withdrawItem(980, 30);
         c.sleep(1280);

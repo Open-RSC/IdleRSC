@@ -82,6 +82,8 @@ public class AIOFighter extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     }
 
@@ -89,190 +91,210 @@ public class AIOFighter extends IdleScript {
   }
 
   public void scriptStart() {
-    lootTable = Arrays.copyOf(loot, loot.length);
-    if (prioritizeBones) {
-      lootTable = Arrays.copyOf(lootTable, loot.length + bones.length);
-      for (int i = loot.length, k = 0; i < loot.length + bones.length; i++, k++) {
-        lootTable[i] = bones[k];
-      }
-    }
-
-    startTile[0] = c.currentX();
-    startTile[1] = c.currentY();
-
     while (c.isRunning()) {
-
-      // 0th priority: walking back to starting zone if out of zone
-      // 1st priority: setting fightmode
-      // 2nd priority: eating
-      // 3rd priority: bury any bones in inv
-      // 4th priority: pickup loot
-      // 5th priority: pickup bones
-      // 6th priority: starting a fight via melee or ranging
-      // 7th priority: maging
-
-      c.sleep(618); // wait 1 tick
-
-      if (!isWithinWander(c.currentX(), c.currentY())) {
-        c.setStatus("@red@Out of range! Walking back.");
-        c.walkTo(startTile[0], startTile[1], 0, true);
-      }
-
-      if (openDoors) {
-        for (int doorId : doorObjectIds) {
-          int[] doorCoords = c.getNearestObjectById(doorId);
-
-          if (doorCoords != null && this.isWithinWander(doorCoords[0], doorCoords[1])) {
-            c.setStatus("@red@Opening door...");
-            c.atObject(doorCoords[0], doorCoords[1]);
-            c.sleep(5000);
-          }
+      lootTable = Arrays.copyOf(loot, loot.length);
+      if (prioritizeBones) {
+        lootTable = Arrays.copyOf(lootTable, loot.length + bones.length);
+        for (int i = loot.length, k = 0; i < loot.length + bones.length; i++, k++) {
+          lootTable[i] = bones[k];
         }
       }
 
-      if (c.getFightMode() != fightMode) {
-        c.setStatus("@red@Changing fightmode");
-        c.setFightMode(fightMode);
-      }
+      startTile[0] = c.currentX();
+      startTile[1] = c.currentY();
 
-      if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth) {
-        c.setStatus("@red@Eating food");
-        c.walkTo(c.currentX(), c.currentY(), 0, true);
+      while (c.isRunning()) {
 
-        boolean ate = false;
+        // 0th priority: walking back to starting zone if out of zone
+        // 1st priority: setting fightmode
+        // 2nd priority: eating
+        // 3rd priority: bury any bones in inv
+        // 4th priority: pickup loot
+        // 5th priority: pickup bones
+        // 6th priority: starting a fight via melee or ranging
+        // 7th priority: maging
 
-        for (int id : c.getFoodIds()) {
-          if (c.getInventoryItemCount(id) > 0) {
-            c.itemCommand(id);
-            ate = true;
-            break;
+        c.sleep(618); // wait 1 tick
+
+        if (!isWithinWander(c.currentX(), c.currentY())) {
+          c.setStatus("@red@Out of range! Walking back.");
+          c.walkTo(startTile[0], startTile[1], 0, true);
+        }
+
+        if (openDoors) {
+          for (int doorId : doorObjectIds) {
+            int[] doorCoords = c.getNearestObjectById(doorId);
+
+            if (doorCoords != null && this.isWithinWander(doorCoords[0], doorCoords[1])) {
+              c.setStatus("@red@Opening door...");
+              c.atObject(doorCoords[0], doorCoords[1]);
+              c.sleep(5000);
+            }
           }
         }
 
-        if (!ate) {
-          c.setStatus("@red@We ran out of food! Logging out.");
-          c.setAutoLogin(false);
-          c.logout();
+        if (c.getFightMode() != fightMode) {
+          c.setStatus("@red@Changing fightmode");
+          c.setFightMode(fightMode);
         }
 
-        continue;
-      }
+        if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth) {
+          c.setStatus("@red@Eating food");
+          c.walkTo(c.currentX(), c.currentY(), 0, true);
 
-      for (int lootId : lootTable) {
-        int[] lootCoord = c.getNearestItemById(lootId);
-        if (lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
-          c.setStatus("@red@Picking up loot");
-          c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
-          c.sleep(618);
-          buryBones();
-        }
-      }
+          boolean ate = false;
 
-      if (!c.isInCombat()) {
-        c.sleepHandler(98, true);
-        ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
-
-        if (ranging) {
-
-          int[] arrowCoord = c.getNearestItemById(arrowId);
-          if (arrowCoord != null) {
-            c.setStatus("@red@Picking up arrows");
-            c.pickupItem(arrowCoord[0], arrowCoord[1], arrowId, false, true);
-            continue;
-          }
-
-          boolean hasArrows = false;
-          for (int id : arrowIds) {
-            if (c.getInventoryItemCount(id) > 0 || c.isItemIdEquipped(id)) {
-              hasArrows = true;
+          for (int id : c.getFoodIds()) {
+            if (c.getInventoryItemCount(id) > 0) {
+              c.itemCommand(id);
+              ate = true;
               break;
             }
           }
 
-          if (!hasArrows) {
-            c.setStatus("@red@Out of arrows!");
+          if (!ate) {
+            c.setStatus("@red@We ran out of food! Logging out.");
             c.setAutoLogin(false);
             c.logout();
-            c.stop();
           }
 
-          for (int id : bowIds) {
-            if (c.getInventoryItemCount(id) > 0) {
-              if (!c.isEquipped(c.getInventoryItemSlotIndex(id))) {
-                c.setStatus("@red@Equipping bow");
-                c.equipItem(c.getInventoryItemSlotIndex(id));
-                c.sleep(1000);
+          continue;
+        }
+
+        for (int lootId : lootTable) {
+          int[] lootCoord = c.getNearestItemById(lootId);
+          if (lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
+            c.setStatus("@red@Picking up loot");
+            c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
+            c.sleep(618);
+            buryBones();
+          }
+        }
+
+        if (!c.isInCombat()) {
+          c.sleepHandler(98, true);
+          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
+
+          if (ranging) {
+
+            int[] arrowCoord = c.getNearestItemById(arrowId);
+            if (arrowCoord != null) {
+              c.setStatus("@red@Picking up arrows");
+              c.pickupItem(arrowCoord[0], arrowCoord[1], arrowId, false, true);
+              continue;
+            }
+
+            boolean hasArrows = false;
+            for (int id : arrowIds) {
+              if (c.getInventoryItemCount(id) > 0 || c.isItemIdEquipped(id)) {
+                hasArrows = true;
                 break;
               }
             }
-          }
-        }
 
-        // maybe wrap this in a 'while not in combat' loop?
-        if (npc != null) {
-          if (maging && !ranging) {
-            currentAttackingNpc = npc.serverIndex;
-            c.castSpellOnNpc(npc.serverIndex, spellId);
-          } else {
-            c.setStatus("@red@Attacking NPC");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
-          }
+            if (!hasArrows) {
+              c.setStatus("@red@Out of arrows!");
+              c.setAutoLogin(false);
+              c.logout();
+              c.stop();
+            }
 
-        } else {
-          if (!c.isInCombat()) {
-            if (buryBones) {
-              for (int lootId : bones) {
-                int[] lootCoord = c.getNearestItemById(lootId);
-                if (lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
-                  c.setStatus("@red@No NPCs, Picking bones");
-                  c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
-                  c.sleep(618);
-                  buryBones();
-                } else {
-                  if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
-                    c.setStatus("@red@No NPCs, walking back to start...");
-                    c.walkToAsync(startTile[0], startTile[1], 0);
-                    c.sleep(1000);
-                  }
+            for (int id : bowIds) {
+              if (c.getInventoryItemCount(id) > 0) {
+                if (!c.isEquipped(c.getInventoryItemSlotIndex(id))) {
+                  c.setStatus("@red@Equipping bow");
+                  c.equipItem(c.getInventoryItemSlotIndex(id));
+                  c.sleep(1000);
+                  break;
                 }
-              }
-            } else {
-              if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
-                c.setStatus("@red@No NPCs found, walking back to start...");
-                c.walkToAsync(startTile[0], startTile[1], 0);
-                c.sleep(1000);
               }
             }
           }
-        }
-      } else {
 
-        if (ranging) {
-          if (!c.isEquipped(c.getInventoryItemSlotIndex(switchId))) {
-            c.setStatus("@red@Switching to melee weapon");
-            c.equipItem(c.getInventoryItemSlotIndex(switchId));
+          // maybe wrap this in a 'while not in combat' loop?
+          if (npc != null) {
+            if (maging && !ranging) {
+              currentAttackingNpc = npc.serverIndex;
+              c.castSpellOnNpc(npc.serverIndex, spellId);
+            } else {
+              c.setStatus("@red@Attacking NPC");
+              c.attackNpc(npc.serverIndex);
+              c.sleep(1000);
+            }
+
+          } else {
+            if (!c.isInCombat()) {
+              if (buryBones) {
+                for (int lootId : bones) {
+                  int[] lootCoord = c.getNearestItemById(lootId);
+                  if (lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
+                    c.setStatus("@red@No NPCs, Picking bones");
+                    c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
+                    c.sleep(618);
+                    buryBones();
+                  } else {
+                    if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
+                      c.setStatus("@red@No NPCs, walking back to start...");
+                      c.walkToAsync(startTile[0], startTile[1], 0);
+                      c.sleep(1000);
+                    }
+                  }
+                }
+              } else {
+                if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
+                  c.setStatus("@red@No NPCs found, walking back to start...");
+                  c.walkToAsync(startTile[0], startTile[1], 0);
+                  c.sleep(1000);
+                }
+              }
+            }
           }
-        }
-        if (maging) {
-          c.setStatus("@red@Maging...");
-          ORSCharacter victimNpc = c.getNearestNpcByIds(npcIds, true);
-          if (victimNpc != null) c.castSpellOnNpc(victimNpc.serverIndex, spellId);
+        } else {
+
+          if (ranging) {
+            if (!c.isEquipped(c.getInventoryItemSlotIndex(switchId))) {
+              c.setStatus("@red@Switching to melee weapon");
+              c.equipItem(c.getInventoryItemSlotIndex(switchId));
+            }
+          }
+          if (maging) {
+            c.setStatus("@red@Maging...");
+            ORSCharacter victimNpc = c.getNearestNpcByIds(npcIds, true);
+            if (victimNpc != null) c.castSpellOnNpc(victimNpc.serverIndex, spellId);
+          }
         }
       }
     }
   }
 
-  public void buryBones() {
-    if (!c.isInCombat()) {
-      for (int id : bones) {
+  private void leaveCombat() {
+    for (int i = 1; i <= 20; i++) {
+      try {
+        if (c.isInCombat()) {
+          c.setStatus("@red@Leaving combat..");
+          c.walkToAsync(c.currentX(), c.currentY(), 1);
+          c.sleep(640);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+    c.setStatus("@gre@Done Leaving combat..");
+  }
+
+  private void buryBones() {
+    if (c.isInCombat()) leaveCombat();
+    for (int id : bones) {
+      try {
         if (c.getInventoryItemCount(id) > 0) {
           c.setStatus("@red@Burying bones..");
           c.itemCommand(id);
-
-          c.sleep(618);
-          buryBones();
+          c.sleep(640);
         }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
   }

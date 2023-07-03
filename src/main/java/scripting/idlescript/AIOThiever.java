@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.JButton;
@@ -17,6 +19,7 @@ import orsc.ORSCharacter;
  * @author Dvorak
  */
 public class AIOThiever extends IdleScript {
+  private static final Controller c = Main.getController();
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;
@@ -92,13 +95,15 @@ public class AIOThiever extends IdleScript {
 
   public int start(String[] parameters) {
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       scriptStart();
     } else {
       if (parameters[0].equals("")) {
         if (!guiSetup) {
           setupGUI();
           guiSetup = true;
-          controller.setStatus("@red@Waiting for start..");
+          c.setStatus("@red@Waiting for start..");
         }
       } else {
         try {
@@ -115,12 +120,12 @@ public class AIOThiever extends IdleScript {
           if (target == null) throw new Exception("Could not parse thieving target!");
 
           scriptStarted = true;
-          controller.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
+          c.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
 
         } catch (Exception e) {
           System.out.println("Could not parse parameters!");
-          controller.displayMessage("@red@Could not parse parameters!");
-          controller.stop();
+          c.displayMessage("@red@Could not parse parameters!");
+          c.stop();
         }
       }
     }
@@ -129,162 +134,166 @@ public class AIOThiever extends IdleScript {
   }
 
   public void scriptStart() {
-    while (controller.isRunning()) {
+    while (c.isRunning()) {
 
       eat();
 
-      if (controller.getFightMode() != this.fightMode) controller.setFightMode(this.fightMode);
+      if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
 
       // for(int doorId : doorObjectIds) {
-      //	int[] doorCoords = controller.getNearestObjectById(doorId);
+      //	int[] doorCoords = c.getNearestObjectById(doorId);
       //
       //	if(doorCoords != null){
-      //		controller.setStatus("@red@AIOThiever: Opening door...");
-      ///		controller.atObject(doorCoords[0], doorCoords[1]);
-      //		controller.sleep(5000);
+      //		c.setStatus("@red@AIOThiever: Opening door...");
+      ///		c.atObject(doorCoords[0], doorCoords[1]);
+      //		c.sleep(5000);
       ///	} else {
-      //		controller.sleep(200);
+      //		c.sleep(200);
       //	}
       // }
 
-      if (controller.getInventoryItemCount(140) > 0) { // drop jugs from heroes
-        controller.setStatus("@red@Dropping empty jugs..");
-        controller.dropItem(controller.getInventoryItemSlotIndex(140));
-        controller.sleep(500);
+      if (c.getInventoryItemCount(140) > 0) { // drop jugs from heroes
+        c.setStatus("@red@Dropping empty jugs..");
+        c.dropItem(c.getInventoryItemSlotIndex(140));
+        c.sleep(500);
       }
 
-      while (controller.isBatching()) controller.sleep(10);
+      while (c.isBatching()) c.sleep(10);
 
-      if (!controller.isInCombat()) {
+      if (!c.isInCombat()) {
         if (target.isNpc) {
-          controller.sleepHandler(98, true);
-          ORSCharacter npc = controller.getNearestNpcById(target.id, false);
+          c.sleepHandler(98, true);
+          ORSCharacter npc = c.getNearestNpcById(target.id, false);
           if (npc != null && npc.serverIndex > 0) {
-            controller.setStatus("@red@Stealing..");
-            controller.npcCommand1(npc.serverIndex);
-            controller.sleep(5);
+            c.setStatus("@red@Stealing..");
+            c.npcCommand1(npc.serverIndex);
+            c.sleep(5);
           } else {
-            controller.setStatus("@red@Waiting for NPC to become available..");
-            controller.sleep(200);
+            c.setStatus("@red@Waiting for NPC to become available..");
+            c.sleep(200);
           }
         }
 
         if (doBank) {
           if (target.name.contains("Bakers")) {
-            if (controller.getInventoryItemCount() < 30) {
-              controller.setStatus("@red@Stealing..");
+            if (c.getInventoryItemCount() < 30) {
+              c.setStatus("@red@Stealing..");
 
-              if (controller.currentX() != 543 && controller.currentY() != 600)
-                controller.walkTo(543, 600);
+              if (c.currentX() != 543 && c.currentY() != 600) c.walkTo(543, 600);
 
-              controller.atObject(544, 599);
+              c.atObject(544, 599);
             }
           }
 
-          if (controller.getInventoryItemCount() == 30 || countFood() == 0) {
-            controller.setStatus("@red@Banking...");
-            controller.walkTo(548, 589);
-            controller.walkTo(547, 607);
-            controller.openBank();
+          if (c.getInventoryItemCount() == 30 || countFood() == 0) {
+            c.setStatus("@red@Banking...");
+            c.walkTo(548, 589);
+            c.walkTo(547, 607);
+            c.openBank();
 
             for (int id : lootIds) {
-              if (controller.getInventoryItemCount(id) > 0) {
-                controller.depositItem(id, controller.getInventoryItemCount(id));
-                controller.sleep(500);
+              if (c.getInventoryItemCount(id) > 0) {
+                c.depositItem(id, c.getInventoryItemCount(id));
+                c.sleep(500);
               }
             }
 
-            for (int id : controller.getFoodIds()) {
-              if (controller.getInventoryItemCount(id) > 0) {
-                controller.depositItem(id, controller.getInventoryItemCount(id));
-                controller.sleep(500);
+            for (int id : c.getFoodIds()) {
+              if (c.getInventoryItemCount(id) > 0) {
+                c.depositItem(id, c.getInventoryItemCount(id));
+                c.sleep(500);
               }
             }
 
-            for (int id : controller.getFoodIds()) {
-              if (controller.getBankItemCount(id) > 0) {
-                controller.withdrawItem(id, foodWithdrawAmount);
-                controller.sleep(500);
+            for (int id : c.getFoodIds()) {
+              if (c.getBankItemCount(id) > 0) {
+                c.withdrawItem(id, foodWithdrawAmount);
+                c.sleep(500);
                 break;
               }
             }
 
-            controller.walkTo(548, 605);
+            c.walkTo(548, 605);
           }
 
         } else { // we are not banking
           if (target.isObject) {
-            int[] coords = controller.getNearestObjectById(target.id);
+            int[] coords = c.getNearestObjectById(target.id);
             if (coords != null) {
-              controller.setStatus("@red@Stealing..");
+              c.setStatus("@red@Stealing..");
               if (target.name.contains("Chest")) {
-                controller.atObject2(coords[0], coords[1]);
+                c.atObject2(coords[0], coords[1]);
               } else {
-                controller.atObject(coords[0], coords[1]);
-                controller.sleep(200);
+                c.atObject(coords[0], coords[1]);
+                c.sleep(200);
               }
             } else {
-              controller.setStatus("@red@Waiting for respawn..");
-              controller.sleep(800);
+              c.setStatus("@red@Waiting for respawn..");
+              c.sleep(800);
             }
           }
         }
       } else {
-        controller.setStatus("@red@Leaving combat..");
+        c.setStatus("@red@Leaving combat..");
         leaveCombat();
-        controller.sleep(400);
+        c.sleep(640);
       }
-      controller.sleep(250);
+      c.sleep(250);
     }
   }
 
   public void eat() {
-    if (controller.getCurrentStat(controller.getStatId("Hits")) <= eatingHealth) {
+    if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth) {
 
       leaveCombat();
-      controller.setStatus("@red@Eating..");
+      c.setStatus("@red@Eating..");
 
       boolean ate = false;
 
-      for (int id : controller.getFoodIds()) {
-        if (controller.getInventoryItemCount(id) > 0) {
-          controller.itemCommand(id);
-          controller.sleep(700);
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.itemCommand(id);
+          c.sleep(700);
           ate = true;
           break;
         }
       }
 
       while (!doBank && !ate) {
-        controller.setStatus("@red@Logging out..");
+        c.setStatus("@red@Logging out..");
         leaveCombat();
-        controller.setAutoLogin(false);
-        controller.logout();
-        controller.sleep(1000);
+        c.setAutoLogin(false);
+        c.logout();
+        c.sleep(1000);
 
-        if (!controller.isLoggedIn()) {
-          controller.stop();
+        if (!c.isLoggedIn()) {
+          c.stop();
           return;
         }
       }
     }
   }
 
-  public void leaveCombat() {
-    for (int i = 1; i <= 15; i++) {
-      if (controller.isInCombat()) {
-        controller.setStatus("@red@Leaving combat..");
-        controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
-        controller.sleep(400);
+  public static void leaveCombat() {
+    for (int i = 1; i <= 20; i++) {
+      try {
+        if (c.isInCombat()) {
+          c.setStatus("@red@Leaving combat..");
+          c.walkToAsync(c.currentX(), c.currentY(), 1);
+          c.sleep(640);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
-      controller.sleep(10);
     }
   }
 
   public int countFood() {
     int result = 0;
-    for (int id : controller.getFoodIds()) {
-      result += controller.getInventoryItemCount(id);
+    for (int id : c.getFoodIds()) {
+      result += c.getInventoryItemCount(id);
     }
 
     return result;
@@ -296,7 +305,7 @@ public class AIOThiever extends IdleScript {
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
     JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
     JTextField eatAtHpField =
-        new JTextField(String.valueOf(controller.getBaseStat(controller.getStatId("Hits")) / 2));
+        new JTextField(String.valueOf(c.getBaseStat(c.getStatId("Hits")) / 2));
     JComboBox<String> targetField = new JComboBox<>();
     JCheckBox doBankCheckbox = new JCheckBox("Bank? (Ardougne Square only)");
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (Ardougne Square only)");
@@ -321,10 +330,10 @@ public class AIOThiever extends IdleScript {
           scriptFrame.dispose();
           scriptStarted = true;
 
-          controller.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
+          c.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
         });
 
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -359,7 +368,7 @@ public class AIOThiever extends IdleScript {
 
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null) {
 
       int successPerHr = 0;
       float ratio = 0;
@@ -373,9 +382,9 @@ public class AIOThiever extends IdleScript {
         // divide by zero
       }
 
-      controller.drawBoxAlpha(7, 7, 160, 21 + 14 + 14 + 14, 0xFF0000, 128);
-      controller.drawString("@red@AIOThiever @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawBoxAlpha(7, 7, 160, 21 + 14 + 14 + 14, 0xFF0000, 128);
+      c.drawString("@red@AIOThiever @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
+      c.drawString(
           "@red@Successes: @whi@"
               + String.format("%,d", success)
               + " @red@(@whi@"
@@ -385,9 +394,9 @@ public class AIOThiever extends IdleScript {
           21 + 14,
           0xFFFFFF,
           1);
-      controller.drawString(
+      c.drawString(
           "@red@Failures: @whi@" + String.format("%,d", failure), 10, 21 + 14 + 14, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawString(
           "@red@Ratio: @whi@" + String.format("%.2f", ratio), 10, 21 + 14 + 14 + 14, 0xFFFFFF, 1);
     }
   }

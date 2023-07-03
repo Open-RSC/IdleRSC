@@ -1,5 +1,8 @@
 package bot.debugger;
 
+import static bot.Main.config;
+import static bot.debugger.DebuggerSectionType.Bank;
+
 import bot.ui.table.Table;
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
@@ -39,7 +42,7 @@ public class Debugger implements Runnable {
   private List<Item> recipientTradeItems = null;
   private List<Item> localTradeItems = null;
 
-  private boolean listening = false;
+  private boolean listening = true;
   private boolean autoRefresh = true;
 
   // GUI
@@ -71,12 +74,10 @@ public class Debugger implements Runnable {
     while (true) {
       if (this.listening) {
         this.queryMudClient();
-
-        if (autoRefresh) {
-          this.refresh();
-        }
+        if (controller.isInShop()) this.queryShopMudClient();
+        if (controller.isInBank()) this.queryBankMudClient();
+        if (autoRefresh) this.refresh();
       }
-
       try {
         Thread.sleep(618);
       } catch (InterruptedException e) {
@@ -87,6 +88,7 @@ public class Debugger implements Runnable {
 
   public void open() {
     if (this.frame == null) {
+      this.refresh();
       return;
     }
 
@@ -120,8 +122,14 @@ public class Debugger implements Runnable {
   }
 
   private void initializeDebuggerFrame() {
-    this.frame = new JFrame("Debugger");
 
+    if (config.getUsername() != null) {
+      this.frame = new JFrame(config.getUsername() + "'s Debugger");
+    } else if (controller.getPlayerName() != null) {
+      this.frame = new JFrame(controller.getPlayerName() + "'s Debugger");
+    } else {
+      this.frame = new JFrame("Debugger");
+    }
     this.scrollPane = new JScrollPane();
 
     this.initializeSections();
@@ -249,8 +257,7 @@ public class Debugger implements Runnable {
     String[] bankShopColumnNames = {"Name", "ID", "Amount", "Base Price"};
     Class[] bankShopColumnTypes = {String.class, Integer.class, Integer.class, Integer.class};
 
-    DebuggerSection bankSection =
-        new DebuggerSection(DebuggerSectionType.Bank, "Bank", bankShopColumnNames, 0);
+    DebuggerSection bankSection = new DebuggerSection(Bank, "Bank", bankShopColumnNames, 0);
     bankSection.setColumnTypes(bankShopColumnTypes);
 
     DebuggerSection shopSection =
@@ -278,6 +285,7 @@ public class Debugger implements Runnable {
         new DebuggerSection(DebuggerSectionType.Ignore, "Ignore List", socialColumnNames, 0);
     ignoreSection.setColumnTypes(socialColumnTypes);
 
+    this.sections.add(bankSection);
     this.sections.add(npcsSection);
     this.sections.add(playersSection);
     this.sections.add(objectsSection);
@@ -285,7 +293,6 @@ public class Debugger implements Runnable {
     this.sections.add(inventoryItemsSection);
     this.sections.add(groundItemsSection);
     this.sections.add(skillsSection);
-    this.sections.add(bankSection);
     this.sections.add(shopSection);
     this.sections.add(friendSection);
     this.sections.add(ignoreSection);
@@ -314,7 +321,6 @@ public class Debugger implements Runnable {
     if (this.activeSection == null) {
       return;
     }
-
     DebuggerSectionType sectionType = this.activeSection.sectionType;
     Table sectionTable = this.activeSection.table;
 
@@ -322,46 +328,61 @@ public class Debugger implements Runnable {
 
     int oldScrollPosition = scrollBar.getValue();
 
-    this.clear();
-
     switch (sectionType) {
       case Recipient:
+        this.clear();
         this.updateRecipientTradeItems(sectionTable);
         break;
       case Local:
+        this.clear();
         this.updateLocalTradeSection(sectionTable);
         break;
       case Ignore:
+        this.clear();
         this.updateIgnoreSection(sectionTable);
         break;
       case Friends:
+        this.clear();
         this.updateFriendSection(sectionTable);
         break;
       case Shop:
-        this.updateShopSection(sectionTable);
+        if (controller.isInShop()) {
+          this.clear();
+          this.updateShopSection(sectionTable);
+        }
         break;
       case Bank:
-        this.updateBankSection(sectionTable);
+        if (controller.isInBank()) {
+          this.clear();
+          this.updateBankSection(sectionTable);
+        }
         break;
       case Skills:
+        this.clear();
         this.updateSkillsSection(sectionTable);
         break;
       case GroundItems:
+        this.clear();
         this.updateGroundItemsSection(sectionTable);
         break;
       case InventoryItems:
+        this.clear();
         this.updateInventoryItemsSection(sectionTable);
         break;
       case WallObjects:
+        this.clear();
         this.updateWallObjectsSection(sectionTable);
         break;
       case Objects:
+        this.clear();
         this.updateObjectsSection(sectionTable);
         break;
       case NPCs:
+        this.clear();
         this.updateNPCsSection(sectionTable);
         break;
       case Players:
+        this.clear();
         this.updatePlayersSection(sectionTable);
         break;
     }
@@ -385,12 +406,18 @@ public class Debugger implements Runnable {
     this.inventoryItems = controller.getInventoryItems();
     this.groundItemDefs = controller.getGroundItemsStacked();
     this.skills = controller.getSkills();
-    this.bankItems = controller.getBankItems();
-    this.shopItems = controller.getShopItems();
     this.friendList = controller.getFriendList();
     this.ignoreList = controller.getIgnoreList();
     this.localTradeItems = controller.getLocalTradeItems();
     this.recipientTradeItems = controller.getRecipientTradeItems();
+  }
+
+  private void queryShopMudClient() {
+    this.shopItems = controller.getShopItems();
+  }
+
+  private void queryBankMudClient() {
+    this.bankItems = controller.getBankItems();
   }
 
   private void updateRecipientTradeItems(Table sectionTable) {
@@ -618,6 +645,6 @@ public class Debugger implements Runnable {
   }
 
   private void onWindowClosed() {
-    this.listening = false;
+    this.listening = true; // always true
   }
 }

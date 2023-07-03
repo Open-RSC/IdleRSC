@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,34 +14,30 @@ import javax.swing.JLabel;
  * adamantite - makes adamantite platebodies. rune, runite - makes runite platebodies. ~ Author -
  * Kaila
  */
-public class K_FastChainLinks extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
+public final class K_FastChainLinks extends K_kailaScript {
   private static int barsInBank = 0;
   private static int totalBars = 0;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] parameters) {
-    if (scriptStarted) {
-      c.displayMessage("@gre@Chain Link Crafter" + '"' + " - by Kaila");
-      c.displayMessage("@gre@Start in Fally East");
-
-      c.quitIfAuthentic();
-      if (c.isInBank()) c.closeBank();
-      startTime = System.currentTimeMillis();
-      scriptStart();
-    }
-    if (c.currentY() < 3000) {
-      bank();
-      bankToAnvil();
-    }
-    if (!scriptStarted && !guiSetup) {
+    if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
+      c.displayMessage("@gre@Chain Link Crafter" + '"' + " - by Kaila");
+      c.displayMessage("@gre@Start in Fally East");
+      c.quitIfAuthentic();
+      if (c.isInBank()) c.closeBank();
+      startTime = System.currentTimeMillis();
+      if (c.currentY() < 3000) {
+        bank();
+        bankToAnvil();
+      }
+      scriptStart();
+    }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -96,8 +90,8 @@ public class K_FastChainLinks extends IdleScript {
 
   private void anvilToBank() {
     c.setStatus("@gre@Walking to Fally, Teleporting!");
-    controller.castSpellOnSelf(controller.getSpellIdFromName("Falador Teleport"));
-    controller.sleep(1000);
+    c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
+    c.sleep(1000);
     // walk to east bank here
     c.walkTo(303, 552);
     c.walkTo(298, 552);
@@ -110,8 +104,10 @@ public class K_FastChainLinks extends IdleScript {
 
     c.setStatus("@gre@Banking..");
     c.openBank();
-    c.sleep(2000);
-    if (c.isInBank()) {
+    c.sleep(640);
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalBars = totalBars + 26;
 
@@ -129,21 +125,21 @@ public class K_FastChainLinks extends IdleScript {
         c.sleep(100);
       }
       c.sleep(1240);
-      if (controller.getInventoryItemCount(168) < 1) { // hammer
-        controller.withdrawItem(168, 1 - controller.getInventoryItemCount(168));
-        controller.sleep(1000);
+      if (c.getInventoryItemCount(168) < 1) { // hammer
+        c.withdrawItem(168, 1 - c.getInventoryItemCount(168));
+        c.sleep(1000);
       }
-      if (controller.getInventoryItemCount(33) < 300) { // air
-        controller.withdrawItem(33, 300 - controller.getInventoryItemCount(33));
-        controller.sleep(1000);
+      if (c.getInventoryItemCount(33) < 300) { // air
+        c.withdrawItem(33, 300 - c.getInventoryItemCount(33));
+        c.sleep(1000);
       }
-      if (controller.getInventoryItemCount(42) < 100) { // law
-        controller.withdrawItem(42, 100 - controller.getInventoryItemCount(42));
-        controller.sleep(1000);
+      if (c.getInventoryItemCount(42) < 100) { // law
+        c.withdrawItem(42, 100 - c.getInventoryItemCount(42));
+        c.sleep(1000);
       }
-      if (controller.getInventoryItemCount(32) < 100) { // water
-        controller.withdrawItem(32, 100 - controller.getInventoryItemCount(32));
-        controller.sleep(1000);
+      if (c.getInventoryItemCount(32) < 100) { // water
+        c.withdrawItem(32, 100 - c.getInventoryItemCount(32));
+        c.sleep(1000);
       }
       if (c.getInventoryItemCount(593) < 25) { // dlong
         c.withdrawItem(593, 25);

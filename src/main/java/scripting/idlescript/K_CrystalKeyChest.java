@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,18 +16,10 @@ import javax.swing.JLabel;
 /*
  * todo add, "if fail agility shortcut" fallback? - currently bot may break.
  */
-public class K_CrystalKeyChest extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static JFrame scriptFrame = null;
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+public final class K_CrystalKeyChest extends K_kailaScript {
   private static int totalDragonstones = 0;
-  private static int totalTrips = 0;
   private static int KeysInBank = 0;
   private static int DragonstonesInBank = 0;
-
   private static final int[] loot = {542, 408, 526, 527};
 
   public int start(String[] parameters) {
@@ -38,6 +28,8 @@ public class K_CrystalKeyChest extends IdleScript {
       guiSetup = true;
     }
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       c.displayMessage("@gre@Crystal Key Chest Opener - By Kaila");
       c.displayMessage("@gre@Start by Crystal chest or in Catherby Bank!");
       if (c.isInBank()) {
@@ -50,6 +42,7 @@ public class K_CrystalKeyChest extends IdleScript {
       }
       scriptStart();
     }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -132,8 +125,9 @@ public class K_CrystalKeyChest extends IdleScript {
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
-
-    if (c.isInBank()) {
+    if (!c.isInBank()) {
+      waitForBankOpen();
+    } else {
 
       totalDragonstones = totalDragonstones + c.getInventoryItemCount(542);
 

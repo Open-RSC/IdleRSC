@@ -63,6 +63,8 @@ public class Woodcutting extends IdleScript {
     }
 
     if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
       scriptStart();
     }
@@ -106,6 +108,7 @@ public class Woodcutting extends IdleScript {
   }
 
   public void scriptStart() {
+    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     while (c.isRunning()) {
       if (c.getInventoryItemCount() == 30) {
         bankTime = true;

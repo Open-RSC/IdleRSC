@@ -528,7 +528,7 @@ public class PotionMaker extends IdleScript {
    * ingredients[3] = 465;
    */
   private void setupGUI() {
-    JLabel header = new JLabel("Potion Maker - Searos & Kaila");
+    JLabel header = new JLabel("Potion Maker - Seatta & Kaila");
     JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures 15 items are made each bank action.");
     JLabel potionLabel = new JLabel("Select Potion/Secondary");

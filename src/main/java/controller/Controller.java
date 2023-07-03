@@ -2177,14 +2177,16 @@ public class Controller {
   /**
    * Takes a screenshot of the client applet and saves a bitmap as the specified filename.
    *
-   * @param filename String
+   * @param fileName String
    * @return boolean -- returns true on success. Returns false if image could not be saved.
    */
-  public boolean takeScreenshot(String filename) {
+  public boolean takeScreenshot(String fileName) {
     boolean temporaryToggledGFX = false;
     boolean temporaryToggledInterlacing = false;
     String directory = "";
-    String saveLocPath = "";
+    String path = "";
+    String savePath = "";
+
     if (isInterlacing()) {
       setInterlacer(false);
       temporaryToggledInterlacing = true;
@@ -2244,24 +2246,26 @@ public class Controller {
        * ~ Kaila ~
        * </pre>
        */
-      if (!playerName.equals("")) {
+      if (playerName != null && !playerName.equals("")) {
         directory = "Screenshots/" + playerName + "/";
+        path = playerName + "_" + playerTime + ".png";
       } else {
         directory = "Screenshots/";
+        path = playerTime + ".png";
       }
-      if (filename != null && !filename.equals("")) {
-        saveLocPath = directory + filename + "_" + playerName + "_" + playerTime + ".png";
+      if (fileName != null && !fileName.equals("")) {
+        savePath = directory + fileName + "_" + path;
       } else {
-        saveLocPath = directory + playerName + "_" + playerTime + ".png";
+        savePath = directory + path;
       }
       Files.createDirectories(Paths.get(directory));
-      ImageIO.write(img, "png", new File(saveLocPath));
+      ImageIO.write(img, "png", new File(savePath));
 
-      boolean newImageExists = Files.exists(Paths.get(saveLocPath));
+      boolean newImageExists = Files.exists(Paths.get(savePath));
       if (newImageExists) {
-        log("@cya@Screenshot successfully saved to ./IdleRSC/" + saveLocPath);
+        log("@cya@Screenshot successfully saved to ./IdleRSC/" + savePath);
       } else {
-        log("@red@Error: @cya@Screenshot not detected at ./IdleRSC/" + saveLocPath);
+        log("@red@Error: @cya@Screenshot not detected at ./IdleRSC/" + savePath);
       }
     } catch (IOException e) {
       System.err.println("Failed to create directory and/or take screenshot!" + e.getMessage());

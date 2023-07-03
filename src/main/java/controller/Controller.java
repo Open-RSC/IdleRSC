@@ -2249,7 +2249,7 @@ public class Controller {
       } else {
         directory = "Screenshots/";
       }
-      if (!Objects.equals(filename, "")) {
+      if (filename != null && !filename.equals("")) {
         saveLocPath = directory + filename + "_" + playerName + "_" + playerTime + ".png";
       } else {
         saveLocPath = directory + playerName + "_" + playerTime + ".png";

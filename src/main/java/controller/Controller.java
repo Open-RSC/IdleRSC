@@ -2183,7 +2183,7 @@ public class Controller {
   public boolean takeScreenshot(String filename) {
     boolean temporaryToggledGFX = false;
     boolean temporaryToggledInterlacing = false;
-    String dir = "";
+    String directory = "";
     String saveLocPath = "";
     if (isInterlacing()) {
       setInterlacer(false);
@@ -2231,28 +2231,30 @@ public class Controller {
     }
 
     try {
-      /*
-       * * First, make a string of /sceenshots/playerName/ folder second, use Path command to turn
-       * string into Path for /Screenshots/playerName/ third, use Files.createDirectories to make
-       * the folder structure for /Screenshots/playerName/ -this will regenerate the folder
-       * structure if user deleted at any point -screenshots will NOT save if the folder path
-       * doesn't exist when imageIO writes fourth, use ImageIO.write to actually write the "img"
-       * created earlier fifth, String the save location, calc Path, calculate boolean
-       * Files.exists(Path) 6th - Confirm image was saved to the user with log
+      /*<pre>
+       * 1st, make a string of /sceenshots/playerName/ folder
+       * 2nd, use Path command to turn string into Path for /Screenshots/playerName/
+       * 3rd, use Files.createDirectories to make  the folder structure for /Screenshots/playerName/
+       * -this will regenerate the folder structure if user deleted at any point
+       * -screenshots will NOT save if the folder path doesn't exist when imageIO writes.
+       * 4th, use ImageIO.write to actually write the "img" created earlier
+       * 5th, String the save location, calc Path, calculate boolean Files.exists(Path)
+       * 6th - Confirm image was saved to the user with log
        *
-       * <p>~ Kaila ~
+       * ~ Kaila ~
+       * </pre>
        */
-      if (!Objects.equals(playerName, "")) {
-        dir = "Screenshots/" + playerName + "/";
+      if (!playerName.equals("")) {
+        directory = "Screenshots/" + playerName + "/";
       } else {
-        dir = "Screenshots/";
+        directory = "Screenshots/";
       }
-      if (!Objects.equals(filename, "")) {
-        saveLocPath = dir + filename + "_" + playerName + "_" + playerTime + ".png";
+      if (filename != null) {
+        saveLocPath = directory + filename + "_" + playerName + "_" + playerTime + ".png";
       } else {
-        saveLocPath = dir + playerName + "_" + playerTime + ".png";
+        saveLocPath = directory + playerName + "_" + playerTime + ".png";
       }
-      Files.createDirectories(Paths.get(dir));
+      Files.createDirectories(Paths.get(directory));
       ImageIO.write(img, "png", new File(saveLocPath));
 
       boolean newImageExists = Files.exists(Paths.get(saveLocPath));

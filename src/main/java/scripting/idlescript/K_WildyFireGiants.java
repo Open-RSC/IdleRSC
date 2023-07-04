@@ -227,19 +227,8 @@ public final class K_WildyFireGiants extends K_kailaScript {
 
       withdrawSuperAttack(1);
       withdrawSuperStrength(1);
-      if (c.getInventoryItemCount(546) < 27) { // withdraw shark //was 27
-        c.withdrawItem(546, 27 - c.getInventoryItemCount(546));
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.sleep(5000);
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(546, 27);
+      bankItemCheck(546, 27);
       c.closeBank();
       c.sleep(640);
       eat();

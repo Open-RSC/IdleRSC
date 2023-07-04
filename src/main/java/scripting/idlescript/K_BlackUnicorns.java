@@ -167,35 +167,16 @@ public final class K_BlackUnicorns extends K_kailaScript {
         c.sleep(340);
       }
       if (teleportOut) {
-        if (c.getInventoryItemCount(33) < 3) { // withdraw 3 air
-          c.withdrawItem(33, 3);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(34) < 1) { // withdraw 1 earth
-          c.withdrawItem(34, 1);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(42) < 1) { // withdraw 1 law
-          c.withdrawItem(42, 1);
-          c.sleep(340);
-        }
+        withdrawItem(airId, 3);
+        withdrawItem(lawId, 1);
+        withdrawItem(earthId, 1);
       }
       if (c.getInventoryItemCount(546) > 1) { // deposit extra shark
         c.depositItem(546, c.getInventoryItemCount(546) - 1);
         c.sleep(340);
       }
-      if (c.getInventoryItemCount(546) < 1) { // withdraw 1 shark
-        c.withdrawItem(546, 1);
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(546, 1);
+      bankItemCheck(546, 5);
       uniInBank = c.getBankItemCount(466);
       c.closeBank();
       c.sleep(640);

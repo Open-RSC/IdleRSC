@@ -338,12 +338,12 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(0); // sets default to controlled
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(2); // sets default to sharks
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(16));
-    fightModeField.setSelectedIndex(0); // sets default to controlled
-    foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

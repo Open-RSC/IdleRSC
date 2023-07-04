@@ -267,11 +267,7 @@ public final class K_TavDruidTown extends K_kailaScript {
         withdrawStrength(1);
       }
       withdrawFood(foodId, foodWithdrawAmount);
-      if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO foodId in the bank, Logging Out!.");
-        c.sleep(3000);
-        endSession();
-      }
+      bankItemCheck(foodId, 30);
       c.closeBank();
       c.sleep(1000);
     }

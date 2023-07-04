@@ -287,23 +287,9 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(99) == 0) { // Brass key check
-        c.withdrawItem(99, 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(foodId) > foodWithdrawAmount) { // deposit extra food
-        c.depositItem(foodId, c.getInventoryItemCount(foodId) - foodWithdrawAmount);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw food
-        c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
-        c.sleep(640);
-      }
-      if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO foodId in the bank, Logging Out!.");
-        c.sleep(3000);
-        endSession();
-      }
+      withdrawItem(99, 1); // brass key check
+      withdrawFood(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(1000);
       brassKeyCheck();

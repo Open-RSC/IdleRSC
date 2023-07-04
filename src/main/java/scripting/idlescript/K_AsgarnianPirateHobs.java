@@ -99,7 +99,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
 
       eat();
       buryBones();
-
+      checkFightMode();
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
@@ -129,10 +129,21 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
         }
         c.sleep(320);
       }
-      if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(546) == 0) {
+      if (c.getInventoryItemCount() > 29
+          || c.getInventoryItemCount(foodId) == 0
+          || timeToBank
+          || timeToBankStay) {
         c.setStatus("@yel@Banking..");
         IceToBank();
+        timeToBank = false;
         bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage(
+              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          c.setStatus("@red@Stopping Script.");
+          endSession();
+        }
         BankToIce();
         c.sleep(618);
       }
@@ -202,18 +213,8 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(546) < foodWithdrawAmount) { // withdraw 20 shark
-        c.withdrawItem(546, foodWithdrawAmount - c.getInventoryItemCount(546));
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawItem(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(640);
     }
@@ -315,8 +316,18 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
   private void setupGUI() {
     JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
-    JLabel label2 = new JLabel("Sharks IN BANK REQUIRED (pots optional)");
+    JLabel label2 = new JLabel("Food in bank REQUIRED (pots optional)");
+    JLabel label3 = new JLabel("Chat commands can be used to direct the bot");
+    JLabel label4 = new JLabel("::bank ::bankstay");
+    JLabel label5 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
+    JLabel fightModeLabel = new JLabel("Fight Mode:");
+    JComboBox<String> fightModeField =
+        new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(0); // sets default to controlled
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(5); // sets default to lobs
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     JLabel blankLabel = new JLabel("          ");
@@ -326,7 +337,10 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
         e -> {
           if (!foodWithdrawAmountField.getText().equals(""))
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+
           potUp = potUpCheckbox.isSelected();
+          fightMode = fightModeField.getSelectedIndex();
+          foodId = foodIds[foodField.getSelectedIndex()];
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           startTime = System.currentTimeMillis();
@@ -340,7 +354,14 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(label2);
+    scriptFrame.add(label3);
+    scriptFrame.add(label4);
+    scriptFrame.add(label5);
     scriptFrame.add(potUpCheckbox);
+    scriptFrame.add(fightModeLabel);
+    scriptFrame.add(fightModeField);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(blankLabel);
@@ -350,6 +371,49 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
+  }
+
+  @Override
+  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
+    if (commandText.contains("bank")) {
+      c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
+      timeToBank = true;
+      c.sleep(100);
+    } else if (commandText.contains("bankstay")) {
+      c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
+      timeToBankStay = true;
+      c.sleep(100);
+    } else if (commandText.contains("potup")) {
+      if (!potUp) {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
+        potUp = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
+        potUp = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains(
+        "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+      c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
+      c.displayMessage("@red@Switching to \"Accurate\" combat style!");
+      fightMode = 2;
+      c.sleep(100);
+    } else if (commandText.contains("strength")) {
+      c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
+      c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
+      fightMode = 1;
+      c.sleep(100);
+    } else if (commandText.contains("defense")) {
+      c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
+      c.displayMessage("@red@Switching to \"Defensive\" combat style!");
+      fightMode = 3;
+      c.sleep(100);
+    } else if (commandText.contains("controlled")) {
+      c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
+      c.displayMessage("@red@Switching to \"Controlled\" combat style!");
+      fightMode = 0;
+      c.sleep(100);
+    }
   }
 
   @Override

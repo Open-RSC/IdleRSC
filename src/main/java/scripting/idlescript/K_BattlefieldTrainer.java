@@ -1,9 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
@@ -43,8 +41,12 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
     while (c.isRunning()) {
 
       eat();
-
-      if (c.getInventoryItemCount(546) > 0) {
+      checkFightMode();
+      if (potUp) {
+        attackBoost(0, false);
+        strengthBoost(0, false);
+      }
+      if (c.getInventoryItemCount(foodId) > 0) {
 
         if (!c.isInCombat()) {
 
@@ -59,10 +61,18 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
           }
         }
         c.sleep(380);
-      } else if (c.getInventoryItemCount(546) == 0) {
+      } else if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
         c.setStatus("@yel@Banking..");
         DruidToBank();
+        timeToBank = false;
         bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage(
+              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          c.setStatus("@red@Stopping Script.");
+          endSession();
+        }
         BankToDruid();
         c.sleep(618);
       }
@@ -78,26 +88,18 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
       waitForBankOpen();
     } else {
 
-      if (c.getInventoryItemCount() > 1) {
+      if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
-          if (itemId != 546) {
-            c.depositItem(itemId, c.getInventoryItemCount(itemId));
-          }
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
         c.sleep(1280); // increased sleep here to prevent double banking
       }
-      if (c.getInventoryItemCount(546) < 28) { // withdraw 1 shark
-        c.withdrawItem(546, 28);
-        c.sleep(340);
+      if (potUp) {
+        withdrawAttack(1);
+        withdrawStrength(1);
       }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks/Laws/Airs/Earths in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawItem(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, foodWithdrawAmount);
       c.closeBank();
       c.sleep(640);
     }
@@ -185,10 +187,31 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
     JLabel header = new JLabel("Battlefield Trainer - By Kaila");
     JLabel label1 = new JLabel("Start in Ardy or at Battlefield");
     JLabel label2 = new JLabel("Sharks in Bank REQUIRED");
+    JLabel label4 = new JLabel("Chat commands can be used to direct the bot");
+    JLabel label5 = new JLabel("::bank ::bankstay");
+    JLabel label6 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
+    JLabel fightModeLabel = new JLabel("Fight Mode:");
+    JComboBox<String> fightModeField =
+        new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(0); // sets default to controlled
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(5); // sets default to lobs
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(30));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          if (!foodWithdrawAmountField.getText().equals("")) {
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          } else {
+            foodWithdrawAmount = 30;
+          }
+          fightMode = fightModeField.getSelectedIndex();
+          foodId = foodIds[foodField.getSelectedIndex()];
+          potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           startTime = System.currentTimeMillis();
@@ -202,12 +225,65 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(label2);
+    scriptFrame.add(label4);
+    scriptFrame.add(label5);
+    scriptFrame.add(label6);
+    scriptFrame.add(potUpCheckbox);
+    scriptFrame.add(fightModeLabel);
+    scriptFrame.add(fightModeField);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(foodWithdrawAmountLabel);
+    scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
+  }
+
+  @Override
+  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
+    if (commandText.contains("bank")) {
+      c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
+      timeToBank = true;
+      c.sleep(100);
+    } else if (commandText.contains("bankstay")) {
+      c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
+      timeToBankStay = true;
+      c.sleep(100);
+    } else if (commandText.contains("potup")) {
+      if (!potUp) {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
+        potUp = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
+        potUp = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains(
+        "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+      c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
+      c.displayMessage("@red@Switching to \"Accurate\" combat style!");
+      fightMode = 2;
+      c.sleep(100);
+    } else if (commandText.contains("strength")) {
+      c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
+      c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
+      fightMode = 1;
+      c.sleep(100);
+    } else if (commandText.contains("defense")) {
+      c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
+      c.displayMessage("@red@Switching to \"Defensive\" combat style!");
+      fightMode = 3;
+      c.sleep(100);
+    } else if (commandText.contains("controlled")) {
+      c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
+      c.displayMessage("@red@Switching to \"Controlled\" combat style!");
+      fightMode = 0;
+      c.sleep(100);
+    }
   }
 
   @Override

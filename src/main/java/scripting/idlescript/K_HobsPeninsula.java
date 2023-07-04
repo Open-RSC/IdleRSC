@@ -194,18 +194,8 @@ public final class K_HobsPeninsula extends K_kailaScript {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw foods
-        c.withdrawItem(foodId, foodWithdrawAmount);
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO Food in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(640);
     }

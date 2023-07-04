@@ -321,9 +321,10 @@ public final class K_AsgarnianIce extends K_kailaScript {
     JLabel label8 = new JLabel("\"autostart\": uses lobsters,5,true");
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField("6");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(6));
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(2); // sets default to sharks
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});

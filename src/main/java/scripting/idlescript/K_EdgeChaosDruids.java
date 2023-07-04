@@ -287,33 +287,16 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
               + totalDwarf;
 
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != foodId) {
-          c.depositItem(itemId, c.getInventoryItemCount(itemId));
-        }
+        c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
-
-      c.sleep(1400); // Important, leave in
+      c.sleep(1280); // Important, leave in
 
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(foodId) > foodWithdrawAmount) { // deposit extra shark
-        c.depositItem(foodId, c.getInventoryItemCount(foodId) - foodWithdrawAmount);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw 1 shark
-        c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
-        c.sleep(640);
-      }
-      if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(1000);
     }

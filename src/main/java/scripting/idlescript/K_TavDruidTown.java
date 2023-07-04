@@ -108,10 +108,7 @@ public final class K_TavDruidTown extends K_kailaScript {
         c.walkTo(371, 490);
         c.sleep(640);
       }
-      if (c.getFightMode() != fightMode) {
-        c.log("@red@Changing fightmode to " + fightMode);
-        c.setFightMode(fightMode);
-      }
+      checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);

@@ -128,10 +128,7 @@ public final class K_EdgeGiants extends K_kailaScript {
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
       }
-      if (c.getFightMode() != fightMode) {
-        c.log("@red@Changing fightmode to " + fightMode);
-        c.setFightMode(fightMode);
-      }
+      checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);

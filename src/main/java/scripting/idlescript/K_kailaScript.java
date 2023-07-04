@@ -432,7 +432,17 @@ public class K_kailaScript extends IdleScript {
    *
    *          Main (useful) methods
    */
-
+  /**
+   * Checks fight mode against selected fightMode int, if no fightMode selector is provided, this
+   * method would force controlled fight mode. fightMode 0 = controlled
+   */
+  public static void checkFightMode() {
+    if (c.getFightMode() != fightMode) {
+      c.log("@red@Changing fightmode to " + fightMode);
+      c.setFightMode(fightMode);
+      c.sleep(640);
+    }
+  }
   /** Drops vials if not in combat, skips if currently in combat. */
   public static void dropVial() {
     if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {

@@ -104,10 +104,7 @@ public final class K_AsgarnianIce extends K_kailaScript {
 
       eat();
       buryBones();
-      if (c.getFightMode() != fightMode) {
-        c.log("@red@Changing fightmode to " + fightMode);
-        c.setFightMode(fightMode);
-      }
+      checkFightMode();
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {

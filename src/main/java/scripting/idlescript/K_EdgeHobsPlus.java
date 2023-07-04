@@ -123,10 +123,7 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
       }
-      if (c.getFightMode() != fightMode) {
-        c.log("@red@Changing fightmode to " + fightMode);
-        c.setFightMode(fightMode);
-      }
+      checkFightMode();
       if (c.currentX() < 186) { // down corridor too much
         c.displayMessage("@red@Error: Too far out of wander range, Walking back!");
         c.walkTo(198, 3299);

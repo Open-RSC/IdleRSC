@@ -232,10 +232,10 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       withdrawItem(lawId, 6);
       withdrawItem(waterId, 6);
       withdrawFood(foodId, foodWithdrawAmount);
-      bankCheckItem(foodId, 30);
-      bankCheckItem(airId, 30);
-      bankCheckItem(waterId, 10); // Falador teleport
-      bankCheckItem(lawId, 10);
+      bankItemCheck(foodId, 30);
+      bankItemCheck(airId, 30);
+      bankItemCheck(waterId, 10); // Falador teleport
+      bankItemCheck(lawId, 10);
       bankCheckAntiDragonShield();
       c.closeBank();
       c.sleep(1000);

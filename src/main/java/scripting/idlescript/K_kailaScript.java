@@ -906,8 +906,15 @@ public class K_kailaScript extends IdleScript {
       c.sleep(640);
     }
   }
-  /** Checks bank for specified itemId, if none, sends error log message and ends session. */
-  public static void bankCheckItem(int itemId, int bankAmount) {
+
+  /**
+   * Checks bank for specified itemId, if none, sends error log message and ends session.
+   *
+   * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
+   * @param bankAmount int - minimum number of item that should be in the bank, before ending
+   *     session.
+   */
+  public static void bankItemCheck(int itemId, int bankAmount) {
     if (c.getBankItemCount(itemId) < bankAmount) {
       c.log(
           "Warning: Item (" + itemId + ") not detected in the Bank, in amount (" + bankAmount + ")",

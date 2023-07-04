@@ -230,9 +230,9 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
       withdrawItem(lawId, 6);
       withdrawSuperAttack(1);
       withdrawSuperStrength(1);
-      bankCheckItem(foodId, 30);
-      bankCheckItem(airId, 50);
-      bankCheckItem(lawId, 10);
+      bankItemCheck(foodId, 30);
+      bankItemCheck(airId, 50);
+      bankItemCheck(lawId, 10);
       c.closeBank();
       c.sleep(1280);
     }

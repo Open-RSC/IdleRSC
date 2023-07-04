@@ -215,12 +215,12 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       withdrawItem(lawId, 6);
       withdrawItem(waterId, 6);
       bankBones = c.getBankItemCount(814);
-      bankCheckItem(prayerPot[2], 6);
-      bankCheckItem(antiPot[2], 1);
-      bankCheckItem(foodId, 30);
-      bankCheckItem(airId, 30);
-      bankCheckItem(waterId, 10); // Falador teleport
-      bankCheckItem(lawId, 10);
+      bankItemCheck(prayerPot[2], 6);
+      bankItemCheck(antiPot[2], 1);
+      bankItemCheck(foodId, 30);
+      bankItemCheck(airId, 30);
+      bankItemCheck(waterId, 10); // Falador teleport
+      bankItemCheck(lawId, 10);
       bankCheckAntiDragonShield();
       c.closeBank();
       c.sleep(1000);

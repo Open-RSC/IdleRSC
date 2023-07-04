@@ -198,23 +198,13 @@ public final class K_AsgarnianIce extends K_kailaScript {
           }
         }
       }
-      c.sleep(640);
+      c.sleep(1280);
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw 20 shark
-        c.withdrawItem(foodId, foodWithdrawAmount);
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO Food in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawItem(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, 30);
       c.closeBank();
       c.sleep(640);
     }

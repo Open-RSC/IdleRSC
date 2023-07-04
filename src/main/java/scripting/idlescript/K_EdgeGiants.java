@@ -132,9 +132,9 @@ public final class K_EdgeGiants extends K_kailaScript {
         c.log("@red@Changing fightmode to " + fightMode);
         c.setFightMode(fightMode);
       }
-      if (potUp && !c.isInCombat()) {
-        attackBoost();
-        strengthBoost();
+      if (potUp) {
+        attackBoost(false);
+        strengthBoost(false);
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
@@ -622,7 +622,7 @@ public final class K_EdgeGiants extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Dungeon Hobs Plus @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Dungeon Giants @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

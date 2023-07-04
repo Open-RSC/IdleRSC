@@ -99,12 +99,12 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     while (c.isRunning()) {
 
       ppotCheck();
-      drinkPrayerPotion();
+      drinkPrayerPotion(true);
       pray();
       foodCheck();
       eat();
-      superAttackBoost();
-      superStrengthBoost();
+      superAttackBoost(false);
+      superStrengthBoost(false);
       eatFoodToLoot();
       lootScript();
       dropVial();
@@ -370,7 +370,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(380, 3372);
     eat();
     ppotCheck();
-    drinkPrayerPotion();
+    drinkPrayerPotion(true);
     pray();
     c.walkTo(386, 3371);
     c.walkTo(388, 3360);
@@ -378,11 +378,11 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(397, 3343);
     c.walkTo(403, 3346);
     c.walkTo(408, 3344);
-    drinkAntidote();
+    drinkAntidote(true);
     c.walkTo(409, 3338);
     eat();
     ppotCheck();
-    drinkPrayerPotion();
+    drinkPrayerPotion(true);
     pray();
     c.setStatus("@gre@Done Walking..");
   }

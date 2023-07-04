@@ -107,10 +107,10 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
 
       foodPotCheck();
       eat();
-      drinkPrayerPotion();
+      drinkPrayerPotion(true);
       prayParalyze();
-      superAttackBoost();
-      superStrengthBoost();
+      superAttackBoost(false);
+      superStrengthBoost(false);
 
       if (c.getInventoryItemCount() < 30) {
         lootScript();
@@ -406,7 +406,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     c.walkTo(380, 3372);
     c.setStatus("@gre@Done Walking..");
     eat();
-    drinkPrayerPotion();
+    drinkPrayerPotion(true);
     prayParalyze();
   }
 

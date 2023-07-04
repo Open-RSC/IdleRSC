@@ -111,9 +111,9 @@ public final class K_TavDruidCircle extends K_kailaScript {
         c.log("@red@Changing fightmode to " + fightMode);
         c.setFightMode(fightMode);
       }
-      if (potUp && !c.isInCombat()) {
-        attackBoost();
-        strengthBoost();
+      if (potUp) {
+        attackBoost(false);
+        strengthBoost(false);
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {

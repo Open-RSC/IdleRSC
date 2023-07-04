@@ -103,8 +103,8 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
-          attackBoost();
-          strengthBoost();
+          attackBoost(false);
+          strengthBoost(false);
         }
         if (c.currentX() > 295 && c.currentY() > 3000) {
           c.setStatus("@yel@Too far West, walking back..");

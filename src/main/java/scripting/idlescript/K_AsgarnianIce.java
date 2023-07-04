@@ -111,8 +111,8 @@ public final class K_AsgarnianIce extends K_kailaScript {
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
-          attackBoost();
-          strengthBoost();
+          attackBoost(true);
+          strengthBoost(true);
         }
         if (!c.isInCombat()) {
           int[] npcIds = {135, 158};

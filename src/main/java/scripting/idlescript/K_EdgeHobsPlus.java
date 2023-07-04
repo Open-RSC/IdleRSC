@@ -133,9 +133,9 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
         c.walkTo(207, 3300);
         c.sleep(640);
       }
-      if (potUp && !c.isInCombat()) {
-        attackBoost();
-        strengthBoost();
+      if (potUp) {
+        attackBoost(false);
+        strengthBoost(false);
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {

@@ -139,7 +139,7 @@ public class K_kailaScript extends IdleScript {
    *
    *
    * <pre>
-   * int[] array of regular attack potion
+   * int[] array of regular attack potions
    *
    * [1,2,3] doses </pre>
    */
@@ -152,14 +152,27 @@ public class K_kailaScript extends IdleScript {
    *
    *
    * <pre>
-   * int[] array of regular strength potion
+   * int[] array of regular strength potions
    *
    * [1,2,3] doses </pre>
    */
   public static final int[] strengthPot = {
-    224, // reg str pot (1)
-    223, // reg str pot (2)
-    222 // reg str pot (3)
+    482, // reg str pot (1)
+    481, // reg str pot (2)
+    480 // reg str pot (3)
+  };
+  /**
+   *
+   *
+   * <pre>
+   * int[] array of regular defense potions
+   *
+   * [1,2,3] doses </pre>
+   */
+  public static final int[] defensePot = {
+    224, // reg def pot (1)
+    223, // reg def pot (2)
+    222 // reg def pot (3)
   };
   /**
    *
@@ -374,6 +387,42 @@ public class K_kailaScript extends IdleScript {
       foodName = "Cooked Meat";
     }
   }
+  /* public static int whatIsMaxBoostLevel(String statName) { //super pots boost effect
+    int potionEffect = 6;
+    if (statName != null && !statName.equals("")) {
+        if (c.getBaseStat(c.getStatId("")) < 14) {
+            return potionEffect;
+        } else if (c.getBaseStat(c.getStatId("")) < 20) {
+            potionEffect = 7;
+        } else if (c.getBaseStat(c.getStatId("")) < 27) {
+            potionEffect = 8;
+        } else if (c.getBaseStat(c.getStatId("")) < 34) {
+            potionEffect = 9;
+        } else if (c.getBaseStat(c.getStatId("")) < 40) {
+            potionEffect = 10;
+        } else if (c.getBaseStat(c.getStatId("")) < 47) {
+            potionEffect = 11;
+        } else if (c.getBaseStat(c.getStatId("")) < 54) {
+            potionEffect = 12;
+        } else if (c.getBaseStat(c.getStatId("")) < 60) {
+            potionEffect = 13;
+        } else if (c.getBaseStat(c.getStatId("")) < 67) {
+            potionEffect = 14;
+        } else if (c.getBaseStat(c.getStatId("")) < 74) {
+            potionEffect = 15;
+        } else if (c.getBaseStat(c.getStatId("")) < 80) {
+            potionEffect = 16;
+        } else if (c.getBaseStat(c.getStatId("")) < 87) {
+            potionEffect = 17;
+        } else if (c.getBaseStat(c.getStatId("")) < 94) {
+            potionEffect = 18;
+        } else if (c.getBaseStat(c.getStatId("")) > 93) {
+            potionEffect = 19;
+        }
+    }
+    return potionEffect;
+  }
+  */
   /*
    *
    *
@@ -521,7 +570,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Withdraw attack potions (checks for and uses 1 and 2 dose potions first)
+   * Withdraw attack potions (checks for and uses 1 or 2 dose potions first)
    *
    * @param withdrawAmount int
    */
@@ -548,7 +597,7 @@ public class K_kailaScript extends IdleScript {
   }
 
   /**
-   * Withdraw strength potions (checks for and uses 1 and 2 dose potions first)
+   * Withdraw strength potions (checks for and uses 1 or 2 dose potions first)
    *
    * @param withdrawAmount int
    */
@@ -571,7 +620,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Withdraw super attack potions (checks for and uses 1 and 2 dose potions first)
+   * Withdraw super attack potions (checks for and uses 1 or 2 dose potions first)
    *
    * @param withdrawAmount int
    */
@@ -594,7 +643,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Withdraw super strength potions (checks for and uses 1 and 2 dose potions first)
+   * Withdraw super strength potions (checks for and uses 1 or 2 dose potions first)
    *
    * @param withdrawAmount int
    */
@@ -617,7 +666,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Withdraw super defense potions (checks for and uses 1 and 2 dose potions first)
+   * Withdraw super defense potions (checks for and uses 1 or 2 dose potions first)
    *
    * @param withdrawAmount int
    */
@@ -640,7 +689,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
-  public static void withdrawAntidote() {
+  public static void withdrawAntidote() { // todo add int withdraw amount, pot count
     if (c.getInventoryItemCount(antiPot[0]) < 1
         && c.getInventoryItemCount(antiPot[1]) < 1
         && c.getInventoryItemCount(antiPot[2]) < 1) {
@@ -657,23 +706,29 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Boost with reg attack potions, leaving combat. (checks for and uses 1 and 2 dose potions first)
+   * Boost with reg attack potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 5 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
   /*
    * todo add int param to select how far above base to use boost potion
    */
-  public static void attackBoost(boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
+  public static void attackBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int attackPotCount =
           c.getInventoryItemCount(attackPot[0])
               + c.getInventoryItemCount(attackPot[1])
               + c.getInventoryItemCount(attackPot[2]);
       if (attackPotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
         if (c.getInventoryItemCount(attackPot[0]) > 0) {
           c.itemCommand(attackPot[0]);
           c.sleep(640);
@@ -684,28 +739,32 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(attackPot[2]);
           c.sleep(640);
         }
+      } else {
+        c.log("error: out of regular Attack Potions");
       }
     }
   }
   /**
-   * Boost with reg strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with reg strength potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 5 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  /*
-   * todo add int param to select how far above base to use boost potion
-   */
-  public static void strengthBoost(boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
+  public static void strengthBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int strengthPotCount =
           c.getInventoryItemCount(strengthPot[0])
               + c.getInventoryItemCount(strengthPot[1])
               + c.getInventoryItemCount(strengthPot[2]);
       if (strengthPotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
         if (c.getInventoryItemCount(strengthPot[0]) > 0) {
           c.itemCommand(strengthPot[0]);
           c.sleep(640);
@@ -716,27 +775,68 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(strengthPot[2]);
           c.sleep(640);
         }
+      } else {
+        c.log("error: out of regular Strength Potions");
       }
     }
   }
   /**
-   * Boost with super attack potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with reg defense potions. (checks for and uses 1 or 2 dose potions first)
    *
-   * @param leaveCombat boolean - true will exit combat in order to boost
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 5 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superAttackBoost(boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
+  public static void defenseBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
+      int defensePotCount =
+          c.getInventoryItemCount(defensePot[0])
+              + c.getInventoryItemCount(defensePot[1])
+              + c.getInventoryItemCount(defensePot[2]);
+      if (defensePotCount > 0) {
+        if (c.getInventoryItemCount(defensePot[0]) > 0) {
+          c.itemCommand(defensePot[0]);
+          c.sleep(640);
+        } else if (c.getInventoryItemCount(defensePot[1]) > 0) {
+          c.itemCommand(defensePot[1]);
+          c.sleep(640);
+        } else if (c.getInventoryItemCount(defensePot[2]) > 0) {
+          c.itemCommand(defensePot[2]);
+          c.sleep(640);
+        }
+      } else {
+        c.log("error: out of regular Defense Potions");
+      }
+    }
+  }
+  /**
+   * Boost with super attack potions. (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 10 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   */
+  public static void superAttackBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int superAttackPotCount =
           c.getInventoryItemCount(superAttackPot[0])
               + c.getInventoryItemCount(superAttackPot[1])
               + c.getInventoryItemCount(superAttackPot[2]);
       if (superAttackPotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
         if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
           c.itemCommand(superAttackPot[0]);
           c.sleep(640);
@@ -747,25 +847,32 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superAttackPot[2]);
           c.sleep(640);
         }
+      } else {
+        c.log("error: out of Super Attack Potions");
       }
     }
   }
   /**
-   * Boost with super strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with super strength potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superStrengthBoost(boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
+  public static void superStrengthBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int superStrengthPotCount =
           c.getInventoryItemCount(superStrengthPot[0])
               + c.getInventoryItemCount(superStrengthPot[1])
               + c.getInventoryItemCount(superStrengthPot[2]);
       if (superStrengthPotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
         if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
           c.itemCommand(superStrengthPot[0]);
           c.sleep(640);
@@ -776,25 +883,32 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superStrengthPot[2]);
           c.sleep(640);
         }
+      } else {
+        c.log("error: out of Super Strength Potions");
       }
     }
   }
   /**
-   * Boost with super defense potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with super defense potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superDefenseBoost(boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Defense")) == c.getBaseStat(c.getStatId("Defense"))) {
+  public static void superDefenseBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int superDefensePotCount =
           c.getInventoryItemCount(superDefensePot[0])
               + c.getInventoryItemCount(superDefensePot[1])
               + c.getInventoryItemCount(superDefensePot[2]);
       if (superDefensePotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
         if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
           c.itemCommand(superDefensePot[0]);
           c.sleep(640);
@@ -805,118 +919,34 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superDefensePot[2]);
           c.sleep(640);
         }
+      } else {
+        c.log("error: out of Super Defense Potions");
       }
     }
   }
   /**
-   * Boost with super attack potions when no boost remains. (checks for and uses 1 and 2 dose
-   * potions first)
+   * drinks prayer potions when 31 points below base stat level, leaving combat. Checks for and uses
+   * 1 and 2 dose potions first. Recommend this boolean is ALWAYS true, or bot could die.
    *
-   * @param boostAt int attack level to boost at
+   * @param boostBelowBase int - levels below base stat to boost at. Recommend 31 to not waste
+   *     doses.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superAttackBoostCustom(int boostAt, boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Attack")) == boostAt) {
-      int superAttackPotCount =
-          c.getInventoryItemCount(superAttackPot[0])
-              + c.getInventoryItemCount(superAttackPot[1])
-              + c.getInventoryItemCount(superAttackPot[2]);
-      if (superAttackPotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
-        if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
-          c.itemCommand(superAttackPot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superAttackPot[1]) > 0) {
-          c.itemCommand(superAttackPot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superAttackPot[2]) > 0) {
-          c.itemCommand(superAttackPot[2]);
-          c.sleep(640);
-        }
+  public static void drinkPrayerPotion(int boostBelowBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Prayer")) - boostBelowBase;
+    if (c.getCurrentStat(c.getStatId("Prayer")) < boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
       }
-    }
-  }
-  /**
-   * Boost with super strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
-   *
-   * @param boostAt int attack level to boost at
-   */
-  public static void superStrengthBoostCustom(int boostAt, boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Strength")) == boostAt) {
-      int superStrengthPotCount =
-          c.getInventoryItemCount(superStrengthPot[0])
-              + c.getInventoryItemCount(superStrengthPot[1])
-              + c.getInventoryItemCount(superStrengthPot[2]);
-      if (superStrengthPotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
-        if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
-          c.itemCommand(superStrengthPot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superStrengthPot[1]) > 0) {
-          c.itemCommand(superStrengthPot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-          c.itemCommand(superStrengthPot[2]);
-          c.sleep(640);
-        }
-      }
-    }
-  }
-  /**
-   * Boost with super defense potions (checks for and uses 1 and 2 dose potions first)
-   *
-   * @param boostAt int attack level to boost at
-   */
-  public static void superDefenseBoostCustom(int boostAt, boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Defense")) == boostAt) {
-      int superDefensePotCount =
-          c.getInventoryItemCount(superDefensePot[0])
-              + c.getInventoryItemCount(superDefensePot[1])
-              + c.getInventoryItemCount(superDefensePot[2]);
-      if (superDefensePotCount > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
-        if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
-          c.itemCommand(superDefensePot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superDefensePot[1]) > 0) {
-          c.itemCommand(superDefensePot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superDefensePot[2]) > 0) {
-          c.itemCommand(superDefensePot[2]);
-          c.sleep(640);
-        }
-      }
-    }
-  }
-  /**
-   * drinks prayer potions when 31 points below base stat level, leaving combat. (checks for and
-   * uses 1 and 2 dose potions first. Recommend this boolean is ALWAYS true, or bot could die.
-   */
-  /*
-   * todo add int param to select how far above base to use boost potion
-   */
-  public static void drinkPrayerPotion(boolean leaveCombat) {
-    if (c.getCurrentStat(c.getStatId("Prayer")) < (c.getBaseStat(c.getStatId("Prayer")) - 31)) {
-      if (c.getInventoryItemCount(prayerPot[0]) > 0
-          || c.getInventoryItemCount(prayerPot[1]) > 0
-          || c.getInventoryItemCount(prayerPot[2]) > 0) {
-        if (leaveCombat) {
-          if (c.isInCombat()) leaveCombat();
-        } else {
-          if (c.isInCombat()) return;
-        }
+      int prayerPotCount =
+          c.getInventoryItemCount(prayerPot[0])
+              + c.getInventoryItemCount(prayerPot[1])
+              + c.getInventoryItemCount(prayerPot[2]);
+      if (prayerPotCount > 0) {
         if (c.getInventoryItemCount(prayerPot[0]) > 0) {
           c.itemCommand(prayerPot[0]);
           c.sleep(320);
@@ -927,28 +957,41 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(prayerPot[2]);
           c.sleep(320);
         }
+      } else {
+        c.log("error: out of Prayer potions");
       }
     }
   }
   /**
    * drinks antidote potion, leaving combat. (checks for and uses 1 and 2 dose potions first)
    * Recommend this boolean is ALWAYS true, or bot could die.
+   *
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
   public static void drinkAntidote(boolean leaveCombat) {
+    int antiPotCount =
+        c.getInventoryItemCount(antiPot[0])
+            + c.getInventoryItemCount(antiPot[1])
+            + c.getInventoryItemCount(antiPot[2]);
     if (leaveCombat) {
       if (c.isInCombat()) leaveCombat();
     } else {
       if (c.isInCombat()) return;
     }
-    if (c.getInventoryItemCount(antiPot[0]) > 0) {
-      c.itemCommand(antiPot[0]);
-      c.sleep(640);
-    } else if (c.getInventoryItemCount(antiPot[1]) > 0) {
-      c.itemCommand(antiPot[1]);
-      c.sleep(640);
-    } else if (c.getInventoryItemCount(antiPot[2]) > 0) {
-      c.itemCommand(antiPot[2]);
-      c.sleep(640);
+    if (antiPotCount > 0) {
+      if (c.getInventoryItemCount(antiPot[0]) > 0) {
+        c.itemCommand(antiPot[0]);
+        c.sleep(640);
+      } else if (c.getInventoryItemCount(antiPot[1]) > 0) {
+        c.itemCommand(antiPot[1]);
+        c.sleep(640);
+      } else if (c.getInventoryItemCount(antiPot[2]) > 0) {
+        c.itemCommand(antiPot[2]);
+        c.sleep(640);
+      }
+    } else {
+      c.log("error: out of Antidote potions");
     }
   }
 

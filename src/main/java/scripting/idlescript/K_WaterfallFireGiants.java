@@ -106,8 +106,8 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
       buryBones();
       eat();
       lootScript();
-      superAttackBoost(false);
-      superStrengthBoost(false);
+      superAttackBoost(0, false);
+      superStrengthBoost(0, false);
 
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {

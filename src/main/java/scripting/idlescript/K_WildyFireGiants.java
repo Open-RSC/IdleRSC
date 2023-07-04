@@ -116,8 +116,8 @@ public final class K_WildyFireGiants extends K_kailaScript {
       buryBones();
       eat();
       lootScript();
-      superAttackBoost(true);
-      superStrengthBoost(true);
+      superAttackBoost(0, true);
+      superStrengthBoost(0, true);
       dropVial();
 
       if (c.getInventoryItemCount(546) > 0) {

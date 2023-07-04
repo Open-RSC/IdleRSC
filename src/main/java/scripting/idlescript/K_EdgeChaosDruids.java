@@ -142,8 +142,8 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
         c.setFightMode(fightMode);
       }
       if (potUp) {
-        attackBoost(false);
-        strengthBoost(false);
+        attackBoost(0, false);
+        strengthBoost(0, false);
       }
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {

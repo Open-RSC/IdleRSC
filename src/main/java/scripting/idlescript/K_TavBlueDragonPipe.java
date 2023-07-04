@@ -104,8 +104,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     while (c.isRunning()) {
 
       eat();
-      superAttackBoost(false);
-      superStrengthBoost(false);
+      superAttackBoost(2, false);
+      superStrengthBoost(2, false);
       dropVial();
       lootScript();
 

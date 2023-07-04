@@ -104,8 +104,8 @@ public final class K_HobsPeninsula extends K_kailaScript {
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
-          attackBoost(false);
-          strengthBoost(false);
+          attackBoost(0, false);
+          strengthBoost(0, false);
         }
         if (!c.isInCombat()) {
           int[] npcIds = {67};

@@ -120,22 +120,13 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
             eat();
-            c.sleep(100);
-          } else {
-            c.walkTo(408, 3336);
-            c.sleep(340);
           }
         }
-        c.sleep(800);
+        c.sleep(640);
       }
       if (c.getInventoryItemCount() == 30) {
         prayPotCheck();
-        leaveCombat();
-        if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-          c.setStatus("@red@Dropping Vial to Loot..");
-          c.dropItem(c.getInventoryItemSlotIndex(465));
-          c.sleep(340);
-        }
+        dropVial(true);
       }
     }
   }
@@ -224,19 +215,19 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       withdrawItem(lawId, 6);
       withdrawItem(waterId, 6);
       bankBones = c.getBankItemCount(814);
-      bankCheckPrayerPotion(6);
-      bankCheckAntidotePotion(1);
-      bankCheckFoodId(30);
-      bankCheckAirRune(30);
-      bankCheckWaterRune(10); // Falador teleport
-      bankCheckLawRune(10);
+      bankCheckItem(prayerPot[2], 6);
+      bankCheckItem(antiPot[2], 1);
+      bankCheckItem(foodId, 30);
+      bankCheckItem(airId, 30);
+      bankCheckItem(waterId, 10); // Falador teleport
+      bankCheckItem(lawId, 10);
       bankCheckAntiDragonShield();
       c.closeBank();
       c.sleep(1000);
     }
-    airCheck();
-    waterCheck();
-    lawCheck();
+    inventoryItemCheck(airId, 18);
+    inventoryItemCheck(waterId, 6);
+    inventoryItemCheck(lawId, 6);
   }
 
   private void pray() {
@@ -356,11 +347,19 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   }
 
   private void foodCheck() {
-    if (c.getInventoryItemCount(foodId) == 0) {
+    if (c.getInventoryItemCount(foodId) < 1 || timeToBank || timeToBankStay) {
       c.setStatus("@yel@No food, Banking..");
       dragonEscape();
       DragonsToBank();
+      timeToBank = false;
       bank();
+      if (timeToBankStay) {
+        timeToBankStay = false;
+        c.displayMessage(
+            "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+        c.setStatus("@red@Stopping Script.");
+        endSession();
+      }
       BankToDragons();
       c.sleep(618);
     }

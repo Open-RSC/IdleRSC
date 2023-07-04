@@ -146,8 +146,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           c.displayMessage(
               "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
           c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          endSession();
         }
         BankToDragons();
         c.sleep(618);
@@ -233,17 +232,17 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       withdrawItem(lawId, 6);
       withdrawItem(waterId, 6);
       withdrawFood(foodId, foodWithdrawAmount);
-      bankCheckFoodId(30);
-      bankCheckAirRune(30);
-      bankCheckWaterRune(10); // Falador teleport
-      bankCheckLawRune(10);
+      bankCheckItem(foodId, 30);
+      bankCheckItem(airId, 30);
+      bankCheckItem(waterId, 10); // Falador teleport
+      bankCheckItem(lawId, 10);
       bankCheckAntiDragonShield();
       c.closeBank();
       c.sleep(1000);
     }
-    airCheck();
-    waterCheck();
-    lawCheck();
+    inventoryItemCheck(airId, 18);
+    inventoryItemCheck(waterId, 6);
+    inventoryItemCheck(lawId, 6);
   }
 
   private void eat() {

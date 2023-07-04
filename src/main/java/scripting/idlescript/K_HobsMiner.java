@@ -340,9 +340,9 @@ public final class K_HobsMiner extends K_kailaScript {
       c.sleep(640);
     }
     if (teleportOut) {
-      airCheck();
-      earthCheck();
-      lawCheck();
+      inventoryItemCheck(airId, 3);
+      inventoryItemCheck(earthId, 1);
+      inventoryItemCheck(lawId, 1);
     }
   }
 

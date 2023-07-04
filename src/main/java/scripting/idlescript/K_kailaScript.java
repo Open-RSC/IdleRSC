@@ -906,6 +906,35 @@ public class K_kailaScript extends IdleScript {
       c.sleep(640);
     }
   }
+  /** Checks bank for specified itemId, if none, sends error log message and ends session. */
+  public static void bankCheckItem(int itemId, int bankAmount) {
+    if (c.getBankItemCount(itemId) < bankAmount) {
+      c.log(
+          "Warning: Item (" + itemId + ") not detected in the Bank, in amount (" + bankAmount + ")",
+          "@red@");
+      endSession();
+    }
+  }
+  /**
+   * checks inventory for specific item and amount, if too few opens banks and withdraws more
+   *
+   * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
+   * @param itemAmount int - number of item that should be in the inventory.
+   */
+  public static void inventoryItemCheck(int itemId, int itemAmount) {
+    if (c.getInventoryItemCount(itemId) < itemAmount) {
+      c.openBank();
+      c.sleep(640);
+      if (!c.isInBank()) {
+        waitForBankOpen();
+      } else {
+        c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
+        c.sleep(640);
+        c.closeBank();
+        c.sleep(1280);
+      }
+    }
+  }
   /**
    * Withdraw provided foodId, unless out, then attempt to withdraw any other foods
    *
@@ -1142,107 +1171,6 @@ public class K_kailaScript extends IdleScript {
       c.closeBank();
       c.equipItem(c.getInventoryItemSlotIndex(420));
       c.sleep(1320);
-    }
-  }
-  /** Checks bank for foodId, if none, sends error log message and ends session. */
-  public static void bankCheckFoodId(int bankAmount) {
-    if (c.getBankItemCount(foodId) == bankAmount) {
-      whatIsFoodName();
-      c.log("Warning: No " + foodName + " detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** Checks bank for Prayer Potions, if none, sends error log message and ends session. */
-  public static void bankCheckPrayerPotion(int bankAmount) {
-    if (c.getBankItemCount(prayerPot[2]) < bankAmount) {
-      c.log("Warning: No 3 dose Prayer Potions detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** Checks bank for Antidote potions, if none, sends error log message and ends session. */
-  public static void bankCheckAntidotePotion(int bankAmount) {
-    if (c.getBankItemCount(antiPot[2]) < bankAmount) {
-      c.log("Warning: No 3 dose Anti Potions detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** Checks bank for Air Runes, if none, sends error log message and ends session. */
-  public static void bankCheckAirRune(int bankAmount) {
-    if (c.getBankItemCount(airId) == bankAmount) {
-      c.log("Warning: No Air Runes detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** Checks bank for Air Runes, if none, sends error log message and ends session. */
-  public static void bankCheckFireRune(int bankAmount) {
-    if (c.getBankItemCount(fireId) == bankAmount) {
-      c.log("Warning: No Fire Runes detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** Checks bank for Air Runes, if none, sends error log message and ends session. */
-  public static void bankCheckWaterRune(int bankAmount) {
-    if (c.getBankItemCount(waterId) == bankAmount) {
-      c.log("Warning: No Water Runes detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** Checks bank for Air Runes, if none, sends error log message and ends session. */
-  public static void bankCheckEarthRune(int bankAmount) {
-    if (c.getBankItemCount(earthId) == bankAmount) {
-      c.log("Warning: No Earth Runes detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** Checks bank for Air Runes, if none, sends error log message and ends session. */
-  public static void bankCheckLawRune(int bankAmount) {
-    if (c.getBankItemCount(lawId) == bankAmount) {
-      c.log("Warning: No Law Runes detected in the Bank.", "@red@");
-      endSession();
-    }
-  }
-  /** checks inventory for (teleport) water runes, if too few opens banks and withdraws more */
-  public static void waterCheck() {
-    if (c.getInventoryItemCount(32) < 6) { // 2 water
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-  /** checks inventory for (teleport) law runes, if too few opens banks and withdraws more */
-  public static void lawCheck() {
-    if (c.getInventoryItemCount(42) < 2) { // law
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(42, 2 - c.getInventoryItemCount(42));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-  /** checks inventory for (teleport) earth runes, if too few opens banks and withdraws more */
-  public static void earthCheck() {
-    if (c.getInventoryItemCount(34) < 2) { // earth
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(34, 2 - c.getInventoryItemCount(34));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-  /** checks inventory for (teleport) air runes, if too few opens banks and withdraws more */
-  public static void airCheck() {
-    if (c.getInventoryItemCount(33) < 6) { // air
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(33, 6 - c.getInventoryItemCount(33));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
     }
   }
 

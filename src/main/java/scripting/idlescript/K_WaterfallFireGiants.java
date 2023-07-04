@@ -222,55 +222,22 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      c.sleep(1400); // increased sleep here to prevent double banking
+      c.sleep(1280); // increased sleep here to prevent double banking
 
-      if (c.getInventoryItemCount(782) < 1) { // glariels amulet
-        c.withdrawItem(782, 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(237) < 1) { // rope
-        c.withdrawItem(237, 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(33) < 30) { // air
-        c.withdrawItem(33, 30 - c.getInventoryItemCount(33));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(42) < 6) { // law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      c.sleep(640); // leave in
+      withdrawItem(782, 1); // glariels amulet
+      withdrawItem(237, 1); // rope
+      withdrawItem(airId, 30);
+      withdrawItem(lawId, 6);
       withdrawSuperAttack(1);
       withdrawSuperStrength(1);
-      if (c.getInventoryItemCount(33) < 30) { // air
-        c.withdrawItem(33, 30 - c.getInventoryItemCount(33));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(42) < 6) { // law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(546) < 23) { // withdraw 23 shark
-        c.withdrawItem(546, 23 - c.getInventoryItemCount(546));
-        c.sleep(640);
-      }
-
-      if (c.getBankItemCount(546) == 0
-          || c.getBankItemCount(33) == 0
-          || c.getBankItemCount(42) == 0) {
-        c.setStatus("@red@NO Sharks/Laws/Airs in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      bankCheckItem(foodId, 30);
+      bankCheckItem(airId, 50);
+      bankCheckItem(lawId, 10);
       c.closeBank();
-      c.sleep(1000);
+      c.sleep(1280);
     }
-    lawCheck();
-    airCheck();
+    inventoryItemCheck(airId, 30);
+    inventoryItemCheck(lawId, 6);
   }
 
   private void eat() {

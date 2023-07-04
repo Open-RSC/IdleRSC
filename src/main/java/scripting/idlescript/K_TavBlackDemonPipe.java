@@ -285,9 +285,9 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.closeBank();
       c.sleep(1000);
     }
-    airCheck();
-    waterCheck();
-    lawCheck();
+    inventoryItemCheck(airId, 18);
+    inventoryItemCheck(waterId, 6);
+    inventoryItemCheck(lawId, 6);
   }
 
   private static void prayParalyze() {

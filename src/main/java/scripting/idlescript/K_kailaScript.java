@@ -163,9 +163,10 @@ public class K_kailaScript extends IdleScript {
    * [1,2,3] doses </pre>
    */
   public static final int[] strengthPot = {
-    482, // reg str pot (1)
-    481, // reg str pot (2)
-    480 // reg str pot (3)
+    224, // reg str pot (1)
+    223, // reg str pot (2)
+    222, // reg str pot (3)
+    221 // reg str pot (4)
   };
   /**
    *
@@ -176,9 +177,9 @@ public class K_kailaScript extends IdleScript {
    * [1,2,3] doses </pre>
    */
   public static final int[] defensePot = {
-    224, // reg def pot (1)
-    223, // reg def pot (2)
-    222 // reg def pot (3)
+    482, // reg def pot (1)
+    481, // reg def pot (2)
+    480 // reg def pot (3)
   };
   /**
    *
@@ -330,25 +331,24 @@ public class K_kailaScript extends IdleScript {
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
    *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
    */
-  public static final String[] foodTypes =
-      new String[] {
-        "Manta Ray",
-        "Sea Turtle",
-        "Shark",
-        "Swordfish",
-        "Tuna",
-        "Lobster",
-        "Bass",
-        "Mackerel",
-        "Cod",
-        "Pike",
-        "Herring",
-        "Salmon",
-        "Trout",
-        "Anchovies",
-        "Shrimp",
-        "Cooked Meat"
-      };
+  public static final String[] foodTypes = {
+    "Manta Ray",
+    "Sea Turtle",
+    "Shark",
+    "Swordfish",
+    "Tuna",
+    "Lobster",
+    "Bass",
+    "Mackerel",
+    "Cod",
+    "Pike",
+    "Herring",
+    "Salmon",
+    "Trout",
+    "Anchovies",
+    "Shrimp",
+    "Cooked Meat"
+  };
 
   /**
    *
@@ -608,8 +608,6 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(attackPot[2]);
           c.sleep(640);
         }
-      } else {
-        c.log("error: out of regular Attack Potions");
       }
     }
   }
@@ -644,8 +642,6 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(strengthPot[2]);
           c.sleep(640);
         }
-      } else {
-        c.log("error: out of regular Strength Potions");
       }
     }
   }
@@ -680,8 +676,6 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(defensePot[2]);
           c.sleep(640);
         }
-      } else {
-        c.log("error: out of regular Defense Potions");
       }
     }
   }
@@ -716,8 +710,6 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superAttackPot[2]);
           c.sleep(640);
         }
-      } else {
-        c.log("error: out of Super Attack Potions");
       }
     }
   }
@@ -752,8 +744,6 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superStrengthPot[2]);
           c.sleep(640);
         }
-      } else {
-        c.log("error: out of Super Strength Potions");
       }
     }
   }
@@ -788,8 +778,6 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superDefensePot[2]);
           c.sleep(640);
         }
-      } else {
-        c.log("error: out of Super Defense Potions");
       }
     }
   }
@@ -826,8 +814,6 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(prayerPot[2]);
           c.sleep(320);
         }
-      } else {
-        c.log("error: out of Prayer potions");
       }
     }
   }
@@ -859,8 +845,6 @@ public class K_kailaScript extends IdleScript {
         c.itemCommand(antiPot[2]);
         c.sleep(640);
       }
-    } else {
-      c.log("error: out of Antidote potions");
     }
   }
   /*
@@ -973,7 +957,8 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(attackPot[0])
             + c.getInventoryItemCount(attackPot[1])
             + c.getInventoryItemCount(attackPot[2]);
-    if (attackPotCount < withdrawAmount) {
+    int bankPotCount = attackPot[0] + attackPot[1] + attackPot[2];
+    if ((attackPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(attackPot[0]) > 0) {
         c.withdrawItem(attackPot[0], withdrawAmount - attackPotCount);
         c.sleep(640);
@@ -984,7 +969,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(attackPot[2], withdrawAmount - attackPotCount);
         c.sleep(640);
       }
-      withdrawAttack(withdrawAmount);
     }
   }
 
@@ -998,7 +982,11 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(strengthPot[0])
             + c.getInventoryItemCount(strengthPot[1])
             + c.getInventoryItemCount(strengthPot[2]);
-    if (strengthPotCount < withdrawAmount) {
+    int bankPotCount =
+        c.getBankItemCount(strengthPot[0])
+            + c.getBankItemCount(strengthPot[1])
+            + c.getBankItemCount(strengthPot[2]);
+    if ((strengthPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(strengthPot[0]) > 0) {
         c.withdrawItem(strengthPot[0], withdrawAmount - strengthPotCount);
         c.sleep(640);
@@ -1009,7 +997,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotCount);
         c.sleep(640);
       }
-      withdrawStrength(withdrawAmount);
     }
   }
   /**
@@ -1022,7 +1009,11 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(defensePot[0])
             + c.getInventoryItemCount(defensePot[1])
             + c.getInventoryItemCount(defensePot[2]);
-    if (defensePotCount < withdrawAmount) {
+    int bankPotCount =
+        c.getBankItemCount(defensePot[0])
+            + c.getBankItemCount(defensePot[1])
+            + c.getBankItemCount(defensePot[2]);
+    if ((defensePotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(defensePot[0]) > 0) {
         c.withdrawItem(defensePot[0], withdrawAmount - defensePotCount);
         c.sleep(640);
@@ -1033,7 +1024,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(defensePot[2], withdrawAmount - defensePotCount);
         c.sleep(640);
       }
-      withdrawDefense(withdrawAmount);
     }
   }
   /**
@@ -1046,7 +1036,11 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(superAttackPot[0])
             + c.getInventoryItemCount(superAttackPot[1])
             + c.getInventoryItemCount(superAttackPot[2]);
-    if (superAttackPotCount < withdrawAmount) {
+    int bankPotCount =
+        c.getBankItemCount(superAttackPot[0])
+            + c.getBankItemCount(superAttackPot[1])
+            + c.getBankItemCount(superAttackPot[2]);
+    if ((superAttackPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(superAttackPot[0]) > 0) {
         c.withdrawItem(superAttackPot[0], withdrawAmount - superAttackPotCount);
         c.sleep(640);
@@ -1057,7 +1051,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotCount);
         c.sleep(640);
       }
-      withdrawSuperAttack(withdrawAmount);
     }
   }
   /**
@@ -1070,7 +1063,11 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(superStrengthPot[0])
             + c.getInventoryItemCount(superStrengthPot[1])
             + c.getInventoryItemCount(superStrengthPot[2]);
-    if (superStrengthPotCount < withdrawAmount) {
+    int bankPotCount =
+        c.getBankItemCount(superStrengthPot[0])
+            + c.getBankItemCount(superStrengthPot[1])
+            + c.getBankItemCount(superStrengthPot[2]);
+    if ((superStrengthPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(superStrengthPot[0]) > 0) {
         c.withdrawItem(superStrengthPot[0], withdrawAmount - superStrengthPotCount);
         c.sleep(640);
@@ -1081,7 +1078,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotCount);
         c.sleep(640);
       }
-      withdrawSuperStrength(withdrawAmount);
     }
   }
   /**
@@ -1094,7 +1090,11 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(superDefensePot[0])
             + c.getInventoryItemCount(superDefensePot[1])
             + c.getInventoryItemCount(superDefensePot[2]);
-    if (superDefensePotCount < withdrawAmount) {
+    int bankPotCount =
+        c.getBankItemCount(superDefensePot[0])
+            + c.getBankItemCount(superDefensePot[1])
+            + c.getBankItemCount(superDefensePot[2]);
+    if ((superDefensePotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(superDefensePot[0]) > 0) {
         c.withdrawItem(superDefensePot[0], withdrawAmount - superDefensePotCount);
         c.sleep(640);
@@ -1105,7 +1105,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotCount);
         c.sleep(640);
       }
-      withdrawSuperDefense(withdrawAmount);
     }
   }
   /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
@@ -1114,7 +1113,11 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(antiPot[0])
             + c.getInventoryItemCount(antiPot[1])
             + c.getInventoryItemCount(antiPot[2]);
-    if (antidotePotCount < withdrawAmount) {
+    int bankPotCount =
+        c.getBankItemCount(antiPot[0])
+            + c.getBankItemCount(antiPot[1])
+            + c.getBankItemCount(antiPot[2]);
+    if ((antidotePotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(antiPot[0]) > 0) {
         c.withdrawItem(antiPot[0], withdrawAmount - antidotePotCount);
         c.sleep(640);
@@ -1125,7 +1128,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(antiPot[2], withdrawAmount - antidotePotCount);
         c.sleep(640);
       }
-      withdrawAntidote(withdrawAmount);
     }
   }
   /** Withdraw prayer potions (checks for and uses 1 and 2 dose potions first) */
@@ -1134,7 +1136,8 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(prayerPot[0])
             + c.getInventoryItemCount(prayerPot[1])
             + c.getInventoryItemCount(prayerPot[2]);
-    if (prayerPotCount < withdrawAmount) {
+    int bankPotCount = prayerPot[0] + prayerPot[1] + prayerPot[2];
+    if ((prayerPotCount) < withdrawAmount && (bankPotCount > 0)) {
       if (c.getBankItemCount(prayerPot[0]) > 0) {
         c.withdrawItem(prayerPot[0], withdrawAmount - prayerPotCount);
         c.sleep(640);
@@ -1145,7 +1148,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(prayerPot[2], withdrawAmount - prayerPotCount);
         c.sleep(640);
       }
-      withdrawPrayer(withdrawAmount);
     }
   }
   /** Checks Inventory for empty slots. If detected, opens bank and withdraws more foodId. */

@@ -163,7 +163,8 @@ public final class K_EdgeGiants extends K_kailaScript {
         } else {
           c.sleep(640);
         }
-      } else if (c.getInventoryItemCount() == 30
+      }
+      if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
           || timeToBankStay) {

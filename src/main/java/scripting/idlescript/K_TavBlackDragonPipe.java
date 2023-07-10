@@ -120,7 +120,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
             eat();
-          }
+          } // todo re-add walk to center?
         }
         c.sleep(640);
       }

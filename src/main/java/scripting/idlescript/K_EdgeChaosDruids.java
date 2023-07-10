@@ -176,9 +176,8 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
         } else {
           c.sleep(640);
         }
-      } else if (c.getInventoryItemCount() == 30
-          || c.getInventoryItemCount(foodId) == 0
-          || timeToBank) {
+      }
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(foodId) == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
         DruidToBank();

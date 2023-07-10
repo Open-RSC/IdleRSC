@@ -113,7 +113,7 @@ public final class K_TavDruidTown extends K_kailaScript {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
         if (!c.isInCombat()) {
           if (lootLowLevel) {
             lowLevelLooting();
@@ -144,7 +144,8 @@ public final class K_TavDruidTown extends K_kailaScript {
         } else {
           c.sleep(640);
         }
-      } else if (c.getInventoryItemCount() == 30
+      }
+      if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
           || timeToBankStay) {

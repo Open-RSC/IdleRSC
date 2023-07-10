@@ -115,7 +115,7 @@ public class AIOSmelter extends IdleScript {
     }
     if (scriptStarted) {
       guiSetup = false;
-      scriptStarted = false;
+      // scriptStarted = false;
       scriptStart();
     } else {
       try {

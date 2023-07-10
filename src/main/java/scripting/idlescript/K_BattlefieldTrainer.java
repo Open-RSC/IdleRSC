@@ -61,7 +61,8 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
           }
         }
         c.sleep(380);
-      } else if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
+      }
+      if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
         c.setStatus("@yel@Banking..");
         DruidToBank();
         timeToBank = false;

@@ -139,9 +139,9 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
           if (lootLimp) lootLimp();
-          c.setStatus("@yel@Attacking..");
           ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {

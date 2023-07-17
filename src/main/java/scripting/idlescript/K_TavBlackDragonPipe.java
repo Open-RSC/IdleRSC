@@ -113,9 +113,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
 
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
-          c.setStatus("@yel@Attacking Dragons");
           ORSCharacter npc = c.getNearestNpcById(291, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
             eat();
           } // todo re-add walk to center?

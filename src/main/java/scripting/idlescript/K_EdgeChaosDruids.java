@@ -146,9 +146,9 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
         if (!c.isInCombat()) {
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
-          c.setStatus("@yel@Attacking Druids");
           ORSCharacter npc = c.getNearestNpcById(270, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking..");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
             c.sleep(640);

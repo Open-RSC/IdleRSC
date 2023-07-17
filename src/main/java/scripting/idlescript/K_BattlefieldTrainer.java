@@ -49,10 +49,9 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
       if (c.getInventoryItemCount(foodId) > 0) {
 
         if (!c.isInCombat()) {
-
-          c.setStatus("@yel@Attacking Trooper");
           ORSCharacter npc = c.getNearestNpcById(407, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Trooper");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
             c.sleep(600);

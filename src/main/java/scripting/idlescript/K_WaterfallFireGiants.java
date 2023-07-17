@@ -112,10 +112,11 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
-            c.setStatus("@yel@Attacking Giants");
-            c.sleepHandler(98, true);
+
+            // c.sleepHandler(98, true);
             ORSCharacter npc = c.getNearestNpcById(344, false);
             if (npc != null) {
+              c.setStatus("@yel@Attacking Giants");
               c.attackNpc(npc.serverIndex);
               c.sleep(1280);
             } else {

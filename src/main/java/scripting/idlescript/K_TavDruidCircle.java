@@ -120,9 +120,9 @@ public final class K_TavDruidCircle extends K_kailaScript {
           }
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
-          c.setStatus("@yel@Attacking Druids");
           ORSCharacter npc = c.getNearestNpcById(200, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {

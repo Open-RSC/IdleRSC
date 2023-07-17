@@ -108,10 +108,10 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       if (c.getInventoryItemCount(foodId) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
-            c.setStatus("@yel@Attacking Dragons");
-            c.sleepHandler(98, true);
+            // c.sleepHandler(98, true);
             ORSCharacter npc = c.getNearestNpcById(202, false);
             if (npc != null) {
+              c.setStatus("@yel@Attacking Dragons");
               c.attackNpc(npc.serverIndex);
               c.sleep(1000);
             } else {

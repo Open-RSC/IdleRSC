@@ -116,10 +116,11 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         lootScript();
 
         if (!c.isInCombat()) {
-          c.setStatus("@yel@Attacking Demons");
-          c.sleepHandler(98, true);
+
+          // c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(290, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Demons");
             c.attackNpc(npc.serverIndex);
             c.sleep(1000);
           } else {

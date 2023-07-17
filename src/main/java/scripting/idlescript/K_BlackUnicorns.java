@@ -95,10 +95,10 @@ public final class K_BlackUnicorns extends K_kailaScript {
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (!c.isInCombat()) {
-          c.setStatus("@yel@Attacking..");
           c.sleepHandler(296, true);
           ORSCharacter npc = c.getNearestNpcById(296, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
             c.sleep(3000);
           } else {

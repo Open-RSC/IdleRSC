@@ -142,9 +142,9 @@ public final class K_EdgeGiants extends K_kailaScript {
           if (lootLimp) lootLimp();
           if (lootBones) lootBones();
           if (buryBones) buryBones();
-          c.setStatus("@yel@Attacking..");
           ORSCharacter npc = c.getNearestNpcById(61, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
@@ -183,7 +183,7 @@ public final class K_EdgeGiants extends K_kailaScript {
   private void lootBones() {
     int[] coords = c.getNearestItemById(413);
     if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-      c.setStatus("@yel@No NPCs, Picking bones");
+      c.setStatus("@yel@Picking bones");
       c.walkToAsync(coords[0], coords[1], 0);
       c.pickupItem(coords[0], coords[1], 413, true, false);
       c.sleep(640);

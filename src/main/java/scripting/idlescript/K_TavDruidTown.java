@@ -117,9 +117,9 @@ public final class K_TavDruidTown extends K_kailaScript {
         if (!c.isInCombat()) {
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
-          c.setStatus("@yel@Attacking Druids");
           ORSCharacter npc = c.getNearestNpcById(200, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
             c.sleep(1280);
           } else {

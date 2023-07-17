@@ -83,12 +83,12 @@ public class K_kailaScript extends IdleScript {
   public static final int waterId = 32;
   public static final int earthId = 34;
   public static final int lawId = 42;
-  public static int totalAirs = 0;
+  public static int totalAir = 0;
   public static int totalFire = 0;
   public static int totalWater = 0;
   public static int totalEarth = 0;
   public static int totalChaos = 0;
-
+  public static int totalCosmic = 0;
   public static int totalLaw = 0;
   public static int totalNat = 0;
   public static int totalBlood = 0;

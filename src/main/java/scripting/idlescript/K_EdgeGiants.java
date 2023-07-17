@@ -39,6 +39,7 @@ public final class K_EdgeGiants extends K_kailaScript {
     // 46,    //cosmic rune
     33, // air rune
     32, // water rune
+    34, // earth rune
     31, // fire rune
     160, // saph
     159, // emerald
@@ -65,8 +66,9 @@ public final class K_EdgeGiants extends K_kailaScript {
     // 46,      //cosmic rune
     33, // air rune
     32, // water rune
+    34, // earth rune
     31, // fire rune
-    // 160, 	 //saph
+    160, // saph
     159, // emerald
     158, // ruby
     157, // diamond
@@ -103,7 +105,7 @@ public final class K_EdgeGiants extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Edge Dungeon Hob\\Skelli\\Zombies ~ Kaila");
+      c.displayMessage("@red@Edge Dungeon Giant Killer ~ Kaila");
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
       c.displayMessage("@red@Dusty Key Required");
 
@@ -135,29 +137,19 @@ public final class K_EdgeGiants extends K_kailaScript {
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          if (lootLowLevel) {
-            lowLevelLooting();
-          } else {
-            highLevelLooting();
-          }
-          if (lootLimp) {
-            lootLimp();
-          }
-          lootBones();
-          if (buryBones) {
-            buryBones();
-          }
+          if (lootLowLevel) lowLevelLooting();
+          else highLevelLooting();
+          if (lootLimp) lootLimp();
+          if (lootBones) lootBones();
+          if (buryBones) buryBones();
           c.setStatus("@yel@Attacking..");
           ORSCharacter npc = c.getNearestNpcById(61, false);
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
+            if (lootLowLevel) lowLevelLooting();
+            else highLevelLooting();
             c.sleep(100);
           }
         } else {
@@ -195,13 +187,9 @@ public final class K_EdgeGiants extends K_kailaScript {
       c.walkToAsync(coords[0], coords[1], 0);
       c.pickupItem(coords[0], coords[1], 413, true, false);
       c.sleep(640);
-      if (buryBones) {
-        buryBones();
-      }
+      if (buryBones) buryBones();
     } else {
-      if (buryBones) {
-        buryBones();
-      }
+      if (buryBones) buryBones();
       c.sleep(100);
     }
   }
@@ -390,7 +378,7 @@ public final class K_EdgeGiants extends K_kailaScript {
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Dungeon Giants@mag@ ~ by Kaila");
+    JLabel header = new JLabel("Edge Mankiller ~ by Kaila");
     JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
     JLabel label6 = new JLabel("Dusty Key Required + Food in Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");

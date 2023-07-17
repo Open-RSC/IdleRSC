@@ -144,30 +144,18 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
       }
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
-          if (lootLowLevel) {
-            lowLevelLooting();
-          } else {
-            highLevelLooting();
-          }
+          if (lootLowLevel) lowLevelLooting();
+          else highLevelLooting();
           c.setStatus("@yel@Attacking Druids");
           ORSCharacter npc = c.getNearestNpcById(270, false);
           if (npc != null) {
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
             c.sleep(640);
-          } else if (lootBones) {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
-            lootBones();
           } else {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
+            if (lootLowLevel) lowLevelLooting();
+            else highLevelLooting();
+            if (lootBones) lootBones();
             if (c.currentX() != 218 || c.currentY() != 3245) {
               c.walkTo(218, 3245);
               c.sleep(640);

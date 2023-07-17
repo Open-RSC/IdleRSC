@@ -108,9 +108,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       }
       eatFoodToLoot();
       lootScript();
-      if (buryBones) {
-        buryBones();
-      }
+      if (buryBones) buryBones();
       dropVial(false);
 
       if (c.getInventoryItemCount() < 30) {
@@ -326,8 +324,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(397, 3343);
     c.walkTo(403, 3346);
     c.walkTo(408, 3344);
-    drinkAntidote(true);
     c.walkTo(409, 3338);
+    drinkAntidote(true);
     eat();
     prayPotCheck();
     drinkPrayerPotion(31, true);

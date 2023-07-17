@@ -136,25 +136,17 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          if (lootLowLevel) {
-            lowLevelLooting();
-          } else {
-            highLevelLooting();
-          }
-          if (lootLimp) {
-            lootLimp();
-          }
+          if (lootLowLevel) lowLevelLooting();
+          else highLevelLooting();
+          if (lootLimp) lootLimp();
           c.setStatus("@yel@Attacking..");
           ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
+            if (lootLowLevel) lowLevelLooting();
+            else highLevelLooting();
             c.sleep(100);
           }
         } else {

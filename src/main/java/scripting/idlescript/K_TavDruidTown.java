@@ -115,32 +115,19 @@ public final class K_TavDruidTown extends K_kailaScript {
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
         if (!c.isInCombat()) {
-          if (lootLowLevel) {
-            lowLevelLooting();
-          } else {
-            highLevelLooting();
-          }
+          if (lootLowLevel) lowLevelLooting();
+          else highLevelLooting();
           c.setStatus("@yel@Attacking Druids");
           ORSCharacter npc = c.getNearestNpcById(200, false);
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
-          } else if (lootBones) {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
-            lootBones();
+            c.sleep(1280);
           } else {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
+            if (lootLowLevel) lowLevelLooting();
+            else highLevelLooting();
+            if (lootBones) lootBones();
             c.sleep(100);
           }
-          c.sleep(640);
         } else {
           c.sleep(640);
         }
@@ -163,8 +150,6 @@ public final class K_TavDruidTown extends K_kailaScript {
         }
         BankToDruid();
         c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }

@@ -118,32 +118,18 @@ public final class K_TavDruidCircle extends K_kailaScript {
             recharge();
             pray();
           }
-          if (lootLowLevel) {
-            lowLevelLooting();
-          } else {
-            highLevelLooting();
-          }
+          if (lootLowLevel) lowLevelLooting();
+          else highLevelLooting();
           c.setStatus("@yel@Attacking Druids");
           ORSCharacter npc = c.getNearestNpcById(200, false);
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
-          } else if (lootBones) {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
-            lootBones();
           } else {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
-            c.sleep(100);
+            if (lootLowLevel) lowLevelLooting();
+            else highLevelLooting();
+            if (lootBones) lootBones();
           }
-          c.sleep(640);
         } else {
           c.sleep(640);
         }

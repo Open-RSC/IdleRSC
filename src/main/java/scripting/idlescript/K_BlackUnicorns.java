@@ -43,6 +43,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
   private static boolean returnEscape = true;
   private static int uniInBank = 0;
   private static int totalUni = 0;
+  private static int inventUni = 0;
 
   private void startSequence() {
     c.displayMessage("@red@Black Unicorn Killer ~ By Kaila");
@@ -94,8 +95,9 @@ public final class K_BlackUnicorns extends K_kailaScript {
       eat();
       if (c.getInventoryItemCount() < 30) {
         lootScript();
+        inventUni = c.getBankItemCount(466);
         if (!c.isInCombat()) {
-          c.sleepHandler(296, true);
+          // c.sleepHandler(296, true);
           ORSCharacter npc = c.getNearestNpcById(296, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
@@ -180,6 +182,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
       uniInBank = c.getBankItemCount(466);
       c.closeBank();
       c.sleep(640);
+      inventUni = c.getBankItemCount(466);
     }
   }
 
@@ -372,7 +375,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        successPerHr = (int) (totalUni * scale);
+        successPerHr = (int) ((totalUni + inventUni) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
 
       } catch (Exception e) {
@@ -385,7 +388,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
       c.drawString("@whi@Horns in Bank: @gre@" + uniInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Horns Picked: @gre@"
-              + totalUni
+              + (totalUni + inventUni)
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",

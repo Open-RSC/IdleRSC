@@ -46,7 +46,41 @@ public class K_kailaScript extends IdleScript {
   public static final long startTimestamp = System.currentTimeMillis() / 1000L;
   public static final int GAME_TICK = 640;
   public static final int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
+
+  // ~~~~~~~~~~~~~~final item Id's~~~~~~~~~~~
+  public static final int unidGuam = 165;
+  public static final int unidMar = 435;
+  public static final int unidTar = 436;
+  public static final int unidHar = 437;
+  public static final int unidRan = 438;
+  public static final int unidIrit = 439;
+  public static final int unidAva = 440;
+  public static final int unidKwu = 441;
+  public static final int unidCada = 442;
+  public static final int unidDwarf = 443;
+  public static final int mindRune = 35;
+  public static final int chaosRune = 41;
+  public static final int deathRune = 38;
+  public static final int bloodRune = 619;
+  public static final int lawRune = 42;
+  public static final int natRune = 40;
+  public static final int cosmicRune = 46;
+  public static final int fireRune = 31;
+  public static final int waterRune = 32;
+  public static final int airRune = 33;
+  public static final int earthRune = 34;
+  public static final int coins = 10;
+  public static final int sapphire = 160;
+  public static final int emerald = 159;
+  public static final int ruby = 158;
+  public static final int diamond = 157;
+  public static final int tooth = 526;
+  public static final int loop = 527;
+  public static final int spear = 1092;
+  public static final int left = 1277;
+
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
+
   public static long startTime;
   public static long next_attempt = -1;
   public static int foodInBank = -1;
@@ -56,6 +90,44 @@ public class K_kailaScript extends IdleScript {
   public static int foodId = -1;
   public static int fightMode = 0;
   public static int totalTrips = 0;
+
+  // Inventory Item Counts
+  // Herbs
+  public static int inventGuam = 0;
+  public static int inventMar = 0;
+  public static int inventTar = 0;
+  public static int inventHar = 0;
+  public static int inventRan = 0;
+  public static int inventIrit = 0;
+  public static int inventAva = 0;
+  public static int inventKwuarm = 0;
+  public static int inventCada = 0;
+  public static int inventDwarf = 0;
+  public static int inventHerbs = 0;
+  // Runes
+  public static int inventMind = 0;
+  public static int inventChaos = 0;
+  public static int inventDeath = 0;
+  public static int inventBlood = 0;
+  public static int inventLaws = 0;
+  public static int inventNats = 0;
+  public static int inventCosmic = 0;
+  public static int inventAir = 0;
+  public static int inventFire = 0;
+  public static int inventWater = 0;
+  public static int inventEarth = 0;
+  public static int inventRunes = 0;
+  // inventory Gems
+  public static int inventSapphire = 0;
+  public static int inventEmerald = 0;
+  public static int inventRuby = 0;
+  public static int inventDiamond = 0;
+  public static int inventGems = 0;
+  // inventory Rares
+  public static int inventTooth = 0;
+  public static int inventLoop = 0;
+  public static int inventSpear = 0;
+  public static int inventLeft = 0;
 
   // UNID HERBS
   public static int totalGuam = 0;
@@ -350,6 +422,72 @@ public class K_kailaScript extends IdleScript {
     "Cooked Meat"
   };
 
+  /**
+   * Checks the amount of items in the inventory and stores the data in the inventItem static
+   * variables. For use with GUI to display the total amount of items gathered between the bank and
+   * inventory.
+   */
+  public static void checkInventoryItemCounts() {
+    // Herbs
+    inventGuam = c.getInventoryItemCount(unidGuam);
+    inventMar = c.getInventoryItemCount(unidMar);
+    inventTar = c.getInventoryItemCount(unidTar);
+    inventHar = c.getInventoryItemCount(unidHar);
+    inventRan = c.getInventoryItemCount(unidRan);
+    inventIrit = c.getInventoryItemCount(unidIrit);
+    inventAva = c.getInventoryItemCount(unidAva);
+    inventKwuarm = c.getInventoryItemCount(unidKwu);
+    inventCada = c.getInventoryItemCount(unidCada);
+    inventDwarf = c.getInventoryItemCount(unidDwarf);
+    // Runes
+    inventLaws = c.getInventoryItemCount(lawRune);
+    inventNats = c.getInventoryItemCount(natRune);
+    inventMind = c.getInventoryItemCount(mindRune);
+    inventChaos = c.getInventoryItemCount(chaosRune);
+    inventDeath = c.getInventoryItemCount(deathRune);
+    inventBlood = c.getInventoryItemCount(bloodRune);
+    inventCosmic = c.getInventoryItemCount(cosmicRune);
+    inventAir = c.getInventoryItemCount(airRune);
+    inventFire = c.getInventoryItemCount(fireRune);
+    inventWater = c.getInventoryItemCount(waterRune);
+    inventEarth = c.getInventoryItemCount(earthRune);
+    // Gems
+    inventSapphire = c.getInventoryItemCount(sapphire);
+    inventEmerald = c.getInventoryItemCount(emerald);
+    inventRuby = c.getInventoryItemCount(ruby);
+    inventDiamond = c.getInventoryItemCount(diamond);
+    inventGems = inventSapphire + inventEmerald + inventRuby + inventDiamond;
+    // rares
+    inventTooth = c.getInventoryItemCount(tooth);
+    inventLoop = c.getInventoryItemCount(loop);
+    inventLeft = c.getInventoryItemCount(left);
+    inventSpear = c.getInventoryItemCount(spear);
+
+    // Totals
+    inventRunes =
+        inventMind
+            + inventChaos
+            + inventDeath
+            + inventBlood
+            + inventLaws
+            + inventNats
+            + inventCosmic
+            + inventAir
+            + inventFire
+            + inventWater
+            + inventEarth;
+    inventHerbs =
+        inventGuam
+            + inventMar
+            + inventTar
+            + inventHar
+            + inventRan
+            + inventIrit
+            + inventAva
+            + inventKwuarm
+            + inventCada
+            + inventDwarf;
+  }
   /**
    *
    *

@@ -135,6 +135,7 @@ public final class K_EdgeGiants extends K_kailaScript {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
+      checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
           if (lootLowLevel) lowLevelLooting();
@@ -302,6 +303,7 @@ public final class K_EdgeGiants extends K_kailaScript {
       c.closeBank();
       c.sleep(1000);
       brassKeyCheck();
+      checkInventoryItemCounts();
     }
   }
 
@@ -567,22 +569,22 @@ public final class K_EdgeGiants extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        guamSuccessPerHr = (int) (totalGuam * scale);
-        marSuccessPerHr = (int) (totalMar * scale);
-        tarSuccessPerHr = (int) (totalTar * scale);
-        harSuccessPerHr = (int) (totalHar * scale);
-        ranSuccessPerHr = (int) (totalRan * scale);
-        iritSuccessPerHr = (int) (totalIrit * scale);
-        avaSuccessPerHr = (int) (totalAva * scale);
-        kwuSuccessPerHr = (int) (totalKwuarm * scale);
-        cadaSuccessPerHr = (int) (totalCada * scale);
-        dwarSuccessPerHr = (int) (totalDwarf * scale);
-        lawSuccessPerHr = (int) (totalLaw * scale);
-        natSuccessPerHr = (int) (totalNat * scale);
-        GemsSuccessPerHr = (int) (totalGems * scale);
+        guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
+        marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
+        tarSuccessPerHr = (int) ((totalTar + inventTar) * scale);
+        harSuccessPerHr = (int) ((totalHar + inventHar) * scale);
+        ranSuccessPerHr = (int) ((totalRan + inventRan) * scale);
+        iritSuccessPerHr = (int) ((totalIrit + inventIrit) * scale);
+        avaSuccessPerHr = (int) ((totalAva + inventAva) * scale);
+        kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
+        cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
+        dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
+        lawSuccessPerHr = (int) ((totalLaw + inventLaws) * scale);
+        natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
+        GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-        herbSuccessPerHr = (int) (totalHerbs * scale);
-        runeSuccessPerHr = (int) (totalRunes * scale);
+        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
+        runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
@@ -597,17 +599,17 @@ public final class K_EdgeGiants extends K_kailaScript {
       if (lootLowLevel) {
         c.drawString(
             "@whi@Guam: @gre@"
-                + totalGuam
+                + (totalGuam + inventGuam)
                 + "@yel@ (@whi@"
                 + String.format("%,d", guamSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Mar: @gre@"
-                + totalMar
+                + (totalMar + inventMar)
                 + "@yel@ (@whi@"
                 + String.format("%,d", marSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Tar: @gre@"
-                + totalTar
+                + (totalTar + inventTar)
                 + "@yel@ (@whi@"
                 + String.format("%,d", tarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -617,17 +619,17 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Har: @gre@"
-                + totalHar
+                + (totalHar + inventHar)
                 + "@yel@ (@whi@"
                 + String.format("%,d", harSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Rana: @gre@"
-                + totalRan
+                + (totalRan + inventRan)
                 + "@yel@ (@whi@"
                 + String.format("%,d", ranSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Irit: @gre@"
-                + totalIrit
+                + (totalIrit + inventIrit)
                 + "@yel@ (@whi@"
                 + String.format("%,d", iritSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)",
@@ -637,17 +639,17 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Ava: @gre@"
-                + totalAva
+                + (totalAva + inventAva)
                 + "@yel@ (@whi@"
                 + String.format("%,d", avaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Kwu: @gre@"
-                + totalKwuarm
+                + (totalKwuarm + inventKwuarm)
                 + "@yel@ (@whi@"
                 + String.format("%,d", kwuSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Cada: @gre@"
-                + totalCada
+                + (totalCada + inventCada)
                 + "@yel@ (@whi@"
                 + String.format("%,d", cadaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -657,17 +659,17 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Dwar: @gre@"
-                + totalDwarf
+                + (totalDwarf + inventDwarf)
                 + "@yel@ (@whi@"
                 + String.format("%,d", dwarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Laws: @gre@"
-                + totalLaw
+                + (totalLaw + inventLaws)
                 + "@yel@ (@whi@"
                 + String.format("%,d", lawSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Nats: @gre@"
-                + totalNat
+                + (totalNat + inventNats)
                 + "@yel@ (@whi@"
                 + String.format("%,d", natSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -677,12 +679,12 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Total Gems: @gre@"
-                + totalGems // remove for regular druids!!!
+                + (totalGems + inventGems) // remove for regular druids!!!
                 + "@yel@ (@whi@"
                 + String.format("%,d", GemsSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Herbs: @gre@"
-                + totalHerbs
+                + (totalHerbs + inventHerbs)
                 + "@yel@ (@whi@"
                 + String.format("%,d", herbSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -692,13 +694,13 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Tooth: @gre@"
-                + totalTooth // remove for regular druids!!!
+                + (totalTooth + inventTooth) // remove for regular druids!!!
                 + "@yel@ / @whi@Loop: @gre@"
-                + totalLoop
+                + (totalLoop + inventLoop)
                 + "@yel@ / @whi@R.Spear: @gre@"
-                + totalSpear
+                + (totalSpear + inventSpear)
                 + "@yel@ / @whi@Half: @gre@"
-                + totalLeft,
+                + (totalLeft + inventLeft),
             x,
             y + (14 * 6),
             0xFFFFFF,
@@ -706,7 +708,7 @@ public final class K_EdgeGiants extends K_kailaScript {
 
         c.drawString(
             "@whi@Total Runes: @gre@"
-                + totalRunes
+                + (totalRunes + inventRunes)
                 + "@yel@ (@whi@"
                 + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
@@ -723,17 +725,17 @@ public final class K_EdgeGiants extends K_kailaScript {
       } else {
         c.drawString(
             "@whi@Rana: @gre@"
-                + totalRan
+                + (totalRan + inventRan)
                 + "@yel@ (@whi@"
                 + String.format("%,d", ranSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Irit: @gre@"
-                + totalIrit
+                + (totalIrit + inventIrit)
                 + "@yel@ (@whi@"
                 + String.format("%,d", iritSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Avan: @gre@"
-                + totalAva
+                + (totalAva + inventAva)
                 + "@yel@ (@whi@"
                 + String.format("%,d", avaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -743,17 +745,17 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Kwua: @gre@"
-                + totalKwuarm
+                + (totalKwuarm + inventKwuarm)
                 + "@yel@ (@whi@"
                 + String.format("%,d", kwuSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Cada: @gre@"
-                + totalCada
+                + (totalCada + inventCada)
                 + "@yel@ (@whi@"
                 + String.format("%,d", cadaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Dwar: @gre@"
-                + totalDwarf
+                + (totalDwarf + inventDwarf)
                 + "@yel@ (@whi@"
                 + String.format("%,d", dwarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -763,12 +765,12 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Total Gems: @gre@"
-                + totalGems // remove for regular druids!!!
+                + (totalGems + inventGems) // remove for regular druids!!!
                 + "@yel@ (@whi@"
                 + String.format("%,d", GemsSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Herbs: @gre@"
-                + totalHerbs
+                + (totalHerbs + inventHerbs)
                 + "@yel@ (@whi@"
                 + String.format("%,d", herbSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -778,20 +780,20 @@ public final class K_EdgeGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Tooth: @gre@"
-                + totalTooth // remove for regular druids!!!
+                + (totalTooth + inventTooth) // remove for regular druids!!!
                 + "@yel@ / @whi@Loop: @gre@"
-                + totalLoop
+                + (totalLoop + inventLoop)
                 + "@yel@ / @whi@R.Spear: @gre@"
-                + totalSpear
+                + (totalSpear + inventSpear)
                 + "@yel@ / @whi@Half: @gre@"
-                + totalLeft,
+                + (totalLeft + inventLeft),
             x,
             y + (14 * 4),
             0xFFFFFF,
             1);
         c.drawString(
             "@whi@Total Runes: @gre@"
-                + totalRunes
+                + (totalRunes + inventRunes)
                 + "@yel@ (@whi@"
                 + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "

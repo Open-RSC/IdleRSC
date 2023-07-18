@@ -101,6 +101,7 @@ public final class K_EdgeSkeletons extends K_kailaScript {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
+      checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
           looting();
@@ -221,6 +222,7 @@ public final class K_EdgeSkeletons extends K_kailaScript {
       bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(1000);
+      checkInventoryItemCounts();
     }
   }
 
@@ -431,19 +433,19 @@ public final class K_EdgeSkeletons extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        guamSuccessPerHr = (int) (totalGuam * scale);
-        marSuccessPerHr = (int) (totalMar * scale);
-        tarSuccessPerHr = (int) (totalTar * scale);
-        harSuccessPerHr = (int) (totalHar * scale);
-        ranSuccessPerHr = (int) (totalRan * scale);
-        iritSuccessPerHr = (int) (totalIrit * scale);
-        avaSuccessPerHr = (int) (totalAva * scale);
-        kwuSuccessPerHr = (int) (totalKwuarm * scale);
-        cadaSuccessPerHr = (int) (totalCada * scale);
-        dwarSuccessPerHr = (int) (totalDwarf * scale);
+        guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
+        marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
+        tarSuccessPerHr = (int) ((totalTar + inventTar) * scale);
+        harSuccessPerHr = (int) ((totalHar + inventHar) * scale);
+        ranSuccessPerHr = (int) ((totalRan + inventRan) * scale);
+        iritSuccessPerHr = (int) ((totalIrit + inventIrit) * scale);
+        avaSuccessPerHr = (int) ((totalAva + inventAva) * scale);
+        kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
+        cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
+        dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
+        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
+        runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-        herbSuccessPerHr = (int) (totalHerbs * scale);
-        runeSuccessPerHr = (int) (totalRunes * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
@@ -457,17 +459,17 @@ public final class K_EdgeSkeletons extends K_kailaScript {
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guam: @gre@"
-              + totalGuam
+              + (totalGuam + inventGuam)
               + "@yel@ (@whi@"
               + String.format("%,d", guamSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Mar: @gre@"
-              + totalMar
+              + (totalMar + inventMar)
               + "@yel@ (@whi@"
               + String.format("%,d", marSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Tar: @gre@"
-              + totalTar
+              + (totalTar + inventTar)
               + "@yel@ (@whi@"
               + String.format("%,d", tarSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
@@ -477,17 +479,17 @@ public final class K_EdgeSkeletons extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Har: @gre@"
-              + totalHar
+              + (totalHar + inventHar)
               + "@yel@ (@whi@"
               + String.format("%,d", harSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Rana: @gre@"
-              + totalRan
+              + (totalRan + inventRan)
               + "@yel@ (@whi@"
               + String.format("%,d", ranSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Irit: @gre@"
-              + totalIrit
+              + (totalIrit + inventIrit)
               + "@yel@ (@whi@"
               + String.format("%,d", iritSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -497,17 +499,17 @@ public final class K_EdgeSkeletons extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Ava: @gre@"
-              + totalAva
+              + (totalAva + inventAva)
               + "@yel@ (@whi@"
               + String.format("%,d", avaSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Kwu: @gre@"
-              + totalKwuarm
+              + (totalKwuarm + inventKwuarm)
               + "@yel@ (@whi@"
               + String.format("%,d", kwuSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Cada: @gre@"
-              + totalCada
+              + (totalCada + inventCada)
               + "@yel@ (@whi@"
               + String.format("%,d", cadaSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
@@ -517,17 +519,22 @@ public final class K_EdgeSkeletons extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Dwar: @gre@"
-              + totalDwarf
+              + (totalDwarf + inventDwarf)
               + "@yel@ (@whi@"
               + String.format("%,d", dwarSuccessPerHr)
-              + "@yel@/@whi@hr@yel@) "
-              + "@whi@Laws: @gre@"
-              + totalHerbs
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 4),
+          0xFFFFFF,
+          1);
+      c.drawString(
+          "@whi@Total Herbs: @gre@"
+              + (totalHerbs + inventHerbs)
               + "@yel@ (@whi@"
               + String.format("%,d", herbSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
           x,
-          y + (14 * 4),
+          y + (14 * 5),
           0xFFFFFF,
           1);
       c.drawString(
@@ -537,7 +544,7 @@ public final class K_EdgeSkeletons extends K_kailaScript {
               + String.format("%,d", runeSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
           x,
-          y + (14 * 5),
+          y + (14 * 6),
           0xFFFFFF,
           1);
       c.drawString(
@@ -547,7 +554,7 @@ public final class K_EdgeSkeletons extends K_kailaScript {
               + String.format("%,d", boneSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
           x,
-          y + (14 * 6),
+          y + (14 * 7),
           0xFFFFFF,
           1);
       c.drawString("@whi@____________________", x, y + 3 + (14 * 7), 0xFFFFFF, 1);

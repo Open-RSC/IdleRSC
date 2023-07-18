@@ -102,6 +102,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
       // buryBones();
 
       if (c.getInventoryItemCount() < 30) {
+        checkInventoryItemCounts();
         lootScript();
         if (potUp) {
           attackBoost(0, false);
@@ -198,6 +199,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
       bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(640);
+      checkInventoryItemCounts();
     }
   }
 
@@ -342,20 +344,20 @@ public final class K_HobsPeninsula extends K_kailaScript {
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        guamSuccessPerHr = (int) (totalGuam * scale);
-        marSuccessPerHr = (int) (totalMar * scale);
-        tarSuccessPerHr = (int) (totalTar * scale);
-        harSuccessPerHr = (int) (totalHar * scale);
-        ranSuccessPerHr = (int) (totalRan * scale);
-        iritSuccessPerHr = (int) (totalIrit * scale);
-        avaSuccessPerHr = (int) (totalAva * scale);
-        kwuSuccessPerHr = (int) (totalKwuarm * scale);
-        cadaSuccessPerHr = (int) (totalCada * scale);
-        dwarSuccessPerHr = (int) (totalDwarf * scale);
+        guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
+        marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
+        tarSuccessPerHr = (int) ((totalTar + inventTar) * scale);
+        harSuccessPerHr = (int) ((totalHar + inventHar) * scale);
+        ranSuccessPerHr = (int) ((totalRan + inventRan) * scale);
+        iritSuccessPerHr = (int) ((totalIrit + inventIrit) * scale);
+        avaSuccessPerHr = (int) ((totalAva + inventAva) * scale);
+        kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
+        cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
+        dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
         limpSuccessPerHr = (int) (totalLimp * scale);
-        lawSuccessPerHr = (int) (totalLaw * scale);
-        natSuccessPerHr = (int) (totalNat * scale);
-        GemsSuccessPerHr = (int) (totalGems * scale);
+        lawSuccessPerHr = (int) ((totalLaw + inventLaws) * scale);
+        natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
+        GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
 
       } catch (Exception e) {
@@ -365,7 +367,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
       c.drawString("@red@Hobgoblin Peninsula @gre@by Kaila", x - 20, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"
-              + totalGuam
+              + (totalGuam + inventGuam)
               + "@yel@ (@whi@"
               + String.format("%,d", guamSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -375,7 +377,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Marrentills: @gre@"
-              + totalMar
+              + (totalMar + inventMar)
               + "@yel@ (@whi@"
               + String.format("%,d", marSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -385,7 +387,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Tarromins: @gre@"
-              + totalTar
+              + (totalTar + inventTar)
               + "@yel@ (@whi@"
               + String.format("%,d", tarSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -395,7 +397,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Harralanders: @gre@"
-              + totalHar
+              + (totalHar + inventHar)
               + "@yel@ (@whi@"
               + String.format("%,d", harSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -405,7 +407,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Ranarrs: @gre@"
-              + totalRan
+              + (totalRan + inventRan)
               + "@yel@ (@whi@"
               + String.format("%,d", ranSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -415,7 +417,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Irit Herbs: @gre@"
-              + totalIrit
+              + (totalIrit + inventIrit)
               + "@yel@ (@whi@"
               + String.format("%,d", iritSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -425,7 +427,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Avantoes: @gre@"
-              + totalAva
+              + (totalAva + inventAva)
               + "@yel@ (@whi@"
               + String.format("%,d", avaSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -435,7 +437,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Kwuarms: @gre@"
-              + totalKwuarm
+              + (totalKwuarm + inventKwuarm)
               + "@yel@ (@whi@"
               + String.format("%,d", kwuSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -445,7 +447,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Cadantines: @gre@"
-              + totalCada
+              + (totalCada + inventCada)
               + "@yel@ (@whi@"
               + String.format("%,d", cadaSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -455,7 +457,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Dwarfs: @gre@"
-              + totalDwarf
+              + (totalDwarf + inventDwarf)
               + "@yel@ (@whi@"
               + String.format("%,d", dwarSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -475,7 +477,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Laws: @gre@"
-              + totalLaw
+              + (totalLaw + inventLaws)
               + "@yel@ (@whi@"
               + String.format("%,d", lawSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -485,7 +487,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Nats: @gre@"
-              + totalNat
+              + (totalNat + inventNats)
               + "@yel@ (@whi@"
               + String.format("%,d", natSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -495,7 +497,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Total Gems: @gre@"
-              + totalGems
+              + (totalGems + inventGems)
               + "@yel@ (@whi@"
               + String.format("%,d", GemsSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -504,13 +506,19 @@ public final class K_HobsPeninsula extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Tooth: @gre@" + totalTooth + "@yel@ / @whi@Loop: @gre@" + totalLoop,
+          "@whi@Tooth: @gre@"
+              + (totalTooth + inventTooth)
+              + "@yel@ / @whi@Loop: @gre@"
+              + (totalLoop + inventLoop),
           x,
           258,
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@R.Spear: @gre@" + totalSpear + "@yel@ / @whi@Shield Half: @gre@" + totalLeft,
+          "@whi@R.Spear: @gre@"
+              + (totalSpear + inventSpear)
+              + "@yel@ / @whi@Shield Half: @gre@"
+              + (totalLeft + inventLeft),
           x,
           272,
           0xFFFFFF,

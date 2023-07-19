@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_EdgeDungThugs extends K_kailaScript {
+public final class K_Edge_DungeonThugs extends K_kailaScript {
 
   private static final int[] lowLevelLoot = {
     unidGuam, // Grimy Guam

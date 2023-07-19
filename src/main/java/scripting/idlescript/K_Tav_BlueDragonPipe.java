@@ -23,7 +23,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_TavBlueDragonPipe extends K_kailaScript {
+public final class K_Tav_BlueDragonPipe extends K_kailaScript {
   private boolean isWithinLootzone(
       int x, int y) { // FURTHEST LOOT is 376, 3368, go 361, 3353  (15 tiles)
     return c.distance(361, 3353, x, y) <= 15; // center of lootzone

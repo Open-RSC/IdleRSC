@@ -17,37 +17,29 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_EdgeThugs extends K_kailaScript {
+public final class K_Edge_Mankiller extends K_kailaScript {
 
   private static final int[] lowLevelLoot = {
-    165, // Grimy Guam
-    435, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    10, // coins
-    40, // nature rune
-    41, // chaos rune
-    38, // death rune
-    46, // cosmic rune
-    42, // law rune
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    unidGuam, // Grimy Guam
+    unidMar, // Grimy mar
+    unidTar, // Grimy tar
+    unidHar, // Grimy har
+    unidRan, // Grimy ranarr
+    unidIrit, // Grimy irit
+    unidAva, // Grimy ava
+    unidKwu, // Grimy kwu
+    unidCada, // Grimy cada
+    unidDwarf, // Grimy dwarf
+    mindRune, // mind rune
+    chaosRune, // chaos rune
+    earthRune, // Earth rune
+    fireRune, // fire rune
+    coins, // coins
+    11 // Bronze arrow
   };
 
   private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(170, 393, x, y) <= 16; // center of lootzone
+    return c.distance(213, 442, x, y) <= 9; // center of lootzone
   }
 
   public int start(String[] parameters) {
@@ -72,7 +64,7 @@ public final class K_EdgeThugs extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Edge Skeletons ~ Kaila");
+      c.displayMessage("@red@Edge Man Killer ~ Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
 
       if (c.isInBank()) {
@@ -101,11 +93,12 @@ public final class K_EdgeThugs extends K_kailaScript {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
+      checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
           looting();
           if (buryBones) buryBones();
-          ORSCharacter npc = c.getNearestNpcById(251, false);
+          ORSCharacter npc = c.getNearestNpcById(11, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
@@ -191,16 +184,12 @@ public final class K_EdgeThugs extends K_kailaScript {
       totalKwuarm = totalKwuarm + c.getInventoryItemCount(441);
       totalCada = totalCada + c.getInventoryItemCount(442);
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
-
-      totalLaw = totalLaw + c.getInventoryItemCount(42);
-      totalDeath = totalDeath + c.getInventoryItemCount(38);
-      totalCosmic = totalCosmic + c.getInventoryItemCount(46);
-      totalNat = totalNat + c.getInventoryItemCount(40);
+      totalFire = totalFire + c.getInventoryItemCount(31);
+      totalEarth = totalEarth + c.getInventoryItemCount(34);
       totalChaos = totalChaos + c.getInventoryItemCount(41);
-
-      totalBones = totalBones + c.getInventoryItemCount(20);
+      totalBones = totalBones + c.getInventoryItemCount(413);
       foodInBank = c.getBankItemCount(foodId);
-      totalRunes = totalLaw + totalDeath + totalCosmic + totalNat + totalChaos;
+      totalRunes = totalFire + totalEarth + totalChaos;
       totalHerbs =
           totalGuam
               + totalMar
@@ -224,7 +213,8 @@ public final class K_EdgeThugs extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(1000);
+      c.sleep(1280);
+      checkInventoryItemCounts();
     }
   }
 
@@ -253,35 +243,25 @@ public final class K_EdgeThugs extends K_kailaScript {
   }
 
   private void bankToHouse() {
-    c.setStatus("@gre@Walking to Edge Skeletons..");
+    c.setStatus("@gre@Walking to Edge House..");
     c.walkTo(217, 447);
-    c.walkTo(210, 447);
-    c.walkTo(200, 435);
-    c.walkTo(192, 435);
-    c.walkTo(185, 427);
-    c.walkTo(185, 419);
-    c.walkTo(178, 411);
-    c.walkTo(173, 405);
+    c.walkTo(209, 446);
+    c.walkTo(209, 443);
     c.setStatus("@gre@Done Walking..");
   }
 
   private void houseToBank() {
     c.setStatus("@gre@Walking to Edge Bank..");
-    c.walkTo(173, 405);
-    c.walkTo(178, 411);
-    c.walkTo(185, 419);
-    c.walkTo(185, 427);
-    c.walkTo(192, 435);
-    c.walkTo(200, 435);
-    c.walkTo(210, 447);
+    c.walkTo(209, 443);
+    c.walkTo(209, 446);
     c.walkTo(217, 447);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Edgeville Thugs ~ by Kaila");
-    JLabel label1 = new JLabel("Start by Edge Thugs or Edge Bank");
+    JLabel header = new JLabel("Edge Mankiller ~ by Kaila");
+    JLabel label1 = new JLabel("Start in Edge House or Edge Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label3 = new JLabel("::bank ::potup ::lootbones ::burybones");
     JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
@@ -440,18 +420,18 @@ public final class K_EdgeThugs extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        guamSuccessPerHr = (int) (totalGuam * scale);
-        marSuccessPerHr = (int) (totalMar * scale);
-        tarSuccessPerHr = (int) (totalTar * scale);
-        harSuccessPerHr = (int) (totalHar * scale);
-        ranSuccessPerHr = (int) (totalRan * scale);
-        iritSuccessPerHr = (int) (totalIrit * scale);
-        avaSuccessPerHr = (int) (totalAva * scale);
-        kwuSuccessPerHr = (int) (totalKwuarm * scale);
-        cadaSuccessPerHr = (int) (totalCada * scale);
-        dwarSuccessPerHr = (int) (totalDwarf * scale);
+        guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
+        marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
+        tarSuccessPerHr = (int) ((totalTar + inventTar) * scale);
+        harSuccessPerHr = (int) ((totalHar + inventHar) * scale);
+        ranSuccessPerHr = (int) ((totalRan + inventRan) * scale);
+        iritSuccessPerHr = (int) ((totalIrit + inventIrit) * scale);
+        avaSuccessPerHr = (int) ((totalAva + inventAva) * scale);
+        kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
+        cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
+        dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-        herbSuccessPerHr = (int) (totalHerbs * scale);
+        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
         runeSuccessPerHr = (int) (totalRunes * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
@@ -462,21 +442,21 @@ public final class K_EdgeThugs extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edgeville Thugs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Mankiller @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guam: @gre@"
-              + totalGuam
+              + (totalGuam + inventGuam)
               + "@yel@ (@whi@"
               + String.format("%,d", guamSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Mar: @gre@"
-              + totalMar
+              + (totalMar + inventMar)
               + "@yel@ (@whi@"
               + String.format("%,d", marSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Tar: @gre@"
-              + totalTar
+              + (totalTar + inventTar)
               + "@yel@ (@whi@"
               + String.format("%,d", tarSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
@@ -486,17 +466,17 @@ public final class K_EdgeThugs extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Har: @gre@"
-              + totalHar
+              + (totalHar + inventHar)
               + "@yel@ (@whi@"
               + String.format("%,d", harSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Rana: @gre@"
-              + totalRan
+              + (totalRan + inventRan)
               + "@yel@ (@whi@"
               + String.format("%,d", ranSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Irit: @gre@"
-              + totalIrit
+              + (totalIrit + inventIrit)
               + "@yel@ (@whi@"
               + String.format("%,d", iritSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -506,17 +486,17 @@ public final class K_EdgeThugs extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Ava: @gre@"
-              + totalAva
+              + (totalAva + inventAva)
               + "@yel@ (@whi@"
               + String.format("%,d", avaSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Kwu: @gre@"
-              + totalKwuarm
+              + (totalKwuarm + inventKwuarm)
               + "@yel@ (@whi@"
               + String.format("%,d", kwuSuccessPerHr)
               + "@yel@/@whi@hr@yel@) "
               + "@whi@Cada: @gre@"
-              + totalCada
+              + (totalCada + inventCada)
               + "@yel@ (@whi@"
               + String.format("%,d", cadaSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
@@ -526,27 +506,32 @@ public final class K_EdgeThugs extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Dwar: @gre@"
-              + totalDwarf
+              + (totalDwarf + inventDwarf)
               + "@yel@ (@whi@"
               + String.format("%,d", dwarSuccessPerHr)
-              + "@yel@/@whi@hr@yel@) "
-              + "@whi@Laws: @gre@"
-              + totalHerbs
-              + "@yel@ (@whi@"
-              + String.format("%,d", herbSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
           x,
           y + (14 * 4),
           0xFFFFFF,
           1);
       c.drawString(
+          "@whi@Total herbs: @gre@"
+              + (totalHerbs + inventHerbs)
+              + "@yel@ (@whi@"
+              + String.format("%,d", herbSuccessPerHr)
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 5),
+          0xFFFFFF,
+          1);
+      c.drawString(
           "@whi@Total Runes: @gre@"
-              + totalRunes
+              + (totalRunes + inventRunes)
               + "@yel@ (@whi@"
               + String.format("%,d", runeSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
           x,
-          y + (14 * 5),
+          y + (14 * 6),
           0xFFFFFF,
           1);
       c.drawString(
@@ -556,7 +541,7 @@ public final class K_EdgeThugs extends K_kailaScript {
               + String.format("%,d", boneSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
           x,
-          y + (14 * 6),
+          y + (14 * 7),
           0xFFFFFF,
           1);
       c.drawString("@whi@____________________", x, y + 3 + (14 * 7), 0xFFFFFF, 1);

@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_WaterfallFireGiants extends K_kailaScript {
+public final class K_Waterfall_FireGiants extends K_kailaScript {
   private static int totalBstaff = 0;
   private static int totalRscim = 0;
   private static int totalRunestuff = 0;

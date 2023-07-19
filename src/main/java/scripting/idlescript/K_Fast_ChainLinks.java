@@ -14,7 +14,7 @@ import javax.swing.JLabel;
  * adamantite - makes adamantite platebodies. rune, runite - makes runite platebodies. ~ Author -
  * Kaila
  */
-public final class K_FastChainLinks extends K_kailaScript {
+public final class K_Fast_ChainLinks extends K_kailaScript {
   private static int barsInBank = 0;
   private static int totalBars = 0;
 

@@ -9,17 +9,15 @@ import orsc.ORSCharacter;
  *
  * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Alter Prayer Boost, Food Type,
  * and Food Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot
- * option, and Autostart. parameter.
+ * option, and Autostart.
  *
- * <p>@Author - Kaila
+ * <p>Author - Kaila
  */
-/*
- *       todo
- *        Door support to prevent trapping. Not a hurry.
- */
-public final class K_TavDruidTown extends K_kailaScript {
+public final class K_Tav_DruidCircle extends K_kailaScript {
+  private static boolean prayerBoost = true;
+
   private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(371, 490, x, y) <= 14; // center of lootzone
+    return c.distance(362, 462, x, y) <= 12; // center of lootzone
   }
 
   private static final int[] lowLevelLoot = {
@@ -59,8 +57,9 @@ public final class K_TavDruidTown extends K_kailaScript {
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
-      lootBones = false;
+      lootBones = true;
       potUp = false;
+      prayerBoost = true;
       c.displayMessage("Got Autostart Parameter");
       c.log(
           "@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, Loot Bones, no pot up, yes prayer boosting",
@@ -103,9 +102,9 @@ public final class K_TavDruidTown extends K_kailaScript {
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
       }
-      if (c.currentY() < 480) {
+      if (c.currentY() > 473) {
         c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
-        c.walkTo(371, 490);
+        c.walkTo(362, 464);
         c.sleep(640);
       }
       checkFightMode();
@@ -115,18 +114,21 @@ public final class K_TavDruidTown extends K_kailaScript {
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
         if (!c.isInCombat()) {
+          if (prayerBoost) {
+            recharge();
+            pray();
+          }
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
           ORSCharacter npc = c.getNearestNpcById(200, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
-            c.sleep(1280);
+            c.sleep(2000);
           } else {
             if (lootLowLevel) lowLevelLooting();
             else highLevelLooting();
             if (lootBones) lootBones();
-            c.sleep(100);
           }
         } else {
           c.sleep(640);
@@ -150,6 +152,8 @@ public final class K_TavDruidTown extends K_kailaScript {
         }
         BankToDruid();
         c.sleep(618);
+      } else {
+        c.sleep(100);
       }
     }
   }
@@ -247,16 +251,39 @@ public final class K_TavDruidTown extends K_kailaScript {
               + totalCada
               + totalDwarf;
 
-      depositAll();
+      for (int itemId : c.getInventoryItemIds()) {
+        c.depositItem(itemId, c.getInventoryItemCount(itemId));
+      }
+
+      c.sleep(1240); // Important, leave in
+
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
       withdrawFood(foodId, foodWithdrawAmount);
-      bankItemCheck(foodId, 30);
+      bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(1000);
     }
+  }
+
+  private void recharge() {
+    if (c.getCurrentStat(c.getStatId("Prayer")) < 5) {
+      c.setStatus("@yel@Recharging Prayer");
+      c.walkTo(363, 461);
+      c.atObject(362, 462);
+      c.sleep(640);
+    }
+  }
+
+  private void pray() {
+    if (!c.isPrayerOn(c.getPrayerId("Ultimate Strength")) && c.currentY() < 475) {
+      c.enablePrayer(c.getPrayerId("Ultimate Strength"));
+    }
+    // if(!c.isPrayerOn(c.getPrayerId("Incredible Reflexes")) && c.currentY() < 475) {
+    //    c.enablePrayer(c.getPrayerId("Incredible Reflexes"));
+    // }
   }
 
   private void eat() {
@@ -297,24 +324,23 @@ public final class K_TavDruidTown extends K_kailaScript {
     c.walkTo(341, 488);
     c.setStatus("@red@Crossing Tav Gate..");
     tavGateEastToWest();
-    c.setStatus("@gre@Walking to Taverly Proper..");
-    c.walkTo(346, 488);
-    c.walkTo(348, 487);
-    c.walkTo(358, 487);
-    c.walkTo(358, 487);
-    c.walkTo(368, 487);
-    c.walkTo(371, 490);
+    c.setStatus("@gre@Walking to Druid Circle..");
+    c.walkTo(346, 487);
+    c.walkTo(351, 482);
+    c.walkTo(356, 477);
+    c.walkTo(361, 472);
+    c.walkTo(361, 466);
     c.setStatus("@gre@Done Walking..");
   }
 
   private void DruidToBank() {
     c.setStatus("@gre@Walking to Tav Gate..");
-    c.walkTo(368, 487);
-    c.walkTo(358, 487);
-    c.walkTo(358, 487);
-    c.walkTo(348, 487);
-    c.walkTo(346, 488);
-    c.walkTo(342, 488);
+    c.walkTo(361, 466);
+    c.walkTo(361, 472);
+    c.walkTo(356, 477);
+    c.walkTo(351, 482);
+    c.walkTo(346, 487);
+    c.walkTo(342, 487);
     c.setStatus("@red@Crossing Tav Gate..");
     tavGateWestToEast();
     c.setStatus("@gre@Walking to Fally West..");
@@ -339,8 +365,9 @@ public final class K_TavDruidTown extends K_kailaScript {
     JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup ::prayer");
     JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel label5 = new JLabel("Param Format: \"auto\"");
-    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", false);
+    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
+    JCheckBox prayerBoostCheckbox = new JCheckBox("Use Alter for Boost Prayers?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
@@ -361,6 +388,7 @@ public final class K_TavDruidTown extends K_kailaScript {
           lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
+          prayerBoost = prayerBoostCheckbox.isSelected();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
@@ -380,6 +408,7 @@ public final class K_TavDruidTown extends K_kailaScript {
     scriptFrame.add(label5);
     scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
+    scriptFrame.add(prayerBoostCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
     scriptFrame.add(fightModeField);
@@ -430,6 +459,15 @@ public final class K_TavDruidTown extends K_kailaScript {
       } else {
         c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
         potUp = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains("prayer")) {
+      if (!prayerBoost) {
+        c.displayMessage("@or1@Got toggle @red@prayer@or1@, now using boost prayers!");
+        prayerBoost = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@prayer@or1@, no longer using boost prayers!");
+        prayerBoost = false;
       }
       c.sleep(100);
     } else if (commandText.contains(
@@ -517,7 +555,7 @@ public final class K_TavDruidTown extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Taverly Druid Town @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Taverly Druid Circle @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

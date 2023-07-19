@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
 /*
  * todo add gui and statistics.
  */
-public final class K_FastBankBury extends K_kailaScript {
+public final class K_Fast_BankBury extends K_kailaScript {
   private static int boneId = -1;
   private static final int[] boneIds = {
     20, // regular bones

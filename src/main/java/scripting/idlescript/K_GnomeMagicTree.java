@@ -6,48 +6,36 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts yew logs in NE ardy, including the far western one, banks in ardy south bank.
+ * Cuts yew logs in NE ardy, including the far western one, banks in seers.
  *
- * <p>Requires 53+ Combat to avoid aggressive bears!
+ * <p>todo: reduce walking between locations - pause at each side logic to cut same tree as other
+ * players
  *
- * <p>Author ~ Kaila
+ * <p>Author - Kaila
  */
-/*
- * todo:
- *   logic to cut same tree as other players.
- */
-public final class K_ArdyYewTree extends K_kailaScript {
-  private static int logInBank = 0;
-  private static int totalLog = 0;
+public final class K_GnomeMagicTree extends K_kailaScript {
 
-  private void startSequence() {
-    checkBatchBars();
-    c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
+  public void startSequence() {
+    c.displayMessage("@red@GnomeMagicTree,  start with an axe in inv/equipment");
     if (c.isInBank()) {
       c.closeBank();
     }
-    if (c.currentY() < 620
-        && c.currentY() > 600
-        && c.currentX() > 543
-        && c.currentX() < 555) { // inside bank
+    if (c.currentY() > 1000) {
       bank();
-      bankToYews();
+      c.walkTo(714, 1459);
+      c.atObject(714, 1460);
+      c.walkTo(722, 507);
       c.sleep(1380);
     }
-    if (c.currentY() < 600 && c.currentY() > 587 && c.currentX() > 525 && c.currentX() < 543) {
-      c.walkTo(533, 596);
-      c.walkTo(548, 600);
-      bank();
-      bankToYews();
-      c.sleep(1380);
-    }
+    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
   }
 
   public int start(String[] parameters) {
+    checkBatchBars();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
-        c.displayMessage("Got Autostart, Cutting Yews", 0);
-        System.out.println("Got Autostart, Cutting Yews");
+        c.displayMessage("Got Autostart, Cutting Magics", 0);
+        System.out.println("Got Autostart, Cutting Magics");
         scriptStarted = true;
         guiSetup = true;
       }
@@ -67,49 +55,72 @@ public final class K_ArdyYewTree extends K_kailaScript {
     return 1000; // start() must return an int value now.
   }
 
-  private void scriptStart() {
+  public void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() < 30) {
-        c.setStatus("@gre@Cutting Yews..");
-        if (c.getObjectAtCoord(509, 571) == 309) {
+
+        if (c.getObjectAtCoord(718, 520) == 310) {
           cutFirstTree();
         }
-        if (c.getObjectAtCoord(509, 571) == 309) {
+        if (c.getObjectAtCoord(718, 520) == 310) {
           cutFirstTree();
         }
-        if (c.getObjectAtCoord(509, 571) == 309) {
+        if (c.getObjectAtCoord(718, 520) == 310) {
           cutFirstTree();
         }
-        if (c.getObjectAtCoord(507, 567) == 309) {
+        c.walkTo(722, 507);
+        if (c.getObjectAtCoord(734, 506) == 310) {
           cutSecondTree();
         }
-        if (c.getObjectAtCoord(507, 567) == 309) {
+        if (c.getObjectAtCoord(734, 506) == 310) {
           cutSecondTree();
         }
-        if (c.getObjectAtCoord(507, 567) == 309) {
+        if (c.getObjectAtCoord(734, 506) == 310) {
           cutSecondTree();
         }
-        mainYewToAltYew();
-        if (c.getObjectAtCoord(513, 525) == 309) {
+        c.walkTo(722, 507);
+        if (c.getObjectAtCoord(718, 493) == 310) {
           cutThirdTree();
         }
-        if (c.getObjectAtCoord(513, 525) == 309) {
+        if (c.getObjectAtCoord(718, 493) == 310) {
           cutThirdTree();
         }
-        if (c.getObjectAtCoord(513, 525) == 309) {
+        if (c.getObjectAtCoord(718, 493) == 310) {
           cutThirdTree();
         }
-        c.walkTo(505, 533);
-        altYewToMainYew();
+        c.walkTo(722, 507);
+        if (c.getObjectAtCoord(718, 493) == 310) {
+          cutFourthTree();
+        }
+        if (c.getObjectAtCoord(718, 493) == 310) {
+          cutFourthTree();
+        }
+        if (c.getObjectAtCoord(718, 493) == 310) {
+          cutFourthTree();
+        }
+        c.walkTo(695, 521); // error walking here
+        if (c.getObjectAtCoord(678, 518) == 310) {
+          cutFifthTree();
+        }
+        if (c.getObjectAtCoord(678, 518) == 310) {
+          cutFifthTree();
+        }
+        if (c.getObjectAtCoord(678, 518) == 310) {
+          cutFifthTree();
+        }
+        c.walkTo(696, 521);
+        c.walkTo(710, 519);
+        c.walkTo(722, 507);
+
       } else {
         goToBank();
       }
     }
   }
 
-  private void cutFirstTree() {
-    c.walkTo(510, 570);
-    c.atObject(509, 571);
+  public void cutFirstTree() {
+    c.walkTo(718, 519);
+    c.atObject(718, 520);
     c.sleep(2000);
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
       c.sleep(1000);
@@ -119,9 +130,9 @@ public final class K_ArdyYewTree extends K_kailaScript {
     }
   }
 
-  private void cutSecondTree() {
-    c.walkTo(509, 568);
-    c.atObject(507, 567);
+  public void cutSecondTree() {
+    c.walkTo(733, 506);
+    c.atObject(734, 506);
     c.sleep(2000);
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
       c.sleep(1000);
@@ -131,71 +142,69 @@ public final class K_ArdyYewTree extends K_kailaScript {
     }
   }
 
-  private void cutThirdTree() {
-    c.walkTo(512, 526);
-    c.atObject(513, 525);
+  public void cutThirdTree() {
+    c.walkTo(718, 494);
+    c.atObject(718, 493);
     c.sleep(2000);
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
       c.sleep(1000);
     }
     if (c.getInventoryItemCount() > 29) {
-      altYewToMainYew();
-      c.walkTo(511, 571);
-      bankToYews();
+      goToBank();
     }
   }
 
-  private void mainYewToAltYew() {
-    //  c.walkTo(511,559);
-    c.walkTo(507, 553);
-    c.walkTo(505, 541);
+  public void cutFourthTree() {
+    c.walkTo(718, 494);
+    c.atObject(718, 493);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      goToBank();
+    }
   }
 
-  private void altYewToMainYew() {
-    c.walkTo(505, 541);
-    c.walkTo(507, 553);
+  public void cutFifthTree() {
+    c.walkTo(679, 518);
+    c.atObject(678, 518);
+    c.sleep(2000);
+    while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(1000);
+    }
+    if (c.getInventoryItemCount() > 29) {
+      c.walkTo(696, 521);
+      c.walkTo(710, 519);
+      goToBank();
+    }
   }
 
-  private void yewToBank() {
-    c.walkTo(512, 571);
-    c.walkTo(512, 577);
-    c.walkTo(521, 588);
-    c.walkTo(534, 595);
-    c.walkTo(547, 602);
-    c.walkTo(550, 612);
-  }
-
-  private void bankToYews() {
-    c.walkTo(550, 612);
-    c.walkTo(547, 602);
-    c.walkTo(534, 595);
-    c.walkTo(521, 588);
-    c.walkTo(512, 577);
-    c.walkTo(512, 571);
-  }
-
-  private void goToBank() {
-    c.setStatus("@gre@Walking to Bank..");
-    yewToBank();
-    c.setStatus("@gre@Done Walking to Bank..");
-    c.walkTo(551, 613);
+  public void goToBank() {
+    c.walkTo(715, 516);
+    if (c.currentY() < 1000) { // added to fix index out of bounds
+      c.atObject(714, 516); // 714 out of bounds
+      c.sleep(1000);
+    }
+    c.sleep(100);
+    c.walkTo(714, 1454);
     totalTrips = totalTrips + 1;
     bank();
-    c.setStatus("@gre@Going to Yews..");
-    bankToYews();
-    c.setStatus("@gre@Done Walking to Yews..");
+    c.walkTo(714, 1459);
+    c.atObject(714, 1460);
+    c.walkTo(722, 507);
   }
 
-  private void bank() {
+  public void bank() {
 
-    c.setStatus("@yel@Banking..");
+    c.setStatus("@blu@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
 
-      totalLog = totalLog + c.getInventoryItemCount(635);
+      totalLog = totalLog + c.getInventoryItemCount(636);
 
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 1263
@@ -209,16 +218,15 @@ public final class K_ArdyYewTree extends K_kailaScript {
         }
       }
 
-      logInBank = c.getBankItemCount(635);
+      logInBank = c.getBankItemCount(636);
       c.closeBank();
       c.sleep(1000);
     }
   }
   // GUI stuff below (icky)
-
-  private void setupGUI() {
-    JLabel header = new JLabel("Ardy Yew Logs by Kaila");
-    JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
+  public void setupGUI() {
+    JLabel header = new JLabel("Gnome Magic Logs by Kaila");
+    JLabel label1 = new JLabel("Start in Gnome Stronghold west of bank, near trees!");
     JLabel label2 = new JLabel("Wield or have rune axe in Inv");
     JButton startScriptButton = new JButton("Start");
 
@@ -237,7 +245,6 @@ public final class K_ArdyYewTree extends K_kailaScript {
     scriptFrame.add(label1);
     scriptFrame.add(label2);
     scriptFrame.add(startScriptButton);
-
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
@@ -251,7 +258,6 @@ public final class K_ArdyYewTree extends K_kailaScript {
       int successPerHr = 0;
       int tripSuccessPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
@@ -261,9 +267,9 @@ public final class K_ArdyYewTree extends K_kailaScript {
         // divide by zero
       }
       int x = 6;
-      int y = 21;
-      c.drawString("@red@Ardy Yew Logs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      int y = 24;
+      c.drawString("@red@Gnome Magic Logs @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@__________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Logs Cut: @gre@"
@@ -286,7 +292,7 @@ public final class K_ArdyYewTree extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
+      c.drawString("@whi@__________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

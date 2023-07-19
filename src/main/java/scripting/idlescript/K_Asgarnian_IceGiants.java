@@ -5,24 +5,19 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Ice Dungeon Hob/Pirate Killer
+ * Ice Dungeon Ice Giant/Warrior Killer - By Kaila
  *
- * <p>
+ * <p>This bot supports the "autostart" Parameter"); Usage: foodname numberOfFood potUp? example:
+ * "shark,5,true". "autostart": uses lobsters,5,true.
  *
- * <p>Start in Fally East bank or in Ice Cave.
+ * <p>Start in Fally East bank or In Ice Cave. Food in bank REQUIRED. Use regular Atk/Str Pots
+ * Selector. Food Withdraw amount Selector Type of Food Array Selector
  *
- * <p>Food in bank required. (pots optional).
- *
- * <p>Use regular Atk/Str Pots Option.
- *
- * <p>Food Withdraw amount Selection.
- *
- * @author Kaila
+ * <p>Author - Kaila
  */
-public final class K_AsgarnianPirateHobs extends K_kailaScript {
-
+public final class K_Asgarnian_IceGiants extends K_kailaScript {
   private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(282, 3522, x, y) <= 14; // center of lootzone
+    return c.distance(308, 3520, x, y) <= 15; // center of lootzone
   }
 
   private static final int[] loot = {
@@ -34,21 +29,18 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     159, // emerald
     158, // ruby
     157, // diamond
-    40, // nature rune
-    42, // law rune
     33, // air rune
     34, // Earth rune
-    36, // body runes
     31, // fire rune
     32, // water rune
+    36, // body runes
+    46, // cosmic
+    40, // nature rune
+    42, // law rune
+    35, // mind rune
     41, // chaos rune
     38, // death rune
     619, // blood rune
-    46, // cosmic
-    11, // bronze arrow
-    1026, // unholy mould
-    10, // coins
-    20, // bones
     165, // Grimy Guam
     435, // Grimy mar
     436, // Grimy tar
@@ -58,14 +50,37 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     440, // Grimy ava
     441, // Grimy kwu
     442, // Grimy cada
-    443 // Grimy dwu
+    443, // Grimy dwu
+    10, // coins
+    153, // mithril ore
+    11, // bronze arrow
+    433, // Black Kite
+    126, // Mithril Square
+    413, // Big bones
+    20 // bones
   };
+
+  private void startSequence() {
+    c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
+    c.displayMessage("@red@Start in Fally East bank with Armor");
+    c.displayMessage("@red@Sharks IN BANK REQUIRED");
+    startTime = System.currentTimeMillis();
+    if (c.isInBank()) {
+      c.closeBank();
+    }
+    if (c.currentY() < 3000) {
+      bank();
+      BankToIce();
+      c.sleep(1380);
+    }
+  } // param 0 - type of food, param 1 - number of food, param 2 - potUp
 
   public int start(String[] parameters) {
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      c.displayMessage("Got Autostart, using 1 Shark, yes pots", 0);
-      System.out.println("Got Autostart, using 1 Shark, yes pots");
-      foodWithdrawAmount = 1;
+      c.displayMessage("Got Autostart, using 2 Lobs, yes pots", 0);
+      System.out.println("Got Autostart, using 2 Lobs, yes pots");
+      foodId = 373;
+      foodWithdrawAmount = 2;
       potUp = true;
       guiSetup = true;
       scriptStarted = true;
@@ -77,17 +92,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
-      c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
-      c.displayMessage("@red@Start in Fally East bank with Armor");
-      c.displayMessage("@red@Sharks IN BANK REQUIRED");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
-      if (c.currentY() < 3000) {
-        bank();
-        BankToIce();
-        c.sleep(1380);
-      }
+      startSequence();
       scriptStart();
     }
 
@@ -104,16 +109,11 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       if (c.getInventoryItemCount() < 30) {
         lootScript();
         if (potUp) {
-          attackBoost(0, false);
-          strengthBoost(0, false);
-        }
-        if (c.currentX() > 295 && c.currentY() > 3000) {
-          c.setStatus("@yel@Too far West, walking back..");
-          c.walkTo(283, 3521);
-          c.sleep(1000);
+          attackBoost(0, true);
+          strengthBoost(0, true);
         }
         if (!c.isInCombat()) {
-          int[] npcIds = {67, 137};
+          int[] npcIds = {135, 158};
           ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
@@ -122,29 +122,18 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
             c.sleep(1000);
           } else {
             c.sleep(1000);
-            if (c.currentX() != 283 || c.currentY() != 3521) {
-              c.walkTo(283, 3521);
+            if (c.currentX() != 305 || c.currentY() != 3522) {
+              c.walkTo(305, 3522);
               c.sleep(1000);
             }
           }
         }
         c.sleep(320);
       }
-      if (c.getInventoryItemCount() > 29
-          || c.getInventoryItemCount(foodId) == 0
-          || timeToBank
-          || timeToBankStay) {
+      if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount() == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
         IceToBank();
-        timeToBank = false;
         bank();
-        if (timeToBankStay) {
-          timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          endSession();
-        }
         BankToIce();
         c.sleep(618);
       }
@@ -188,17 +177,18 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
       totalLaw = totalLaw + c.getInventoryItemCount(42);
       totalNat = totalNat + c.getInventoryItemCount(40);
+      totalDeath = totalDeath + c.getInventoryItemCount(38);
+      totalBlood = totalBlood + c.getInventoryItemCount(619);
       totalLoop = totalLoop + c.getInventoryItemCount(527);
       totalTooth = totalTooth + c.getInventoryItemCount(526);
       totalLeft = totalLeft + c.getInventoryItemCount(1277);
-      totalSpear = totalSpear + c.getInventoryItemCount(1092);
       totalGems =
           totalGems
               + c.getInventoryItemCount(160)
               + c.getInventoryItemCount(159)
               + c.getInventoryItemCount(158)
               + c.getInventoryItemCount(157);
-
+      totalSpear = totalSpear + c.getInventoryItemCount(1092);
       if (c.getInventoryItemCount() > 2) {
         for (int itemId : c.getInventoryItemIds()) {
           if (itemId != 476
@@ -209,13 +199,13 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
           }
         }
       }
-      c.sleep(640);
+      c.sleep(1280);
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
       withdrawItem(foodId, foodWithdrawAmount);
-      bankItemCheck(foodId, 5);
+      bankItemCheck(foodId, 30);
       c.closeBank();
       c.sleep(640);
       checkInventoryItemCounts();
@@ -226,12 +216,9 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
     if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
       leaveCombat();
       c.setStatus("@red@Eating..");
-
       boolean ate = false;
-
       for (int id : c.getFoodIds()) {
         if (c.getInventoryItemCount(id) > 0) {
           c.itemCommand(id);
@@ -242,7 +229,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-        c.setStatus("@yel@Banking..");
+        // c.setStatus("@yel@Banking..");
         IceToBank();
         bank();
         BankToIce();
@@ -253,7 +240,10 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
 
   private void IceToBank() {
     c.setStatus("@gre@Walking to Bank..");
-    c.walkTo(280, 3521);
+    c.walkTo(302, 3519);
+    c.walkTo(293, 3519);
+    c.walkTo(291, 3521);
+    c.walkTo(284, 3522);
     c.walkTo(279, 3531);
     c.walkTo(279, 3540);
     c.walkTo(285, 3544);
@@ -298,6 +288,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     c.walkTo(289, 650);
     c.walkTo(287, 652);
     c.walkTo(287, 665);
+    // add pathing??
     c.walkTo(287, 673);
     c.walkTo(287, 680);
     c.walkTo(287, 694);
@@ -305,47 +296,54 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     c.walkTo(285, 712);
     c.atObject(285, 711); // go down ladder
     c.sleep(1000);
-    c.walkTo(282, 3543);
+    // c.walkTo(282,3543);
     c.walkTo(285, 3544);
     c.walkTo(279, 3540);
     c.walkTo(279, 3531);
-    c.walkTo(280, 3521);
+    c.walkTo(284, 3522);
+    c.walkTo(291, 3521);
+    c.walkTo(293, 3519);
+    c.walkTo(302, 3519);
+    c.walkTo(305, 3522);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
 
   private void setupGUI() {
-    JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer ~ By Kaila");
+
+    JLabel header = new JLabel("Ice Dungeon Ice Giant/Warrior Killer - by Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
-    JLabel label2 = new JLabel("Food in bank REQUIRED (pots optional)");
-    JLabel label3 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label4 = new JLabel("::bank ::bankstay");
-    JLabel label5 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JLabel spacer = new JLabel("             ");
+    JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
+    JLabel label3 = new JLabel("Example ::bank ");
+    JLabel label4 = new JLabel("Combat Styles ::attack :strength ::defense ::controller");
+    JLabel label5 = new JLabel("This bot supports the \"autostart\" Parameter");
+    JLabel label6 = new JLabel("Usage: foodname numberOfFood potUp?");
+    JLabel label7 = new JLabel("example: \"shark,5,true\"");
+    JLabel label8 = new JLabel("\"autostart\": uses lobsters,5,true");
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(6));
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(2); // sets default to sharks
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
-    fightModeField.setSelectedIndex(0); // sets default to controlled
-    JLabel foodLabel = new JLabel("Type of Food:");
-    JComboBox<String> foodField = new JComboBox<>(foodTypes);
-    foodField.setSelectedIndex(5); // sets default to lobs
-    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     JLabel blankLabel = new JLabel("          ");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
-          if (!foodWithdrawAmountField.getText().equals(""))
-            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-
-          potUp = potUpCheckbox.isSelected();
-          fightMode = fightModeField.getSelectedIndex();
           foodId = foodIds[foodField.getSelectedIndex()];
+          if (!foodWithdrawAmountField.getText().equals("")) {
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          } else if (foodWithdrawAmountField.getText().equals("")) {
+            foodWithdrawAmount = 1;
+          }
+          potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
-          startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
 
@@ -356,16 +354,22 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(label2);
+    scriptFrame.add(spacer);
     scriptFrame.add(label3);
     scriptFrame.add(label4);
+    scriptFrame.add(spacer);
     scriptFrame.add(label5);
+    scriptFrame.add(label6);
+    scriptFrame.add(label7);
+    scriptFrame.add(label8);
+    scriptFrame.add(spacer);
     scriptFrame.add(potUpCheckbox);
-    scriptFrame.add(fightModeLabel);
-    scriptFrame.add(fightModeField);
-    scriptFrame.add(foodLabel);
-    scriptFrame.add(foodField);
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(fightModeLabel);
+    scriptFrame.add(fightModeField);
     scriptFrame.add(blankLabel);
     scriptFrame.add(startScriptButton);
 
@@ -376,23 +380,10 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
   }
 
   @Override
-  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
+  public void chatCommandInterrupt(String commandText) {
     if (commandText.contains("bank")) {
-      c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
+      c.displayMessage("@red@Got banking command! Going to the Bank!");
       timeToBank = true;
-      c.sleep(100);
-    } else if (commandText.contains("bankstay")) {
-      c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
-      timeToBankStay = true;
-      c.sleep(100);
-    } else if (commandText.contains("potup")) {
-      if (!potUp) {
-        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
-        potUp = true;
-      } else {
-        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
-        potUp = false;
-      }
       c.sleep(100);
     } else if (commandText.contains(
         "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
@@ -421,7 +412,6 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -435,6 +425,8 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       int dwarSuccessPerHr = 0;
       int lawSuccessPerHr = 0;
       int natSuccessPerHr = 0;
+      int deathSuccessPerHr = 0;
+      int bloodSuccessPerHr = 0;
       int GemsSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
@@ -455,13 +447,15 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
         lawSuccessPerHr = (int) ((totalLaw + inventLaws) * scale);
         natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
         GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
+        deathSuccessPerHr = (int) ((totalDeath + inventDeath) * scale);
+        bloodSuccessPerHr = (int) ((totalBlood + inventBlood) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
 
       } catch (Exception e) {
         // divide by zero
       }
 
-      c.drawString("@red@Asgarnian Pirate Hobs @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Asgarnian Ice Slayer @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"
               + (totalGuam + inventGuam)
@@ -583,13 +577,33 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
+          "@whi@Deaths: @gre@"
+              + (totalDeath + inventDeath)
+              + "@yel@ (@whi@"
+              + String.format("%,d", deathSuccessPerHr)
+              + "@yel@/@whi@hr@yel@)",
+          350,
+          230,
+          0xFFFFFF,
+          1);
+      c.drawString(
+          "@whi@Bloods: @gre@"
+              + (totalBlood + inventBlood)
+              + "@yel@ (@whi@"
+              + String.format("%,d", bloodSuccessPerHr)
+              + "@yel@/@whi@hr@yel@)",
+          350,
+          244,
+          0xFFFFFF,
+          1);
+      c.drawString(
           "@whi@Total Gems: @gre@"
               + (totalGems + inventGems)
               + "@yel@ (@whi@"
               + String.format("%,d", GemsSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
           350,
-          230,
+          258,
           0xFFFFFF,
           1);
       c.drawString(
@@ -598,7 +612,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
               + "@yel@ / @whi@Loop: @gre@"
               + (totalLoop + inventLoop),
           350,
-          244,
+          272,
           0xFFFFFF,
           1);
       c.drawString(
@@ -607,7 +621,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
               + "@yel@ / @whi@Shield Half: @gre@"
               + (totalLeft + inventLeft),
           350,
-          258,
+          286,
           0xFFFFFF,
           1);
       c.drawString(
@@ -617,10 +631,10 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
           350,
-          272,
+          300,
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, 350, 286, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, 350, 314, 0xFFFFFF, 1);
     }
   }
 }

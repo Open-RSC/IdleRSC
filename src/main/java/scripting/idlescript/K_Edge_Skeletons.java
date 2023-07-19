@@ -17,29 +17,37 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_EdgeMankiller extends K_kailaScript {
+public final class K_Edge_Skeletons extends K_kailaScript {
 
   private static final int[] lowLevelLoot = {
-    unidGuam, // Grimy Guam
-    unidMar, // Grimy mar
-    unidTar, // Grimy tar
-    unidHar, // Grimy har
-    unidRan, // Grimy ranarr
-    unidIrit, // Grimy irit
-    unidAva, // Grimy ava
-    unidKwu, // Grimy kwu
-    unidCada, // Grimy cada
-    unidDwarf, // Grimy dwarf
-    mindRune, // mind rune
-    chaosRune, // chaos rune
-    earthRune, // Earth rune
-    fireRune, // fire rune
-    coins, // coins
-    11 // Bronze arrow
+    165, // Grimy Guam
+    435, // Grimy mar
+    436, // Grimy tar
+    437, // Grimy har
+    438, // Grimy ranarr
+    439, // Grimy irit
+    440, // Grimy ava
+    441, // Grimy kwu
+    442, // Grimy cada
+    443, // Grimy dwu
+    40, // nature rune
+    41, // chaos rune
+    11, // bronze arrows
+    33, // air rune
+    34, // earth rune
+    31, // fire rune
+    160, // saph
+    159, // emerald
+    158, // ruby
+    157, // diamond
+    526, // tooth half
+    527, // loop half
+    1277, // shield (left) half
+    1092 // rune spear
   };
 
   private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(213, 442, x, y) <= 9; // center of lootzone
+    return c.distance(229, 407, x, y) <= 18; // center of lootzone
   }
 
   public int start(String[] parameters) {
@@ -64,7 +72,7 @@ public final class K_EdgeMankiller extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Edge Man Killer ~ Kaila");
+      c.displayMessage("@red@Edge Skeletons ~ Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
 
       if (c.isInBank()) {
@@ -98,7 +106,7 @@ public final class K_EdgeMankiller extends K_kailaScript {
         if (!c.isInCombat()) {
           looting();
           if (buryBones) buryBones();
-          ORSCharacter npc = c.getNearestNpcById(11, false);
+          ORSCharacter npc = c.getNearestNpcById(46, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
@@ -213,7 +221,7 @@ public final class K_EdgeMankiller extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(1280);
+      c.sleep(1000);
       checkInventoryItemCounts();
     }
   }
@@ -243,24 +251,29 @@ public final class K_EdgeMankiller extends K_kailaScript {
   }
 
   private void bankToHouse() {
-    c.setStatus("@gre@Walking to Edge House..");
-    c.walkTo(217, 447);
-    c.walkTo(209, 446);
-    c.walkTo(209, 443);
+    c.setStatus("@gre@Walking to Edge Skeletons..");
+    c.walkTo(218, 447);
+    c.walkTo(220, 444);
+    c.walkTo(220, 430);
+    c.walkTo(220, 422);
+    c.walkTo(227, 416);
+    c.walkTo(229, 407); // 229,407
     c.setStatus("@gre@Done Walking..");
   }
 
   private void houseToBank() {
     c.setStatus("@gre@Walking to Edge Bank..");
-    c.walkTo(209, 443);
-    c.walkTo(209, 446);
-    c.walkTo(217, 447);
+    c.walkTo(227, 416);
+    c.walkTo(220, 422);
+    c.walkTo(220, 430);
+    c.walkTo(220, 444);
+    c.walkTo(218, 447);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Mankiller ~ by Kaila");
+    JLabel header = new JLabel("Edge Skeletons ~ by Kaila");
     JLabel label1 = new JLabel("Start in Edge House or Edge Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label3 = new JLabel("::bank ::potup ::lootbones ::burybones");
@@ -430,9 +443,9 @@ public final class K_EdgeMankiller extends K_kailaScript {
         kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
         cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
         dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
-        TripSuccessPerHr = (int) (totalTrips * scale);
         herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
-        runeSuccessPerHr = (int) (totalRunes * scale);
+        runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
+        TripSuccessPerHr = (int) (totalTrips * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
@@ -442,7 +455,7 @@ public final class K_EdgeMankiller extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Mankiller @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Skeletons @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guam: @gre@"
@@ -515,7 +528,7 @@ public final class K_EdgeMankiller extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Total herbs: @gre@"
+          "@whi@Total Herbs: @gre@"
               + (totalHerbs + inventHerbs)
               + "@yel@ (@whi@"
               + String.format("%,d", herbSuccessPerHr)
@@ -526,7 +539,7 @@ public final class K_EdgeMankiller extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Total Runes: @gre@"
-              + (totalRunes + inventRunes)
+              + totalRunes
               + "@yel@ (@whi@"
               + String.format("%,d", runeSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",

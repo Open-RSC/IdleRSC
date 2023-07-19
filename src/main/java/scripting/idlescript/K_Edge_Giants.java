@@ -17,8 +17,8 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_ArdyMossGiants extends K_kailaScript {
-  private static boolean lootSpinachRoll = false;
+public final class K_Edge_Giants extends K_kailaScript {
+
   private static final int[] lowLevelLoot = {
     165, // Grimy Guam
     435, // Grimy mar
@@ -32,14 +32,15 @@ public final class K_ArdyMossGiants extends K_kailaScript {
     443, // Grimy dwu
     42, // law rune
     40, // nature rune
+    35, // mind rune
     41, // chaos rune
     38, // Death Rune
-    619, // blood rune
     // 36,      //body rune
-    46, // cosmic rune
+    // 46,    //cosmic rune
     33, // air rune
+    32, // water rune
     34, // earth rune
-    432, // black sq shield
+    31, // fire rune
     160, // saph
     159, // emerald
     158, // ruby
@@ -58,14 +59,15 @@ public final class K_ArdyMossGiants extends K_kailaScript {
     443, // Grimy dwu
     42, // law rune
     40, // nature rune
+    // 35,      //mind rune
     41, // chaos rune
     38, // Death Rune
-    619, // blood rune
     // 36,      //body rune
-    // 46,    //cosmic rune
-    // 33, // air rune
-    // 34, // earth rune
-    432, // black sq shield
+    // 46,      //cosmic rune
+    33, // air rune
+    32, // water rune
+    34, // earth rune
+    31, // fire rune
     160, // saph
     159, // emerald
     158, // ruby
@@ -77,7 +79,7 @@ public final class K_ArdyMossGiants extends K_kailaScript {
   };
 
   private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(637, 504, x, y) <= 20; // center of lootzone
+    return c.distance(208, 3328, x, y) <= 14; // center of lootzone
   }
 
   public int start(String[] parameters) {
@@ -103,14 +105,14 @@ public final class K_ArdyMossGiants extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Ardy Moss Giants ~ Kaila");
+      c.displayMessage("@red@Edge Dungeon Giant Killer ~ Kaila");
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
       c.displayMessage("@red@Dusty Key Required");
 
       if (c.isInBank()) {
         c.closeBank();
       }
-      if (c.currentY() > 565) {
+      if (c.currentY() < 3000) {
         bank();
         bankToDungeon();
         c.sleep(1380);
@@ -133,16 +135,17 @@ public final class K_ArdyMossGiants extends K_kailaScript {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
+      checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
-          if (lootSpinachRoll) lootSpinachRoll();
+          if (lootLimp) lootLimp();
           if (lootBones) lootBones();
           if (buryBones) buryBones();
-          ORSCharacter npc = c.getNearestNpcById(104, false);
-          c.setStatus("@yel@Attacking..");
+          ORSCharacter npc = c.getNearestNpcById(61, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
@@ -192,9 +195,9 @@ public final class K_ArdyMossGiants extends K_kailaScript {
     }
   }
 
-  private void lootSpinachRoll() {
+  private void lootLimp() {
     try {
-      int[] coords = c.getNearestItemById(179);
+      int[] coords = c.getNearestItemById(220);
       if (coords != null && isWithinLootzone(coords[0], coords[1])) {
         c.setStatus("@yel@Looting..");
         c.walkToAsync(coords[0], coords[1], 0);
@@ -255,31 +258,19 @@ public final class K_ArdyMossGiants extends K_kailaScript {
       totalKwuarm = totalKwuarm + c.getInventoryItemCount(441);
       totalCada = totalCada + c.getInventoryItemCount(442);
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
-
       totalLaw = totalLaw + c.getInventoryItemCount(42);
       totalNat = totalNat + c.getInventoryItemCount(40);
-      totalChaos = totalChaos + c.getInventoryItemCount(41);
-      totalDeath = totalDeath + c.getInventoryItemCount(38);
-      totalBlood = totalBlood + c.getInventoryItemCount(619);
+      totalFire = totalFire + c.getInventoryItemCount(31);
       totalEarth = totalEarth + c.getInventoryItemCount(34);
-      totalAir = totalAir + c.getInventoryItemCount(33);
-      totalCosmic = totalCosmic + c.getInventoryItemCount(46);
-
+      totalChaos = totalChaos + c.getInventoryItemCount(41);
+      totalWater = totalWater + c.getInventoryItemCount(32);
       totalLoop = totalLoop + c.getInventoryItemCount(527);
       totalTooth = totalTooth + c.getInventoryItemCount(526);
       totalLeft = totalLeft + c.getInventoryItemCount(1277);
       totalSpear = totalSpear + c.getInventoryItemCount(1092);
       totalBones = totalBones + c.getInventoryItemCount(413);
       foodInBank = c.getBankItemCount(foodId);
-      totalRunes =
-          totalLaw
-              + totalNat
-              + totalEarth
-              + totalChaos
-              + totalDeath
-              + totalBlood
-              + totalAir
-              + totalCosmic;
+      totalRunes = totalFire + totalNat + totalEarth + totalChaos + totalWater + totalLaw;
       totalGems =
           totalGems
               + c.getInventoryItemCount(160)
@@ -306,10 +297,13 @@ public final class K_ArdyMossGiants extends K_kailaScript {
         withdrawAttack(1);
         withdrawStrength(1);
       }
+      withdrawItem(99, 1); // brass key check
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(1000);
+      brassKeyCheck();
+      checkInventoryItemCounts();
     }
   }
 
@@ -338,36 +332,55 @@ public final class K_ArdyMossGiants extends K_kailaScript {
   }
 
   private void bankToDungeon() {
-    c.setStatus("@gre@Walking to Moss Giants..");
-    c.walkTo(581, 571);
-    c.walkTo(588, 568);
-    c.walkTo(588, 562);
-    c.walkTo(593, 558);
-    c.walkTo(600, 551);
-    c.walkTo(602, 544);
-    c.walkTo(611, 536);
-    c.walkTo(623, 526);
-    c.walkTo(633, 516);
+    c.setStatus("@gre@Walking to Edge Dungeon..");
+    c.walkTo(151, 507);
+    c.walkTo(162, 507);
+    c.walkTo(172, 507);
+    c.walkTo(182, 507);
+    c.walkTo(192, 497);
+    c.walkTo(202, 487);
+    c.walkTo(202, 485);
+    brassKeyCheck();
+    c.setStatus("@red@Crossing Dusty Gate..");
+    brassDoorSouthToNorth();
+    c.setStatus("@gre@Walking to Edge Dungeon..");
+    c.walkTo(203, 483);
+    c.atObject(203, 482);
+    c.sleep(2000);
+    c.walkTo(207, 3315);
+    c.walkTo(208, 3317);
+    // giantGateCheck();  //unknown if necessary when server reboots, gate was open when script was
+    // written
+    c.walkTo(208, 3322);
     c.setStatus("@gre@Done Walking..");
   }
 
   private void dungeonToBank() {
-    c.setStatus("@gre@Walking to Ardy North Bank..");
-    c.walkTo(633, 516);
-    c.walkTo(623, 526);
-    c.walkTo(611, 536);
-    c.walkTo(602, 544);
-    c.walkTo(600, 551);
-    c.walkTo(593, 558);
-    c.walkTo(588, 562);
-    c.walkTo(588, 568);
-    c.walkTo(581, 571);
+    c.setStatus("@gre@Walking to Varrock West..");
+    c.walkTo(208, 3318);
+    // giantGateCheck();  //unknown if necessary when server reboots, gate was open when script was
+    // written
+    c.walkTo(207, 3315);
+    c.walkTo(203, 3315);
+    c.atObject(203, 3314);
+    c.sleep(2000);
+    c.walkTo(202, 484);
+    brassKeyCheck();
+    c.setStatus("@red@Crossing Dusty Gate..");
+    brassDoorNorthToSouth();
+    c.setStatus("@gre@Walking to Varrock West..");
+    c.walkTo(202, 487);
+    c.walkTo(192, 497);
+    c.walkTo(182, 507);
+    c.walkTo(172, 507);
+    c.walkTo(162, 507);
+    c.walkTo(151, 507);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Ardy Moss Giants ~ by Kaila");
+    JLabel header = new JLabel("Edge Mankiller ~ by Kaila");
     JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
     JLabel label6 = new JLabel("Dusty Key Required + Food in Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
@@ -376,7 +389,7 @@ public final class K_ArdyMossGiants extends K_kailaScript {
     JLabel label5 = new JLabel("Param Format: \"auto\"");
     JCheckBox lootBonesCheckbox = new JCheckBox("Pickup Big Bones?", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Big Bones?", true);
-    JCheckBox lootSpinachRollCheckbox = new JCheckBox("Loot Spinach Rolls?", true);
+    JCheckBox lootLimpCheckbox = new JCheckBox("Loot Limps?", false);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -396,7 +409,7 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
           lootBones = lootBonesCheckbox.isSelected();
-          lootSpinachRoll = lootSpinachRollCheckbox.isSelected();
+          lootLimp = lootLimpCheckbox.isSelected();
           buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
@@ -419,7 +432,7 @@ public final class K_ArdyMossGiants extends K_kailaScript {
     scriptFrame.add(label5);
     scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(buryBonesCheckbox);
-    scriptFrame.add(lootSpinachRollCheckbox);
+    scriptFrame.add(lootLimpCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
@@ -445,15 +458,13 @@ public final class K_ArdyMossGiants extends K_kailaScript {
       c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
       timeToBankStay = true;
       c.sleep(100);
-    } else if (commandText.contains("lootspin")) {
-      if (!lootSpinachRoll) {
-        c.displayMessage(
-            "@or1@Got toggle @red@lootSpinachRoll@or1@, turning on SpinachRoll looting!");
-        lootSpinachRoll = true;
+    } else if (commandText.contains("lootlimp")) {
+      if (!lootLimp) {
+        c.displayMessage("@or1@Got toggle @red@lootlimp@or1@, turning on Limpwurt looting!");
+        lootLimp = true;
       } else {
-        c.displayMessage(
-            "@or1@Got toggle @red@lootSpinachRoll@or1@, turning off SpinachRoll looting!");
-        lootSpinachRoll = false;
+        c.displayMessage("@or1@Got toggle @red@lootlimp@or1@, turning off Limpwurt looting!");
+        lootLimp = false;
       }
       c.sleep(100);
     } else if (commandText.contains("lootbones")) {
@@ -558,22 +569,22 @@ public final class K_ArdyMossGiants extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        guamSuccessPerHr = (int) (totalGuam * scale);
-        marSuccessPerHr = (int) (totalMar * scale);
-        tarSuccessPerHr = (int) (totalTar * scale);
-        harSuccessPerHr = (int) (totalHar * scale);
-        ranSuccessPerHr = (int) (totalRan * scale);
-        iritSuccessPerHr = (int) (totalIrit * scale);
-        avaSuccessPerHr = (int) (totalAva * scale);
-        kwuSuccessPerHr = (int) (totalKwuarm * scale);
-        cadaSuccessPerHr = (int) (totalCada * scale);
-        dwarSuccessPerHr = (int) (totalDwarf * scale);
-        lawSuccessPerHr = (int) (totalLaw * scale);
-        natSuccessPerHr = (int) (totalNat * scale);
-        GemsSuccessPerHr = (int) (totalGems * scale);
+        guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
+        marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
+        tarSuccessPerHr = (int) ((totalTar + inventTar) * scale);
+        harSuccessPerHr = (int) ((totalHar + inventHar) * scale);
+        ranSuccessPerHr = (int) ((totalRan + inventRan) * scale);
+        iritSuccessPerHr = (int) ((totalIrit + inventIrit) * scale);
+        avaSuccessPerHr = (int) ((totalAva + inventAva) * scale);
+        kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
+        cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
+        dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
+        lawSuccessPerHr = (int) ((totalLaw + inventLaws) * scale);
+        natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
+        GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-        herbSuccessPerHr = (int) (totalHerbs * scale);
-        runeSuccessPerHr = (int) (totalRunes * scale);
+        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
+        runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
@@ -583,22 +594,22 @@ public final class K_ArdyMossGiants extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Ardy Moss Giants @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Dungeon Giants @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(
             "@whi@Guam: @gre@"
-                + totalGuam
+                + (totalGuam + inventGuam)
                 + "@yel@ (@whi@"
                 + String.format("%,d", guamSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Mar: @gre@"
-                + totalMar
+                + (totalMar + inventMar)
                 + "@yel@ (@whi@"
                 + String.format("%,d", marSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Tar: @gre@"
-                + totalTar
+                + (totalTar + inventTar)
                 + "@yel@ (@whi@"
                 + String.format("%,d", tarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -608,17 +619,17 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Har: @gre@"
-                + totalHar
+                + (totalHar + inventHar)
                 + "@yel@ (@whi@"
                 + String.format("%,d", harSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Rana: @gre@"
-                + totalRan
+                + (totalRan + inventRan)
                 + "@yel@ (@whi@"
                 + String.format("%,d", ranSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Irit: @gre@"
-                + totalIrit
+                + (totalIrit + inventIrit)
                 + "@yel@ (@whi@"
                 + String.format("%,d", iritSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)",
@@ -628,17 +639,17 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Ava: @gre@"
-                + totalAva
+                + (totalAva + inventAva)
                 + "@yel@ (@whi@"
                 + String.format("%,d", avaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Kwu: @gre@"
-                + totalKwuarm
+                + (totalKwuarm + inventKwuarm)
                 + "@yel@ (@whi@"
                 + String.format("%,d", kwuSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Cada: @gre@"
-                + totalCada
+                + (totalCada + inventCada)
                 + "@yel@ (@whi@"
                 + String.format("%,d", cadaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -648,17 +659,17 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Dwar: @gre@"
-                + totalDwarf
+                + (totalDwarf + inventDwarf)
                 + "@yel@ (@whi@"
                 + String.format("%,d", dwarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Laws: @gre@"
-                + totalLaw
+                + (totalLaw + inventLaws)
                 + "@yel@ (@whi@"
                 + String.format("%,d", lawSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Nats: @gre@"
-                + totalNat
+                + (totalNat + inventNats)
                 + "@yel@ (@whi@"
                 + String.format("%,d", natSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -668,12 +679,12 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Total Gems: @gre@"
-                + totalGems // remove for regular druids!!!
+                + (totalGems + inventGems) // remove for regular druids!!!
                 + "@yel@ (@whi@"
                 + String.format("%,d", GemsSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Herbs: @gre@"
-                + totalHerbs
+                + (totalHerbs + inventHerbs)
                 + "@yel@ (@whi@"
                 + String.format("%,d", herbSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -683,13 +694,13 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Tooth: @gre@"
-                + totalTooth // remove for regular druids!!!
+                + (totalTooth + inventTooth) // remove for regular druids!!!
                 + "@yel@ / @whi@Loop: @gre@"
-                + totalLoop
+                + (totalLoop + inventLoop)
                 + "@yel@ / @whi@R.Spear: @gre@"
-                + totalSpear
+                + (totalSpear + inventSpear)
                 + "@yel@ / @whi@Half: @gre@"
-                + totalLeft,
+                + (totalLeft + inventLeft),
             x,
             y + (14 * 6),
             0xFFFFFF,
@@ -697,7 +708,7 @@ public final class K_ArdyMossGiants extends K_kailaScript {
 
         c.drawString(
             "@whi@Total Runes: @gre@"
-                + totalRunes
+                + (totalRunes + inventRunes)
                 + "@yel@ (@whi@"
                 + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
@@ -714,17 +725,17 @@ public final class K_ArdyMossGiants extends K_kailaScript {
       } else {
         c.drawString(
             "@whi@Rana: @gre@"
-                + totalRan
+                + (totalRan + inventRan)
                 + "@yel@ (@whi@"
                 + String.format("%,d", ranSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Irit: @gre@"
-                + totalIrit
+                + (totalIrit + inventIrit)
                 + "@yel@ (@whi@"
                 + String.format("%,d", iritSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Avan: @gre@"
-                + totalAva
+                + (totalAva + inventAva)
                 + "@yel@ (@whi@"
                 + String.format("%,d", avaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -734,17 +745,17 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Kwua: @gre@"
-                + totalKwuarm
+                + (totalKwuarm + inventKwuarm)
                 + "@yel@ (@whi@"
                 + String.format("%,d", kwuSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Cada: @gre@"
-                + totalCada
+                + (totalCada + inventCada)
                 + "@yel@ (@whi@"
                 + String.format("%,d", cadaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Dwar: @gre@"
-                + totalDwarf
+                + (totalDwarf + inventDwarf)
                 + "@yel@ (@whi@"
                 + String.format("%,d", dwarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -754,12 +765,12 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Total Gems: @gre@"
-                + totalGems // remove for regular druids!!!
+                + (totalGems + inventGems) // remove for regular druids!!!
                 + "@yel@ (@whi@"
                 + String.format("%,d", GemsSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Herbs: @gre@"
-                + totalHerbs
+                + (totalHerbs + inventHerbs)
                 + "@yel@ (@whi@"
                 + String.format("%,d", herbSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -769,20 +780,20 @@ public final class K_ArdyMossGiants extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Tooth: @gre@"
-                + totalTooth // remove for regular druids!!!
+                + (totalTooth + inventTooth) // remove for regular druids!!!
                 + "@yel@ / @whi@Loop: @gre@"
-                + totalLoop
+                + (totalLoop + inventLoop)
                 + "@yel@ / @whi@R.Spear: @gre@"
-                + totalSpear
+                + (totalSpear + inventSpear)
                 + "@yel@ / @whi@Half: @gre@"
-                + totalLeft,
+                + (totalLeft + inventLeft),
             x,
             y + (14 * 4),
             0xFFFFFF,
             1);
         c.drawString(
             "@whi@Total Runes: @gre@"
-                + totalRunes
+                + (totalRunes + inventRunes)
                 + "@yel@ (@whi@"
                 + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "

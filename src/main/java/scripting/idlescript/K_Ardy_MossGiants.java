@@ -5,21 +5,20 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Taverly Druid Circle - By Kaila.
+ * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
  *
- * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Alter Prayer Boost, Food Type,
- * and Food Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot
- * option, and Autostart.
+ * <p>
  *
- * <p>Author - Kaila
+ * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
+ * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
+ * and Autostart.
+ *
+ * <p>- cannot support bone looting with this bot due to the shape of the dungeon
+ *
+ * <p>@Author - Kaila
  */
-public final class K_TavDruidCircle extends K_kailaScript {
-  private static boolean prayerBoost = true;
-
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(362, 462, x, y) <= 12; // center of lootzone
-  }
-
+public final class K_Ardy_MossGiants extends K_kailaScript {
+  private static boolean lootSpinachRoll = false;
   private static final int[] lowLevelLoot = {
     165, // Grimy Guam
     435, // Grimy mar
@@ -32,10 +31,23 @@ public final class K_TavDruidCircle extends K_kailaScript {
     442, // Grimy cada
     443, // Grimy dwu
     42, // law rune
-    32, // water rune
-    34, // Earth rune
-    31, // fire rune
-    41 // chaos rune
+    40, // nature rune
+    41, // chaos rune
+    38, // Death Rune
+    619, // blood rune
+    // 36,      //body rune
+    46, // cosmic rune
+    33, // air rune
+    34, // earth rune
+    432, // black sq shield
+    160, // saph
+    159, // emerald
+    158, // ruby
+    157, // diamond
+    526, // tooth half
+    527, // loop half
+    1277, // shield (left) half
+    1092 // rune spear
   };
   private static final int[] highLevelLoot = {
     438, // Grimy ranarr
@@ -45,11 +57,28 @@ public final class K_TavDruidCircle extends K_kailaScript {
     442, // Grimy cada
     443, // Grimy dwu
     42, // law rune
-    32, // water rune
-    34, // Earth rune
-    31, // fire rune
-    41 // chaos rune
+    40, // nature rune
+    41, // chaos rune
+    38, // Death Rune
+    619, // blood rune
+    // 36,      //body rune
+    // 46,    //cosmic rune
+    // 33, // air rune
+    // 34, // earth rune
+    432, // black sq shield
+    160, // saph
+    159, // emerald
+    158, // ruby
+    157, // diamond
+    526, // tooth half
+    527, // loop half
+    1277, // shield (left) half
+    1092 // rune spear
   };
+
+  private static boolean isWithinLootzone(int x, int y) {
+    return c.distance(637, 504, x, y) <= 20; // center of lootzone
+  }
 
   public int start(String[] parameters) {
     if (parameters[0].toLowerCase().startsWith("auto")) {
@@ -57,15 +86,14 @@ public final class K_TavDruidCircle extends K_kailaScript {
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
-      lootBones = true;
       potUp = false;
-      prayerBoost = true;
+      lootBones = true;
+      buryBones = false;
       c.displayMessage("Got Autostart Parameter");
-      c.log(
-          "@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, Loot Bones, no pot up, yes prayer boosting",
-          "cya");
-      scriptStarted = true;
+      c.log("Auto-Starting using 1 Shark, controlled, Loot Low Level, no pot up", "cya");
+      c.log("Looting Bones, Banking bones", "cya");
       guiSetup = true;
+      scriptStarted = true;
     }
     if (!guiSetup) {
       setupGUI();
@@ -75,16 +103,16 @@ public final class K_TavDruidCircle extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Tav Druid Circle - By Kaila");
-      c.displayMessage("@red@Start in Fally west or druid Circle");
-      c.displayMessage("@red@Food in Bank required");
+      c.displayMessage("@red@Ardy Moss Giants ~ Kaila");
+      c.displayMessage("@red@Start in Varrock West or in Dungeon");
+      c.displayMessage("@red@Dusty Key Required");
 
       if (c.isInBank()) {
         c.closeBank();
       }
-      if (c.currentY() > 515) {
+      if (c.currentY() > 565) {
         bank();
-        BankToDruid();
+        bankToDungeon();
         c.sleep(1380);
       }
       whatIsFoodName();
@@ -97,38 +125,30 @@ public final class K_TavDruidCircle extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-      buryBones();
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
-      }
-      if (c.currentY() > 473) {
-        c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
-        c.walkTo(362, 464);
-        c.sleep(640);
       }
       checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          if (prayerBoost) {
-            recharge();
-            pray();
-          }
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
-          ORSCharacter npc = c.getNearestNpcById(200, false);
+          if (lootSpinachRoll) lootSpinachRoll();
+          if (lootBones) lootBones();
+          if (buryBones) buryBones();
+          ORSCharacter npc = c.getNearestNpcById(104, false);
+          c.setStatus("@yel@Attacking..");
           if (npc != null) {
-            c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
             if (lootLowLevel) lowLevelLooting();
             else highLevelLooting();
-            if (lootBones) lootBones();
+            c.sleep(100);
           }
         } else {
           c.sleep(640);
@@ -140,7 +160,7 @@ public final class K_TavDruidCircle extends K_kailaScript {
           || timeToBankStay) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
-        DruidToBank();
+        dungeonToBank();
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
@@ -150,7 +170,7 @@ public final class K_TavDruidCircle extends K_kailaScript {
           c.setAutoLogin(false);
           c.stop();
         }
-        BankToDruid();
+        bankToDungeon();
         c.sleep(618);
       } else {
         c.sleep(100);
@@ -159,21 +179,30 @@ public final class K_TavDruidCircle extends K_kailaScript {
   }
 
   private void lootBones() {
-    for (int lootId : bones) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@No NPCs, Picking bones");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-          buryBones();
-        } else {
-          c.sleep(300);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+    int[] coords = c.getNearestItemById(413);
+    if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
+      c.setStatus("@yel@Picking bones");
+      c.walkToAsync(coords[0], coords[1], 0);
+      c.pickupItem(coords[0], coords[1], 413, true, false);
+      c.sleep(640);
+      if (buryBones) buryBones();
+    } else {
+      if (buryBones) buryBones();
+      c.sleep(100);
+    }
+  }
+
+  private void lootSpinachRoll() {
+    try {
+      int[] coords = c.getNearestItemById(179);
+      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+        c.setStatus("@yel@Looting..");
+        c.walkToAsync(coords[0], coords[1], 0);
+        c.pickupItem(coords[0], coords[1], 220, true, false);
+        c.sleep(640);
       }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -216,11 +245,6 @@ public final class K_TavDruidCircle extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
-      //       32,      //water rune
-      // 34, 	 //Earth rune
-      // 31,      //fire rune  +total runes
-      // 41       //chaos rune
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -231,14 +255,37 @@ public final class K_TavDruidCircle extends K_kailaScript {
       totalKwuarm = totalKwuarm + c.getInventoryItemCount(441);
       totalCada = totalCada + c.getInventoryItemCount(442);
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
+
       totalLaw = totalLaw + c.getInventoryItemCount(42);
       totalNat = totalNat + c.getInventoryItemCount(40);
-      totalFire = totalFire + c.getInventoryItemCount(31);
-      totalEarth = totalEarth + c.getInventoryItemCount(34);
       totalChaos = totalChaos + c.getInventoryItemCount(41);
-      totalWater = totalWater + c.getInventoryItemCount(32);
+      totalDeath = totalDeath + c.getInventoryItemCount(38);
+      totalBlood = totalBlood + c.getInventoryItemCount(619);
+      totalEarth = totalEarth + c.getInventoryItemCount(34);
+      totalAir = totalAir + c.getInventoryItemCount(33);
+      totalCosmic = totalCosmic + c.getInventoryItemCount(46);
+
+      totalLoop = totalLoop + c.getInventoryItemCount(527);
+      totalTooth = totalTooth + c.getInventoryItemCount(526);
+      totalLeft = totalLeft + c.getInventoryItemCount(1277);
+      totalSpear = totalSpear + c.getInventoryItemCount(1092);
+      totalBones = totalBones + c.getInventoryItemCount(413);
       foodInBank = c.getBankItemCount(foodId);
-      totalRunes = totalFire + totalNat + totalEarth + totalChaos + totalWater + totalLaw;
+      totalRunes =
+          totalLaw
+              + totalNat
+              + totalEarth
+              + totalChaos
+              + totalDeath
+              + totalBlood
+              + totalAir
+              + totalCosmic;
+      totalGems =
+          totalGems
+              + c.getInventoryItemCount(160)
+              + c.getInventoryItemCount(159)
+              + c.getInventoryItemCount(158)
+              + c.getInventoryItemCount(157);
       totalHerbs =
           totalGuam
               + totalMar
@@ -254,9 +301,7 @@ public final class K_TavDruidCircle extends K_kailaScript {
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
-
       c.sleep(1240); // Important, leave in
-
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
@@ -266,24 +311,6 @@ public final class K_TavDruidCircle extends K_kailaScript {
       c.closeBank();
       c.sleep(1000);
     }
-  }
-
-  private void recharge() {
-    if (c.getCurrentStat(c.getStatId("Prayer")) < 5) {
-      c.setStatus("@yel@Recharging Prayer");
-      c.walkTo(363, 461);
-      c.atObject(362, 462);
-      c.sleep(640);
-    }
-  }
-
-  private void pray() {
-    if (!c.isPrayerOn(c.getPrayerId("Ultimate Strength")) && c.currentY() < 475) {
-      c.enablePrayer(c.getPrayerId("Ultimate Strength"));
-    }
-    // if(!c.isPrayerOn(c.getPrayerId("Incredible Reflexes")) && c.currentY() < 475) {
-    //    c.enablePrayer(c.getPrayerId("Incredible Reflexes"));
-    // }
   }
 
   private void eat() {
@@ -303,71 +330,54 @@ public final class K_TavDruidCircle extends K_kailaScript {
     if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
       // usually
       c.setStatus("@red@We've ran out of Food! Running Away!.");
-      DruidToBank();
+      dungeonToBank();
       bank();
-      BankToDruid();
+      bankToDungeon();
       c.sleep(618);
     }
   }
 
-  private void BankToDruid() {
-    c.setStatus("@gre@Walking to Tav Gate..");
-    c.walkTo(327, 552);
-    c.walkTo(324, 549);
-    c.walkTo(324, 539);
-    c.walkTo(324, 530);
-    c.walkTo(317, 523);
-    c.walkTo(317, 516);
-    c.walkTo(327, 506);
-    c.walkTo(337, 496);
-    c.walkTo(337, 492);
-    c.walkTo(341, 488);
-    c.setStatus("@red@Crossing Tav Gate..");
-    tavGateEastToWest();
-    c.setStatus("@gre@Walking to Druid Circle..");
-    c.walkTo(346, 487);
-    c.walkTo(351, 482);
-    c.walkTo(356, 477);
-    c.walkTo(361, 472);
-    c.walkTo(361, 466);
+  private void bankToDungeon() {
+    c.setStatus("@gre@Walking to Moss Giants..");
+    c.walkTo(581, 571);
+    c.walkTo(588, 568);
+    c.walkTo(588, 562);
+    c.walkTo(593, 558);
+    c.walkTo(600, 551);
+    c.walkTo(602, 544);
+    c.walkTo(611, 536);
+    c.walkTo(623, 526);
+    c.walkTo(633, 516);
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void DruidToBank() {
-    c.setStatus("@gre@Walking to Tav Gate..");
-    c.walkTo(361, 466);
-    c.walkTo(361, 472);
-    c.walkTo(356, 477);
-    c.walkTo(351, 482);
-    c.walkTo(346, 487);
-    c.walkTo(342, 487);
-    c.setStatus("@red@Crossing Tav Gate..");
-    tavGateWestToEast();
-    c.setStatus("@gre@Walking to Fally West..");
-    c.walkTo(337, 492);
-    c.walkTo(337, 496);
-    c.walkTo(327, 506);
-    c.walkTo(317, 516);
-    c.walkTo(317, 523);
-    c.walkTo(324, 530);
-    c.walkTo(324, 539);
-    c.walkTo(324, 549);
-    c.walkTo(327, 552);
+  private void dungeonToBank() {
+    c.setStatus("@gre@Walking to Ardy North Bank..");
+    c.walkTo(633, 516);
+    c.walkTo(623, 526);
+    c.walkTo(611, 536);
+    c.walkTo(602, 544);
+    c.walkTo(600, 551);
+    c.walkTo(593, 558);
+    c.walkTo(588, 562);
+    c.walkTo(588, 568);
+    c.walkTo(581, 571);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Tav Druid Circle - By Kaila");
-    JLabel label1 = new JLabel("Start in Fally west or druid Circle");
-    JLabel label6 = new JLabel("Food in Bank required!");
+    JLabel header = new JLabel("Ardy Moss Giants ~ by Kaila");
+    JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
+    JLabel label6 = new JLabel("Dusty Key Required + Food in Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup ::prayer");
+    JLabel label3 = new JLabel("::bank ::lowlevel :potup ::lootbones ::burybones");
     JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel label5 = new JLabel("Param Format: \"auto\"");
-    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
+    JCheckBox lootBonesCheckbox = new JCheckBox("Pickup Big Bones?", true);
+    JCheckBox buryBonesCheckbox = new JCheckBox("Bury Big Bones?", true);
+    JCheckBox lootSpinachRollCheckbox = new JCheckBox("Loot Spinach Rolls?", true);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
-    JCheckBox prayerBoostCheckbox = new JCheckBox("Use Alter for Boost Prayers?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
@@ -386,9 +396,10 @@ public final class K_TavDruidCircle extends K_kailaScript {
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
           lootBones = lootBonesCheckbox.isSelected();
+          lootSpinachRoll = lootSpinachRollCheckbox.isSelected();
+          buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
-          prayerBoost = prayerBoostCheckbox.isSelected();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
@@ -407,8 +418,9 @@ public final class K_TavDruidCircle extends K_kailaScript {
     scriptFrame.add(label4);
     scriptFrame.add(label5);
     scriptFrame.add(lootBonesCheckbox);
+    scriptFrame.add(buryBonesCheckbox);
+    scriptFrame.add(lootSpinachRollCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
-    scriptFrame.add(prayerBoostCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
     scriptFrame.add(fightModeField);
@@ -424,8 +436,7 @@ public final class K_TavDruidCircle extends K_kailaScript {
   }
 
   @Override
-  public void chatCommandInterrupt(
-      String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
+  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
     if (commandText.contains("bank")) {
       c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
       timeToBank = true;
@@ -434,13 +445,33 @@ public final class K_TavDruidCircle extends K_kailaScript {
       c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
       timeToBankStay = true;
       c.sleep(100);
-    } else if (commandText.contains("bones")) {
+    } else if (commandText.contains("lootspin")) {
+      if (!lootSpinachRoll) {
+        c.displayMessage(
+            "@or1@Got toggle @red@lootSpinachRoll@or1@, turning on SpinachRoll looting!");
+        lootSpinachRoll = true;
+      } else {
+        c.displayMessage(
+            "@or1@Got toggle @red@lootSpinachRoll@or1@, turning off SpinachRoll looting!");
+        lootSpinachRoll = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains("lootbones")) {
       if (!lootBones) {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
+        c.displayMessage("@or1@Got toggle @red@lootbones@or1@, turning on bone looting!");
         lootBones = true;
       } else {
         c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
         lootBones = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains("burybones")) {
+      if (!buryBones) {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone bury!");
+        buryBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@buryBones@or1@, turning off bone bury!");
+        buryBones = false;
       }
       c.sleep(100);
     } else if (commandText.contains("lowlevel")) {
@@ -459,15 +490,6 @@ public final class K_TavDruidCircle extends K_kailaScript {
       } else {
         c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
         potUp = false;
-      }
-      c.sleep(100);
-    } else if (commandText.contains("prayer")) {
-      if (!prayerBoost) {
-        c.displayMessage("@or1@Got toggle @red@prayer@or1@, now using boost prayers!");
-        prayerBoost = true;
-      } else {
-        c.displayMessage("@or1@Got toggle @red@prayer@or1@, no longer using boost prayers!");
-        prayerBoost = false;
       }
       c.sleep(100);
     } else if (commandText.contains(
@@ -502,6 +524,13 @@ public final class K_TavDruidCircle extends K_kailaScript {
   }
 
   @Override
+  public void serverMessageInterrupt(String message) {
+    if (message.contains("You dig a hole")) {
+      usedBones++;
+    }
+  }
+
+  @Override
   public void paintInterrupt() {
     if (c != null) {
 
@@ -517,14 +546,13 @@ public final class K_TavDruidCircle extends K_kailaScript {
       int cadaSuccessPerHr = 0;
       int dwarSuccessPerHr = 0;
       int lawSuccessPerHr = 0;
+      int runeSuccessPerHr = 0;
+      int natSuccessPerHr = 0;
+      int GemsSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       int herbSuccessPerHr = 0;
-      int fireSuccessPerHr = 0;
-      int waterSuccessPerHr = 0;
-      int earthSuccessPerHr = 0;
-      int chaosSuccessPerHr = 0;
-      int runeSuccessPerHr = 0;
       int foodUsedPerHr = 0;
+      int boneSuccessPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
@@ -541,13 +569,12 @@ public final class K_TavDruidCircle extends K_kailaScript {
         cadaSuccessPerHr = (int) (totalCada * scale);
         dwarSuccessPerHr = (int) (totalDwarf * scale);
         lawSuccessPerHr = (int) (totalLaw * scale);
+        natSuccessPerHr = (int) (totalNat * scale);
+        GemsSuccessPerHr = (int) (totalGems * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
         herbSuccessPerHr = (int) (totalHerbs * scale);
-        fireSuccessPerHr = (int) (totalHerbs * scale);
-        waterSuccessPerHr = (int) (totalHerbs * scale);
-        earthSuccessPerHr = (int) (totalHerbs * scale);
-        chaosSuccessPerHr = (int) (totalHerbs * scale);
         runeSuccessPerHr = (int) (totalRunes * scale);
+        boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
       } catch (Exception e) {
@@ -555,7 +582,8 @@ public final class K_TavDruidCircle extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Taverly Druid Circle @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      int y2 = 202;
+      c.drawString("@red@Ardy Moss Giants @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(
@@ -629,20 +657,20 @@ public final class K_TavDruidCircle extends K_kailaScript {
                 + "@yel@ (@whi@"
                 + String.format("%,d", lawSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
-                + "@whi@Chaos: @gre@"
-                + totalChaos
+                + "@whi@Nats: @gre@"
+                + totalNat
                 + "@yel@ (@whi@"
-                + String.format("%,d", chaosSuccessPerHr)
+                + String.format("%,d", natSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
             x,
             y + (14 * 4),
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@Total Runes: @gre@"
-                + totalRunes
+            "@whi@Total Gems: @gre@"
+                + totalGems // remove for regular druids!!!
                 + "@yel@ (@whi@"
-                + String.format("%,d", runeSuccessPerHr)
+                + String.format("%,d", GemsSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Herbs: @gre@"
                 + totalHerbs
@@ -653,48 +681,31 @@ public final class K_TavDruidCircle extends K_kailaScript {
             y + (14 * 5),
             0xFFFFFF,
             1);
-        if (foodInBank == -1) {
-          c.drawString(
-              "@whi@"
-                  + foodName
-                  + "'s Used: @gre@"
-                  + usedFood
-                  + "@yel@ (@whi@"
-                  + String.format("%,d", foodUsedPerHr)
-                  + "@yel@/@whi@hr@yel@) "
-                  + "@whi@"
-                  + foodName
-                  + "'s in Bank: @gre@ Unknown",
-              x,
-              y + (14 * 6),
-              0xFFFFFF,
-              1);
-        } else {
-          c.drawString(
-              "@whi@"
-                  + foodName
-                  + "'s Used: @gre@"
-                  + usedFood
-                  + "@yel@ (@whi@"
-                  + String.format("%,d", foodUsedPerHr)
-                  + "@yel@/@whi@hr@yel@) "
-                  + "@whi@"
-                  + foodName
-                  + "'s in Bank: @gre@"
-                  + foodInBank,
-              x,
-              y + (14 * 6),
-              0xFFFFFF,
-              1);
-        }
         c.drawString(
-            "@whi@Total Trips: @gre@"
-                + totalTrips
+            "@whi@Tooth: @gre@"
+                + totalTooth // remove for regular druids!!!
+                + "@yel@ / @whi@Loop: @gre@"
+                + totalLoop
+                + "@yel@ / @whi@R.Spear: @gre@"
+                + totalSpear
+                + "@yel@ / @whi@Half: @gre@"
+                + totalLeft,
+            x,
+            y + (14 * 6),
+            0xFFFFFF,
+            1);
+
+        c.drawString(
+            "@whi@Total Runes: @gre@"
+                + totalRunes
                 + "@yel@ (@whi@"
-                + String.format("%,d", TripSuccessPerHr)
+                + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
-                + "@whi@Runtime: "
-                + runTime,
+                + "@whi@Total Bones: @gre@"
+                + (bankBones + usedBones)
+                + "@yel@ (@whi@"
+                + String.format("%,d", boneSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) ",
             x,
             y + (14 * 7),
             0xFFFFFF,
@@ -742,35 +753,10 @@ public final class K_TavDruidCircle extends K_kailaScript {
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@Fire: @gre@"
-                + totalFire
+            "@whi@Total Gems: @gre@"
+                + totalGems // remove for regular druids!!!
                 + "@yel@ (@whi@"
-                + String.format("%,d", fireSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) "
-                + "@whi@Water: @gre@"
-                + totalWater
-                + "@yel@ (@whi@"
-                + String.format("%,d", waterSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) "
-                + "@whi@Earth: @gre@"
-                + totalEarth
-                + "@yel@ (@whi@"
-                + String.format("%,d", earthSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) ",
-            x,
-            y + (14 * 3),
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@whi@Chaos: @gre@"
-                + totalChaos
-                + "@yel@ (@whi@"
-                + String.format("%,d", chaosSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) "
-                + "@whi@Total Runes: @gre@"
-                + totalRunes
-                + "@yel@ (@whi@"
-                + String.format("%,d", runeSuccessPerHr)
+                + String.format("%,d", GemsSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Herbs: @gre@"
                 + totalHerbs
@@ -778,43 +764,37 @@ public final class K_TavDruidCircle extends K_kailaScript {
                 + String.format("%,d", herbSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
             x,
+            y + (14 * 3),
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@whi@Tooth: @gre@"
+                + totalTooth // remove for regular druids!!!
+                + "@yel@ / @whi@Loop: @gre@"
+                + totalLoop
+                + "@yel@ / @whi@R.Spear: @gre@"
+                + totalSpear
+                + "@yel@ / @whi@Half: @gre@"
+                + totalLeft,
+            x,
             y + (14 * 4),
             0xFFFFFF,
             1);
-        if (foodInBank == -1) {
-          c.drawString(
-              "@whi@"
-                  + foodName
-                  + "'s Used: @gre@"
-                  + usedFood
-                  + "@yel@ (@whi@"
-                  + String.format("%,d", foodUsedPerHr)
-                  + "@yel@/@whi@hr@yel@) "
-                  + "@whi@"
-                  + foodName
-                  + "'s in Bank: @gre@ Unknown",
-              x,
-              y + (14 * 5),
-              0xFFFFFF,
-              1);
-        } else {
-          c.drawString(
-              "@whi@"
-                  + foodName
-                  + "'s Used: @gre@"
-                  + usedFood
-                  + "@yel@ (@whi@"
-                  + String.format("%,d", foodUsedPerHr)
-                  + "@yel@/@whi@hr@yel@) "
-                  + "@whi@"
-                  + foodName
-                  + "'s in Bank: @gre@"
-                  + foodInBank,
-              x,
-              y + (14 * 5),
-              0xFFFFFF,
-              1);
-        }
+        c.drawString(
+            "@whi@Total Runes: @gre@"
+                + totalRunes
+                + "@yel@ (@whi@"
+                + String.format("%,d", runeSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) "
+                + "@whi@Total Bones: @gre@"
+                + (bankBones + usedBones)
+                + "@yel@ (@whi@"
+                + String.format("%,d", boneSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) ",
+            x,
+            y + (14 * 5),
+            0xFFFFFF,
+            1);
         c.drawString(
             "@whi@Total Trips: @gre@"
                 + totalTrips
@@ -828,6 +808,49 @@ public final class K_TavDruidCircle extends K_kailaScript {
             0xFFFFFF,
             1);
         c.drawString("@whi@____________________", x, y + 3 + (14 * 6), 0xFFFFFF, 1);
+      }
+      c.drawString("@whi@____________________", x, y2, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y2 + 14, 0xFFFFFF, 1);
+      c.drawString(
+          "@whi@Total Trips: @gre@"
+              + totalTrips
+              + "@yel@ (@whi@"
+              + String.format("%,d", TripSuccessPerHr)
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y2 + (14 * 2),
+          0xFFFFFF,
+          1);
+      if (foodInBank == -1) {
+        c.drawString(
+            "@whi@"
+                + foodName
+                + "'s Used: @gre@"
+                + usedFood
+                + "@yel@ (@whi@"
+                + String.format("%,d", foodUsedPerHr)
+                + "@yel@/@whi@hr@yel@) ",
+            x,
+            y2 + (14 * 3),
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, y2 + (14 * 4), 0xFFFFFF, 1);
+      } else {
+        c.drawString(
+            "@whi@"
+                + foodName
+                + "'s Used: @gre@"
+                + usedFood
+                + "@yel@ (@whi@"
+                + String.format("%,d", foodUsedPerHr)
+                + "@yel@/@whi@hr@yel@) ",
+            x,
+            y2 + (14 * 3),
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, y2 + (14 * 4), 0xFFFFFF, 1);
       }
     }
   }

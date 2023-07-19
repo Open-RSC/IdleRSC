@@ -5,27 +5,24 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
+ * Taverly Druid Circle - By Kaila.
  *
- * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
- * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
- * and Autostart. cannot support bone looting with this bot due to the shape of the dungeon
+ * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Alter Prayer Boost, Food Type,
+ * and Food Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot
+ * option, and Autostart. parameter.
  *
- * <p>Author - Kaila
+ * <p>@Author - Kaila
  */
-public final class K_EdgeHobsPlus extends K_kailaScript {
-
+/*
+ *       todo
+ *        Door support to prevent trapping. Not a hurry.
+ */
+public final class K_Tav_DruidTown extends K_kailaScript {
   private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(207, 3302, x, y) <= 14; // center of lootzone
+    return c.distance(371, 490, x, y) <= 14; // center of lootzone
   }
 
-  private static final int[] npcIds = {
-    67, // Hobgoblin
-    45, // Skelli
-    68 // Zombie
-  };
   private static final int[] lowLevelLoot = {
-    11, // bronze arrows (skeletons)
     165, // Grimy Guam
     435, // Grimy mar
     436, // Grimy tar
@@ -37,21 +34,10 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
     442, // Grimy cada
     443, // Grimy dwu
     42, // law rune
-    40, // nature rune
-    41, // chaos rune
-    36, // body rune
-    // 46,    //cosmic rune
-    33, // air rune
     32, // water rune
+    34, // Earth rune
     31, // fire rune
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    41 // chaos rune
   };
   private static final int[] highLevelLoot = {
     438, // Grimy ranarr
@@ -61,21 +47,10 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
     442, // Grimy cada
     443, // Grimy dwu
     42, // law rune
-    40, // nature rune
-    41, // chaos rune
-    // 36,      //body rune
-    // 46,      //cosmic rune
-    33, // air rune
     32, // water rune
+    34, // Earth rune
     31, // fire rune
-    // 160, 	 //saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    41 // chaos rune
   };
 
   public int start(String[] parameters) {
@@ -84,11 +59,14 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
+      lootBones = false;
       potUp = false;
       c.displayMessage("Got Autostart Parameter");
-      c.log("@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, no pot up", "cya");
-      guiSetup = true;
+      c.log(
+          "@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, Loot Bones, no pot up, yes prayer boosting",
+          "cya");
       scriptStarted = true;
+      guiSetup = true;
     }
     if (!guiSetup) {
       setupGUI();
@@ -98,16 +76,16 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Edge Dungeon Hob\\Skelli\\Zombies ~ Kaila");
-      c.displayMessage("@red@Start in Varrock West or in Dungeon");
-      c.displayMessage("@red@Brass Key Required");
+      c.displayMessage("@red@Tav Druid Circle - By Kaila");
+      c.displayMessage("@red@Start in Fally west or druid Circle");
+      c.displayMessage("@red@Food in Bank required");
 
       if (c.isInBank()) {
         c.closeBank();
       }
-      if (c.currentY() < 3000) {
+      if (c.currentY() > 515) {
         bank();
-        bankToDungeon();
+        BankToDruid();
         c.sleep(1380);
       }
       whatIsFoodName();
@@ -120,34 +98,34 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
+
+      buryBones();
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
       }
-      checkFightMode();
-      if (c.currentX() < 186) { // down corridor too much
-        c.displayMessage("@red@Error: Too far out of wander range, Walking back!");
-        c.walkTo(198, 3299);
-        c.walkTo(207, 3300);
+      if (c.currentY() < 480) {
+        c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
+        c.walkTo(371, 490);
         c.sleep(640);
       }
+      checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
         if (!c.isInCombat()) {
           if (lootLowLevel) lowLevelLooting();
           else highLevelLooting();
-          if (lootLimp) lootLimp();
-          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
+          ORSCharacter npc = c.getNearestNpcById(200, false);
           if (npc != null) {
-            c.setStatus("@yel@Attacking..");
+            c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
+            c.sleep(1280);
           } else {
             if (lootLowLevel) lowLevelLooting();
             else highLevelLooting();
+            if (lootBones) lootBones();
             c.sleep(100);
           }
         } else {
@@ -160,7 +138,7 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
           || timeToBankStay) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
-        dungeonToBank();
+        DruidToBank();
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
@@ -170,25 +148,28 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
           c.setAutoLogin(false);
           c.stop();
         }
-        bankToDungeon();
+        BankToDruid();
         c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }
 
-  private void lootLimp() {
-    try {
-      int[] coords = c.getNearestItemById(220);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkToAsync(coords[0], coords[1], 0);
-        c.pickupItem(coords[0], coords[1], 220, true, false);
-        c.sleep(640);
+  private void lootBones() {
+    for (int lootId : bones) {
+      try {
+        int[] coords = c.getNearestItemById(lootId);
+        if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@No NPCs, Picking bones");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], lootId, true, false);
+          c.sleep(640);
+          buryBones();
+        } else {
+          c.sleep(300);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
   }
 
@@ -231,6 +212,11 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
+
+      //       32,      //water rune
+      // 34, 	 //Earth rune
+      // 31,      //fire rune  +total runes
+      // 41       //chaos rune
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -247,18 +233,8 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       totalEarth = totalEarth + c.getInventoryItemCount(34);
       totalChaos = totalChaos + c.getInventoryItemCount(41);
       totalWater = totalWater + c.getInventoryItemCount(32);
-      totalLoop = totalLoop + c.getInventoryItemCount(527);
-      totalTooth = totalTooth + c.getInventoryItemCount(526);
-      totalLeft = totalLeft + c.getInventoryItemCount(1277);
-      totalSpear = totalSpear + c.getInventoryItemCount(1092);
       foodInBank = c.getBankItemCount(foodId);
       totalRunes = totalFire + totalNat + totalEarth + totalChaos + totalWater + totalLaw;
-      totalGems =
-          totalGems
-              + c.getInventoryItemCount(160)
-              + c.getInventoryItemCount(159)
-              + c.getInventoryItemCount(158)
-              + c.getInventoryItemCount(157);
       totalHerbs =
           totalGuam
               + totalMar
@@ -271,23 +247,15 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
               + totalCada
               + totalDwarf;
 
-      for (int itemId : c.getInventoryItemIds()) {
-        c.depositItem(itemId, c.getInventoryItemCount(itemId));
-      }
-
-      c.sleep(1240); // Important, leave in
-
+      depositAll();
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      withdrawItem(99, 1); // brass key check
       withdrawFood(foodId, foodWithdrawAmount);
-      bankItemCheck(foodId, 5);
+      bankItemCheck(foodId, 30);
       c.closeBank();
       c.sleep(1000);
-      brassKeyCheck();
-      checkInventoryItemCounts();
     }
   }
 
@@ -308,64 +276,70 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
     if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
       // usually
       c.setStatus("@red@We've ran out of Food! Running Away!.");
-      dungeonToBank();
+      DruidToBank();
       bank();
-      bankToDungeon();
+      BankToDruid();
       c.sleep(618);
     }
   }
 
-  private void bankToDungeon() {
-    c.setStatus("@gre@Walking to Edge Dungeon..");
-    c.walkTo(151, 507);
-    c.walkTo(162, 507);
-    c.walkTo(172, 507);
-    c.walkTo(182, 507);
-    c.walkTo(192, 497);
-    c.walkTo(202, 487);
-    c.walkTo(202, 485);
-    brassKeyCheck();
-    c.setStatus("@red@Crossing brass Gate..");
-    brassDoorSouthToNorth();
-    c.setStatus("@gre@Walking to Edge Dungeon..");
-    c.walkTo(203, 483);
-    c.atObject(203, 482);
-    c.sleep(2000);
-    c.walkTo(207, 3314);
+  private void BankToDruid() {
+    c.setStatus("@gre@Walking to Tav Gate..");
+    c.walkTo(327, 552);
+    c.walkTo(324, 549);
+    c.walkTo(324, 539);
+    c.walkTo(324, 530);
+    c.walkTo(317, 523);
+    c.walkTo(317, 516);
+    c.walkTo(327, 506);
+    c.walkTo(337, 496);
+    c.walkTo(337, 492);
+    c.walkTo(341, 488);
+    c.setStatus("@red@Crossing Tav Gate..");
+    tavGateEastToWest();
+    c.setStatus("@gre@Walking to Taverly Proper..");
+    c.walkTo(346, 488);
+    c.walkTo(348, 487);
+    c.walkTo(358, 487);
+    c.walkTo(358, 487);
+    c.walkTo(368, 487);
+    c.walkTo(371, 490);
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void dungeonToBank() {
-    c.setStatus("@gre@Walking to Varrock West..");
-    c.walkTo(207, 3315);
-    c.walkTo(203, 3315);
-    c.atObject(203, 3314);
-    c.sleep(2000);
-    c.walkTo(202, 484);
-    brassKeyCheck();
-    c.setStatus("@red@Crossing brass Gate..");
-    brassDoorNorthToSouth();
-    c.setStatus("@gre@Walking to Varrock West..");
-    c.walkTo(202, 487);
-    c.walkTo(192, 497);
-    c.walkTo(182, 507);
-    c.walkTo(172, 507);
-    c.walkTo(162, 507);
-    c.walkTo(151, 507);
+  private void DruidToBank() {
+    c.setStatus("@gre@Walking to Tav Gate..");
+    c.walkTo(368, 487);
+    c.walkTo(358, 487);
+    c.walkTo(358, 487);
+    c.walkTo(348, 487);
+    c.walkTo(346, 488);
+    c.walkTo(342, 488);
+    c.setStatus("@red@Crossing Tav Gate..");
+    tavGateWestToEast();
+    c.setStatus("@gre@Walking to Fally West..");
+    c.walkTo(337, 492);
+    c.walkTo(337, 496);
+    c.walkTo(327, 506);
+    c.walkTo(317, 516);
+    c.walkTo(317, 523);
+    c.walkTo(324, 530);
+    c.walkTo(324, 539);
+    c.walkTo(324, 549);
+    c.walkTo(327, 552);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Dungeon Hob\\\\Skelli\\\\Zombies ~ by Kaila");
-    JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
-    JLabel label6 = new JLabel("brass Key Required + Food in Bank");
+    JLabel header = new JLabel("Tav Druid Circle - By Kaila");
+    JLabel label1 = new JLabel("Start in Fally west or druid Circle");
+    JLabel label6 = new JLabel("Food in Bank required!");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("::bank ::lowlevel :potup");
+    JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup ::prayer");
     JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel label5 = new JLabel("Param Format: \"auto\"");
-    JCheckBox lootLimpCheckbox = new JCheckBox("Loot Limps?", true);
+    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", false);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -383,8 +357,8 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
         e -> {
           if (!foodWithdrawAmountField.getText().equals(""))
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-          lootLimp = lootLimpCheckbox.isSelected();
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
+          lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
@@ -404,7 +378,7 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
     scriptFrame.add(label3);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
-    scriptFrame.add(lootLimpCheckbox);
+    scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
@@ -421,7 +395,8 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
   }
 
   @Override
-  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
+  public void chatCommandInterrupt(
+      String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
     if (commandText.contains("bank")) {
       c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
       timeToBank = true;
@@ -430,13 +405,13 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
       timeToBankStay = true;
       c.sleep(100);
-    } else if (commandText.contains("lootlimp")) {
-      if (!lootLimp) {
-        c.displayMessage("@or1@Got toggle @red@lootlimp@or1@, turning on Limpwurt looting!");
-        lootLimp = true;
+    } else if (commandText.contains("bones")) {
+      if (!lootBones) {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
+        lootBones = true;
       } else {
-        c.displayMessage("@or1@Got toggle @red@lootlimp@or1@, turning off Limpwurt looting!");
-        lootLimp = false;
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
+        lootBones = false;
       }
       c.sleep(100);
     } else if (commandText.contains("lowlevel")) {
@@ -504,33 +479,37 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       int cadaSuccessPerHr = 0;
       int dwarSuccessPerHr = 0;
       int lawSuccessPerHr = 0;
-      int runeSuccessPerHr = 0;
-      int natSuccessPerHr = 0;
-      int GemsSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       int herbSuccessPerHr = 0;
+      int fireSuccessPerHr = 0;
+      int waterSuccessPerHr = 0;
+      int earthSuccessPerHr = 0;
+      int chaosSuccessPerHr = 0;
+      int runeSuccessPerHr = 0;
       int foodUsedPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
-        marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
-        tarSuccessPerHr = (int) ((totalTar + inventTar) * scale);
-        harSuccessPerHr = (int) ((totalHar + inventHar) * scale);
-        ranSuccessPerHr = (int) ((totalRan + inventRan) * scale);
-        iritSuccessPerHr = (int) ((totalIrit + inventIrit) * scale);
-        avaSuccessPerHr = (int) ((totalAva + inventAva) * scale);
-        kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
-        cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
-        dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
-        lawSuccessPerHr = (int) ((totalLaw + inventLaws) * scale);
-        natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
-        GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
-        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
+        guamSuccessPerHr = (int) (totalGuam * scale);
+        marSuccessPerHr = (int) (totalMar * scale);
+        tarSuccessPerHr = (int) (totalTar * scale);
+        harSuccessPerHr = (int) (totalHar * scale);
+        ranSuccessPerHr = (int) (totalRan * scale);
+        iritSuccessPerHr = (int) (totalIrit * scale);
+        avaSuccessPerHr = (int) (totalAva * scale);
+        kwuSuccessPerHr = (int) (totalKwuarm * scale);
+        cadaSuccessPerHr = (int) (totalCada * scale);
+        dwarSuccessPerHr = (int) (totalDwarf * scale);
+        lawSuccessPerHr = (int) (totalLaw * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-        runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
+        herbSuccessPerHr = (int) (totalHerbs * scale);
+        fireSuccessPerHr = (int) (totalHerbs * scale);
+        waterSuccessPerHr = (int) (totalHerbs * scale);
+        earthSuccessPerHr = (int) (totalHerbs * scale);
+        chaosSuccessPerHr = (int) (totalHerbs * scale);
+        runeSuccessPerHr = (int) (totalRunes * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
       } catch (Exception e) {
@@ -538,23 +517,22 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      int y2 = 202;
-      c.drawString("@red@Edge Dungeon Hobs Plus @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Taverly Druid Town @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(
             "@whi@Guam: @gre@"
-                + (totalGuam + inventGuam)
+                + totalGuam
                 + "@yel@ (@whi@"
                 + String.format("%,d", guamSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Mar: @gre@"
-                + (totalMar + inventMar)
+                + totalMar
                 + "@yel@ (@whi@"
                 + String.format("%,d", marSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Tar: @gre@"
-                + (totalTar + inventTar)
+                + totalTar
                 + "@yel@ (@whi@"
                 + String.format("%,d", tarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -564,17 +542,17 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Har: @gre@"
-                + (totalHar + inventHar)
+                + totalHar
                 + "@yel@ (@whi@"
                 + String.format("%,d", harSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Rana: @gre@"
-                + (totalRan + inventRan)
+                + totalRan
                 + "@yel@ (@whi@"
                 + String.format("%,d", ranSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Irit: @gre@"
-                + (totalIrit + inventIrit)
+                + totalIrit
                 + "@yel@ (@whi@"
                 + String.format("%,d", iritSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)",
@@ -584,17 +562,17 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Ava: @gre@"
-                + (totalAva + inventAva)
+                + totalAva
                 + "@yel@ (@whi@"
                 + String.format("%,d", avaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Kwu: @gre@"
-                + (totalKwuarm + inventKwuarm)
+                + totalKwuarm
                 + "@yel@ (@whi@"
                 + String.format("%,d", kwuSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Cada: @gre@"
-                + (totalCada + inventCada)
+                + totalCada
                 + "@yel@ (@whi@"
                 + String.format("%,d", cadaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -604,32 +582,32 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Dwar: @gre@"
-                + (totalDwarf + inventDwarf)
+                + totalDwarf
                 + "@yel@ (@whi@"
                 + String.format("%,d", dwarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Laws: @gre@"
-                + (totalLaw + inventLaws)
+                + totalLaw
                 + "@yel@ (@whi@"
                 + String.format("%,d", lawSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
-                + "@whi@Nats: @gre@"
-                + (totalNat + inventNats)
+                + "@whi@Chaos: @gre@"
+                + totalChaos
                 + "@yel@ (@whi@"
-                + String.format("%,d", natSuccessPerHr)
+                + String.format("%,d", chaosSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
             x,
             y + (14 * 4),
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@Total Gems: @gre@"
-                + (totalGems + inventGems) // remove for regular druids!!!
+            "@whi@Total Runes: @gre@"
+                + totalRunes
                 + "@yel@ (@whi@"
-                + String.format("%,d", GemsSuccessPerHr)
+                + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Herbs: @gre@"
-                + (totalHerbs + inventHerbs)
+                + totalHerbs
                 + "@yel@ (@whi@"
                 + String.format("%,d", herbSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -637,25 +615,48 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
             y + (14 * 5),
             0xFFFFFF,
             1);
+        if (foodInBank == -1) {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@ Unknown",
+              x,
+              y + (14 * 6),
+              0xFFFFFF,
+              1);
+        } else {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@"
+                  + foodInBank,
+              x,
+              y + (14 * 6),
+              0xFFFFFF,
+              1);
+        }
         c.drawString(
-            "@whi@Tooth: @gre@"
-                + (totalTooth + inventTooth) // remove for regular druids!!!
-                + "@yel@ / @whi@Loop: @gre@"
-                + (totalLoop + inventLoop)
-                + "@yel@ / @whi@R.Spear: @gre@"
-                + (totalSpear + inventSpear)
-                + "@yel@ / @whi@Half: @gre@"
-                + (totalLeft + inventLeft),
-            x,
-            y + (14 * 6),
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@whi@Total Runes: @gre@"
-                + (totalRunes + inventRunes)
+            "@whi@Total Trips: @gre@"
+                + totalTrips
                 + "@yel@ (@whi@"
-                + String.format("%,d", runeSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) ",
+                + String.format("%,d", TripSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) "
+                + "@whi@Runtime: "
+                + runTime,
             x,
             y + (14 * 7),
             0xFFFFFF,
@@ -664,17 +665,17 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       } else {
         c.drawString(
             "@whi@Rana: @gre@"
-                + (totalRan + inventRan)
+                + totalRan
                 + "@yel@ (@whi@"
                 + String.format("%,d", ranSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Irit: @gre@"
-                + (totalIrit + inventIrit)
+                + totalIrit
                 + "@yel@ (@whi@"
                 + String.format("%,d", iritSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Avan: @gre@"
-                + (totalAva + inventAva)
+                + totalAva
                 + "@yel@ (@whi@"
                 + String.format("%,d", avaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -684,17 +685,17 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
             1);
         c.drawString(
             "@whi@Kwua: @gre@"
-                + (totalKwuarm + inventKwuarm)
+                + totalKwuarm
                 + "@yel@ (@whi@"
                 + String.format("%,d", kwuSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Cada: @gre@"
-                + (totalCada + inventCada)
+                + totalCada
                 + "@yel@ (@whi@"
                 + String.format("%,d", cadaSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Dwar: @gre@"
-                + (totalDwarf + inventDwarf)
+                + totalDwarf
                 + "@yel@ (@whi@"
                 + String.format("%,d", dwarSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -703,87 +704,92 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@Total Gems: @gre@"
-                + (totalGems + inventGems) // remove for regular druids!!!
+            "@whi@Fire: @gre@"
+                + totalFire
                 + "@yel@ (@whi@"
-                + String.format("%,d", GemsSuccessPerHr)
+                + String.format("%,d", fireSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
-                + "@whi@Total Herbs: @gre@"
-                + (totalHerbs + inventHerbs)
+                + "@whi@Water: @gre@"
+                + totalWater
                 + "@yel@ (@whi@"
-                + String.format("%,d", herbSuccessPerHr)
+                + String.format("%,d", waterSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) "
+                + "@whi@Earth: @gre@"
+                + totalEarth
+                + "@yel@ (@whi@"
+                + String.format("%,d", earthSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
             x,
             y + (14 * 3),
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@Tooth: @gre@"
-                + (totalTooth + inventTooth) // remove for regular druids!!!
-                + "@yel@ / @whi@Loop: @gre@"
-                + (totalLoop + inventLoop)
-                + "@yel@ / @whi@R.Spear: @gre@"
-                + (totalSpear + inventSpear)
-                + "@yel@ / @whi@Half: @gre@"
-                + (totalLeft + inventLeft),
+            "@whi@Chaos: @gre@"
+                + totalChaos
+                + "@yel@ (@whi@"
+                + String.format("%,d", chaosSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) "
+                + "@whi@Total Runes: @gre@"
+                + totalRunes
+                + "@yel@ (@whi@"
+                + String.format("%,d", runeSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) "
+                + "@whi@Total Herbs: @gre@"
+                + totalHerbs
+                + "@yel@ (@whi@"
+                + String.format("%,d", herbSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) ",
             x,
             y + (14 * 4),
             0xFFFFFF,
             1);
+        if (foodInBank == -1) {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@ Unknown",
+              x,
+              y + (14 * 5),
+              0xFFFFFF,
+              1);
+        } else {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@"
+                  + foodInBank,
+              x,
+              y + (14 * 5),
+              0xFFFFFF,
+              1);
+        }
         c.drawString(
-            "@whi@Total Runes: @gre@"
-                + (totalRunes + inventRunes)
+            "@whi@Total Trips: @gre@"
+                + totalTrips
                 + "@yel@ (@whi@"
-                + String.format("%,d", runeSuccessPerHr)
-                + "@yel@/@whi@hr@yel@) ",
+                + String.format("%,d", TripSuccessPerHr)
+                + "@yel@/@whi@hr@yel@) "
+                + "@whi@Runtime: "
+                + runTime,
             x,
-            y + (14 * 5),
+            y + (14 * 6),
             0xFFFFFF,
             1);
-        c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
-      }
-      c.drawString("@whi@____________________", x, y2, 0xFFFFFF, 1);
-      c.drawString("@whi@Runtime: " + runTime, x, y2 + 14, 0xFFFFFF, 1);
-      c.drawString(
-          "@whi@Total Trips: @gre@"
-              + totalTrips
-              + "@yel@ (@whi@"
-              + String.format("%,d", TripSuccessPerHr)
-              + "@yel@/@whi@hr@yel@) ",
-          x,
-          y2 + (14 * 2),
-          0xFFFFFF,
-          1);
-      if (foodInBank == -1) {
-        c.drawString(
-            "@whi@"
-                + foodName
-                + "'s Used: @gre@"
-                + usedFood
-                + "@yel@ (@whi@"
-                + String.format("%,d", foodUsedPerHr)
-                + "@yel@/@whi@hr@yel@) ",
-            x,
-            y2 + (14 * 3),
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, y2 + (14 * 4), 0xFFFFFF, 1);
-      } else {
-        c.drawString(
-            "@whi@"
-                + foodName
-                + "'s Used: @gre@"
-                + usedFood
-                + "@yel@ (@whi@"
-                + String.format("%,d", foodUsedPerHr)
-                + "@yel@/@whi@hr@yel@) ",
-            x,
-            y2 + (14 * 3),
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, y2 + (14 * 4), 0xFFFFFF, 1);
+        c.drawString("@whi@____________________", x, y + 3 + (14 * 6), 0xFFFFFF, 1);
       }
     }
   }

@@ -22,7 +22,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_TavBlackDemonPipe extends K_kailaScript {
+public final class K_Tav_BlackDemonPipe extends K_kailaScript {
   private static boolean d2hWield = false;
 
   private static boolean isWithinWander(int x, int y) {

@@ -35,7 +35,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author ~ Kaila
  */
-public final class K_FastPlateSmither extends K_kailaScript {
+public final class K_Fast_PlateSmither extends K_kailaScript {
   private static int barId = -1;
 
   public int start(String[] parameters) {

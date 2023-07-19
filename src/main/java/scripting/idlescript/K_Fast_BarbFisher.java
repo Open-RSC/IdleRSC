@@ -14,7 +14,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila.
  */
-public final class K_FastBarbFisher extends K_kailaScript {
+public final class K_Fast_BarbFisher extends K_kailaScript {
   private static int troutSuccess = 0;
   private static int salmonSuccess = 0;
   private static int failure = 0;

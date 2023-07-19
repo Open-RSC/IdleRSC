@@ -15,7 +15,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_WildyFireGiants extends K_kailaScript {
+public final class K_Wildy_FireGiants extends K_kailaScript {
 
   private boolean isWithinLootzone(int x, int y) {
     return c.distance(269, 2949, x, y) <= 10;

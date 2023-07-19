@@ -23,7 +23,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_TavBlackDragonPipe extends K_kailaScript {
+public final class K_Tav_BlackDragonPipe extends K_kailaScript {
   private boolean isWithinWander(int x, int y) {
     return c.distance(408, 3337, x, y) <= 22;
   }

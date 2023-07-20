@@ -48,6 +48,9 @@ public class K_kailaScript extends IdleScript {
   public static final int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
   // ~~~~~~~~~~~~~~final item Id's~~~~~~~~~~~
+  public static final int UNC_SAPP = 160, UNC_EMER = 159, UNC_RUBY = 158, UNC_DIA = 157;
+  public static final int UNID_GUAM = 165, UNID_MAR = 435;
+  public static final int EMPTY_VIAL = 465;
   public static final int unidGuam = 165;
   public static final int unidMar = 435;
   public static final int unidTar = 436;
@@ -62,8 +65,8 @@ public class K_kailaScript extends IdleScript {
   public static final int chaosRune = 41;
   public static final int deathRune = 38;
   public static final int bloodRune = 619;
-  public static final int lawRune = 42;
-  public static final int natRune = 40;
+  public static final int LAW_RUNE = 42;
+  public static final int NATURE_RUNE = 40;
   public static final int cosmicRune = 46;
   public static final int fireRune = 31;
   public static final int waterRune = 32;
@@ -440,8 +443,8 @@ public class K_kailaScript extends IdleScript {
     inventCada = c.getInventoryItemCount(unidCada);
     inventDwarf = c.getInventoryItemCount(unidDwarf);
     // Runes
-    inventLaws = c.getInventoryItemCount(lawRune);
-    inventNats = c.getInventoryItemCount(natRune);
+    inventLaws = c.getInventoryItemCount(LAW_RUNE);
+    inventNats = c.getInventoryItemCount(NATURE_RUNE);
     inventMind = c.getInventoryItemCount(mindRune);
     inventChaos = c.getInventoryItemCount(chaosRune);
     inventDeath = c.getInventoryItemCount(deathRune);
@@ -590,29 +593,36 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Drops vials if not in combat, skips if currently in combat.
+   * Drops all of specified itemId and waits for batch dropping to complete.
    *
-   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   * @param itemId int of item to drop
+   * @param amount int number of item to drop (negative value to drop all)
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
    */
-  public static void dropVial(boolean leaveCombat) {
-    if (c.getInventoryItemCount(465) > 0) {
+  public static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
+    if (c.getInventoryItemCount(itemId) > 0) {
       if (leaveCombat) {
         if (c.isInCombat()) leaveCombat();
       } else {
         if (c.isInCombat()) return;
       }
-      c.dropItem(c.getInventoryItemSlotIndex(465));
+      if (amount < 0) {
+        amount = c.getInventoryItemCount(itemId);
+      }
+      c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
+      c.sleep(GAME_TICK);
+      waitForBatching();
     }
   }
   /** If on coleslaw and batch bars are off, it will toggle ON batch bars */
   public static void checkBatchBars() {
     if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
   }
-  /** while batching, sleep 1000. Unless next_attempt timestamp (triggers autowalk) */
+  /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
   public static void waitForBatching() {
     while (c.isBatching() && System.currentTimeMillis() < next_attempt && next_attempt != -1) {
-      c.sleep(1000);
+      c.sleep(GAME_TICK);
     }
   }
   /**

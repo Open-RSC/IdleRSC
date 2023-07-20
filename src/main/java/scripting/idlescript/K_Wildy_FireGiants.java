@@ -118,7 +118,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       lootScript();
       superAttackBoost(0, true);
       superStrengthBoost(0, true);
-      dropVial(true);
+      dropItemAmount(EMPTY_VIAL, 1, true);
 
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {

@@ -102,7 +102,7 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
-      dropVial(false);
+      dropItemAmount(EMPTY_VIAL, 1, false);
       checkFightMode();
 
       if (c.getInventoryItemCount(foodId) > 0) {

@@ -109,7 +109,7 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
       eatFoodToLoot();
       lootScript();
       if (buryBones) buryBones();
-      dropVial(false);
+      dropItemAmount(EMPTY_VIAL, 1, false);
 
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
@@ -124,7 +124,7 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
       }
       if (c.getInventoryItemCount() == 30) {
         prayPotCheck();
-        dropVial(true);
+        dropItemAmount(EMPTY_VIAL, 1, false);
       }
     }
   }

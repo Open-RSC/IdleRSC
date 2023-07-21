@@ -103,7 +103,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
 
-      buryBones();
+      buryBones(false);
       eat();
       lootScript();
       superAttackBoost(0, false);
@@ -128,7 +128,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
         }
         if (c.getInventoryItemCount() == 30) {
           leaveCombat();
-          buryBones();
+          buryBones(false);
           if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
             c.setStatus("@red@Dropping Vial to Loot..");
             c.dropItem(c.getInventoryItemSlotIndex(465));

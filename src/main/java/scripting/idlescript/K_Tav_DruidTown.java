@@ -99,7 +99,7 @@ public final class K_Tav_DruidTown extends K_kailaScript {
     while (c.isRunning()) {
       int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-      buryBones();
+      buryBones(false);
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
       }
@@ -163,7 +163,7 @@ public final class K_Tav_DruidTown extends K_kailaScript {
           c.walkToAsync(coords[0], coords[1], 0);
           c.pickupItem(coords[0], coords[1], lootId, true, false);
           c.sleep(640);
-          buryBones();
+          buryBones(false);
         } else {
           c.sleep(300);
         }

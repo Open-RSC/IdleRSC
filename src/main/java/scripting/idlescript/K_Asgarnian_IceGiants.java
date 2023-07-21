@@ -101,9 +101,14 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      eat();
-      buryBones();
+      boolean ate = eatFood(true);
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        IceToBank();
+        bank();
+        BankToIce();
+      }
+      buryBones(false);
       checkFightMode();
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30) {
@@ -209,32 +214,6 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
       c.closeBank();
       c.sleep(640);
       checkInventoryItemCounts();
-    }
-  }
-
-  private void eat() {
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-      boolean ate = false;
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        // c.setStatus("@yel@Banking..");
-        IceToBank();
-        bank();
-        BankToIce();
-        c.sleep(618);
-      }
     }
   }
 

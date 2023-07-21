@@ -105,7 +105,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
           looting();
-          if (buryBones) buryBones();
+          if (buryBones) buryBones(false);
           ORSCharacter npc = c.getNearestNpcById(46, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
@@ -152,9 +152,9 @@ public final class K_Edge_Skeletons extends K_kailaScript {
       c.walkToAsync(coords[0], coords[1], 0);
       c.pickupItem(coords[0], coords[1], boneId, true, false);
       c.sleep(640);
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(false);
     } else {
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(false);
       c.sleep(100);
     }
   }

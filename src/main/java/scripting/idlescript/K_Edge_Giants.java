@@ -126,8 +126,7 @@ public final class K_Edge_Giants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-      if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
+      if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
         eat();
       }
       checkFightMode();
@@ -142,7 +141,7 @@ public final class K_Edge_Giants extends K_kailaScript {
           else highLevelLooting();
           if (lootLimp) lootLimp();
           if (lootBones) lootBones();
-          if (buryBones) buryBones();
+          if (buryBones) buryBones(false);
           ORSCharacter npc = c.getNearestNpcById(61, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
@@ -188,9 +187,9 @@ public final class K_Edge_Giants extends K_kailaScript {
       c.walkToAsync(coords[0], coords[1], 0);
       c.pickupItem(coords[0], coords[1], 413, true, false);
       c.sleep(640);
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(false);
     } else {
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(false);
       c.sleep(100);
     }
   }
@@ -380,7 +379,7 @@ public final class K_Edge_Giants extends K_kailaScript {
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Mankiller ~ by Kaila");
+    JLabel header = new JLabel("Edge Dungeon Giants ~ by Kaila");
     JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
     JLabel label6 = new JLabel("Dusty Key Required + Food in Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");

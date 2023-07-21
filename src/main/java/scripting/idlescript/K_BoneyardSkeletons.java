@@ -102,7 +102,7 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
         looting();
         if (!c.isInCombat()) {
           looting();
-          if (buryBones) buryBones();
+          if (buryBones) buryBones(true);
           c.setStatus("@yel@Attacking..");
           ORSCharacter npc = c.getNearestNpcById(45, false);
           if (npc != null) {
@@ -149,9 +149,9 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
       c.walkToAsync(coords[0], coords[1], 0);
       c.pickupItem(coords[0], coords[1], boneId, true, false);
       c.sleep(640);
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(true);
     } else {
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(true);
       c.sleep(100);
     }
   }

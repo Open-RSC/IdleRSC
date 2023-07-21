@@ -109,7 +109,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
           }
         }
       } else if (c.getInventoryItemCount() == 30) {
-        buryBones();
+        buryBones(false);
         if (c.getInventoryItemCount() == 30) {
           c.setStatus("@yel@Banking..");
           UniToBank();
@@ -130,7 +130,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
           c.walkToAsync(coords[0], coords[1], 0);
           c.pickupItem(coords[0], coords[1], lootId, true, false);
           c.sleep(640);
-          buryBones();
+          buryBones(false);
         } else {
           c.sleep(300);
         }

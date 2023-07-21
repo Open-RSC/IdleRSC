@@ -139,7 +139,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
           else highLevelLooting();
           if (lootSpinachRoll) lootSpinachRoll();
           if (lootBones) lootBones();
-          if (buryBones) buryBones();
+          if (buryBones) buryBones(false);
           ORSCharacter npc = c.getNearestNpcById(104, false);
           c.setStatus("@yel@Attacking..");
           if (npc != null) {
@@ -185,9 +185,9 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       c.walkToAsync(coords[0], coords[1], 0);
       c.pickupItem(coords[0], coords[1], 413, true, false);
       c.sleep(640);
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(false);
     } else {
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(false);
       c.sleep(100);
     }
   }

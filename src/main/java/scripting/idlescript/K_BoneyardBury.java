@@ -64,7 +64,7 @@ public final class K_BoneyardBury extends K_kailaScript {
       checkFightMode();
       if (c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         lootBones();
-        buryBones();
+        buryBones(true);
       }
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
         c.setStatus("@yel@Banking..");
@@ -95,9 +95,9 @@ public final class K_BoneyardBury extends K_kailaScript {
       c.walkToAsync(coords[0], coords[1], 0);
       c.pickupItem(coords[0], coords[1], boneId, true, false);
       c.sleep(640);
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(true);
     } else {
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(true);
       c.sleep(100);
     }
   }

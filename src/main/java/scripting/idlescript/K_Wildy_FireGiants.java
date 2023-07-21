@@ -113,7 +113,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
 
-      buryBones();
+      buryBones(true);
       eat();
       lootScript();
       superAttackBoost(0, true);

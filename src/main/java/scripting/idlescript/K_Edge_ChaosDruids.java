@@ -187,7 +187,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
           c.walkToAsync(coords[0], coords[1], 0);
           c.pickupItem(coords[0], coords[1], lootId, true, false);
           c.sleep(640);
-          buryBones();
+          buryBones(false);
         } else {
           c.sleep(300);
         }

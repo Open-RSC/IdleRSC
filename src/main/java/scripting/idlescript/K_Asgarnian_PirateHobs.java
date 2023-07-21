@@ -98,7 +98,7 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
     while (c.isRunning()) {
 
       eat();
-      buryBones();
+      buryBones(false);
       checkFightMode();
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30) {

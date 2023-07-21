@@ -108,7 +108,7 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
       }
       eatFoodToLoot();
       lootScript();
-      if (buryBones) buryBones();
+      if (buryBones) buryBones(false);
       dropItemAmount(EMPTY_VIAL, 1, false);
 
       if (c.getInventoryItemCount() < 30) {

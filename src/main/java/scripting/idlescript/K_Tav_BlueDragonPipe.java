@@ -116,7 +116,7 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
               c.sleep(1000);
             } else {
               lootScript();
-              if (buryBones) buryBones();
+              if (buryBones) buryBones(false);
               if (potUp) {
                 superAttackBoost(2, false);
                 superStrengthBoost(2, false);

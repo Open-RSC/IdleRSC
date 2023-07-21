@@ -581,6 +581,24 @@ public class K_kailaScript extends IdleScript {
    *
    *          Main (useful) methods
    */
+  public static boolean eatFood(boolean leaveCombat) {
+    boolean ate = false;
+    if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
+      if (leaveCombat && c.isInCombat()) leaveCombat();
+      else if (!leaveCombat && c.isInCombat()) return true; // blocked by combat
+      c.setStatus("@red@Eating..");
+
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.itemCommand(id);
+          c.sleep(GAME_TICK);
+          ate = true;
+          break;
+        }
+      }
+    } else return true; // not necessary to eat
+    return ate; // return false if not eaten, return true if has eaten.
+  }
   /**
    * Checks fight mode against selected fightMode int, if no fightMode selector is provided, this
    * method would force controlled fight mode. fightMode 0 = controlled
@@ -657,11 +675,12 @@ public class K_kailaScript extends IdleScript {
    *
    * will leave combat to bury bones </pre>
    */
-  public static void buryBones() {
+  public static void buryBones(boolean leaveCombat) {
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount(id) > 0) {
-          if (c.isInCombat()) leaveCombat();
+          if (leaveCombat && c.isInCombat()) leaveCombat();
+          else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
           c.setStatus("@yel@Burying bones..");
           c.itemCommand(id);
           c.sleep(640);

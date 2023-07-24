@@ -102,13 +102,11 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      buryBones(false);
       eat();
-      lootScript();
+      buryBones(false);
+      lootItems(true, loot);
       superAttackBoost(0, false);
       superStrengthBoost(0, false);
-
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
@@ -120,22 +118,16 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
               c.attackNpc(npc.serverIndex);
               c.sleep(1280);
             } else {
-              c.sleep(640);
+                buryBones(false);
+                lootItems(true, loot);
             }
           } else {
             c.sleep(640);
           }
         }
         if (c.getInventoryItemCount() == 30) {
-          leaveCombat();
-          buryBones(false);
-          if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-            c.setStatus("@red@Dropping Vial to Loot..");
-            c.dropItem(c.getInventoryItemSlotIndex(465));
-            c.sleep(250);
-          }
-          c.setStatus("@red@Eating Food to Loot..");
-          eatFoodToLoot();
+          dropItemToLoot(true, 1, EMPTY_VIAL);
+          eatFoodToLoot(true);
         }
       }
       if (c.getInventoryItemCount(546) == 0) {
@@ -145,22 +137,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
         bank();
         BankToGiants();
         c.sleep(618);
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

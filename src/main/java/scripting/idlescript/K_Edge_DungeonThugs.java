@@ -19,9 +19,9 @@ import orsc.ORSCharacter;
  */
 public final class K_Edge_DungeonThugs extends K_kailaScript {
 
-  private static final int[] lowLevelLoot = {
-    unidGuam, // Grimy Guam
-    unidMar, // Grimy mar
+  private static final int[] loot = {
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy mar
     436, // Grimy tar
     437, // Grimy har
     438, // Grimy ranarr
@@ -46,11 +46,10 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
     1092 // rune spear
   };
 
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(199, 3254, x, y) <= 7; // center of lootzone
-  }
-
   public int start(String[] parameters) {
+    centerX = 199;
+    centerY = 3254;
+    centerDistance = 7;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -104,21 +103,25 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          looting();
-          if (buryBones) buryBones();
+          lootItems(false, loot);
+          if (buryBones) buryBones(false);
           ORSCharacter npc = c.getNearestNpcById(251, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
-            looting();
-            if (lootBones) lootBones();
+            lootItems(false, loot);
+            if (lootBones) lootItem(false, BONES);
             c.sleep(100);
           }
         } else {
           c.sleep(640);
         }
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
@@ -140,37 +143,6 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
         c.sleep(618);
       } else {
         c.sleep(100);
-      }
-    }
-  }
-
-  private void lootBones() {
-    final int boneId = 20;
-    int[] coords = c.getNearestItemById(boneId);
-    if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-      c.setStatus("@yel@No NPCs, Picking bones");
-      c.walkToAsync(coords[0], coords[1], 0);
-      c.pickupItem(coords[0], coords[1], boneId, true, false);
-      c.sleep(640);
-      if (buryBones) buryBones();
-    } else {
-      if (buryBones) buryBones();
-      c.sleep(100);
-    }
-  }
-
-  private void looting() {
-    for (int lootId : lowLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

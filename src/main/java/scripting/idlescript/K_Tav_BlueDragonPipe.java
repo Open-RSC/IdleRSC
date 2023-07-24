@@ -24,11 +24,6 @@ import orsc.ORSCharacter;
  * <p>@Author - Kaila
  */
 public final class K_Tav_BlueDragonPipe extends K_kailaScript {
-  private boolean isWithinLootzone(
-      int x, int y) { // FURTHEST LOOT is 376, 3368, go 361, 3353  (15 tiles)
-    return c.distance(361, 3353, x, y) <= 15; // center of lootzone
-  }
-
   private static int totalRdagger = 0;
   private static final int[] loot = {
     814, // D Bones
@@ -56,6 +51,9 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
   };
   // STARTing script
   public int start(String[] parameters) {
+    centerX = 361;
+    centerY = 3353; // FURTHEST LOOT is 376, 3368, go 361, 3353  (15 tiles)
+    centerDistance = 15;
     if (!parameters[0].equals("")) {
       try {
         foodWithdrawAmount = Integer.parseInt(parameters[0]);
@@ -96,48 +94,37 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-
       eat();
       if (potUp) {
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
-      dropItemAmount(EMPTY_VIAL, 1, false);
       checkFightMode();
-
-      if (c.getInventoryItemCount(foodId) > 0) {
-        if (c.getInventoryItemCount() < 30) {
-          if (!c.isInCombat()) {
-            // c.sleepHandler(98, true);
-            ORSCharacter npc = c.getNearestNpcById(202, false);
-            if (npc != null) {
-              c.setStatus("@yel@Attacking Dragons");
-              c.attackNpc(npc.serverIndex);
-              c.sleep(1000);
-            } else {
-              lootScript();
-              if (buryBones) buryBones(false);
-              if (potUp) {
-                superAttackBoost(2, false);
-                superStrengthBoost(2, false);
-              }
-              // c.sleep(640);
-              walkToCenter();
+      lootItems(false, loot);
+      if (c.getInventoryItemCount(foodId) > 0 && c.getInventoryItemCount() < 30) {
+        if (!c.isInCombat()) {
+          ORSCharacter npc = c.getNearestNpcById(202, false);
+          if (npc != null) {
+            c.setStatus("@yel@Attacking Dragons");
+            c.attackNpc(npc.serverIndex);
+            c.sleep(1000);
+          } else {
+            lootItems(false, loot);
+            if (buryBones) buryBones(false);
+            if (potUp) {
+              superAttackBoost(2, false);
+              superStrengthBoost(2, false);
             }
+            walkToCenter();
           }
-          c.sleep(800);
-        }
-        if (c.getInventoryItemCount() == 30) {
-          leaveCombat();
-          if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-            c.setStatus("@red@Dropping Vial to Loot..");
-            c.dropItem(c.getInventoryItemSlotIndex(465));
-            c.sleep(340);
-          }
-          eatFoodToLoot();
         }
       }
-      if (c.getInventoryItemCount(foodId) < 1 || timeToBank || timeToBankStay) {
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        if (buryBones) buryBonesToLoot(false);
+        eatFoodToLoot(false);
+      }
+      if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
         pipeEscape();
         c.setStatus("@yel@Banking..");
         timeToBank = false;
@@ -160,22 +147,6 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
     if (c.currentX() != 370 || c.currentY() != 3353) {
       c.walkTo(370, 3353);
       c.sleep(1000);
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
     }
   }
 

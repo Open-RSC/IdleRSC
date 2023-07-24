@@ -40,47 +40,25 @@ public class K_kailaScript extends IdleScript {
   public static boolean buryBones = false;
   public static boolean lootLimp = false;
   public static boolean potUp = false;
-  // ~~~~~~~~~~~~final~~~~~~~~~~~~~
+  // ~~~~~~~~~~~~OTHER CONSTANTS~~~~~~~~~~~~~
   public static final long twoHundredFiftySecondsInMillis = 255000L;
   public static final long nineMinutesInMillis = 540000L;
   public static final long startTimestamp = System.currentTimeMillis() / 1000L;
   public static final int GAME_TICK = 640;
-  public static final int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
+  public static final int EAT_LEVEL = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-  // ~~~~~~~~~~~~~~final item Id's~~~~~~~~~~~
-  public static final int UNC_SAPP = 160, UNC_EMER = 159, UNC_RUBY = 158, UNC_DIA = 157;
-  public static final int UNID_GUAM = 165, UNID_MAR = 435;
-  public static final int EMPTY_VIAL = 465;
-  public static final int unidGuam = 165;
-  public static final int unidMar = 435;
-  public static final int unidTar = 436;
-  public static final int unidHar = 437;
-  public static final int unidRan = 438;
-  public static final int unidIrit = 439;
-  public static final int unidAva = 440;
-  public static final int unidKwu = 441;
-  public static final int unidCada = 442;
-  public static final int unidDwarf = 443;
-  public static final int mindRune = 35;
-  public static final int chaosRune = 41;
-  public static final int deathRune = 38;
-  public static final int bloodRune = 619;
-  public static final int LAW_RUNE = 42;
-  public static final int NATURE_RUNE = 40;
-  public static final int cosmicRune = 46;
-  public static final int fireRune = 31;
-  public static final int waterRune = 32;
-  public static final int airRune = 33;
-  public static final int earthRune = 34;
-  public static final int coins = 10;
-  public static final int sapphire = 160;
-  public static final int emerald = 159;
-  public static final int ruby = 158;
-  public static final int diamond = 157;
-  public static final int tooth = 526;
-  public static final int loop = 527;
-  public static final int spear = 1092;
-  public static final int left = 1277;
+  // ~~~~~~~~~~~~~ITEM CONSTANTS~~~~~~~~~~~
+  public static final int UNCUT_SAPP = 160, UNCUT_EMER = 159, UNCUT_RUBY = 158, UNCUT_DIA = 157;
+  public static final int CUT_SAPP = 164, CUT_EMER = 163, CUT_RUBY = 162, CUT_DIA = 161;
+  public static final int UNID_GUAM = 165, UNID_MAR = 435, UNID_TAR = 436, UNID_HAR = 437;
+  public static final int UNID_RANARR = 438, UNID_IRIT = 439, UNID_AVANTOE = 440, UNID_KWUARM = 441;
+  public static final int UNID_CADA = 442, UNID_DWARF = 443, UNID_TORSTOL = 933;
+  public static final int FIRE_RUNE = 31, WATER_RUNE = 32, AIR_RUNE = 33, EARTH_RUNE = 34;
+  public static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
+  public static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
+  public static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
+  public static final int COINS = 10, EMPTY_VIAL = 465, LIMP_ROOT = 220, SPIN_ROLL = 179;
+  public static final int BONES = 20, BAT_BONES = 604, BIG_BONES = 413, DRAGON_BONES = 814;
 
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
 
@@ -93,7 +71,9 @@ public class K_kailaScript extends IdleScript {
   public static int foodId = -1;
   public static int fightMode = 0;
   public static int totalTrips = 0;
-
+  public static int centerX = -1;
+  public static int centerY = -1;
+  public static int centerDistance = -1;
   // Inventory Item Counts
   // Herbs
   public static int inventGuam = 0;
@@ -432,39 +412,39 @@ public class K_kailaScript extends IdleScript {
    */
   public static void checkInventoryItemCounts() {
     // Herbs
-    inventGuam = c.getInventoryItemCount(unidGuam);
-    inventMar = c.getInventoryItemCount(unidMar);
-    inventTar = c.getInventoryItemCount(unidTar);
-    inventHar = c.getInventoryItemCount(unidHar);
-    inventRan = c.getInventoryItemCount(unidRan);
-    inventIrit = c.getInventoryItemCount(unidIrit);
-    inventAva = c.getInventoryItemCount(unidAva);
-    inventKwuarm = c.getInventoryItemCount(unidKwu);
-    inventCada = c.getInventoryItemCount(unidCada);
-    inventDwarf = c.getInventoryItemCount(unidDwarf);
+    inventGuam = c.getInventoryItemCount(UNID_GUAM);
+    inventMar = c.getInventoryItemCount(UNID_MAR);
+    inventTar = c.getInventoryItemCount(UNID_TAR);
+    inventHar = c.getInventoryItemCount(UNID_HAR);
+    inventRan = c.getInventoryItemCount(UNID_RANARR);
+    inventIrit = c.getInventoryItemCount(UNID_IRIT);
+    inventAva = c.getInventoryItemCount(UNID_AVANTOE);
+    inventKwuarm = c.getInventoryItemCount(UNID_KWUARM);
+    inventCada = c.getInventoryItemCount(UNID_CADA);
+    inventDwarf = c.getInventoryItemCount(UNID_DWARF);
     // Runes
     inventLaws = c.getInventoryItemCount(LAW_RUNE);
     inventNats = c.getInventoryItemCount(NATURE_RUNE);
-    inventMind = c.getInventoryItemCount(mindRune);
-    inventChaos = c.getInventoryItemCount(chaosRune);
-    inventDeath = c.getInventoryItemCount(deathRune);
-    inventBlood = c.getInventoryItemCount(bloodRune);
-    inventCosmic = c.getInventoryItemCount(cosmicRune);
-    inventAir = c.getInventoryItemCount(airRune);
-    inventFire = c.getInventoryItemCount(fireRune);
-    inventWater = c.getInventoryItemCount(waterRune);
-    inventEarth = c.getInventoryItemCount(earthRune);
+    inventMind = c.getInventoryItemCount(MIND_RUNE);
+    inventChaos = c.getInventoryItemCount(CHAOS_RUNE);
+    inventDeath = c.getInventoryItemCount(DEATH_RUNE);
+    inventBlood = c.getInventoryItemCount(BLOOD_RUNE);
+    inventCosmic = c.getInventoryItemCount(COSMIC_RUNE);
+    inventAir = c.getInventoryItemCount(AIR_RUNE);
+    inventFire = c.getInventoryItemCount(FIRE_RUNE);
+    inventWater = c.getInventoryItemCount(WATER_RUNE);
+    inventEarth = c.getInventoryItemCount(EARTH_RUNE);
     // Gems
-    inventSapphire = c.getInventoryItemCount(sapphire);
-    inventEmerald = c.getInventoryItemCount(emerald);
-    inventRuby = c.getInventoryItemCount(ruby);
-    inventDiamond = c.getInventoryItemCount(diamond);
+    inventSapphire = c.getInventoryItemCount(UNCUT_SAPP);
+    inventEmerald = c.getInventoryItemCount(UNCUT_EMER);
+    inventRuby = c.getInventoryItemCount(UNCUT_RUBY);
+    inventDiamond = c.getInventoryItemCount(UNCUT_DIA);
     inventGems = inventSapphire + inventEmerald + inventRuby + inventDiamond;
     // rares
-    inventTooth = c.getInventoryItemCount(tooth);
-    inventLoop = c.getInventoryItemCount(loop);
-    inventLeft = c.getInventoryItemCount(left);
-    inventSpear = c.getInventoryItemCount(spear);
+    inventTooth = c.getInventoryItemCount(TOOTH_HALF);
+    inventLoop = c.getInventoryItemCount(LOOP_HALF);
+    inventLeft = c.getInventoryItemCount(LEFT_HALF);
+    inventSpear = c.getInventoryItemCount(RUNE_SPEAR);
 
     // Totals
     inventRunes =
@@ -581,6 +561,15 @@ public class K_kailaScript extends IdleScript {
    *
    *          Main (useful) methods
    */
+
+  public static boolean isWithinLootzone(int x, int y) {
+    if (centerX == -1 || centerY == -1 || centerDistance == -1) {
+      c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
+      return true;
+    }
+    return c.distance(centerX, centerY, x, y) <= centerDistance; // center of lootzone
+  }
+
   public static boolean eatFood(boolean leaveCombat) {
     boolean ate = false;
     if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
@@ -598,6 +587,56 @@ public class K_kailaScript extends IdleScript {
       }
     } else return true; // not necessary to eat
     return ate; // return false if not eaten, return true if has eaten.
+  }
+  /**
+   * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots 1 of item.
+   *
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   * @param itemId int of itemId to loot. For multiple items use lootItems(boolean, int[]);
+   */
+  public static void lootItem(boolean leaveCombat, int itemId) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    try {
+      int[] coords = c.getNearestItemById(itemId);
+      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+        c.setStatus("@yel@No NPCs, Picking bones");
+        c.walkToAsync(coords[0], coords[1], 0);
+        c.pickupItem(coords[0], coords[1], itemId, true, false);
+        c.sleep(GAME_TICK);
+        if (buryBones) buryBones(false);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+  /**
+   * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots list of
+   * items
+   *
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   * @param itemIds int[] array listing itemIds to loot using for loop. Can institize item arrays in
+   *     the method parameters with "new int[]{data}" as the value for this param.
+   */
+  public static void lootItems(boolean leaveCombat, int[] itemIds) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    for (int itemId : itemIds) {
+      try {
+        int[] coords = c.getNearestItemById(itemId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@No NPCs, Picking bones");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], itemId, true, false);
+          c.sleep(GAME_TICK);
+          if (buryBones) buryBones(false);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
   /**
    * Checks fight mode against selected fightMode int, if no fightMode selector is provided, this
@@ -619,13 +658,10 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    */
   public static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     if (c.getInventoryItemCount(itemId) > 0) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
-      if (amount < 0) {
+      if (amount < 1) {
         amount = c.getInventoryItemCount(itemId);
       }
       c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
@@ -676,11 +712,11 @@ public class K_kailaScript extends IdleScript {
    * will leave combat to bury bones </pre>
    */
   public static void buryBones(boolean leaveCombat) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount(id) > 0) {
-          if (leaveCombat && c.isInCombat()) leaveCombat();
-          else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
           c.setStatus("@yel@Burying bones..");
           c.itemCommand(id);
           c.sleep(640);
@@ -705,28 +741,87 @@ public class K_kailaScript extends IdleScript {
           c.walkToAsync(c.currentX(), c.currentY(), 1);
           c.sleep(640);
         } else {
-          break;
+          return;
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
     }
   }
-  /** if full inventory, leave combat, eat 1 food to make inventory space. */
-  public static void eatFoodToLoot() {
+  /**
+   * Checks for full inventory, if true eat 1 food to make inventory space. Depending on
+   * leaveCombat.
+   *
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
+   *     combat.
+   */
+  public static void eatFoodToLoot(boolean leaveCombat) {
+    if (c.getInventoryItemCount() != 30) return;
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int id : c.getFoodIds()) {
       try {
-        if (c.getInventoryItemCount(id) > 0 && c.getInventoryItemCount() == 30) {
-          if (c.isInCombat()) leaveCombat();
+        if (c.getInventoryItemCount() != 30) return;
+        if (c.getInventoryItemCount(id) > 0) {
           c.setStatus("@red@Eating Food to Loot..");
           c.itemCommand(id);
-          c.sleep(640);
+          c.sleep(GAME_TICK);
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
     }
   }
+  /**
+   * Checks for full inventory, if true bury bones to make inventory space. Depending on
+   * leaveCombat.
+   *
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
+   *     combat.
+   */
+  public static void buryBonesToLoot(boolean leaveCombat) {
+    if (c.getInventoryItemCount() != 30) return;
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    for (int id : bones) {
+      try {
+        if (c.getInventoryItemCount() != 30) return;
+        if (c.getInventoryItemCount(id) > 0) {
+          c.setStatus("@yel@Burying bones..");
+          c.itemCommand(id);
+          c.sleep(GAME_TICK);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /**
+   * Checks for full inventory, if true drops items to make inventory space. Depending on
+   * leaveCombat.
+   *
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
+   *     combat.
+   */
+  public static void dropItemToLoot(boolean leaveCombat, int amount, int itemId) {
+    if (c.getInventoryItemCount() != 30) return;
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    try {
+      if (c.getInventoryItemCount() != 30) return;
+      if (c.getInventoryItemCount(itemId) > 0) {
+        if (amount < 1) {
+          amount = 1;
+        }
+        c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
+        c.sleep(GAME_TICK);
+        waitForBatching();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   /*
    *
    *

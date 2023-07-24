@@ -18,8 +18,8 @@ import orsc.ORSCharacter;
  * <p>@Author - Kaila
  */
 public final class K_BoneyardSkeletons extends K_kailaScript {
-
-  private static final int[] lowLevelLoot = {
+  private static boolean lootBigBones = false;
+  private static final int[] loot = {
     438, // Grimy ranarr
     439, // Grimy irit
     440, // Grimy ava
@@ -41,11 +41,10 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
     1092 // rune spear
   };
 
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(126, 265, x, y) <= 30; // center of lootzone
-  }
-
   public int start(String[] parameters) {
+    centerX = 126;
+    centerY = 265;
+    centerDistance = 30;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -93,15 +92,13 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
       }
       checkFightMode();
       checkInventoryItemCounts();
-
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
-        looting();
         if (!c.isInCombat()) {
-          looting();
+          lootItems(true, loot);
           if (buryBones) buryBones(true);
           c.setStatus("@yel@Attacking..");
           ORSCharacter npc = c.getNearestNpcById(45, false);
@@ -109,13 +106,16 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
-
-            if (lootBones) lootBones();
-            c.sleep(100);
+            if (lootBigBones) lootItem(false, BIG_BONES);
+            if (lootBones) lootItem(false, BONES);
           }
         } else {
-          c.sleep(640);
+          c.sleep(GAME_TICK);
         }
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
@@ -137,37 +137,6 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
         c.sleep(618);
       } else {
         c.sleep(100);
-      }
-    }
-  }
-
-  private void lootBones() {
-    final int boneId = 20;
-    int[] coords = c.getNearestItemById(boneId);
-    if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-      c.setStatus("@yel@No NPCs, Picking bones");
-      c.walkToAsync(coords[0], coords[1], 0);
-      c.pickupItem(coords[0], coords[1], boneId, true, false);
-      c.sleep(640);
-      if (buryBones) buryBones(true);
-    } else {
-      if (buryBones) buryBones(true);
-      c.sleep(100);
-    }
-  }
-
-  private void looting() {
-    for (int lootId : lowLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }
@@ -313,10 +282,11 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
     JLabel header = new JLabel("Boneyard Skeletons ~ by Kaila");
     JLabel label1 = new JLabel("Start in Boneyard or Edge Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("::bank ::potup ::lootbones");
+    JLabel label3 = new JLabel("::bank ::potup ::lootbones ::lootbigbones");
     JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel label5 = new JLabel("Param Format: \"auto\"");
-    JCheckBox lootBonesCheckbox = new JCheckBox("Pickup Bones?", true);
+    JCheckBox lootBonesCheckbox = new JCheckBox("Pickup Bones? When npc Null", true);
+    JCheckBox lootBigBonesCheckbox = new JCheckBox("Pickup Big Bones? When npc Null", false);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Bones?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -335,6 +305,7 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
           if (!foodWithdrawAmountField.getText().equals(""))
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           lootBones = lootBonesCheckbox.isSelected();
+          lootBigBones = lootBigBonesCheckbox.isSelected();
           buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
@@ -355,6 +326,7 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
     scriptFrame.add(label4);
     scriptFrame.add(label5);
     scriptFrame.add(lootBonesCheckbox);
+    scriptFrame.add(lootBigBonesCheckbox);
     scriptFrame.add(buryBonesCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
@@ -387,6 +359,15 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
       } else {
         c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
         lootBones = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains("lootbigbones")) {
+      if (!lootBones) {
+        c.displayMessage("@or1@Got toggle @red@lootbigbones@or1@, turning on bone looting!");
+        lootBigBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@lootbigbones@or1@, turning off bone looting!");
+        lootBigBones = false;
       }
       c.sleep(100);
     } else if (commandText.contains("burybones")) {

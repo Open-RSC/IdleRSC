@@ -94,7 +94,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
     while (c.isRunning()) {
       eat();
       if (c.getInventoryItemCount() < 30) {
-        lootScript();
+        lootItem(false, 466);
         inventUni = c.getBankItemCount(466);
         if (!c.isInCombat()) {
           // c.sleepHandler(296, true);
@@ -102,55 +102,23 @@ public final class K_BlackUnicorns extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(3000);
+            c.sleep(3 * GAME_TICK);
           } else {
-            lootBones();
-            c.sleep(640);
+            if (lootBones) lootItem(false, BONES);
           }
         }
-      } else if (c.getInventoryItemCount() == 30) {
-        buryBones(false);
-        if (c.getInventoryItemCount() == 30) {
-          c.setStatus("@yel@Banking..");
-          UniToBank();
-          bank();
-          BankToUni();
-          c.sleep(618);
-        }
       }
-    }
-  }
-
-  private void lootBones() {
-    for (int lootId : bones) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && !c.isInCombat()) {
-          c.setStatus("@yel@No NPCs, Picking bones");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-          buryBones(false);
-        } else {
-          c.sleep(300);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
-    }
-  }
-
-  private void lootScript() {
-    try {
-      int[] coords = c.getNearestItemById(466);
-      if (coords != null) {
-        c.setStatus("@yel@Looting..");
-        c.walkToAsync(coords[0], coords[1], 0);
-        c.pickupItem(coords[0], coords[1], 466, true, false);
-        c.sleep(640);
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@yel@Banking..");
+        UniToBank();
+        bank();
+        BankToUni();
+        c.sleep(618);
       }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
   }
 

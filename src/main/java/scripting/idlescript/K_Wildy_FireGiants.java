@@ -16,11 +16,6 @@ import orsc.ORSCharacter;
  * <p>@Author - Kaila
  */
 public final class K_Wildy_FireGiants extends K_kailaScript {
-
-  private boolean isWithinLootzone(int x, int y) {
-    return c.distance(269, 2949, x, y) <= 10;
-  }
-
   private static int totalBstaff = 0;
   private static int totalRscim = 0;
   private static int totalRunestuff = 0;
@@ -81,6 +76,9 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+    centerX = 269;
+    centerY = 2949;
+    centerDistance = 10;
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -115,10 +113,9 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
 
       buryBones(true);
       eat();
-      lootScript();
+      lootItems(false, loot);
       superAttackBoost(0, true);
       superStrengthBoost(0, true);
-      dropItemAmount(EMPTY_VIAL, 1, true);
 
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
@@ -132,12 +129,14 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
               c.attackNpc(npc.serverIndex);
               c.sleep(1280);
             } else {
-              c.sleep(640);
+              lootItems(false, loot);
+              c.sleep(GAME_TICK);
             }
           }
         }
-        if (c.getInventoryItemCount() == 30 && !c.isInCombat()) {
-          eatFoodToLoot();
+        if (c.getInventoryItemCount() == 30) {
+          dropItemToLoot(true, 1, EMPTY_VIAL);
+          eatFoodToLoot(true);
         }
       }
       if (c.getInventoryItemCount(546) == 0
@@ -149,22 +148,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
         BankToStair();
         stairToGiants();
         c.sleep(618);
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

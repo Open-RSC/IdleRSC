@@ -18,7 +18,6 @@ import orsc.ORSCharacter;
  * <p>@Author - Kaila
  */
 public final class K_Edge_Giants extends K_kailaScript {
-
   private static final int[] lowLevelLoot = {
     165, // Grimy Guam
     435, // Grimy mar
@@ -78,11 +77,11 @@ public final class K_Edge_Giants extends K_kailaScript {
     1092 // rune spear
   };
 
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(208, 3328, x, y) <= 14; // center of lootzone
-  }
-
   public int start(String[] parameters) {
+    centerX = 208;
+    centerY = 3328;
+    centerDistance = 14;
+
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -137,24 +136,27 @@ public final class K_Edge_Giants extends K_kailaScript {
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          if (lootLowLevel) lowLevelLooting();
-          else highLevelLooting();
-          if (lootLimp) lootLimp();
-          if (lootBones) lootBones();
+          if (lootLowLevel) lootItems(false, lowLevelLoot);
+          else lootItems(false, highLevelLoot);
+          if (lootLimp) lootItem(false, LIMP_ROOT);
+          if (lootBones) lootItem(false, BIG_BONES);
           if (buryBones) buryBones(false);
           ORSCharacter npc = c.getNearestNpcById(61, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
+            c.sleep(3 * GAME_TICK);
           } else {
-            if (lootLowLevel) lowLevelLooting();
-            else highLevelLooting();
-            c.sleep(100);
+            if (lootLowLevel) lootItems(false, lowLevelLoot);
+            else lootItems(false, highLevelLoot);
           }
         } else {
-          c.sleep(640);
+          c.sleep(GAME_TICK);
         }
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        if (buryBones) buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
@@ -173,69 +175,6 @@ public final class K_Edge_Giants extends K_kailaScript {
           c.stop();
         }
         bankToDungeon();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
-      }
-    }
-  }
-
-  private void lootBones() {
-    int[] coords = c.getNearestItemById(413);
-    if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-      c.setStatus("@yel@Picking bones");
-      c.walkToAsync(coords[0], coords[1], 0);
-      c.pickupItem(coords[0], coords[1], 413, true, false);
-      c.sleep(640);
-      if (buryBones) buryBones(false);
-    } else {
-      if (buryBones) buryBones(false);
-      c.sleep(100);
-    }
-  }
-
-  private void lootLimp() {
-    try {
-      int[] coords = c.getNearestItemById(220);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkToAsync(coords[0], coords[1], 0);
-        c.pickupItem(coords[0], coords[1], 220, true, false);
-        c.sleep(640);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void highLevelLooting() {
-    for (int lootId : highLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  private void lowLevelLooting() {
-    for (int lootId : lowLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

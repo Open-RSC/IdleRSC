@@ -19,30 +19,29 @@ import orsc.ORSCharacter;
  */
 public final class K_Edge_Mankiller extends K_kailaScript {
 
-  private static final int[] lowLevelLoot = {
-    unidGuam, // Grimy Guam
-    unidMar, // Grimy mar
-    unidTar, // Grimy tar
-    unidHar, // Grimy har
-    unidRan, // Grimy ranarr
-    unidIrit, // Grimy irit
-    unidAva, // Grimy ava
-    unidKwu, // Grimy kwu
-    unidCada, // Grimy cada
-    unidDwarf, // Grimy dwarf
-    mindRune, // mind rune
-    chaosRune, // chaos rune
-    earthRune, // Earth rune
-    fireRune, // fire rune
-    coins, // coins
+  private static final int[] loot = {
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy mar
+    UNID_TAR, // Grimy tar
+    UNID_HAR, // Grimy har
+    UNID_RANARR, // Grimy ranarr
+    UNID_IRIT, // Grimy irit
+    UNID_AVANTOE, // Grimy ava
+    UNID_KWUARM, // Grimy kwu
+    UNID_CADA, // Grimy cada
+    UNID_DWARF, // Grimy dwarf
+    MIND_RUNE, // mind rune
+    CHAOS_RUNE, // chaos rune
+    EARTH_RUNE, // Earth rune
+    FIRE_RUNE, // fire rune
+    COINS, // coins
     11 // Bronze arrow
   };
 
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(213, 442, x, y) <= 9; // center of lootzone
-  }
-
   public int start(String[] parameters) {
+    centerX = 213;
+    centerY = 442;
+    centerDistance = 9;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -96,7 +95,7 @@ public final class K_Edge_Mankiller extends K_kailaScript {
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          looting();
+          lootItems(false, loot);
           if (buryBones) buryBones(false);
           ORSCharacter npc = c.getNearestNpcById(11, false);
           if (npc != null) {
@@ -104,13 +103,17 @@ public final class K_Edge_Mankiller extends K_kailaScript {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
-            looting();
-            if (lootBones) lootBones();
+            lootItems(false, loot);
+            if (lootBones) lootItem(false, BONES);
             c.sleep(100);
           }
         } else {
           c.sleep(640);
         }
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
@@ -132,37 +135,6 @@ public final class K_Edge_Mankiller extends K_kailaScript {
         c.sleep(618);
       } else {
         c.sleep(100);
-      }
-    }
-  }
-
-  private void lootBones() {
-    final int boneId = 20;
-    int[] coords = c.getNearestItemById(boneId);
-    if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-      c.setStatus("@yel@No NPCs, Picking bones");
-      c.walkToAsync(coords[0], coords[1], 0);
-      c.pickupItem(coords[0], coords[1], boneId, true, false);
-      c.sleep(640);
-      if (buryBones) buryBones(false);
-    } else {
-      if (buryBones) buryBones(false);
-      c.sleep(100);
-    }
-  }
-
-  private void looting() {
-    for (int lootId : lowLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

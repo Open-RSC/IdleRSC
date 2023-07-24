@@ -14,10 +14,6 @@ import orsc.ORSCharacter;
  * <p>Author - Kaila
  */
 public final class K_HobsPeninsula extends K_kailaScript {
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(363, 610, x, y) <= 15; // center of lootzone
-  }
-
   private static int totalLimp = 0;
   private static final int[] loot = {
     526, // tooth half
@@ -59,6 +55,9 @@ public final class K_HobsPeninsula extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+    centerX = 363;
+    centerY = 610;
+    centerDistance = 15;
     if (!parameters[0].equals("")) {
       try {
         foodWithdrawAmount = Integer.parseInt(parameters[0]);
@@ -103,7 +102,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
 
       if (c.getInventoryItemCount() < 30) {
         checkInventoryItemCounts();
-        lootScript();
+        lootItems(false, loot);
         if (potUp) {
           attackBoost(0, false);
           strengthBoost(0, false);
@@ -114,34 +113,27 @@ public final class K_HobsPeninsula extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
+            c.sleep(2 * GAME_TICK);
           } else {
-            c.sleep(1000);
+            lootItems(false, loot);
+            c.sleep(GAME_TICK);
             if (c.currentX() != 364 || c.currentY() != 607) {
               c.walkTo(364, 607);
-              c.sleep(1000);
+              c.sleep(2 * GAME_TICK);
             }
           }
         }
-        c.sleep(320);
+        c.sleep(GAME_TICK);
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(foodId) == 0) {
         c.setStatus("@yel@Banking..");
         PeninsulaToBank();
         bank();
         BankToPeninsula();
-        c.sleep(618);
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
         c.sleep(618);
       }
     }

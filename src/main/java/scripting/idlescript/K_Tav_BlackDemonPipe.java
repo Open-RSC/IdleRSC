@@ -111,48 +111,33 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
       prayParalyze();
       superAttackBoost(0, false);
       superStrengthBoost(0, false);
-
+      eatFoodToLoot(true);
       if (c.getInventoryItemCount() < 30) {
-        lootScript();
-
+        lootItems(true, loot);
         if (!c.isInCombat()) {
-
-          // c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(290, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking Demons");
             c.attackNpc(npc.serverIndex);
             c.sleep(1000);
           } else {
-            c.sleep(1000);
+            lootItems(true, loot);
+            c.sleep(GAME_TICK);
           }
         }
         c.sleep(1380);
       }
-      if (c.getInventoryItemCount() == 30) {
-        leaveCombat();
-        if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-          c.setStatus("@red@Dropping Vial to Loot..");
-          c.dropItem(c.getInventoryItemSlotIndex(465));
-          c.sleep(340);
-        }
-        eatFoodToLoot();
+      if (c.getInventoryItemCount() == 30) dropItemToLoot(false, 1, EMPTY_VIAL);
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@red@Full Inv / Out of Food");
+        c.sleep(308);
+        demonEscape();
+        DemonsToBank();
+        bank();
+        BankToDemons();
       }
     }
   }
-
-  public void lootScript() {
-    for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinWander(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
-      }
-    }
-  }
-  // actionable private voids (eat, bank, etc)
 
   private void bank() {
 

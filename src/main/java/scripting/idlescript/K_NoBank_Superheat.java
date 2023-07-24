@@ -132,10 +132,10 @@ public final class K_NoBank_Superheat extends K_kailaScript {
   }
 
   private void dropGems() {
-    dropItemAmount(UNC_SAPP, -1, true);
-    dropItemAmount(UNC_EMER, -1, true);
-    dropItemAmount(UNC_RUBY, -1, true);
-    dropItemAmount(UNC_DIA, -1, true);
+    dropItemAmount(UNCUT_SAPP, -1, true);
+    dropItemAmount(UNCUT_EMER, -1, true);
+    dropItemAmount(UNCUT_RUBY, -1, true);
+    dropItemAmount(UNCUT_DIA, -1, true);
   }
 
   private void mine(String i) {

@@ -16,9 +16,6 @@ import orsc.ORSCharacter;
  * <p>Author - Kaila
  */
 public final class K_Asgarnian_IceGiants extends K_kailaScript {
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(308, 3520, x, y) <= 15; // center of lootzone
-  }
 
   private static final int[] loot = {
     526, // tooth half
@@ -61,7 +58,7 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
   };
 
   private void startSequence() {
-    c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
+    c.displayMessage("@red@Asgarnian Ice Giants - By Kaila");
     c.displayMessage("@red@Start in Fally East bank with Armor");
     c.displayMessage("@red@Sharks IN BANK REQUIRED");
     startTime = System.currentTimeMillis();
@@ -76,10 +73,14 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
   } // param 0 - type of food, param 1 - number of food, param 2 - potUp
 
   public int start(String[] parameters) {
+    centerX = 308;
+    centerY = 3520;
+    centerDistance = 15;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       c.displayMessage("Got Autostart, using 2 Lobs, yes pots", 0);
       System.out.println("Got Autostart, using 2 Lobs, yes pots");
       foodId = 373;
+      lootBones = true;
       foodWithdrawAmount = 2;
       potUp = true;
       guiSetup = true;
@@ -112,7 +113,8 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
       checkFightMode();
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30) {
-        lootScript();
+        lootItems(true, loot);
+        if (lootBones) lootItem(true, BIG_BONES);
         if (potUp) {
           attackBoost(0, true);
           strengthBoost(0, true);
@@ -126,37 +128,26 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
             c.attackNpc(npc.serverIndex);
             c.sleep(1000);
           } else {
-            c.sleep(1000);
-            if (c.currentX() != 305 || c.currentY() != 3522) {
-              c.walkTo(305, 3522);
-              c.sleep(1000);
-            }
+            lootItems(true, loot);
+            if (lootBones) lootItem(true, BIG_BONES);
+            // if (c.currentX() != 305 || c.currentY() != 3522) {
+            //  c.walkTo(305, 3522);
+            //  c.sleep(1000);
+            // }
           }
+        } else {
+          c.sleep(GAME_TICK);
         }
-        c.sleep(320);
       }
-      if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount() == 0 || timeToBank) {
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
+      }
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount() == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
         IceToBank();
         bank();
         BankToIce();
-        c.sleep(618);
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

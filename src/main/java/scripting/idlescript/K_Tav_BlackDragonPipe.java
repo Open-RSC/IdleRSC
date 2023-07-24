@@ -102,14 +102,12 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
       foodCheck();
       eat();
       checkFightMode();
+      lootItems(true, loot);
+      if (buryBones) buryBones(false);
       if (potUp) {
         superAttackBoost(5, false);
         superStrengthBoost(5, false);
       }
-      eatFoodToLoot();
-      lootScript();
-      if (buryBones) buryBones(false);
-      dropItemAmount(EMPTY_VIAL, 1, false);
 
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
@@ -118,29 +116,26 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
             eat();
-          } // todo re-add walk to center?
+          } else {
+            lootItems(true, loot);
+            c.sleep(GAME_TICK);
+          }
         }
         c.sleep(640);
       }
       if (c.getInventoryItemCount() == 30) {
         prayPotCheck();
-        dropItemAmount(EMPTY_VIAL, 1, false);
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        if (buryBones) buryBonesToLoot(false);
+        eatFoodToLoot(false);
       }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinWander(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@red@Full Inv / Out of Food");
+        c.sleep(308);
+        dragonEscape();
+        DragonsToBank();
+        bank();
+        BankToDragons();
       }
     }
   }

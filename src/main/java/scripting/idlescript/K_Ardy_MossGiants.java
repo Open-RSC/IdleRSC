@@ -76,11 +76,10 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     1092 // rune spear
   };
 
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(637, 504, x, y) <= 20; // center of lootzone
-  }
-
   public int start(String[] parameters) {
+    centerX = 637;
+    centerY = 504;
+    centerDistance = 20;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -135,10 +134,10 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       }
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          if (lootLowLevel) lowLevelLooting();
-          else highLevelLooting();
-          if (lootSpinachRoll) lootSpinachRoll();
-          if (lootBones) lootBones();
+          if (lootLowLevel) lootItems(false, lowLevelLoot);
+          else lootItems(false, highLevelLoot);
+          if (lootSpinachRoll) lootItem(false, SPIN_ROLL);
+          if (lootBones) lootItem(false, BIG_BONES);
           if (buryBones) buryBones(false);
           ORSCharacter npc = c.getNearestNpcById(104, false);
           c.setStatus("@yel@Attacking..");
@@ -146,8 +145,8 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
-            if (lootLowLevel) lowLevelLooting();
-            else highLevelLooting();
+            if (lootLowLevel) lootItems(false, lowLevelLoot);
+            else lootItems(false, highLevelLoot);
             c.sleep(100);
           }
         } else {
@@ -174,66 +173,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
         c.sleep(618);
       } else {
         c.sleep(100);
-      }
-    }
-  }
-
-  private void lootBones() {
-    int[] coords = c.getNearestItemById(413);
-    if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-      c.setStatus("@yel@Picking bones");
-      c.walkToAsync(coords[0], coords[1], 0);
-      c.pickupItem(coords[0], coords[1], 413, true, false);
-      c.sleep(640);
-      if (buryBones) buryBones(false);
-    } else {
-      if (buryBones) buryBones(false);
-      c.sleep(100);
-    }
-  }
-
-  private void lootSpinachRoll() {
-    try {
-      int[] coords = c.getNearestItemById(179);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkToAsync(coords[0], coords[1], 0);
-        c.pickupItem(coords[0], coords[1], 220, true, false);
-        c.sleep(640);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void highLevelLooting() {
-    for (int lootId : highLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  private void lowLevelLooting() {
-    for (int lootId : lowLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

@@ -91,10 +91,6 @@ public final class K_HobsMiner extends K_kailaScript {
     443, // Grimy dwu
   };
 
-  private boolean isWithinLootzone(int x, int y) {
-    return c.distance(225, 251, x, y) <= 30; // center of hobs mine lootzone
-  }
-
   private boolean adamantiteAvailable() {
     return c.getNearestObjectByIds(addyIDs) != null;
   }
@@ -139,6 +135,9 @@ public final class K_HobsMiner extends K_kailaScript {
   }
 
   public int start(String[] parameters) {
+    centerX = 225;
+    centerY = 251;
+    centerDistance = 30;
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Auto-starting, teleport false, return escape true", 0);
@@ -191,7 +190,7 @@ public final class K_HobsMiner extends K_kailaScript {
 
         eat();
         leaveCombat();
-        lootScript();
+        lootItems(true, loot);
         if (rockEmpty() || !c.isBatching()) {
           isMining = "none";
           currentOre[0] = 0;
@@ -225,22 +224,6 @@ public final class K_HobsMiner extends K_kailaScript {
           }
           c.sleep(1280);
         }
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

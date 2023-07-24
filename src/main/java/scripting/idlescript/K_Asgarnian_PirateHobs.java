@@ -20,11 +20,6 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Asgarnian_PirateHobs extends K_kailaScript {
-
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(282, 3522, x, y) <= 14; // center of lootzone
-  }
-
   private static final int[] loot = {
     526, // tooth half
     527, // loop half
@@ -62,9 +57,13 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+    centerX = 282;
+    centerY = 3522;
+    centerDistance = 14;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       c.displayMessage("Got Autostart, using 1 Shark, yes pots", 0);
       System.out.println("Got Autostart, using 1 Shark, yes pots");
+      lootBones = true;
       foodWithdrawAmount = 1;
       potUp = true;
       guiSetup = true;
@@ -102,7 +101,7 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
       checkFightMode();
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30) {
-        lootScript();
+        lootItems(false, loot);
         if (potUp) {
           attackBoost(0, false);
           strengthBoost(0, false);
@@ -119,16 +118,22 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
             c.setStatus("@yel@Attacking..");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
+            c.sleep(2 * GAME_TICK);
           } else {
+            if (lootBones) lootItem(false, BONES);
             c.sleep(1000);
             if (c.currentX() != 283 || c.currentY() != 3521) {
               c.walkTo(283, 3521);
               c.sleep(1000);
             }
           }
+        } else {
+          c.sleep(GAME_TICK);
         }
-        c.sleep(320);
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() > 29
           || c.getInventoryItemCount(foodId) == 0
@@ -146,23 +151,6 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
           endSession();
         }
         BankToIce();
-        c.sleep(618);
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }
@@ -322,6 +310,7 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
     JLabel label3 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label4 = new JLabel("::bank ::bankstay");
     JLabel label5 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
@@ -341,6 +330,7 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
 
           potUp = potUpCheckbox.isSelected();
+          lootBones = lootBonesCheckbox.isSelected();
           fightMode = fightModeField.getSelectedIndex();
           foodId = foodIds[foodField.getSelectedIndex()];
           scriptFrame.setVisible(false);
@@ -359,6 +349,7 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
     scriptFrame.add(label3);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
+    scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
     scriptFrame.add(fightModeField);
@@ -392,6 +383,15 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
       } else {
         c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
         potUp = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains("bones")) {
+      if (!lootBones) {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
+        lootBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
+        lootBones = false;
       }
       c.sleep(100);
     } else if (commandText.contains(

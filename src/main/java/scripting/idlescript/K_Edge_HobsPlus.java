@@ -14,11 +14,6 @@ import orsc.ORSCharacter;
  * <p>Author - Kaila
  */
 public final class K_Edge_HobsPlus extends K_kailaScript {
-
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(207, 3302, x, y) <= 14; // center of lootzone
-  }
-
   private static final int[] npcIds = {
     67, // Hobgoblin
     45, // Skelli
@@ -79,6 +74,9 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+    centerX = 207;
+    centerY = 3302;
+    centerDistance = 14;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -137,22 +135,26 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          if (lootLowLevel) lowLevelLooting();
-          else highLevelLooting();
-          if (lootLimp) lootLimp();
+          if (lootLowLevel) lootItems(false, lowLevelLoot);
+          else lootItems(false, highLevelLoot);
+          if (lootLimp) lootItem(false, LIMP_ROOT);
           ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
-            if (lootLowLevel) lowLevelLooting();
-            else highLevelLooting();
+            if (lootLowLevel) lootItems(false, lowLevelLoot);
+            else lootItems(false, highLevelLoot);
             c.sleep(100);
           }
         } else {
           c.sleep(640);
         }
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
@@ -174,52 +176,6 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
         c.sleep(618);
       } else {
         c.sleep(100);
-      }
-    }
-  }
-
-  private void lootLimp() {
-    try {
-      int[] coords = c.getNearestItemById(220);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkToAsync(coords[0], coords[1], 0);
-        c.pickupItem(coords[0], coords[1], 220, true, false);
-        c.sleep(640);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void highLevelLooting() {
-    for (int lootId : highLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  private void lowLevelLooting() {
-    for (int lootId : lowLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }

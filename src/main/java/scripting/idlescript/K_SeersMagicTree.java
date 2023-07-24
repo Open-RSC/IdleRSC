@@ -59,14 +59,12 @@ public final class K_SeersMagicTree extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() < 30) {
-
         if (c.getObjectAtCoord(519, 494) == 310) {
           cutFirstTree();
         }
@@ -216,16 +214,13 @@ public final class K_SeersMagicTree extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalLog = totalLog + c.getInventoryItemCount(636);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 1263
             && itemId != axeId[0]
@@ -244,7 +239,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
     }
   }
   // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Seers Magic Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
@@ -257,7 +251,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -290,7 +283,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-
       c.drawString("@red@Seers Magic Logs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);

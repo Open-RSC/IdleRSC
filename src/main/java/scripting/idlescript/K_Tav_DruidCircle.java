@@ -76,7 +76,6 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
       c.displayMessage("@red@Tav Druid Circle - By Kaila");
       c.displayMessage("@red@Start in Fally west or druid Circle");
       c.displayMessage("@red@Food in Bank required");
-
       if (c.isInBank()) {
         c.closeBank();
       }
@@ -88,7 +87,6 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -169,11 +167,6 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
-      //       32,      //water rune
-      // 34, 	 //Earth rune
-      // 31,      //fire rune  +total runes
-      // 41       //chaos rune
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);

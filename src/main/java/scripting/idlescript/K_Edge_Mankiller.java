@@ -77,7 +77,6 @@ public final class K_Edge_Mankiller extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 

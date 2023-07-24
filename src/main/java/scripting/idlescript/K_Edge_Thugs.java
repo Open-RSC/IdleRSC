@@ -73,7 +73,6 @@ public final class K_Edge_Thugs extends K_kailaScript {
       startTime = System.currentTimeMillis();
       c.displayMessage("@red@Edge Skeletons ~ Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
-
       if (c.isInBank()) {
         c.closeBank();
       }
@@ -166,13 +165,11 @@ public final class K_Edge_Thugs extends K_kailaScript {
       totalKwuarm = totalKwuarm + c.getInventoryItemCount(441);
       totalCada = totalCada + c.getInventoryItemCount(442);
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
-
       totalLaw = totalLaw + c.getInventoryItemCount(42);
       totalDeath = totalDeath + c.getInventoryItemCount(38);
       totalCosmic = totalCosmic + c.getInventoryItemCount(46);
       totalNat = totalNat + c.getInventoryItemCount(40);
       totalChaos = totalChaos + c.getInventoryItemCount(41);
-
       totalBones = totalBones + c.getInventoryItemCount(20);
       foodInBank = c.getBankItemCount(foodId);
       totalRunes = totalLaw + totalDeath + totalCosmic + totalNat + totalChaos;
@@ -187,7 +184,6 @@ public final class K_Edge_Thugs extends K_kailaScript {
               + totalKwuarm
               + totalCada
               + totalDwarf;
-
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }

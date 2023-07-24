@@ -95,15 +95,7 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        dragonEscape();
-        DragonsToBank();
-        bank();
-        BankToDragons();
-      }
+      eat();
       prayPotCheck();
       drinkPrayerPotion(31, true);
       pray();
@@ -143,6 +135,18 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
         bank();
         BankToDragons();
       }
+    }
+  }
+
+  private void eat() {
+    boolean ate = eatFood();
+    if (!ate) {
+      c.setStatus("@red@We've ran out of Food! Running Away!.");
+      c.sleep(308);
+      dragonEscape();
+      DragonsToBank();
+      bank();
+      BankToDragons();
     }
   }
 

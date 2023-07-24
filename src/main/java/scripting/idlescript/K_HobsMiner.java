@@ -66,7 +66,6 @@ public final class K_HobsMiner extends K_kailaScript {
     159, // emerald
     158, // ruby
     157, // diamond
-
     // loot common armor if another bot dies
     1318, // ring of wealth
     402, // rune leg
@@ -79,7 +78,6 @@ public final class K_HobsMiner extends K_kailaScript {
     315, // Emerald Amulet of protection
     317, // Diamond Amulet of power
     522, // dragonstone ammy
-
     // loot "some" hobs drops
     38, // death rune
     619, // blood rune
@@ -159,16 +157,13 @@ public final class K_HobsMiner extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
       eat();
       leaveCombat();
-
       if (c.getInventoryItemCount(546) == 0) {
         c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
         hobsToTwenty();
@@ -183,11 +178,9 @@ public final class K_HobsMiner extends K_kailaScript {
         bankToHobs();
       }
       if (c.getInventoryItemCount() == 30) {
-
         goToBank();
       }
       if (c.getInventoryItemCount() < 30) {
-
         eat();
         leaveCombat();
         lootItems(true, loot);
@@ -213,7 +206,6 @@ public final class K_HobsMiner extends K_kailaScript {
         }
         leaveCombat();
         c.setStatus("@yel@Mining..");
-
         if (!c.isBatching() && Objects.equals(isMining, "none") && rockEmpty()) {
           if (adamantiteAvailable()) {
             mine("adamantite");
@@ -258,14 +250,12 @@ public final class K_HobsMiner extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalMith = totalMith + c.getInventoryItemCount(153);
       totalAddy = totalAddy + c.getInventoryItemCount(154);
@@ -273,7 +263,6 @@ public final class K_HobsMiner extends K_kailaScript {
       totalEme = totalEme + c.getInventoryItemCount(159);
       totalRub = totalRub + c.getInventoryItemCount(158);
       totalDia = totalDia + c.getInventoryItemCount(157);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 546
             && itemId != 156
@@ -283,11 +272,9 @@ public final class K_HobsMiner extends K_kailaScript {
         }
       }
       c.sleep(1280); // increased sleep here to prevent double banking
-
       coalInBank = c.getBankItemCount(155);
       mithInBank = c.getBankItemCount(153);
       addyInBank = c.getBankItemCount(154);
-
       if (teleportOut) {
         if (c.getInventoryItemCount(33) < 3) { // withdraw 3 air
           c.withdrawItem(33, 3);
@@ -330,18 +317,12 @@ public final class K_HobsMiner extends K_kailaScript {
   }
 
   private void eat() {
-
     int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
     if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
       leaveCombat();
       c.sleep(200);
-
       c.setStatus("@red@Eating..");
-
       boolean ate = false;
-
       for (int id : c.getFoodIds()) {
         if (c.getInventoryItemCount(id) > 0) {
           c.itemCommand(id);
@@ -351,14 +332,12 @@ public final class K_HobsMiner extends K_kailaScript {
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-
         c.setStatus("@red@We've ran out of Food at Hobs! Running Away!.");
         isMining = "none";
         currentOre[0] = 0;
         currentOre[1] = 0;
         c.setStatus("@yel@Banking..");
         hobsToTwenty();
-
         if (!teleportOut
             || c.getInventoryItemCount(42) < 1
             || c.getInventoryItemCount(33) < 3
@@ -438,7 +417,6 @@ public final class K_HobsMiner extends K_kailaScript {
     c.walkTo(220, 425);
     c.walkTo(220, 445);
     c.walkTo(217, 448);
-
     c.setStatus("@gre@Done Walking..");
   }
 
@@ -462,10 +440,8 @@ public final class K_HobsMiner extends K_kailaScript {
     c.walkTo(221, 301);
     c.walkTo(221, 283);
     c.walkTo(221, 262);
-
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Hobs Miner - By Kaila");
@@ -481,7 +457,6 @@ public final class K_HobsMiner extends K_kailaScript {
     JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
     JLabel label9 = new JLabel("Defaults to Teleport Off, Return On.");
     JButton startScriptButton = new JButton("Start");
-
     startScriptButton.addActionListener(
         e -> {
           teleportOut = teleportCheckbox.isSelected();
@@ -490,7 +465,6 @@ public final class K_HobsMiner extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -518,7 +492,6 @@ public final class K_HobsMiner extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int coalSuccessPerHr = 0;
       int mithSuccessPerHr = 0;
@@ -529,7 +502,6 @@ public final class K_HobsMiner extends K_kailaScript {
       int diaSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
@@ -541,7 +513,6 @@ public final class K_HobsMiner extends K_kailaScript {
         rubSuccessPerHr = (int) (totalRub * scale);
         diaSuccessPerHr = (int) (totalDia * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

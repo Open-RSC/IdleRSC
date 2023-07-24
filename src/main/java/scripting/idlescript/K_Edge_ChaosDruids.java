@@ -114,7 +114,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       c.displayMessage("@red@Start in Edge bank with Armor");
       c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
       c.displayMessage("@red@31 Magic Required for escape tele");
-
       if (c.isInBank()) {
         c.closeBank();
       }
@@ -185,14 +184,12 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -232,7 +229,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
       c.sleep(1280); // Important, leave in
-
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
@@ -308,7 +304,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     c.walkTo(210, 3254);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Edge Druid Killer @mag@~ by Kaila");
@@ -440,7 +435,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -479,11 +473,9 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
         TripSuccessPerHr = (int) (totalTrips * scale);
         herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
-
       } catch (Exception e) {
         // divide by zero
       }
-
       int x = 6;
       int y = 15;
       int y2 = 202;

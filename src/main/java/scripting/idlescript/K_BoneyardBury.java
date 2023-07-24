@@ -17,7 +17,6 @@ import javax.swing.*;
  * <p>@Author - Kaila
  */
 public final class K_BoneyardBury extends K_kailaScript {
-
   public int start(String[] parameters) {
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
@@ -51,7 +50,6 @@ public final class K_BoneyardBury extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -249,20 +247,17 @@ public final class K_BoneyardBury extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int TripSuccessPerHr = 0;
       int foodUsedPerHr = 0;
       int boneSuccessPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         TripSuccessPerHr = (int) (totalTrips * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
-
       } catch (Exception e) {
         // divide by zero
       }
@@ -283,7 +278,6 @@ public final class K_BoneyardBury extends K_kailaScript {
           1);
       c.drawString("@whi@____________________", x, y + 3 + (14 * 7), 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y2, 0xFFFFFF, 1);
-
       c.drawString(
           "@whi@Total Trips: @gre@"
               + totalTrips

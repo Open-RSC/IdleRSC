@@ -233,9 +233,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
-
       c.sleep(1240); // Important, leave in
-
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);

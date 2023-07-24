@@ -117,7 +117,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -197,7 +196,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       totalKwuarm = totalKwuarm + c.getInventoryItemCount(441);
       totalCada = totalCada + c.getInventoryItemCount(442);
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
-
       totalLaw = totalLaw + c.getInventoryItemCount(42);
       totalNat = totalNat + c.getInventoryItemCount(40);
       totalChaos = totalChaos + c.getInventoryItemCount(41);
@@ -206,7 +204,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       totalEarth = totalEarth + c.getInventoryItemCount(34);
       totalAir = totalAir + c.getInventoryItemCount(33);
       totalCosmic = totalCosmic + c.getInventoryItemCount(46);
-
       totalLoop = totalLoop + c.getInventoryItemCount(527);
       totalTooth = totalTooth + c.getInventoryItemCount(526);
       totalLeft = totalLeft + c.getInventoryItemCount(1277);
@@ -239,7 +236,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
               + totalKwuarm
               + totalCada
               + totalDwarf;
-
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
@@ -451,7 +447,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -494,7 +489,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
         runeSuccessPerHr = (int) (totalRunes * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

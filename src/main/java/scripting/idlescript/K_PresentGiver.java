@@ -22,12 +22,10 @@ import orsc.ORSCharacter;
  * <p>Author - Kaila.
  */
 public final class K_PresentGiver extends K_kailaScript {
-
   public int start(String[] parameters) {
     c.displayMessage("@red@present GIVER! Let's party like it's 2004! ~ Kaila");
     c.displayMessage("@red@Directions inside K_PresentGiver.java file");
     c.displayMessage("@red@Ideal location is Draynor Bank!");
-
     while (c.isRunning()) {
       if (c.getInventoryItemCount(980) < 2) {
         c.setStatus("@gre@Banking.");
@@ -52,12 +50,10 @@ public final class K_PresentGiver extends K_kailaScript {
         c.sleep(640);
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);

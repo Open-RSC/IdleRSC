@@ -16,7 +16,6 @@ import orsc.ORSCharacter;
  * <p>Author - Kaila
  */
 public final class K_Asgarnian_IceGiants extends K_kailaScript {
-
   private static final int[] loot = {
     526, // tooth half
     527, // loop half
@@ -96,7 +95,6 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -153,14 +151,12 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -278,9 +274,7 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
   // GUI stuff below (icky)
-
   private void setupGUI() {
-
     JLabel header = new JLabel("Ice Dungeon Ice Giant/Warrior Killer - by Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
     JLabel spacer = new JLabel("             ");
@@ -420,11 +414,9 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
         deathSuccessPerHr = (int) ((totalDeath + inventDeath) * scale);
         bloodSuccessPerHr = (int) ((totalBlood + inventBlood) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }
-
       c.drawString("@red@Asgarnian Ice Slayer @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"

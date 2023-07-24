@@ -57,7 +57,6 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@gre@Banking..");
     c.openBank();
     c.sleep(640);

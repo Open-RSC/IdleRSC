@@ -48,7 +48,6 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -77,7 +76,6 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
@@ -86,7 +84,6 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
     } else {
       int featherId = 381;
       int rodId = 378;
-
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
         c.sleep(100);

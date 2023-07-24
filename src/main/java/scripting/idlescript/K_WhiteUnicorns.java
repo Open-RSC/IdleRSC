@@ -48,7 +48,6 @@ public final class K_WhiteUnicorns extends K_kailaScript {
       startTime = System.currentTimeMillis();
       c.displayMessage("@red@Edge Skeletons ~ Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
-
       if (c.isInBank()) {
         c.closeBank();
       }
@@ -60,7 +59,6 @@ public final class K_WhiteUnicorns extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -203,7 +201,6 @@ public final class K_WhiteUnicorns extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -309,18 +306,15 @@ public final class K_WhiteUnicorns extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) ((totalUni + inventUni) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

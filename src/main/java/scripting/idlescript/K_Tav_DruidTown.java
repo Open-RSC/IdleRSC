@@ -90,7 +90,6 @@ public final class K_Tav_DruidTown extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -166,7 +165,6 @@ public final class K_Tav_DruidTown extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       //       32,      //water rune
       // 34, 	 //Earth rune
       // 31,      //fire rune  +total runes
@@ -200,7 +198,6 @@ public final class K_Tav_DruidTown extends K_kailaScript {
               + totalKwuarm
               + totalCada
               + totalDwarf;
-
       depositAll();
       if (potUp) {
         withdrawAttack(1);

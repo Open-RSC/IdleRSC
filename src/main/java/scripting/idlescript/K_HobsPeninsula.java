@@ -233,9 +233,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
     c.walkTo(361, 614);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Asgarnian Hobs Peninsula - By Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank with Armor");
@@ -260,7 +258,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
           startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -286,7 +283,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -323,7 +319,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
         natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
         GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

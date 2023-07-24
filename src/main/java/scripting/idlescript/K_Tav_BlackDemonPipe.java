@@ -73,7 +73,6 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
     1092, // rune spear
     795 // D med
   };
-
   // STARTing script
   public int start(String[] parameters) {
     if (!guiSetup) {
@@ -97,10 +96,8 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
-
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
@@ -188,7 +185,6 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
       totalRchain = totalMed + c.getInventoryItemCount(400);
       totalRmed = totalMed + c.getInventoryItemCount(399);
       totalMed = totalMed + c.getInventoryItemCount(795);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 486
             && itemId != 487
@@ -205,7 +201,6 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
         }
       }
       c.sleep(1400); // Important, leave in
-
       if (c.getInventoryItemCount(420) < 1) { // antidragon shield
         c.withdrawItem(420, 1);
         c.sleep(640);
@@ -235,7 +230,6 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
         c.withdrawItem(superStrengthPot[2], 1);
         c.sleep(640);
       }
-
       if (c.getInventoryItemCount(483) < 17) { // withdraw 17 ppot
         c.withdrawItem(
             483,
@@ -363,13 +357,10 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
     c.sleep(320);
     c.walkTo(380, 3372);
     c.setStatus("@gre@Done Walking..");
-    eat();
     drinkPrayerPotion(31, true);
     prayParalyze();
   }
-
   // BOOST private voids
-
   private void foodPotCheck() {
     if (c.getInventoryItemCount(483) == 0 || c.getInventoryItemCount(546) == 0) {
       c.setStatus("@yel@No Ppots/food, Banking..");
@@ -380,7 +371,6 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
       c.sleep(618);
     }
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Taverley Black Demon (Pipe) - By Kaila");
@@ -437,7 +427,6 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
       int HerbSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
@@ -454,7 +443,6 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
         RmedSuccessPerHr = (int) (totalRmed * scale);
         HerbSuccessPerHr = (int) (totalHerb * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

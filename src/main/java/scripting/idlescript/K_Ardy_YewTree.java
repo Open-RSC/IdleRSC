@@ -63,7 +63,6 @@ public final class K_Ardy_YewTree extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -187,16 +186,13 @@ public final class K_Ardy_YewTree extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalLog = totalLog + c.getInventoryItemCount(635);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 1263
             && itemId != axeId[0]
@@ -208,14 +204,12 @@ public final class K_Ardy_YewTree extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-
       logInBank = c.getBankItemCount(635);
       c.closeBank();
       c.sleep(1000);
     }
   }
   // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Ardy Yew Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");

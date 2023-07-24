@@ -42,22 +42,21 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       }
       if (c.currentY() > 340 && c.currentY() < 500) { // fixed start area bug
         bank();
-        eat();
         BankToEgg();
         c.sleep(100);
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        escapeRoute();
+      }
       leaveCombat();
-
       if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(546) == 0) {
         c.setStatus("@red@Banking..");
         EggToBank();
@@ -78,16 +77,13 @@ public final class K_RedSpiderEggz extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalEggz = totalEggz + c.getInventoryItemCount(219);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 546) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
@@ -131,66 +127,44 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     }
   }
 
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
+  private void escapeRoute() {
+    c.setStatus("@red@We've ran out of Food! Running Away!.");
+    if (!teleportOut
+        || c.getInventoryItemCount(42) < 1
+        || c.getInventoryItemCount(33) < 3
+        || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
+      EggToBank();
+      bank();
+    }
+    if (teleportOut) {
+      c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(1)"));
+      c.sleep(800);
+      if (c.currentY() > 3000) {
+        c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(2)"));
+        c.sleep(800);
       }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        if (!teleportOut
-            || c.getInventoryItemCount(42) < 1
-            || c.getInventoryItemCount(33) < 3
-            || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
-          EggToBank();
-          bank();
-        }
-        if (teleportOut) {
-          c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(1)"));
-          c.sleep(800);
-          if (c.currentY() > 3000) {
-            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(2)"));
-            c.sleep(800);
-          }
-          if (c.currentY() > 3000) {
-            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(3)"));
-            c.sleep(800);
-          }
-          c.walkTo(120, 644);
-          c.atObject(119, 642);
-          c.walkTo(217, 447);
-        }
-        if (!returnEscape) {
-          c.setAutoLogin(false);
-          c.logout();
-          c.sleep(1000);
-
-          if (!c.isLoggedIn()) {
-            c.stop();
-            c.logout();
-          }
-        }
-        if (returnEscape) {
-          bank();
-          BankToEgg();
-          c.sleep(618);
-        }
+      if (c.currentY() > 3000) {
+        c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(3)"));
+        c.sleep(800);
       }
+      c.walkTo(120, 644);
+      c.atObject(119, 642);
+      c.walkTo(217, 447);
+    }
+    if (!returnEscape) {
+      c.setAutoLogin(false);
+      c.logout();
+      c.sleep(1000);
+
+      if (!c.isLoggedIn()) {
+        c.stop();
+        c.logout();
+      }
+    }
+    if (returnEscape) {
+      bank();
+      BankToEgg();
+      c.sleep(618);
     }
   }
 

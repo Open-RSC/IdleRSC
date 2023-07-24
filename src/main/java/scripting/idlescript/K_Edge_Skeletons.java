@@ -18,7 +18,6 @@ import orsc.ORSCharacter;
  * <p>@Author - Kaila
  */
 public final class K_Edge_Skeletons extends K_kailaScript {
-
   private static final int[] loot = {
     165, // Grimy Guam
     435, // Grimy mar
@@ -362,7 +361,6 @@ public final class K_Edge_Skeletons extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -399,7 +397,6 @@ public final class K_Edge_Skeletons extends K_kailaScript {
         TripSuccessPerHr = (int) (totalTrips * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

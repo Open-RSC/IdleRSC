@@ -104,7 +104,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -122,7 +121,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       lootItems(false, loot);
       superAttackBoost(0, true);
       superStrengthBoost(0, true);
-
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
@@ -212,7 +210,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
         }
       }
       c.sleep(1280); // keep, important
-
       withdrawSuperAttack(1);
       withdrawSuperStrength(1);
       withdrawFood(546, 27);

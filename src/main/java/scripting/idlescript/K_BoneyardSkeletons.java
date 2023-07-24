@@ -190,7 +190,6 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
               + totalKwuarm
               + totalCada
               + totalDwarf;
-
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
@@ -358,7 +357,6 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
         buryBones = false;
       }
       c.sleep(100);
-
     } else if (commandText.contains("potup")) {
       if (!potUp) {
         c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
@@ -409,7 +407,6 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -450,7 +447,6 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
         TripSuccessPerHr = (int) (totalTrips * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

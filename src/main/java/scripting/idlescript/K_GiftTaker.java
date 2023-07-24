@@ -23,13 +23,11 @@ package scripting.idlescript;
  * <p>Author - Kaila
  */
 public final class K_GiftTaker extends K_kailaScript {
-
   public int start(String[] parameters) {
     c.displayMessage("@red@present TAKER! Let's party like it's 2004! ~ by Kaila");
     c.setStatus("@gre@Running..");
     c.openBank();
     c.sleep(1240);
-
     if (!c.isInBank()) {
       c.openBank();
       c.sleep(1240);

@@ -37,13 +37,11 @@ public final class K_TeleWines extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
       if (c.getInventoryItemCount() == 30) {
         c.setStatus("@red@Banking..");
         WineToBank();
@@ -51,10 +49,8 @@ public final class K_TeleWines extends K_kailaScript {
         BankToWine();
         c.sleep(618);
       }
-
       c.setStatus("@yel@Picking Wines..");
       int[] coords = c.getNearestItemById(501);
-
       if (coords != null) {
         c.castSpellOnGroundItem(c.getSpellIdFromName("Telekinetic grab"), 501, 333, 434);
         c.sleep(1500);
@@ -69,23 +65,18 @@ public final class K_TeleWines extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalWinez = totalWinez + c.getInventoryItemCount(501);
-
       if (c.getInventoryItemCount(501) > 0) { // deposit the Wines
         c.depositItem(501, c.getInventoryItemCount(501));
         c.sleep(1380);
       }
-
       WinezInBank = c.getBankItemCount(501);
-
       if (c.getInventoryItemCount(42) < 30) { // withdraw 30 law
         c.withdrawItem(42, 30 - c.getInventoryItemCount(42));
         c.sleep(340);
@@ -172,7 +163,6 @@ public final class K_TeleWines extends K_kailaScript {
     // next to wine now)
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Zammy Wine Tele Grabber@mag@~ by Kaila");
@@ -210,7 +200,6 @@ public final class K_TeleWines extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
@@ -220,7 +209,6 @@ public final class K_TeleWines extends K_kailaScript {
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalWinez * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

@@ -87,10 +87,8 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
-
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
@@ -162,7 +160,6 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
     c.openBank();
     c.sleep(1200);
     if (c.isInBank()) {
-
       totalBones = totalBones + c.getInventoryItemCount(814);
       totalRdagger = totalRdagger + c.getInventoryItemCount(396);
       totalGems =

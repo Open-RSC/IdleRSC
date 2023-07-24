@@ -67,22 +67,16 @@ public final class K_SkelliCoal extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() == 30) { // c.getInventoryItemCount(546) == 0 ||
-
         goToBank();
-
       } else {
-
         //	eat();
-
         leaveCombat();
-
         if (rockEmpty() || !c.isBatching()) {
           isMining = "none";
           currentOre[0] = 0;
@@ -91,9 +85,7 @@ public final class K_SkelliCoal extends K_kailaScript {
         } else if (c.isBatching() && c.getInventoryItemCount() < 30) {
           c.sleep(1000);
         }
-
         c.setStatus("@yel@Mining..");
-
         if (!c.isBatching() && Objects.equals(isMining, "none") && rockEmpty()) {
           if (coalAvailable()) {
             int[] oreCoords = c.getNearestObjectByIds(coalIDs);
@@ -113,14 +105,12 @@ public final class K_SkelliCoal extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalSap = totalSap + c.getInventoryItemCount(160);
       totalEme = totalEme + c.getInventoryItemCount(159);
@@ -145,17 +135,11 @@ public final class K_SkelliCoal extends K_kailaScript {
   }
 
   private void eat() {
-
     int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
     if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
       leaveCombat();
-
       c.setStatus("@red@Eating..");
-
       boolean ate = false;
-
       for (int id : c.getFoodIds()) {
         if (c.getInventoryItemCount(id) > 0) {
           c.itemCommand(id);
@@ -169,7 +153,6 @@ public final class K_SkelliCoal extends K_kailaScript {
         c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
         SkeliToBank();
         c.sleep(100);
-
         c.walkTo(120, 644);
         c.atObject(119, 642);
         c.walkTo(217, 447);
@@ -177,7 +160,6 @@ public final class K_SkelliCoal extends K_kailaScript {
         c.setAutoLogin(false);
         c.logout();
         c.sleep(1000);
-
         if (!c.isLoggedIn()) {
           c.stop();
           c.logout();
@@ -229,9 +211,7 @@ public final class K_SkelliCoal extends K_kailaScript {
     c.walkTo(269, 380);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Skeleton Coal Miner ~ By Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");
@@ -243,7 +223,6 @@ public final class K_SkelliCoal extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -261,7 +240,6 @@ public final class K_SkelliCoal extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int coalSuccessPerHr = 0;
       int sapSuccessPerHr = 0;
@@ -270,7 +248,6 @@ public final class K_SkelliCoal extends K_kailaScript {
       int diaSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
@@ -280,7 +257,6 @@ public final class K_SkelliCoal extends K_kailaScript {
         rubSuccessPerHr = (int) (totalRub * scale);
         diaSuccessPerHr = (int) (totalDia * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

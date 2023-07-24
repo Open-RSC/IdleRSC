@@ -52,7 +52,6 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
         strengthBoost(0, false);
       }
       if (c.getInventoryItemCount(foodId) > 0) {
-
         if (!c.isInCombat()) {
           ORSCharacter npc = c.getNearestNpcById(407, false);
           if (npc != null) {
@@ -85,14 +84,12 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
@@ -112,7 +109,6 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
 
   private void DruidToBank() {
     c.setStatus("@gre@Walking to Bank..");
-
     c.walkTo(649, 639);
     c.walkTo(644, 639);
     c.walkTo(636, 638);
@@ -129,14 +125,12 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
     c.walkTo(563, 621);
     c.walkTo(550, 620);
     c.walkTo(550, 613);
-
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 
   private void BankToDruid() {
     c.setStatus("@gre@Walking to Druids..");
-
     c.walkTo(550, 613);
     c.walkTo(550, 620);
     c.walkTo(563, 621);
@@ -154,13 +148,10 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
     c.walkTo(649, 639);
     c.walkTo(653, 642);
     c.walkTo(658, 642);
-
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
-
     JLabel header = new JLabel("Battlefield Trainer - By Kaila");
     JLabel label1 = new JLabel("Start in Ardy or at Battlefield");
     JLabel label2 = new JLabel("Sharks in Bank REQUIRED");
@@ -266,7 +257,6 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;

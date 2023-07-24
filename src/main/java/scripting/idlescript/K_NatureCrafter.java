@@ -69,15 +69,11 @@ public final class K_NatureCrafter extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
-
   // if low hp log out for nature rc
-
   private void scriptStart() {
     while (c.isRunning()) {
-
       if (c.currentY() < 50) {
         c.setStatus("@red@Crafting..");
         c.atObject(787, 21);
@@ -95,11 +91,8 @@ public final class K_NatureCrafter extends K_kailaScript {
         BankToNat();
         c.sleep(618);
       }
-
       int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
         leaveCombat();
         c.setStatus("@red@We've ran out of Food! Running Away/Logging Out.");
         c.sleep(308);
@@ -111,7 +104,6 @@ public final class K_NatureCrafter extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Buying Runes..");
     if (c.getInventoryItemCount(10) == 0 || c.getInventoryItemCount(1299) == 0) {
       c.setStatus("@red@NO Coins or Ess in Inventory, Logging Out!.");
@@ -251,7 +243,6 @@ public final class K_NatureCrafter extends K_kailaScript {
       c.walkTo(787, 23);
     }
   }
-
   // GUI stuff below (icky)
   private void parseVariables() {
     startTime = System.currentTimeMillis();
@@ -278,7 +269,6 @@ public final class K_NatureCrafter extends K_kailaScript {
           parseVariables();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -301,18 +291,15 @@ public final class K_NatureCrafter extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int NatSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         NatSuccessPerHr = (int) (totalNat * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

@@ -8,10 +8,8 @@ import orsc.ORSCharacter;
  * <p>start in any bank. @Author - Kaila
  */
 public final class K_IronPresentOpener extends K_kailaScript {
-
   public int start(String[] parameters) {
     c.displayMessage("@ran@Iron Present Opener! Let's party like it's 2004!");
-
     while (c.isRunning()) {
       if (c.getInventoryItemCount(980) < 1) {
         if (!c.isInBank()) {
@@ -36,7 +34,6 @@ public final class K_IronPresentOpener extends K_kailaScript {
         c.sleep(650);
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -47,7 +44,6 @@ public final class K_IronPresentOpener extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
           if (itemId != 980) {

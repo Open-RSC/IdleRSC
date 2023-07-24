@@ -81,7 +81,6 @@ public final class K_Edge_Giants extends K_kailaScript {
     centerX = 208;
     centerY = 3328;
     centerDistance = 14;
-
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -107,7 +106,6 @@ public final class K_Edge_Giants extends K_kailaScript {
       c.displayMessage("@red@Edge Dungeon Giant Killer ~ Kaila");
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
       c.displayMessage("@red@Dusty Key Required");
-
       if (c.isInBank()) {
         c.closeBank();
       }
@@ -119,7 +117,6 @@ public final class K_Edge_Giants extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -230,7 +227,6 @@ public final class K_Edge_Giants extends K_kailaScript {
               + totalKwuarm
               + totalCada
               + totalDwarf;
-
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }

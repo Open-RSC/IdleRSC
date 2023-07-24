@@ -14,7 +14,6 @@ import javax.swing.JLabel;
  * <p>Author - Kaila
  */
 public final class K_GnomeMagicTree extends K_kailaScript {
-
   public void startSequence() {
     c.displayMessage("@red@GnomeMagicTree,  start with an axe in inv/equipment");
     if (c.isInBank()) {
@@ -51,16 +50,15 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   public void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() < 30) {
-
         if (c.getObjectAtCoord(718, 520) == 310) {
-          cutFirstTree();
+          cutFirstTree(); // this approach forces all bots on a world to cut the SAME tree (more
+          // efficient)
         }
         if (c.getObjectAtCoord(718, 520) == 310) {
           cutFirstTree();
@@ -111,7 +109,6 @@ public final class K_GnomeMagicTree extends K_kailaScript {
         c.walkTo(696, 521);
         c.walkTo(710, 519);
         c.walkTo(722, 507);
-
       } else {
         goToBank();
       }
@@ -196,16 +193,13 @@ public final class K_GnomeMagicTree extends K_kailaScript {
   }
 
   public void bank() {
-
     c.setStatus("@blu@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalLog = totalLog + c.getInventoryItemCount(636);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 1263
             && itemId != axeId[0]
@@ -217,7 +211,6 @@ public final class K_GnomeMagicTree extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-
       logInBank = c.getBankItemCount(636);
       c.closeBank();
       c.sleep(1000);

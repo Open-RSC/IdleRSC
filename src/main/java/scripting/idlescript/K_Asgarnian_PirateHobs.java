@@ -89,7 +89,6 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -162,14 +161,12 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -277,9 +274,7 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
     c.walkTo(280, 3521);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
@@ -398,7 +393,6 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -433,11 +427,9 @@ public final class K_Asgarnian_PirateHobs extends K_kailaScript {
         natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
         GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }
-
       c.drawString("@red@Asgarnian Pirate Hobs @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"

@@ -56,7 +56,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
     }
     if (c.currentY() > 340) {
       bank();
-      eat();
       BankToUni();
       c.sleep(1380);
     }
@@ -86,7 +85,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -127,7 +125,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
@@ -135,7 +132,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
       waitForBankOpen();
     } else {
       totalUni = totalUni + c.getInventoryItemCount(466);
-
       if (c.getInventoryItemCount(466) > 0) { // deposit the uni horns
         c.depositItem(466, c.getInventoryItemCount(466));
         c.sleep(340);
@@ -193,28 +189,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
       bank();
       BankToUni();
       c.sleep(618);
-    }
-  }
-
-  private void eat() {
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-      boolean ate = false;
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-
-      }
     }
   }
 
@@ -288,7 +262,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
       c.sleep(10);
     }
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Black Unicorn Killer ~ By Kaila");
@@ -313,7 +286,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -341,7 +313,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
@@ -352,7 +323,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) ((totalUni + inventUni) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

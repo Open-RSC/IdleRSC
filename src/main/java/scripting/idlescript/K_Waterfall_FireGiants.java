@@ -414,7 +414,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
           startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));

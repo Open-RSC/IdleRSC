@@ -92,7 +92,11 @@ public final class K_BlackUnicorns extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        escapePath();
+      }
       if (c.getInventoryItemCount() < 30) {
         lootItem(false, 466);
         inventUni = c.getBankItemCount(466);
@@ -154,6 +158,44 @@ public final class K_BlackUnicorns extends K_kailaScript {
     }
   }
 
+  private void escapePath() {
+    if (!teleportOut
+        || c.getInventoryItemCount(42) < 1
+        || c.getInventoryItemCount(33) < 3
+        || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
+      c.setStatus("@yel@Banking..");
+      UniToBank();
+      bank();
+      BankToUni();
+    }
+    if (teleportOut) {
+      c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
+      goToTwenty();
+      c.setStatus("@red@Teleporting Now!.");
+      teleportOut();
+      c.walkTo(120, 644);
+      c.atObject(119, 642);
+      c.walkTo(217, 447);
+    }
+    if (!returnEscape) {
+      c.setAutoLogin(
+          false); // uncomment and remove bank and banktoHobs to prevent bot going back to mine
+      // after being attacked
+      c.logout();
+      c.sleep(1000);
+
+      if (!c.isLoggedIn()) {
+        c.stop();
+        c.logout();
+      }
+    }
+    if (returnEscape) {
+      bank();
+      BankToUni();
+      c.sleep(618);
+    }
+  }
+
   private void eat() {
     int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
 
@@ -171,42 +213,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
       }
       if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
         // usually
-        if (!teleportOut
-            || c.getInventoryItemCount(42) < 1
-            || c.getInventoryItemCount(33) < 3
-            || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
-          c.setStatus("@yel@Banking..");
-          UniToBank();
-          bank();
-          BankToUni();
-          c.sleep(618);
-        }
-        if (teleportOut) {
-          c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-          goToTwenty();
-          c.setStatus("@red@Teleporting Now!.");
-          teleportOut();
-          c.walkTo(120, 644);
-          c.atObject(119, 642);
-          c.walkTo(217, 447);
-        }
-        if (!returnEscape) {
-          c.setAutoLogin(
-              false); // uncomment and remove bank and banktoHobs to prevent bot going back to mine
-          // after being attacked
-          c.logout();
-          c.sleep(1000);
 
-          if (!c.isLoggedIn()) {
-            c.stop();
-            c.logout();
-          }
-        }
-        if (returnEscape) {
-          bank();
-          BankToUni();
-          c.sleep(618);
-        }
       }
     }
   }

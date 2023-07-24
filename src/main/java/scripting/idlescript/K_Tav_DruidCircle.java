@@ -94,12 +94,14 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-      buryBones(false);
-      if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-        eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        DruidToBank();
+        bank();
+        BankToDruid();
       }
+      buryBones(false);
       if (c.currentY() > 473) {
         c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
         c.walkTo(362, 464);
@@ -235,30 +237,6 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
     // if(!c.isPrayerOn(c.getPrayerId("Incredible Reflexes")) && c.currentY() < 475) {
     //    c.enablePrayer(c.getPrayerId("Incredible Reflexes"));
     // }
-  }
-
-  private void eat() {
-    leaveCombat();
-    c.setStatus("@red@Eating..");
-
-    boolean ate = false;
-
-    for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0) {
-        c.itemCommand(id);
-        c.sleep(700);
-        ate = true;
-        break;
-      }
-    }
-    if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-      // usually
-      c.setStatus("@red@We've ran out of Food! Running Away!.");
-      DruidToBank();
-      bank();
-      BankToDruid();
-      c.sleep(618);
-    }
   }
 
   private void BankToDruid() {

@@ -562,6 +562,15 @@ public class K_kailaScript extends IdleScript {
    *          Main (useful) methods
    */
 
+  /**
+   * Checks distance from provided x, y coords to the predefined center position and radius with int
+   * values centerX, centerY, and centerDistance (set values in main method) If not predefined, then
+   * method will return true as a default fallback
+   *
+   * @param x coordinate of point you are checking
+   * @param y coordinate of point you are checking
+   * @return true if point is within radius of center, false if outside radius distance from center.
+   */
   public static boolean isWithinLootzone(int x, int y) {
     if (centerX == -1 || centerY == -1 || centerDistance == -1) {
       c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
@@ -570,15 +579,17 @@ public class K_kailaScript extends IdleScript {
     return c.distance(centerX, centerY, x, y) <= centerDistance; // center of lootzone
   }
 
-  public static boolean eatFood(boolean leaveCombat) {
+  /**
+   * eatFood method will eat any food ids in the inventory with a for loop. Always exiting combat.
+   *
+   * @return ate - true if no need to eat, or if successful. False if out of food items.
+   */
+  public static boolean eatFood() {
     boolean ate = false;
     if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
-      if (leaveCombat && c.isInCombat()) leaveCombat();
-      else if (!leaveCombat && c.isInCombat()) return true; // blocked by combat
-      c.setStatus("@red@Eating..");
-
       for (int id : c.getFoodIds()) {
         if (c.getInventoryItemCount(id) > 0) {
+          c.setStatus("@red@Eating..");
           c.itemCommand(id);
           c.sleep(GAME_TICK);
           ate = true;

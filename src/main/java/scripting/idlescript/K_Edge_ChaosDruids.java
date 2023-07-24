@@ -131,9 +131,12 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      if (c.getCurrentStat(c.getStatId("Hits")) < (c.getBaseStat(c.getStatId("Hits")) - 20)) {
-        eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        DruidToBank();
+        bank();
+        BankToDruid();
       }
       if (potUp) {
         attackBoost(0, false);
@@ -239,28 +242,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       c.closeBank();
       c.sleep(1000);
       checkInventoryItemCounts();
-    }
-  }
-
-  private void eat() {
-    leaveCombat();
-    c.setStatus("@red@Eating..");
-    boolean ate = false;
-    for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0) {
-        c.itemCommand(id);
-        c.sleep(700);
-        ate = true;
-        break;
-      }
-    }
-    if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-      // usually
-      c.setStatus("@red@We've ran out of Food! Running Away!.");
-      DruidToBank();
-      bank();
-      BankToDruid();
-      c.sleep(618);
     }
   }
 

@@ -110,9 +110,15 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        GiantsToBank();
+        bank();
+        BankToStair();
+        stairToGiants();
+      }
       buryBones(true);
-      eat();
       lootItems(false, loot);
       superAttackBoost(0, true);
       superStrengthBoost(0, true);
@@ -153,14 +159,12 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBstaff = totalBstaff + c.getInventoryItemCount(615);
       totalRscim = totalRscim + c.getInventoryItemCount(398);
       totalRunestuff =
@@ -215,55 +219,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       bankItemCheck(546, 27);
       c.closeBank();
       c.sleep(640);
-      eat();
-    }
-  }
-
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-    int panicLvl = c.getBaseStat(c.getStatId("Hits")) - 50;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < panicLvl) {
-      c.setStatus(
-          "@red@We've taken massive damage! Running Away!."); // Tested and when panic hp goToBank
-      // then Logout is working
-      c.sleep(308);
-      GiantsToBank();
-      bank();
-      c.setAutoLogin(false);
-      c.logout();
-      c.sleep(1000);
-
-      if (!c.isLoggedIn()) {
-        c.stop();
-        c.logout();
-      }
-    }
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        GiantsToBank();
-        bank();
-        BankToStair();
-        stairToGiants();
-      }
     }
   }
 

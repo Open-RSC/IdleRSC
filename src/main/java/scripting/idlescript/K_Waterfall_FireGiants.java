@@ -102,7 +102,14 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        giantEscape();
+        GiantsToBank();
+        bank();
+        BankToGiants();
+      }
       buryBones(false);
       lootItems(true, loot);
       superAttackBoost(0, false);
@@ -110,16 +117,14 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
-
-            // c.sleepHandler(98, true);
             ORSCharacter npc = c.getNearestNpcById(344, false);
             if (npc != null) {
               c.setStatus("@yel@Attacking Giants");
               c.attackNpc(npc.serverIndex);
               c.sleep(1280);
             } else {
-                buryBones(false);
-                lootItems(true, loot);
+              buryBones(false);
+              lootItems(true, loot);
             }
           } else {
             c.sleep(640);
@@ -142,14 +147,12 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBstaff = totalBstaff + c.getInventoryItemCount(615);
       totalRscim = totalRscim + c.getInventoryItemCount(398);
       totalRunestuff =
@@ -185,7 +188,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       totalLeft = totalLeft + c.getInventoryItemCount(1277);
       totalSpear = totalSpear + c.getInventoryItemCount(1092);
       totalMed = totalMed + c.getInventoryItemCount(795);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 782
             && itemId != 237
@@ -200,7 +202,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
         }
       }
       c.sleep(1280); // increased sleep here to prevent double banking
-
       withdrawItem(782, 1); // glariels amulet
       withdrawItem(237, 1); // rope
       withdrawItem(airId, 30);
@@ -215,37 +216,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     }
     inventoryItemCheck(airId, 30);
     inventoryItemCheck(lawId, 6);
-  }
-
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        giantEscape();
-        GiantsToBank();
-        bank();
-        BankToGiants();
-      }
-    }
   }
 
   private void giantEscape() {

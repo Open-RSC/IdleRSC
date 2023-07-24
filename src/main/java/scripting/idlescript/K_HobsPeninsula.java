@@ -96,10 +96,13 @@ public final class K_HobsPeninsula extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      eat();
-      // buryBones();
-
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@yel@Banking..");
+        PeninsulaToBank();
+        bank();
+        BankToPeninsula();
+      }
       if (c.getInventoryItemCount() < 30) {
         checkInventoryItemCounts();
         lootItems(false, loot);
@@ -140,14 +143,12 @@ public final class K_HobsPeninsula extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -192,35 +193,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
       c.closeBank();
       c.sleep(640);
       checkInventoryItemCounts();
-    }
-  }
-
-  private void eat() {
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@yel@Banking..");
-        PeninsulaToBank();
-        bank();
-        BankToPeninsula();
-        c.sleep(618);
-      }
     }
   }
 

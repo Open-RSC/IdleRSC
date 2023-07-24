@@ -95,12 +95,19 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        c.sleep(308);
+        dragonEscape();
+        DragonsToBank();
+        bank();
+        BankToDragons();
+      }
       prayPotCheck();
       drinkPrayerPotion(31, true);
       pray();
       foodCheck();
-      eat();
       checkFightMode();
       lootItems(true, loot);
       if (buryBones) buryBones(false);
@@ -115,7 +122,6 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            eat();
           } else {
             lootItems(true, loot);
             c.sleep(GAME_TICK);
@@ -226,37 +232,6 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
   private void pray() {
     if (!c.isPrayerOn(c.getPrayerId("Paralyze Monster")) && c.currentY() > 3000) {
       c.enablePrayer(c.getPrayerId("Paralyze Monster"));
-    }
-  }
-
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        dragonEscape();
-        DragonsToBank();
-        bank();
-        BankToDragons();
-      }
     }
   }
 

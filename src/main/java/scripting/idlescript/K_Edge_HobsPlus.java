@@ -117,9 +117,12 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-      if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-        eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        dungeonToBank();
+        bank();
+        bankToDungeon();
       }
       checkFightMode();
       if (c.currentX() < 186) { // down corridor too much
@@ -244,30 +247,6 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       c.sleep(1000);
       brassKeyCheck();
       checkInventoryItemCounts();
-    }
-  }
-
-  private void eat() {
-    leaveCombat();
-    c.setStatus("@red@Eating..");
-
-    boolean ate = false;
-
-    for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0) {
-        c.itemCommand(id);
-        c.sleep(700);
-        ate = true;
-        break;
-      }
-    }
-    if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-      // usually
-      c.setStatus("@red@We've ran out of Food! Running Away!.");
-      dungeonToBank();
-      bank();
-      bankToDungeon();
-      c.sleep(618);
     }
   }
 

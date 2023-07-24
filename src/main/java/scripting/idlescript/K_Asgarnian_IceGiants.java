@@ -102,7 +102,7 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood(true);
+      boolean ate = eatFood();
       if (!ate) {
         c.setStatus("@red@We've ran out of Food! Running Away!.");
         IceToBank();

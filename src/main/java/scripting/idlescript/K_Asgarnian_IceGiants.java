@@ -17,43 +17,43 @@ import orsc.ORSCharacter;
  */
 public final class K_Asgarnian_IceGiants extends K_kailaScript {
   private static final int[] loot = {
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    33, // air rune
-    34, // Earth rune
-    31, // fire rune
-    32, // water rune
-    36, // body runes
-    46, // cosmic
-    40, // nature rune
-    42, // law rune
-    35, // mind rune
-    41, // chaos rune
-    38, // death rune
-    619, // blood rune
-    165, // Grimy Guam
-    435, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    10, // coins
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy Marrentill
+    UNID_TAR, // Grimy Tarromin
+    UNID_HAR, // Grimy Harralander
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    AIR_RUNE, // air rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    BODY_RUNE, // body rune  //remove
+    COSMIC_RUNE, // cosmic rune
+    MIND_RUNE, // remove
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    COINS, // coins
     153, // mithril ore
     11, // bronze arrow
     433, // Black Kite
     126, // Mithril Square
-    413, // Big bones
-    20 // bones
+    BIG_BONES, // Big bones
+    BONES, // bones
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   private void startSequence() {

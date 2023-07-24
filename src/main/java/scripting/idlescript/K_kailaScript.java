@@ -57,7 +57,8 @@ public class K_kailaScript extends IdleScript {
   public static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
   public static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
   public static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
-  public static final int COINS = 10, EMPTY_VIAL = 465, LIMP_ROOT = 220, SPIN_ROLL = 179;
+  public static final int COINS = 10, EMPTY_VIAL = 465, BRONZE_ARROW = 11, SPIN_ROLL = 179;
+  public static final int LIMP_ROOT = 220;
   public static final int BONES = 20, BAT_BONES = 604, BIG_BONES = 413, DRAGON_BONES = 814;
 
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~

@@ -32,38 +32,38 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
   private static int totalMed = 0;
   private static int totalDstone = 0;
   private static final int[] loot = {
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    AIR_RUNE, // air rune
+    FIRE_RUNE,
     814, // D Bones
     75, // rune long
     120, // addy plate body
-    619, // blood rune
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
     405, // rune axe
     81, // rune 2h
     93, // rune battle axe
-    31, // fire rune
-    33, // air rune
-    38, // Death Rune
-    619, // blood rune
-    40, // nature rune
-    42, // law rune
     11, // bronze arrows
     408, // rune bar
     520, // silver cert
     518, // coal cert
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    523, // dragonstone!
-    526, // tooth half
-    527, // loop half
-    1092, // rune spear
-    1277, // shield (left) half
     795, // D med
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {
@@ -89,7 +89,6 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
       c.quitIfAuthentic();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -107,7 +106,6 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
         superAttackBoost(5, false);
         superStrengthBoost(5, false);
       }
-
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
           ORSCharacter npc = c.getNearestNpcById(291, false);
@@ -158,7 +156,6 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBones = totalBones + c.getInventoryItemCount(814);
       totalGems =
           totalGems
@@ -354,7 +351,6 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
     c.sleep(308);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Tavelry Black Dragons (Pipe) - By Kaila");

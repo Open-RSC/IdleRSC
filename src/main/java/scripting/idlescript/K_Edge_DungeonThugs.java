@@ -21,29 +21,31 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
 
   private static final int[] loot = {
     UNID_GUAM, // Grimy Guam
-    UNID_MAR, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    10, // coins
-    40, // nature rune
-    41, // chaos rune
-    38, // death rune
-    46, // cosmic rune
-    42, // law rune
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    UNID_MAR, // Grimy Marrentill
+    UNID_TAR, // Grimy Tarromin
+    UNID_HAR, // Grimy Harralander
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    COINS,
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    BODY_RUNE, // body rune  //remove
+    COSMIC_RUNE, // cosmic rune
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {

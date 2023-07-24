@@ -26,28 +26,28 @@ import orsc.ORSCharacter;
 public final class K_Tav_BlueDragonPipe extends K_kailaScript {
   private static int totalRdagger = 0;
   private static final int[] loot = {
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    FIRE_RUNE,
+    WATER_RUNE,
     814, // D Bones
     396, // rune dagger
-    40, // nature rune
-    42, // law rune
-    32, // water rune
-    31, // fire rune
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
     154, // Addy Ore
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    1092, // rune spear
-    795 // D med
+    795, // D med
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
   // STARTing script
   public int start(String[] parameters) {

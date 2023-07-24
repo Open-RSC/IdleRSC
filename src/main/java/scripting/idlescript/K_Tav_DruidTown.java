@@ -19,34 +19,34 @@ import orsc.ORSCharacter;
  */
 public final class K_Tav_DruidTown extends K_kailaScript {
   private static final int[] lowLevelLoot = {
-    165, // Grimy Guam
-    435, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    42, // law rune
-    32, // water rune
-    34, // Earth rune
-    31, // fire rune
-    41 // chaos rune
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy Marrentill
+    UNID_TAR, // Grimy Tarromin
+    UNID_HAR, // Grimy Harralander
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    LAW_RUNE, // law rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    CHAOS_RUNE // chaos rune
   };
   private static final int[] highLevelLoot = {
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    42, // law rune
-    32, // water rune
-    34, // Earth rune
-    31, // fire rune
-    41 // chaos rune
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    LAW_RUNE, // law rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    CHAOS_RUNE // chaos rune
   };
 
   public int start(String[] parameters) {

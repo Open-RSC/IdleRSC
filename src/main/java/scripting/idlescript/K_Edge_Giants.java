@@ -19,62 +19,62 @@ import orsc.ORSCharacter;
  */
 public final class K_Edge_Giants extends K_kailaScript {
   private static final int[] lowLevelLoot = {
-    165, // Grimy Guam
-    435, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    42, // law rune
-    40, // nature rune
-    35, // mind rune
-    41, // chaos rune
-    38, // Death Rune
-    // 36,      //body rune
-    // 46,    //cosmic rune
-    33, // air rune
-    32, // water rune
-    34, // earth rune
-    31, // fire rune
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy Marrentill
+    UNID_TAR, // Grimy Tarromin
+    UNID_HAR, // Grimy Harralander
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    MIND_RUNE, // remove
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    // BODY_RUNE,      //body rune  //remove
+    COSMIC_RUNE, // cosmic rune
+    AIR_RUNE, // air rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
   private static final int[] highLevelLoot = {
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    42, // law rune
-    40, // nature rune
-    // 35,      //mind rune
-    41, // chaos rune
-    38, // Death Rune
-    // 36,      //body rune
-    // 46,      //cosmic rune
-    33, // air rune
-    32, // water rune
-    34, // earth rune
-    31, // fire rune
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    MIND_RUNE, // remove
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    // BODY_RUNE,      //body rune  //remove
+    COSMIC_RUNE, // cosmic rune
+    AIR_RUNE, // air rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {

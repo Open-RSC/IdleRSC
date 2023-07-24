@@ -62,7 +62,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
   }
 
   public int start(String[] parameters) {
-
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         guiSetup = true;

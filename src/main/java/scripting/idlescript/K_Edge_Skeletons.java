@@ -19,30 +19,32 @@ import orsc.ORSCharacter;
  */
 public final class K_Edge_Skeletons extends K_kailaScript {
   private static final int[] loot = {
-    165, // Grimy Guam
-    435, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    40, // nature rune
-    41, // chaos rune
-    11, // bronze arrows
-    33, // air rune
-    34, // earth rune
-    31, // fire rune
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy Marrentill
+    UNID_TAR, // Grimy Tarromin
+    UNID_HAR, // Grimy Harralander
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    CHAOS_RUNE, // chaos rune
+    AIR_RUNE, // air rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    BRONZE_ARROW,
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {

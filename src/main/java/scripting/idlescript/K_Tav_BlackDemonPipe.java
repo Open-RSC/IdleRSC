@@ -36,26 +36,23 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
   private static int totalRchain = 0;
   private static int totalRmed = 0;
   private static final int[] loot = {
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    FIRE_RUNE,
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    COSMIC_RUNE, // cosmic rune
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    AIR_RUNE, // air rune
     400, // rune chain
     399, // rune med
-    31, // fire rune
-    42, // law rune
-    41, // chaos rune
-    619, // blood rune
-    33, // air rune
-    40, // nature rune
-    38, // Death Rune
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
     174, // Addy bar
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
     404, // rune kite
     403, // rune square
     542, // uncut dstone
@@ -67,10 +64,14 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
     93, // rune battle axe
     520, // silver cert
     518, // coal cert
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR, // rune spear
     795 // D med
   };
   // STARTing script

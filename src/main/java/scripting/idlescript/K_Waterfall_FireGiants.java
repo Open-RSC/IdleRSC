@@ -24,6 +24,12 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
   private static int totalDstone = 0;
   private static int totalMed = 0;
   private static final int[] loot = {
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
     413, // big bones
     1346, // d2h
     795, // D med
@@ -42,20 +48,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     542, // uncut dstone
     523, // cut dstone
     795, // D med
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
     40, // nature rune
     42, // law rune
     38, // death rune
@@ -73,7 +65,15 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     615, // fire bstaff
     520, // silver cert
     518, // coal cert
-    373 // lobster (will get eaten)
+    373, // lobster (will get eaten)
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {

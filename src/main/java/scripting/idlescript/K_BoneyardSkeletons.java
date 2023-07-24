@@ -20,25 +20,25 @@ import orsc.ORSCharacter;
 public final class K_BoneyardSkeletons extends K_kailaScript {
   private static boolean lootBigBones = false;
   private static final int[] loot = {
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    42, // law rune
-    41, // chaos rune
-    33, // air rune
-    34, // earth rune
-    32, // Water rune
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092 // rune spear
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    LAW_RUNE, // law rune
+    CHAOS_RUNE, // chaos rune
+    AIR_RUNE, // air rune
+    EARTH_RUNE, // earth runF
+    WATER_RUNE,
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {

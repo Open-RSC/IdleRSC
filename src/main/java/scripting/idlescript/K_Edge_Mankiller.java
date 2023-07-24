@@ -35,7 +35,7 @@ public final class K_Edge_Mankiller extends K_kailaScript {
     EARTH_RUNE, // Earth rune
     FIRE_RUNE, // fire rune
     COINS, // coins
-    11 // Bronze arrow
+    BRONZE_ARROW // Bronze arrow
   };
 
   public int start(String[] parameters) {

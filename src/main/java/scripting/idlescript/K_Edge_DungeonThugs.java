@@ -114,15 +114,12 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
           } else {
+            c.sleep(GAME_TICK);
             lootItems(false, loot);
             if (lootBones) lootItem(false, BONES);
-            c.sleep(100);
           }
-        } else {
-          c.sleep(640);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);
@@ -145,9 +142,6 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
           c.stop();
         }
         bankToHouse();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }

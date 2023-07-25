@@ -122,15 +122,13 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
           } else {
+            c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
             if (lootBones) lootItem(false, BONES);
           }
-        } else {
-          c.sleep(640);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);
@@ -153,9 +151,6 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
           c.stop();
         }
         BankToDruid();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }

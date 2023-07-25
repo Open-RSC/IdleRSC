@@ -136,7 +136,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
         c.displayMessage("@red@Error: Too far out of wander range, Walking back!");
         c.walkTo(198, 3299);
         c.walkTo(207, 3300);
-        c.sleep(640);
+        c.sleep(GAME_TICK);
       }
       if (potUp) {
         attackBoost(0, false);
@@ -152,15 +152,12 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
           } else {
+            c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
-            c.sleep(100);
           }
-        } else {
-          c.sleep(640);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);
@@ -183,9 +180,6 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
           c.stop();
         }
         bankToDungeon();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }

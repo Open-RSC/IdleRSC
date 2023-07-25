@@ -121,14 +121,12 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
             if (npc != null) {
               c.setStatus("@yel@Attacking Giants");
               c.attackNpc(npc.serverIndex);
-              c.sleep(1280);
             } else {
+              c.sleep(GAME_TICK);
               buryBones(false);
               lootItems(true, loot);
             }
-          } else {
-            c.sleep(640);
-          }
+          } else c.sleep(640);
         }
         if (c.getInventoryItemCount() == 30) {
           dropItemToLoot(true, 1, EMPTY_VIAL);
@@ -141,7 +139,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
         GiantsToBank();
         bank();
         BankToGiants();
-        c.sleep(618);
       }
     }
   }

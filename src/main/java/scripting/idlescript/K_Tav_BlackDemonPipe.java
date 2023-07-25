@@ -123,13 +123,11 @@ public final class K_Tav_BlackDemonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Demons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
           } else {
-            lootItems(true, loot);
             c.sleep(GAME_TICK);
+            lootItems(true, loot);
           }
-        }
-        c.sleep(1380);
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) dropItemToLoot(false, 1, EMPTY_VIAL);
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {

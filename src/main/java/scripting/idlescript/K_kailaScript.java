@@ -613,7 +613,7 @@ public class K_kailaScript extends IdleScript {
     try {
       int[] coords = c.getNearestItemById(itemId);
       if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@No NPCs, Picking bones");
+        c.setStatus("@yel@Picking Loot...");
         c.walkToAsync(coords[0], coords[1], 0);
         c.pickupItem(coords[0], coords[1], itemId, true, false);
         c.sleep(GAME_TICK);
@@ -639,7 +639,7 @@ public class K_kailaScript extends IdleScript {
       try {
         int[] coords = c.getNearestItemById(itemId);
         if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@No NPCs, Picking bones");
+          c.setStatus("@yel@Picking loot...");
           c.walkToAsync(coords[0], coords[1], 0);
           c.pickupItem(coords[0], coords[1], itemId, true, false);
           c.sleep(GAME_TICK);

@@ -112,8 +112,8 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
           } else {
+            c.sleep(GAME_TICK);
             lootItems(false, loot);
             if (buryBones) buryBones(false);
             if (potUp) {
@@ -143,7 +143,6 @@ public final class K_Tav_BlueDragonPipe extends K_kailaScript {
           endSession();
         }
         BankToDragons();
-        c.sleep(618);
       }
     }
   }

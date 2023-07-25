@@ -152,19 +152,16 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
             c.setStatus("@yel@Attacking..");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
-            c.sleep(640);
           } else {
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
             if (lootBones) lootItem(false, BONES);
             if (c.currentX() != 218 || c.currentY() != 3245) {
               c.walkTo(218, 3245);
-              c.sleep(640);
+              c.sleep(GAME_TICK);
             }
           }
-        } else {
-          c.sleep(640);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);
@@ -176,9 +173,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
         DruidToBank();
         bank();
         BankToDruid();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }

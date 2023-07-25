@@ -131,12 +131,11 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
               c.setStatus("@yel@Attacking Giants");
               c.walktoNPC(npc.serverIndex, 1);
               c.attackNpc(npc.serverIndex);
-              c.sleep(1280);
             } else {
-              lootItems(false, loot);
               c.sleep(GAME_TICK);
+              lootItems(false, loot);
             }
-          }
+          } else c.sleep(GAME_TICK);
         }
         if (c.getInventoryItemCount() == 30) {
           dropItemToLoot(true, 1, EMPTY_VIAL);
@@ -151,7 +150,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
         bank();
         BankToStair();
         stairToGiants();
-        c.sleep(618);
       }
     }
   }

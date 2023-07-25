@@ -150,15 +150,12 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
           c.setStatus("@yel@Attacking..");
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
           } else {
+            c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
-            c.sleep(100);
           }
-        } else {
-          c.sleep(640);
-        }
+        } else c.sleep(640);
       }
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0

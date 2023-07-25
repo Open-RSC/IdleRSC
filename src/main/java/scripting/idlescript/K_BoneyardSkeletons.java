@@ -109,12 +109,11 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
             c.attackNpc(npc.serverIndex);
             c.sleep(2000);
           } else {
+            c.sleep(GAME_TICK);
             if (lootBigBones) lootItem(false, BIG_BONES);
             if (lootBones) lootItem(false, BONES);
           }
-        } else {
-          c.sleep(GAME_TICK);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);

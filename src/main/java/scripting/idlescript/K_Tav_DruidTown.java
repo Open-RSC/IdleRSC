@@ -121,12 +121,11 @@ public final class K_Tav_DruidTown extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
-            c.sleep(1280);
           } else {
+            c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
             if (lootBones) lootItem(false, BONES);
-            c.sleep(100);
           }
         } else {
           c.sleep(640);

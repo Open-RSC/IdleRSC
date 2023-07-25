@@ -124,8 +124,8 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
             c.setStatus("@yel@Attacking..");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
           } else {
+            c.sleep(GAME_TICK);
             lootItems(true, loot);
             if (lootBones) lootItem(true, BIG_BONES);
             // if (c.currentX() != 305 || c.currentY() != 3522) {
@@ -133,9 +133,7 @@ public final class K_Asgarnian_IceGiants extends K_kailaScript {
             //  c.sleep(1000);
             // }
           }
-        } else {
-          c.sleep(GAME_TICK);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);

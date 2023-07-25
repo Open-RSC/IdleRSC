@@ -113,11 +113,10 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
           } else {
-            lootItems(true, loot);
             c.sleep(GAME_TICK);
+            lootItems(true, loot);
           }
-        }
-        c.sleep(640);
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         prayPotCheck();
@@ -127,7 +126,6 @@ public final class K_Tav_BlackDragonPipe extends K_kailaScript {
       }
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
         c.setStatus("@red@Full Inv / Out of Food");
-        c.sleep(308);
         dragonEscape();
         DragonsToBank();
         bank();

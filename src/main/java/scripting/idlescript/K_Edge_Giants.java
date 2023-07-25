@@ -146,14 +146,12 @@ public final class K_Edge_Giants extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(3 * GAME_TICK);
           } else {
+            c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
           }
-        } else {
-          c.sleep(GAME_TICK);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);

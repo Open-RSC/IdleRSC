@@ -53,32 +53,32 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     RUNE_SPEAR // rune spear
   };
   private static final int[] highLevelLoot = {
-          UNID_RANARR, // Grimy Ranarr Weed
-          UNID_IRIT, // Grimy Irit
-          UNID_AVANTOE, // Grimy Avantoe
-          UNID_KWUARM, // Grimy Kwuarm
-          UNID_CADA, // Grimy Cadantine
-          UNID_DWARF, // Grimy Dwarf Weed
-          AIR_RUNE, // air rune
-          EARTH_RUNE, // earth runF
-          FIRE_RUNE,
-          WATER_RUNE,
-          CHAOS_RUNE, // chaos rune
-          DEATH_RUNE, // Death Rune
-          BLOOD_RUNE, // blood rune
-          NATURE_RUNE, // nature rune
-          LAW_RUNE, // law rune
-          432, // black sq shield
-          COINS,
-          BRONZE_ARROW,
-          UNCUT_SAPP, // saph
-          UNCUT_EMER, // emerald
-          UNCUT_RUBY, // ruby
-          UNCUT_DIA, // diamond
-          TOOTH_HALF, // tooth half
-          LOOP_HALF, // loop half
-          LEFT_HALF, // shield (left) half
-          RUNE_SPEAR // rune spear
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    AIR_RUNE, // air rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    432, // black sq shield
+    COINS,
+    BRONZE_ARROW,
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {
@@ -324,7 +324,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));

@@ -19,7 +19,6 @@ public final class K_WineDrinker extends IdleScript {
   public int start(String[] parameters) {
     c.displayMessage("@red@Wine Drinker!!");
     long next_attempt = System.currentTimeMillis() + 5000L;
-
     while (c.isRunning()) {
       if (System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
@@ -59,29 +58,24 @@ public final class K_WineDrinker extends IdleScript {
         c.sleep(100);
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       K_kailaScript.waitForBankOpen();
     } else {
-
       if (c.getInventoryItemCount(140) > 0) {
         c.depositItem(140, c.getInventoryItemCount(140));
         c.sleep(100);
       }
-
       if (c.getInventoryItemCount(246) > 0) {
         c.depositItem(246, c.getInventoryItemCount(246));
         c.sleep(100);
       }
-
       if (c.getInventoryItemCount(142) < 30) {
         c.withdrawItem(142, 30 - c.getInventoryItemCount());
         c.sleep(650);

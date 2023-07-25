@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
 /*
  * todo add gui and statistics.
  */
-public final class K_FastBankBury extends K_kailaScript {
+public final class K_Fast_BankBury extends K_kailaScript {
   private static int boneId = -1;
   private static final int[] boneIds = {
     20, // regular bones
@@ -36,7 +36,6 @@ public final class K_FastBankBury extends K_kailaScript {
       scriptStarted = false;
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -67,12 +66,9 @@ public final class K_FastBankBury extends K_kailaScript {
         c.sleep(100);
       }
     }
-
-    //	return 1000; //start() must return an int value now.
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);

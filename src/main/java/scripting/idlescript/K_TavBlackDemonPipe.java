@@ -36,26 +36,23 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   private static int totalRchain = 0;
   private static int totalRmed = 0;
   private static final int[] loot = {
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    FIRE_RUNE,
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    COSMIC_RUNE, // cosmic rune
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    AIR_RUNE, // air rune
     400, // rune chain
     399, // rune med
-    31, // fire rune
-    42, // law rune
-    41, // chaos rune
-    619, // blood rune
-    33, // air rune
-    40, // nature rune
-    38, // Death Rune
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
     174, // Addy bar
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
     404, // rune kite
     403, // rune square
     542, // uncut dstone
@@ -67,13 +64,16 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     93, // rune battle axe
     520, // silver cert
     518, // coal cert
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR, // rune spear
     795 // D med
   };
-
   // STARTing script
   public int start(String[] parameters) {
     if (!guiSetup) {
@@ -97,71 +97,57 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
-
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        demonEscape();
+        DemonsToBank();
+        bank();
+        BankToDemons();
+      }
       foodPotCheck();
-      eat();
-      drinkPrayerPotion();
+      drinkPrayerPotion(31, true);
       prayParalyze();
-      superAttackBoost();
-      superStrengthBoost();
-
+      superAttackBoost(0, false);
+      superStrengthBoost(0, false);
+      eatFoodToLoot(true);
       if (c.getInventoryItemCount() < 30) {
-        lootScript();
-
+        lootItems(true, loot);
         if (!c.isInCombat()) {
-          c.setStatus("@yel@Attacking Demons");
-          c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(290, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Demons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
           } else {
-            c.sleep(1000);
+            c.sleep(GAME_TICK);
+            lootItems(true, loot);
           }
-        }
-        c.sleep(1380);
+        } else c.sleep(GAME_TICK);
       }
-      if (c.getInventoryItemCount() == 30) {
-        leaveCombat();
-        if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-          c.setStatus("@red@Dropping Vial to Loot..");
-          c.dropItem(c.getInventoryItemSlotIndex(465));
-          c.sleep(340);
-        }
-        eatFoodToLoot();
-      }
-    }
-  }
-
-  public void lootScript() {
-    for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinWander(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
+      if (c.getInventoryItemCount() == 30) dropItemToLoot(false, 1, EMPTY_VIAL);
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@red@Full Inv / Out of Food");
+        c.sleep(308);
+        demonEscape();
+        DemonsToBank();
+        bank();
+        BankToDemons();
       }
     }
   }
-  // actionable private voids (eat, bank, etc)
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalRunestuff =
           totalRunestuff
               + c.getInventoryItemCount(404) // kite
@@ -198,7 +184,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       totalRchain = totalMed + c.getInventoryItemCount(400);
       totalRmed = totalMed + c.getInventoryItemCount(399);
       totalMed = totalMed + c.getInventoryItemCount(795);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 486
             && itemId != 487
@@ -215,7 +200,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         }
       }
       c.sleep(1400); // Important, leave in
-
       if (c.getInventoryItemCount(420) < 1) { // antidragon shield
         c.withdrawItem(420, 1);
         c.sleep(640);
@@ -245,7 +229,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         c.withdrawItem(superStrengthPot[2], 1);
         c.sleep(640);
       }
-
       if (c.getInventoryItemCount(483) < 17) { // withdraw 17 ppot
         c.withdrawItem(
             483,
@@ -285,9 +268,9 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.closeBank();
       c.sleep(1000);
     }
-    airCheck();
-    waterCheck();
-    lawCheck();
+    inventoryItemCheck(airId, 18);
+    inventoryItemCheck(waterId, 6);
+    inventoryItemCheck(lawId, 6);
   }
 
   private static void prayParalyze() {
@@ -295,39 +278,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.enablePrayer(c.getPrayerId("Paralyze Monster"));
     }
   }
-
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        demonEscape();
-        DemonsToBank();
-        bank();
-        BankToDemons();
-      }
-    }
-  }
-
   // PATHING private voids
-
   private void demonEscape() {
     c.setStatus("We've ran out of Food! @gre@Going to safe zone.");
     c.walkTo(382, 3372);
@@ -405,13 +356,10 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     c.sleep(320);
     c.walkTo(380, 3372);
     c.setStatus("@gre@Done Walking..");
-    eat();
-    drinkPrayerPotion();
+    drinkPrayerPotion(31, true);
     prayParalyze();
   }
-
   // BOOST private voids
-
   private void foodPotCheck() {
     if (c.getInventoryItemCount(483) == 0 || c.getInventoryItemCount(546) == 0) {
       c.setStatus("@yel@No Ppots/food, Banking..");
@@ -422,7 +370,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.sleep(618);
     }
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Taverley Black Demon (Pipe) - By Kaila");
@@ -479,7 +426,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       int HerbSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
@@ -496,7 +442,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         RmedSuccessPerHr = (int) (totalRmed * scale);
         HerbSuccessPerHr = (int) (totalHerb * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

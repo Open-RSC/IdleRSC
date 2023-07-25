@@ -43,6 +43,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
   private static boolean returnEscape = true;
   private static int uniInBank = 0;
   private static int totalUni = 0;
+  private static int inventUni = 0;
 
   private void startSequence() {
     c.displayMessage("@red@Black Unicorn Killer ~ By Kaila");
@@ -55,14 +56,12 @@ public final class K_BlackUnicorns extends K_kailaScript {
     }
     if (c.currentY() > 340) {
       bank();
-      eat();
       BankToUni();
       c.sleep(1380);
     }
   }
 
   public int start(String[] parameters) {
-
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         guiSetup = true;
@@ -85,75 +84,46 @@ public final class K_BlackUnicorns extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-      eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        escapePath();
+      }
       if (c.getInventoryItemCount() < 30) {
-        lootScript();
+        lootItem(false, 466);
+        inventUni = c.getBankItemCount(466);
         if (!c.isInCombat()) {
-          c.setStatus("@yel@Attacking..");
-          c.sleepHandler(296, true);
+          // c.sleepHandler(296, true);
           ORSCharacter npc = c.getNearestNpcById(296, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(3000);
           } else {
-            lootBones();
-            c.sleep(640);
+            c.sleep(GAME_TICK);
+            if (lootBones) lootItem(false, BONES);
           }
-        }
-      } else if (c.getInventoryItemCount() == 30) {
-        buryBones();
-        if (c.getInventoryItemCount() == 30) {
-          c.setStatus("@yel@Banking..");
-          UniToBank();
-          bank();
-          BankToUni();
-          c.sleep(618);
-        }
+        } else c.sleep(GAME_TICK);
       }
-    }
-  }
-
-  private void lootBones() {
-    for (int lootId : bones) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && !c.isInCombat()) {
-          c.setStatus("@yel@No NPCs, Picking bones");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-          buryBones();
-        } else {
-          c.sleep(300);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
-    }
-  }
-
-  private void lootScript() {
-    try {
-      int[] coords = c.getNearestItemById(466);
-      if (coords != null) {
-        c.setStatus("@yel@Looting..");
-        c.walkToAsync(coords[0], coords[1], 0);
-        c.pickupItem(coords[0], coords[1], 466, true, false);
-        c.sleep(640);
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@yel@Banking..");
+        UniToBank();
+        bank();
+        BankToUni();
+        c.sleep(618);
       }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
@@ -161,101 +131,63 @@ public final class K_BlackUnicorns extends K_kailaScript {
       waitForBankOpen();
     } else {
       totalUni = totalUni + c.getInventoryItemCount(466);
-
       if (c.getInventoryItemCount(466) > 0) { // deposit the uni horns
         c.depositItem(466, c.getInventoryItemCount(466));
         c.sleep(340);
       }
       if (teleportOut) {
-        if (c.getInventoryItemCount(33) < 3) { // withdraw 3 air
-          c.withdrawItem(33, 3);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(34) < 1) { // withdraw 1 earth
-          c.withdrawItem(34, 1);
-          c.sleep(340);
-        }
-        if (c.getInventoryItemCount(42) < 1) { // withdraw 1 law
-          c.withdrawItem(42, 1);
-          c.sleep(340);
-        }
+        withdrawItem(airId, 3);
+        withdrawItem(lawId, 1);
+        withdrawItem(earthId, 1);
       }
       if (c.getInventoryItemCount(546) > 1) { // deposit extra shark
         c.depositItem(546, c.getInventoryItemCount(546) - 1);
         c.sleep(340);
       }
-      if (c.getInventoryItemCount(546) < 1) { // withdraw 1 shark
-        c.withdrawItem(546, 1);
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(546, 1);
+      bankItemCheck(546, 5);
       uniInBank = c.getBankItemCount(466);
       c.closeBank();
       c.sleep(640);
+      inventUni = c.getBankItemCount(466);
     }
   }
 
-  private void eat() {
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
+  private void escapePath() {
+    if (!teleportOut
+        || c.getInventoryItemCount(42) < 1
+        || c.getInventoryItemCount(33) < 3
+        || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
+      c.setStatus("@yel@Banking..");
+      UniToBank();
+      bank();
+      BankToUni();
+    }
+    if (teleportOut) {
+      c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
+      goToTwenty();
+      c.setStatus("@red@Teleporting Now!.");
+      teleportOut();
+      c.walkTo(120, 644);
+      c.atObject(119, 642);
+      c.walkTo(217, 447);
+    }
+    if (!returnEscape) {
+      c.setAutoLogin(
+          false); // uncomment and remove bank and banktoHobs to prevent bot going back to mine
+      // after being attacked
+      c.logout();
+      c.sleep(1000);
 
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-      boolean ate = false;
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
+      if (!c.isLoggedIn()) {
+        c.stop();
+        c.logout();
       }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        if (!teleportOut
-            || c.getInventoryItemCount(42) < 1
-            || c.getInventoryItemCount(33) < 3
-            || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
-          c.setStatus("@yel@Banking..");
-          UniToBank();
-          bank();
-          BankToUni();
-          c.sleep(618);
-        }
-        if (teleportOut) {
-          c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
-          goToTwenty();
-          c.setStatus("@red@Teleporting Now!.");
-          teleportOut();
-          c.walkTo(120, 644);
-          c.atObject(119, 642);
-          c.walkTo(217, 447);
-        }
-        if (!returnEscape) {
-          c.setAutoLogin(
-              false); // uncomment and remove bank and banktoHobs to prevent bot going back to mine
-          // after being attacked
-          c.logout();
-          c.sleep(1000);
-
-          if (!c.isLoggedIn()) {
-            c.stop();
-            c.logout();
-          }
-        }
-        if (returnEscape) {
-          bank();
-          BankToUni();
-          c.sleep(618);
-        }
-      }
+    }
+    if (returnEscape) {
+      bank();
+      BankToUni();
+      c.sleep(618);
     }
   }
 
@@ -329,7 +261,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
       c.sleep(10);
     }
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Black Unicorn Killer ~ By Kaila");
@@ -354,7 +285,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -382,7 +312,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
@@ -391,9 +320,8 @@ public final class K_BlackUnicorns extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        successPerHr = (int) (totalUni * scale);
+        successPerHr = (int) ((totalUni + inventUni) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }
@@ -404,7 +332,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
       c.drawString("@whi@Horns in Bank: @gre@" + uniInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Horns Picked: @gre@"
-              + totalUni
+              + (totalUni + inventUni)
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",

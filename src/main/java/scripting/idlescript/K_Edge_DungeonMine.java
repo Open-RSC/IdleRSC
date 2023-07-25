@@ -21,7 +21,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author - Kaila
  */
-public final class K_EdgeDungeonMine extends K_kailaScript {
+public final class K_Edge_DungeonMine extends K_kailaScript {
   private static String isMining = "none";
   private static final int[] currentOre = {0, 0};
   private static final int[] addyIDs = {108, 231, 109};
@@ -49,7 +49,7 @@ public final class K_EdgeDungeonMine extends K_kailaScript {
   }
 
   private void startSequence() {
-    c.displayMessage("@red@Hobs Miner- By Kaila");
+    c.displayMessage("@red@Edge Dungeon Miner- By Kaila");
     c.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
     c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
     c.displayMessage("@red@31 Magic Required for escape tele");
@@ -150,14 +150,12 @@ public final class K_EdgeDungeonMine extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalCoal = totalCoal + c.getInventoryItemCount(155);
       totalMith = totalMith + c.getInventoryItemCount(153);
       totalAddy = totalAddy + c.getInventoryItemCount(154);
@@ -270,7 +268,6 @@ public final class K_EdgeDungeonMine extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int coalSuccessPerHr = 0;
       int mithSuccessPerHr = 0;
@@ -293,9 +290,7 @@ public final class K_EdgeDungeonMine extends K_kailaScript {
         rubSuccessPerHr = (int) (totalRub * scale);
         diaSuccessPerHr = (int) (totalDia * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
-      } catch (Exception e) {
-        // divide by zero
+      } catch (Exception e) { // divide by zero
       }
       int x = 6;
       int y = 15;

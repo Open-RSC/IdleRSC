@@ -6,44 +6,48 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts Magic logs in seers, including the far western one, banks in Seers.
+ * Cuts yew logs in NE ardy, including the far western one, banks in ardy south bank.
  *
- * <p>@Author - Kaila
+ * <p>Requires 53+ Combat to avoid aggressive bears!
+ *
+ * <p>Author ~ Kaila
  */
 /*
  * todo:
- *   reduce walking between locations - pause at each side.
  *   logic to cut same tree as other players.
  */
-public final class K_SeersMagicTree extends K_kailaScript {
+public final class K_Ardy_YewTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
 
   private void startSequence() {
-    c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
+    checkBatchBars();
+    c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
     if (c.isInBank()) {
       c.closeBank();
     }
-    if (c.currentY() < 458) {
+    if (c.currentY() < 620
+        && c.currentY() > 600
+        && c.currentX() > 543
+        && c.currentX() < 555) { // inside bank
       bank();
-      c.walkTo(500, 454);
-      c.walkTo(503, 457);
-      c.walkTo(503, 460);
-      c.walkTo(506, 463);
-      c.walkTo(506, 472);
-      c.walkTo(506, 478);
-      c.walkTo(516, 488);
+      bankToYews();
       c.sleep(1380);
     }
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    if (c.currentY() < 600 && c.currentY() > 587 && c.currentX() > 525 && c.currentX() < 543) {
+      c.walkTo(533, 596);
+      c.walkTo(548, 600);
+      bank();
+      bankToYews();
+      c.sleep(1380);
+    }
   }
 
   public int start(String[] parameters) {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
-        c.displayMessage("Got Autostart, Cutting Magics", 0);
-        System.out.println("Got Autostart, Cutting Magics");
+        c.displayMessage("Got Autostart, Cutting Yews", 0);
+        System.out.println("Got Autostart, Cutting Yews");
         scriptStarted = true;
         guiSetup = true;
       }
@@ -65,38 +69,37 @@ public final class K_SeersMagicTree extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() < 30) {
-        if (c.getObjectAtCoord(519, 494) == 310) {
+        c.setStatus("@gre@Cutting Yews..");
+        if (c.getObjectAtCoord(509, 571) == 309) {
           cutFirstTree();
         }
-        if (c.getObjectAtCoord(519, 494) == 310) {
+        if (c.getObjectAtCoord(509, 571) == 309) {
           cutFirstTree();
         }
-        if (c.getObjectAtCoord(519, 494) == 310) {
+        if (c.getObjectAtCoord(509, 571) == 309) {
           cutFirstTree();
         }
-        if (c.getObjectAtCoord(521, 492) == 310) {
+        if (c.getObjectAtCoord(507, 567) == 309) {
           cutSecondTree();
         }
-        if (c.getObjectAtCoord(521, 492) == 310) {
+        if (c.getObjectAtCoord(507, 567) == 309) {
           cutSecondTree();
         }
-        if (c.getObjectAtCoord(521, 492) == 310) {
+        if (c.getObjectAtCoord(507, 567) == 309) {
           cutSecondTree();
         }
-        if (c.getObjectAtCoord(524, 489) == 310) {
+        mainYewToAltYew();
+        if (c.getObjectAtCoord(513, 525) == 309) {
           cutThirdTree();
         }
-        if (c.getObjectAtCoord(524, 489) == 310) {
+        if (c.getObjectAtCoord(513, 525) == 309) {
           cutThirdTree();
         }
-        if (c.getObjectAtCoord(524, 489) == 310) {
+        if (c.getObjectAtCoord(513, 525) == 309) {
           cutThirdTree();
         }
-        c.walkTo(531, 487);
-        if (c.getObjectAtCoord(548, 484) == 310) {
-          cutFourthTree();
-        }
-        c.sleep(1280);
+        c.walkTo(505, 533);
+        altYewToMainYew();
       } else {
         goToBank();
       }
@@ -104,8 +107,8 @@ public final class K_SeersMagicTree extends K_kailaScript {
   }
 
   private void cutFirstTree() {
-    c.walkTo(519, 493);
-    c.atObject(519, 494);
+    c.walkTo(510, 570);
+    c.atObject(509, 571);
     c.sleep(2000);
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
       c.sleep(1000);
@@ -116,8 +119,8 @@ public final class K_SeersMagicTree extends K_kailaScript {
   }
 
   private void cutSecondTree() {
-    c.walkTo(521, 491);
-    c.atObject(521, 492);
+    c.walkTo(509, 568);
+    c.atObject(507, 567);
     c.sleep(2000);
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
       c.sleep(1000);
@@ -128,89 +131,58 @@ public final class K_SeersMagicTree extends K_kailaScript {
   }
 
   private void cutThirdTree() {
-    c.walkTo(524, 488);
-    c.atObject(524, 489);
+    c.walkTo(512, 526);
+    c.atObject(513, 525);
     c.sleep(2000);
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
       c.sleep(1000);
     }
     if (c.getInventoryItemCount() > 29) {
-      goToBank();
+      altYewToMainYew();
+      c.walkTo(511, 571);
+      bankToYews();
     }
   }
 
-  private void cutFourthTree() {
-    c.walkTo(538, 486);
-    c.walkTo(547, 484);
-    c.atObject(548, 484);
-    c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
-    if (c.getInventoryItemCount() > 29) {
-      goToBank2();
-    }
-    if (c.getObjectAtCoord(548, 484) == 310) {
-      cutFourthTreeAgain();
-    }
-    if (c.getObjectAtCoord(548, 484) == 310) {
-      cutFourthTreeAgain();
-    }
-    if (c.getObjectAtCoord(548, 484) == 310) {
-      cutFourthTreeAgain();
-    }
-    c.walkTo(538, 486);
-    c.walkTo(531, 487);
+  private void mainYewToAltYew() {
+    //  c.walkTo(511,559);
+    c.walkTo(507, 553);
+    c.walkTo(505, 541);
   }
 
-  private void cutFourthTreeAgain() {
-    c.atObject(548, 484);
-    c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
-    if (c.getInventoryItemCount() > 29) {
-      goToBank2();
-    }
+  private void altYewToMainYew() {
+    c.walkTo(505, 541);
+    c.walkTo(507, 553);
+  }
+
+  private void yewToBank() {
+    c.walkTo(512, 571);
+    c.walkTo(512, 577);
+    c.walkTo(521, 588);
+    c.walkTo(534, 595);
+    c.walkTo(547, 602);
+    c.walkTo(550, 612);
+  }
+
+  private void bankToYews() {
+    c.walkTo(550, 612);
+    c.walkTo(547, 602);
+    c.walkTo(534, 595);
+    c.walkTo(521, 588);
+    c.walkTo(512, 577);
+    c.walkTo(512, 571);
   }
 
   private void goToBank() {
-    c.walkTo(516, 488);
-    c.walkTo(506, 478);
-    c.walkTo(506, 472);
-    c.walkTo(506, 463);
-    c.walkTo(503, 460);
-    c.walkTo(503, 457);
-    c.walkTo(500, 454);
+    c.setStatus("@gre@Walking to Bank..");
+    yewToBank();
+    c.setStatus("@gre@Done Walking to Bank..");
+    c.walkTo(551, 613);
     totalTrips = totalTrips + 1;
     bank();
-    c.walkTo(500, 454);
-    c.walkTo(503, 457);
-    c.walkTo(503, 460);
-    c.walkTo(506, 463);
-    c.walkTo(506, 472);
-    c.walkTo(506, 478);
-    c.walkTo(516, 488);
-  }
-
-  private void goToBank2() {
-    c.walkTo(547, 484);
-    c.walkTo(537, 474);
-    c.walkTo(531, 468);
-    c.walkTo(521, 468);
-    c.walkTo(510, 468);
-    c.walkTo(504, 462);
-    c.walkTo(504, 458);
-    c.walkTo(500, 454);
-    totalTrips = totalTrips + 1;
-    bank();
-    c.walkTo(500, 454);
-    c.walkTo(503, 457);
-    c.walkTo(503, 460);
-    c.walkTo(506, 463);
-    c.walkTo(506, 472);
-    c.walkTo(506, 478);
-    c.walkTo(516, 488);
+    c.setStatus("@gre@Going to Yews..");
+    bankToYews();
+    c.setStatus("@gre@Done Walking to Yews..");
   }
 
   private void bank() {
@@ -220,7 +192,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-      totalLog = totalLog + c.getInventoryItemCount(636);
+      totalLog = totalLog + c.getInventoryItemCount(635);
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 1263
             && itemId != axeId[0]
@@ -232,15 +204,14 @@ public final class K_SeersMagicTree extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-
-      logInBank = c.getBankItemCount(636);
+      logInBank = c.getBankItemCount(635);
       c.closeBank();
       c.sleep(1000);
     }
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Seers Magic Logs by Kaila");
+    JLabel header = new JLabel("Ardy Yew Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");
     JLabel label2 = new JLabel("Wield or have rune axe in Inv");
     JButton startScriptButton = new JButton("Start");
@@ -251,6 +222,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
+
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -272,9 +244,10 @@ public final class K_SeersMagicTree extends K_kailaScript {
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int tripSuccessPerHr = 0;
-      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
+      long timeInSeconds = System.currentTimeMillis() / 1000L;
+
       try {
-        float timeRan = currentTimeInSeconds - startTimestamp;
+        float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalLog * scale);
         tripSuccessPerHr = (int) (totalTrips * scale);
@@ -283,7 +256,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Seers Magic Logs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Ardy Yew Logs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

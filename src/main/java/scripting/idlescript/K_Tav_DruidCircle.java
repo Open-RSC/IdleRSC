@@ -13,45 +13,43 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila
  */
-public final class K_TavDruidCircle extends K_kailaScript {
+public final class K_Tav_DruidCircle extends K_kailaScript {
   private static boolean prayerBoost = true;
-
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(362, 462, x, y) <= 12; // center of lootzone
-  }
-
   private static final int[] lowLevelLoot = {
-    165, // Grimy Guam
-    435, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    42, // law rune
-    32, // water rune
-    34, // Earth rune
-    31, // fire rune
-    41 // chaos rune
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy Marrentill
+    UNID_TAR, // Grimy Tarromin
+    UNID_HAR, // Grimy Harralander
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    LAW_RUNE, // law rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    CHAOS_RUNE // chaos rune
   };
   private static final int[] highLevelLoot = {
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    42, // law rune
-    32, // water rune
-    34, // Earth rune
-    31, // fire rune
-    41 // chaos rune
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    LAW_RUNE, // law rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    CHAOS_RUNE // chaos rune
   };
 
   public int start(String[] parameters) {
+    centerX = 362;
+    centerY = 462;
+    centerDistance = 12;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
       fightMode = 0;
@@ -78,7 +76,6 @@ public final class K_TavDruidCircle extends K_kailaScript {
       c.displayMessage("@red@Tav Druid Circle - By Kaila");
       c.displayMessage("@red@Start in Fally west or druid Circle");
       c.displayMessage("@red@Food in Bank required");
-
       if (c.isInBank()) {
         c.closeBank();
       }
@@ -90,67 +87,54 @@ public final class K_TavDruidCircle extends K_kailaScript {
       whatIsFoodName();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-      int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-      buryBones();
-      if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-        eat();
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        DruidToBank();
+        bank();
+        BankToDruid();
       }
+      buryBones(false);
       if (c.currentY() > 473) {
         c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
         c.walkTo(362, 464);
         c.sleep(640);
       }
-      if (c.getFightMode() != fightMode) {
-        c.log("@red@Changing fightmode to " + fightMode);
-        c.setFightMode(fightMode);
+      checkFightMode();
+      if (potUp) {
+        attackBoost(0, false);
+        strengthBoost(0, false);
       }
-      if (potUp && !c.isInCombat()) {
-        attackBoost();
-        strengthBoost();
-      }
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
         if (!c.isInCombat()) {
           if (prayerBoost) {
             recharge();
             pray();
           }
-          if (lootLowLevel) {
-            lowLevelLooting();
-          } else {
-            highLevelLooting();
-          }
-          c.setStatus("@yel@Attacking Druids");
+          if (lootLowLevel) lootItems(false, lowLevelLoot);
+          else lootItems(false, highLevelLoot);
           ORSCharacter npc = c.getNearestNpcById(200, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
-          } else if (lootBones) {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
-            lootBones();
           } else {
-            if (lootLowLevel) {
-              lowLevelLooting();
-            } else {
-              highLevelLooting();
-            }
-            c.sleep(100);
+            c.sleep(GAME_TICK);
+            if (lootLowLevel) lootItems(false, lowLevelLoot);
+            else lootItems(false, highLevelLoot);
+            if (lootBones) lootItem(false, BONES);
           }
-          c.sleep(640);
-        } else {
-          c.sleep(640);
-        }
-      } else if (c.getInventoryItemCount() == 30
+        } else c.sleep(GAME_TICK);
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
+      }
+      if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
           || timeToBankStay) {
@@ -167,60 +151,6 @@ public final class K_TavDruidCircle extends K_kailaScript {
           c.stop();
         }
         BankToDruid();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
-      }
-    }
-  }
-
-  private void lootBones() {
-    for (int lootId : bones) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && !c.isInCombat() && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@No NPCs, Picking bones");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-          buryBones();
-        } else {
-          c.sleep(300);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  private void highLevelLooting() {
-    for (int lootId : highLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  private void lowLevelLooting() {
-    for (int lootId : lowLevelLoot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }
@@ -232,11 +162,6 @@ public final class K_TavDruidCircle extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
-      //       32,      //water rune
-      // 34, 	 //Earth rune
-      // 31,      //fire rune  +total runes
-      // 41       //chaos rune
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -277,23 +202,8 @@ public final class K_TavDruidCircle extends K_kailaScript {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(foodId) > foodWithdrawAmount) { // deposit extra shark
-        c.depositItem(foodId, c.getInventoryItemCount(foodId) - foodWithdrawAmount);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw 1 shark
-        c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
-        c.sleep(640);
-      }
-      if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO foodId in the bank, Logging Out!.");
-        c.sleep(3000);
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(1000);
     }
@@ -315,30 +225,6 @@ public final class K_TavDruidCircle extends K_kailaScript {
     // if(!c.isPrayerOn(c.getPrayerId("Incredible Reflexes")) && c.currentY() < 475) {
     //    c.enablePrayer(c.getPrayerId("Incredible Reflexes"));
     // }
-  }
-
-  private void eat() {
-    leaveCombat();
-    c.setStatus("@red@Eating..");
-
-    boolean ate = false;
-
-    for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0) {
-        c.itemCommand(id);
-        c.sleep(700);
-        ate = true;
-        break;
-      }
-    }
-    if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-      // usually
-      c.setStatus("@red@We've ran out of Food! Running Away!.");
-      DruidToBank();
-      bank();
-      BankToDruid();
-      c.sleep(618);
-    }
   }
 
   private void BankToDruid() {

@@ -121,16 +121,13 @@ public final class K_CrystalKeyChest extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalDragonstones = totalDragonstones + c.getInventoryItemCount(542);
-
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
@@ -140,7 +137,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
         c.withdrawItem(525, 14 - c.getInventoryItemCount(525));
         c.sleep(1000);
       }
-
       KeysInBank = c.getBankItemCount(525);
       DragonstonesInBank = c.getBankItemCount(542);
 
@@ -150,7 +146,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
   }
 
   private void GrapeToBank() { // replace
-
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(371, 495);
     c.walkTo(375, 498);
@@ -171,7 +166,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
   }
 
   private void BankToGrape() {
-
     c.setStatus("@gre@Walking to Crystal Chest..");
     c.walkTo(439, 497);
     c.walkTo(429, 497);
@@ -189,7 +183,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
     c.walkTo(367, 496);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Crystal Key Chest Opener - By Kaila");
@@ -197,7 +190,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
     JLabel label2 = new JLabel("Only works on Coleslaw for the time Being");
     JLabel label3 = new JLabel("Utilizes the White Wolf Mountain Agility Shortcut");
     JButton startScriptButton = new JButton("Start Script");
-
     startScriptButton.addActionListener(
         e -> {
           scriptFrame.setVisible(false);
@@ -205,7 +197,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
           startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -225,7 +216,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int DragonstoneSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
@@ -235,7 +225,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
         float scale = (60 * 60) / timeRan;
         DragonstoneSuccessPerHr = (int) (totalDragonstones * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

@@ -166,7 +166,7 @@ public enum ItemId implements Id {
   RUBY(162),
   EMERALD(163),
   SAPPHIRE(164),
-  HERB(165),
+  HERB(165), // unif guam leaf
   TINDERBOX(166),
   CHISEL(167),
   HAMMER(168),
@@ -436,15 +436,15 @@ public enum ItemId implements Id {
   BLACK_SQUARE_SHIELD(432),
   BLACK_KITE_SHIELD(433),
   BLACK_PLATED_SKIRT(434),
-  HERB_435(435),
-  HERB_436(436),
-  HERB_437(437),
-  HERB_438(438),
-  HERB_439(439),
-  HERB_440(440),
-  HERB_441(441),
-  HERB_442(442),
-  HERB_443(443),
+  HERB_435(435), // unid Marrentill
+  HERB_436(436), // unid Tarromin
+  HERB_437(437), // unid Harralander
+  HERB_438(438), // unid Ranarr Weed
+  HERB_439(439), // unid Irit Leaf
+  HERB_440(440), // unid Avantoe
+  HERB_441(441), // unid Kwuarm
+  HERB_442(442), // unid Cadantine
+  HERB_443(443), // unid Dwarf Weed
   GUAM_LEAF(444),
   MARRENTILL(445),
   TARROMIN(446),

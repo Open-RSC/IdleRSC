@@ -29,7 +29,6 @@ public final class K_CrackerGiver extends IdleScript {
     c.displayMessage("@red@present GIVER! Let's party like it's 2004!");
     c.displayMessage("@red@Directions inside K_CrackerGiver.java file");
     c.displayMessage("@red@Ideal location is Draynor Bank!");
-
     while (c.isRunning()) {
       if (c.getInventoryItemCount() > 29) {
         c.setStatus("@gre@Banking.");
@@ -71,12 +70,10 @@ public final class K_CrackerGiver extends IdleScript {
         c.sleep(640);
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);

@@ -48,13 +48,11 @@ public final class K_MonkRobes extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
       if (c.getInventoryItemCount() == 30) {
         c.setStatus("@red@Banking..");
         GrapeToBank();
@@ -62,7 +60,6 @@ public final class K_MonkRobes extends K_kailaScript {
         BankToGrape();
         c.sleep(618);
       }
-
       int[] coords = c.getNearestItemById(388); // always pick up tops
       if (coords != null) {
         c.setStatus("@yel@Looting..");
@@ -82,17 +79,14 @@ public final class K_MonkRobes extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalTopz = totalTopz + c.getInventoryItemCount(388);
       totalBotz = totalBotz + c.getInventoryItemCount(389);
-
       if (c.getInventoryItemCount(388) > 0) { // robe top
         c.depositItem(388, c.getInventoryItemCount(388));
         c.sleep(1380);
@@ -101,17 +95,14 @@ public final class K_MonkRobes extends K_kailaScript {
         c.depositItem(389, c.getInventoryItemCount(389));
         c.sleep(1380);
       }
-
       TopzInBank = c.getBankItemCount(388);
       BotzInBank = c.getBankItemCount(389);
-
       c.closeBank();
       c.sleep(640);
     }
   }
 
   private void GrapeToBank() { // replace
-
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(260, 1405);
     c.walkTo(260, 1411);
@@ -139,7 +130,6 @@ public final class K_MonkRobes extends K_kailaScript {
   }
 
   private void BankToGrape() {
-
     c.setStatus("@gre@Walking to Robes..");
     c.walkTo(218, 447);
     c.walkTo(220, 445);
@@ -170,7 +160,6 @@ public final class K_MonkRobes extends K_kailaScript {
     // next to robes now)
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Monk Robe Picker - By Kaila");
@@ -210,7 +199,6 @@ public final class K_MonkRobes extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int TopzSuccessPerHr = 0;
       int BotzSuccessPerHr = 0;
@@ -223,7 +211,6 @@ public final class K_MonkRobes extends K_kailaScript {
         TopzSuccessPerHr = (int) (totalTopz * scale);
         BotzSuccessPerHr = (int) (totalTopz * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }
@@ -231,7 +218,6 @@ public final class K_MonkRobes extends K_kailaScript {
       int y = 21;
       c.drawString("@red@Monks Robe Picker @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
-
       c.drawString("@whi@Robe Tops Banked: @gre@" + TopzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@Robe Bots Banked:@gre@" + BotzInBank, x, y + (14 * 2), 0xFFFFFF, 1);
       c.drawString(

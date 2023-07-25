@@ -30,12 +30,10 @@ public class K_TrickGiver extends IdleScript {
     c.displayMessage("@red@Trick Or Treat Cracker GIVER! @mag@~ by Kaila");
     c.displayMessage("@red@Directions inside K_TrickGiver.java file");
     c.displayMessage("@red@Ideal location is Draynor Bank!");
-
     while (c.isRunning()) {
       if (c.getInventoryItemCount() > 29) {
         c.setStatus("@gre@Banking.");
         if (!c.isInBank()) {
-
           ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
             c.setStatus("@yel@Walking to Banker..");
@@ -72,12 +70,10 @@ public class K_TrickGiver extends IdleScript {
         c.sleep(640);
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);

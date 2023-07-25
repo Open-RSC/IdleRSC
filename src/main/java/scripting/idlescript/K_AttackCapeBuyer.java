@@ -45,13 +45,11 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
       if (c.getInventoryItemCount() == 30) {
         c.setStatus("@red@Banking..");
         GrapeToBank();
@@ -60,7 +58,6 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
         c.sleep(618);
       }
       ORSCharacter npc = c.getNearestNpcById(18, true);
-
       if (npc != null) {
         c.setStatus("@red@Getting cape from Rovin..");
         c.talkToNpc(npc.serverIndex);
@@ -77,30 +74,24 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalTopz = totalTopz + c.getInventoryItemCount(1374);
-
       if (c.getInventoryItemCount(1374) > 0) { // robe top
         c.depositItem(1374, c.getInventoryItemCount(1374));
         c.sleep(1380);
       }
-
       TopzInBank = c.getBankItemCount(1374);
-
       c.closeBank();
       c.sleep(640);
     }
   }
 
   private void GrapeToBank() { // replace
-
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(141, 1398);
     c.sleep(340);
@@ -119,7 +110,6 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
   }
 
   private void BankToGrape() {
-
     c.setStatus("@gre@Walking to Rovin..");
     c.walkTo(150, 507);
     c.walkTo(137, 507);
@@ -135,7 +125,6 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
     // next to rovin now
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below
   private void setupGUI() {
     JLabel header = new JLabel("Attack Cape Buyer ~ By Kaila");
@@ -171,7 +160,6 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int TopzSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
@@ -182,7 +170,6 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
         float scale = (60 * 60) / timeRan;
         TopzSuccessPerHr = (int) (totalTopz * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

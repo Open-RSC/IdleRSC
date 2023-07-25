@@ -18,7 +18,7 @@ import orsc.ORSCharacter;
  *      todo
  *          Add autostart sequence from fastPlate and change variables
  */
-public final class K_FastBowFletcher extends K_kailaScript {
+public final class K_Fast_BowFletcher extends K_kailaScript {
   private static int logId = -1;
   private static int logsInBank = 0;
   private static int totalBows = 0;
@@ -79,7 +79,6 @@ public final class K_FastBowFletcher extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@gre@Banking..");
     c.displayMessage("@gre@Banking..");
     c.openBank();
@@ -87,9 +86,7 @@ public final class K_FastBowFletcher extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBows = totalBows + 29;
-
       if (c.getBankItemCount(logId)
           < 30) { // stops making when 30 in bank to not mess up alignments/organization of bank!!!
         c.setStatus("@red@NO Logs in the bank, Logging Out!.");
@@ -120,7 +117,6 @@ public final class K_FastBowFletcher extends K_kailaScript {
       c.closeBank();
     }
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Unstrung Longbow Maker ~ Kaila");

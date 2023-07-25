@@ -15,12 +15,7 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_WildyFireGiants extends K_kailaScript {
-
-  private boolean isWithinLootzone(int x, int y) {
-    return c.distance(269, 2949, x, y) <= 10;
-  }
-
+public final class K_Wildy_FireGiants extends K_kailaScript {
   private static int totalBstaff = 0;
   private static int totalRscim = 0;
   private static int totalRunestuff = 0;
@@ -81,6 +76,9 @@ public final class K_WildyFireGiants extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+    centerX = 269;
+    centerY = 2949;
+    centerDistance = 10;
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -106,37 +104,42 @@ public final class K_WildyFireGiants extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      buryBones();
-      eat();
-      lootScript();
-      superAttackBoost();
-      superStrengthBoost();
-      dropVial();
-
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        GiantsToBank();
+        bank();
+        BankToStair();
+        stairToGiants();
+      }
+      buryBones(true);
+      lootItems(false, loot);
+      superAttackBoost(0, true);
+      superStrengthBoost(0, true);
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
-            c.setStatus("@yel@Attacking Giants");
-            c.sleepHandler(98, true);
+
+            // c.sleepHandler(98, true);
             ORSCharacter npc = c.getNearestNpcById(344, false);
             if (npc != null) {
+              c.setStatus("@yel@Attacking Giants");
               c.walktoNPC(npc.serverIndex, 1);
               c.attackNpc(npc.serverIndex);
-              c.sleep(1280);
             } else {
-              c.sleep(640);
+              c.sleep(GAME_TICK);
+              lootItems(false, loot);
             }
-          }
+          } else c.sleep(GAME_TICK);
         }
-        if (c.getInventoryItemCount() == 30 && !c.isInCombat()) {
-          eatFoodToLoot();
+        if (c.getInventoryItemCount() == 30) {
+          dropItemToLoot(true, 1, EMPTY_VIAL);
+          eatFoodToLoot(true);
         }
       }
       if (c.getInventoryItemCount(546) == 0
@@ -147,36 +150,17 @@ public final class K_WildyFireGiants extends K_kailaScript {
         bank();
         BankToStair();
         stairToGiants();
-        c.sleep(618);
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBstaff = totalBstaff + c.getInventoryItemCount(615);
       totalRscim = totalRscim + c.getInventoryItemCount(398);
       totalRunestuff =
@@ -224,73 +208,12 @@ public final class K_WildyFireGiants extends K_kailaScript {
         }
       }
       c.sleep(1280); // keep, important
-
       withdrawSuperAttack(1);
       withdrawSuperStrength(1);
-      if (c.getInventoryItemCount(546) < 27) { // withdraw shark //was 27
-        c.withdrawItem(546, 27 - c.getInventoryItemCount(546));
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.sleep(5000);
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(546, 27);
+      bankItemCheck(546, 27);
       c.closeBank();
       c.sleep(640);
-      eat();
-    }
-  }
-
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-    int panicLvl = c.getBaseStat(c.getStatId("Hits")) - 50;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < panicLvl) {
-      c.setStatus(
-          "@red@We've taken massive damage! Running Away!."); // Tested and when panic hp goToBank
-      // then Logout is working
-      c.sleep(308);
-      GiantsToBank();
-      bank();
-      c.setAutoLogin(false);
-      c.logout();
-      c.sleep(1000);
-
-      if (!c.isLoggedIn()) {
-        c.stop();
-        c.logout();
-      }
-    }
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        GiantsToBank();
-        bank();
-        BankToStair();
-        stairToGiants();
-      }
     }
   }
 

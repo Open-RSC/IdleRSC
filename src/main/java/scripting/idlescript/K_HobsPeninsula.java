@@ -14,51 +14,47 @@ import orsc.ORSCharacter;
  * <p>Author - Kaila
  */
 public final class K_HobsPeninsula extends K_kailaScript {
-  private static boolean isWithinLootzone(int x, int y) {
-    return c.distance(363, 610, x, y) <= 15; // center of lootzone
-  }
-
   private static int totalLimp = 0;
   private static final int[] loot = {
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    33, // air rune
-    34, // Earth rune
-    31, // fire rune
-    32, // water rune
-    36, // body runes
-    46, // cosmic
-    40, // nature rune
-    42, // law rune
-    35, // mind rune
-    41, // chaos rune
-    38, // death rune
-    619, // blood rune
-    220, // limps
-    165, // Grimy Guam
-    435, // Grimy mar
-    436, // Grimy tar
-    437, // Grimy har
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    11, // bronze arrow
-    1026, // unholy mould
-    10 // , 	 //coins
-    // 20       //bones
-
+    UNID_GUAM, // Grimy Guam
+    UNID_MAR, // Grimy Marrentill
+    UNID_TAR, // Grimy Tarromin
+    UNID_HAR, // Grimy Harralander
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    AIR_RUNE, // air rune
+    EARTH_RUNE, // earth runF
+    FIRE_RUNE,
+    WATER_RUNE,
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    BODY_RUNE, // body rune  //remove
+    COSMIC_RUNE, // cosmic rune
+    MIND_RUNE, // remove
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    LIMP_ROOT, // limps
+    BRONZE_ARROW, // bronze arrow
+    COINS, // , 	 //coins
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {
+    centerX = 363;
+    centerY = 610;
+    centerDistance = 15;
     if (!parameters[0].equals("")) {
       try {
         foodWithdrawAmount = Integer.parseInt(parameters[0]);
@@ -97,15 +93,19 @@ public final class K_HobsPeninsula extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      eat();
-      // buryBones();
-
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@yel@Banking..");
+        PeninsulaToBank();
+        bank();
+        BankToPeninsula();
+      }
       if (c.getInventoryItemCount() < 30) {
-        lootScript();
+        checkInventoryItemCounts();
+        lootItems(false, loot);
         if (potUp) {
-          attackBoost();
-          strengthBoost();
+          attackBoost(0, false);
+          strengthBoost(0, false);
         }
         if (!c.isInCombat()) {
           int[] npcIds = {67};
@@ -113,16 +113,21 @@ public final class K_HobsPeninsula extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(1000);
+            c.sleep(2 * GAME_TICK);
           } else {
-            c.sleep(1000);
+            lootItems(false, loot);
+            c.sleep(GAME_TICK);
             if (c.currentX() != 364 || c.currentY() != 607) {
               c.walkTo(364, 607);
-              c.sleep(1000);
+              c.sleep(2 * GAME_TICK);
             }
           }
         }
-        c.sleep(320);
+        c.sleep(GAME_TICK);
+      }
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(foodId) == 0) {
         c.setStatus("@yel@Banking..");
@@ -134,27 +139,13 @@ public final class K_HobsPeninsula extends K_kailaScript {
     }
   }
 
-  private void lootScript() {
-    for (int lootId : loot) {
-      int[] coords = c.getNearestItemById(lootId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        c.setStatus("@yel@Looting..");
-        c.walkTo(coords[0], coords[1]);
-        c.pickupItem(coords[0], coords[1], lootId, true, true);
-        c.sleep(618);
-      }
-    }
-  }
-
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalGuam = totalGuam + c.getInventoryItemCount(165);
       totalMar = totalMar + c.getInventoryItemCount(435);
       totalTar = totalTar + c.getInventoryItemCount(436);
@@ -194,49 +185,11 @@ public final class K_HobsPeninsula extends K_kailaScript {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw foods
-        c.withdrawItem(foodId, foodWithdrawAmount);
-        c.sleep(340);
-      }
-      if (c.getBankItemCount(foodId) == 0) {
-        c.setStatus("@red@NO Food in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawFood(foodId, foodWithdrawAmount);
+      bankItemCheck(foodId, 5);
       c.closeBank();
       c.sleep(640);
-    }
-  }
-
-  private void eat() {
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@yel@Banking..");
-        PeninsulaToBank();
-        bank();
-        BankToPeninsula();
-        c.sleep(618);
-      }
+      checkInventoryItemCounts();
     }
   }
 
@@ -277,9 +230,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
     c.walkTo(361, 614);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Asgarnian Hobs Peninsula - By Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank with Armor");
@@ -304,7 +255,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
           startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -330,7 +280,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -352,22 +301,21 @@ public final class K_HobsPeninsula extends K_kailaScript {
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        guamSuccessPerHr = (int) (totalGuam * scale);
-        marSuccessPerHr = (int) (totalMar * scale);
-        tarSuccessPerHr = (int) (totalTar * scale);
-        harSuccessPerHr = (int) (totalHar * scale);
-        ranSuccessPerHr = (int) (totalRan * scale);
-        iritSuccessPerHr = (int) (totalIrit * scale);
-        avaSuccessPerHr = (int) (totalAva * scale);
-        kwuSuccessPerHr = (int) (totalKwuarm * scale);
-        cadaSuccessPerHr = (int) (totalCada * scale);
-        dwarSuccessPerHr = (int) (totalDwarf * scale);
+        guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
+        marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
+        tarSuccessPerHr = (int) ((totalTar + inventTar) * scale);
+        harSuccessPerHr = (int) ((totalHar + inventHar) * scale);
+        ranSuccessPerHr = (int) ((totalRan + inventRan) * scale);
+        iritSuccessPerHr = (int) ((totalIrit + inventIrit) * scale);
+        avaSuccessPerHr = (int) ((totalAva + inventAva) * scale);
+        kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
+        cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
+        dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
         limpSuccessPerHr = (int) (totalLimp * scale);
-        lawSuccessPerHr = (int) (totalLaw * scale);
-        natSuccessPerHr = (int) (totalNat * scale);
-        GemsSuccessPerHr = (int) (totalGems * scale);
+        lawSuccessPerHr = (int) ((totalLaw + inventLaws) * scale);
+        natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
+        GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }
@@ -375,7 +323,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
       c.drawString("@red@Hobgoblin Peninsula @gre@by Kaila", x - 20, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"
-              + totalGuam
+              + (totalGuam + inventGuam)
               + "@yel@ (@whi@"
               + String.format("%,d", guamSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -385,7 +333,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Marrentills: @gre@"
-              + totalMar
+              + (totalMar + inventMar)
               + "@yel@ (@whi@"
               + String.format("%,d", marSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -395,7 +343,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Tarromins: @gre@"
-              + totalTar
+              + (totalTar + inventTar)
               + "@yel@ (@whi@"
               + String.format("%,d", tarSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -405,7 +353,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Harralanders: @gre@"
-              + totalHar
+              + (totalHar + inventHar)
               + "@yel@ (@whi@"
               + String.format("%,d", harSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -415,7 +363,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Ranarrs: @gre@"
-              + totalRan
+              + (totalRan + inventRan)
               + "@yel@ (@whi@"
               + String.format("%,d", ranSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -425,7 +373,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Irit Herbs: @gre@"
-              + totalIrit
+              + (totalIrit + inventIrit)
               + "@yel@ (@whi@"
               + String.format("%,d", iritSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -435,7 +383,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Avantoes: @gre@"
-              + totalAva
+              + (totalAva + inventAva)
               + "@yel@ (@whi@"
               + String.format("%,d", avaSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -445,7 +393,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Kwuarms: @gre@"
-              + totalKwuarm
+              + (totalKwuarm + inventKwuarm)
               + "@yel@ (@whi@"
               + String.format("%,d", kwuSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -455,7 +403,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Cadantines: @gre@"
-              + totalCada
+              + (totalCada + inventCada)
               + "@yel@ (@whi@"
               + String.format("%,d", cadaSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -465,7 +413,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Dwarfs: @gre@"
-              + totalDwarf
+              + (totalDwarf + inventDwarf)
               + "@yel@ (@whi@"
               + String.format("%,d", dwarSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -485,7 +433,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Laws: @gre@"
-              + totalLaw
+              + (totalLaw + inventLaws)
               + "@yel@ (@whi@"
               + String.format("%,d", lawSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -495,7 +443,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Nats: @gre@"
-              + totalNat
+              + (totalNat + inventNats)
               + "@yel@ (@whi@"
               + String.format("%,d", natSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -505,7 +453,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Total Gems: @gre@"
-              + totalGems
+              + (totalGems + inventGems)
               + "@yel@ (@whi@"
               + String.format("%,d", GemsSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -514,13 +462,19 @@ public final class K_HobsPeninsula extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Tooth: @gre@" + totalTooth + "@yel@ / @whi@Loop: @gre@" + totalLoop,
+          "@whi@Tooth: @gre@"
+              + (totalTooth + inventTooth)
+              + "@yel@ / @whi@Loop: @gre@"
+              + (totalLoop + inventLoop),
           x,
           258,
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@R.Spear: @gre@" + totalSpear + "@yel@ / @whi@Shield Half: @gre@" + totalLeft,
+          "@whi@R.Spear: @gre@"
+              + (totalSpear + inventSpear)
+              + "@yel@ / @whi@Shield Half: @gre@"
+              + (totalLeft + inventLeft),
           x,
           272,
           0xFFFFFF,

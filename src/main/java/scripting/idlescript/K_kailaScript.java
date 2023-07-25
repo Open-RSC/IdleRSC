@@ -40,21 +40,78 @@ public class K_kailaScript extends IdleScript {
   public static boolean buryBones = false;
   public static boolean lootLimp = false;
   public static boolean potUp = false;
-  // ~~~~~~~~~~~~final~~~~~~~~~~~~~
+  // ~~~~~~~~~~~~OTHER CONSTANTS~~~~~~~~~~~~~
   public static final long twoHundredFiftySecondsInMillis = 255000L;
   public static final long nineMinutesInMillis = 540000L;
   public static final long startTimestamp = System.currentTimeMillis() / 1000L;
   public static final int GAME_TICK = 640;
-  public static final int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
+  public static final int EAT_LEVEL = c.getBaseStat(c.getStatId("Hits")) - 20;
+
+  // ~~~~~~~~~~~~~ITEM CONSTANTS~~~~~~~~~~~
+  public static final int UNCUT_SAPP = 160, UNCUT_EMER = 159, UNCUT_RUBY = 158, UNCUT_DIA = 157;
+  public static final int CUT_SAPP = 164, CUT_EMER = 163, CUT_RUBY = 162, CUT_DIA = 161;
+  public static final int UNID_GUAM = 165, UNID_MAR = 435, UNID_TAR = 436, UNID_HAR = 437;
+  public static final int UNID_RANARR = 438, UNID_IRIT = 439, UNID_AVANTOE = 440, UNID_KWUARM = 441;
+  public static final int UNID_CADA = 442, UNID_DWARF = 443, UNID_TORSTOL = 933;
+  public static final int FIRE_RUNE = 31, WATER_RUNE = 32, AIR_RUNE = 33, EARTH_RUNE = 34;
+  public static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
+  public static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
+  public static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
+  public static final int COINS = 10, EMPTY_VIAL = 465, BRONZE_ARROW = 11, SPIN_ROLL = 179;
+  public static final int LIMP_ROOT = 220;
+  public static final int BONES = 20, BAT_BONES = 604, BIG_BONES = 413, DRAGON_BONES = 814;
+
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
+
   public static long startTime;
   public static long next_attempt = -1;
   public static int foodInBank = -1;
   public static int usedFood = 0;
   public static int foodWithdrawAmount = -1;
+  public static int prayPotWithdrawAmount = -1;
   public static int foodId = -1;
   public static int fightMode = 0;
   public static int totalTrips = 0;
+  public static int centerX = -1;
+  public static int centerY = -1;
+  public static int centerDistance = -1;
+  // Inventory Item Counts
+  // Herbs
+  public static int inventGuam = 0;
+  public static int inventMar = 0;
+  public static int inventTar = 0;
+  public static int inventHar = 0;
+  public static int inventRan = 0;
+  public static int inventIrit = 0;
+  public static int inventAva = 0;
+  public static int inventKwuarm = 0;
+  public static int inventCada = 0;
+  public static int inventDwarf = 0;
+  public static int inventHerbs = 0;
+  // Runes
+  public static int inventMind = 0;
+  public static int inventChaos = 0;
+  public static int inventDeath = 0;
+  public static int inventBlood = 0;
+  public static int inventLaws = 0;
+  public static int inventNats = 0;
+  public static int inventCosmic = 0;
+  public static int inventAir = 0;
+  public static int inventFire = 0;
+  public static int inventWater = 0;
+  public static int inventEarth = 0;
+  public static int inventRunes = 0;
+  // inventory Gems
+  public static int inventSapphire = 0;
+  public static int inventEmerald = 0;
+  public static int inventRuby = 0;
+  public static int inventDiamond = 0;
+  public static int inventGems = 0;
+  // inventory Rares
+  public static int inventTooth = 0;
+  public static int inventLoop = 0;
+  public static int inventSpear = 0;
+  public static int inventLeft = 0;
 
   // UNID HERBS
   public static int totalGuam = 0;
@@ -77,12 +134,17 @@ public class K_kailaScript extends IdleScript {
   public static int totalBars = 0;
 
   // RUNES
-  public static int totalAirs = 0;
+  public static final int airId = 33;
+  public static final int fireId = 31;
+  public static final int waterId = 32;
+  public static final int earthId = 34;
+  public static final int lawId = 42;
+  public static int totalAir = 0;
   public static int totalFire = 0;
   public static int totalWater = 0;
   public static int totalEarth = 0;
   public static int totalChaos = 0;
-
+  public static int totalCosmic = 0;
   public static int totalLaw = 0;
   public static int totalNat = 0;
   public static int totalBlood = 0;
@@ -139,7 +201,7 @@ public class K_kailaScript extends IdleScript {
    *
    *
    * <pre>
-   * int[] array of regular attack potion
+   * int[] array of regular attack potions
    *
    * [1,2,3] doses </pre>
    */
@@ -152,14 +214,28 @@ public class K_kailaScript extends IdleScript {
    *
    *
    * <pre>
-   * int[] array of regular strength potion
+   * int[] array of regular strength potions
    *
    * [1,2,3] doses </pre>
    */
   public static final int[] strengthPot = {
     224, // reg str pot (1)
     223, // reg str pot (2)
-    222 // reg str pot (3)
+    222, // reg str pot (3)
+    221 // reg str pot (4)
+  };
+  /**
+   *
+   *
+   * <pre>
+   * int[] array of regular defense potions
+   *
+   * [1,2,3] doses </pre>
+   */
+  public static final int[] defensePot = {
+    482, // reg def pot (1)
+    481, // reg def pot (2)
+    480 // reg def pot (3)
   };
   /**
    *
@@ -311,25 +387,91 @@ public class K_kailaScript extends IdleScript {
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
    *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
    */
-  public static final String[] foodTypes =
-      new String[] {
-        "Manta Ray",
-        "Sea Turtle",
-        "Shark",
-        "Swordfish",
-        "Tuna",
-        "Lobster",
-        "Bass",
-        "Mackerel",
-        "Cod",
-        "Pike",
-        "Herring",
-        "Salmon",
-        "Trout",
-        "Anchovies",
-        "Shrimp",
-        "Cooked Meat"
-      };
+  public static final String[] foodTypes = {
+    "Manta Ray",
+    "Sea Turtle",
+    "Shark",
+    "Swordfish",
+    "Tuna",
+    "Lobster",
+    "Bass",
+    "Mackerel",
+    "Cod",
+    "Pike",
+    "Herring",
+    "Salmon",
+    "Trout",
+    "Anchovies",
+    "Shrimp",
+    "Cooked Meat"
+  };
+
+  /**
+   * Checks the amount of items in the inventory and stores the data in the inventItem static
+   * variables. For use with GUI to display the total amount of items gathered between the bank and
+   * inventory.
+   */
+  public static void checkInventoryItemCounts() {
+    // Herbs
+    inventGuam = c.getInventoryItemCount(UNID_GUAM);
+    inventMar = c.getInventoryItemCount(UNID_MAR);
+    inventTar = c.getInventoryItemCount(UNID_TAR);
+    inventHar = c.getInventoryItemCount(UNID_HAR);
+    inventRan = c.getInventoryItemCount(UNID_RANARR);
+    inventIrit = c.getInventoryItemCount(UNID_IRIT);
+    inventAva = c.getInventoryItemCount(UNID_AVANTOE);
+    inventKwuarm = c.getInventoryItemCount(UNID_KWUARM);
+    inventCada = c.getInventoryItemCount(UNID_CADA);
+    inventDwarf = c.getInventoryItemCount(UNID_DWARF);
+    // Runes
+    inventLaws = c.getInventoryItemCount(LAW_RUNE);
+    inventNats = c.getInventoryItemCount(NATURE_RUNE);
+    inventMind = c.getInventoryItemCount(MIND_RUNE);
+    inventChaos = c.getInventoryItemCount(CHAOS_RUNE);
+    inventDeath = c.getInventoryItemCount(DEATH_RUNE);
+    inventBlood = c.getInventoryItemCount(BLOOD_RUNE);
+    inventCosmic = c.getInventoryItemCount(COSMIC_RUNE);
+    inventAir = c.getInventoryItemCount(AIR_RUNE);
+    inventFire = c.getInventoryItemCount(FIRE_RUNE);
+    inventWater = c.getInventoryItemCount(WATER_RUNE);
+    inventEarth = c.getInventoryItemCount(EARTH_RUNE);
+    // Gems
+    inventSapphire = c.getInventoryItemCount(UNCUT_SAPP);
+    inventEmerald = c.getInventoryItemCount(UNCUT_EMER);
+    inventRuby = c.getInventoryItemCount(UNCUT_RUBY);
+    inventDiamond = c.getInventoryItemCount(UNCUT_DIA);
+    inventGems = inventSapphire + inventEmerald + inventRuby + inventDiamond;
+    // rares
+    inventTooth = c.getInventoryItemCount(TOOTH_HALF);
+    inventLoop = c.getInventoryItemCount(LOOP_HALF);
+    inventLeft = c.getInventoryItemCount(LEFT_HALF);
+    inventSpear = c.getInventoryItemCount(RUNE_SPEAR);
+
+    // Totals
+    inventRunes =
+        inventMind
+            + inventChaos
+            + inventDeath
+            + inventBlood
+            + inventLaws
+            + inventNats
+            + inventCosmic
+            + inventAir
+            + inventFire
+            + inventWater
+            + inventEarth;
+    inventHerbs =
+        inventGuam
+            + inventMar
+            + inventTar
+            + inventHar
+            + inventRan
+            + inventIrit
+            + inventAva
+            + inventKwuarm
+            + inventCada
+            + inventDwarf;
+  }
   /**
    *
    *
@@ -374,6 +516,43 @@ public class K_kailaScript extends IdleScript {
       foodName = "Cooked Meat";
     }
   }
+
+  /* public static int whatIsMaxBoostLevel(String statName) { //super pots boost effect
+    int potionEffect = 6;
+    if (statName != null && !statName.equals("")) {
+        if (c.getBaseStat(c.getStatId("")) < 14) {
+            return potionEffect;
+        } else if (c.getBaseStat(c.getStatId("")) < 20) {
+            potionEffect = 7;
+        } else if (c.getBaseStat(c.getStatId("")) < 27) {
+            potionEffect = 8;
+        } else if (c.getBaseStat(c.getStatId("")) < 34) {
+            potionEffect = 9;
+        } else if (c.getBaseStat(c.getStatId("")) < 40) {
+            potionEffect = 10;
+        } else if (c.getBaseStat(c.getStatId("")) < 47) {
+            potionEffect = 11;
+        } else if (c.getBaseStat(c.getStatId("")) < 54) {
+            potionEffect = 12;
+        } else if (c.getBaseStat(c.getStatId("")) < 60) {
+            potionEffect = 13;
+        } else if (c.getBaseStat(c.getStatId("")) < 67) {
+            potionEffect = 14;
+        } else if (c.getBaseStat(c.getStatId("")) < 74) {
+            potionEffect = 15;
+        } else if (c.getBaseStat(c.getStatId("")) < 80) {
+            potionEffect = 16;
+        } else if (c.getBaseStat(c.getStatId("")) < 87) {
+            potionEffect = 17;
+        } else if (c.getBaseStat(c.getStatId("")) < 94) {
+            potionEffect = 18;
+        } else if (c.getBaseStat(c.getStatId("")) > 93) {
+            potionEffect = 19;
+        }
+    }
+    return potionEffect;
+  }
+  */
   /*
    *
    *
@@ -384,20 +563,132 @@ public class K_kailaScript extends IdleScript {
    *          Main (useful) methods
    */
 
-  /** Drops vials if not in combat, skips if currently in combat. */
-  public static void dropVial() {
-    if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-      c.dropItem(c.getInventoryItemSlotIndex(465));
+  /**
+   * Checks distance from provided x, y coords to the predefined center position and radius with int
+   * values centerX, centerY, and centerDistance (set values in main method) If not predefined, then
+   * method will return true as a default fallback
+   *
+   * @param x coordinate of point you are checking
+   * @param y coordinate of point you are checking
+   * @return true if point is within radius of center, false if outside radius distance from center.
+   */
+  public static boolean isWithinLootzone(int x, int y) {
+    if (centerX == -1 || centerY == -1 || centerDistance == -1) {
+      c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
+      return true;
+    }
+    return c.distance(centerX, centerY, x, y) <= centerDistance; // center of lootzone
+  }
+
+  /**
+   * eatFood method will eat any food ids in the inventory with a for loop. Always exiting combat.
+   *
+   * @return ate - true if no need to eat, or if successful. False if out of food items.
+   */
+  public static boolean eatFood() {
+    boolean ate = false;
+    if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          c.setStatus("@red@Eating..");
+          c.itemCommand(id);
+          c.sleep(GAME_TICK);
+          ate = true;
+          break;
+        }
+      }
+    } else return true; // not necessary to eat
+    return ate; // return false if not eaten, return true if has eaten.
+  }
+  /**
+   * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots 1 of item.
+   *
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   * @param itemId int of itemId to loot. For multiple items use lootItems(boolean, int[]);
+   */
+  public static void lootItem(boolean leaveCombat, int itemId) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    try {
+      int[] coords = c.getNearestItemById(itemId);
+      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+        c.setStatus("@yel@Picking Loot...");
+        c.walkToAsync(coords[0], coords[1], 0);
+        c.pickupItem(coords[0], coords[1], itemId, true, false);
+        c.sleep(GAME_TICK);
+        if (buryBones) buryBones(false);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+  /**
+   * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots list of
+   * items
+   *
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   * @param itemIds int[] array listing itemIds to loot using for loop. Can institize item arrays in
+   *     the method parameters with "new int[]{data}" as the value for this param.
+   */
+  public static void lootItems(boolean leaveCombat, int[] itemIds) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    for (int itemId : itemIds) {
+      try {
+        int[] coords = c.getNearestItemById(itemId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          c.setStatus("@yel@Picking loot...");
+          c.walkToAsync(coords[0], coords[1], 0);
+          c.pickupItem(coords[0], coords[1], itemId, true, false);
+          c.sleep(GAME_TICK);
+          if (buryBones) buryBones(false);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /**
+   * Checks fight mode against selected fightMode int, if no fightMode selector is provided, this
+   * method would force controlled fight mode. fightMode 0 = controlled
+   */
+  public static void checkFightMode() {
+    if (c.getFightMode() != fightMode) {
+      c.log("@red@Changing fightmode to " + fightMode, "@yel@");
+      c.setFightMode(fightMode);
+      c.sleep(640);
+    }
+  }
+  /**
+   * Drops all of specified itemId and waits for batch dropping to complete.
+   *
+   * @param itemId int of item to drop
+   * @param amount int number of item to drop (negative value to drop all)
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
+   *     combat.
+   */
+  public static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    if (c.getInventoryItemCount(itemId) > 0) {
+      if (amount < 1) {
+        amount = c.getInventoryItemCount(itemId);
+      }
+      c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
+      c.sleep(GAME_TICK);
+      waitForBatching();
     }
   }
   /** If on coleslaw and batch bars are off, it will toggle ON batch bars */
   public static void checkBatchBars() {
     if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
   }
-  /** while batching, sleep 1000. Unless next_attempt timestamp (triggers autowalk) */
+  /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
   public static void waitForBatching() {
     while (c.isBatching() && System.currentTimeMillis() < next_attempt && next_attempt != -1) {
-      c.sleep(1000);
+      c.sleep(GAME_TICK);
     }
   }
   /**
@@ -432,11 +723,12 @@ public class K_kailaScript extends IdleScript {
    *
    * will leave combat to bury bones </pre>
    */
-  public static void buryBones() {
+  public static void buryBones(boolean leaveCombat) {
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount(id) > 0) {
-          if (c.isInCombat()) leaveCombat();
           c.setStatus("@yel@Burying bones..");
           c.itemCommand(id);
           c.sleep(640);
@@ -461,28 +753,87 @@ public class K_kailaScript extends IdleScript {
           c.walkToAsync(c.currentX(), c.currentY(), 1);
           c.sleep(640);
         } else {
-          break;
+          return;
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
     }
   }
-  /** if full inventory, leave combat, eat 1 food to make inventory space. */
-  public static void eatFoodToLoot() {
+  /**
+   * Checks for full inventory, if true eat 1 food to make inventory space. Depending on
+   * leaveCombat.
+   *
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
+   *     combat.
+   */
+  public static void eatFoodToLoot(boolean leaveCombat) {
+    if (c.getInventoryItemCount() != 30) return;
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int id : c.getFoodIds()) {
       try {
-        if (c.getInventoryItemCount(id) > 0 && c.getInventoryItemCount() == 30) {
-          if (c.isInCombat()) leaveCombat();
+        if (c.getInventoryItemCount() != 30) return;
+        if (c.getInventoryItemCount(id) > 0) {
           c.setStatus("@red@Eating Food to Loot..");
           c.itemCommand(id);
-          c.sleep(640);
+          c.sleep(GAME_TICK);
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
     }
   }
+  /**
+   * Checks for full inventory, if true bury bones to make inventory space. Depending on
+   * leaveCombat.
+   *
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
+   *     combat.
+   */
+  public static void buryBonesToLoot(boolean leaveCombat) {
+    if (c.getInventoryItemCount() != 30) return;
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    for (int id : bones) {
+      try {
+        if (c.getInventoryItemCount() != 30) return;
+        if (c.getInventoryItemCount(id) > 0) {
+          c.setStatus("@yel@Burying bones..");
+          c.itemCommand(id);
+          c.sleep(GAME_TICK);
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /**
+   * Checks for full inventory, if true drops items to make inventory space. Depending on
+   * leaveCombat.
+   *
+   * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
+   *     combat.
+   */
+  public static void dropItemToLoot(boolean leaveCombat, int amount, int itemId) {
+    if (c.getInventoryItemCount() != 30) return;
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+    try {
+      if (c.getInventoryItemCount() != 30) return;
+      if (c.getInventoryItemCount(itemId) > 0) {
+        if (amount < 1) {
+          amount = 1;
+        }
+        c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
+        c.sleep(GAME_TICK);
+        waitForBatching();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   /*
    *
    *
@@ -497,179 +848,30 @@ public class K_kailaScript extends IdleScript {
    *
    *      Potion Methods
    */
-
   /**
-   * Withdraw provided foodId, unless out, then attempt to withdraw any other foods
+   * Boost with reg attack potions (checks for and uses 1 or 2 dose potions first)
    *
-   * @param foodId int
-   * @param foodWithdrawAmount int
-   */
-  public static void withdrawFood(int foodId, int foodWithdrawAmount) {
-    if (c.isInBank()) {
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) {
-        c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) {
-        for (int foodId2 : c.getFoodIds()) {
-          if (c.getInventoryItemCount() < 30) { // todo find a better way, using foodIds
-            c.withdrawItem(foodId2, c.getBankItemCount(foodId2) - 1);
-            c.sleep(640);
-          }
-        }
-      }
-    }
-  }
-  /**
-   * Withdraw attack potions (checks for and uses 1 and 2 dose potions first)
-   *
-   * @param withdrawAmount int
-   */
-  /*
-   * todo make it withdraw one 2 dose and one 1 dose instead of 3 dose?
-   */
-  public static void withdrawAttack(int withdrawAmount) {
-    int attackPotCount =
-        c.getInventoryItemCount(attackPot[0])
-            + c.getInventoryItemCount(attackPot[1])
-            + c.getInventoryItemCount(attackPot[2]);
-    if (attackPotCount < withdrawAmount) {
-      if (c.getBankItemCount(attackPot[0]) > 0) {
-        c.withdrawItem(attackPot[0], withdrawAmount - attackPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(attackPot[1]) > 0) {
-        c.withdrawItem(attackPot[1], withdrawAmount - attackPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(attackPot[2]) > 0) {
-        c.withdrawItem(attackPot[2], withdrawAmount - attackPotCount);
-        c.sleep(640);
-      }
-    }
-  }
-
-  /**
-   * Withdraw strength potions (checks for and uses 1 and 2 dose potions first)
-   *
-   * @param withdrawAmount int
-   */
-  public static void withdrawStrength(int withdrawAmount) {
-    int strengthPotCount =
-        c.getInventoryItemCount(strengthPot[0])
-            + c.getInventoryItemCount(strengthPot[1])
-            + c.getInventoryItemCount(strengthPot[2]);
-    if (strengthPotCount < withdrawAmount) {
-      if (c.getBankItemCount(strengthPot[0]) > 0) {
-        c.withdrawItem(strengthPot[0], withdrawAmount - strengthPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(strengthPot[1]) > 0) {
-        c.withdrawItem(strengthPot[1], withdrawAmount - strengthPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(strengthPot[2]) > 0) {
-        c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotCount);
-        c.sleep(640);
-      }
-    }
-  }
-  /**
-   * Withdraw super attack potions (checks for and uses 1 and 2 dose potions first)
-   *
-   * @param withdrawAmount int
-   */
-  public static void withdrawSuperAttack(int withdrawAmount) {
-    int superAttackPotCount =
-        c.getInventoryItemCount(superAttackPot[0])
-            + c.getInventoryItemCount(superAttackPot[1])
-            + c.getInventoryItemCount(superAttackPot[2]);
-    if (superAttackPotCount < withdrawAmount) {
-      if (c.getBankItemCount(superAttackPot[0]) > 0) {
-        c.withdrawItem(superAttackPot[0], withdrawAmount - superAttackPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(superAttackPot[1]) > 0) {
-        c.withdrawItem(superAttackPot[1], withdrawAmount - superAttackPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(superAttackPot[2]) > 0) {
-        c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotCount);
-        c.sleep(640);
-      }
-    }
-  }
-  /**
-   * Withdraw super strength potions (checks for and uses 1 and 2 dose potions first)
-   *
-   * @param withdrawAmount int
-   */
-  public static void withdrawSuperStrength(int withdrawAmount) {
-    int superStrengthPotCount =
-        c.getInventoryItemCount(superStrengthPot[0])
-            + c.getInventoryItemCount(superStrengthPot[1])
-            + c.getInventoryItemCount(superStrengthPot[2]);
-    if (superStrengthPotCount < withdrawAmount) {
-      if (c.getBankItemCount(superStrengthPot[0]) > 0) {
-        c.withdrawItem(superStrengthPot[0], withdrawAmount - superStrengthPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(superStrengthPot[1]) > 0) {
-        c.withdrawItem(superStrengthPot[1], withdrawAmount - superStrengthPotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(superStrengthPot[2]) > 0) {
-        c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotCount);
-        c.sleep(640);
-      }
-    }
-  }
-  /**
-   * Withdraw super defense potions (checks for and uses 1 and 2 dose potions first)
-   *
-   * @param withdrawAmount int
-   */
-  public static void withdrawSuperDefense(int withdrawAmount) {
-    int superDefensePotCount =
-        c.getInventoryItemCount(superDefensePot[0])
-            + c.getInventoryItemCount(superDefensePot[1])
-            + c.getInventoryItemCount(superDefensePot[2]);
-    if (superDefensePotCount < withdrawAmount) {
-      if (c.getBankItemCount(superDefensePot[0]) > 0) {
-        c.withdrawItem(superDefensePot[0], withdrawAmount - superDefensePotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(superDefensePot[1]) > 0) {
-        c.withdrawItem(superDefensePot[1], withdrawAmount - superDefensePotCount);
-        c.sleep(640);
-      } else if (c.getBankItemCount(superDefensePot[2]) > 0) {
-        c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotCount);
-        c.sleep(640);
-      }
-    }
-  }
-  /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
-  public static void withdrawAntidote() {
-    if (c.getInventoryItemCount(antiPot[0]) < 1
-        && c.getInventoryItemCount(antiPot[1]) < 1
-        && c.getInventoryItemCount(antiPot[2]) < 1) {
-      if (c.getBankItemCount(antiPot[0]) > 0) {
-        c.withdrawItem(antiPot[0], 1);
-        c.sleep(640);
-      } else if (c.getBankItemCount(antiPot[1]) > 0) {
-        c.withdrawItem(antiPot[1], 1);
-        c.sleep(640);
-      } else if (c.getBankItemCount(antiPot[2]) > 0) {
-        c.withdrawItem(antiPot[2], 1);
-        c.sleep(640);
-      }
-    }
-  }
-  /**
-   * Boost with reg attack potions, leaving combat. (checks for and uses 1 and 2 dose potions first)
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 5 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
   /*
    * todo add int param to select how far above base to use boost potion
    */
-  public static void attackBoost() {
-    if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
+  public static void attackBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int attackPotCount =
           c.getInventoryItemCount(attackPot[0])
               + c.getInventoryItemCount(attackPot[1])
               + c.getInventoryItemCount(attackPot[2]);
       if (attackPotCount > 0) {
-        if (c.isInCombat()) leaveCombat();
         if (c.getInventoryItemCount(attackPot[0]) > 0) {
           c.itemCommand(attackPot[0]);
           c.sleep(640);
@@ -684,20 +886,26 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Boost with reg strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with reg strength potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 5 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  /*
-   * todo add int param to select how far above base to use boost potion
-   */
-  public static void strengthBoost() {
-    if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
+  public static void strengthBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int strengthPotCount =
           c.getInventoryItemCount(strengthPot[0])
               + c.getInventoryItemCount(strengthPot[1])
               + c.getInventoryItemCount(strengthPot[2]);
       if (strengthPotCount > 0) {
-        if (c.isInCombat()) leaveCombat();
         if (c.getInventoryItemCount(strengthPot[0]) > 0) {
           c.itemCommand(strengthPot[0]);
           c.sleep(640);
@@ -712,17 +920,60 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Boost with super attack potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with reg defense potions. (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 5 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superAttackBoost() {
-    if (c.getCurrentStat(c.getStatId("Attack")) == c.getBaseStat(c.getStatId("Attack"))) {
+  public static void defenseBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
+      int defensePotCount =
+          c.getInventoryItemCount(defensePot[0])
+              + c.getInventoryItemCount(defensePot[1])
+              + c.getInventoryItemCount(defensePot[2]);
+      if (defensePotCount > 0) {
+        if (c.getInventoryItemCount(defensePot[0]) > 0) {
+          c.itemCommand(defensePot[0]);
+          c.sleep(640);
+        } else if (c.getInventoryItemCount(defensePot[1]) > 0) {
+          c.itemCommand(defensePot[1]);
+          c.sleep(640);
+        } else if (c.getInventoryItemCount(defensePot[2]) > 0) {
+          c.itemCommand(defensePot[2]);
+          c.sleep(640);
+        }
+      }
+    }
+  }
+  /**
+   * Boost with super attack potions. (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at. Typically, 0 to 10 above base.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   */
+  public static void superAttackBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int superAttackPotCount =
           c.getInventoryItemCount(superAttackPot[0])
               + c.getInventoryItemCount(superAttackPot[1])
               + c.getInventoryItemCount(superAttackPot[2]);
       if (superAttackPotCount > 0) {
-        if (c.isInCombat()) leaveCombat();
         if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
           c.itemCommand(superAttackPot[0]);
           c.sleep(640);
@@ -737,17 +988,26 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Boost with super strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with super strength potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superStrengthBoost() {
-    if (c.getCurrentStat(c.getStatId("Strength")) == c.getBaseStat(c.getStatId("Strength"))) {
+  public static void superStrengthBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int superStrengthPotCount =
           c.getInventoryItemCount(superStrengthPot[0])
               + c.getInventoryItemCount(superStrengthPot[1])
               + c.getInventoryItemCount(superStrengthPot[2]);
       if (superStrengthPotCount > 0) {
-        if (c.isInCombat()) leaveCombat();
         if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
           c.itemCommand(superStrengthPot[0]);
           c.sleep(640);
@@ -762,17 +1022,26 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Boost with super defense potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * Boost with super defense potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param boostAboveBase int - levels above base stat to boost at.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superDefenseBoost() {
-    if (c.getCurrentStat(c.getStatId("Defense")) == c.getBaseStat(c.getStatId("Defense"))) {
+  public static void superDefenseBoost(int boostAboveBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
+    if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
+      if (leaveCombat) {
+        if (c.isInCombat()) leaveCombat();
+      } else {
+        if (c.isInCombat()) return;
+      }
       int superDefensePotCount =
           c.getInventoryItemCount(superDefensePot[0])
               + c.getInventoryItemCount(superDefensePot[1])
               + c.getInventoryItemCount(superDefensePot[2]);
       if (superDefensePotCount > 0) {
-        if (c.isInCombat()) leaveCombat();
         if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
           c.itemCommand(superDefensePot[0]);
           c.sleep(640);
@@ -787,98 +1056,28 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Boost with super attack potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
+   * drinks prayer potions when 31 points below base stat level, leaving combat. Checks for and uses
+   * 1 and 2 dose potions first. Recommend this boolean is ALWAYS true, or bot could die.
    *
-   * @param boostAt int attack level to boost at
+   * @param boostBelowBase int - levels below base stat to boost at. Recommend 31 to not waste
+   *     doses.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
    */
-  public static void superAttackBoostCustom(int boostAt) {
-    if (c.getCurrentStat(c.getStatId("Attack")) == boostAt) {
-      int superAttackPotCount =
-          c.getInventoryItemCount(superAttackPot[0])
-              + c.getInventoryItemCount(superAttackPot[1])
-              + c.getInventoryItemCount(superAttackPot[2]);
-      if (superAttackPotCount > 0) {
+  public static void drinkPrayerPotion(int boostBelowBase, boolean leaveCombat) {
+    int boostAtLvl;
+    boostAtLvl = c.getBaseStat(c.getStatId("Prayer")) - boostBelowBase;
+    if (c.getCurrentStat(c.getStatId("Prayer")) < boostAtLvl) {
+      if (leaveCombat) {
         if (c.isInCombat()) leaveCombat();
-        if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
-          c.itemCommand(superAttackPot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superAttackPot[1]) > 0) {
-          c.itemCommand(superAttackPot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superAttackPot[2]) > 0) {
-          c.itemCommand(superAttackPot[2]);
-          c.sleep(640);
-        }
+      } else {
+        if (c.isInCombat()) return;
       }
-    }
-  }
-  /**
-   * Boost with super strength potions, leaving combat. (checks for and uses 1 and 2 dose potions
-   * first)
-   *
-   * @param boostAt int attack level to boost at
-   */
-  public static void superStrengthBoostCustom(int boostAt) {
-    if (c.getCurrentStat(c.getStatId("Strength")) == boostAt) {
-      int superStrengthPotCount =
-          c.getInventoryItemCount(superStrengthPot[0])
-              + c.getInventoryItemCount(superStrengthPot[1])
-              + c.getInventoryItemCount(superStrengthPot[2]);
-      if (superStrengthPotCount > 0) {
-        if (c.isInCombat()) leaveCombat();
-        if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
-          c.itemCommand(superStrengthPot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superStrengthPot[1]) > 0) {
-          c.itemCommand(superStrengthPot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superStrengthPot[2]) > 0) {
-          c.itemCommand(superStrengthPot[2]);
-          c.sleep(640);
-        }
-      }
-    }
-  }
-  /**
-   * Boost with super defense potions (checks for and uses 1 and 2 dose potions first)
-   *
-   * @param boostAt int attack level to boost at
-   */
-  public static void superDefenseBoostCustom(int boostAt) {
-    if (c.getCurrentStat(c.getStatId("Defense")) == boostAt) {
-      int superDefensePotCount =
-          c.getInventoryItemCount(superDefensePot[0])
-              + c.getInventoryItemCount(superDefensePot[1])
-              + c.getInventoryItemCount(superDefensePot[2]);
-      if (superDefensePotCount > 0) {
-        if (c.isInCombat()) leaveCombat();
-        if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
-          c.itemCommand(superDefensePot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superDefensePot[1]) > 0) {
-          c.itemCommand(superDefensePot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(superDefensePot[2]) > 0) {
-          c.itemCommand(superDefensePot[2]);
-          c.sleep(640);
-        }
-      }
-    }
-  }
-  /**
-   * drinks prayer potions when 31 points below base stat level, leaving combat. (checks for and
-   * uses 1 and 2 dose potions first)
-   */
-  /*
-   * todo add int param to select how far above base to use boost potion
-   */
-  public static void drinkPrayerPotion() {
-    if (c.getCurrentStat(c.getStatId("Prayer")) < (c.getBaseStat(c.getStatId("Prayer")) - 31)) {
-      if (c.getInventoryItemCount(prayerPot[0]) > 0
-          || c.getInventoryItemCount(prayerPot[1]) > 0
-          || c.getInventoryItemCount(prayerPot[2]) > 0) {
-        if (c.isInCombat()) leaveCombat();
+      int prayerPotCount =
+          c.getInventoryItemCount(prayerPot[0])
+              + c.getInventoryItemCount(prayerPot[1])
+              + c.getInventoryItemCount(prayerPot[2]);
+      if (prayerPotCount > 0) {
         if (c.getInventoryItemCount(prayerPot[0]) > 0) {
           c.itemCommand(prayerPot[0]);
           c.sleep(320);
@@ -892,18 +1091,369 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /** drinks antidote potion, leaving combat. (checks for and uses 1 and 2 dose potions first) */
-  public static void drinkAntidote() {
-    if (c.isInCombat()) leaveCombat();
-    if (c.getInventoryItemCount(antiPot[0]) > 0) {
-      c.itemCommand(antiPot[0]);
+  /**
+   * drinks antidote potion, leaving combat. (checks for and uses 1 and 2 dose potions first)
+   * Recommend this boolean is ALWAYS true, or bot could die.
+   *
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   */
+  public static void drinkAntidote(boolean leaveCombat) {
+    int antiPotCount =
+        c.getInventoryItemCount(antiPot[0])
+            + c.getInventoryItemCount(antiPot[1])
+            + c.getInventoryItemCount(antiPot[2]);
+    if (leaveCombat) {
+      if (c.isInCombat()) leaveCombat();
+    } else {
+      if (c.isInCombat()) return;
+    }
+    if (antiPotCount > 0) {
+      if (c.getInventoryItemCount(antiPot[0]) > 0) {
+        c.itemCommand(antiPot[0]);
+        c.sleep(640);
+      } else if (c.getInventoryItemCount(antiPot[1]) > 0) {
+        c.itemCommand(antiPot[1]);
+        c.sleep(640);
+      } else if (c.getInventoryItemCount(antiPot[2]) > 0) {
+        c.itemCommand(antiPot[2]);
+        c.sleep(640);
+      }
+    }
+  }
+  /*
+   * BANKING METHODS
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
+  /** if bank is not open, wait 2 ticks, repeat check. repeats 16 times. */
+  public static void waitForBankOpen() {
+    for (int i = 0; i <= 15; i++) {
+      try {
+        if (!c.isInBank()) {
+          // c.log("waiting for bank");
+          c.sleep(1280);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  /**
+   * Withdraw amount of item from the bank, accepts any itemId or withdraw Amount. For potions or
+   * food use withdrawFood() or other methods below this.
+   *
+   * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
+   * @param withdrawAmount int - number of item to withdraw.
+   */
+  public static void withdrawItem(int itemId, int withdrawAmount) {
+    if (c.getInventoryItemCount(itemId) < withdrawAmount) {
+      c.withdrawItem(itemId, withdrawAmount - c.getInventoryItemCount(itemId));
       c.sleep(640);
-    } else if (c.getInventoryItemCount(antiPot[1]) > 0) {
-      c.itemCommand(antiPot[1]);
+    }
+  }
+
+  /**
+   * Checks bank for specified itemId, if none, sends error log message and ends session.
+   *
+   * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
+   * @param bankAmount int - minimum number of item that should be in the bank, before ending
+   *     session.
+   */
+  public static void bankItemCheck(int itemId, int bankAmount) {
+    if (c.getBankItemCount(itemId) < bankAmount) {
+      c.log(
+          "Warning: Item (" + itemId + ") not detected in the Bank, in amount (" + bankAmount + ")",
+          "@red@");
+      endSession();
+    }
+  }
+  /**
+   * checks inventory for specific item and amount, if too few opens banks and withdraws more
+   *
+   * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
+   * @param itemAmount int - number of item that should be in the inventory.
+   */
+  public static void inventoryItemCheck(int itemId, int itemAmount) {
+    if (c.getInventoryItemCount(itemId) < itemAmount) {
+      c.openBank();
       c.sleep(640);
-    } else if (c.getInventoryItemCount(antiPot[2]) > 0) {
-      c.itemCommand(antiPot[2]);
-      c.sleep(640);
+      if (!c.isInBank()) {
+        waitForBankOpen();
+      } else {
+        c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
+        c.sleep(640);
+        c.closeBank();
+        c.sleep(1280);
+      }
+    }
+  }
+  /**
+   * Withdraw provided foodId, unless out, then attempt to withdraw any other foods
+   *
+   * @param foodId int
+   * @param foodWithdrawAmount int
+   */
+  public static void withdrawFood(int foodId, int foodWithdrawAmount) {
+    if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) {
+      c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
+      c.sleep(1280);
+    }
+    if (c.getInventoryItemCount(foodId) < (foodWithdrawAmount - 2)) {
+      for (int foodId2 : c.getFoodIds()) {
+        c.withdrawItem(foodId2, foodWithdrawAmount - c.getInventoryItemCount(foodId) - 2);
+        c.sleep(640);
+      }
+    }
+  }
+  /**
+   * Withdraw reg attack potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
+  /*
+   * todo make it withdraw one 2 dose and one 1 dose instead of 3 dose?
+   */
+  public static void withdrawAttack(int withdrawAmount) {
+    int attackPotCount =
+        c.getInventoryItemCount(attackPot[0])
+            + c.getInventoryItemCount(attackPot[1])
+            + c.getInventoryItemCount(attackPot[2]);
+    int bankPotCount = attackPot[0] + attackPot[1] + attackPot[2];
+    if ((attackPotCount < withdrawAmount) && (bankPotCount > 0)) {
+      if (c.getBankItemCount(attackPot[0]) > 0) {
+        c.withdrawItem(attackPot[0], withdrawAmount - attackPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(attackPot[1]) > 0) {
+        c.withdrawItem(attackPot[1], withdrawAmount - attackPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(attackPot[2]) > 0) {
+        c.withdrawItem(attackPot[2], withdrawAmount - attackPotCount);
+        c.sleep(640);
+      }
+    }
+  }
+
+  /**
+   * Withdraw reg strength potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
+  public static void withdrawStrength(int withdrawAmount) {
+    int strengthPotCount =
+        c.getInventoryItemCount(strengthPot[0])
+            + c.getInventoryItemCount(strengthPot[1])
+            + c.getInventoryItemCount(strengthPot[2]);
+    int bankPotCount =
+        c.getBankItemCount(strengthPot[0])
+            + c.getBankItemCount(strengthPot[1])
+            + c.getBankItemCount(strengthPot[2]);
+    if ((strengthPotCount < withdrawAmount) && (bankPotCount > 0)) {
+      if (c.getBankItemCount(strengthPot[0]) > 0) {
+        c.withdrawItem(strengthPot[0], withdrawAmount - strengthPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(strengthPot[1]) > 0) {
+        c.withdrawItem(strengthPot[1], withdrawAmount - strengthPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(strengthPot[2]) > 0) {
+        c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotCount);
+        c.sleep(640);
+      }
+    }
+  }
+  /**
+   * Withdraw reg defense potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
+  public static void withdrawDefense(int withdrawAmount) {
+    int defensePotCount =
+        c.getInventoryItemCount(defensePot[0])
+            + c.getInventoryItemCount(defensePot[1])
+            + c.getInventoryItemCount(defensePot[2]);
+    int bankPotCount =
+        c.getBankItemCount(defensePot[0])
+            + c.getBankItemCount(defensePot[1])
+            + c.getBankItemCount(defensePot[2]);
+    if ((defensePotCount < withdrawAmount) && (bankPotCount > 0)) {
+      if (c.getBankItemCount(defensePot[0]) > 0) {
+        c.withdrawItem(defensePot[0], withdrawAmount - defensePotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(defensePot[1]) > 0) {
+        c.withdrawItem(defensePot[1], withdrawAmount - defensePotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(defensePot[2]) > 0) {
+        c.withdrawItem(defensePot[2], withdrawAmount - defensePotCount);
+        c.sleep(640);
+      }
+    }
+  }
+  /**
+   * Withdraw super attack potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
+  public static void withdrawSuperAttack(int withdrawAmount) {
+    int superAttackPotCount =
+        c.getInventoryItemCount(superAttackPot[0])
+            + c.getInventoryItemCount(superAttackPot[1])
+            + c.getInventoryItemCount(superAttackPot[2]);
+    int bankPotCount =
+        c.getBankItemCount(superAttackPot[0])
+            + c.getBankItemCount(superAttackPot[1])
+            + c.getBankItemCount(superAttackPot[2]);
+    if ((superAttackPotCount < withdrawAmount) && (bankPotCount > 0)) {
+      if (c.getBankItemCount(superAttackPot[0]) > 0) {
+        c.withdrawItem(superAttackPot[0], withdrawAmount - superAttackPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(superAttackPot[1]) > 0) {
+        c.withdrawItem(superAttackPot[1], withdrawAmount - superAttackPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(superAttackPot[2]) > 0) {
+        c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotCount);
+        c.sleep(640);
+      }
+    }
+  }
+  /**
+   * Withdraw super strength potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
+  public static void withdrawSuperStrength(int withdrawAmount) {
+    int superStrengthPotCount =
+        c.getInventoryItemCount(superStrengthPot[0])
+            + c.getInventoryItemCount(superStrengthPot[1])
+            + c.getInventoryItemCount(superStrengthPot[2]);
+    int bankPotCount =
+        c.getBankItemCount(superStrengthPot[0])
+            + c.getBankItemCount(superStrengthPot[1])
+            + c.getBankItemCount(superStrengthPot[2]);
+    if ((superStrengthPotCount < withdrawAmount) && (bankPotCount > 0)) {
+      if (c.getBankItemCount(superStrengthPot[0]) > 0) {
+        c.withdrawItem(superStrengthPot[0], withdrawAmount - superStrengthPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(superStrengthPot[1]) > 0) {
+        c.withdrawItem(superStrengthPot[1], withdrawAmount - superStrengthPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(superStrengthPot[2]) > 0) {
+        c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotCount);
+        c.sleep(640);
+      }
+    }
+  }
+  /**
+   * Withdraw super defense potions (checks for and uses 1 or 2 dose potions first)
+   *
+   * @param withdrawAmount int
+   */
+  public static void withdrawSuperDefense(int withdrawAmount) {
+    int superDefensePotCount =
+        c.getInventoryItemCount(superDefensePot[0])
+            + c.getInventoryItemCount(superDefensePot[1])
+            + c.getInventoryItemCount(superDefensePot[2]);
+    int bankPotCount =
+        c.getBankItemCount(superDefensePot[0])
+            + c.getBankItemCount(superDefensePot[1])
+            + c.getBankItemCount(superDefensePot[2]);
+    if ((superDefensePotCount < withdrawAmount) && (bankPotCount > 0)) {
+      if (c.getBankItemCount(superDefensePot[0]) > 0) {
+        c.withdrawItem(superDefensePot[0], withdrawAmount - superDefensePotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(superDefensePot[1]) > 0) {
+        c.withdrawItem(superDefensePot[1], withdrawAmount - superDefensePotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(superDefensePot[2]) > 0) {
+        c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotCount);
+        c.sleep(640);
+      }
+    }
+  }
+  /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
+  public static void withdrawAntidote(int withdrawAmount) {
+    int antidotePotCount =
+        c.getInventoryItemCount(antiPot[0])
+            + c.getInventoryItemCount(antiPot[1])
+            + c.getInventoryItemCount(antiPot[2]);
+    int bankPotCount =
+        c.getBankItemCount(antiPot[0])
+            + c.getBankItemCount(antiPot[1])
+            + c.getBankItemCount(antiPot[2]);
+    if ((antidotePotCount < withdrawAmount) && (bankPotCount > 0)) {
+      if (c.getBankItemCount(antiPot[0]) > 0) {
+        c.withdrawItem(antiPot[0], withdrawAmount - antidotePotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(antiPot[1]) > 0) {
+        c.withdrawItem(antiPot[1], withdrawAmount - antidotePotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(antiPot[2]) > 0) {
+        c.withdrawItem(antiPot[2], withdrawAmount - antidotePotCount);
+        c.sleep(640);
+      }
+    }
+  }
+  /** Withdraw prayer potions (checks for and uses 1 and 2 dose potions first) */
+  public static void withdrawPrayer(int withdrawAmount) {
+    int prayerPotCount =
+        c.getInventoryItemCount(prayerPot[0])
+            + c.getInventoryItemCount(prayerPot[1])
+            + c.getInventoryItemCount(prayerPot[2]);
+    int bankPotCount = prayerPot[0] + prayerPot[1] + prayerPot[2];
+    if ((prayerPotCount) < withdrawAmount && (bankPotCount > 0)) {
+      if (c.getBankItemCount(prayerPot[0]) > 0) {
+        c.withdrawItem(prayerPot[0], withdrawAmount - prayerPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(prayerPot[1]) > 0) {
+        c.withdrawItem(prayerPot[1], withdrawAmount - prayerPotCount);
+        c.sleep(640);
+      } else if (c.getBankItemCount(prayerPot[2]) > 0) {
+        c.withdrawItem(prayerPot[2], withdrawAmount - prayerPotCount);
+        c.sleep(640);
+      }
+    }
+  }
+  /** Checks Inventory for empty slots. If detected, opens bank and withdraws more foodId. */
+  public static void reBankForFullFoodCheck() {
+    if (c.getInventoryItemCount() < 30) {
+      c.openBank();
+      c.sleep(1280);
+      if (!c.isInBank()) {
+        waitForBankOpen();
+      } else {
+        c.withdrawItem(foodId, 30 - c.getInventoryItemCount());
+        c.sleep(640);
+      }
+      c.closeBank();
+      c.sleep(1280);
+    }
+  }
+  /**
+   * Checks equipment for anti dragon shield, if none, checks bank. If none in bank, end session. If
+   * anti dragon shield is in bank, withdraw, exit bank, and wield it.
+   */
+  public static void bankCheckAntiDragonShield() {
+    if (!c.isItemIdEquipped(420)) {
+      c.log("@red@Not Wielding Dragonfire Shield!.", "@red@");
+      if (c.getBankItemCount(420) == 0) {
+        c.log("Warning: Cannot find anti dragon shield, logging OUT", "@red@");
+        endSession();
+      }
+      c.withdrawItem(420, 1);
+      c.closeBank();
+      c.equipItem(c.getInventoryItemSlotIndex(420));
+      c.sleep(1320);
     }
   }
 
@@ -921,21 +1471,6 @@ public class K_kailaScript extends IdleScript {
    *
    *      Magic/Other Methods
    */
-  /** if bank is not open, wait 2 ticks, repeat check. repeats 16 times. */
-  public static void waitForBankOpen() {
-    for (int i = 0; i <= 15; i++) {
-      try {
-        if (!c.isInBank()) {
-          // c.log("waiting for bank");
-          c.sleep(1280);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
   /** checks if brass key is in inventory, if not, sets warning message, and shuts down bot. */
   public static void brassKeyCheck() {
     if (c.getInventoryItemCount(99) == 0) {
@@ -994,50 +1529,6 @@ public class K_kailaScript extends IdleScript {
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
-    }
-  }
-  /** checks inventory for (teleport) water runes, if too few opens banks and withdraws more */
-  public static void waterCheck() {
-    if (c.getInventoryItemCount(32) < 6) { // 2 water
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-  /** checks inventory for (teleport) law runes, if too few opens banks and withdraws more */
-  public static void lawCheck() {
-    if (c.getInventoryItemCount(42) < 2) { // law
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(42, 2 - c.getInventoryItemCount(42));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-  /** checks inventory for (teleport) earth runes, if too few opens banks and withdraws more */
-  public static void earthCheck() {
-    if (c.getInventoryItemCount(34) < 2) { // earth
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(34, 2 - c.getInventoryItemCount(34));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
-    }
-  }
-  /** checks inventory for (teleport) air runes, if too few opens banks and withdraws more */
-  public static void airCheck() {
-    if (c.getInventoryItemCount(33) < 6) { // air
-      c.openBank();
-      c.sleep(1200);
-      c.withdrawItem(33, 6 - c.getInventoryItemCount(33));
-      c.sleep(1000);
-      c.closeBank();
-      c.sleep(1000);
     }
   }
   /*

@@ -193,7 +193,6 @@ public final class K_Paladins extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -293,7 +292,6 @@ public final class K_Paladins extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
@@ -315,7 +313,6 @@ public final class K_Paladins extends K_kailaScript {
         c.sleep(100);
       }
       c.sleep(1280); // Important, leave in
-
       if (c.getInventoryItemCount(foodId)
           < 27) { // withdraw 27 shark if needed        //change 546(shark) to desired food id
         c.withdrawItem(
@@ -491,7 +488,6 @@ public final class K_Paladins extends K_kailaScript {
               "cya");
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -572,7 +568,6 @@ public final class K_Paladins extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int coinSuccessPerHr = 0;
       int chaosSuccessPerHr = 0;
@@ -593,7 +588,6 @@ public final class K_Paladins extends K_kailaScript {
         thieveFailurePerHr = (int) (thieveFailure * scale);
         thieveCapturePerHr = (int) (thieveCapture * scale);
         foodUsedPerHr = (int) (usedFood * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

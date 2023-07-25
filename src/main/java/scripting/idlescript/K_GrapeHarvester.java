@@ -63,13 +63,11 @@ public final class K_GrapeHarvester extends K_kailaScript {
       startSequence();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
       if (c.getInventoryItemCount() == 30) {
         c.setStatus("@red@Banking..");
         GrapeToBank();
@@ -77,7 +75,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
         BankToGrape();
         c.sleep(618);
       }
-
       c.setStatus("@yel@Picking Grapes..");
       int[] coords = c.getNearestObjectById(1283);
       if (coords != null) {
@@ -95,16 +92,13 @@ public final class K_GrapeHarvester extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalGrapez = totalGrapez + c.getInventoryItemCount(143);
-
       if (c.getInventoryItemCount(143) > 0) { // deposit the Grapes
         c.depositItem(143, c.getInventoryItemCount(143));
         c.sleep(1380);
@@ -117,7 +111,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
           c.displayMessage("@red@You need herb clippers!");
         }
       }
-
       GrapezInBank = c.getBankItemCount(143);
       c.closeBank();
       c.sleep(640);
@@ -125,7 +118,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
   }
 
   private void GrapeToBank() { // replace
-
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(251, 454);
     c.walkTo(254, 454);
@@ -146,7 +138,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
   }
 
   private void BankToGrape() {
-
     c.setStatus("@gre@Walking to Grapes..");
     c.walkTo(218, 447);
     c.walkTo(220, 445);
@@ -165,7 +156,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
     // (next to Grape now)
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Grape Harvester - By Kaila");
@@ -181,7 +171,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -202,7 +191,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
@@ -213,7 +201,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalGrapez * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

@@ -35,7 +35,7 @@ import javax.swing.JLabel;
  *
  * <p>@Author ~ Kaila
  */
-public final class K_FastPlateSmither extends K_kailaScript {
+public final class K_Fast_PlateSmither extends K_kailaScript {
   private static int barId = -1;
 
   public int start(String[] parameters) {
@@ -110,7 +110,6 @@ public final class K_FastPlateSmither extends K_kailaScript {
         scriptStart();
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -149,7 +148,6 @@ public final class K_FastPlateSmither extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@gre@Banking..");
     c.openBank();
     c.sleep(640);
@@ -158,7 +156,6 @@ public final class K_FastPlateSmither extends K_kailaScript {
     } else {
       totalPlates = totalPlates + 5;
       totalBars = totalBars + 25;
-
       if (c.getBankItemCount(barId)
           < 30) { // stops making when 30 in bank to not mess up alignments/organization of bank!!!
         c.setStatus("@red@NO Bars in the bank, Logging Out!.");

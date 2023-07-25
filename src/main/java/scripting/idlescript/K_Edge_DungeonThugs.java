@@ -5,21 +5,20 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Ice Dungeon Hob/Pirate Killer
+ * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
  *
  * <p>
  *
- * <p>Start in Fally East bank or in Ice Cave.
+ * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
+ * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
+ * and Autostart.
  *
- * <p>Food in bank required. (pots optional).
+ * <p>- cannot support bone looting with this bot due to the shape of the dungeon
  *
- * <p>Use regular Atk/Str Pots Option.
- *
- * <p>Food Withdraw amount Selection.
- *
- * @author Kaila
+ * <p>@Author - Kaila
  */
-public final class K_AsgarnianPirateHobs extends K_kailaScript {
+public final class K_Edge_DungeonThugs extends K_kailaScript {
+
   private static final int[] loot = {
     UNID_GUAM, // Grimy Guam
     UNID_MAR, // Grimy Marrentill
@@ -31,11 +30,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     UNID_KWUARM, // Grimy Kwuarm
     UNID_CADA, // Grimy Cadantine
     UNID_DWARF, // Grimy Dwarf Weed
-    AIR_RUNE, // air rune
-    EARTH_RUNE, // earth runF
-    FIRE_RUNE,
-    WATER_RUNE,
-    MIND_RUNE, // remove
+    COINS,
     CHAOS_RUNE, // chaos rune
     DEATH_RUNE, // Death Rune
     BLOOD_RUNE, // blood rune
@@ -43,9 +38,6 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     LAW_RUNE, // law rune
     BODY_RUNE, // body rune  //remove
     COSMIC_RUNE, // cosmic rune
-    BRONZE_ARROW, // bronze arrow
-    COINS,
-    BONES,
     UNCUT_SAPP, // saph
     UNCUT_EMER, // emerald
     UNCUT_RUBY, // ruby
@@ -57,15 +49,19 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
-    centerX = 282;
-    centerY = 3522;
-    centerDistance = 14;
+    centerX = 199;
+    centerY = 3254;
+    centerDistance = 7;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      c.displayMessage("Got Autostart, using 1 Shark, yes pots", 0);
-      System.out.println("Got Autostart, using 1 Shark, yes pots");
-      lootBones = true;
+      foodId = 546;
+      fightMode = 0;
       foodWithdrawAmount = 1;
-      potUp = true;
+      potUp = false;
+      lootBones = true;
+      buryBones = true;
+      c.displayMessage("Got Autostart Parameter");
+      c.log("Auto-Starting using 1 Shark, controlled, Loot Low Level, no pot up", "cya");
+      c.log("Looting Bones, Banking bones", "cya");
       guiSetup = true;
       scriptStarted = true;
     }
@@ -76,19 +72,22 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
-      c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
-      c.displayMessage("@red@Start in Fally East bank with Armor");
-      c.displayMessage("@red@Sharks IN BANK REQUIRED");
+      startTime = System.currentTimeMillis();
+      c.displayMessage("@red@Edge Dungeon Thugs ~ Kaila");
+      c.displayMessage("@red@Start in Edge bank with Armor");
+
       if (c.isInBank()) {
         c.closeBank();
       }
       if (c.currentY() < 3000) {
         bank();
-        BankToIce();
+        bankToHouse();
         c.sleep(1380);
       }
+      whatIsFoodName();
       scriptStart();
     }
+
     return 1000; // start() must return an int value now.
   }
 
@@ -96,65 +95,53 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     while (c.isRunning()) {
       boolean ate = eatFood();
       if (!ate) {
-        c.setStatus("@yel@Banking..");
-        IceToBank();
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        houseToBank();
         bank();
-        BankToIce();
-        c.sleep(618);
+        bankToHouse();
       }
-      buryBones(false);
       checkFightMode();
+      if (potUp) {
+        attackBoost(0, false);
+        strengthBoost(0, false);
+      }
       checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30) {
-        lootItems(false, loot);
-        if (potUp) {
-          attackBoost(0, false);
-          strengthBoost(0, false);
-        }
-        if (c.currentX() > 295 && c.currentY() > 3000) {
-          c.setStatus("@yel@Too far West, walking back..");
-          c.walkTo(283, 3521);
-          c.sleep(1000);
-        }
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         if (!c.isInCombat()) {
-          int[] npcIds = {67, 137};
-          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
+          lootItems(false, loot);
+          if (buryBones) buryBones(false);
+          ORSCharacter npc = c.getNearestNpcById(251, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
-            // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
           } else {
             c.sleep(GAME_TICK);
+            lootItems(false, loot);
             if (lootBones) lootItem(false, BONES);
-            if (c.currentX() != 283 || c.currentY() != 3521) {
-              c.walkTo(283, 3521);
-              c.sleep(1000);
-            }
           }
-        } else {
-          c.sleep(GAME_TICK);
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, EMPTY_VIAL);
         buryBonesToLoot(false);
       }
-      if (c.getInventoryItemCount() > 29
+      if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
           || timeToBankStay) {
         c.setStatus("@yel@Banking..");
-        IceToBank();
         timeToBank = false;
+        houseToBank();
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
           c.displayMessage(
               "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
           c.setStatus("@red@Stopping Script.");
-          endSession();
+          c.setAutoLogin(false);
+          c.stop();
         }
-        BankToIce();
+        bankToHouse();
       }
     }
   }
@@ -177,139 +164,136 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       totalCada = totalCada + c.getInventoryItemCount(442);
       totalDwarf = totalDwarf + c.getInventoryItemCount(443);
       totalLaw = totalLaw + c.getInventoryItemCount(42);
+      totalDeath = totalDeath + c.getInventoryItemCount(38);
+      totalCosmic = totalCosmic + c.getInventoryItemCount(46);
       totalNat = totalNat + c.getInventoryItemCount(40);
-      totalLoop = totalLoop + c.getInventoryItemCount(527);
-      totalTooth = totalTooth + c.getInventoryItemCount(526);
-      totalLeft = totalLeft + c.getInventoryItemCount(1277);
-      totalSpear = totalSpear + c.getInventoryItemCount(1092);
-      totalGems =
-          totalGems
-              + c.getInventoryItemCount(160)
-              + c.getInventoryItemCount(159)
-              + c.getInventoryItemCount(158)
-              + c.getInventoryItemCount(157);
+      totalChaos = totalChaos + c.getInventoryItemCount(41);
+      totalBones = totalBones + c.getInventoryItemCount(20);
+      foodInBank = c.getBankItemCount(foodId);
+      totalRunes = totalLaw + totalDeath + totalCosmic + totalNat + totalChaos;
+      totalHerbs =
+          totalGuam
+              + totalMar
+              + totalTar
+              + totalHar
+              + totalRan
+              + totalIrit
+              + totalAva
+              + totalKwuarm
+              + totalCada
+              + totalDwarf;
 
-      if (c.getInventoryItemCount() > 2) {
-        for (int itemId : c.getInventoryItemIds()) {
-          if (itemId != 476
-              && itemId != 475
-              && itemId != 224
-              && itemId != 223) { // dont deposit partial potions!
-            c.depositItem(itemId, c.getInventoryItemCount(itemId));
-          }
-        }
+      for (int itemId : c.getInventoryItemIds()) {
+        c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
-      c.sleep(640);
+      c.sleep(1240); // Important, leave in
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
-      withdrawItem(foodId, foodWithdrawAmount);
+      withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(640);
+      c.sleep(1000);
       checkInventoryItemCounts();
     }
   }
-
-  private void IceToBank() {
+  // GUI stuff below (icky)
+  private void houseToBank() {
     c.setStatus("@gre@Walking to Bank..");
-    c.walkTo(280, 3521);
-    c.walkTo(279, 3531);
-    c.walkTo(279, 3540);
-    c.walkTo(285, 3544);
-    c.atObject(285, 3543); // go up ladder
+    c.walkTo(196, 3265);
+    c.setStatus("@gre@Opening Wildy Gate North to South(1)..");
+    c.atObject(196, 3266);
     c.sleep(1000);
-    c.walkTo(287, 711);
-    c.walkTo(287, 694);
-    c.walkTo(287, 680);
-    c.walkTo(287, 673);
-    c.walkTo(287, 665);
-    c.walkTo(287, 652);
-    c.walkTo(289, 650);
-    c.walkTo(288, 649);
-    c.walkTo(288, 639);
-    c.walkTo(288, 629);
-    c.walkTo(288, 619);
-    c.walkTo(288, 609);
-    c.walkTo(290, 607);
-    c.walkTo(290, 597);
-    c.walkTo(290, 587);
-    c.walkTo(290, 577);
-    c.walkTo(290, 575);
-    c.walkTo(286, 571);
+    if (c.currentY() == 3265) {
+      openEdgeDungGateNorthToSouth();
+    }
+    c.walkTo(197, 3266);
+    c.walkTo(204, 3272);
+    c.walkTo(210, 3273);
+    if (c.getObjectAtCoord(211, 3272) == 57) {
+      c.setStatus("@gre@Opening Edge Gate..");
+      c.walkTo(210, 3273);
+      c.atObject(211, 3272);
+      c.sleep(340);
+    }
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(217, 3283);
+    c.walkTo(215, 3294);
+    c.walkTo(215, 3299);
+    c.atObject(215, 3300);
+    c.sleep(640);
+    c.walkTo(217, 458);
+    c.walkTo(221, 447);
+    c.walkTo(217, 448);
     c.sleep(640);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void BankToIce() {
-    c.setStatus("@gre@Walking to Ice Dungeon..");
-    c.walkTo(287, 571);
-    c.walkTo(290, 575);
-    c.walkTo(290, 577);
-    c.walkTo(290, 587);
-    c.walkTo(290, 597);
-    c.walkTo(290, 607);
-    c.walkTo(288, 609);
-    c.walkTo(288, 619);
-    c.walkTo(288, 629);
-    c.walkTo(288, 639);
-    c.walkTo(288, 649);
-    c.walkTo(289, 650);
-    c.walkTo(287, 652);
-    c.walkTo(287, 665);
-    c.walkTo(287, 673);
-    c.walkTo(287, 680);
-    c.walkTo(287, 694);
-    c.walkTo(287, 711);
-    c.walkTo(285, 712);
-    c.atObject(285, 711); // go down ladder
+  private void bankToHouse() {
+    c.setStatus("@gre@Walking to Thugs..");
+    c.walkTo(221, 447);
+    c.walkTo(217, 458);
+    c.walkTo(215, 467);
+    c.atObject(215, 468);
+    c.sleep(640);
+    c.walkTo(217, 3283);
+    c.walkTo(211, 3273);
+    if (c.getObjectAtCoord(211, 3272) == 57) {
+      c.setStatus("@gre@Opening Edge Gate..");
+      c.walkTo(211, 3273);
+      c.atObject(211, 3272);
+      c.sleep(340);
+    }
+    c.setStatus("@gre@Walking to Druids..");
+    c.walkTo(204, 3272);
+    c.walkTo(199, 3272);
+    c.walkTo(197, 3266);
+    c.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
+    c.atObject(196, 3266);
     c.sleep(1000);
-    c.walkTo(282, 3543);
-    c.walkTo(285, 3544);
-    c.walkTo(279, 3540);
-    c.walkTo(279, 3531);
-    c.walkTo(280, 3521);
+    if (c.currentY() == 3266) {
+      openEdgeDungSouthToNorth();
+    }
+    c.walkTo(199, 3255);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
-    JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer ~ By Kaila");
-    JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
-    JLabel label2 = new JLabel("Food in bank REQUIRED (pots optional)");
-    JLabel label3 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label4 = new JLabel("::bank ::bankstay");
-    JLabel label5 = new JLabel("Styles ::attack :strength ::defense ::controlled");
-    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
-    JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", true);
+    JLabel header = new JLabel("Edge Dungeon Thugs ~ by Kaila");
+    JLabel label1 = new JLabel("Start by Edge Thugs or Edge Bank");
+    JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
+    JLabel label3 = new JLabel("::bank ::potup ::lootbones ::burybones");
+    JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JLabel label5 = new JLabel("Param Format: \"auto\"");
+    JCheckBox lootBonesCheckbox = new JCheckBox("Pickup Bones?", true);
+    JCheckBox buryBonesCheckbox = new JCheckBox("Bury Bones?", true);
+    JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
-    fightModeField.setSelectedIndex(0); // sets default to controlled
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
-    foodField.setSelectedIndex(5); // sets default to lobs
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
-    JLabel blankLabel = new JLabel("          ");
+    fightModeField.setSelectedIndex(0); // sets default to controlled
+    foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
           if (!foodWithdrawAmountField.getText().equals(""))
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-
-          potUp = potUpCheckbox.isSelected();
           lootBones = lootBonesCheckbox.isSelected();
-          fightMode = fightModeField.getSelectedIndex();
+          buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          fightMode = fightModeField.getSelectedIndex();
+          potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
-          startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -321,6 +305,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     scriptFrame.add(label4);
     scriptFrame.add(label5);
     scriptFrame.add(lootBonesCheckbox);
+    scriptFrame.add(buryBonesCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
     scriptFrame.add(fightModeField);
@@ -328,9 +313,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     scriptFrame.add(foodField);
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
-    scriptFrame.add(blankLabel);
     scriptFrame.add(startScriptButton);
-
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
@@ -347,6 +330,24 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
       timeToBankStay = true;
       c.sleep(100);
+    } else if (commandText.contains("lootbones")) {
+      if (!lootBones) {
+        c.displayMessage("@or1@Got toggle @red@lootbones@or1@, turning on bone looting!");
+        lootBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
+        lootBones = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains("burybones")) {
+      if (!buryBones) {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone bury!");
+        buryBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@buryBones@or1@, turning off bone bury!");
+        buryBones = false;
+      }
+      c.sleep(100);
     } else if (commandText.contains("potup")) {
       if (!potUp) {
         c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
@@ -354,15 +355,6 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       } else {
         c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
         potUp = false;
-      }
-      c.sleep(100);
-    } else if (commandText.contains("bones")) {
-      if (!lootBones) {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
-        lootBones = true;
-      } else {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
-        lootBones = false;
       }
       c.sleep(100);
     } else if (commandText.contains(
@@ -390,8 +382,23 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
   }
 
   @Override
+  public void questMessageInterrupt(String message) {
+    if (message.contains("You eat the")) {
+      usedFood++;
+    }
+  }
+
+  @Override
+  public void serverMessageInterrupt(String message) {
+    if (message.contains("You dig a hole")) {
+      usedBones++;
+    }
+  }
+
+  @Override
   public void paintInterrupt() {
     if (c != null) {
+
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -403,14 +410,15 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       int kwuSuccessPerHr = 0;
       int cadaSuccessPerHr = 0;
       int dwarSuccessPerHr = 0;
-      int lawSuccessPerHr = 0;
-      int natSuccessPerHr = 0;
-      int GemsSuccessPerHr = 0;
+      int runeSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
-      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
+      int herbSuccessPerHr = 0;
+      int foodUsedPerHr = 0;
+      int boneSuccessPerHr = 0;
+      long timeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
-        float timeRan = currentTimeInSeconds - startTimestamp;
+        float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         guamSuccessPerHr = (int) ((totalGuam + inventGuam) * scale);
         marSuccessPerHr = (int) ((totalMar + inventMar) * scale);
@@ -422,173 +430,164 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
         kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
         cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
         dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
-        lawSuccessPerHr = (int) ((totalLaw + inventLaws) * scale);
-        natSuccessPerHr = (int) ((totalNat + inventNats) * scale);
-        GemsSuccessPerHr = (int) ((totalGems + inventGems) * scale);
+        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
+        runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
+        boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
+        foodUsedPerHr = (int) (usedFood * scale);
+
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Asgarnian Pirate Hobs @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      int x = 6;
+      int y = 15;
+      int y2 = 202;
+      c.drawString("@red@Edge Dungeon Thugs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
-          "@whi@Guams: @gre@"
+          "@whi@Guam: @gre@"
               + (totalGuam + inventGuam)
               + "@yel@ (@whi@"
               + String.format("%,d", guamSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          62,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Marrentills: @gre@"
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Mar: @gre@"
               + (totalMar + inventMar)
               + "@yel@ (@whi@"
               + String.format("%,d", marSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          76,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Tarromins: @gre@"
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Tar: @gre@"
               + (totalTar + inventTar)
               + "@yel@ (@whi@"
               + String.format("%,d", tarSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          90,
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + 14,
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Harralanders: @gre@"
+          "@whi@Har: @gre@"
               + (totalHar + inventHar)
               + "@yel@ (@whi@"
               + String.format("%,d", harSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          104,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Ranarrs: @gre@"
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Rana: @gre@"
               + (totalRan + inventRan)
               + "@yel@ (@whi@"
               + String.format("%,d", ranSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          118,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Irit Herbs: @gre@"
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Irit: @gre@"
               + (totalIrit + inventIrit)
               + "@yel@ (@whi@"
               + String.format("%,d", iritSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
-          350,
-          132,
+          x,
+          y + (14 * 2),
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Avantoes: @gre@"
+          "@whi@Ava: @gre@"
               + (totalAva + inventAva)
               + "@yel@ (@whi@"
               + String.format("%,d", avaSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          146,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Kwuarms: @gre@"
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Kwu: @gre@"
               + (totalKwuarm + inventKwuarm)
               + "@yel@ (@whi@"
               + String.format("%,d", kwuSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          160,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Cadantines: @gre@"
+              + "@yel@/@whi@hr@yel@) "
+              + "@whi@Cada: @gre@"
               + (totalCada + inventCada)
               + "@yel@ (@whi@"
               + String.format("%,d", cadaSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          174,
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 3),
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Dwarfs: @gre@"
+          "@whi@Dwar: @gre@"
               + (totalDwarf + inventDwarf)
               + "@yel@ (@whi@"
               + String.format("%,d", dwarSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          188,
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 4),
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Laws: @gre@"
-              + (totalLaw + inventLaws)
+          "@whi@Total Herbs: @gre@"
+              + (totalHerbs + inventHerbs)
               + "@yel@ (@whi@"
-              + String.format("%,d", lawSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          202,
+              + String.format("%,d", herbSuccessPerHr)
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 5),
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Nats: @gre@"
-              + (totalNat + inventNats)
+          "@whi@Total Runes: @gre@"
+              + totalRunes
               + "@yel@ (@whi@"
-              + String.format("%,d", natSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          216,
+              + String.format("%,d", runeSuccessPerHr)
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 6),
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Total Gems: @gre@"
-              + (totalGems + inventGems)
+          "@whi@Total Bones: @gre@"
+              + (bankBones + usedBones)
               + "@yel@ (@whi@"
-              + String.format("%,d", GemsSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          230,
+              + String.format("%,d", boneSuccessPerHr)
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y + (14 * 7),
           0xFFFFFF,
           1);
-      c.drawString(
-          "@whi@Tooth: @gre@"
-              + (totalTooth + inventTooth)
-              + "@yel@ / @whi@Loop: @gre@"
-              + (totalLoop + inventLoop),
-          350,
-          244,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@R.Spear: @gre@"
-              + (totalSpear + inventSpear)
-              + "@yel@ / @whi@Shield Half: @gre@"
-              + (totalLeft + inventLeft),
-          350,
-          258,
-          0xFFFFFF,
-          1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 7), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y2, 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y2 + 14, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Total Trips: @gre@"
               + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          350,
-          272,
+              + "@yel@/@whi@hr@yel@) ",
+          x,
+          y2 + (14 * 2),
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, 350, 286, 0xFFFFFF, 1);
+      if (foodInBank == -1) {
+        c.drawString(
+            "@whi@"
+                + foodName
+                + "'s Used: @gre@"
+                + usedFood
+                + "@yel@ (@whi@"
+                + String.format("%,d", foodUsedPerHr)
+                + "@yel@/@whi@hr@yel@) ",
+            x,
+            y2 + (14 * 3),
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, y2 + (14 * 4), 0xFFFFFF, 1);
+      } else {
+        c.drawString(
+            "@whi@"
+                + foodName
+                + "'s Used: @gre@"
+                + usedFood
+                + "@yel@ (@whi@"
+                + String.format("%,d", foodUsedPerHr)
+                + "@yel@/@whi@hr@yel@) ",
+            x,
+            y2 + (14 * 3),
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, y2 + (14 * 4), 0xFFFFFF, 1);
+      }
     }
   }
 }

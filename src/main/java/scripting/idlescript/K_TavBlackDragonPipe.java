@@ -1,9 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
@@ -17,7 +15,7 @@ import orsc.ORSCharacter;
  *
  * <p>70 Agility required, for the shortcut!
  *
- * <p>Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED.
+ * <p>Sharks/prayPots/Laws/Airs/Earths IN BANK REQUIRED.
  *
  * <p>31 Magic Required for escape tele.
  *
@@ -34,38 +32,38 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private static int totalMed = 0;
   private static int totalDstone = 0;
   private static final int[] loot = {
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
+    CHAOS_RUNE, // chaos rune
+    DEATH_RUNE, // Death Rune
+    BLOOD_RUNE, // blood rune
+    NATURE_RUNE, // nature rune
+    LAW_RUNE, // law rune
+    AIR_RUNE, // air rune
+    FIRE_RUNE,
     814, // D Bones
     75, // rune long
     120, // addy plate body
-    619, // blood rune
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
     405, // rune axe
     81, // rune 2h
     93, // rune battle axe
-    31, // fire rune
-    33, // air rune
-    38, // Death Rune
-    619, // blood rune
-    40, // nature rune
-    42, // law rune
     11, // bronze arrows
     408, // rune bar
     520, // silver cert
     518, // coal cert
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    523, // dragonstone!
-    526, // tooth half
-    527, // loop half
-    1092, // rune spear
-    1277, // shield (left) half
     795, // D med
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {
@@ -91,64 +89,60 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.quitIfAuthentic();
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      ppotCheck();
-      drinkPrayerPotion();
+      eat();
+      prayPotCheck();
+      drinkPrayerPotion(31, true);
       pray();
       foodCheck();
-      eat();
-      superAttackBoost();
-      superStrengthBoost();
-      eatFoodToLoot();
-      lootScript();
-      dropVial();
-
+      checkFightMode();
+      lootItems(true, loot);
+      if (buryBones) buryBones(false);
+      if (potUp) {
+        superAttackBoost(5, false);
+        superStrengthBoost(5, false);
+      }
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
-          c.setStatus("@yel@Attacking Dragons");
           ORSCharacter npc = c.getNearestNpcById(291, false);
           if (npc != null) {
+            c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            eat();
-            c.sleep(100);
           } else {
-            c.walkTo(408, 3336);
-            c.sleep(340);
+            c.sleep(GAME_TICK);
+            lootItems(true, loot);
           }
-        }
-        c.sleep(800);
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        ppotCheck();
-        leaveCombat();
-        if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-          c.setStatus("@red@Dropping Vial to Loot..");
-          c.dropItem(c.getInventoryItemSlotIndex(465));
-          c.sleep(340);
-        }
+        prayPotCheck();
+        dropItemToLoot(false, 1, EMPTY_VIAL);
+        if (buryBones) buryBonesToLoot(false);
+        eatFoodToLoot(false);
+      }
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
+        c.setStatus("@red@Full Inv / Out of Food");
+        dragonEscape();
+        DragonsToBank();
+        bank();
+        BankToDragons();
       }
     }
   }
 
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null && isWithinWander(coords[0], coords[1])) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+  private void eat() {
+    boolean ate = eatFood();
+    if (!ate) {
+      c.setStatus("@red@We've ran out of Food! Running Away!.");
+      c.sleep(308);
+      dragonEscape();
+      DragonsToBank();
+      bank();
+      BankToDragons();
     }
   }
 
@@ -160,7 +154,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBones = totalBones + c.getInventoryItemCount(814);
       totalGems =
           totalGems
@@ -189,16 +182,15 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       totalSpear = totalSpear + c.getInventoryItemCount(1092);
       totalAddy = totalAddy + c.getInventoryItemCount(120);
       totalRlong = totalRlong + c.getInventoryItemCount(75);
-      // ppotCount() = (c.getInventoryItemCount(483) + c.getInventoryItemCount(483)
+      // prayPotCount() = (c.getInventoryItemCount(483) + c.getInventoryItemCount(483)
       // +c.getInventoryItemCount(483));
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 486
+        if (itemId != 486 // dont bank partial potions
             && itemId != 487
             && itemId != 488
             && itemId != 492
             && itemId != 493
             && itemId != 494
-            && itemId != 546
             && itemId != 420
             && itemId != 485
             && itemId != 484
@@ -209,77 +201,31 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      c.sleep(1400); // Important, leave in
-
-      if (c.getInventoryItemCount(33) < 18) { // 6 air
-        c.withdrawItem(33, 18 - c.getInventoryItemCount(33));
-        c.sleep(1000);
+      c.sleep(1280); // Important, leave in
+      if (potUp) {
+        withdrawSuperAttack(1);
+        withdrawSuperStrength(1);
       }
-      if (c.getInventoryItemCount(42) < 6) { // 2 law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(32) < 6) { // 2 water
-        c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-        c.sleep(1000);
-      }
-      c.sleep(640); // leave in
-      withdrawSuperAttack(1);
-      withdrawSuperStrength(1);
-      withdrawAntidote();
-      if (c.getInventoryItemCount(483) < 6) { // withdraw 5 ppot
-        c.withdrawItem(
-            483,
-            6
-                - (c.getInventoryItemCount(483)
-                    + c.getInventoryItemCount(484)
-                    + c.getInventoryItemCount(485))); // minus ppot count
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(546) < 4) { // withdraw 2 shark
-        c.withdrawItem(546, 4 - c.getInventoryItemCount(546));
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(33) < 18) { // 6 air
-        c.withdrawItem(33, 18 - c.getInventoryItemCount(33));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(42) < 6) { // 2 law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(32) < 6) { // 2 water
-        c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-        c.sleep(1000);
-      }
+      withdrawAntidote(1);
+      withdrawPrayer(prayPotWithdrawAmount);
+      withdrawFood(foodId, foodWithdrawAmount);
+      withdrawItem(airId, 18);
+      withdrawItem(lawId, 6);
+      withdrawItem(waterId, 6);
       bankBones = c.getBankItemCount(814);
-      if (c.getBankItemCount(546) < 4
-          || c.getBankItemCount(569) < 1
-          || c.getBankItemCount(483) < 6
-          || c.getBankItemCount(33) == 0
-          || c.getBankItemCount(33) == 0
-          || c.getBankItemCount(42) == 0
-          || c.getBankItemCount(32) == 0) {
-        c.setStatus("@red@NO Sharks/Laws/Airs in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
-      if (!c.isItemIdEquipped(420)) {
-        c.setStatus("@red@Not Wielding Dragonfire Shield!.");
-        c.withdrawItem(420, 1);
-        c.closeBank();
-        c.equipItem(c.getInventoryItemSlotIndex(420));
-        c.sleep(1320);
-      }
+      bankItemCheck(prayerPot[2], 6);
+      bankItemCheck(antiPot[2], 1);
+      bankItemCheck(foodId, 30);
+      bankItemCheck(airId, 30);
+      bankItemCheck(waterId, 10); // Falador teleport
+      bankItemCheck(lawId, 10);
+      bankCheckAntiDragonShield();
       c.closeBank();
       c.sleep(1000);
     }
-    airCheck();
-    waterCheck();
-    lawCheck();
+    inventoryItemCheck(airId, 18);
+    inventoryItemCheck(waterId, 6);
+    inventoryItemCheck(lawId, 6);
   }
 
   private void pray() {
@@ -288,39 +234,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     }
   }
 
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        dragonEscape();
-        DragonsToBank();
-        bank();
-        BankToDragons();
-      }
-    }
-  }
-
   private void dragonEscape() {
-    c.setStatus("We've ran out of Food/PPots! @gre@Going to safe zone.");
+    c.setStatus("We've ran out of Food/prayPotprayPotprayPotprayPots! @gre@Going to safe zone.");
     c.walkTo(408, 3340);
     c.walkTo(408, 3348);
     c.sleep(1000);
@@ -369,8 +284,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.sleep(320);
     c.walkTo(380, 3372);
     eat();
-    ppotCheck();
-    drinkPrayerPotion();
+    prayPotCheck();
+    drinkPrayerPotion(31, true);
     pray();
     c.walkTo(386, 3371);
     c.walkTo(388, 3360);
@@ -378,18 +293,18 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(397, 3343);
     c.walkTo(403, 3346);
     c.walkTo(408, 3344);
-    drinkAntidote();
     c.walkTo(409, 3338);
+    drinkAntidote(true);
     eat();
-    ppotCheck();
-    drinkPrayerPotion();
+    prayPotCheck();
+    drinkPrayerPotion(31, true);
     pray();
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void ppotCheck() {
+  private void prayPotCheck() {
     if (c.getInventoryItemCount(483) == 0) {
-      c.setStatus("@yel@No Ppots, Banking..");
+      c.setStatus("@yel@No prayPots, Banking..");
       dragonEscape();
       DragonsToBank();
       bank();
@@ -399,11 +314,19 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   }
 
   private void foodCheck() {
-    if (c.getInventoryItemCount(546) == 0) {
+    if (c.getInventoryItemCount(foodId) < 1 || timeToBank || timeToBankStay) {
       c.setStatus("@yel@No food, Banking..");
       dragonEscape();
       DragonsToBank();
+      timeToBank = false;
       bank();
+      if (timeToBankStay) {
+        timeToBankStay = false;
+        c.displayMessage(
+            "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+        c.setStatus("@red@Stopping Script.");
+        endSession();
+      }
       BankToDragons();
       c.sleep(618);
     }
@@ -426,7 +349,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.sleep(308);
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Tavelry Black Dragons (Pipe) - By Kaila");
@@ -435,10 +357,41 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel label3 = new JLabel("70 Agility required, for the shortcut!");
     JLabel label4 = new JLabel("Bot will attempt to wield dragonfire shield");
     JLabel label5 = new JLabel("When walking through Blue Dragon Room");
+    JLabel label6 = new JLabel("Chat commands can be used to direct the bot");
+    JLabel label7 = new JLabel("::bank ::bankstay ::burybones");
+    JLabel label8 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
+    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
+    JLabel fightModeLabel = new JLabel("Fight Mode:");
+    JComboBox<String> fightModeField =
+        new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(0); // sets default to controlled
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(4));
+    JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
+    JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(6));
+
+    foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          if (!foodWithdrawAmountField.getText().equals("")) {
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          } else {
+            foodWithdrawAmount = 4;
+          }
+          if (!prayPotWithdrawAmountField.getText().equals("")) {
+            prayPotWithdrawAmount = Integer.parseInt(prayPotWithdrawAmountField.getText());
+          } else {
+            prayPotWithdrawAmount = 6;
+          }
+          buryBones = buryBonesCheckbox.isSelected();
+          fightMode = fightModeField.getSelectedIndex();
+          foodId = foodIds[foodField.getSelectedIndex()];
+          potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           startTime = System.currentTimeMillis();
@@ -455,11 +408,76 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     scriptFrame.add(label3);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
+    scriptFrame.add(label6);
+    scriptFrame.add(label7);
+    scriptFrame.add(label8);
+    scriptFrame.add(buryBonesCheckbox);
+    scriptFrame.add(potUpCheckbox);
+    scriptFrame.add(fightModeLabel);
+    scriptFrame.add(fightModeField);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(foodWithdrawAmountLabel);
+    scriptFrame.add(foodWithdrawAmountField);
+    scriptFrame.add(prayPotWithdrawAmountLabel);
+    scriptFrame.add(prayPotWithdrawAmountField);
     scriptFrame.add(startScriptButton);
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocus();
+  }
+
+  @Override
+  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
+    if (commandText.contains("bank")) {
+      c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
+      timeToBank = true;
+      c.sleep(100);
+    } else if (commandText.contains("bankstay")) {
+      c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
+      timeToBankStay = true;
+      c.sleep(100);
+    } else if (commandText.contains("burybones")) {
+      if (!buryBones) {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone bury!");
+        buryBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@buryBones@or1@, turning off bone bury!");
+        buryBones = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains("potup")) {
+      if (!potUp) {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
+        potUp = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
+        potUp = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains(
+        "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+      c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
+      c.displayMessage("@red@Switching to \"Accurate\" combat style!");
+      fightMode = 2;
+      c.sleep(100);
+    } else if (commandText.contains("strength")) {
+      c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
+      c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
+      fightMode = 1;
+      c.sleep(100);
+    } else if (commandText.contains("defense")) {
+      c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
+      c.displayMessage("@red@Switching to \"Defensive\" combat style!");
+      fightMode = 3;
+      c.sleep(100);
+    } else if (commandText.contains("controlled")) {
+      c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
+      c.displayMessage("@red@Switching to \"Controlled\" combat style!");
+      fightMode = 0;
+      c.sleep(100);
+    }
   }
 
   @Override

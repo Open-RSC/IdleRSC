@@ -43,7 +43,6 @@ public final class K_Nightshade extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
       if (c.getInventoryItemCount() == 30) {
         c.setStatus("@red@Banking..");
         GrapeToBank();
@@ -51,7 +50,6 @@ public final class K_Nightshade extends K_kailaScript {
         BankToGrape();
         c.sleep(618);
       }
-
       int[] coords = c.getNearestItemById(1086); // always pick up tops
       if (coords != null) {
         c.setStatus("@yel@Looting..");
@@ -68,16 +66,13 @@ public final class K_Nightshade extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalShade = totalShade + c.getInventoryItemCount(1086);
-
       if (c.getInventoryItemCount(1086) > 0) { // nightshade
         c.depositItem(1086, c.getInventoryItemCount(1086));
         c.sleep(1380);
@@ -91,14 +86,12 @@ public final class K_Nightshade extends K_kailaScript {
         c.sleep(1380);
       }
       shadeInBank = c.getBankItemCount(1086);
-
       c.closeBank();
       c.sleep(640);
     }
   }
 
   private void GrapeToBank() { // replace
-
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(649, 3555);
     while (c.currentX() == 649 && c.currentY() == 3555) {
@@ -122,7 +115,6 @@ public final class K_Nightshade extends K_kailaScript {
   }
 
   private void BankToGrape() {
-
     c.setStatus("@gre@Walking to Nightshade..");
     c.walkTo(584, 752);
     c.walkTo(584, 749);
@@ -143,7 +135,6 @@ public final class K_Nightshade extends K_kailaScript {
     // ontop of nightshade now
     c.setStatus("@gre@Done Walking..");
   }
-
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Nightshade Picker - By Kaila");
@@ -179,18 +170,15 @@ public final class K_Nightshade extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int ShadeSuccessPerHr = 0;
       int TripSuccessPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
-
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         ShadeSuccessPerHr = (int) (totalShade * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
-
       } catch (Exception e) {
         // divide by zero
       }

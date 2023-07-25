@@ -17,13 +17,19 @@ import orsc.ORSCharacter;
  *
  * <p>@Author - Kaila
  */
-public final class K_WaterfallFireGiants extends K_kailaScript {
+public final class K_Waterfall_FireGiants extends K_kailaScript {
   private static int totalBstaff = 0;
   private static int totalRscim = 0;
   private static int totalRunestuff = 0;
   private static int totalDstone = 0;
   private static int totalMed = 0;
   private static final int[] loot = {
+    UNID_RANARR, // Grimy Ranarr Weed
+    UNID_IRIT, // Grimy Irit
+    UNID_AVANTOE, // Grimy Avantoe
+    UNID_KWUARM, // Grimy Kwuarm
+    UNID_CADA, // Grimy Cadantine
+    UNID_DWARF, // Grimy Dwarf Weed
     413, // big bones
     1346, // d2h
     795, // D med
@@ -42,20 +48,6 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
     542, // uncut dstone
     523, // cut dstone
     795, // D med
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
     40, // nature rune
     42, // law rune
     38, // death rune
@@ -73,7 +65,15 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
     615, // fire bstaff
     520, // silver cert
     518, // coal cert
-    373 // lobster (will get eaten)
+    373, // lobster (will get eaten)
+    UNCUT_SAPP, // saph
+    UNCUT_EMER, // emerald
+    UNCUT_RUBY, // ruby
+    UNCUT_DIA, // diamond
+    TOOTH_HALF, // tooth half
+    LOOP_HALF, // loop half
+    LEFT_HALF, // shield (left) half
+    RUNE_SPEAR // rune spear
   };
 
   public int start(String[] parameters) {
@@ -102,39 +102,35 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
-      buryBones();
-      eat();
-      lootScript();
-      superAttackBoost();
-      superStrengthBoost();
-
+      boolean ate = eatFood();
+      if (!ate) {
+        c.setStatus("@red@We've ran out of Food! Running Away!.");
+        giantEscape();
+        GiantsToBank();
+        bank();
+        BankToGiants();
+      }
+      buryBones(false);
+      lootItems(true, loot);
+      superAttackBoost(0, false);
+      superStrengthBoost(0, false);
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
-            c.setStatus("@yel@Attacking Giants");
-            c.sleepHandler(98, true);
             ORSCharacter npc = c.getNearestNpcById(344, false);
             if (npc != null) {
+              c.setStatus("@yel@Attacking Giants");
               c.attackNpc(npc.serverIndex);
-              c.sleep(1280);
             } else {
-              c.sleep(640);
+              c.sleep(GAME_TICK);
+              buryBones(false);
+              lootItems(true, loot);
             }
-          } else {
-            c.sleep(640);
-          }
+          } else c.sleep(640);
         }
         if (c.getInventoryItemCount() == 30) {
-          leaveCombat();
-          buryBones();
-          if (c.getInventoryItemCount(465) > 0 && !c.isInCombat()) {
-            c.setStatus("@red@Dropping Vial to Loot..");
-            c.dropItem(c.getInventoryItemSlotIndex(465));
-            c.sleep(250);
-          }
-          c.setStatus("@red@Eating Food to Loot..");
-          eatFoodToLoot();
+          dropItemToLoot(true, 1, EMPTY_VIAL);
+          eatFoodToLoot(true);
         }
       }
       if (c.getInventoryItemCount(546) == 0) {
@@ -143,36 +139,17 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
         GiantsToBank();
         bank();
         BankToGiants();
-        c.sleep(618);
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }
 
   private void bank() {
-
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBstaff = totalBstaff + c.getInventoryItemCount(615);
       totalRscim = totalRscim + c.getInventoryItemCount(398);
       totalRunestuff =
@@ -208,7 +185,6 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
       totalLeft = totalLeft + c.getInventoryItemCount(1277);
       totalSpear = totalSpear + c.getInventoryItemCount(1092);
       totalMed = totalMed + c.getInventoryItemCount(795);
-
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != 782
             && itemId != 237
@@ -222,86 +198,21 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      c.sleep(1400); // increased sleep here to prevent double banking
-
-      if (c.getInventoryItemCount(782) < 1) { // glariels amulet
-        c.withdrawItem(782, 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(237) < 1) { // rope
-        c.withdrawItem(237, 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(33) < 30) { // air
-        c.withdrawItem(33, 30 - c.getInventoryItemCount(33));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(42) < 6) { // law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      c.sleep(640); // leave in
+      c.sleep(1280); // increased sleep here to prevent double banking
+      withdrawItem(782, 1); // glariels amulet
+      withdrawItem(237, 1); // rope
+      withdrawItem(airId, 30);
+      withdrawItem(lawId, 6);
       withdrawSuperAttack(1);
       withdrawSuperStrength(1);
-      if (c.getInventoryItemCount(33) < 30) { // air
-        c.withdrawItem(33, 30 - c.getInventoryItemCount(33));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(42) < 6) { // law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(546) < 23) { // withdraw 23 shark
-        c.withdrawItem(546, 23 - c.getInventoryItemCount(546));
-        c.sleep(640);
-      }
-
-      if (c.getBankItemCount(546) == 0
-          || c.getBankItemCount(33) == 0
-          || c.getBankItemCount(42) == 0) {
-        c.setStatus("@red@NO Sharks/Laws/Airs in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      bankItemCheck(foodId, 30);
+      bankItemCheck(airId, 50);
+      bankItemCheck(lawId, 10);
       c.closeBank();
-      c.sleep(1000);
+      c.sleep(1280);
     }
-    lawCheck();
-    airCheck();
-  }
-
-  private void eat() {
-
-    int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-    if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-
-      leaveCombat();
-      c.setStatus("@red@Eating..");
-
-      boolean ate = false;
-
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          c.itemCommand(id);
-          c.sleep(700);
-          ate = true;
-          break;
-        }
-      }
-      if (!ate) { // only activates if hp goes to -20 again THAT trip, will bank and get new shark
-        // usually
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        c.sleep(308);
-        giantEscape();
-        GiantsToBank();
-        bank();
-        BankToGiants();
-      }
-    }
+    inventoryItemCheck(airId, 30);
+    inventoryItemCheck(lawId, 6);
   }
 
   private void giantEscape() {
@@ -500,7 +411,6 @@ public final class K_WaterfallFireGiants extends K_kailaScript {
           startTime = System.currentTimeMillis();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));

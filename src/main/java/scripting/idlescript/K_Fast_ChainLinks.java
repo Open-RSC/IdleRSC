@@ -14,7 +14,7 @@ import javax.swing.JLabel;
  * adamantite - makes adamantite platebodies. rune, runite - makes runite platebodies. ~ Author -
  * Kaila
  */
-public final class K_FastChainLinks extends K_kailaScript {
+public final class K_Fast_ChainLinks extends K_kailaScript {
   private static int barsInBank = 0;
   private static int totalBars = 0;
 
@@ -37,7 +37,6 @@ public final class K_FastChainLinks extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -101,16 +100,13 @@ public final class K_FastChainLinks extends K_kailaScript {
   }
 
   private void bank() {
-
     c.setStatus("@gre@Banking..");
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-
       totalBars = totalBars + 26;
-
       if (c.getBankItemCount(593)
           < 2) { // stops making when 30 in bank to not mess up alignments/organization of bank!!!
         c.setStatus("@red@NO D Longs in the bank, Stopping!.");
@@ -164,7 +160,6 @@ public final class K_FastChainLinks extends K_kailaScript {
           scriptFrame.dispose();
           scriptStarted = true;
         });
-
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));

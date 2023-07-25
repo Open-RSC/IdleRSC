@@ -19,7 +19,7 @@ import orsc.ORSCharacter;
  *
  * @author Kaila
  */
-public final class K_Asgarnian_PirateHobs extends K_kailaScript {
+public final class K_AsgarnianPirateHobs extends K_kailaScript {
   private static final int[] loot = {
     UNID_GUAM, // Grimy Guam
     UNID_MAR, // Grimy Marrentill

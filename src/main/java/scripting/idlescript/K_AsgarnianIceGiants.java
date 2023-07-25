@@ -15,7 +15,7 @@ import orsc.ORSCharacter;
  *
  * <p>Author - Kaila
  */
-public final class K_Asgarnian_IceGiants extends K_kailaScript {
+public final class K_AsgarnianIceGiants extends K_kailaScript {
   private static final int[] loot = {
     UNID_GUAM, // Grimy Guam
     UNID_MAR, // Grimy Marrentill

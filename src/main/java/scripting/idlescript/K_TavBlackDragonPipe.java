@@ -24,10 +24,6 @@ import orsc.ORSCharacter;
  * <p>@Author - Kaila
  */
 public final class K_TavBlackDragonPipe extends K_kailaScript {
-  private boolean isWithinWander(int x, int y) {
-    return c.distance(408, 3337, x, y) <= 22;
-  }
-
   private static int totalRlong = 0;
   private static int totalMed = 0;
   private static int totalDstone = 0;
@@ -67,6 +63,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   };
 
   public int start(String[] parameters) {
+    centerX = 408;
+    centerY = 3337;
+    centerDistance = 22;
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -112,6 +111,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             lootItems(true, loot);

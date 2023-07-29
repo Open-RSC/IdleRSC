@@ -152,6 +152,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
             c.setStatus("@yel@Attacking..");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);

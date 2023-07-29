@@ -112,6 +112,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             lootItems(false, loot);

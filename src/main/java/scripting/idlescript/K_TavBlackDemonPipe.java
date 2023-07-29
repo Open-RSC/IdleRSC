@@ -25,10 +25,6 @@ import orsc.ORSCharacter;
 public final class K_TavBlackDemonPipe extends K_kailaScript {
   private static boolean d2hWield = false;
 
-  private static boolean isWithinWander(int x, int y) {
-    return c.distance(390, 3371, x, y) <= 10;
-  }
-
   private static int totalMed = 0;
   private static int totalDstone = 0;
   private static int totalRbar = 0;
@@ -76,6 +72,9 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   };
   // STARTing script
   public int start(String[] parameters) {
+    centerX = 390;
+    centerY = 3371;
+    centerDistance = 10;
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -116,6 +115,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       superAttackBoost(0, false);
       superStrengthBoost(0, false);
       eatFoodToLoot(true);
+      if (c.getInventoryItemCount() == 30) dropItemToLoot(true, 1, EMPTY_VIAL);
       if (c.getInventoryItemCount() < 30) {
         lootItems(true, loot);
         if (!c.isInCombat()) {
@@ -123,13 +123,14 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Demons");
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             lootItems(true, loot);
           }
         } else c.sleep(GAME_TICK);
       }
-      if (c.getInventoryItemCount() == 30) dropItemToLoot(false, 1, EMPTY_VIAL);
+
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
         c.setStatus("@red@Full Inv / Out of Food");
         c.sleep(308);
@@ -229,10 +230,10 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         c.withdrawItem(superStrengthPot[2], 1);
         c.sleep(640);
       }
-      if (c.getInventoryItemCount(483) < 17) { // withdraw 17 ppot
+      if (c.getInventoryItemCount(483) < 16) { // withdraw 17 ppot
         c.withdrawItem(
             483,
-            17
+            16
                 - (c.getInventoryItemCount(483)
                     + c.getInventoryItemCount(484)
                     + c.getInventoryItemCount(485))); // minus ppot count

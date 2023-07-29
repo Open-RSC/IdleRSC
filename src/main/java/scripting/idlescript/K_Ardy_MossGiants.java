@@ -5,15 +5,13 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
+ * Ardy moss giants - by Kaila
  *
  * <p>
  *
  * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
  * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
  * and Autostart.
- *
- * <p>- cannot support bone looting with this bot due to the shape of the dungeon
  *
  * <p>@Author - Kaila
  */
@@ -108,8 +106,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       scriptStarted = false;
       startTime = System.currentTimeMillis();
       c.displayMessage("@red@Ardy Moss Giants ~ Kaila");
-      c.displayMessage("@red@Start in Varrock West or in Dungeon");
-      c.displayMessage("@red@Dusty Key Required");
+      c.displayMessage("@red@Start in Ardy north bank or near moss giants.");
 
       if (c.isInBank()) {
         c.closeBank();
@@ -150,6 +147,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
           c.setStatus("@yel@Attacking..");
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);

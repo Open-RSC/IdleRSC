@@ -123,6 +123,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
             c.setStatus("@yel@Attacking..");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             if (lootBones) lootItem(false, BONES);

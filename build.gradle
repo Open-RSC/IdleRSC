@@ -41,9 +41,16 @@ tasks.named('compileJava') {
 }
 
 tasks.named('jar') {
-  // Define entry point for application
   manifest {
-    attributes 'Main-Class': 'bot.Main'
+    attributes(
+      // Define entry point for application
+      'Main-Class': 'bot.Main',
+      // Embed version/build information in application
+      'Build-Commit-Hash': "${commitHash()}",
+      'Build-Commit-Date': "${commitDate()}",
+      'Build-Commit-Count': "${commitCount()}",
+      'Build-Jdk' : "${System.properties['java.version']}",
+    )
   }
 
   // Modify jar task to include all dependencies (a.k.a. create a fat jar)

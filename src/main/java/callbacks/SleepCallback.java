@@ -64,7 +64,7 @@ public class SleepCallback {
 
     mud = controller.getMud();
 
-    if (Main.config.getLocalOCR()) {
+    if (Main.config.isLocalOcr()) {
       Main.log("Local OCR specified...");
       controller.sleep(1000); // give OCR time to catch up.
 

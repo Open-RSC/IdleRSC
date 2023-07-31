@@ -28,9 +28,9 @@ public final class K_Fast_ChainLinks extends K_kailaScript {
       c.displayMessage("@gre@Chain Link Crafter" + '"' + " - by Kaila");
       c.displayMessage("@gre@Start in Fally East");
       c.quitIfAuthentic();
-      if (c.isInBank()){
+      if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       startTime = System.currentTimeMillis();
       if (c.currentY() < 3000) {
@@ -145,7 +145,7 @@ public final class K_Fast_ChainLinks extends K_kailaScript {
       }
       barsInBank = c.getBankItemCount(593);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
   // GUI stuff below (icky)

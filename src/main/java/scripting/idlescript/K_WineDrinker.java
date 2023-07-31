@@ -82,7 +82,7 @@ public final class K_WineDrinker extends IdleScript {
         c.sleep(650);
       }
       c.closeBank();
-      c.sleep(2*640);
+      c.sleep(2 * 640);
     }
   }
 }

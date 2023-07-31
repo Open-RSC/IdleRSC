@@ -62,7 +62,7 @@ public final class K_IronPresentOpener extends K_kailaScript {
         c.sleep(650);
       }
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
 }

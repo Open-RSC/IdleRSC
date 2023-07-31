@@ -105,7 +105,7 @@ public final class K_Edge_Giants extends K_kailaScript {
       c.displayMessage("@red@Dusty Key Required");
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       if (c.currentY() < 3000) {
         bank();
@@ -236,7 +236,7 @@ public final class K_Edge_Giants extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
       brassKeyCheck();
       checkInventoryItemCounts();
     }

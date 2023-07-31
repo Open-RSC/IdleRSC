@@ -38,7 +38,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     c.displayMessage("@red@Start in Khazard Mine with nats,hammer,fire staff,pickaxe");
     if (c.isInBank()) {
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
   }

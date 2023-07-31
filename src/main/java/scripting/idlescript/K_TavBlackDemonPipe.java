@@ -84,7 +84,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.displayMessage("@red@70 Agility required, for the shortcut!");
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       if (c.currentY() < 2800) {
         bank();
@@ -264,7 +264,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         }
       }
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     inventoryItemCheck(airId, 18);
     inventoryItemCheck(waterId, 6);

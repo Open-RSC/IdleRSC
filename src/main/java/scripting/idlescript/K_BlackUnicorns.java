@@ -40,7 +40,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
     //			bank();
     if (c.isInBank()) {
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     if (c.currentY() > 340) {
       bank();
@@ -137,7 +137,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
       bankItemCheck(546, 5);
       uniInBank = c.getBankItemCount(466);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
       inventUni = c.getBankItemCount(466);
     }
   }

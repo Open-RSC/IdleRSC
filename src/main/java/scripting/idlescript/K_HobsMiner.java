@@ -98,7 +98,7 @@ public final class K_HobsMiner extends K_kailaScript {
     c.displayMessage("@red@31 Magic Required for escape tele");
     if (c.isInBank()) {
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     if (c.currentY() > 340) {
       bank();
@@ -290,7 +290,7 @@ public final class K_HobsMiner extends K_kailaScript {
         }
       }
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     if (teleportOut) {
       inventoryItemCheck(airId, 3);

@@ -92,7 +92,7 @@ public class K_TrickGiver extends IdleScript {
         c.sleep(1280);
       }
       c.closeBank();
-      c.sleep(2*640);
+      c.sleep(2 * 640);
     }
   }
 }

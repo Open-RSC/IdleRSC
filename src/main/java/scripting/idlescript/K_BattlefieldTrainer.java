@@ -30,7 +30,7 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
       c.displayMessage("@red@Sharks in Bank REQUIRED");
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       if (c.currentX() < 600) {
         bank();
@@ -105,7 +105,7 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
       withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, foodWithdrawAmount);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
 

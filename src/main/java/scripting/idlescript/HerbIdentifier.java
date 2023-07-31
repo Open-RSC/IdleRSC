@@ -94,7 +94,7 @@ public class HerbIdentifier extends IdleScript {
         }
 
         controller.closeBank();
-        controller.sleep(2*640);
+        controller.sleep(2 * 640);
 
       } else {
         controller.setStatus("@whi@Identifying...");

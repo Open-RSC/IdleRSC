@@ -51,7 +51,7 @@ public final class K_Edge_DungeonMine extends K_kailaScript {
     c.displayMessage("@red@31 Magic Required for escape tele");
     if (c.isInBank()) {
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     if (c.currentY() < 3000) {
       bank();
@@ -175,7 +175,7 @@ public final class K_Edge_DungeonMine extends K_kailaScript {
       mithInBank = c.getBankItemCount(153);
       addyInBank = c.getBankItemCount(154);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     brassKeyCheck();
   }

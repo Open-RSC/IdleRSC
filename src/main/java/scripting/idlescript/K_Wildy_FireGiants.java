@@ -91,7 +91,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       if (c.currentX() > 260 && c.currentX() < 275 && c.currentY() < 132 && c.currentY() > 125) {
         stairToGiants();
@@ -213,7 +213,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       withdrawFood(546, 27);
       bankItemCheck(546, 27);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
 

@@ -110,7 +110,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
 
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       if (c.currentY() < 3000) {
         bank();
@@ -246,7 +246,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
       brassKeyCheck();
       checkInventoryItemCounts();
     }

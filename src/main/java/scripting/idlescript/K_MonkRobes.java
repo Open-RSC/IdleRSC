@@ -35,7 +35,7 @@ public final class K_MonkRobes extends K_kailaScript {
       c.displayMessage("@red@Start in Edge Bank or upstairs Monestary");
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       if (c.currentY() < 1000 && c.currentX() < 245) {
         bank();
@@ -102,7 +102,7 @@ public final class K_MonkRobes extends K_kailaScript {
       TopzInBank = c.getBankItemCount(388);
       BotzInBank = c.getBankItemCount(389);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
 

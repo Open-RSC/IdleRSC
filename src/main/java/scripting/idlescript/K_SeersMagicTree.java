@@ -26,7 +26,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
     c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
     if (c.isInBank()) {
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
     if (c.currentY() < 458) {
       bank();
@@ -239,7 +239,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
 
       logInBank = c.getBankItemCount(636);
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
   // GUI stuff below (icky)

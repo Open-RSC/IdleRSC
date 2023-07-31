@@ -43,7 +43,7 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
       if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2*GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       if (c.currentX() < 195) {
         bank();
@@ -112,7 +112,7 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
         endSession();
       }
       c.closeBank();
-      c.sleep(2*GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
 

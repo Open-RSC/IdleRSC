@@ -22,6 +22,7 @@ public class Config extends ParseResult {
     setLogWindowVisible(parseResult.isLogWindowVisible());
     setSidePanelSticky(parseResult.isSidePanelSticky());
     setDebug(parseResult.isDebug());
+    setBotPaintVisible(parseResult.isBotPaintVisible());
     setSidePanelVisible(parseResult.isSidePanelVisible());
     setGraphicsEnabled(parseResult.isGraphicsEnabled());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());

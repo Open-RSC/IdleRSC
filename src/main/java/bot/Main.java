@@ -257,6 +257,7 @@ public class Main {
     logWindowCheckbox.setSelected(config.isLogWindowVisible());
     unstickCheckbox.setSelected(!config.isSidePanelSticky()); // this one is a double negative :(
     debugCheckbox.setSelected(config.isDebug());
+    botPaintCheckbox.setSelected(config.isBotPaintVisible());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
 
     if (config.isGraphicsInterlacingEnabled()) {

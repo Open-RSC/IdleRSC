@@ -14,6 +14,7 @@ public class ParseResult {
   private boolean logWindowVisible;
   private boolean sidePanelSticky;
   private boolean debug;
+  private boolean botPaintVisible;
   private boolean sidePanelVisible;
   private boolean graphicsEnabled;
   private boolean graphicsInterlacingEnabled;
@@ -108,12 +109,20 @@ public class ParseResult {
     return debug;
   }
 
+  public void setBotPaintVisible(boolean botPaintVisible) {
+    this.botPaintVisible = botPaintVisible;
+  }
+
   public void setSidePanelVisible(boolean sidePanelVisible) {
     this.sidePanelVisible = sidePanelVisible;
   }
 
   public boolean isSidePanelVisible() {
     return sidePanelVisible;
+  }
+
+  public boolean isBotPaintVisible() {
+    return botPaintVisible;
   }
 
   public void setGraphicsEnabled(boolean graphicsEnabled) {

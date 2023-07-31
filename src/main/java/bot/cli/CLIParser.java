@@ -25,6 +25,7 @@ public class CLIParser {
     parseResult.setLogWindowVisible(cmd.hasOption("log-window"));
     parseResult.setSidePanelSticky(!cmd.hasOption("unstick")); // negative (sticky by default)
     parseResult.setDebug(cmd.hasOption("debug"));
+    parseResult.setBotPaintVisible(!cmd.hasOption("botpaint")); // negative (enabled by default)
     parseResult.setSidePanelVisible(
         !cmd.hasOption("hide-side-panel")); // negative (enabled by default)
     parseResult.setGraphicsEnabled(!cmd.hasOption("disable-gfx")); // negative (enabled by default)

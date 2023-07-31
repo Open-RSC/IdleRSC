@@ -112,6 +112,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
+            c.sleep(3 * GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             lootItems(false, loot);
@@ -148,7 +149,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   }
 
   private void walkToCenter() {
-    if (c.currentX() != 370 || c.currentY() != 3353) {
+    if (!c.isInCombat() && (c.currentX() != 370 || c.currentY() != 3353)) {
       c.walkTo(370, 3353);
       c.sleep(1000);
     }

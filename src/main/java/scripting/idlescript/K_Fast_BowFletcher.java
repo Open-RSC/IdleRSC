@@ -1,10 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
@@ -22,6 +19,10 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   private static int logId = -1;
   private static int logsInBank = 0;
   private static int totalBows = 0;
+  private static boolean stringBows = false;
+  private static final int BOW_STRING = 676;
+  private static final int KNIFE_ID = 13;
+  private static final int[] unstrungIds = {276, 658, 660, 662, 664, 666};
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
@@ -46,7 +47,9 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getInventoryItemCount(logId) < 1) {
+      if (c.getInventoryItemCount(logId) == 0
+          || (stringBows && c.getInventoryItemCount(BOW_STRING) == 0)
+          || c.getInventoryItemCount(KNIFE_ID) == 0) {
         if (!c.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
           ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
@@ -63,56 +66,71 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
         bank();
       }
       if (c.getInventoryItemCount(logId) > 0) {
-        fletchingScript();
+        if (!stringBows) fletchingScript();
+        else stringScript();
+        c.sleep(100);
       }
-      c.sleep(320);
+      // c.sleep(320);
     }
+  }
+
+  private void stringScript() {
+    c.displayMessage("@gre@Stringing..");
+    c.setStatus("@gre@Stringing.");
+    c.useItemOnItemBySlot(
+        c.getInventoryItemSlotIndex(BOW_STRING), c.getInventoryItemSlotIndex(logId));
+    c.sleep(2 * GAME_TICK);
+    while (c.isBatching()) c.sleep(GAME_TICK);
   }
 
   private void fletchingScript() {
     c.displayMessage("@gre@Fletching..");
     c.setStatus("@gre@Fletching..");
-    c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(13), c.getInventoryItemSlotIndex(logId));
-    c.sleep(1200);
+    c.useItemOnItemBySlot(
+        c.getInventoryItemSlotIndex(KNIFE_ID), c.getInventoryItemSlotIndex(logId));
+    c.sleep(2 * GAME_TICK);
     c.optionAnswer(2);
-    while (c.isBatching()) c.sleep(1000);
+    while (c.isBatching()) c.sleep(GAME_TICK);
   }
 
   private void bank() {
     c.setStatus("@gre@Banking..");
     c.displayMessage("@gre@Banking..");
     c.openBank();
-    c.sleep(640);
+    c.sleep(GAME_TICK);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-      totalBows = totalBows + 29;
-      if (c.getBankItemCount(logId)
-          < 30) { // stops making when 30 in bank to not mess up alignments/organization of bank!!!
+      if (!stringBows) totalBows = totalBows + 29;
+      else totalBows = totalBows + 15;
+      if (c.getBankItemCount(logId) < 30 // out of logs or unstrung
+          || (stringBows && c.getBankItemCount(BOW_STRING) < 30) // out of strings
+          || (!stringBows
+              && c.getBankItemCount(KNIFE_ID) == 0
+              && c.getInventoryItemCount(KNIFE_ID) == 0)) {
         c.setStatus("@red@NO Logs in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
+        endSession();
       }
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
-          if (itemId != 13 && itemId != logId) {
+          if (itemId != KNIFE_ID && itemId != logId) {
             c.depositItem(itemId, c.getInventoryItemCount(itemId));
           }
         }
         c.sleep(100);
       }
-      if (c.getInventoryItemCount(13) < 1) {
-        c.withdrawItem(13, 1);
+      if (!stringBows && c.getInventoryItemCount(KNIFE_ID) < 1) {
+        c.withdrawItem(KNIFE_ID, 1);
         c.sleep(320);
       }
       if (c.getInventoryItemCount() < 30) {
-        c.withdrawItem(logId, 29);
+        if (!stringBows) c.withdrawItem(logId, 29);
+        else {
+          c.withdrawItem(logId, 15);
+          c.withdrawItem(BOW_STRING, 15);
+        }
         c.sleep(650);
       }
-
       logsInBank = c.getBankItemCount(logId);
       c.closeBank();
     }
@@ -126,11 +144,14 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
     JLabel logLabel = new JLabel("Log Type:");
     JComboBox<String> logField =
         new JComboBox<>(new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"});
+    JCheckBox stringBowsCheckbox = new JCheckBox("String Bows?", true);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
-          logId = logIds[logField.getSelectedIndex()];
+          stringBows = stringBowsCheckbox.isSelected();
+          if (!stringBows) logId = logIds[logField.getSelectedIndex()];
+          else logId = unstrungIds[logField.getSelectedIndex()];
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
@@ -146,6 +167,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
     scriptFrame.add(batchLabel2);
     scriptFrame.add(logLabel);
     scriptFrame.add(logField);
+    scriptFrame.add(stringBowsCheckbox);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
@@ -171,7 +193,9 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       int y = 21;
       c.drawString("@red@Fast Bow Fletcher @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
-      c.drawString("@whi@Logs In bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
+      if (!stringBows)
+        c.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
+      else c.drawString("@whi@Unstrung Bows in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@Longbows Made: @yel@" + totalBows, x, y + (14 * 2), 0xFFFFFF, 1);
       c.drawString(
           "@whi@Longbows Per Hr: @yel@" + String.format("%,d", successPerHr) + "@yel@/@whi@hr",

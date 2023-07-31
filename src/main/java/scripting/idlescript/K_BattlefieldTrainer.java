@@ -58,6 +58,7 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
             c.setStatus("@yel@Attacking Trooper");
             // c.walktoNPC(npc.serverIndex,1);
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else c.sleep(GAME_TICK);
         } else c.sleep(GAME_TICK);
       }

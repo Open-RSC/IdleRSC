@@ -574,7 +574,7 @@ public class K_kailaScript extends IdleScript {
    */
   public static boolean isWithinLootzone(int x, int y) {
     if (centerX == -1 || centerY == -1 || centerDistance == -1) {
-      c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
+      // c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
       return true;
     }
     return c.distance(centerX, centerY, x, y) <= centerDistance; // center of lootzone
@@ -590,6 +590,7 @@ public class K_kailaScript extends IdleScript {
     if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
       for (int id : c.getFoodIds()) {
         if (c.getInventoryItemCount(id) > 0) {
+          leaveCombat();
           c.setStatus("@red@Eating..");
           c.itemCommand(id);
           c.sleep(GAME_TICK);
@@ -608,12 +609,11 @@ public class K_kailaScript extends IdleScript {
    * @param itemId int of itemId to loot. For multiple items use lootItems(boolean, int[]);
    */
   public static void lootItem(boolean leaveCombat, int itemId) {
-    if (leaveCombat && c.isInCombat()) leaveCombat();
-    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     try {
       int[] coords = c.getNearestItemById(itemId);
       if (coords != null && isWithinLootzone(coords[0], coords[1])) {
         c.setStatus("@yel@Picking Loot...");
+        if (!leaveCombat && c.isInCombat()) return; // method blocked by combat
         c.walkToAsync(coords[0], coords[1], 0);
         c.pickupItem(coords[0], coords[1], itemId, true, false);
         c.sleep(GAME_TICK);
@@ -633,12 +633,11 @@ public class K_kailaScript extends IdleScript {
    *     the method parameters with "new int[]{data}" as the value for this param.
    */
   public static void lootItems(boolean leaveCombat, int[] itemIds) {
-    if (leaveCombat && c.isInCombat()) leaveCombat();
-    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int itemId : itemIds) {
       try {
         int[] coords = c.getNearestItemById(itemId);
         if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          if (!leaveCombat && c.isInCombat()) return; // method blocked by combat
           c.setStatus("@yel@Picking loot...");
           c.walkToAsync(coords[0], coords[1], 0);
           c.pickupItem(coords[0], coords[1], itemId, true, false);
@@ -670,12 +669,10 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    */
   public static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
-    if (leaveCombat && c.isInCombat()) leaveCombat();
-    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     if (c.getInventoryItemCount(itemId) > 0) {
-      if (amount < 1) {
-        amount = c.getInventoryItemCount(itemId);
-      }
+      if (leaveCombat && c.isInCombat()) leaveCombat();
+      else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+      if (amount < 1) amount = 1;
       c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
       c.sleep(GAME_TICK);
       waitForBatching();
@@ -724,11 +721,11 @@ public class K_kailaScript extends IdleScript {
    * will leave combat to bury bones </pre>
    */
   public static void buryBones(boolean leaveCombat) {
-    if (leaveCombat && c.isInCombat()) leaveCombat();
-    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount(id) > 0) {
+          if (leaveCombat && c.isInCombat()) leaveCombat();
+          else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
           c.setStatus("@yel@Burying bones..");
           c.itemCommand(id);
           c.sleep(640);
@@ -768,13 +765,12 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    */
   public static void eatFoodToLoot(boolean leaveCombat) {
-    if (c.getInventoryItemCount() != 30) return;
-    if (leaveCombat && c.isInCombat()) leaveCombat();
-    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int id : c.getFoodIds()) {
       try {
         if (c.getInventoryItemCount() != 30) return;
         if (c.getInventoryItemCount(id) > 0) {
+          if (leaveCombat && c.isInCombat()) leaveCombat();
+          else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
           c.setStatus("@red@Eating Food to Loot..");
           c.itemCommand(id);
           c.sleep(GAME_TICK);
@@ -792,13 +788,12 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    */
   public static void buryBonesToLoot(boolean leaveCombat) {
-    if (c.getInventoryItemCount() != 30) return;
-    if (leaveCombat && c.isInCombat()) leaveCombat();
-    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount() != 30) return;
         if (c.getInventoryItemCount(id) > 0) {
+          if (leaveCombat && c.isInCombat()) leaveCombat();
+          else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
           c.setStatus("@yel@Burying bones..");
           c.itemCommand(id);
           c.sleep(GAME_TICK);
@@ -816,15 +811,12 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    */
   public static void dropItemToLoot(boolean leaveCombat, int amount, int itemId) {
-    if (c.getInventoryItemCount() != 30) return;
-    if (leaveCombat && c.isInCombat()) leaveCombat();
-    else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
     try {
       if (c.getInventoryItemCount() != 30) return;
       if (c.getInventoryItemCount(itemId) > 0) {
-        if (amount < 1) {
-          amount = 1;
-        }
+        if (amount < 1) amount = 1;
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
         c.sleep(GAME_TICK);
         waitForBatching();
@@ -862,16 +854,13 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
       int attackPotCount =
           c.getInventoryItemCount(attackPot[0])
               + c.getInventoryItemCount(attackPot[1])
               + c.getInventoryItemCount(attackPot[2]);
       if (attackPotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(attackPot[0]) > 0) {
           c.itemCommand(attackPot[0]);
           c.sleep(640);
@@ -896,16 +885,13 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
       int strengthPotCount =
           c.getInventoryItemCount(strengthPot[0])
               + c.getInventoryItemCount(strengthPot[1])
               + c.getInventoryItemCount(strengthPot[2]);
       if (strengthPotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(strengthPot[0]) > 0) {
           c.itemCommand(strengthPot[0]);
           c.sleep(640);
@@ -930,16 +916,13 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
       int defensePotCount =
           c.getInventoryItemCount(defensePot[0])
               + c.getInventoryItemCount(defensePot[1])
               + c.getInventoryItemCount(defensePot[2]);
       if (defensePotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(defensePot[0]) > 0) {
           c.itemCommand(defensePot[0]);
           c.sleep(640);
@@ -964,16 +947,13 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
       int superAttackPotCount =
           c.getInventoryItemCount(superAttackPot[0])
               + c.getInventoryItemCount(superAttackPot[1])
               + c.getInventoryItemCount(superAttackPot[2]);
       if (superAttackPotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
           c.itemCommand(superAttackPot[0]);
           c.sleep(640);
@@ -998,16 +978,13 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
       int superStrengthPotCount =
           c.getInventoryItemCount(superStrengthPot[0])
               + c.getInventoryItemCount(superStrengthPot[1])
               + c.getInventoryItemCount(superStrengthPot[2]);
       if (superStrengthPotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
           c.itemCommand(superStrengthPot[0]);
           c.sleep(640);
@@ -1032,16 +1009,13 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
       int superDefensePotCount =
           c.getInventoryItemCount(superDefensePot[0])
               + c.getInventoryItemCount(superDefensePot[1])
               + c.getInventoryItemCount(superDefensePot[2]);
       if (superDefensePotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
           c.itemCommand(superDefensePot[0]);
           c.sleep(640);
@@ -1068,16 +1042,13 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Prayer")) - boostBelowBase;
     if (c.getCurrentStat(c.getStatId("Prayer")) < boostAtLvl) {
-      if (leaveCombat) {
-        if (c.isInCombat()) leaveCombat();
-      } else {
-        if (c.isInCombat()) return;
-      }
       int prayerPotCount =
           c.getInventoryItemCount(prayerPot[0])
               + c.getInventoryItemCount(prayerPot[1])
               + c.getInventoryItemCount(prayerPot[2]);
       if (prayerPotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(prayerPot[0]) > 0) {
           c.itemCommand(prayerPot[0]);
           c.sleep(320);
@@ -1103,12 +1074,9 @@ public class K_kailaScript extends IdleScript {
         c.getInventoryItemCount(antiPot[0])
             + c.getInventoryItemCount(antiPot[1])
             + c.getInventoryItemCount(antiPot[2]);
-    if (leaveCombat) {
-      if (c.isInCombat()) leaveCombat();
-    } else {
-      if (c.isInCombat()) return;
-    }
     if (antiPotCount > 0) {
+      if (leaveCombat && c.isInCombat()) leaveCombat();
+      else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
       if (c.getInventoryItemCount(antiPot[0]) > 0) {
         c.itemCommand(antiPot[0]);
         c.sleep(640);

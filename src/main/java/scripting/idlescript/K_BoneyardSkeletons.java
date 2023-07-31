@@ -107,7 +107,7 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
           ORSCharacter npc = c.getNearestNpcById(45, false);
           if (npc != null) {
             c.attackNpc(npc.serverIndex);
-            c.sleep(2000);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             if (lootBigBones) lootItem(false, BIG_BONES);

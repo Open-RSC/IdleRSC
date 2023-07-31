@@ -10,12 +10,9 @@ import javax.swing.JTextField;
 /**
  * BuyFromShop by Searos
  *
- * @author Searos
+ * @author Searos and Kaila (fixed/improved)
  */
-public class BuyFromShop extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
+public class BuyFromShop extends K_kailaScript {
   int[] itemIds = {};
   int[] npcId = {};
   int shopNumber = -1;
@@ -23,14 +20,14 @@ public class BuyFromShop extends IdleScript {
   int startY = -1;
   int purchased = 0;
   final JTextField items = new JTextField("");
-  final JTextField shopCount = new JTextField("10");
-  JTextField shopBuyCount = new JTextField("10");
+  final JTextField shopCount = new JTextField("0");
+  JTextField shopBuyCount = new JTextField("0");
   final JTextField vendorId =
       new JTextField("51,55,87,105,145,168,185,222,391,82,83,88,106,146,169,186,223");
 
   public int start(String[] parameters) {
-    startX = controller.currentX();
-    startY = controller.currentY();
+    startX = c.currentX();
+    startY = c.currentY();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -38,6 +35,8 @@ public class BuyFromShop extends IdleScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      startTime = System.currentTimeMillis();
+      next_attempt = System.currentTimeMillis() + 5000L;
       scriptStart();
     }
 
@@ -48,31 +47,31 @@ public class BuyFromShop extends IdleScript {
     // shitty autowalk
     int newX = x;
     int newY = y;
-    while (controller.currentX() != x || controller.currentY() != y) {
-      if (controller.currentX() - x > 23) {
-        newX = controller.currentX() - 20;
+    while (c.currentX() != x || c.currentY() != y) {
+      if (c.currentX() - x > 23) {
+        newX = c.currentX() - 10;
       }
-      if (controller.currentY() - y > 23) {
-        newY = controller.currentY() - 20;
+      if (c.currentY() - y > 23) {
+        newY = c.currentY() - 10;
       }
-      if (controller.currentX() - x < -23) {
-        newX = controller.currentX() + 20;
+      if (c.currentX() - x < -23) {
+        newX = c.currentX() + 10;
       }
-      if (controller.currentY() - y < -23) {
-        newY = controller.currentY() + 20;
+      if (c.currentY() - y < -23) {
+        newY = c.currentY() + 10;
       }
-      if (Math.abs(controller.currentX() - x) <= 23) {
+      if (Math.abs(c.currentX() - x) <= 13) {
         newX = x;
       }
-      if (Math.abs(controller.currentY() - y) <= 23) {
+      if (Math.abs(c.currentY() - y) <= 13) {
         newY = y;
       }
-      if (!controller.isTileEmpty(newX, newY)) {
-        controller.walkToAsync(newX, newY, 2);
-        controller.sleep(640);
+      if (!c.isTileEmpty(newX, newY)) {
+        c.walkToAsync(newX, newY, 2);
+        c.sleep(640);
       } else {
-        controller.walkToAsync(newX, newY, 0);
-        controller.sleep(640);
+        c.walkToAsync(newX, newY, 0);
+        c.sleep(640);
       }
     }
   }
@@ -86,52 +85,73 @@ public class BuyFromShop extends IdleScript {
   }
 
   public void scriptStart() {
-    while (controller.isRunning()) {
-      while (controller.getInventoryItemCount() < 30) {
-        while (controller.getNearestNpcByIds(npcId, false) == null) {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount() < 30) {
+        if (c.getNearestNpcByIds(npcId, false) == null) {
           startWalking(startX, startY);
         }
-        while (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
+        if (c.getNearestNpcByIds(npcId, false) != null && !c.isInShop()) {
+          checkAutowalk();
           if (npcId[0] != 54) {
-            controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
-            controller.sleep(640);
+            c.npcCommand1(c.getNearestNpcByIds(npcId, false).serverIndex);
+            c.sleep(640);
           } else {
-            controller.npcCommand2(controller.getNearestNpcByIds(npcId, false).serverIndex);
-            controller.sleep(640);
+            c.npcCommand2(c.getNearestNpcByIds(npcId, false).serverIndex);
+            c.sleep(640);
           }
         }
-        while (controller.isInShop() && controller.getInventoryItemCount() < 30) {
+        if (c.isInShop() && c.getInventoryItemCount() < 30) {
           for (int itemId : itemIds) {
-            while (itemId != 0
+            if (itemId != 0
                 && isSellable(itemId)
-                && controller.getShopItemCount(itemId) > shopNumber
-                && controller.getShopItemCount(itemId) > 0) {
-              controller.shopBuy(itemId, shopNumber - controller.getShopItemCount(itemId));
-              controller.sleep(430);
+                && c.getShopItemCount(itemId) > shopNumber
+                && c.getShopItemCount(itemId) > 0) {
+              c.shopBuy(itemId, shopNumber - c.getShopItemCount(itemId));
+              c.sleep(640);
             }
           }
-          controller.sleep(420);
+          c.sleep(640);
         }
+        checkAutowalk();
+        c.sleep(640);
       }
-      while (controller.getInventoryItemCount() == 30) {
-        startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
-        while (controller.getNearestNpcById(95, false) == null) {
-          startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
+      if (c.getInventoryItemCount() == 30) {
+        startWalking(c.getNearestBank()[0], c.getNearestBank()[1]);
+        if (c.getNearestNpcById(95, false) == null) {
+          startWalking(c.getNearestBank()[0], c.getNearestBank()[1]);
         }
-        while (!controller.isInBank()) {
-          controller.openBank();
-          controller.sleep(430);
+        if (!c.isInBank()) {
+          c.openBank();
+          c.sleep(640);
         }
-        while (controller.isInBank() && controller.getInventoryItemCount() == 30) {
-          for (int itemId : controller.getInventoryItemIds()) {
-            purchased = purchased + controller.getInventoryItemCount(itemId);
+        if (c.isInBank() && c.getInventoryItemCount() == 30) {
+          for (int itemId : c.getInventoryItemIds()) {
             if (itemId != 0 && itemId != 10) {
-              controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-              controller.sleep(10);
+              c.depositItem(itemId, c.getInventoryItemCount(itemId));
+              c.sleep(640);
+              purchased = purchased + c.getInventoryItemCount(itemId);
             }
           }
         }
+        c.sleep(640);
       }
+    }
+  }
+
+  private static void checkAutowalk() {
+    if (System.currentTimeMillis() > next_attempt) {
+      c.log("@red@Walking to Avoid Logging!");
+      int x = c.currentX();
+      int y = c.currentY();
+
+      if (c.isReachable(x + 1, y, true)) c.walkTo(x + 1, y, 0, false);
+      else if (c.isReachable(x - 1, y, true)) c.walkTo(x - 1, y, 0, false);
+      else if (c.isReachable(x, y + 1, true)) c.walkTo(x, y + 1, 0, false);
+      else if (c.isReachable(x, y - 1, true)) c.walkTo(x, y - 1, 0, false);
+      c.sleep(GAME_TICK);
+      next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
+      long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
+      c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
     }
   }
 
@@ -156,7 +176,7 @@ public class BuyFromShop extends IdleScript {
   }
 
   public void setupGUI() {
-    JLabel header = new JLabel("Sell To Shop");
+    JLabel header = new JLabel("Buy From Shop");
     JButton startScriptButton = new JButton("Start");
     JLabel itemsLabel = new JLabel("Item Ids to buy");
     JLabel shopCountLabel = new JLabel("Buy until shop has");
@@ -167,9 +187,9 @@ public class BuyFromShop extends IdleScript {
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
-          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
+          c.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
           completeSetup();
-          controller.displayMessage("@red@buyFromShop started");
+          c.displayMessage("@red@buyFromShop started");
         });
 
     scriptFrame = new JFrame("Script Options");
@@ -193,10 +213,16 @@ public class BuyFromShop extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (controller != null) {
-      controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
-      controller.drawString("@red@Buy from Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
-          "@red@Purchased items banked: @yel@" + this.purchased, 10, 35, 0xFFFFFF, 1);
+      c.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+      c.drawString("@red@Buy from Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+      c.drawString("@red@Purchased items banked: @yel@" + this.purchased, 10, 35, 0xFFFFFF, 1);
+      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
+      c.drawString(
+          "@red@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
+          10,
+          35 + 14,
+          0xFFFFFF,
+          1);
     }
   }
 }

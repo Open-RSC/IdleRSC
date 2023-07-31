@@ -124,13 +124,12 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       if (c.getInventoryItemCount(546) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
-
-            // c.sleepHandler(98, true);
             ORSCharacter npc = c.getNearestNpcById(344, false);
             if (npc != null) {
               c.setStatus("@yel@Attacking Giants");
               c.walktoNPC(npc.serverIndex, 1);
               c.attackNpc(npc.serverIndex);
+              c.sleep(GAME_TICK);
             } else {
               c.sleep(GAME_TICK);
               lootItems(false, loot);

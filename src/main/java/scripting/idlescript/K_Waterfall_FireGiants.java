@@ -121,6 +121,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
             if (npc != null) {
               c.setStatus("@yel@Attacking Giants");
               c.attackNpc(npc.serverIndex);
+              c.sleep(GAME_TICK);
             } else {
               c.sleep(GAME_TICK);
               buryBones(false);

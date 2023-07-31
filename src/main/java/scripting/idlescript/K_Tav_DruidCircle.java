@@ -122,6 +122,7 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Druids");
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);

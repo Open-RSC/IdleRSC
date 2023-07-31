@@ -103,6 +103,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
+            c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             if (lootBones) lootItem(false, BONES);

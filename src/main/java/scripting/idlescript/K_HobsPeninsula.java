@@ -113,7 +113,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking..");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2 * GAME_TICK);
+            c.sleep(GAME_TICK);
           } else {
             lootItems(false, loot);
             c.sleep(GAME_TICK);

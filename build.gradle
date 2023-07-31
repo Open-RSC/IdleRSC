@@ -38,6 +38,11 @@ tasks.named('compileJava') {
   // Run spotlessApply after successful compilation rather than before, so
   // that any developer errors can be dealt with prior to formatting
   finalizedBy spotlessApply
+
+  options.compilerArgs += [
+    '-Xlint:deprecation',
+    '-Xlint:unchecked',
+  ]
 }
 
 tasks.named('jar') {

@@ -50,21 +50,21 @@ public class BuyFromShop extends IdleScript {
     int newY = y;
     while (controller.currentX() != x || controller.currentY() != y) {
       if (controller.currentX() - x > 23) {
-        newX = controller.currentX() - 20;
+        newX = controller.currentX() - 10;
       }
       if (controller.currentY() - y > 23) {
-        newY = controller.currentY() - 20;
+        newY = controller.currentY() - 10;
       }
       if (controller.currentX() - x < -23) {
-        newX = controller.currentX() + 20;
+        newX = controller.currentX() + 10;
       }
       if (controller.currentY() - y < -23) {
-        newY = controller.currentY() + 20;
+        newY = controller.currentY() + 10;
       }
-      if (Math.abs(controller.currentX() - x) <= 23) {
+      if (Math.abs(controller.currentX() - x) <= 13) {
         newX = x;
       }
-      if (Math.abs(controller.currentY() - y) <= 23) {
+      if (Math.abs(controller.currentY() - y) <= 13) {
         newY = y;
       }
       if (!controller.isTileEmpty(newX, newY)) {
@@ -87,11 +87,11 @@ public class BuyFromShop extends IdleScript {
 
   public void scriptStart() {
     while (controller.isRunning()) {
-      while (controller.getInventoryItemCount() < 30) {
-        while (controller.getNearestNpcByIds(npcId, false) == null) {
+      if (controller.getInventoryItemCount() < 30) {
+        if (controller.getNearestNpcByIds(npcId, false) == null) {
           startWalking(startX, startY);
         }
-        while (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
+        if (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
           if (npcId[0] != 54) {
             controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
             controller.sleep(640);
@@ -100,37 +100,39 @@ public class BuyFromShop extends IdleScript {
             controller.sleep(640);
           }
         }
-        while (controller.isInShop() && controller.getInventoryItemCount() < 30) {
+        if (controller.isInShop() && controller.getInventoryItemCount() < 30) {
           for (int itemId : itemIds) {
-            while (itemId != 0
+            if (itemId != 0
                 && isSellable(itemId)
                 && controller.getShopItemCount(itemId) > shopNumber
                 && controller.getShopItemCount(itemId) > 0) {
               controller.shopBuy(itemId, shopNumber - controller.getShopItemCount(itemId));
-              controller.sleep(430);
+              controller.sleep(640);
             }
           }
-          controller.sleep(420);
+          controller.sleep(640);
         }
+        controller.sleep(640);
       }
-      while (controller.getInventoryItemCount() == 30) {
+      if (controller.getInventoryItemCount() == 30) {
         startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
-        while (controller.getNearestNpcById(95, false) == null) {
+        if (controller.getNearestNpcById(95, false) == null) {
           startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
         }
-        while (!controller.isInBank()) {
+        if (!controller.isInBank()) {
           controller.openBank();
-          controller.sleep(430);
+          controller.sleep(640);
         }
-        while (controller.isInBank() && controller.getInventoryItemCount() == 30) {
+        if (controller.isInBank() && controller.getInventoryItemCount() == 30) {
           for (int itemId : controller.getInventoryItemIds()) {
-            purchased = purchased + controller.getInventoryItemCount(itemId);
             if (itemId != 0 && itemId != 10) {
               controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-              controller.sleep(10);
+              controller.sleep(640);
+              purchased = purchased + controller.getInventoryItemCount(itemId);
             }
           }
         }
+        controller.sleep(640);
       }
     }
   }
@@ -156,7 +158,7 @@ public class BuyFromShop extends IdleScript {
   }
 
   public void setupGUI() {
-    JLabel header = new JLabel("Sell To Shop");
+    JLabel header = new JLabel("Buy From Shop");
     JButton startScriptButton = new JButton("Start");
     JLabel itemsLabel = new JLabel("Item Ids to buy");
     JLabel shopCountLabel = new JLabel("Buy until shop has");

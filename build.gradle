@@ -5,6 +5,8 @@ plugins {
   id 'base'
   // For formatting source-code
   alias(libs.plugins.spotless)
+  // Use metadata from git
+  id 'git-metadata'
 }
 
 // Tasks not related to build are split out into their own gradle scripts
@@ -31,7 +33,7 @@ dependencies {
 
 // Moves the compiled jar to the root folder
 base {
-    libsDirectory = getProjectDir()
+  libsDirectory = getProjectDir()
 }
 
 tasks.named('compileJava') {
@@ -51,9 +53,9 @@ tasks.named('jar') {
       // Define entry point for application
       'Main-Class': 'bot.Main',
       // Embed version/build information in application
-      'Build-Commit-Hash': "${commitHash()}",
-      'Build-Commit-Date': "${commitDate()}",
-      'Build-Commit-Count': "${commitCount()}",
+      'Build-Commit-Hash': "${gitCommitHash()}",
+      'Build-Commit-Date': "${gitCommitDate()}",
+      'Build-Commit-Count': "${gitCommitCount()}",
       'Build-Jdk' : "${System.properties['java.version']}",
     )
   }
@@ -74,7 +76,7 @@ tasks.named('jar') {
 tasks.named('clean') {
   delete 'src/main/resources/cache'
   delete "${project.name}.jar"
-  delete "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}.zip"
+  delete "${project.name}-${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}.zip"
 }
 
 // ensure builds are reproducible

@@ -111,7 +111,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
+            c.sleep(2 * GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
             lootItems(true, loot);
@@ -235,7 +235,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   }
 
   private void dragonEscape() {
-    c.setStatus("We've ran out of Food/prayPotprayPotprayPotprayPots! @gre@Going to safe zone.");
+    c.setStatus("We've ran out of Food/prayPots! @gre@Going to safe zone.");
     c.walkTo(408, 3340);
     c.walkTo(408, 3348);
     c.sleep(1000);
@@ -293,7 +293,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(397, 3343);
     c.walkTo(403, 3346);
     c.walkTo(408, 3344);
-    c.walkTo(409, 3338);
+    c.walkTo(408, 3340);
     drinkAntidote(true);
     eat();
     prayPotCheck();
@@ -303,7 +303,11 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   }
 
   private void prayPotCheck() {
-    if (c.getInventoryItemCount(483) == 0) {
+    int prayerPotCount =
+        c.getInventoryItemCount(prayerPot[0])
+            + c.getInventoryItemCount(prayerPot[1])
+            + c.getInventoryItemCount(prayerPot[2]);
+    if (prayerPotCount == 0) {
       c.setStatus("@yel@No prayPots, Banking..");
       dragonEscape();
       DragonsToBank();
@@ -369,7 +373,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(4));
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(3));
     JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
     JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(6));
 
@@ -381,7 +385,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           if (!foodWithdrawAmountField.getText().equals("")) {
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           } else {
-            foodWithdrawAmount = 4;
+            foodWithdrawAmount = 3;
           }
           if (!prayPotWithdrawAmountField.getText().equals("")) {
             prayPotWithdrawAmount = Integer.parseInt(prayPotWithdrawAmountField.getText());

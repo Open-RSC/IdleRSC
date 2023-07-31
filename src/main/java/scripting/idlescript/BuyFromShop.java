@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 /**
  * BuyFromShop by Searos
  *
- * @author Searos
+ * @author Searos and Kaila (fixed/improved)
  */
 public class BuyFromShop extends K_kailaScript {
   int[] itemIds = {};

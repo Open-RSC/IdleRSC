@@ -12,10 +12,7 @@ import javax.swing.JTextField;
  *
  * @author Searos
  */
-public class BuyFromShop extends IdleScript {
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
+public class BuyFromShop extends K_kailaScript {
   int[] itemIds = {};
   int[] npcId = {};
   int shopNumber = -1;
@@ -23,8 +20,8 @@ public class BuyFromShop extends IdleScript {
   int startY = -1;
   int purchased = 0;
   final JTextField items = new JTextField("");
-  final JTextField shopCount = new JTextField("10");
-  JTextField shopBuyCount = new JTextField("10");
+  final JTextField shopCount = new JTextField("0");
+  JTextField shopBuyCount = new JTextField("0");
   final JTextField vendorId =
       new JTextField("51,55,87,105,145,168,185,222,391,82,83,88,106,146,169,186,223");
 
@@ -38,6 +35,8 @@ public class BuyFromShop extends IdleScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      startTime = System.currentTimeMillis();
+      next_attempt = System.currentTimeMillis() + 5000L;
       scriptStart();
     }
 
@@ -92,6 +91,7 @@ public class BuyFromShop extends IdleScript {
           startWalking(startX, startY);
         }
         if (controller.getNearestNpcByIds(npcId, false) != null && !controller.isInShop()) {
+          checkAutowalk();
           if (npcId[0] != 54) {
             controller.npcCommand1(controller.getNearestNpcByIds(npcId, false).serverIndex);
             controller.sleep(640);
@@ -112,6 +112,7 @@ public class BuyFromShop extends IdleScript {
           }
           controller.sleep(640);
         }
+        checkAutowalk();
         controller.sleep(640);
       }
       if (controller.getInventoryItemCount() == 30) {
@@ -134,6 +135,23 @@ public class BuyFromShop extends IdleScript {
         }
         controller.sleep(640);
       }
+    }
+  }
+
+  private static void checkAutowalk() {
+    if (System.currentTimeMillis() > next_attempt) {
+      c.log("@red@Walking to Avoid Logging!");
+      int x = c.currentX();
+      int y = c.currentY();
+
+      if (c.isReachable(x + 1, y, true)) c.walkTo(x + 1, y, 0, false);
+      else if (c.isReachable(x - 1, y, true)) c.walkTo(x - 1, y, 0, false);
+      else if (c.isReachable(x, y + 1, true)) c.walkTo(x, y + 1, 0, false);
+      else if (c.isReachable(x, y - 1, true)) c.walkTo(x, y - 1, 0, false);
+      c.sleep(GAME_TICK);
+      next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
+      long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
+      c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
     }
   }
 
@@ -199,6 +217,13 @@ public class BuyFromShop extends IdleScript {
       controller.drawString("@red@Buy from Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       controller.drawString(
           "@red@Purchased items banked: @yel@" + this.purchased, 10, 35, 0xFFFFFF, 1);
+      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
+      c.drawString(
+          "@red@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
+          10,
+          35 + 14,
+          0xFFFFFF,
+          1);
     }
   }
 }

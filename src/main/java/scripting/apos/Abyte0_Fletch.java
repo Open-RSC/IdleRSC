@@ -2,25 +2,25 @@ package scripting.apos;
 
 import compatibility.apos.Script;
 
-// Abyte0
-// 2012-01-25
-// Make Oak,Willow,Yew,Magic Longbows
-
-/*
-To Cut tree + Cut Log + Bank Untrung
-abyte0_fletch oak
-abyte0_fletch willow
-abyte0_fletch yew
-abyte0_fletch magic
-
-To Withdraw Untring Add String Bank Bows
-abyte0_fletch o
-abyte0_fletch w
-abyte0_fletch y
-abyte0_fletch m
-*/
-
-public class Abyte0_Fletch extends Script {
+/**
+ * Abyte0 <br>
+ * 2012-01-25<br>
+ *
+ * <p>Make Oak,Willow,Yew,Magic Longbows<br>
+ *
+ * <p>To Cut tree + Cut Log + Bank Untrung<br>
+ * abyte0_fletch oak<br>
+ * abyte0_fletch willow<br>
+ * abyte0_fletch yew<br>
+ * abyte0_fletch magic<br>
+ *
+ * <p>To Withdraw Untring Add String Bank Bows<br>
+ * abyte0_fletch o<br>
+ * abyte0_fletch w<br>
+ * abyte0_fletch y<br>
+ * abyte0_fletch m<br>
+ */
+public final class Abyte0_Fletch extends Script {
   final int oakTree = 306;
   final int oakLog = 632;
   final int oakLongBow = 648;
@@ -56,11 +56,11 @@ public class Abyte0_Fletch extends Script {
 
   final int fmode = 3;
 
-  public final void print(String gameText) {
+  private final void print(String gameText) {
     System.out.println(gameText);
   }
 
-  public Abyte0_Fletch(String e) {}
+  private Abyte0_Fletch(String e) {}
 
   public void init(String param) {
     print("Seer Fletcher by Abyte0");
@@ -247,7 +247,7 @@ public class Abyte0_Fletch extends Script {
     return random(800, 1000);
   }
 
-  public int cut() {
+  private int cut() {
     if (getInventoryCount(logId) > 0) {
       useItemWithItem(getInventoryIndex(knife), getInventoryIndex(logId));
       return random(500, 600);
@@ -255,7 +255,7 @@ public class Abyte0_Fletch extends Script {
     return 0;
   }
 
-  public int sortirBanque() {
+  private int sortirBanque() {
     if (getX() == 500 && getY() == 453) {
       // si devant porte on ouvre et on sort de la banque
       atObject(500, 454);
@@ -271,7 +271,7 @@ public class Abyte0_Fletch extends Script {
     return 0;
   }
 
-  public int entreBanque() {
+  private int entreBanque() {
     if (getX() >= 498 && getX() <= 504 && getY() >= 447 && getY() <= 453) {
       // Si dans la banque
       int[] banker = getNpcByIdNotTalk(95);

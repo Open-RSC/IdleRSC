@@ -2,6 +2,7 @@ package scripting.apos;
 
 import compatibility.apos.Script;
 
+/** Mine ores in fally west mine */
 public class Abyte0_FallyMiner extends Script {
   final int oreID = 151;
   // Iron
@@ -15,7 +16,7 @@ public class Abyte0_FallyMiner extends Script {
   int cptTry = 0;
   int cptInventaireToBank = 30;
 
-  public Abyte0_FallyMiner(String e) {
+  private Abyte0_FallyMiner(String e) {
     // super(e);
   }
 
@@ -38,7 +39,7 @@ public class Abyte0_FallyMiner extends Script {
     return Mine();
   }
 
-  public int Mine() {
+  private int Mine() {
     if (getFightMode() != fMode) {
       setFightMode(fMode);
     }
@@ -186,7 +187,7 @@ public class Abyte0_FallyMiner extends Script {
     }
   }
 
-  public final void print(String gameText) {
+  private void print(String gameText) {
     System.out.println(gameText);
   }
 }

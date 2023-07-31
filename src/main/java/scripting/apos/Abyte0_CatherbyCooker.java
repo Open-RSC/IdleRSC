@@ -49,7 +49,7 @@ public class Abyte0_CatherbyCooker extends Abyte0_Script {
   final int[] cookArea = new int[] {435, 485};
   final int[] bankArea = new int[] {439, 495};
 
-  public Abyte0_CatherbyCooker(String e) {
+  private Abyte0_CatherbyCooker(String e) {
     super(e);
   }
 

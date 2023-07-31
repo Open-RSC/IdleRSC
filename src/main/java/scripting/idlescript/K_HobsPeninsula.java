@@ -5,7 +5,7 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * <b>Asgarnian Hobs Peninsula</b>>
+ * <b>Asgarnian Hobs Peninsula</b>
  *
  * <p>Start in Fally East bank with Armor or Hobs Peninsula
  *

@@ -1,6 +1,7 @@
 package scripting.apos;
 
-public class Abyte0_GetSnape extends Abyte0_Script {
+/** Picks up snape grass and limp from hobs peninsula */
+public final class Abyte0_GetSnape extends Abyte0_Script {
   int step = 0;
   int foodId = 373;
   int fmode = 2;
@@ -38,7 +39,7 @@ public class Abyte0_GetSnape extends Abyte0_Script {
   };
 
   // client extension;
-  public Abyte0_GetSnape(String e) {
+  private Abyte0_GetSnape(String e) {
     super(e);
     // extension = new client();
   }
@@ -183,7 +184,7 @@ public class Abyte0_GetSnape extends Abyte0_Script {
   //	System.out.println(gameText);
   // }
 
-  public final void EatFood() {
+  private void EatFood() {
     int foodIndex = getInventoryIndex(foodId);
     useItem(foodIndex);
   }

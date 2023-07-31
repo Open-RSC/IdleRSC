@@ -2,7 +2,7 @@ package scripting.apos;
 
 import compatibility.apos.Script;
 
-public class Abyte0_SwampMiner extends Script {
+public final class Abyte0_SwampMiner extends Script {
   final int oreMith = 153; // Mith ore
   final int oreAddy = 154; // Addy ore
   final int oreCoal = 155; // Coal ore
@@ -26,7 +26,7 @@ public class Abyte0_SwampMiner extends Script {
 
   final int cptInventaireToBank = 30;
 
-  public Abyte0_SwampMiner(String e) {
+  private Abyte0_SwampMiner(String e) {
     // super(e);
   }
 
@@ -59,7 +59,7 @@ public class Abyte0_SwampMiner extends Script {
     return Mine();
   }
 
-  public int Mine() {
+  private int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }
@@ -298,11 +298,11 @@ public class Abyte0_SwampMiner extends Script {
     }
   }
 
-  public final void print(String gameText) {
+  private void print(String gameText) {
     System.out.println(gameText);
   }
 
-  public final int mineOre(int id) {
+  private int mineOre(int id) {
     int[] rock = getObjectById(id);
     if (rock[0] != -1) {
       if (rock[1] >= 108 && rock[1] <= 118 && rock[2] >= 695 && rock[2] <= 706) {

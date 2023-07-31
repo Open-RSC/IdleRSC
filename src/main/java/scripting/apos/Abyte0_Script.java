@@ -97,6 +97,11 @@ public class Abyte0_Script extends Storm_Script {
     buyShopItem(position, amount);
   }
 
+  /**
+   * print the input text in the console and on the game messages screen
+   *
+   * @param gameText String value to be output
+   */
   public void print(String gameText) {
     System.out.println(gameText);
     printBot(gameText);
@@ -318,7 +323,12 @@ public class Abyte0_Script extends Storm_Script {
     return -1;
   }
 
-  /** Drop the */
+  /**
+   * Drop Item id or wait for next drop tick
+   *
+   * @param id itemId to be dropped
+   * @return unknown sleep time
+   */
   public int dropItemIdOrWait(int id) {
 
     int firstInstanceIndex = getInventoryIndex(id);
@@ -371,16 +381,27 @@ public class Abyte0_Script extends Storm_Script {
   //		return npcS;
   //	}
 
-  public void RunFromCombat() {
+  private void RunFromCombat() {
     walkTo(getX(), getY());
   }
 
+  /**
+   * Checks if you still have food items
+   *
+   * @param foodId id value of food item
+   * @return boolean true if you have food, false if not
+   */
   public boolean IsStillHavingFood(int foodId) {
     if (foodId == -1) return true;
     if (foodId == 330) return getInventoryCount(foodId, 333, 335) > 0;
     else return getInventoryCount(foodId) > 0;
   }
 
+  /**
+   * Eat the food id
+   *
+   * @param foodId id value of food item
+   */
   public final void EatFood(int foodId) {
     if (foodId == -1) return;
 

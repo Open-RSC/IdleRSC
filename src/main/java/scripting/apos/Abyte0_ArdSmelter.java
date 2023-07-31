@@ -1,6 +1,7 @@
 package scripting.apos;
 
-public class Abyte0_ArdSmelter extends Abyte0_Script {
+/** Smelt ores at ardy furnace */
+public final class Abyte0_ArdSmelter extends Abyte0_Script {
   int[] mix;
   // int[] barMith;
   // int[] barAddy;
@@ -25,7 +26,7 @@ public class Abyte0_ArdSmelter extends Abyte0_Script {
 
   int[] doorObj;
 
-  public Abyte0_ArdSmelter(String e) {
+  private Abyte0_ArdSmelter(String e) {
     super(e);
   }
 
@@ -80,7 +81,7 @@ public class Abyte0_ArdSmelter extends Abyte0_Script {
     return Mine();
   }
 
-  public int Mine() {
+  private int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }

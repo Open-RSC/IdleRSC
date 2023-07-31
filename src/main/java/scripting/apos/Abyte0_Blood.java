@@ -1,6 +1,7 @@
 package scripting.apos;
 
-public class Abyte0_Blood extends Abyte0_Script {
+/** opens blood chest below ardy chaos druid tower */
+public final class Abyte0_Blood extends Abyte0_Script {
   // Version 3.1 2021-08-17 Support Cake as 330
 
   int fmode = 2;
@@ -14,7 +15,7 @@ public class Abyte0_Blood extends Abyte0_Script {
   int minWait = 30000;
   int maxWait = 90000;
 
-  public Abyte0_Blood(String e) {
+  private Abyte0_Blood(String e) {
     super(e);
   }
 
@@ -249,7 +250,7 @@ public class Abyte0_Blood extends Abyte0_Script {
     return random(2000, 2500);
   }
 
-  public int walk() {
+  private int walk() {
     if (getInventoryCount(foodId) <= minFoodToBankAt) {
       // we need to bank
       // 617, 558, 609, 565, 603, 582, 600, 595, 588, 598, 590, 578, 581, 574
@@ -286,13 +287,13 @@ public class Abyte0_Blood extends Abyte0_Script {
     return 1000;
   }
 
-  public final void BuryBigBone() {
+  private void BuryBigBone() {
     int boneIndex = getInventoryIndex(413);
     print("Bury Bones at position : " + boneIndex);
     useItem(boneIndex);
   }
 
-  public int TryBury() {
+  private int TryBury() {
     if (BuryOrNot == 0) {
       if (getInventoryCount(413) > 0) {
         if (inCombat()) {
@@ -318,13 +319,13 @@ public class Abyte0_Blood extends Abyte0_Script {
     return -1;
   }
 
-  public void RunFromCombat() {
+  private void RunFromCombat() {
     int x = getX();
     int y = getY();
     walkTo(x, y);
   }
 
-  public void RunNorthOrAttackNorth() {
+  private void RunNorthOrAttackNorth() {
     int[] npcs = getNpcInRadius(312, getX(), getY() - 1, 0); // ,525,706);
     if (npcs[0] != -1) attackNpc(npcs[0]);
     else {

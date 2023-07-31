@@ -1,10 +1,7 @@
 package scripting.apos;
-/*
-	By: 			Abyte0
-	Private Release: 	2011-??-??
-	Public Release: 	2013-01-15
-*/
-public class Abyte0_ArdMiner extends Abyte0_Script {
+
+/** By: Abyte0 Private Release: 2011-??-?? Public Release: 2013-01-15 */
+public final class Abyte0_ArdMiner extends Abyte0_Script {
   final int oreID = 151;
   // Iron
   int banker = 95; // Banker    // uncut gem id's
@@ -16,7 +13,7 @@ public class Abyte0_ArdMiner extends Abyte0_Script {
   int cptTry = 0;
   int cptInventaireToBank = 30;
 
-  public Abyte0_ArdMiner(String e) {
+  private Abyte0_ArdMiner(String e) {
     super(e);
   }
 
@@ -32,7 +29,7 @@ public class Abyte0_ArdMiner extends Abyte0_Script {
     return Mine();
   }
 
-  public int Mine() {
+  private int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }

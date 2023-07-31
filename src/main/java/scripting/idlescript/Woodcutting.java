@@ -10,14 +10,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Woodcutting by Searos
+ * <b>AIO Woodcutting Bot</b>
  *
- * <p>Updated by Kaila
+ * <p>Does banking automatically<br>
  *
- * <p>
- *
- * @author Searos
- *     <p>Kaila
+ * @author Searos, Kaila
  */
 public class Woodcutting extends IdleScript {
   private static final Controller c = Main.getController();

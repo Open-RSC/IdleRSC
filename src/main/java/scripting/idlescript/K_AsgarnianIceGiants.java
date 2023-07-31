@@ -9,7 +9,7 @@ import orsc.ORSCharacter;
  *
  * <p>This bot supports the "autostart" Parameter"); Usage: foodname numberOfFood potUp? example:
  * "shark,5,true". "autostart": uses lobsters,5,true. <br>
- * <Start in Fally East bank or In Ice Cave. <br>
+ * Start in Fally East bank or In Ice Cave. <br>
  * Food in bank REQUIRED. <br>
  * Use regular Atk/Str Pots option. <br>
  * Food Withdraw amount <br>

@@ -77,7 +77,7 @@ public abstract class Script implements IScript {
    * Used internally by the bot to set {@link controller.Controller}, as that is what adapts APOS to
    * IdleRSC.
    *
-   * @param _controller
+   * @param _controller controller
    */
   public static void setController(Controller _controller) {
     controller = _controller;
@@ -2502,7 +2502,7 @@ public abstract class Script implements IScript {
   /**
    * <b>New APOS function.</b> On Coleslaw, returns whether or not we are currently batching.
    *
-   * @return
+   * @return true if batching and false if not
    */
   public boolean isBatching() {
     return controller.isBatching();

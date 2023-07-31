@@ -14,7 +14,7 @@ public class Abyte0_CatherbyFisher extends Abyte0_Script {
   boolean isDoingShark = false;
   int cptTry = 0;
 
-  public Abyte0_CatherbyFisher(String e) {
+  private Abyte0_CatherbyFisher(String e) {
     super(e);
   }
 

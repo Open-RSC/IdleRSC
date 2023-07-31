@@ -8,29 +8,20 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * PotionMaker Script by Seatta, Updated by Kaila.
+ * <b>PotionMaker Script</b>
  *
- * <p>
+ * <p>Batch bars MUST be toggles on to function properly.<br>
+ * added unif only option.<br>
+ * Changed method to 15/15 inventories for efficiency.<br>
+ * added option to stop making unif/etc. when out of secondary.<br>
  *
- * <p>Batch bars MUST be toggles on to function properly.
- *
- * <p>
- *
- * <p>Kaila -
- *
- * <p>added unif only option.
- *
- * <p>Changed method to 15/15 inventories for efficiency.
- *
- * <p>added option to stop making unif/etc. when out of secondary.
- *
- * <p>
+ * @author Seatta, Kaila
+ * @version 1.2 Updated with GUI and full logic rewrite
  */
 /*
- *      todo
- *         add uranium support/no batching support
+ * todo add uranium support/no batching support
  */
-public class PotionMaker extends IdleScript {
+public final class PotionMaker extends IdleScript {
   private static final Controller c = Main.getController();
   private static String potion = "";
   private static String primaryIngredientName = "";

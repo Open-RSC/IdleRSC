@@ -1,14 +1,13 @@
 package scripting.apos;
 
-// Based on the Script HARRY provided on forum (fletch)
-// Edited by Abyte0
-// 2012-01-24 - Added WalkBack
-
-public class Abyte0_Shaft extends Abyte0_Script {
+/**
+ * Based on the Script HARRY provided on forum (fletch) Edited by Abyte0 2012-01-24 - Added WalkBack
+ */
+public final class Abyte0_Shaft extends Abyte0_Script {
 
   int x, y;
 
-  public Abyte0_Shaft(String e) {
+  private Abyte0_Shaft(String e) {
     super(e);
   }
 

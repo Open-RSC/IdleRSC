@@ -3,6 +3,7 @@ package scripting.apos;
 import compatibility.apos.Script;
 import java.util.Locale;
 
+/** Pick flax in gnome tree, bank or spin/drop */
 public class Abyte0_Flax extends Script {
   private long menu_time;
   private long bank_time;
@@ -11,9 +12,9 @@ public class Abyte0_Flax extends Script {
   final int idBanker = 540;
   boolean power = false;
 
-  public Abyte0_Flax(String e) {}
+  private Abyte0_Flax(String e) {}
 
-  public void print(String s) {
+  private void print(String s) {
     System.out.println(s);
   }
 

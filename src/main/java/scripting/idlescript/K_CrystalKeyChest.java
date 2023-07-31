@@ -35,6 +35,7 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       c.displayMessage("@gre@Start by Crystal chest or in Catherby Bank!");
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       if (c.currentX() > 400) {
         bank();
@@ -142,7 +143,7 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       DragonstonesInBank = c.getBankItemCount(542);
 
       c.closeBank();
-      c.sleep(640);
+      c.sleep(2*GAME_TICK);
     }
   }
 

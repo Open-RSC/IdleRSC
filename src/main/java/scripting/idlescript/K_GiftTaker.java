@@ -28,7 +28,7 @@ public final class K_GiftTaker extends K_kailaScript {
     c.sleep(1240);
     if (!c.isInBank()) {
       c.openBank();
-      c.sleep(1240);
+      c.sleep(2*GAME_TICK);
     }
     if (c.isInBank()) {
       if (c.getInventoryItemCount() < 20) {
@@ -38,7 +38,7 @@ public final class K_GiftTaker extends K_kailaScript {
         depositAll();
       }
       c.closeBank();
-      c.sleep(1240);
+      c.sleep(2*GAME_TICK);
     }
     return 1000; // start() must return an int value now.
   }

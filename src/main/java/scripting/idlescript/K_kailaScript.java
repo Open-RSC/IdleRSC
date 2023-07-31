@@ -1162,7 +1162,7 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
         c.sleep(640);
         c.closeBank();
-        c.sleep(1280);
+        c.sleep(2*GAME_TICK);
       }
     }
   }
@@ -1402,7 +1402,7 @@ public class K_kailaScript extends IdleScript {
         c.sleep(640);
       }
       c.closeBank();
-      c.sleep(1280);
+      c.sleep(2*GAME_TICK);
     }
   }
   /**
@@ -1418,8 +1418,8 @@ public class K_kailaScript extends IdleScript {
       }
       c.withdrawItem(420, 1);
       c.closeBank();
+      c.sleep(2 * GAME_TICK);
       c.equipItem(c.getInventoryItemSlotIndex(420));
-      c.sleep(1320);
     }
   }
 

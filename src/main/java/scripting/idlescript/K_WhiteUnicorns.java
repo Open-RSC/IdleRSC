@@ -49,6 +49,7 @@ public final class K_WhiteUnicorns extends K_kailaScript {
       c.displayMessage("@red@Start in Edge bank with Armor");
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       if (c.currentX() < 450) {
         bank();
@@ -137,7 +138,7 @@ public final class K_WhiteUnicorns extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(1000);
+      c.sleep(2*GAME_TICK);
     }
   }
 

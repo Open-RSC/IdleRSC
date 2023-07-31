@@ -38,6 +38,7 @@ public final class K_SkelliCoal extends K_kailaScript {
     c.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
     if (c.isInBank()) {
       c.closeBank();
+      c.sleep(2*GAME_TICK);
     }
     if (c.currentY() > 400) {
       bank();
@@ -132,7 +133,7 @@ public final class K_SkelliCoal extends K_kailaScript {
       coalInBank = c.getBankItemCount(155);
 
       c.closeBank();
-      c.sleep(640);
+      c.sleep(2*GAME_TICK);
     }
   }
 

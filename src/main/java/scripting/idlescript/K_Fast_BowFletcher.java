@@ -39,7 +39,10 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
 
       guiSetup = false;
       scriptStarted = false;
-      if (c.isInBank()) c.closeBank();
+      if (c.isInBank()) {
+        c.closeBank();
+        c.sleep(2*GAME_TICK);
+      }
       startTime = System.currentTimeMillis();
       scriptStart();
     }
@@ -134,6 +137,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       }
       logsInBank = c.getBankItemCount(logId);
       c.closeBank();
+      c.sleep(2*GAME_TICK);
     }
   }
   // GUI stuff below (icky)

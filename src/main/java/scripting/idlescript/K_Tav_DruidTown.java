@@ -82,6 +82,7 @@ public final class K_Tav_DruidTown extends K_kailaScript {
 
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       if (c.currentY() > 515) {
         bank();
@@ -207,7 +208,7 @@ public final class K_Tav_DruidTown extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 30);
       c.closeBank();
-      c.sleep(1000);
+      c.sleep(2*GAME_TICK);
     }
   }
 

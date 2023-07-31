@@ -34,6 +34,7 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
       c.displayMessage("@red@Need coins in the inventory to buy");
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       if (c.currentY() < 1000) {
         bank();
@@ -84,7 +85,7 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
       }
       TopzInBank = c.getBankItemCount(1374);
       c.closeBank();
-      c.sleep(640);
+      c.sleep(2*GAME_TICK);
     }
   }
 

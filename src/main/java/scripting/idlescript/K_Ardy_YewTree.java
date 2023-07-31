@@ -27,6 +27,7 @@ public final class K_Ardy_YewTree extends K_kailaScript {
     c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
     if (c.isInBank()) {
       c.closeBank();
+      c.sleep(2*GAME_TICK);
     }
     if (c.currentY() < 620
         && c.currentY() > 600
@@ -208,7 +209,7 @@ public final class K_Ardy_YewTree extends K_kailaScript {
       }
       logInBank = c.getBankItemCount(635);
       c.closeBank();
-      c.sleep(1000);
+      c.sleep(2*GAME_TICK);
     }
   }
   // GUI stuff below (icky)

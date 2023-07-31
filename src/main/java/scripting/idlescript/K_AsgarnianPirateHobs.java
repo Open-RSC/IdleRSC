@@ -77,6 +77,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       if (c.currentY() < 3000) {
         bank();
@@ -204,7 +205,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(640);
+      c.sleep(2*GAME_TICK);
       checkInventoryItemCounts();
     }
   }

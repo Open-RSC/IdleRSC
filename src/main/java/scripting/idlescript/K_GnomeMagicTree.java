@@ -19,6 +19,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     c.displayMessage("@red@GnomeMagicTree,  start with an axe in inv/equipment");
     if (c.isInBank()) {
       c.closeBank();
+      c.sleep(2*GAME_TICK);
     }
     if (c.currentY() > 1000) {
       bank();
@@ -214,7 +215,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       }
       logInBank = c.getBankItemCount(636);
       c.closeBank();
-      c.sleep(1000);
+      c.sleep(2*GAME_TICK);
     }
   }
   // GUI stuff below (icky)

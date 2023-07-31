@@ -67,7 +67,7 @@ public final class K_PresentGiver extends K_kailaScript {
       }
       c.closeBank();
       c.setStatus("@gre@Opening.");
-      c.sleep(1000);
+      c.sleep(2*GAME_TICK);
     }
   }
 }

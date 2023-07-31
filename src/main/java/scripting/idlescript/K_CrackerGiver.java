@@ -93,7 +93,7 @@ public final class K_CrackerGiver extends IdleScript {
         c.withdrawItem(575, 23 - c.getInventoryItemCount(575));
         c.sleep(1280);
         c.closeBank();
-        c.sleep(1280);
+        c.sleep(2*640);
       }
     }
   }

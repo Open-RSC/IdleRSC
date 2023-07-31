@@ -102,6 +102,7 @@ public final class K_Paladins extends K_kailaScript {
     c.displayMessage("@gre@Beginning Startup Sequence.");
     if (c.isInBank()) {
       c.closeBank();
+      c.sleep(2*GAME_TICK);
     }
     if (c.currentY() < 621
         && c.currentY() > 600
@@ -326,7 +327,7 @@ public final class K_Paladins extends K_kailaScript {
         endSession();
       }
       c.closeBank();
-      c.sleep(1320);
+      c.sleep(2*GAME_TICK);
       invCoins = c.getInventoryItemCount(10);
       invChaos = c.getInventoryItemCount(41);
     }

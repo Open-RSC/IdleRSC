@@ -42,6 +42,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       c.displayMessage("@red@31 Magic Required for escape tele");
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       if (c.currentY() > 340 && c.currentY() < 500) { // fixed start area bug
         bank();
@@ -126,7 +127,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
         }
       }
       c.closeBank();
-      c.sleep(640);
+      c.sleep(2*GAME_TICK);
     }
   }
 

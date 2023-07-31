@@ -25,6 +25,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
     c.displayMessage("@red@Start in Edge Bank or near Grapes");
     if (c.isInBank()) {
       c.closeBank();
+      c.sleep(2*GAME_TICK);
     }
     if (c.currentX() < 240) {
       bank();
@@ -103,7 +104,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
       }
       GrapezInBank = c.getBankItemCount(143);
       c.closeBank();
-      c.sleep(640);
+      c.sleep(2*GAME_TICK);
     }
   }
 

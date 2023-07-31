@@ -94,7 +94,10 @@ public final class K_Fast_PlateSmither extends K_kailaScript {
         c.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
         c.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
         c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
-        if (c.isInBank()) c.closeBank();
+        if (c.isInBank()) {
+          c.closeBank();
+          c.sleep(2*GAME_TICK);
+        }
         startTime = System.currentTimeMillis();
         next_attempt = System.currentTimeMillis() + 10000L;
         scriptStart();
@@ -174,7 +177,7 @@ public final class K_Fast_PlateSmither extends K_kailaScript {
 
       barsInBank = c.getBankItemCount(barId);
       c.closeBank();
-      c.sleep(200);
+      c.sleep(2*GAME_TICK);
     }
   }
   // GUI stuff below (icky)

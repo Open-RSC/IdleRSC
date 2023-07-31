@@ -33,6 +33,7 @@ public final class K_TeleWines extends K_kailaScript {
       c.displayMessage("@red@Recommend using grape harvester for coleslaw wines!!!!");
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       if (c.currentY() > 450) {
         bank();
@@ -92,18 +93,18 @@ public final class K_TeleWines extends K_kailaScript {
         if (c.getBankItemCount(101) > 0) {
           c.withdrawItem(101, 1);
           c.closeBank();
+          c.sleep(2*GAME_TICK);
           c.equipItem(c.getInventoryItemSlotIndex(101));
-          c.sleep(340);
         } else if (c.getBankItemCount(617) > 0) {
           c.withdrawItem(617, 1);
           c.closeBank();
+          c.sleep(2*GAME_TICK);
           c.equipItem(c.getInventoryItemSlotIndex(617));
-          c.sleep(340);
         } else if (c.getBankItemCount(684) > 0) {
           c.withdrawItem(684, 1);
           c.closeBank();
+          c.sleep(2*GAME_TICK);
           c.equipItem(c.getInventoryItemSlotIndex(684));
-          c.sleep(340);
         } else if (c.getBankItemCount(101) == 0
             && c.getBankItemCount(617) == 0
             && c.getBankItemCount(684) == 0) c.displayMessage("@red@NO Air staff, ending script");
@@ -115,6 +116,7 @@ public final class K_TeleWines extends K_kailaScript {
       }
       if (c.isInBank()) {
         c.closeBank();
+        c.sleep(2*GAME_TICK);
       }
       c.sleep(640);
     }

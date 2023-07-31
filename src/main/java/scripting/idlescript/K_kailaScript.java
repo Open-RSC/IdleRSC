@@ -574,8 +574,8 @@ public class K_kailaScript extends IdleScript {
    */
   public static boolean isWithinLootzone(int x, int y) {
     if (centerX == -1 || centerY == -1 || centerDistance == -1) {
-      //c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
-      return true; 
+      // c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
+      return true;
     }
     return c.distance(centerX, centerY, x, y) <= centerDistance; // center of lootzone
   }

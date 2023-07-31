@@ -2,7 +2,6 @@ package scripting.sbot;
 
 import compatibility.sbot.Script;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 
@@ -72,7 +71,7 @@ public class MultiFight extends Script {
   public boolean pI = false;
   public boolean bones = false;
   public boolean mage = false;
-  public JComboBox spells;
+  public JComboBox<String> spells;
   public long time;
 
   public void KeyPressed(int id) {
@@ -300,7 +299,7 @@ public class MultiFight extends Script {
       "Earth Blast",
       "Fire Blast"
     };
-    spells = new JComboBox(spellList);
+    spells = new JComboBox<>(spellList);
     magePanel.add(mYN);
     magePanel.add(spells);
 

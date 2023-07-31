@@ -123,7 +123,7 @@ public class SAF_Market extends Script {
     // Trade confirm screen
     if (isInTradeConfirm()) {
       int gp_count2 = getRemoteTradeItemStack(0);
-      if (gp_count2 == selling_ammount * traded_ammount && getTheirTradedItemCount() == 1) {
+      if (gp_count2 == selling_ammount * traded_ammount && getRemoteTradeItemCount() == 1) {
         traded_ammount = 0;
         confirmTrade();
         setTypeLine("Thank you for your business!");

@@ -27,7 +27,8 @@ public class BarbFisher2 extends Script implements ActionListener {
   JPanel fishPanel, reportPanel;
   JLabel fishModeLabel, fishLabel, emptylabel1, pMode, pMins, pExp, pFished, pLevels, pSlept, empty;
   JButton save;
-  JComboBox fishMode, bankMode;
+  JComboBox<String> fishMode;
+  JComboBox<String> bankMode;
 
   public String[] getCommands() {
     return new String[] {"barbfish"};
@@ -352,9 +353,9 @@ public class BarbFisher2 extends Script implements ActionListener {
 
     emptylabel1 = new JLabel("");
     fishLabel = new JLabel("Do what?", SwingConstants.LEFT);
-    fishMode = new JComboBox(fishModes);
+    fishMode = new JComboBox<>(fishModes);
     save = new JButton("Save choices");
-    bankMode = new JComboBox(bankModes);
+    bankMode = new JComboBox<>(bankModes);
     save.addActionListener(this);
 
     fishPanel.add(fishModeLabel);

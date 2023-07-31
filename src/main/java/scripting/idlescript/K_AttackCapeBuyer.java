@@ -7,17 +7,14 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Attack Cape Buyer - By Kaila.
+ * <b>Attack Cape Buyer - By Kaila.</b>
  *
- * <p>
+ * <p>Talks to Rovin for capes and Banks. <br>
+ * Start by Rovin or varrock west! <br>
+ * Need coins in the inventory to buy. <br>
  *
- * <p>Talks to Rovin for capes and Banks.
- *
- * <p>Start by Rovin or varrock west!
- *
- * <p>Need coins in the inventory to buy.
- *
- * <p>@Author - Kaila.
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila.
  */
 public final class K_AttackCapeBuyer extends K_kailaScript {
   private static int totalTopz = 0;

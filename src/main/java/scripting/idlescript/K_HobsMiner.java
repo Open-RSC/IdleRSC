@@ -8,43 +8,25 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Mines Addy/Mith/Coal in Hobgoblin Mine and banks in Edge! (some pk/death protection).
+ * <b>Hobgoblin Miner</b>
  *
- * <p>
+ * <p>Mines Addy/Mith/Coal in Hobgoblin Mine and banks in Edge! (some pk/death protection). <br>
+ * This bot supports the "autostart" parameter to automatiically start the bot without gui.<br>
  *
- * <p>This bot supports the "autostart" parameter to automatiically start the bot without gui.
+ * <p>Start in Edge bank with Armor and Pickaxe. <br>
+ * Sharks in bank REQUIRED.<br>
+ * Teleport if Pkers Attack Option.<br>
+ * 31 Magic, Laws, Airs, and Earths required for Escape Tele.<br>
+ * Unselected, bot WALKS to Edge when Attacked.<br>
+ * Selected, bot walks to 19 wildy and teleports.<br>
+ * Return to Hobs Mine after Escaping Option.<br>
+ * Unselected, bot will log out after escaping Pkers.<br>
+ * Selected, bot will grab more food and return.<br>
+ * This bot supports the \"autostart\" parameter.<br>
+ * Defaults to Teleport Off, Return On.<br>
  *
- * <p>
- *
- * <p>Start in Edge bank with Armor and Pickaxe.
- *
- * <p>Sharks in bank REQUIRED.
- *
- * <p>
- *
- * <p>Teleport if Pkers Attack Option.
- *
- * <p>31 Magic, Laws, Airs, and Earths required for Escape Tele.
- *
- * <p>Unselected, bot WALKS to Edge when Attacked.
- *
- * <p>Selected, bot walks to 19 wildy and teleports.
- *
- * <p>
- *
- * <p>Return to Hobs Mine after Escaping Option.
- *
- * <p>Unselected, bot will log out after escaping Pkers.
- *
- * <p>Selected, bot will grab more food and return.
- *
- * <p>
- *
- * <p>This bot supports the \"autostart\" parameter.
- *
- * <p>Defaults to Teleport Off, Return On.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_HobsMiner extends K_kailaScript {
   private static String isMining = "none";

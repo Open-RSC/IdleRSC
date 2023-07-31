@@ -8,35 +8,22 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Black Unicorn Killer - By Kaila.
+ * <b>Black Unicorn Killer - By Kaila.</b>
  *
- * <p>
+ * <p>This bot supports the \"autostart\" parameter.<br>
+ * Defaults to Teleport Off, Return On. <br>
+ * Start in Edge bank or Uni's with Gear. <br>
+ * Sharks IN BANK REQUIRED.<br>
+ * Teleport if Pkers Attack Option.<br>
+ * 31 Magic, Laws, Airs, and Earths required for Escape Tele.<br>
+ * Unselected, bot WALKS to Edge when Attacked.<br>
+ * Selected, bot walks to 19 wildy and teleports.<br>
+ * Return to Hobs Mine after Escaping?", true.<br>
+ * Unselected, bot will log out after escaping Pkers.<br>
+ * Selected, bot will grab more food and return.<br>
  *
- * <p>This bot supports the \"autostart\" parameter.
- *
- * <p>Defaults to Teleport Off, Return On.
- *
- * <p>
- *
- * <p>Start in Edge bank or Uni's with Gear.
- *
- * <p>Sharks IN BANK REQUIRED.
- *
- * <p>Teleport if Pkers Attack Option.
- *
- * <p>31 Magic, Laws, Airs, and Earths required for Escape Tele.
- *
- * <p>Unselected, bot WALKS to Edge when Attacked.
- *
- * <p>Selected, bot walks to 19 wildy and teleports.
- *
- * <p>Return to Hobs Mine after Escaping?", true.
- *
- * <p>Unselected, bot will log out after escaping Pkers.
- *
- * <p>Selected, bot will grab more food and return.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_BlackUnicorns extends K_kailaScript {
   private static boolean teleportOut = false;

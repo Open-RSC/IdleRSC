@@ -7,9 +7,7 @@ import javax.swing.*;
 /**
  * WIP master file for common commands used in Kaila_Scripts
  *
- * <p>sans - documentation for now!
- *
- * <p>@Author - Kaila
+ * @author Kaila
  */
 /*
  *       todo

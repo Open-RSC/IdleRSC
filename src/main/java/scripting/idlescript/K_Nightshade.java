@@ -6,13 +6,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Grabs Nightshades in Gu'Tanoth (for entrance to ogre enclave).
+ * <b>Nightshade Picker</b>
  *
- * <p>Picks Nightshade in northern skavid cave. Start in Yanille bank or northern nightshade cave.
+ * <p>Grabs Nightshades in Gu'Tanoth (for entrance to ogre enclave). <br>
+ * Picks Nightshade in northern skavid cave. Start in Yanille bank or northern nightshade cave.<br>
+ * Requires Lit Candle and Skavid Map in Invent.<br>
  *
- * <p>Requires Lit Candle and Skavid Map in Invent.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Nightshade extends K_kailaScript {
   private static int totalShade = 0;

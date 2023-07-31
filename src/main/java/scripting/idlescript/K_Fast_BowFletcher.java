@@ -5,11 +5,12 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Fast Longbow Fletcher
+ * <b>Fast Longbow Fletcher</b>
  *
- * <p>Start in any bank with knife in inventory
+ * <p>Start in any bank. Can make unstrung bows from logs, or string them.
  *
- * <p>@Author ~ Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  *      todo

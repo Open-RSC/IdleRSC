@@ -6,12 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts yew logs in NE ardy, including the far western one, banks in seers.
+ * <b>Gnome Magic Trees</b>
  *
- * <p>todo: reduce walking between locations - pause at each side logic to cut same tree as other
- * players
+ * <p>Cuts Magic Trees in Gnome Tree, including the far eastern one. <br>
+ * Banks the logs at upstairs flax bank<br>
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_GnomeMagicTree extends K_kailaScript {
   public void startSequence() {

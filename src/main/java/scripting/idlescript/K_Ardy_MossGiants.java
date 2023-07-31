@@ -5,15 +5,14 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Ardy moss giants - by Kaila
- *
- * <p>
+ * <b>Ardy Moss Giants</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
  * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
  * and Autostart.
  *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Ardy_MossGiants extends K_kailaScript {
   private static boolean lootSpinachRoll = false;

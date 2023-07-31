@@ -6,10 +6,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Tele Grabs Wines in chaos temple. NOT recommended to use on coleslaw, wines can be obtained with
- * harvesting. Not tested on uranium, but should function if sleep added.
+ * <b>Tele Wines</b>
  *
- * <p>Author - Kaila
+ * <p>Tele Grabs Wines in chaos temple. <br>
+ * NOT recommended to use on coleslaw, wines can be obtained with harvesting. <br>
+ * Not tested on uranium, but should function if sleep added. <br>
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_TeleWines extends K_kailaScript {
   private static int WinezInBank = 0;

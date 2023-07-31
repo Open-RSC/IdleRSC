@@ -5,17 +5,14 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
- *
- * <p>
+ * <b>Edge Thugs (in Wilderness)</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
  * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
  * and Autostart.
  *
- * <p>- cannot support bone looting with this bot due to the shape of the dungeon
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Edge_Thugs extends K_kailaScript {
 

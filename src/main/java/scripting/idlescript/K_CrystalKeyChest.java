@@ -6,12 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Crystal Key Chest Opener.
+ * <b>Crystal Key Chest Opener.</b>
  *
  * <p>Start by Crystal chest or in Catherby Bank! Only works on Coleslaw for the time Being.
  * Utilizes the White Wolf Mountain Agility Shortcut.
  *
- * <p>@Author ~ Kaila.
+ * @see scripting.idlescript.K_kailaScript
+ * @author kaila.
  */
 /*
  * todo add, "if fail agility shortcut" fallback? - currently bot may break.

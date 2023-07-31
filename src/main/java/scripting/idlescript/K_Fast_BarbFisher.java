@@ -6,13 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Power fishes trout/salmon in barb village using Batching.
+ * <b>Fast Barb Fisher</b>
  *
- * <p>
+ * <p>Power fishes trout/salmon in barb village using Batching. <br>
+ * Batch bars MUST be toggles on to function properly. Bot will Autotoggle them On. <br>
  *
- * <p>Batch bars MUST be toggles on to function properly. Bot will Autotoggle them On.
- *
- * <p>@Author - Kaila.
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila.
  */
 public final class K_Fast_BarbFisher extends K_kailaScript {
   private static int troutSuccess = 0;

@@ -7,13 +7,13 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila
+ * <b>Wildy Fire Giant Killer</b>
  *
- * <p>Start in mage bank with Armor
+ * <p>Start in mage bank with Armor <br>
+ * Sharks/Laws/Airs/Earths IN BANK REQUIRED <br>
  *
- * <p>Sharks/Laws/Airs/Earths IN BANK REQUIRED
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Wildy_FireGiants extends K_kailaScript {
   private static int totalBstaff = 0;

@@ -7,33 +7,23 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Fast Platebody Smither - by Kaila.
+ * <b>Fast Platebody Smither</b>
  *
- * <p>Start with Hammer in Inv! Only works on Coleslaw (batch bars)
+ * <p>Start with Hammer in Inv! Only works on Coleslaw (batch bars)<br>
+ * This ensures 5 Plates are made per Menu Cycle. Supports all bar types.<br>
+ * This bot supports the \"autostart\" parameter. defaults to steel.<br>
  *
- * <p>This ensures 5 Plates are made per Menu Cycle. Supports all bar types.
+ * <p>Parameters for Starting: <br>
+ * <i>autostart</i> - makes steel platebodies<br>
+ * <i>bronze</i> - makes bronze platebodies<br>
+ * <i>iron</i> - makes iron platebodies<br>
+ * <i>steel</i> - makes steel platebodies<br>
+ * <i>mith, mithril</i> - makes mithril platebodies<br>
+ * <i>addy, adamantite</i> - makes adamantite platebodies.<br>
+ * <i>rune, runite</i> - makes runite platebodies.<br>
  *
- * <p>This bot supports the \"autostart\" parameter. defaults to steel.
- *
- * <p>
- *
- * <p>Parameters for Starting:
- *
- * <p>autostart - makes steel platebodies
- *
- * <p>bronze - makes bronze platebodies
- *
- * <p>iron - makes iron platebodies
- *
- * <p>steel - makes steel platebodies
- *
- * <p>mith, mithril - makes mithril platebodies
- *
- * <p>addy, adamantite - makes adamantite platebodies.
- *
- * <p>rune, runite - makes runite platebodies.
- *
- * <p>@Author ~ Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Fast_PlateSmither extends K_kailaScript {
   private static int barId = -1;

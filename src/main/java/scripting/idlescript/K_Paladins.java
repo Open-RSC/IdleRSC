@@ -8,15 +8,17 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Paladin Tower Thiever - By Kaila
+ * <b>Paladin Tower Thiever</b>
  *
- * <p>Start in Ardy South Bank OR in Paladin Tower Sharks in bank REQUIRED, can be changed in script
- * Switching to Defensive combat mode is ideal. Low Atk/Str and Higher Def is more Efficient Ensure
- * to never wield weapons when Thieving.
+ * <p>Start in Ardy South Bank OR in Paladin Tower <br>
+ * Switching to Defensive combat mode is ideal. <br>
+ * Low Atk/Str and Higher Def is more Efficient <br>
+ * Ensure to never wield weapons when Thieving.<br>
  *
- * <p>~300k per hr+ xp per hr possible! (at 99 with thieving cape)
+ * <p>~300k per hr+ xp per hr possible! (at 99 with thieving cape)<br>
  *
- * <p>Author ~ Kaila ~
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Paladins extends K_kailaScript {
   private static int totalCoins = 0;

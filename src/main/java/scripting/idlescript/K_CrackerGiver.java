@@ -5,7 +5,7 @@ import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
- * Christmas Cracker Opener.
+ * <b>Christmas Cracker Opener</b>
  *
  * <p>Opens Christmas Crackers by using them on a 2nd account. Used in conjunction with K_GiftTaker
  * Script!
@@ -20,7 +20,10 @@ import orsc.ORSCharacter;
  *
  * <p>WARNING: while within 1 tile of the giver, you will continue to recieve presents. WARNING:
  * regardless of how full your inventory is. items WILL continue to be recieved and extras will drop
- * to the floor and despawn. Always monitor this bot!!! @Author ~ Kaila
+ * to the floor and despawn. Always monitor this bot!!!
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_CrackerGiver extends IdleScript {
   private static final Controller c = Main.getController();

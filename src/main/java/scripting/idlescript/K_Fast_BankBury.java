@@ -8,11 +8,12 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Fast Bank Bury.
+ * <b>Fast Bank Bury</b>
  *
  * <p>Selectable Bone id. start in bank with unnoted bones in bank. Will withdraw and bury bones.
  *
- * <p>@Author ~ Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  * todo add gui and statistics.

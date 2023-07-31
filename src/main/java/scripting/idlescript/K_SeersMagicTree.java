@@ -6,9 +6,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts Magic logs in seers, including the far western one, banks in Seers.
+ * <b>Seers Magic Tree</b>
  *
- * <p>@Author - Kaila
+ * <p>Cuts Magic logs in seers, including the far western one, banks in Seers. <br>
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  * todo:

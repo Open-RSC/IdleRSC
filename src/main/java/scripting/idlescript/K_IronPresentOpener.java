@@ -3,9 +3,14 @@ package scripting.idlescript;
 import orsc.ORSCharacter;
 
 /**
- * Opens Holiday event Presents on an Iron, banks loot (coleslaw) only works on official irons.
+ * <b>Iron Present Opener</b>
  *
- * <p>start in any bank. @Author - Kaila
+ * <p>Opens Holiday event Presents on an Iron, banks loot (coleslaw) only works on official irons.
+ * <br>
+ * start in any bank. <br>
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_IronPresentOpener extends K_kailaScript {
   public int start(String[] parameters) {

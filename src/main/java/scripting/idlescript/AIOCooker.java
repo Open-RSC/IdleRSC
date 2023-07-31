@@ -15,10 +15,8 @@ import javax.swing.JLabel;
 /**
  * A basic cooking script to use in Catherby.
  *
- * @author Dvorak - original script
- *     <p>Kaila - rewrite
+ * @author Dvorak - original script, Kaila - rewrite
  * @version 1.1 - Batch bar autotoggle bugfix still preserving uranium support
- *     <p>
  */
 public class AIOCooker extends IdleScript {
   final Controller c = Main.getController();

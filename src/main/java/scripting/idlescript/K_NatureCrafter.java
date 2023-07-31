@@ -8,18 +8,20 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Crafts Nature runes on Karamja.
+ * <b>Nature Rune Crafter</b>
  *
- * <p>Start in Karamja Shop or Inside/Outside Nature Alter. Start with Coins, Noted Ess, and Nat
- * Talisman. Need 79+ combat so tribesmen don't poison you. Unnotes ess in jungle shop, walks to
- * alter to craft, repeat.
+ * <p>Crafts Nature runes on Karamja (coleslaw only). <br>
+ * Start in Karamja Shop or Inside/Outside Nature Alter.<br>
+ * Start with Coins, Noted Ess, and Nat Talisman.<br>
+ * Need 79+ combat so tribesmen don't poison you.<br>
+ * Unnotes ess in jungle shop, walks to alter to craft, repeat.<br>
  *
- * <p>Does NOT work for offical coleslaw irons (cannot purchase from overstock shops)
+ * <p>Does NOT work for offical coleslaw irons <br>
+ * (cannot purchase from overstock shops)<br>
+ * This bot supports the "autostart" parameter/CLI to automatiically start the bot without gui<br>
  *
- * <p>This bot supports the "autostart" parameter/CLI to automatiically start the bot without gui -
- * Will automatically start without GUI.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_NatureCrafter extends K_kailaScript {
   private static boolean lowLevel = false;

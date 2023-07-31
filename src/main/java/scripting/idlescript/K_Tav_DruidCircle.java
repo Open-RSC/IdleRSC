@@ -5,13 +5,14 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Taverly Druid Circle - By Kaila.
+ * <b>Taverly Druid Circle</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Alter Prayer Boost, Food Type,
  * and Food Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot
- * option, and Autostart.
+ * option, and Autostart. <br>
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Tav_DruidCircle extends K_kailaScript {
   private static boolean prayerBoost = true;

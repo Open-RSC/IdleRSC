@@ -5,9 +5,13 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Battlefield Trainer - By Kaila.
+ * <b>Battlefield Trainer</b>
  *
- * <p>Start in Ardy or at Battlefield. Sharks in Bank REQUIRED. @Author ~ Kaila
+ * <p>Start in Ardy or at Battlefield. <br>
+ * Food in Bank required. <br>
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  *   todo add food type selection add maging option

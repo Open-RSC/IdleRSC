@@ -6,11 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts yew logs in NE ardy, including the far western one, banks in ardy south bank.
+ * <b>Ardy Yew Trees</b>
  *
- * <p>Requires 53+ Combat to avoid aggressive bears!
+ * <p>Cuts yew logs in NE ardy, including the far western one, banks in ardy south bank. <br>
+ * Requires 53+ Combat to avoid aggressive bears! <br>
  *
- * <p>Author ~ Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  * todo:

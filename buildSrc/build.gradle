@@ -1,0 +1,4 @@
+// Create Gradle plugins using Groovy
+plugins {
+  id 'groovy-gradle-plugin'
+}

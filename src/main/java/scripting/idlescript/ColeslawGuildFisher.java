@@ -40,49 +40,49 @@ public class ColeslawGuildFisher extends K_kailaScript {
     }
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("lobster")) {
-        controller.displayMessage("Got param " + parameters[0] + ". Fishing Lobsters!", 0);
+        c.displayMessage("Got param " + parameters[0] + ". Fishing Lobsters!", 0);
         equipId = LOBSTER_POT_ID;
         spotId = LOBSTER_FISH_SPOT;
         guiSetup = true;
         scriptStarted = true;
       } else if (parameters[0].toLowerCase().startsWith("sword")) {
-        controller.displayMessage("Got param " + parameters[0] + ". Fishing Swordfish!", 0);
+        c.displayMessage("Got param " + parameters[0] + ". Fishing Swordfish!", 0);
         spotId = LOBSTER_FISH_SPOT;
         swordFish = true;
         guiSetup = true;
         scriptStarted = true;
       } else if (parameters[0].toLowerCase().startsWith("big")) {
-        controller.displayMessage("Got param " + parameters[0] + ". Fishing Big Net!", 0);
+        c.displayMessage("Got param " + parameters[0] + ". Fishing Big Net!", 0);
         equipId = 548;
         bigNetFishing = true;
         guiSetup = true;
         scriptStarted = true;
       } else {
-        controller.displayMessage("Got unknown param. Fishing Sharks!", 0);
+        c.displayMessage("Got unknown param. Fishing Sharks!", 0);
         guiSetup = true;
         scriptStarted = true;
       }
       scriptStart();
     }
 
-    /*controller.displayMessage("@cya@No parameters entered", 0);
+    /*c.displayMessage("@cya@No parameters entered", 0);
 
-       if (controller.getInventoryItemCount(HARPOON_ID) >= 1) {
-         controller.displayMessage("Because you have a harpoon, I'm assuming you want sharks.", 0);
-       } else if (controller.getInventoryItemCount(LOBSTER_POT_ID) >= 1) {
-         controller.displayMessage(
+       if (c.getInventoryItemCount(HARPOON_ID) >= 1) {
+         c.displayMessage("Because you have a harpoon, I'm assuming you want sharks.", 0);
+       } else if (c.getInventoryItemCount(LOBSTER_POT_ID) >= 1) {
+         c.displayMessage(
              "Because you have a lobster pot, I'm assuming you want lobsters.", 0);
          equipId = LOBSTER_POT_ID;
          spotId = LOBSTER_FISH_SPOT;
        } else {
-         controller.displayMessage(
+         c.displayMessage(
              "@red@Please grab either a harpoon or lobster pot, and use the parameter \"Lobster\" or \"Shark\".");
-         controller.stop();
+         c.stop();
          return 1000;
        }
-       controller.displayMessage(
+       c.displayMessage(
            "If you want to override this, either put the parameter \"Lobster\" or \"Shark\"!", 0);
-       controller.sleep(5000);
+       c.sleep(5000);
 
        scriptStart();
     */
@@ -90,16 +90,16 @@ public class ColeslawGuildFisher extends K_kailaScript {
   }
 
   public void scriptStart() {
-    while (controller.isRunning()) {
-      if (controller.getInventoryItemCount() == 30) {
+    while (c.isRunning()) {
+      if (c.getInventoryItemCount() == 30) {
         handleFullInven();
       }
 
-      if (controller.getInventoryItemCount() < 30) {
+      if (c.getInventoryItemCount() < 30) {
         handleFishing();
       }
 
-      controller.sleep(600);
+      c.sleep(600);
     }
   }
 
@@ -113,16 +113,16 @@ public class ColeslawGuildFisher extends K_kailaScript {
   }
 
   private void handleFishing() {
-    if (!controller.isBatching()) {
+    if (!c.isBatching()) {
       if (dropJunk && bigNetFishing) dropJunk();
-      int[] fishingSpot = controller.getNearestObjectById(spotId);
+      int[] fishingSpot = c.getNearestObjectById(spotId);
       try {
         if (spotId == LOBSTER_FISH_SPOT) {
-          if (!swordFish) controller.atObject(fishingSpot[0], fishingSpot[1]);
-          else controller.atObject2(fishingSpot[0], fishingSpot[1]);
+          if (!swordFish) c.atObject(fishingSpot[0], fishingSpot[1]);
+          else c.atObject2(fishingSpot[0], fishingSpot[1]);
         } else { // if spot Id is shark Id
-          if (!bigNetFishing) controller.atObject2(fishingSpot[0], fishingSpot[1]);
-          else controller.atObject(fishingSpot[0], fishingSpot[1]);
+          if (!bigNetFishing) c.atObject2(fishingSpot[0], fishingSpot[1]);
+          else c.atObject(fishingSpot[0], fishingSpot[1]);
         }
         c.sleep(GAME_TICK);
       } catch (NullPointerException ignored) {
@@ -132,14 +132,14 @@ public class ColeslawGuildFisher extends K_kailaScript {
   }
 
   private void handleFullInven() {
-    if (controller.isInBank()) {
-      for (int itemId : controller.getInventoryItemIds()) {
-        if (itemId != 0 && itemId != equipId && controller.getInventoryItemCount(itemId) > 0) {
-          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+    if (c.isInBank()) {
+      for (int itemId : c.getInventoryItemIds()) {
+        if (itemId != 0 && itemId != equipId && c.getInventoryItemCount(itemId) > 0) {
+          c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
     } else {
-      controller.openBank();
+      c.openBank();
     }
   }
 

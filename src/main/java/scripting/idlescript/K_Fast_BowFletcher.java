@@ -20,6 +20,8 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   private static int logsInBank = 0;
   private static int totalBows = 0;
   private static boolean stringBows = false;
+  private static final int BOW_STRING = 676;
+  private static final int KNIFE_ID = 13;
   private static final int[] unstrungIds = {276, 658, 660, 662, 664, 666};
 
   public int start(String[] parameters) {
@@ -45,7 +47,9 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getInventoryItemCount(logId) == 0) {
+      if (c.getInventoryItemCount(logId) == 0
+          || (stringBows && c.getInventoryItemCount(BOW_STRING) == 0)
+          || c.getInventoryItemCount(KNIFE_ID) == 0) {
         if (!c.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
           ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
@@ -73,7 +77,8 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   private void stringScript() {
     c.displayMessage("@gre@Stringing..");
     c.setStatus("@gre@Stringing.");
-    c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(676), c.getInventoryItemSlotIndex(logId));
+    c.useItemOnItemBySlot(
+        c.getInventoryItemSlotIndex(BOW_STRING), c.getInventoryItemSlotIndex(logId));
     c.sleep(2 * GAME_TICK);
     while (c.isBatching()) c.sleep(GAME_TICK);
   }
@@ -81,7 +86,8 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   private void fletchingScript() {
     c.displayMessage("@gre@Fletching..");
     c.setStatus("@gre@Fletching..");
-    c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(13), c.getInventoryItemSlotIndex(logId));
+    c.useItemOnItemBySlot(
+        c.getInventoryItemSlotIndex(KNIFE_ID), c.getInventoryItemSlotIndex(logId));
     c.sleep(2 * GAME_TICK);
     c.optionAnswer(2);
     while (c.isBatching()) c.sleep(GAME_TICK);
@@ -91,35 +97,37 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
     c.setStatus("@gre@Banking..");
     c.displayMessage("@gre@Banking..");
     c.openBank();
-    c.sleep(640);
+    c.sleep(GAME_TICK);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
       if (!stringBows) totalBows = totalBows + 29;
       else totalBows = totalBows + 15;
       if (c.getBankItemCount(logId) < 30 // out of logs or unstrung
-          || (stringBows && c.getBankItemCount(676) < 30) // out of strings
-          || (!stringBows && c.getBankItemCount(13) == 0 && c.getInventoryItemCount(13) == 0)) {
+          || (stringBows && c.getBankItemCount(BOW_STRING) < 30) // out of strings
+          || (!stringBows
+              && c.getBankItemCount(KNIFE_ID) == 0
+              && c.getInventoryItemCount(KNIFE_ID) == 0)) {
         c.setStatus("@red@NO Logs in the bank, Logging Out!.");
         endSession();
       }
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
-          if (itemId != 13 && itemId != logId) {
+          if (itemId != KNIFE_ID && itemId != logId) {
             c.depositItem(itemId, c.getInventoryItemCount(itemId));
           }
         }
         c.sleep(100);
       }
-      if (!stringBows && c.getInventoryItemCount(13) < 1) {
-        c.withdrawItem(13, 1);
+      if (!stringBows && c.getInventoryItemCount(KNIFE_ID) < 1) {
+        c.withdrawItem(KNIFE_ID, 1);
         c.sleep(320);
       }
       if (c.getInventoryItemCount() < 30) {
         if (!stringBows) c.withdrawItem(logId, 29);
         else {
           c.withdrawItem(logId, 15);
-          c.withdrawItem(676, 15);
+          c.withdrawItem(BOW_STRING, 15);
         }
         c.sleep(650);
       }

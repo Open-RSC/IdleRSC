@@ -252,10 +252,10 @@ public class Main {
     // don't do anything until RSC is loaded.
     while (!controller.isLoaded()) controller.sleep(1);
 
-    // Set checkboxes on side panel
+    // Set checkboxes on side panel using "get" methods
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     logWindowCheckbox.setSelected(config.isLogWindowVisible());
-    unstickCheckbox.setSelected(!config.isSidePanelSticky()); // this one is a double negative :(
+    unstickCheckbox.setSelected(!config.isSidePanelSticky());
     debugCheckbox.setSelected(config.isDebug());
     botPaintCheckbox.setSelected(config.isBotPaintVisible());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
@@ -463,6 +463,8 @@ public class Main {
         e -> {
           if (controller != null) {
             controller.setDrawing(graphicsCheckbox.isSelected());
+            if (graphicsCheckbox.isSelected()) DrawCallback.nextRefresh = -1;
+            else DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L;
           }
         });
     botPaintCheckbox.addActionListener(

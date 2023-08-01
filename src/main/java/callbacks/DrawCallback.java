@@ -109,7 +109,7 @@ public class DrawCallback {
             1);
       }
     }
-    if (System.currentTimeMillis() > nextDeRefresh && nextDeRefresh != -1) {
+    if ((System.currentTimeMillis() > nextDeRefresh) && nextDeRefresh != -1) {
       c.setDrawing(false);
       nextDeRefresh = -1;
     }

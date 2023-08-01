@@ -44,7 +44,7 @@ public class MessageCallback {
       int crownID,
       String formerName,
       String colourOverride) {
-    Controller cd = Main.getController();
+    Controller con = Main.getController();
     if (timeNextLogClear == -1) {
       timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
       // cd.log(String.valueOf((timeNextLogClear - System.currentTimeMillis()) / 1000L) + " s");
@@ -53,14 +53,14 @@ public class MessageCallback {
       Main.clearLog();
       timeNextLogClear = System.currentTimeMillis() + 86400000L; // add 24 hrs in ms
     }
-    if (!cd.isDrawEnabled() && (System.currentTimeMillis() > DrawCallback.nextRefresh)) {
-      cd.setDrawing(true);
-      DrawCallback.nextDeRefresh = System.currentTimeMillis() + 20L; // toggle on gfx 1 frame
-      DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L; // wait 1 min for refresh
-      /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
-      System.currentTimeMillis()) / 1000L) + "s");*/
-    } else if (cd.isDrawEnabled()) {
-      DrawCallback.nextRefresh = -1;
+    if ((System.currentTimeMillis() > DrawCallback.nextRefresh) && DrawCallback.nextRefresh != -1) {
+      if (!con.isDrawEnabled()) {
+        con.setDrawing(true);
+        DrawCallback.nextDeRefresh = System.currentTimeMillis() + 20L; // toggle on gfx 1 frame
+        DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L; // wait 1 min for refresh
+        /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
+        System.currentTimeMillis()) / 1000L) + "s");*/
+      } else DrawCallback.nextRefresh = -1;
     }
     if (type == MessageType.GAME) {
       if (message.contains("You just advanced")) {
@@ -146,7 +146,7 @@ public class MessageCallback {
       skillName = m.group(2);
       int statId = c.getStatId(skillName);
       c.log("skillName - " + skillName);
-      c.log("statId" + statId); //invalid skill Id is being generated...
+      c.log("statId" + statId); // invalid skill Id is being generated...
       if (statId == -1) {
         throw new IllegalArgumentException("Invalid skill name: " + skillName);
       }
@@ -154,8 +154,8 @@ public class MessageCallback {
         if (skillName.equalsIgnoreCase("woodcut")) skillName = "Woodcutting"; // fix woodcut
 
         skillName =
-          Character.toUpperCase(skillName.charAt(0)) // capitalize skill name first letter
-            + skillName.substring(1); // lowercase the rest
+            Character.toUpperCase(skillName.charAt(0)) // capitalize skill name first letter
+                + skillName.substring(1); // lowercase the rest
 
         skillLevel = c.getBaseStat(statId); // this is returning skillLevel = -1
 

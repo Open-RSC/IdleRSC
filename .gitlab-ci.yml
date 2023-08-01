@@ -37,7 +37,7 @@ cache:
 format:
   stage: format
   script:
-    - ./gradlew --build-cache spotlessCheck
+    - ./gradlew --build-cache --parallel spotlessCheck
 
 # Explicitly state to gradle wrapper that we want the cache to be enabled,
 # build a release zip, then upload the zip artifact to Gitlab CI for end-users
@@ -45,7 +45,7 @@ format:
 build:
   stage: build
   script: 
-    - ./gradlew --build-cache release
+    - ./gradlew --build-cache --parallel release
   artifacts:
     paths:
       - ./*.zip
@@ -54,7 +54,7 @@ build:
 pages:
   stage: pages
   script: 
-    - ./gradlew --build-cache javadoc
+    - ./gradlew --build-cache --parallel javadoc
     - cp -r build/docs/javadoc public
   artifacts:
     paths:

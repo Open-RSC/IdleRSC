@@ -23,10 +23,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
   private void startSequence() {
     c.displayMessage("@red@Grape Harvester - By Kaila");
     c.displayMessage("@red@Start in Edge Bank or near Grapes");
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentX() < 240) {
       bank();
       BankToGrape();
@@ -104,7 +101,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
       }
       GrapezInBank = c.getBankItemCount(143);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

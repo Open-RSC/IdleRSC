@@ -137,7 +137,6 @@ public class MineGoldCraftingGuild extends IdleScript {
           bankedSilver = controller.getBankItemCount(383);
           bankedGold = controller.getBankItemCount(152);
           controller.closeBank();
-          controller.sleep(640);
         }
       }
     }

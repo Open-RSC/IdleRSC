@@ -108,10 +108,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
       c.displayMessage("@red@Brass Key Required");
 
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         bankToDungeon();
@@ -246,7 +243,6 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       brassKeyCheck();
       checkInventoryItemCounts();
     }

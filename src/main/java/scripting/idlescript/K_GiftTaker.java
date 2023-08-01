@@ -38,7 +38,6 @@ public final class K_GiftTaker extends K_kailaScript {
         depositAll();
       }
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
     return 1000; // start() must return an int value now.
   }

@@ -480,8 +480,8 @@ public class Controller {
   }
 
   /**
-   * Retrieves the current X coordinates of the player. This occassionally returns incorrect values
-   * while Underground
+   * Retrieves the current X coordinates of the player. <br>
+   * This occassionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -493,8 +493,8 @@ public class Controller {
   }
 
   /**
-   * Retrieves the current Y coordinates of the player. This occassionally returns incorrect values
-   * while Underground
+   * Retrieves the current Y coordinates of the player. <br>
+   * This occassionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -1841,6 +1841,7 @@ public class Controller {
   /** Closes the bank window. No effect if window is not currently open. */
   public void closeBank() {
     reflector.setObjectMember(mud, "showDialogBank", false);
+    sleep(GAME_TICK);
   }
 
   /**

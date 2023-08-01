@@ -29,10 +29,7 @@ public final class K_Nightshade extends K_kailaScript {
       scriptStarted = false;
       c.displayMessage("@red@Nightshade Picker - By Kaila");
       c.displayMessage("@red@Start in Yanille Bank");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 800 && c.currentY() > 740 && c.currentX() < 591) {
         bank();
         BankToGrape();
@@ -89,7 +86,6 @@ public final class K_Nightshade extends K_kailaScript {
       }
       shadeInBank = c.getBankItemCount(1086);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

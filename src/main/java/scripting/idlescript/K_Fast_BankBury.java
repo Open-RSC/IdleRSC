@@ -80,7 +80,6 @@ public final class K_Fast_BankBury extends K_kailaScript {
         c.withdrawItem(boneId, 30);
       }
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

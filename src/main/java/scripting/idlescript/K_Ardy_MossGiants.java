@@ -107,10 +107,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       c.displayMessage("@red@Ardy Moss Giants ~ Kaila");
       c.displayMessage("@red@Start in Ardy north bank or near moss giants.");
 
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 565) {
         bank();
         bankToDungeon();
@@ -247,7 +244,6 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

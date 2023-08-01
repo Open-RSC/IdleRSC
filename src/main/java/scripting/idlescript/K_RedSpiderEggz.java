@@ -40,10 +40,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       c.displayMessage("@red@Start in Edge bank with Armor");
       c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
       c.displayMessage("@red@31 Magic Required for escape tele");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 340 && c.currentY() < 500) { // fixed start area bug
         bank();
         BankToEgg();
@@ -127,7 +124,6 @@ public final class K_RedSpiderEggz extends K_kailaScript {
         }
       }
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

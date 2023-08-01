@@ -22,9 +22,7 @@ public class GnomeFlaxx0r extends IdleScript {
         "@red@Put true or false in Params. True to spin & bank flax, false to pick & bank flax.");
     c.displayMessage("@red@Bot will Pick & Bank by Default!");
 
-    if (c.isInBank()) {
-      c.closeBank();
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() > 1000) {
       bank();
       goToFlax();
@@ -180,7 +178,6 @@ public class GnomeFlaxx0r extends IdleScript {
         flaxBanked = c.getBankItemCount(675);
       }
       c.closeBank();
-      c.sleep(640);
     }
   }
 

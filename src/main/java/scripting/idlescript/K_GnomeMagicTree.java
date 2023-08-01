@@ -17,10 +17,7 @@ import javax.swing.JLabel;
 public final class K_GnomeMagicTree extends K_kailaScript {
   public void startSequence() {
     c.displayMessage("@red@GnomeMagicTree,  start with an axe in inv/equipment");
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() > 1000) {
       bank();
       c.walkTo(714, 1459);
@@ -215,7 +212,6 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       }
       logInBank = c.getBankItemCount(636);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
   // GUI stuff below (icky)

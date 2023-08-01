@@ -64,10 +64,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
     c.displayMessage("@red@Start in Fally East bank with Armor");
     c.displayMessage("@red@Sharks IN BANK REQUIRED");
     startTime = System.currentTimeMillis();
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() < 3000) {
       bank();
       BankToIce();
@@ -202,7 +199,6 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
       withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 30);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       checkInventoryItemCounts();
     }
   }

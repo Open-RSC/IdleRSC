@@ -69,13 +69,10 @@ public class HerbIdentifier extends IdleScript {
     controller.displayMessage("@red@Start in any bank with herbs in the bank!");
 
     while (controller.isRunning()) {
-
       controller.sleepHandler(98, true);
-
       if (countUnids() == 0) {
         controller.setStatus("@whi@Banking...");
         controller.openBank();
-
         for (int id : controller.getInventoryItemIds()) {
           if (id != 1263) // don't deposit sleeping bags.
           {
@@ -84,7 +81,6 @@ public class HerbIdentifier extends IdleScript {
             break;
           }
         }
-
         for (int id : unids) {
           if (controller.getBankItemCount(id) > 0 && canIdentifyHerb(id)) {
             controller.withdrawItem(id, controller.getBankItemCount(id));
@@ -92,10 +88,7 @@ public class HerbIdentifier extends IdleScript {
             break;
           }
         }
-
         controller.closeBank();
-        controller.sleep(2 * 640);
-
       } else {
         controller.setStatus("@whi@Identifying...");
         for (int id : unids) {
@@ -108,7 +101,6 @@ public class HerbIdentifier extends IdleScript {
         }
       }
     }
-
     return 1000; // start() must return a int value now.
   }
 

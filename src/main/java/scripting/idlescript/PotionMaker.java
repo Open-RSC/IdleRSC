@@ -177,7 +177,6 @@ public final class PotionMaker extends IdleScript {
         withdrawPre();
       }
       c.closeBank(); // Next, close back
-      c.sleep(640);
     }
   }
 

@@ -31,10 +31,8 @@ public final class K_TeleWines extends K_kailaScript {
       c.displayMessage("@cya@Start in Edge Bank");
       c.displayMessage("@cya@Laws, Air staff required");
       c.displayMessage("@red@Recommend using grape harvester for coleslaw wines!!!!");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 450) {
         bank();
         BankToWine();
@@ -93,17 +91,14 @@ public final class K_TeleWines extends K_kailaScript {
         if (c.getBankItemCount(101) > 0) {
           c.withdrawItem(101, 1);
           c.closeBank();
-          c.sleep(2 * GAME_TICK);
           c.equipItem(c.getInventoryItemSlotIndex(101));
         } else if (c.getBankItemCount(617) > 0) {
           c.withdrawItem(617, 1);
           c.closeBank();
-          c.sleep(2 * GAME_TICK);
           c.equipItem(c.getInventoryItemSlotIndex(617));
         } else if (c.getBankItemCount(684) > 0) {
           c.withdrawItem(684, 1);
           c.closeBank();
-          c.sleep(2 * GAME_TICK);
           c.equipItem(c.getInventoryItemSlotIndex(684));
         } else if (c.getBankItemCount(101) == 0
             && c.getBankItemCount(617) == 0
@@ -114,11 +109,7 @@ public final class K_TeleWines extends K_kailaScript {
           c.stop();
         }
       }
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
-      c.sleep(640);
+      if (c.isInBank()) c.closeBank();
     }
   }
 

@@ -36,10 +36,7 @@ public final class K_SkelliCoal extends K_kailaScript {
   private void startSequence() {
     c.displayMessage("@red@Skeleton Coal Miner- By Kaila");
     c.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() > 400) {
       bank();
       eat();
@@ -133,7 +130,6 @@ public final class K_SkelliCoal extends K_kailaScript {
       coalInBank = c.getBankItemCount(155);
 
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

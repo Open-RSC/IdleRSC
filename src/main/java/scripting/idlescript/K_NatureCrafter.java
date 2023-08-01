@@ -29,10 +29,7 @@ public final class K_NatureCrafter extends K_kailaScript {
   private void startSequence() {
     c.displayMessage("@red@Nature Rune Crafter - By Kaila");
     c.displayMessage("@red@Start in Tai Bwo Wannai General Store or Inside/Outside Nature Alter");
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.isInShop()) {
       c.closeShop();
     }

@@ -37,11 +37,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
     c.displayMessage("@red@Start in Edge bank with Armor");
     c.displayMessage("@red@Sharks IN BANK REQUIRED");
     c.displayMessage("@red@31 Magic Required for escape tele");
-    //			bank();
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() > 340) {
       bank();
       BankToUni();
@@ -137,7 +133,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
       bankItemCheck(546, 5);
       uniInBank = c.getBankItemCount(466);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       inventUni = c.getBankItemCount(466);
     }
   }

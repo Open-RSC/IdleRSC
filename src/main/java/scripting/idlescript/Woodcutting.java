@@ -156,7 +156,6 @@ public class Woodcutting extends IdleScript {
       }
       if (c.getInventoryItemCount() == 0 && c.isInBank()) {
         c.closeBank();
-        c.sleep(100);
       }
       if (!bankTime && !chopTime) {
         // c.sleep(1000);

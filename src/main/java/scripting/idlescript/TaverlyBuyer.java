@@ -35,9 +35,7 @@ public class TaverlyBuyer extends IdleScript {
     controller.displayMessage("@red@Start in Taverly or Fally West with GP!");
     controller.displayMessage("@red@This bot supports the \"autostart\" Parameter");
     controller.displayMessage("@red@autostart collects Newts then Vials");
-    if (controller.isInBank()) {
-      controller.closeBank();
-    }
+    if (controller.isInBank()) controller.closeBank();
     if (controller.currentY() > 545) {
       bank();
       walkToTaverly();
@@ -222,9 +220,7 @@ public class TaverlyBuyer extends IdleScript {
       vialsBanked = controller.getBankItemCount(465);
       newtsBanked = controller.getBankItemCount(270);
       controller.sleep(100);
-
       controller.closeBank();
-      controller.sleep(640);
     }
   }
 

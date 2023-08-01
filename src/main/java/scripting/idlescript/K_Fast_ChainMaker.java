@@ -32,10 +32,7 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
       c.displayMessage("@gre@Start in Fally East");
 
       c.quitIfAuthentic();
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -106,7 +103,6 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
         c.sleep(100);
       }
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
   // GUI stuff below (icky)

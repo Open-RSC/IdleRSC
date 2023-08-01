@@ -75,10 +75,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         BankToIce();
@@ -205,7 +202,6 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       checkInventoryItemCounts();
     }
   }

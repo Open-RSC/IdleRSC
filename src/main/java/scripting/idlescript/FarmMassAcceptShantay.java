@@ -42,7 +42,6 @@ public class FarmMassAcceptShantay extends IdleScript {
         }
 
         controller.closeBank();
-        // controller.sleep(640);
       }
     }
   }

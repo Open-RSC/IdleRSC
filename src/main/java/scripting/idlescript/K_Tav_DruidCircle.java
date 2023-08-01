@@ -77,10 +77,7 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
       c.displayMessage("@red@Tav Druid Circle - By Kaila");
       c.displayMessage("@red@Start in Fally west or druid Circle");
       c.displayMessage("@red@Food in Bank required");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 515) {
         bank();
         BankToDruid();
@@ -208,7 +205,6 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

@@ -33,10 +33,8 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       scriptStarted = false;
       c.displayMessage("@gre@Crystal Key Chest Opener - By Kaila");
       c.displayMessage("@gre@Start by Crystal chest or in Catherby Bank!");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+
+      if (c.isInBank()) c.closeBank();
       if (c.currentX() > 400) {
         bank();
         BankToGrape();
@@ -143,7 +141,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       DragonstonesInBank = c.getBankItemCount(542);
 
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

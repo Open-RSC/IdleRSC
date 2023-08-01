@@ -63,10 +63,7 @@ public final class K_Edge_Mankiller extends K_kailaScript {
       c.displayMessage("@red@Edge Man Killer ~ Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
 
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 445) {
         bank();
         bankToHouse();
@@ -180,7 +177,6 @@ public final class K_Edge_Mankiller extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       checkInventoryItemCounts();
     }
   }

@@ -49,10 +49,8 @@ public final class K_Edge_DungeonMine extends K_kailaScript {
     c.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
     c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
     c.displayMessage("@red@31 Magic Required for escape tele");
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() < 3000) {
       bank();
       bankToDungeon();
@@ -175,7 +173,6 @@ public final class K_Edge_DungeonMine extends K_kailaScript {
       mithInBank = c.getBankItemCount(153);
       addyInBank = c.getBankItemCount(154);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
     brassKeyCheck();
   }

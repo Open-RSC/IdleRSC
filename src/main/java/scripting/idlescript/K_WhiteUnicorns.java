@@ -47,10 +47,7 @@ public final class K_WhiteUnicorns extends K_kailaScript {
       startTime = System.currentTimeMillis();
       c.displayMessage("@red@Edge Skeletons ~ Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentX() < 450) {
         bank();
         bankToHouse();
@@ -138,7 +135,6 @@ public final class K_WhiteUnicorns extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

@@ -182,7 +182,6 @@ public class DamWildyAgility extends IdleScript {
         }
       }
       controller.closeBank();
-      controller.sleep(320);
     }
   }
 

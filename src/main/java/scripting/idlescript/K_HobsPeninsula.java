@@ -81,10 +81,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
       c.displayMessage("@red@Asgarnian Hobs Peninsula - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor or Hobs Peninsula");
       c.displayMessage("@red@Food in Bank REQUIRED");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 595) {
         bank();
         BankToPeninsula();
@@ -192,7 +189,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       checkInventoryItemCounts();
     }
   }

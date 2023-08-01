@@ -82,10 +82,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
       c.displayMessage("@red@70 Agility required, for the shortcut!");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 2800) {
         bank();
         BankToDemons();
@@ -264,7 +261,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         }
       }
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
     inventoryItemCheck(airId, 18);
     inventoryItemCheck(waterId, 6);

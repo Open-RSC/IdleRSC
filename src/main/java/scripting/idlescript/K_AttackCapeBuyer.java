@@ -32,10 +32,7 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
       c.displayMessage("@red@Attack Cape Buyer - By Kaila");
       c.displayMessage("@red@Start by Rovin or varrock west!");
       c.displayMessage("@red@Need coins in the inventory to buy");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 1000) {
         bank();
         BankToGrape();
@@ -85,7 +82,6 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
       }
       TopzInBank = c.getBankItemCount(1374);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

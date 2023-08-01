@@ -274,7 +274,6 @@ public class AIOSmelter extends IdleScript {
       secondaryOreInBank = c.getBankItemCount(secondaryOreId);
       barsInBank = c.getBankItemCount(barId);
       c.closeBank();
-      c.sleep(1280);
     }
   }
 

@@ -88,7 +88,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
       if (c.isInBank()) {
         c.closeBank();
-        c.sleep(2 * GAME_TICK);
       }
       if (c.currentY() < 500) {
         bank();
@@ -210,7 +209,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       bankItemCheck(airId, 50);
       bankItemCheck(lawId, 10);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
     inventoryItemCheck(airId, 30);
     inventoryItemCheck(lawId, 6);

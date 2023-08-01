@@ -100,10 +100,7 @@ public final class K_Paladins extends K_kailaScript {
     }
     c.displayMessage("@ran@Paladin Tower - By Kaila.");
     c.displayMessage("@gre@Beginning Startup Sequence.");
-    if (c.isInBank()) {
-      c.closeBank();
-      c.sleep(2 * GAME_TICK);
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() < 621
         && c.currentY() > 600
         && c.currentX() > 539
@@ -327,7 +324,6 @@ public final class K_Paladins extends K_kailaScript {
         endSession();
       }
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       invCoins = c.getInventoryItemCount(10);
       invChaos = c.getInventoryItemCount(41);
     }

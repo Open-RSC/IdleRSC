@@ -100,10 +100,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       c.displayMessage("@red@Start in Edge bank with Armor");
       c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
       c.displayMessage("@red@31 Magic Required for escape tele");
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         BankToDruid();
@@ -218,7 +215,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
       checkInventoryItemCounts();
     }
   }

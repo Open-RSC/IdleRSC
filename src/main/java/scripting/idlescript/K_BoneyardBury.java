@@ -35,10 +35,7 @@ public final class K_BoneyardBury extends K_kailaScript {
       c.displayMessage("@red@Bone Yard Skeletons ~ Kaila");
       c.displayMessage("@red@Start in Edge bank or Bone Yard with Armor");
 
-      if (c.isInBank()) {
-        c.closeBank();
-        c.sleep(2 * GAME_TICK);
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 440) {
         bank();
         bankToHouse();
@@ -114,7 +111,6 @@ public final class K_BoneyardBury extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(2 * GAME_TICK);
     }
   }
 

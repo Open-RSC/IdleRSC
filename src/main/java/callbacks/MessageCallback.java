@@ -22,7 +22,9 @@ public class MessageCallback {
   private static long timeNextLogClear = -1;
   private static final Pattern p =
       Pattern.compile("^(.*) (.*) level!"); // for parsing level up messages
-
+  // message is "You just advanced 1 hitpoints level"
+  // old Pattern.compile("^(.*) (.*) level!");
+  // new Pattern.compile("^You just advanced \\d (.*) level!$");
   /**
    * The hook called by the patched client every time a message is printed on screen.
    *
@@ -135,20 +137,32 @@ public class MessageCallback {
     Controller c = Main.getController();
     String skillName = null;
     int skillLevel = -1;
-
-    Matcher m = p.matcher(message);
-
+    // old Pattern.compile("^(.*) (.*) level!");
+    // new Pattern.compile("^You just advanced \\d (.*) level!$");
+    System.out.println("matching begin");
+    Matcher m = p.matcher(message); // "You just advanced 1 hitpoints level"
+    System.out.println("p.matcher(message) - " + p.matcher(message));
     if (m.find()) {
       skillName = m.group(2);
-      if (skillName != null && skillName.length() > 1) {
-        if (skillName.equalsIgnoreCase("woodcut")) skillName = "Woodcutting";
+      int statId = c.getStatId(skillName);
+      c.log("skillName - " + skillName);
+      c.log("statId" + statId); //invalid skill Id is being generated...
+      if (statId == -1) {
+        throw new IllegalArgumentException("Invalid skill name: " + skillName);
+      }
+      if (skillName != null && skillName.length() > 0 && statId > 0) {
+        if (skillName.equalsIgnoreCase("woodcut")) skillName = "Woodcutting"; // fix woodcut
 
-        skillName = Character.toUpperCase(skillName.charAt(0)) + skillName.substring(1);
+        skillName =
+          Character.toUpperCase(skillName.charAt(0)) // capitalize skill name first letter
+            + skillName.substring(1); // lowercase the rest
 
-        skillLevel = c.getBaseStat(c.getStatId(skillName));
+        skillLevel = c.getBaseStat(statId); // this is returning skillLevel = -1
 
         DrawCallback.displayAndScreenshotLevelUp(skillName, skillLevel);
       }
+    } else {
+      System.out.println("no find");
     }
   }
 

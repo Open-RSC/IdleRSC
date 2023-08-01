@@ -191,7 +191,7 @@ public class K_kailaScript extends IdleScript {
   };
   /**
    * int[] array of <b>regular attack potions</b><br>
-   * [1,2,3] doses </pre>
+   * [1,2,3] doses
    */
   protected static final int[] attackPot = {
     476, // reg attack pot (1)
@@ -200,7 +200,7 @@ public class K_kailaScript extends IdleScript {
   };
   /**
    * int[] array of <b>regular strength potions</b><br>
-   * [1,2,3] doses </pre>
+   * [1,2,3] doses
    */
   protected static final int[] strengthPot = {
     224, // reg str pot (1)
@@ -210,7 +210,7 @@ public class K_kailaScript extends IdleScript {
   };
   /**
    * int[] array of <b>regular defense potions</b><br>
-   * [1,2,3] doses </pre>
+   * [1,2,3] doses
    */
   protected static final int[] defensePot = {
     482, // reg def pot (1)
@@ -219,7 +219,7 @@ public class K_kailaScript extends IdleScript {
   };
   /**
    * int[] array of <b>super attack potion</b><br>
-   * [1,2,3] doses </pre>
+   * [1,2,3] doses
    */
   protected static final int[] superAttackPot = {
     488, // super  attack pot (1)

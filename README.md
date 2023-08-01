@@ -1,22 +1,74 @@
 # IdleRSC
 
-IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has
-it's own custom scripting API. It also has backwards compatibility with APOS
-and SBot. It also has built in staker bot functionality!
+IdleRSC is a bot for [Open RSC][open-rsc]. It uses code injection and
+reflection. It has it's own custom scripting API called IdleScript, as well as
+backwards compatibility with APOS and SBot scripts. It also provides staker
+bot functionality!
 
 ![screenshot of main window](doc/main-window.png "Main Window")
 
 ## Starting IdleRSC
 
-Releases are automatically regenerated upon every commit to the Gitlab
-repository, the last successful build can be found
-[here](https://gitlab.com/open-runescape-classic/idlersc/-/jobs/artifacts/master/browse?job=build).
+Releases are automatically generated upon every commit to the GitLab
+[repository][repository], the last successful build can be downloaded
+[here][download].
 
 1. Modify run.bat/sh.
 1. Select which server you want.
 1. **Optional**: if playing on a different server which allows botting,
    modify Cache/ip.txt and Cache/port.txt if needed.
 1. Run .bat/.sh file!
+
+## Commands
+
+![screenshot of in-game help menu](doc/help-menu.png "Help Menu")
+
+### In-game
+
+* `::bothelp` - show help menu with all in-game commands & keyboard shortcuts
+* `::show` - show the bot side-pane
+* `::gfx` - toggle graphics rendering
+* `::screenshot` - take a screenshot
+* `::hidepaint`/`::showpaint` - toggle paint left-side menu
+* `::toggleid` - toggle item/object/npc IDs on right-click
+* `::interlace` - toggle graphics interlacing
+
+### Shortcuts
+
+* `F1` - toggle graphics interlacing
+* `F2` - toggle left-side sub menu
+* `F3` - return camera zoom to default setting
+* `F4` - toggles between first & third person view
+* `F5`/`F6`/`F7` - attack/defense/strength item swapping (stake switching)
+* `F8` - spell id casting
+* `F9` - take a screenshot
+* `F10` - lock the client's camera position until `F10` is pressed or
+  mouse click
+* `F11` - stop the current script and load a new one
+* `F12` - show help menu with all in-game commands & keyboard shortcuts
+
+## Configuration
+
+The client provided by Open RSC has an alternate UI that can be toggled by
+opening `Cache/config.txt` and changing the number on the `Menu:` line to
+0 (classic) or 1 (alternate).
+
+### Stake Switcher
+
+The stake switcher can only be configured by use of command-line parameters.
+Inside your `run_windows.bat` or `run_linux.sh` script, add the following
+lines:
+
+```
+--attack-items 123,456
+--strength-items 123,456
+--defence-items 123,456
+--spell-id 2
+```
+
+e.g. `java -jar IdleRSC.jar --attack-items 123,456` and so on.
+
+Restart the bot. Press `F5`, `F6`, `F7`, `F8` to validate.
 
 ## Rules
 
@@ -27,10 +79,13 @@ accounts.
 
 ## Sleeping
 
+Note: The below paragraph is out of date. The sleeper server no longer
+runs, and the local OCR functionality has not *yet* been tested by the
+current developers.
+
 IdleRSC uses a sleeper server which is provided free of charge. However,
 if you would like, you can run the FOCR sleeper locally with --localOCR
-on the command line. Get the latest copy of FOCR here:
-[FOCR Resurrection](https://gitlab.com/open-runescape-classic/tools/focr-resurrection).
+on the command line. Get the latest copy of FOCR [here][focr].
 
 ## Account Security
 
@@ -122,33 +177,22 @@ public alch(mudclient rs)
 
 If you have problems, you can create a new issue or ask for help in the OpenRSC Discord.
 
-## Configuring Stake Switcher
-
-Inside your `run_windows.bat` or `run_linux.sh`, add the following lines.
-Restart the bot. Press `F5`, `F6`, `F7`, `F8` to validate.
-
-```
---attack-items 123,456
---strength-items 123,456
---defence-items 123,456
---spell-id 2
-```
 
 ## Contributing
 
-* Please submit issues, questions, bugs on Gitlab.
+* Please submit issues, questions, bugs on GitLab's [issue tracker][issue-tracker].
 * Provide stack traces for crashes, etc.
-* Please submit pull requests to Gitlab.
+* Please submit pull requests to [GitLab][merge-requests].
 
 ## Discussion
 
-Please join the [OpenRSC discord](https://discord.gg/CutQxDZ8Np) and post
-in the `#botting-client-development` channel. Other channels are not tied
-to botting, so please do not discuss botting in those channels.
+Please join the [OpenRSC discord][discord] and post in the
+`#botting-client-development` channel. Other channels are not tied to botting,
+so please do not discuss botting in those channels.
 
 ## Donations
 
-Like [OpenRSC](https://rsc.vet), donations are not accepted. IdleRSC is
+Like [Open RSC][open-rsc], donations are not accepted. IdleRSC is
 provided for free under [GPLv3](LICENSE), due to passion for RSC botting.
 
 ## About
@@ -165,3 +209,11 @@ Damrau, grawlinson, JonathanB31, Kaila, Kkoemets, and Searos.
 
 The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after
 APOS, STS, SBot, and AutoRune!
+
+[open-rsc]: https://rsc.vet
+[repository]: https://gitlab.com/open-runescape-classic/idlersc
+[issue-tracker]: https://gitlab.com/open-runescape-classic/idlersc/-/issues
+[merge-requests]: https://gitlab.com/open-runescape-classic/idlersc/-/merge_requests
+[discord]: https://discord.gg/CutQxDZ8Np
+[focr]: https://gitlab.com/open-runescape-classic/tools/focr-resurrection
+[download]: https://gitlab.com/open-runescape-classic/idlersc/-/jobs/artifacts/master/browse?job=build

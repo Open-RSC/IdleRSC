@@ -177,20 +177,11 @@ public class K_kailaScript extends IdleScript {
   protected static int totalRunes = 0;
   /*
    *
-   *
-   *
-   *
-   *
-   *
-   *      int[]
+   *      int[]  Arrays
    */
   /**
-   *
-   *
-   * <pre>
-   * int[] array of bone id's
-   *
-   * [regular,big,bat,dragon] </pre>
+   * int[] array of <b>bone id</b>'s <br>
+   * [regular,big,bat,dragon]
    */
   protected static final int[] bones = {
     20, // regular
@@ -199,11 +190,7 @@ public class K_kailaScript extends IdleScript {
     814 // dragon
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of regular attack potions
-   *
+   * int[] array of <b>regular attack potions</b><br>
    * [1,2,3] doses </pre>
    */
   protected static final int[] attackPot = {
@@ -212,11 +199,7 @@ public class K_kailaScript extends IdleScript {
     474 // reg attack pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of regular strength potions
-   *
+   * int[] array of <b>regular strength potions</b><br>
    * [1,2,3] doses </pre>
    */
   protected static final int[] strengthPot = {
@@ -226,11 +209,7 @@ public class K_kailaScript extends IdleScript {
     221 // reg str pot (4)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of regular defense potions
-   *
+   * int[] array of <b>regular defense potions</b><br>
    * [1,2,3] doses </pre>
    */
   protected static final int[] defensePot = {
@@ -239,11 +218,7 @@ public class K_kailaScript extends IdleScript {
     480 // reg def pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of super attack potion
-   *
+   * int[] array of <b>super attack potion</b><br>
    * [1,2,3] doses </pre>
    */
   protected static final int[] superAttackPot = {
@@ -252,12 +227,8 @@ public class K_kailaScript extends IdleScript {
     486 // super attack pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of super strength potion
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>super strength potion</b><br>
+   * [1,2,3] doses
    */
   protected static final int[] superStrengthPot = {
     494, // super str pot (1)
@@ -265,8 +236,8 @@ public class K_kailaScript extends IdleScript {
     492 // super str pot (3)
   };
   /**
-   * int[] array of super defense potion <br>
-   * [1,2,3] doses </pre>
+   * int[] array of <b>super defense potion</b><br>
+   * [1,2,3] doses
    */
   protected static final int[] superDefensePot = {
     497, // super defense pot (1)
@@ -274,12 +245,8 @@ public class K_kailaScript extends IdleScript {
     495 // super defense pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of prayer potion
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>prayer potion</b><br>
+   * [1,2,3] doses
    */
   protected static final int[] prayerPot = {
     485, // prayer potion (1)
@@ -287,12 +254,8 @@ public class K_kailaScript extends IdleScript {
     483 // prayer potion (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of antidote (the red one)
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>antidote</b><br>
+   * (the red one) [1,2,3] doses
    */
   protected static final int[] antiPot = {
     571, // 1 dose
@@ -300,12 +263,8 @@ public class K_kailaScript extends IdleScript {
     569 // 3 dose
   };
   /**
-   *
-   *
-   * <pre>
-   *  int[] array of axe Id's
-   *
-   *  [bronze,iron,steel,black,mith,addy,rune] </pre>
+   * int[] array of <b>axe Ids</b><br>
+   * [bronze,iron,steel,black,mith,addy,rune]
    */
   protected static final int[] axeId = {
     87, // bronze axe
@@ -317,12 +276,8 @@ public class K_kailaScript extends IdleScript {
     405 // rune axe
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of bar Ids
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>bar Ids</b><br>
+   * [1,2,3] doses
    */
   protected static final int[] barIds = {
     169, // bronze bar
@@ -333,12 +288,8 @@ public class K_kailaScript extends IdleScript {
     408 // runite bar
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of log Ids
-   *
-   * [normal,oak,willow,maple,yew,magic] </pre>
+   * int[] array of <b>log Ids</b><br>
+   * [normal,oak,willow,maple,yew,magic]
    */
   protected static final int[] logIds = {
     14, // normal logs
@@ -349,13 +300,9 @@ public class K_kailaScript extends IdleScript {
     636 // magic logs
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of cooked food IDS
-   *
-   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
-   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
+   * int[] array of cooked <b>food Ids</b><br>
+   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
+   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
   protected static final int[] foodIds = {
     1191, // cooked Manta Ray
@@ -376,13 +323,9 @@ public class K_kailaScript extends IdleScript {
     132 // cooked Meat
   };
   /**
-   *
-   *
-   * <pre>
-   * String[] array of cooked food NAMES
-   *
-   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
-   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
+   * String[] array of <b>cooked food NAMES</b><br>
+   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
+   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
   protected static final String[] foodTypes = {
     "Manta Ray",
@@ -469,12 +412,7 @@ public class K_kailaScript extends IdleScript {
             + inventCada
             + inventDwarf;
   }
-  /**
-   *
-   *
-   * <pre>
-   * sets foodName string to the name for the current foodId </pre>
-   */
+  /** sets foodName string to the name for the current foodId <br> */
   /*
    *  todo refactor to input foodId, output foodName
    */
@@ -686,12 +624,9 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * Set autologin false,
-   * WHILE logged in attempt to log out,
-   * when not logged in then stop script </pre>
+   * Set autologin false, <br>
+   * WHILE logged in attempt to log out,<br>
+   * when not logged in then stop script <br>
    */
   protected static void endSession() {
     c.setAutoLogin(false);
@@ -710,12 +645,8 @@ public class K_kailaScript extends IdleScript {
     c.sleep(650);
   }
   /**
-   *
-   *
-   * <pre>
-   * for all boneIds, attempt to bury bones
-   *
-   * will leave combat to bury bones </pre>
+   * for all boneIds, attempt to bury bones<br>
+   * will leave combat to bury bones <br>
    */
   protected static void buryBones(boolean leaveCombat) {
     for (int id : bones) {
@@ -733,11 +664,8 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * attempt to leave combat once per tick for 30 ticks
-   * walks to current tile (async non-blocking) radius 1. </pre>
+   * attempt to leave combat once per tick for 30 ticks<br>
+   * walks to current tile (async non-blocking) radius 1. <br>
    */
   protected static void leaveCombat() {
     for (int i = 0; i <= 30; i++) {
@@ -755,8 +683,8 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Checks for full inventory, if true eat 1 food to make inventory space. Depending on
-   * leaveCombat.
+   * Checks for full inventory, if true eat 1 food to make inventory space. <br>
+   * Depending on leaveCombat.<br>
    *
    * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
@@ -778,8 +706,8 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Checks for full inventory, if true bury bones to make inventory space. Depending on
-   * leaveCombat.
+   * Checks for full inventory, if true bury bones to make inventory space.<br>
+   * Depending on leaveCombat.
    *
    * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
@@ -801,8 +729,8 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Checks for full inventory, if true drops items to make inventory space. Depending on
-   * leaveCombat.
+   * Checks for full inventory, if true drops items to make inventory space.<br>
+   * Depending on leaveCombat.
    *
    * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
@@ -824,17 +752,6 @@ public class K_kailaScript extends IdleScript {
   }
 
   /*
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
    *      Potion Methods
    */
   /**
@@ -1448,11 +1365,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * (depreciated) while in KBD lair attempt to tele to lumbridge </pre>
-   *
+   * (depreciated) while in KBD lair attempt to tele to lumbridge <br>
    * todo change to "while NOT in lumbridge, attempt to teleport"
    */
   protected static void teleportOutLumbridge() {
@@ -1471,11 +1384,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * (depreciated) while in tav dungeon attempt to tele to falador </pre>
-   *
+   * (depreciated) while in tav dungeon attempt to tele to falador <br>
    * todo change to "while NOT in location, then attempt to teleport"
    */
   protected static void teleportOutFalador() {
@@ -1494,19 +1403,6 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /*
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
    *
    *      Gate Methods
    */

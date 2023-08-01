@@ -47,12 +47,6 @@ Releases are automatically generated upon every commit to the GitLab
 * `F11` - stop the current script and load a new one
 * `F12` - show help menu with all in-game commands & keyboard shortcuts
 
-## Configuration
-
-The client provided by Open RSC has an alternate UI that can be toggled by
-opening `Cache/config.txt` and changing the number on the `Menu:` line to
-0 (classic) or 1 (alternate).
-
 ### Stake Switcher
 
 The stake switcher can only be configured by use of command-line parameters.

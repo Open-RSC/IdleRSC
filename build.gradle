@@ -64,8 +64,7 @@ tasks.named('jar') {
     }
   }
 
-  // Fix for FTBFS error below:
-  // Entry module-info.class is a duplicate but no duplicate handling strategy has been set.
+  // FTBFS: Set duplicate handling strategy for module-info.class.
   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 

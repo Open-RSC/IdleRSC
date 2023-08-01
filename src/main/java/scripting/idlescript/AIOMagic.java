@@ -47,7 +47,7 @@ public class AIOMagic extends IdleScript {
   JFrame scriptFrame = null;
   final int[] lootIds = {
     10, 169, 170, 171, 172, 173, 174, 384, 314, 315, 316, 317, 408, 522, 1314, 1315, 1316, 1317,
-    1318, 1510, 1511, 1512, 1513, 1514
+    1318, 1509, 1510, 1511, 1512, 1513, 1514
   }; // dragonstone items not supported. not like anyone will have thousands of those, right? xd
 
   int spellId = -1;

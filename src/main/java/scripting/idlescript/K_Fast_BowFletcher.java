@@ -117,23 +117,24 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       }
       if (c.getInventoryItemCount() > 0) {
         for (int itemId : c.getInventoryItemIds()) {
-          if (itemId != KNIFE_ID && itemId != logId) {
+          if (itemId != KNIFE_ID) {
             c.depositItem(itemId, c.getInventoryItemCount(itemId));
           }
         }
-        c.sleep(100);
       }
+      c.sleep(GAME_TICK);
       if (!stringBows && c.getInventoryItemCount(KNIFE_ID) < 1) {
         c.withdrawItem(KNIFE_ID, 1);
-        c.sleep(320);
+        c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() < 30) {
         if (!stringBows) c.withdrawItem(logId, 29);
         else {
           c.withdrawItem(logId, 15);
+          c.sleep(GAME_TICK);
           c.withdrawItem(BOW_STRING, 15);
+          c.sleep(GAME_TICK);
         }
-        c.sleep(650);
       }
       logsInBank = c.getBankItemCount(logId);
       c.closeBank();

@@ -14,7 +14,7 @@ import orsc.ORSCharacter;
  *
  * @author Dvorak, rewritten by Kaila and Spilk
  */
-public class S_AggieBuyer extends IdleScript {
+public class S_BettyBuyer extends IdleScript {
   final String[] options = new String[] {"Newts"};
 
   final int[] loot = {465, 270};
@@ -31,7 +31,7 @@ public class S_AggieBuyer extends IdleScript {
   final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public void startSequence() {
-    controller.displayMessage("@red@AggieBuyer by Dvorak. Fixed by Kaila!");
+    controller.displayMessage("@red@BettyBuyer by Dvorak. Fixed by Kaila!");
     controller.displayMessage("@red@Start in Port Sarim or Fally East with GP!");
     controller.displayMessage("@red@This bot supports the \"autostart\" Parameter");
     controller.displayMessage("@red@autostart collects Newts then Vials");
@@ -40,7 +40,7 @@ public class S_AggieBuyer extends IdleScript {
     }
     if (controller.currentY() > 545) {
       bank();
-      walkToAggie();
+      walkToBetty();
       controller.sleep(1380);
     }
   }
@@ -75,7 +75,7 @@ public class S_AggieBuyer extends IdleScript {
     while (controller.isRunning()) {
       if (controller.getInventoryItemCount() < 30) {
         controller.setStatus("@gre@Buying stuff..");
-        // changed from 230 to 149 (aggie)
+        // changed from 230 to 149 (Betty)
         ORSCharacter npc = controller.getNearestNpcById(149, false);
 
         if (npc != null) {
@@ -106,7 +106,7 @@ public class S_AggieBuyer extends IdleScript {
       } else {
         walkToBank();
         bank();
-        walkToAggie();
+        walkToBetty();
       }
 
       controller.sleep(100);
@@ -212,9 +212,9 @@ public class S_AggieBuyer extends IdleScript {
     }
   }
 
-  public void walkToAggie() {
+  public void walkToBetty() {
 
-    controller.setStatus("@gre@Walking back to Aggie..");
+    controller.setStatus("@gre@Walking back to Betty..");
     controller.walkTo(286, 571);
 
     // open bank door
@@ -260,8 +260,8 @@ public class S_AggieBuyer extends IdleScript {
   }
 
   public void setupGUI() {
-    final JFrame scriptFrame = new JFrame("AggieBuyer by Dvorak. Fixed by Kaila");
-    JLabel headerLabel = new JLabel("Buys Newtsfrom Aggie");
+    final JFrame scriptFrame = new JFrame("BettyBuyer by Dvorak. Fixed by Kaila");
+    JLabel headerLabel = new JLabel("Buys Newtsfrom Betty");
     JLabel Label1 = new JLabel("Start in Port Sarim or Fally West with GP!");
     JLabel Label2 = new JLabel("This bot supports the \"autostart\" Parameter");
     JLabel Label3 = new JLabel("autostart collects Newts then Vials");
@@ -317,7 +317,7 @@ public class S_AggieBuyer extends IdleScript {
 
       controller.drawBoxAlpha(7, 7, 180, height, 0xFFFFFF, 128);
       controller.drawString(
-          "@gre@AggieBuyer @whi@by @gre@Dvorak & Kaila & spilk", 10, 21, 0xFFFFFF, 1);
+          "@gre@BettyBuyer @whi@by @gre@Dvorak & Kaila & spilk", 10, 21, 0xFFFFFF, 1);
 
       if (option == 1) {
         controller.drawString(

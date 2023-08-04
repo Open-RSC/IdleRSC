@@ -3,14 +3,18 @@ package scripting.idlescript;
 import bot.Main;
 import controller.Controller;
 import javax.swing.*;
+import models.entities.ItemId;
 
 /**
  * WIP master file for common commands used in Kaila_Scripts
+ *
+ * <p>int trout = ItemId.RAW_TROUT.getId();
  *
  * @author Kaila
  */
 /*
  *       todo
+ *           int trout = ItemId.RAW_TROUT.getId();
  *           fix teleport spot bounding
  *           replace eat food to loot with clearInventorySlot
  *          eat any 1 food script, return true/false to bank?
@@ -47,20 +51,19 @@ public class K_kailaScript extends IdleScript {
 
   // ~~~~~~~~~~~~~ITEM CONSTANTS~~~~~~~~~~~
   protected static final int UNCUT_SAPP = 160, UNCUT_EMER = 159, UNCUT_RUBY = 158, UNCUT_DIA = 157;
-  protected static final int CUT_SAPP = 164, CUT_EMER = 163, CUT_RUBY = 162, CUT_DIA = 161;
   protected static final int UNID_GUAM = 165, UNID_MAR = 435, UNID_TAR = 436, UNID_HAR = 437;
   protected static final int UNID_RANARR = 438,
       UNID_IRIT = 439,
       UNID_AVANTOE = 440,
       UNID_KWUARM = 441;
-  protected static final int UNID_CADA = 442, UNID_DWARF = 443, UNID_TORSTOL = 933;
+  protected static final int UNID_CADA = 442, UNID_DWARF = 443;
   protected static final int FIRE_RUNE = 31, WATER_RUNE = 32, AIR_RUNE = 33, EARTH_RUNE = 34;
   protected static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
   protected static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
   protected static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
   protected static final int COINS = 10, EMPTY_VIAL = 465, BRONZE_ARROW = 11, SPIN_ROLL = 179;
   protected static final int LIMP_ROOT = 220;
-  protected static final int BONES = 20, BAT_BONES = 604, BIG_BONES = 413, DRAGON_BONES = 814;
+  protected static final int BONES = 20, BIG_BONES = 413;
 
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
 
@@ -304,6 +307,7 @@ public class K_kailaScript extends IdleScript {
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
    * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
+  // todo convert to hashmap
   protected static final int[] foodIds = {
     1191, // cooked Manta Ray
     1193, // cooked Sea Turtle
@@ -327,6 +331,7 @@ public class K_kailaScript extends IdleScript {
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
    * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
+  // todo convert to hashmap
   protected static final String[] foodTypes = {
     "Manta Ray",
     "Sea Turtle",
@@ -353,39 +358,39 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void checkInventoryItemCounts() {
     // Herbs
-    inventGuam = c.getInventoryItemCount(UNID_GUAM);
-    inventMar = c.getInventoryItemCount(UNID_MAR);
-    inventTar = c.getInventoryItemCount(UNID_TAR);
-    inventHar = c.getInventoryItemCount(UNID_HAR);
-    inventRan = c.getInventoryItemCount(UNID_RANARR);
-    inventIrit = c.getInventoryItemCount(UNID_IRIT);
-    inventAva = c.getInventoryItemCount(UNID_AVANTOE);
-    inventKwuarm = c.getInventoryItemCount(UNID_KWUARM);
-    inventCada = c.getInventoryItemCount(UNID_CADA);
-    inventDwarf = c.getInventoryItemCount(UNID_DWARF);
+    inventGuam = c.getInventoryItemCount(ItemId.GUAM_LEAF.getId());
+    inventMar = c.getInventoryItemCount(ItemId.UNID_MARRENTILL.getId());
+    inventTar = c.getInventoryItemCount(ItemId.UNID_TARROMIN.getId());
+    inventHar = c.getInventoryItemCount(ItemId.UNID_HARRALANDER.getId());
+    inventRan = c.getInventoryItemCount(ItemId.UNID_RANARR.getId());
+    inventIrit = c.getInventoryItemCount(ItemId.UNID_IRIT.getId());
+    inventAva = c.getInventoryItemCount(ItemId.UNID_AVANTOE.getId());
+    inventKwuarm = c.getInventoryItemCount(ItemId.UNID_KWUARM.getId());
+    inventCada = c.getInventoryItemCount(ItemId.UNID_CADANTINE.getId());
+    inventDwarf = c.getInventoryItemCount(ItemId.UNID_DWARF.getId());
     // Runes
-    inventLaws = c.getInventoryItemCount(LAW_RUNE);
-    inventNats = c.getInventoryItemCount(NATURE_RUNE);
-    inventMind = c.getInventoryItemCount(MIND_RUNE);
-    inventChaos = c.getInventoryItemCount(CHAOS_RUNE);
-    inventDeath = c.getInventoryItemCount(DEATH_RUNE);
-    inventBlood = c.getInventoryItemCount(BLOOD_RUNE);
-    inventCosmic = c.getInventoryItemCount(COSMIC_RUNE);
-    inventAir = c.getInventoryItemCount(AIR_RUNE);
-    inventFire = c.getInventoryItemCount(FIRE_RUNE);
-    inventWater = c.getInventoryItemCount(WATER_RUNE);
-    inventEarth = c.getInventoryItemCount(EARTH_RUNE);
+    inventLaws = c.getInventoryItemCount(ItemId.LAW_RUNE.getId());
+    inventNats = c.getInventoryItemCount(ItemId.NATURE_RUNE.getId());
+    inventMind = c.getInventoryItemCount(ItemId.MIND_RUNE.getId());
+    inventChaos = c.getInventoryItemCount(ItemId.CHAOS_RUNE.getId());
+    inventDeath = c.getInventoryItemCount(ItemId.DEATH_RUNE.getId());
+    inventBlood = c.getInventoryItemCount(ItemId.BLOOD_RUNE.getId());
+    inventCosmic = c.getInventoryItemCount(ItemId.COSMIC_RUNE.getId());
+    inventAir = c.getInventoryItemCount(ItemId.AIR_RUNE.getId());
+    inventFire = c.getInventoryItemCount(ItemId.FIRE_RUNE.getId());
+    inventWater = c.getInventoryItemCount(ItemId.WATER_RUNE.getId());
+    inventEarth = c.getInventoryItemCount(ItemId.EARTH_RUNE.getId());
     // Gems
-    inventSapphire = c.getInventoryItemCount(UNCUT_SAPP);
-    inventEmerald = c.getInventoryItemCount(UNCUT_EMER);
-    inventRuby = c.getInventoryItemCount(UNCUT_RUBY);
-    inventDiamond = c.getInventoryItemCount(UNCUT_DIA);
+    inventSapphire = c.getInventoryItemCount(ItemId.UNCUT_SAPPHIRE.getId());
+    inventEmerald = c.getInventoryItemCount(ItemId.UNCUT_EMERALD.getId());
+    inventRuby = c.getInventoryItemCount(ItemId.UNCUT_RUBY.getId());
+    inventDiamond = c.getInventoryItemCount(ItemId.UNCUT_DIAMOND.getId());
     inventGems = inventSapphire + inventEmerald + inventRuby + inventDiamond;
     // rares
-    inventTooth = c.getInventoryItemCount(TOOTH_HALF);
-    inventLoop = c.getInventoryItemCount(LOOP_HALF);
-    inventLeft = c.getInventoryItemCount(LEFT_HALF);
-    inventSpear = c.getInventoryItemCount(RUNE_SPEAR);
+    inventTooth = c.getInventoryItemCount(ItemId.TOOTH_HALF_KEY.getId());
+    inventLoop = c.getInventoryItemCount(ItemId.LOOP_HALF_KEY.getId());
+    inventLeft = c.getInventoryItemCount(ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId());
+    inventSpear = c.getInventoryItemCount(ItemId.RUNE_SPEAR.getId());
 
     // Totals
     inventRunes =
@@ -414,7 +419,7 @@ public class K_kailaScript extends IdleScript {
   }
   /** sets foodName string to the name for the current foodId <br> */
   /*
-   *  todo refactor to input foodId, output foodName
+   *    todo convert to hashmap
    */
   protected static void whatIsFoodName() {
     if (foodId == 1191) {
@@ -768,22 +773,25 @@ public class K_kailaScript extends IdleScript {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
+      final int oneDose = ItemId.ATTACK_POTION_1DOSE.getId();
+      final int twoDose = ItemId.ATTACK_POTION_2DOSE.getId();
+      final int threeDose = ItemId.ATTACK_POTION_3DOSE.getId();
       int attackPotCount =
-          c.getInventoryItemCount(attackPot[0])
-              + c.getInventoryItemCount(attackPot[1])
-              + c.getInventoryItemCount(attackPot[2]);
+          c.getInventoryItemCount(oneDose)
+              + c.getInventoryItemCount(twoDose)
+              + c.getInventoryItemCount(threeDose);
       if (attackPotCount > 0) {
         if (leaveCombat && c.isInCombat()) leaveCombat();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-        if (c.getInventoryItemCount(attackPot[0]) > 0) {
-          c.itemCommand(attackPot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(attackPot[1]) > 0) {
-          c.itemCommand(attackPot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(attackPot[2]) > 0) {
-          c.itemCommand(attackPot[2]);
-          c.sleep(640);
+        if (c.getInventoryItemCount(oneDose) > 0) {
+          c.itemCommand(oneDose);
+          c.sleep(GAME_TICK);
+        } else if (c.getInventoryItemCount(twoDose) > 0) {
+          c.itemCommand(twoDose);
+          c.sleep(GAME_TICK);
+        } else if (c.getInventoryItemCount(threeDose) > 0) {
+          c.itemCommand(threeDose);
+          c.sleep(GAME_TICK);
         }
       }
     }

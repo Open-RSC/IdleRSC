@@ -317,8 +317,10 @@ public class AIOSmelter extends IdleScript {
     JLabel batchLabel = new JLabel("IMPORTANT: Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures all bars crafted in 1 \"trip.\"");
     JComboBox<String> destination = new JComboBox<>(destinations);
+    destination.setSelectedIndex(1);
     JLabel barLabel = new JLabel("Bar Type:");
     JComboBox<String> barField = new JComboBox<>(options);
+    barField.setSelectedIndex(3);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

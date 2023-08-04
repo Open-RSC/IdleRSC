@@ -9,6 +9,7 @@ bot functionality!
 
 ## Starting IdleRSC
 
+---
 Releases are automatically generated upon every commit to the GitLab
 [repository][repository], the last successful build can be downloaded
 [here][download].
@@ -21,6 +22,7 @@ Releases are automatically generated upon every commit to the GitLab
 
 ## Commands
 
+---
 ![screenshot of in-game help menu](doc/help-menu.png "Help Menu")
 
 ### In-game
@@ -47,6 +49,35 @@ Releases are automatically generated upon every commit to the GitLab
 * `F11` - stop the current script and load a new one
 * `F12` - show help menu with all in-game commands & keyboard shortcuts
 
+### CLI Startup Commands
+
+---
+Command Line Interface (CLI) commands can be included following a command line startup
+for example `java -jar IdleRSC.jar` , or added to the `run_windows.bat`or `run_linux.sh`
+script files that execute the same startup command.
+
+* `--script-arguments <arguments>` - pass arguments to the script (e.g. dragonstone) <br>
+* `--auto-login` - Enable automatic log-in with credentials (--username, --password) <br>
+* `--debug` - Enable debug logging <br>
+* `--log-window` - Display log window <br>
+* `--disable-gfx` - Disable graphics refresh <br>
+* `--help` - Show help menu (F12) <br>
+* `--hide-side-panel` - Hide side panel <br>
+* `--init-cache <server>` - Initialise cache for specified server (coleslaw|uranium) <br>
+* `--interlace` - Enable graphics interlacing <br>
+* `--local-ocr` - Enable local OCR <br>
+* `--log-window` - Display log window <br>
+* `--script-name <name>` - Name of the script to run <br>
+* `--password <password>` - Account password <br>
+* `--script-selector` - Display script selector window <br>
+* `--username <username>` - Account username <br>
+* `--unstick` - Unstick side panel from main window <br>
+* `--version` - Show version <br>
+* `--attack-items <item1,item2>` - stake switcher attack item swapping <br>
+* `--defence-items <item1,item2>` - stake switcher defence items swapping <br>
+* `--strength-items <item1,item2>` - stake switcher strength items swapping <br>
+* `--spell-id <id>` - Spell id for stake switcher casting <br>
+
 ### Stake Switcher
 
 The stake switcher can only be configured by use of command-line parameters.
@@ -66,12 +97,16 @@ Restart the bot. Press `F5`, `F6`, `F7`, `F8` to validate.
 
 ## Rules
 
+---
+
 User will NOT use this client to bot on non-botting servers. The only
 allowed openRSC botting servers are Coleslaw and Uranium. Use of this
 client to bot on Cabbage or Preservation will result in a BAN of the
 accounts.
 
 ## Sleeping
+
+---
 
 Note: The below paragraph is out of date. The sleeper server no longer
 runs, and the local OCR functionality has not *yet* been tested by the
@@ -83,6 +118,8 @@ on the command line. Get the latest copy of FOCR [here][focr].
 
 ## Account Security
 
+---
+
 Please be aware that run.bat is not encrypted. If someone has your
 run.bat, they have your username and password.
 Please be aware that you should not run any .class files from sources
@@ -90,12 +127,14 @@ you do not trust. Running a rogue .class file is akin to running a .exe
 file on your computer. IF YOU DON'T TRUST IT, READ THE SOURCE CODE AND
 COMPILE IT!!!
 
-## Lost Items, Accounts, etc
+### Lost Items, Accounts, etc
 
 Developers of IdleRSC are not responsible for ruined, banned, hacked accounts,
 or anything else.
 
 ## Compiling Scripts
+
+---
 
 ### Linux
 
@@ -131,12 +170,16 @@ WARNING: This will delete your JAR file!!!
 
 Read "converting SBot scripts" section for compilitation issues.
 
-## Converting APOS Scripts
+## Converting Scripts
+
+---
+
+### Converting APOS Scripts
 
 APOS scripts require several changes in order to be made compatible.
 Please see changes made to scripts which were added.
 
-## Converting SBot Scripts
+### Converting SBot Scripts
 
 1. Open SBot script in a text editor.
 2. Place these lines at the top of the file:
@@ -159,6 +202,8 @@ public alch(mudclient rs)
 
 ## Compiling IdleRSC.jar
 
+---
+
 1. Clone the repository from [GitLab](https://gitlab.com/open-runescape-classic/idlersc).
 2. Open the project in Eclipse or IntelliJ, set up eclipse or gradle (preferred) compiler.
 3. If client JAR is out of date, run patcher utility from the Gitlab [repository](https://gitlab.com/open-runescape-classic/tools/idlersc_patcher) (follow README in that project).
@@ -174,11 +219,15 @@ If you have problems, you can create a new issue or ask for help in the OpenRSC 
 
 ## Contributing
 
+---
+
 * Please submit issues, questions, bugs on GitLab's [issue tracker][issue-tracker].
 * Provide stack traces for crashes, etc.
 * Please submit pull requests to [GitLab][merge-requests].
 
 ## Discussion
+
+---
 
 Please join the [OpenRSC discord][discord] and post in the
 `#botting-client-development` channel. Other channels are not tied to botting,
@@ -186,10 +235,14 @@ so please do not discuss botting in those channels.
 
 ## Donations
 
+---
+
 Like [Open RSC][open-rsc], donations are not accepted. IdleRSC is
 provided for free under [GPLv3](LICENSE), due to passion for RSC botting.
 
 ## About
+
+---
 
 This started as a project in April 2020 due to a distinct lack of botting
 clients available for RSC post-closure. After Jagex decided to nerf the
@@ -199,7 +252,7 @@ and the project was resurrected and released.
 The original owner is no longer part of this fork of the project. However all
 credit for writing the original client goes to DvorakKeys.
 Additional credit goes to various developers including but not limited to:
-Damrau, grawlinson, JonathanB31, Kaila, Kkoemets, and Searos.
+Damrau, Grawlinson, JonathanB31, Kaila Btw, Kkoemets, and Searos.
 
 The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after
 APOS, STS, SBot, and AutoRune!

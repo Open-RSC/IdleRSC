@@ -362,12 +362,12 @@ public class K_kailaScript extends IdleScript {
     inventMar = c.getInventoryItemCount(ItemId.UNID_MARRENTILL.getId());
     inventTar = c.getInventoryItemCount(ItemId.UNID_TARROMIN.getId());
     inventHar = c.getInventoryItemCount(ItemId.UNID_HARRALANDER.getId());
-    inventRan = c.getInventoryItemCount(ItemId.UNID_RANARR.getId());
+    inventRan = c.getInventoryItemCount(ItemId.UNID_RANARR_WEED.getId());
     inventIrit = c.getInventoryItemCount(ItemId.UNID_IRIT.getId());
     inventAva = c.getInventoryItemCount(ItemId.UNID_AVANTOE.getId());
     inventKwuarm = c.getInventoryItemCount(ItemId.UNID_KWUARM.getId());
     inventCada = c.getInventoryItemCount(ItemId.UNID_CADANTINE.getId());
-    inventDwarf = c.getInventoryItemCount(ItemId.UNID_DWARF.getId());
+    inventDwarf = c.getInventoryItemCount(ItemId.UNID_DWARF_WEED.getId());
     // Runes
     inventLaws = c.getInventoryItemCount(ItemId.LAW_RUNE.getId());
     inventNats = c.getInventoryItemCount(ItemId.NATURE_RUNE.getId());

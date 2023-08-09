@@ -19,7 +19,6 @@ public class MessageCallback {
   private static String sbotLastChatMessage = "";
   private static String sbotLastNPCMessage = "";
   private static String sbotLastServerMessage = "";
-  private static long timeNextLogClear = -1;
   private static final Pattern p =
       Pattern.compile("^(.*) (.*) level!"); // for parsing level up messages
   // message is "You just advanced 1 hitpoints level"
@@ -45,13 +44,13 @@ public class MessageCallback {
       String formerName,
       String colourOverride) {
     Controller con = Main.getController();
-    if (timeNextLogClear == -1) {
-      timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
+    if (Main.isLogWindowOpen() && DrawCallback.timeNextLogClear == -1) {
+      DrawCallback.timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
       // cd.log(String.valueOf((timeNextLogClear - System.currentTimeMillis()) / 1000L) + " s");
     }
-    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > timeNextLogClear)) {
+    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > DrawCallback.timeNextLogClear)) {
       Main.clearLog();
-      timeNextLogClear = System.currentTimeMillis() + 86400000L; // add 24 hrs in ms
+      DrawCallback.timeNextLogClear = System.currentTimeMillis() + 86400000L; // add 24 hrs in ms
     }
     if ((System.currentTimeMillis() > DrawCallback.nextRefresh) && DrawCallback.nextRefresh != -1) {
       if (!con.isDrawEnabled()) {

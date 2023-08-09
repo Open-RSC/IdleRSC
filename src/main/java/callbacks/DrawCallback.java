@@ -21,6 +21,7 @@ public class DrawCallback {
   public static boolean toggleOnViewId = false;
   public static long nextRefresh = -1;
   public static long nextDeRefresh = -1;
+  public static long timeNextLogClear = -1;
   /** The hook called each frame by the patched client. */
   public static void drawHook() {
     Controller c = Main.getController();

@@ -6,25 +6,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Harvests Grapes from Edgeville Monastery.
+ * <b>Grape Harvester</b>
  *
- * <p>
+ * <p>Harvests Grapes from Edgeville Monastery (Coleslaw Only).<br>
+ * Start in Edge Bank with Herb Clippers or near grapes. <br>
+ * Recommend Armor against lvl 21 Scorpions. <br>
+ * This bot supports the "autostart" parameter to automatiically start the bot without gui.<br>
  *
- * <p>This bot supports the "autostart" parameter to automatiically start the bot without gui.
- *
- * <p>
- *
- * <p>Grape Harvester - By Kaila.
- *
- * <p>Coleslaw Only
- *
- * <p>Harvests Grapes near Edge Monastery.
- *
- * <p>Start in Edge Bank with Herb Clippers.
- *
- * <p>Recommend Armor against lvl 21 Scorpions.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_GrapeHarvester extends K_kailaScript {
   private static int GrapezInBank = 0;
@@ -33,15 +23,13 @@ public final class K_GrapeHarvester extends K_kailaScript {
   private void startSequence() {
     c.displayMessage("@red@Grape Harvester - By Kaila");
     c.displayMessage("@red@Start in Edge Bank or near Grapes");
-    if (c.isInBank()) {
-      c.closeBank();
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentX() < 240) {
       bank();
       BankToGrape();
       c.sleep(1380);
     }
-    checkBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {
@@ -113,7 +101,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
       }
       GrapezInBank = c.getBankItemCount(143);
       c.closeBank();
-      c.sleep(640);
     }
   }
 

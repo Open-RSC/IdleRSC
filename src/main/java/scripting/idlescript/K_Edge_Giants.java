@@ -5,17 +5,14 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
- *
- * <p>
+ * <b>Edge Dungeon Giants</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
  * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
  * and Autostart.
  *
- * <p>- cannot support bone looting with this bot due to the shape of the dungeon
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Edge_Giants extends K_kailaScript {
   private static final int[] lowLevelLoot = {
@@ -106,9 +103,7 @@ public final class K_Edge_Giants extends K_kailaScript {
       c.displayMessage("@red@Edge Dungeon Giant Killer ~ Kaila");
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
       c.displayMessage("@red@Dusty Key Required");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         bankToDungeon();
@@ -238,7 +233,6 @@ public final class K_Edge_Giants extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(1000);
       brassKeyCheck();
       checkInventoryItemCounts();
     }

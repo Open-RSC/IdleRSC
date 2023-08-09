@@ -7,12 +7,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Mines coal from the Skelli coal mine, banks in edge.
+ * <b>Skelli Coal</b>
  *
- * <p>Brings food, banks if out of food. Start in Edge bank with Armor and Pickaxe or near skilli
- * mine.
+ * <p>Mines coal from the Skelli coal mine, banks in edge.<br>
+ * Brings food, banks if out of food. <br>
+ * Start in Edge bank with Armor and Pickaxe or near skilli mine. <br>
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_SkelliCoal extends K_kailaScript {
   private static String isMining = "none";
@@ -34,9 +36,7 @@ public final class K_SkelliCoal extends K_kailaScript {
   private void startSequence() {
     c.displayMessage("@red@Skeleton Coal Miner- By Kaila");
     c.displayMessage("@red@Start in Edge bank with Armor and pickaxe");
-    if (c.isInBank()) {
-      c.closeBank();
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() > 400) {
       bank();
       eat();
@@ -130,7 +130,6 @@ public final class K_SkelliCoal extends K_kailaScript {
       coalInBank = c.getBankItemCount(155);
 
       c.closeBank();
-      c.sleep(640);
     }
   }
 

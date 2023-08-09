@@ -18,11 +18,15 @@ public class ColeslawGuildFisher extends K_kailaScript {
   private static boolean dropJunk = true;
   private static int equipId = HARPOON_ID;
   private static int spotId = SHARK_FISH_SPOT;
+  private static int sharkSuccess = 0;
+  private static int swordSuccess = 0;
+  private static int lobsterSuccess = 0;
+  private static int tunaSuccess = 0;
   private static int success = 0;
   private static int failure = 0;
 
   public int start(String[] parameters) {
-    checkBatchBars();
+    c.toggleBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -200,7 +204,15 @@ public class ColeslawGuildFisher extends K_kailaScript {
 
   @Override
   public void questMessageInterrupt(String message) {
-    if (message.contains("You catch a")) {
+    if (message.contains("You catch a shark")) {
+      sharkSuccess++;
+    } else if (message.contains("You catch a swordfish")) {
+      swordSuccess++;
+    } else if (message.contains("You catch a tuna")) {
+      tunaSuccess++;
+    } else if (message.contains("You catch a lobster")) {
+      lobsterSuccess++;
+    } else if (message.contains("You catch a")) {
       success++;
     } else if (message.contains("You fail")) {
       failure++;
@@ -211,6 +223,10 @@ public class ColeslawGuildFisher extends K_kailaScript {
   public void paintInterrupt() {
     if (c != null) {
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
+      int sharkSuccessPerHr = 0;
+      int swordSuccessPerHr = 0;
+      int lobsterSuccessPerHr = 0;
+      int tunaSuccessPerHr = 0;
       int successPerHr = 0;
       int failurePerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
@@ -218,6 +234,10 @@ public class ColeslawGuildFisher extends K_kailaScript {
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
+        sharkSuccessPerHr = (int) (sharkSuccess * scale);
+        swordSuccessPerHr = (int) (swordSuccess * scale);
+        lobsterSuccessPerHr = (int) (lobsterSuccess * scale);
+        tunaSuccessPerHr = (int) (tunaSuccess * scale);
         successPerHr = (int) (success * scale);
         failurePerHr = (int) (failure * scale);
       } catch (Exception e) {
@@ -227,34 +247,113 @@ public class ColeslawGuildFisher extends K_kailaScript {
       int y = 15;
       c.drawString("@red@Coleslaw Guild Fisher @cya@~ Searos and Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
-      c.drawString(
-          "@whi@Fish Caught: @gre@"
-              + success
-              + "@yel@ (@whi@"
-              + String.format("%,d", successPerHr)
-              + "@yel@/@whi@hr@yel@)",
-          x,
-          y + 14,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Failure to Catch: @gre@"
-              + failure
-              + "@yel@ (@whi@"
-              + failurePerHr
-              + "@yel@/@whi@hr@yel@)",
-          x,
-          y + (14 * 2),
-          0xFFFFFF,
-          1);
-      if (spotId == LOBSTER_FISH_SPOT)
-        if (swordFish) c.drawString("@whi@Fishing: @gre@Swordfish", x, y + (14 * 3), 0xFFFFFF, 1);
-        else c.drawString("@whi@Fishing: @gre@Lobster", x, y + (14 * 3), 0xFFFFFF, 1);
-      else if (spotId == SHARK_FISH_SPOT)
-        if (bigNetFishing) c.drawString("@whi@Fishing: @gre@Big Net", x, y + (14 * 3), 0xFFFFFF, 1);
-        else c.drawString("@whi@Fishing: @gre@Sharks", x, y + (14 * 3), 0xFFFFFF, 1);
-      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      // c.drawString("@whi@__________________", x, y + 3 + (14 * 7), 0xFFFFFF, 1);
+      if (spotId == LOBSTER_FISH_SPOT) {
+        if (swordFish) {
+          c.drawString(
+              "@whi@Swordfish Caught: @gre@"
+                  + (swordSuccess + success)
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", (swordSuccessPerHr + successPerHr))
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + 14,
+              0xFFFFFF,
+              1);
+          c.drawString(
+              "@whi@Tuna Caught: @gre@"
+                  + (tunaSuccess)
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", tunaSuccessPerHr)
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + (14 * 2),
+              0xFFFFFF,
+              1);
+          c.drawString(
+              "@whi@Failure to Catch: @gre@"
+                  + failure
+                  + "@yel@ (@whi@"
+                  + failurePerHr
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + (14 * 3),
+              0xFFFFFF,
+              1);
+          c.drawString("@whi@Fishing: @gre@Swordfish/Tuna", x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+        } else {
+          c.drawString(
+              "@whi@Lobsters Caught: @gre@"
+                  + (lobsterSuccess + success)
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", lobsterSuccessPerHr + successPerHr)
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + 14,
+              0xFFFFFF,
+              1);
+          c.drawString(
+              "@whi@Failure to Catch: @gre@"
+                  + failure
+                  + "@yel@ (@whi@"
+                  + failurePerHr
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + (14 * 2),
+              0xFFFFFF,
+              1);
+          c.drawString("@whi@Fishing: @gre@Lobster", x, y + (14 * 3), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+        }
+      } else if (spotId == SHARK_FISH_SPOT) {
+        if (bigNetFishing) {
+          c.drawString(
+              "@whi@Big Net Fish Caught: @gre@"
+                  + (success)
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", successPerHr)
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + 14,
+              0xFFFFFF,
+              1);
+          c.drawString(
+              "@whi@Failure to Catch: @gre@"
+                  + failure
+                  + "@yel@ (@whi@"
+                  + failurePerHr
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + (14 * 2),
+              0xFFFFFF,
+              1);
+          c.drawString("@whi@Fishing: @gre@Big Net", x, y + (14 * 3), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+        } else {
+          c.drawString(
+              "@whi@Sharks Caught: @gre@"
+                  + (sharkSuccess + success)
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", sharkSuccessPerHr + successPerHr)
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + 14,
+              0xFFFFFF,
+              1);
+          c.drawString(
+              "@whi@Failure to Catch: @gre@"
+                  + failure
+                  + "@yel@ (@whi@"
+                  + failurePerHr
+                  + "@yel@/@whi@hr@yel@)",
+              x,
+              y + (14 * 2),
+              0xFFFFFF,
+              1);
+          c.drawString("@whi@Fishing: @gre@Sharks", x, y + (14 * 3), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+        }
+      }
     }
   }
 }

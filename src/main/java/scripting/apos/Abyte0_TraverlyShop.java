@@ -3,6 +3,7 @@ package scripting.apos;
 import java.awt.*;
 import javax.swing.*;
 
+/** buy eyes of newt and vials from taverly herb shop */
 public class Abyte0_TraverlyShop extends Abyte0_Script {
   int fMode = 2;
 
@@ -23,7 +24,7 @@ public class Abyte0_TraverlyShop extends Abyte0_Script {
   final String[] cptEyesName = {"0", "5", "10", "14", "15", "19", "24", "29"};
   final int[] cptEyesList = {0, 5, 10, 14, 15, 19, 24, 29};
 
-  public Abyte0_TraverlyShop(String e) {
+  private Abyte0_TraverlyShop(String e) {
     super(e);
   }
 

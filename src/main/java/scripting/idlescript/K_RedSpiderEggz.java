@@ -7,17 +7,20 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Grabs red spider eggs in edge dungeon, recommend very high stats ~90+ and good defensive armor.
+ * <b>Red Spider Eggs</b>
  *
- * <p>Start in Edge bank with Armor. Sharks in bank REQUIRED.
+ * <p>Grabs red spider eggs in edge dungeon, recommend very high stats ~90+ and good defensive
+ * armor.<br>
+ * Start in Edge bank with Armor. Sharks in bank REQUIRED.<br>
+ * Escape Teleport<br>
+ * 31 Magic, Laws, Airs, and Earths required for Escape Tele.<br>
+ * Unselected, bot WALKS to Edge when Attacked. Selected, bot teleports, then walks to edge.<br>
+ * Return to eggs<br>
+ * Unselected, bot will log out after escaping Pkers.<br>
+ * Selected, bot will grab more food and return.<br>
  *
- * <p>Should bot Teleport if Pkers Attack?. 31 Magic, Laws, Airs, and Earths required for Escape
- * Tele. Unselected, bot WALKS to Edge when Attacked. Selected, bot teleports, then walks to edge.
- *
- * <p>Should bot Return to Eggz after Escaping?. Unselected, bot will log out after escaping Pkers.
- * Selected, bot will grab more food and return.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_RedSpiderEggz extends K_kailaScript {
   private static boolean teleportOut = false;
@@ -37,9 +40,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       c.displayMessage("@red@Start in Edge bank with Armor");
       c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
       c.displayMessage("@red@31 Magic Required for escape tele");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 340 && c.currentY() < 500) { // fixed start area bug
         bank();
         BankToEgg();
@@ -123,7 +124,6 @@ public final class K_RedSpiderEggz extends K_kailaScript {
         }
       }
       c.closeBank();
-      c.sleep(640);
     }
   }
 

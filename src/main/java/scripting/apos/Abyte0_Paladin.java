@@ -2,12 +2,8 @@ package scripting.apos;
 
 import compatibility.apos.Script;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-public class Abyte0_Paladin extends Script {
+/** Source code recreated from a .class file by IntelliJ IDEA (powered by FernFlower decompiler) */
+public final class Abyte0_Paladin extends Script {
   int fightMode = 3;
   boolean chestReady = true;
   final int[] npcID = new int[] {323};
@@ -15,7 +11,7 @@ public class Abyte0_Paladin extends Script {
   final boolean eatFoodToPickMithBar = false;
   int[] foodIDs = new int[] {330, 333, 335, 895, 897, 138, 142, 373};
 
-  public Abyte0_Paladin(String var1) {
+  private Abyte0_Paladin(String var1) {
     //        super(var1);
   }
 

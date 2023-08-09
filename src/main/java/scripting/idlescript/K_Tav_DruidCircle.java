@@ -5,13 +5,14 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Taverly Druid Circle - By Kaila.
+ * <b>Taverly Druid Circle</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Alter Prayer Boost, Food Type,
  * and Food Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot
- * option, and Autostart.
+ * option, and Autostart. <br>
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Tav_DruidCircle extends K_kailaScript {
   private static boolean prayerBoost = true;
@@ -76,9 +77,7 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
       c.displayMessage("@red@Tav Druid Circle - By Kaila");
       c.displayMessage("@red@Start in Fally west or druid Circle");
       c.displayMessage("@red@Food in Bank required");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 515) {
         bank();
         BankToDruid();
@@ -206,7 +205,6 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(1000);
     }
   }
 

@@ -480,8 +480,8 @@ public class Controller {
   }
 
   /**
-   * Retrieves the current X coordinates of the player. This occassionally returns incorrect values
-   * while Underground
+   * Retrieves the current X coordinates of the player. <br>
+   * This occassionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -493,8 +493,8 @@ public class Controller {
   }
 
   /**
-   * Retrieves the current Y coordinates of the player. This occassionally returns incorrect values
-   * while Underground
+   * Retrieves the current Y coordinates of the player. <br>
+   * This occassionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -1841,6 +1841,7 @@ public class Controller {
   /** Closes the bank window. No effect if window is not currently open. */
   public void closeBank() {
     reflector.setObjectMember(mud, "showDialogBank", false);
+    sleep(GAME_TICK);
   }
 
   /**
@@ -4424,13 +4425,13 @@ public class Controller {
     if (isLoggedIn()) {
       int groupId = getPlayer().groupID;
 
-      if (groupId == 10) { // if off, change to on
+      if (groupId == 10) { // if viewId off, change to on
         if (Config.C_SIDE_MENU_OVERLAY) {
           temporaryToggleSideMenu = true;
           orsc.Config.C_SIDE_MENU_OVERLAY = false; // bugfix for coleslaw flickering
         }
         DrawCallback.toggleOnViewId = true;
-      } else if (groupId == 9) { // if on, change to off
+      } else if (groupId == 9) { // if viewId on, change to off
         DrawCallback.toggleOnViewId = false;
         if (temporaryToggleSideMenu) {
           temporaryToggleSideMenu = false;
@@ -4440,13 +4441,21 @@ public class Controller {
     }
   }
   /**
-   * Function to toggle on Batch Bars in the openrsc client config for native scripts utilizing
-   * batch bars. Can be used with isAuthentic to ensure batching on coleslaw conditions for scripts.
-   * Example to toggle on batch bars: if(!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+   * Method can be called to toggle ON Batch Bars in the openrsc client config. <br>
+   * This is necessary for scripts utilizing batch bars.
    */
-  public void toggleBatchBars() {
-    if (isLoggedIn() && !isAuthentic()) {
-      Config.C_BATCH_PROGRESS_BAR = !Config.C_BATCH_PROGRESS_BAR;
+  public void toggleBatchBarsOn() {
+    if (isLoggedIn() && !isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) {
+      Config.C_BATCH_PROGRESS_BAR = true;
+    }
+  }
+  /**
+   * Method can be called to toggle OFF Batch Bars in the openrsc client config for native scripts
+   * utilizing batch bars.
+   */
+  public void toggleBatchBarsOff() {
+    if (isLoggedIn() && !isAuthentic() && orsc.Config.C_BATCH_PROGRESS_BAR) {
+      Config.C_BATCH_PROGRESS_BAR = false;
     }
   }
   /**
@@ -4521,32 +4530,22 @@ public class Controller {
     final long ttl = (long) (secondsPerItem * remaining);
     return String.format("%d", ttl / 3600);
   }
-  /** Hides Details Menu */
-  public void hideDetails() {
-    // int opcode = 253;
-    mud.setShowContactDialogue(false);
-
-    /*
-            reflector.mudInvoker(mud, "hideDetails");
-            while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
-            mud.packetHandler.getClientStream().newPacket(opcode);
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().finishPacket();
-    */
+  /** Show Recovery Question Menu */
+  public void showRecoveryDetailsMenu() {
+    mud.setShowRecoveryDialogue(true);
+  }
+  /** Hide Recovery Question Menu */
+  public void hideRecoveryDetailsMenu() {
+    mud.setShowRecoveryDialogue(false);
   }
   /** Show Details Menu */
-  public void showDetails() {
-    // int opcode = 253;
+  public void showContactDetailsMenu() {
     mud.setShowContactDialogue(true);
-
-    /*
+  }
+  /** Hides Details Menu */
+  public void hideContactDetailsMenu() { // int opcode = 253;
+    mud.setShowContactDialogue(false);
+    /* packet not required to close coleslaw, but may be needed for uranium
             reflector.mudInvoker(mud, "hideDetails");
             while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
             mud.packetHandler.getClientStream().newPacket(opcode);

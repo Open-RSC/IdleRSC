@@ -12,8 +12,10 @@ import orsc.ORSCharacter;
  * supports the \"autostart\" parameter. defaults to steel plates. ~ Parameters for Starting: auto,
  * autostart - makes steel platebodies. bronze - makes bronze platebodies. iron - makes iron
  * platebodies. steel - makes steel platebodies. mith, mithril - makes mithril platebodies. addy,
- * adamantite - makes adamantite platebodies. rune, runite - makes runite platebodies. ~ Author -
- * Kaila
+ * adamantite - makes adamantite platebodies. rune, runite - makes runite platebodies. ~
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Fast_ChainMaker extends K_kailaScript {
   private static int totalBars = 0;
@@ -101,7 +103,6 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
         c.sleep(100);
       }
       c.closeBank();
-      c.sleep(200);
     }
   }
   // GUI stuff below (icky)

@@ -5,9 +5,13 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Battlefield Trainer - By Kaila.
+ * <b>Battlefield Trainer</b>
  *
- * <p>Start in Ardy or at Battlefield. Sharks in Bank REQUIRED. @Author ~ Kaila
+ * <p>Start in Ardy or at Battlefield. <br>
+ * Food in Bank required. <br>
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  *   todo add food type selection add maging option
@@ -24,9 +28,7 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
       c.displayMessage("@red@Battlefield Trainer - By Kaila");
       c.displayMessage("@red@Start in Ardy or at Battlefield");
       c.displayMessage("@red@Sharks in Bank REQUIRED");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentX() < 600) {
         bank();
         BankToDruid();
@@ -100,7 +102,6 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
       withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, foodWithdrawAmount);
       c.closeBank();
-      c.sleep(640);
     }
   }
 

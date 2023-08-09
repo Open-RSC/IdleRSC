@@ -76,9 +76,7 @@ public class Wildberries extends IdleScript {
       controller.displayMessage(
           "@red@Start in Varrock East bank! You need antidragon shields in the bank!");
 
-      if (controller.isInBank()) {
-        controller.closeBank();
-      }
+      if (controller.isInBank()) controller.closeBank();
       if (controller.currentY() > 509) {
         bank();
         eat();
@@ -281,7 +279,6 @@ public class Wildberries extends IdleScript {
     berriesBanked = controller.getBankItemCount(471);
     sharksInBank = controller.getBankItemCount(546);
     controller.closeBank();
-    controller.sleep(640);
   }
 
   public void setupGUI() {

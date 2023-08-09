@@ -6,10 +6,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Tele Grabs Wines in chaos temple. NOT recommended to use on coleslaw, wines can be obtained with
- * harvesting. Not tested on uranium, but should function if sleep added.
+ * <b>Tele Wines</b>
  *
- * <p>Author - Kaila
+ * <p>Tele Grabs Wines in chaos temple. <br>
+ * NOT recommended to use on coleslaw, wines can be obtained with harvesting. <br>
+ * Not tested on uranium, but should function if sleep added. <br>
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_TeleWines extends K_kailaScript {
   private static int WinezInBank = 0;
@@ -27,9 +31,8 @@ public final class K_TeleWines extends K_kailaScript {
       c.displayMessage("@cya@Start in Edge Bank");
       c.displayMessage("@cya@Laws, Air staff required");
       c.displayMessage("@red@Recommend using grape harvester for coleslaw wines!!!!");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() > 450) {
         bank();
         BankToWine();
@@ -89,17 +92,14 @@ public final class K_TeleWines extends K_kailaScript {
           c.withdrawItem(101, 1);
           c.closeBank();
           c.equipItem(c.getInventoryItemSlotIndex(101));
-          c.sleep(340);
         } else if (c.getBankItemCount(617) > 0) {
           c.withdrawItem(617, 1);
           c.closeBank();
           c.equipItem(c.getInventoryItemSlotIndex(617));
-          c.sleep(340);
         } else if (c.getBankItemCount(684) > 0) {
           c.withdrawItem(684, 1);
           c.closeBank();
           c.equipItem(c.getInventoryItemSlotIndex(684));
-          c.sleep(340);
         } else if (c.getBankItemCount(101) == 0
             && c.getBankItemCount(617) == 0
             && c.getBankItemCount(684) == 0) c.displayMessage("@red@NO Air staff, ending script");
@@ -109,10 +109,7 @@ public final class K_TeleWines extends K_kailaScript {
           c.stop();
         }
       }
-      if (c.isInBank()) {
-        c.closeBank();
-      }
-      c.sleep(640);
+      if (c.isInBank()) c.closeBank();
     }
   }
 

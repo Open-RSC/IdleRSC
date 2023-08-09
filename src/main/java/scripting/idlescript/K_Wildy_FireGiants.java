@@ -7,13 +7,13 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila
+ * <b>Wildy Fire Giant Killer</b>
  *
- * <p>Start in mage bank with Armor
+ * <p>Start in mage bank with Armor <br>
+ * Sharks/Laws/Airs/Earths IN BANK REQUIRED <br>
  *
- * <p>Sharks/Laws/Airs/Earths IN BANK REQUIRED
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Wildy_FireGiants extends K_kailaScript {
   private static int totalBstaff = 0;
@@ -89,9 +89,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       c.displayMessage("@red@Wildy Fire Giant Killer - By Kaila");
       c.displayMessage("@red@Start in Mage bank OR in Giants room");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentX() > 260 && c.currentX() < 275 && c.currentY() < 132 && c.currentY() > 125) {
         stairToGiants();
         c.sleep(1380);
@@ -212,7 +210,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       withdrawFood(546, 27);
       bankItemCheck(546, 27);
       c.closeBank();
-      c.sleep(640);
     }
   }
 

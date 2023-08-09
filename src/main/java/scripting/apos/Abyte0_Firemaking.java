@@ -3,13 +3,14 @@ package scripting.apos;
 import java.awt.Point;
 import java.util.ArrayList;
 
+/** cuts normal logs in draynor and burns them */
 public class Abyte0_Firemaking extends Abyte0_Script {
   private final int fmode = 3;
   private int _lastActionReturn = 0;
   private ArrayList<Point> _lastTree = null;
   private final ArrayList<ArrayList<Point>> _paths = new ArrayList<>();
 
-  public Abyte0_Firemaking(String e) {
+  private Abyte0_Firemaking(String e) {
     super(e);
   }
 
@@ -86,7 +87,7 @@ public class Abyte0_Firemaking extends Abyte0_Script {
     return random(600, 650);
   }
 
-  public int isNearBank() {
+  private int isNearBank() {
     if (isAtApproxCoords(213, 648, 2)) {
       walkTo(200, 653);
       return random(1000, 1100);

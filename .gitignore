@@ -28,9 +28,10 @@ IdleRSC.iml
 # output
 classes/
 build/
-IdleRSC.jar
+*.jar
 *.zip
 src/main/resources/cache
+public/
 
 # User chosen cache
 Cache/

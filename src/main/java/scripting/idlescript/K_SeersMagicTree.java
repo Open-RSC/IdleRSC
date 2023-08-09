@@ -6,9 +6,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts Magic logs in seers, including the far western one, banks in Seers.
+ * <b>Seers Magic Tree</b>
  *
- * <p>@Author - Kaila
+ * <p>Cuts Magic logs in seers, including the far western one, banks in Seers. <br>
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  * todo:
@@ -21,9 +24,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
 
   private void startSequence() {
     c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
-    if (c.isInBank()) {
-      c.closeBank();
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() < 458) {
       bank();
       c.walkTo(500, 454);
@@ -35,11 +36,10 @@ public final class K_SeersMagicTree extends K_kailaScript {
       c.walkTo(516, 488);
       c.sleep(1380);
     }
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Magics", 0);
@@ -235,7 +235,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
 
       logInBank = c.getBankItemCount(636);
       c.closeBank();
-      c.sleep(1000);
     }
   }
   // GUI stuff below (icky)

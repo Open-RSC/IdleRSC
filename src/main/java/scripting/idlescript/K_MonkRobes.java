@@ -6,13 +6,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Grabs Monks Robes from edge monestary
+ * <b>Monk Robe Picker</b>
  *
- * <p>Picks up Monks Robe SETS in Edge Monastery and Banks (equal amount of tops and bottoms) Start
- * in Edge Bank or near Robes Recommend Armor against lvl 21 Scorpions Please Gain Permission to
- * enter Prayer guild FIRST Bot will loot Equal Amounts of robe tops and bottoms
+ * <p>Grabs Monks Robes from edge monestary <br>
+ * Picks up Monks Robe SETS in Edge Monastery and Banks (equal amount of tops and bottoms) <br>
+ * Start in Edge Bank or near Robes Recommend Armor against lvl 21 Scorpions <br>
+ * Please Gain Permission to enter Prayer guild FIRST <br>
+ * Bot will loot Equal Amounts of robe tops and bottoms<br>
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_MonkRobes extends K_kailaScript {
   private static int totalTopz = 0;
@@ -30,9 +33,7 @@ public final class K_MonkRobes extends K_kailaScript {
       scriptStarted = false;
       c.displayMessage("@red@Monks Robes Picker - By Kaila");
       c.displayMessage("@red@Start in Edge Bank or upstairs Monestary");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 1000 && c.currentX() < 245) {
         bank();
         BankToGrape();
@@ -98,7 +99,6 @@ public final class K_MonkRobes extends K_kailaScript {
       TopzInBank = c.getBankItemCount(388);
       BotzInBank = c.getBankItemCount(389);
       c.closeBank();
-      c.sleep(640);
     }
   }
 

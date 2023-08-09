@@ -1,8 +1,7 @@
 package scripting.apos;
 
-// Based on old AnySmither
-// Seer Smither by Abyte0
-public class Abyte0_Smither extends Abyte0_Script {
+/** Based on old AnySmither Seer Smither by Abyte0 */
+public final class Abyte0_Smither extends Abyte0_Script {
   int barID = 171;
   int nbBars = 25;
   int nbBarsParItems = 5;
@@ -19,7 +18,7 @@ public class Abyte0_Smither extends Abyte0_Script {
 
   int cptReponseActuel = 0;
 
-  public Abyte0_Smither(String e) {
+  private Abyte0_Smither(String e) {
     super(e);
   }
 

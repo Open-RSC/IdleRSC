@@ -8,19 +8,15 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Tav black demons - By Kaila.
+ * <b>Tav Black Demons</b>
  *
- * <p>
+ * <p>Start in Fally west bank with gear. Uses Coleslaw agility pipe shortcut. <br>
+ * Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED. super atk, super str pots suggested.<br>
+ * 37 Magic Required for tele, 37 prayer for paralize monster, 70 agility for shortcut.<br>
+ * anti dragon shield required. D2h recommended to demon kill rates don't suck.<br>
  *
- * <p>Start in Fally west bank with gear. Uses Coleslaw agility pipe shortcut.
- *
- * <p>Sharks/ppots/Laws/Airs/Earths IN BANK REQUIRED. super atk, super str pots suggested.
- *
- * <p>37 Magic Required for tele, 37 prayer for paralize monster, 70 agility for shortcut.
- *
- * <p>anti dragon shield required. D2h recommended to demon kill rates don't suck.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_TavBlackDemonPipe extends K_kailaScript {
   private static boolean d2hWield = false;
@@ -86,9 +82,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
       c.displayMessage("@red@70 Agility required, for the shortcut!");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 2800) {
         bank();
         BankToDemons();
@@ -267,7 +261,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         }
       }
       c.closeBank();
-      c.sleep(1000);
     }
     inventoryItemCheck(airId, 18);
     inventoryItemCheck(waterId, 6);

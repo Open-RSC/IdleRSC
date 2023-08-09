@@ -5,13 +5,14 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Dungeon Hobs (and Skeleton/Zombie) - by Kaila
+ * <b>Edge Dungeon Hobs (and Skeleton/Zombie)</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
  * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
  * and Autostart. cannot support bone looting with this bot due to the shape of the dungeon
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Edge_HobsPlus extends K_kailaScript {
   private static final int[] npcIds = {
@@ -107,9 +108,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       c.displayMessage("@red@Start in Varrock West or in Dungeon");
       c.displayMessage("@red@Brass Key Required");
 
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         bankToDungeon();
@@ -244,7 +243,6 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(1000);
       brassKeyCheck();
       checkInventoryItemCounts();
     }

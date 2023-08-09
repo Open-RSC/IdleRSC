@@ -15,10 +15,8 @@ import javax.swing.JLabel;
 /**
  * A basic cooking script to use in Catherby.
  *
- * @author Dvorak - original script
- *     <p>Kaila - rewrite
+ * @author Dvorak - original script, Kaila - rewrite
  * @version 1.1 - Batch bar autotoggle bugfix still preserving uranium support
- *     <p>
  */
 public class AIOCooker extends IdleScript {
   final Controller c = Main.getController();
@@ -89,7 +87,7 @@ public class AIOCooker extends IdleScript {
   }
 
   public int start(String[] parameters) {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
     String[] splitParams = null;
     if (parameters != null && parameters[0].contains(" ")) {
       splitParams = parameters[0].split(" ");
@@ -99,7 +97,6 @@ public class AIOCooker extends IdleScript {
         setupGUI();
         guiSetup = true;
       }
-
       if (scriptStarted) {
         guiSetup = false;
         scriptStarted = false;
@@ -112,7 +109,6 @@ public class AIOCooker extends IdleScript {
         target = new FoodObject(splitParams[0]);
         dropBurnt = Boolean.parseBoolean(splitParams[1]);
         gauntlets = Boolean.parseBoolean(splitParams[2]);
-
         scriptStart();
       } catch (Exception e) {
         log("Invalid parameters! Usage: ");
@@ -120,7 +116,6 @@ public class AIOCooker extends IdleScript {
         c.stop();
       }
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -139,10 +134,8 @@ public class AIOCooker extends IdleScript {
   }
 
   public void bank() {
-
     c.walkTo(439, 497);
     openDoor();
-
     c.openBank();
     c.sleep(600);
 
@@ -157,19 +150,15 @@ public class AIOCooker extends IdleScript {
           c.sleep(250);
         }
       }
-
       if (this.gauntlets && c.getInventoryItemCount(700) == 0) {
         c.withdrawItem(700);
         c.sleep(250);
       }
-
       if (c.getInventoryItemCount(target.rawId) == 0) {
         c.withdrawItem(target.rawId, 30);
         c.sleep(250);
       }
-
       c.closeBank();
-      c.sleep(200);
     }
     c.walkTo(439, 496);
     openDoor();
@@ -178,14 +167,11 @@ public class AIOCooker extends IdleScript {
   public void goToCook() {
     c.walkTo(435, 486);
     openCookDoor();
-
     if (gauntlets) {
-
       if (c.getInventoryItemCount(700) < 1) {
         c.displayMessage("@red@Please withdraw gauntlets. Stopping script.");
         c.stop();
       }
-
       if (!c.isEquipped(c.getInventoryItemSlotIndex(700))) {
         c.equipItem(c.getInventoryItemSlotIndex(700));
         c.sleep(618);
@@ -200,7 +186,6 @@ public class AIOCooker extends IdleScript {
         c.sleep(250);
       }
     }
-
     c.walkTo(435, 485);
     openCookDoor();
   }
@@ -208,7 +193,6 @@ public class AIOCooker extends IdleScript {
   public void cook() {
     if (c.getInventoryItemCount(target.rawId) > 0) {
       c.sleepHandler(98, true);
-
       if (!c.isBatching()) {
         c.useItemIdOnObject(432, 480, target.rawId);
       }
@@ -233,6 +217,7 @@ public class AIOCooker extends IdleScript {
   public void setupGUI() {
     JLabel headerLabel = new JLabel("Start in Catherby!");
     JComboBox<String> foodField = new JComboBox<>();
+    foodField.setSelectedIndex(14);
     JCheckBox dropBurntCheckbox = new JCheckBox("Drop Burnt?", false);
     JCheckBox gauntletsCheckbox = new JCheckBox("Cooking Gauntlets?", false);
 

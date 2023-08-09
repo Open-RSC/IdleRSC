@@ -6,11 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts yew logs in NE ardy, including the far western one, banks in ardy south bank.
+ * <b>Ardy Yew Trees</b>
  *
- * <p>Requires 53+ Combat to avoid aggressive bears!
+ * <p>Cuts yew logs in NE ardy, including the far western one, banks in ardy south bank. <br>
+ * Requires 53+ Combat to avoid aggressive bears! <br>
  *
- * <p>Author ~ Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 /*
  * todo:
@@ -21,11 +23,8 @@ public final class K_Ardy_YewTree extends K_kailaScript {
   private static int totalLog = 0;
 
   private void startSequence() {
-    checkBatchBars();
     c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
-    if (c.isInBank()) {
-      c.closeBank();
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() < 620
         && c.currentY() > 600
         && c.currentX() > 543
@@ -44,6 +43,7 @@ public final class K_Ardy_YewTree extends K_kailaScript {
   }
 
   public int start(String[] parameters) {
+    c.toggleBatchBarsOn();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Yews", 0);
@@ -206,7 +206,6 @@ public final class K_Ardy_YewTree extends K_kailaScript {
       }
       logInBank = c.getBankItemCount(635);
       c.closeBank();
-      c.sleep(1000);
     }
   }
   // GUI stuff below (icky)

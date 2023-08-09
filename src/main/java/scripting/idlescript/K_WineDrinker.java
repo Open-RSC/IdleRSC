@@ -5,12 +5,13 @@ import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
- * - Easy AF Wine drinker
+ * <b>Easy AF Wine drinker</b>
  *
- * <p>Drinks wine from the bank, Banks the jugs and any half wine you might get. About 7k+ wines
- * processed per hour!
+ * <p>Drinks wine from the bank, Banks the jugs and any half wine you might get. <br>
+ * About 7k+ wines processed per hour! <br>
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_WineDrinker extends IdleScript {
   private static final Controller c = Main.getController();
@@ -81,7 +82,6 @@ public final class K_WineDrinker extends IdleScript {
         c.sleep(650);
       }
       c.closeBank();
-      c.sleep(650);
     }
   }
 }

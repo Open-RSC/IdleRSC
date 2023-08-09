@@ -5,11 +5,12 @@ import controller.Controller;
 import javax.swing.*;
 
 /**
- * WIP master file for common commands used in Kaila_Scripts
+ * WIP master file for common commands used in Kaila combat Scripts
  *
  * <p>sans - documentation for now!
  *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author - Kaila
  */
 /*
  *       todo

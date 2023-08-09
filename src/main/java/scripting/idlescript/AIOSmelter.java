@@ -108,7 +108,7 @@ public class AIOSmelter extends IdleScript {
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -274,7 +274,6 @@ public class AIOSmelter extends IdleScript {
       secondaryOreInBank = c.getBankItemCount(secondaryOreId);
       barsInBank = c.getBankItemCount(barId);
       c.closeBank();
-      c.sleep(1280);
     }
   }
 
@@ -318,8 +317,10 @@ public class AIOSmelter extends IdleScript {
     JLabel batchLabel = new JLabel("IMPORTANT: Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures all bars crafted in 1 \"trip.\"");
     JComboBox<String> destination = new JComboBox<>(destinations);
+    destination.setSelectedIndex(1);
     JLabel barLabel = new JLabel("Bar Type:");
     JComboBox<String> barField = new JComboBox<>(options);
+    barField.setSelectedIndex(3);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

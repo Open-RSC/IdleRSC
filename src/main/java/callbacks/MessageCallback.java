@@ -19,10 +19,11 @@ public class MessageCallback {
   private static String sbotLastChatMessage = "";
   private static String sbotLastNPCMessage = "";
   private static String sbotLastServerMessage = "";
-  private static long timeNextLogClear = -1;
   private static final Pattern p =
       Pattern.compile("^(.*) (.*) level!"); // for parsing level up messages
-
+  // message is "You just advanced 1 hitpoints level"
+  // old Pattern.compile("^(.*) (.*) level!");
+  // new Pattern.compile("^You just advanced \\d (.*) level!$");
   /**
    * The hook called by the patched client every time a message is printed on screen.
    *
@@ -42,23 +43,25 @@ public class MessageCallback {
       int crownID,
       String formerName,
       String colourOverride) {
-    Controller cd = Main.getController();
-    if (timeNextLogClear == -1) {
-      timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
+    Controller con = Main.getController();
+    con.hideRecoveryDetailsMenu();
+    con.hideContactDetailsMenu();
+    if (Main.isLogWindowOpen() && DrawCallback.timeNextLogClear == -1) {
+      DrawCallback.timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
       // cd.log(String.valueOf((timeNextLogClear - System.currentTimeMillis()) / 1000L) + " s");
     }
-    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > timeNextLogClear)) {
+    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > DrawCallback.timeNextLogClear)) {
       Main.clearLog();
-      timeNextLogClear = System.currentTimeMillis() + 86400000L; // add 24 hrs in ms
+      DrawCallback.timeNextLogClear = System.currentTimeMillis() + 86400000L; // add 24 hrs in ms
     }
-    if (!cd.isDrawEnabled() && (System.currentTimeMillis() > DrawCallback.nextRefresh)) {
-      cd.setDrawing(true);
-      DrawCallback.nextDeRefresh = System.currentTimeMillis() + 20L; // toggle on gfx 1 frame
-      DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L; // wait 1 min for refresh
-      /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
-      System.currentTimeMillis()) / 1000L) + "s");*/
-    } else if (cd.isDrawEnabled()) {
-      DrawCallback.nextRefresh = -1;
+    if ((System.currentTimeMillis() > DrawCallback.nextRefresh) && DrawCallback.nextRefresh != -1) {
+      if (!con.isDrawEnabled()) {
+        con.setDrawing(true);
+        DrawCallback.nextDeRefresh = System.currentTimeMillis() + 20L; // toggle on gfx 1 frame
+        DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L; // wait 1 min for refresh
+        /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
+        System.currentTimeMillis()) / 1000L) + "s");*/
+      } else DrawCallback.nextRefresh = -1;
     }
     if (type == MessageType.GAME) {
       if (message.contains("You just advanced")) {
@@ -135,20 +138,32 @@ public class MessageCallback {
     Controller c = Main.getController();
     String skillName = null;
     int skillLevel = -1;
-
-    Matcher m = p.matcher(message);
-
+    // old Pattern.compile("^(.*) (.*) level!");
+    // new Pattern.compile("^You just advanced \\d (.*) level!$");
+    System.out.println("matching begin");
+    Matcher m = p.matcher(message); // "You just advanced 1 hitpoints level"
+    System.out.println("p.matcher(message) - " + p.matcher(message));
     if (m.find()) {
       skillName = m.group(2);
-      if (skillName != null && skillName.length() > 1) {
-        if (skillName.equalsIgnoreCase("woodcut")) skillName = "Woodcutting";
+      int statId = c.getStatId(skillName);
+      c.log("skillName - " + skillName);
+      c.log("statId" + statId); // invalid skill Id is being generated...
+      if (statId == -1) {
+        throw new IllegalArgumentException("Invalid skill name: " + skillName);
+      }
+      if (skillName != null && skillName.length() > 0 && statId > 0) {
+        if (skillName.equalsIgnoreCase("woodcut")) skillName = "Woodcutting"; // fix woodcut
 
-        skillName = Character.toUpperCase(skillName.charAt(0)) + skillName.substring(1);
+        skillName =
+            Character.toUpperCase(skillName.charAt(0)) // capitalize skill name first letter
+                + skillName.substring(1); // lowercase the rest
 
-        skillLevel = c.getBaseStat(c.getStatId(skillName));
+        skillLevel = c.getBaseStat(statId); // this is returning skillLevel = -1
 
         DrawCallback.displayAndScreenshotLevelUp(skillName, skillLevel);
       }
+    } else {
+      System.out.println("no find");
     }
   }
 

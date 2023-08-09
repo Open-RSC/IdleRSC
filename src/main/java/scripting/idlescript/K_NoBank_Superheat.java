@@ -7,19 +7,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Mines Addy/Mith/Coal in Hobgoblin Mine and banks in Edge! (some pk/death protection).
+ * <b>No Bank Superheat</b>
  *
- * <p>
+ * <p>Mines Iron in Hobgoblin Mine and banks in Edge! (some pk/death protection). <br>
+ * This bot supports the "autostart" parameter to automatiically start the bot without gui.<br>
+ * Start in Varrock East bank or near Mine, with a pickaxe and bass key.<br>
+ * Sharks in bank REQUIRED.<br>
  *
- * <p>This bot supports the "autostart" parameter to automatiically start the bot without gui.
- *
- * <p>
- *
- * <p>Start in Varrock East bank or near Mine, with a pickaxe and bass key.
- *
- * <p>Sharks in bank REQUIRED.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_NoBank_Superheat extends K_kailaScript {
   private static String isMining = "none";
@@ -40,10 +36,8 @@ public final class K_NoBank_Superheat extends K_kailaScript {
   private void startSequence() {
     c.displayMessage("@red@No Bank Iron Superheat- By Kaila");
     c.displayMessage("@red@Start in Khazard Mine with nats,hammer,fire staff,pickaxe");
-    if (c.isInBank()) {
-      c.closeBank();
-    }
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    if (c.isInBank()) c.closeBank();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {

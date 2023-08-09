@@ -5,37 +5,23 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Edge Dungeon Chaos Druids - By Kaila.
+ * <b>Edge Dungeon Chaos Druids</b>
  *
- * <p>Start in Edge bank or near Druids.
- *
- * <p>"FoodId" in bank REQUIRED.
- *
- * <p>
- *
- * <p>Teleport if Pkers Attack option.
- *
- * <p>31 Magic, Laws, Airs, and Earths required for Escape Tele.
- *
- * <p>Unselected, bot WALKS to Edge when Attacked.
- *
- * <p>Selected, bot teleports, then walks to edge.
- *
- * <p>
- *
- * <p>Return to Druids after Escaping option.
- *
- * <p>Unselected, bot will log out after escaping Pkers.
- *
- * <p>Selected, bot will grab more food and return.
- *
- * <p>
+ * <p>Start in Edge bank or near Druids. "FoodId" in bank REQUIRED. <br>
+ * Teleport if Pkers Attack option.<br>
+ * 31 Magic, Laws, Airs, and Earths required for Escape Tele.<br>
+ * Unselected, bot WALKS to Edge when Attacked.<br>
+ * Selected, bot teleports, then walks to edge.<br>
+ * Return to Druids after Escaping option.<br>
+ * Unselected, bot will log out after escaping Pkers.<br>
+ * Selected, bot will grab more food and return.<br>
  *
  * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Food Type, and Food Withdraw
  * Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option, and
- * Autostart.
+ * Autostart.<br>
  *
- * <p>@Author ~ Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Edge_ChaosDruids extends K_kailaScript {
   private static final int[] lowLevelLoot = {
@@ -114,9 +100,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       c.displayMessage("@red@Start in Edge bank with Armor");
       c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
       c.displayMessage("@red@31 Magic Required for escape tele");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         BankToDruid();
@@ -231,7 +215,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(1000);
       checkInventoryItemCounts();
     }
   }

@@ -5,23 +5,17 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila.
+ * <b>Wildy Fire Giant Killer</b>
  *
- * <p>
+ * <p>Start in Fally west with gear on, or in Dragon room! <br>
+ * Uses Coleslaw agility pipe shortcut.<br>
+ * 70 Agility required, for the shortcut.<br>
+ * Sharks/Laws/Airs/Earths IN BANK REQUIRED.<br>
+ * 31 Magic Required for escape tele.<br>
+ * Adjustable Food Withdraw amount.<br>
  *
- * <p>Start in Fally west with gear on, or in Dragon room!
- *
- * <p>Uses Coleslaw agility pipe shortcut.
- *
- * <p>70 Agility required, for the shortcut.
- *
- * <p>Sharks/Laws/Airs/Earths IN BANK REQUIRED.
- *
- * <p>31 Magic Required for escape tele.
- *
- * <p>Adjustable Food Withdraw amount.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_TavBlueDragonPipe extends K_kailaScript {
   private static int totalRdagger = 0;
@@ -77,9 +71,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       c.displayMessage("@red@Start in Fally west with gear on, or in dragon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
       c.displayMessage("@red@70 Agility required, for the shortcut!");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 2800) {
         bank();
         BankToDragons();
@@ -213,7 +205,6 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       bankItemCheck(lawId, 10);
       bankCheckAntiDragonShield();
       c.closeBank();
-      c.sleep(1000);
     }
     inventoryItemCheck(airId, 18);
     inventoryItemCheck(waterId, 6);

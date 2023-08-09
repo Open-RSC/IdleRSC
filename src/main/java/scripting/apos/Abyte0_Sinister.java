@@ -3,7 +3,8 @@ package scripting.apos;
 import java.awt.*;
 import javax.swing.*;
 
-public class Abyte0_Sinister extends Abyte0_Script {
+/** Gather sinister keys by killing salarin */
+public final class Abyte0_Sinister extends Abyte0_Script {
   // -- Default Settings --
   int fMode = 3;
   int foodId = 373;
@@ -117,7 +118,7 @@ public class Abyte0_Sinister extends Abyte0_Script {
   final String[] drinkOrNotName = {"Drink", "No Drink"};
   int drinkOrNot = 0; // Default Setting
 
-  public Abyte0_Sinister(String e) {
+  private Abyte0_Sinister(String e) {
     super(e);
   }
 
@@ -592,16 +593,16 @@ public class Abyte0_Sinister extends Abyte0_Script {
     return random(2000, 2500);
   }
 
-  public final void EatFood() {
+  private final void EatFood() {
     int foodIndex = getInventoryIndex(foodId);
     useItem(foodIndex);
   }
 
-  public void RunFromCombat() {
+  private void RunFromCombat() {
     walkTo(getX(), getY());
   }
 
-  public void RunSouthOrAttackSouth(int[] npcIds) {
+  private void RunSouthOrAttackSouth(int[] npcIds) {
     boolean npcFound = false;
 
     print("Run or attack V2");

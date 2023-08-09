@@ -2,26 +2,19 @@ package scripting.apos;
 
 import compatibility.apos.Script;
 
-public class Abyte0_MagicSmelter extends Script {
-  // Made by Abyte0
-  // Public Release: 2011-12-22
-  // Used to smelt bars using magic....
-
-  // Updates
-  /* =============================================== */
-  // Updated : 2012-01-23 - Abyte0 - Added Iron - 0r5
-  // Updated : 2012-01-24 - Abyte0 - Fixed banking - 1
-  // Updated : 2012-12-10 - Abyte0 - Added Silver and Gold - 1.1
-  // Updated : 2012-12-18 - Abyte0 - Fixed Addy Amount - 1.2
-  /* =============================================== */
-
-  // Thanks
-  /* =============================================== */
-  /*  Thanks "Tarooki" ---> gold and silver id                      */
-  /* =============================================== */
-
+/**
+ * Made by Abyte0 <br>
+ * Public Release: 2011-12-22<br>
+ * Used to smelt bars using magic....<br>
+ *
+ * <p>Updates<br>
+ * Updated : 2012-01-23 - Abyte0 - Added Iron - 0r5<br>
+ * Updated : 2012-01-24 - Abyte0 - Fixed banking - 1<br>
+ * Updated : 2012-12-10 - Abyte0 - Added Silver and Gold - 1.1<br>
+ * Updated : 2012-12-18 - Abyte0 - Fixed Addy Amount - 1.2<br>
+ */
+public final class Abyte0_MagicSmelter extends Script {
   int[] mix;
-
   // Ores
   final int oreIron = 151;
   final int oreMith = 153;
@@ -48,7 +41,7 @@ public class Abyte0_MagicSmelter extends Script {
 
   int[] doorObj;
 
-  public Abyte0_MagicSmelter(String e) {
+  private Abyte0_MagicSmelter(String e) {
     // super(e);
   }
 
@@ -98,7 +91,7 @@ public class Abyte0_MagicSmelter extends Script {
     return Mine();
   }
 
-  public int Mine() {
+  private int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }
@@ -187,11 +180,11 @@ public class Abyte0_MagicSmelter extends Script {
     }
   }
 
-  public final void print(String gameText) {
+  private void print(String gameText) {
     System.out.println(gameText);
   }
 
-  public final int talkBanker() {
+  private int talkBanker() {
     int[] banker = getNpcByIdNotTalk(95);
     if (banker[0] != -1 && !isBanking()) {
       // print("Hello you Banker!");

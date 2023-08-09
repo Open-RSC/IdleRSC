@@ -39,7 +39,7 @@ public class MiningGuild extends IdleScript {
       setup();
       guiSetup = true;
     }
-    while (controller.isRunning() && setupCompleted) {
+    if (setupCompleted) {
       guiSetup = false;
       setupCompleted = false;
       String x = param[0].toLowerCase();
@@ -49,36 +49,26 @@ public class MiningGuild extends IdleScript {
           && !coalCheck.isSelected()) {
         quit(3); // You can't mine nothing!
       }
-      if (runiteCheck.isSelected()) {
-        mineRunite = true;
-      }
-      if (adamantiteCheck.isSelected()) {
-        mineAdamantite = true;
-      }
-      if (mithrilCheck.isSelected()) {
-        mineMithril = true;
-      }
-      if (coalCheck.isSelected()) {
-        mineCoal = true;
-      }
-
+      mineRunite = runiteCheck.isSelected();
+      mineAdamantite = adamantiteCheck.isSelected();
+      mineMithril = mithrilCheck.isSelected();
+      mineCoal = coalCheck.isSelected();
       run();
     }
-
     return 1000; // start() must return a int value now.
   }
 
   public void run() {
-    if (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5
-        && controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223) {
-      quit(2);
-    } else {
-      while (controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) == 223) {
-        controller.atObject(ladderDown[0], ladderDown[1]);
-        controller.sleep(640);
-      }
-    }
     while (controller.isRunning()) {
+      if (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5
+          && controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223) {
+        quit(2);
+      } else {
+        while (controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) == 223) {
+          controller.atObject(ladderDown[0], ladderDown[1]);
+          controller.sleep(640);
+        }
+      }
       miningLevel = controller.getBaseStat(controller.getStatId("Mining"));
       if (controller.getInventoryItemCount() == 30) {
         bank();
@@ -124,10 +114,6 @@ public class MiningGuild extends IdleScript {
           controller.sleep(1280);
         }
       }
-    }
-    if (!controller.isRunning() && !stopped) {
-      // script stopped
-      quit(1);
     }
   }
 

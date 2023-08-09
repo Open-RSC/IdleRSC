@@ -6,13 +6,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Fast Platebody Smither - by Kaila. ~ Start with Hammer in Inv! Batch Bars MUST be toggled ON in
- * settings!!! This ensures 5 Plates are made per Menu Cycle. Supports all bar types. ~ This bot
- * supports the \"autostart\" parameter. defaults to steel plates. ~ Parameters for Starting: auto,
- * autostart - makes steel platebodies. bronze - makes bronze platebodies. iron - makes iron
- * platebodies. steel - makes steel platebodies. mith, mithril - makes mithril platebodies. addy,
- * adamantite - makes adamantite platebodies. rune, runite - makes runite platebodies. ~ Author -
- * Kaila
+ * <b>Fast Chain Links</b>
+ *
+ * <p>Makes Chain Links from dragon longs for use in Dragon Scale Mail armor
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Fast_ChainLinks extends K_kailaScript {
   private static int barsInBank = 0;
@@ -143,7 +142,6 @@ public final class K_Fast_ChainLinks extends K_kailaScript {
       }
       barsInBank = c.getBankItemCount(593);
       c.closeBank();
-      c.sleep(200);
     }
   }
   // GUI stuff below (icky)

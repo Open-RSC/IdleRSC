@@ -5,15 +5,18 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Ice Dungeon Ice Giant/Warrior Killer - By Kaila
+ * <b>Ice Dungeon Ice Giant/Warrior Killer</b><br>
  *
  * <p>This bot supports the "autostart" Parameter"); Usage: foodname numberOfFood potUp? example:
- * "shark,5,true". "autostart": uses lobsters,5,true.
+ * "shark,5,true". "autostart": uses lobsters,5,true. <br>
+ * Start in Fally East bank or In Ice Cave. <br>
+ * Food in bank REQUIRED. <br>
+ * Use regular Atk/Str Pots option. <br>
+ * Food Withdraw amount <br>
+ * Type of Food <br>
  *
- * <p>Start in Fally East bank or In Ice Cave. Food in bank REQUIRED. Use regular Atk/Str Pots
- * Selector. Food Withdraw amount Selector Type of Food Array Selector
- *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_AsgarnianIceGiants extends K_kailaScript {
   private static final int[] loot = {
@@ -61,9 +64,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
     c.displayMessage("@red@Start in Fally East bank with Armor");
     c.displayMessage("@red@Sharks IN BANK REQUIRED");
     startTime = System.currentTimeMillis();
-    if (c.isInBank()) {
-      c.closeBank();
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() < 3000) {
       bank();
       BankToIce();
@@ -198,7 +199,6 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
       withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 30);
       c.closeBank();
-      c.sleep(640);
       checkInventoryItemCounts();
     }
   }

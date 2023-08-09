@@ -6,12 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Crystal Key Chest Opener.
+ * <b>Crystal Key Chest Opener.</b>
  *
  * <p>Start by Crystal chest or in Catherby Bank! Only works on Coleslaw for the time Being.
  * Utilizes the White Wolf Mountain Agility Shortcut.
  *
- * <p>@Author ~ Kaila.
+ * @see scripting.idlescript.K_kailaScript
+ * @author kaila.
  */
 /*
  * todo add, "if fail agility shortcut" fallback? - currently bot may break.
@@ -32,9 +33,8 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       scriptStarted = false;
       c.displayMessage("@gre@Crystal Key Chest Opener - By Kaila");
       c.displayMessage("@gre@Start by Crystal chest or in Catherby Bank!");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+
+      if (c.isInBank()) c.closeBank();
       if (c.currentX() > 400) {
         bank();
         BankToGrape();
@@ -141,7 +141,6 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       DragonstonesInBank = c.getBankItemCount(542);
 
       c.closeBank();
-      c.sleep(640);
     }
   }
 

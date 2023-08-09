@@ -21,6 +21,7 @@ public class DrawCallback {
   public static boolean toggleOnViewId = false;
   public static long nextRefresh = -1;
   public static long nextDeRefresh = -1;
+  public static long timeNextLogClear = -1;
   /** The hook called each frame by the patched client. */
   public static void drawHook() {
     Controller c = Main.getController();
@@ -42,7 +43,8 @@ public class DrawCallback {
     String localStatusText = statusText;
 
     if (toggleOnViewId) {
-      c.getPlayer().groupID = 9;
+      c.getPlayer().groupID = 9; // set developer group id to show itemIds
+      orsc.Config.C_SIDE_MENU_OVERLAY = false; // turn off side menu to fix flickering bug
     } else {
       c.getPlayer().groupID = 10;
     }
@@ -109,7 +111,7 @@ public class DrawCallback {
             1);
       }
     }
-    if (System.currentTimeMillis() > nextDeRefresh && nextDeRefresh != -1) {
+    if ((System.currentTimeMillis() > nextDeRefresh) && nextDeRefresh != -1) {
       c.setDrawing(false);
       nextDeRefresh = -1;
     }

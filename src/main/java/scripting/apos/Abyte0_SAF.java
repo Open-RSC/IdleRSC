@@ -1,11 +1,13 @@
 package scripting.apos;
-// SimpleAutofighter Script Provided by RLN
-// Edited by Abyte0
-// 2012-01-24 - Version 0 - Added Open Doors/Gates at 10 squares from you if closed
-// 2012-01-24 - Version 0 - Added Eating multiple food like Yomama Scripts
-// 2012-01-24 - Version 0 - Will Add Pick && Bury BigBones
 
-public class Abyte0_SAF extends Abyte0_Script {
+/**
+ * SimpleAutofighter Script Provided by RLN <br>
+ * Edited by Abyte0<br>
+ * 2012-01-24 - Version 0 - Added Open Doors/Gates at 10 squares from you if closed<br>
+ * 2012-01-24 - Version 0 - Added Eating multiple food like Yomama Scripts<br>
+ * 2012-01-24 - Version 0 - Will Add Pick and Bury BigBones<br>
+ */
+public final class Abyte0_SAF extends Abyte0_Script {
 
   int fmode = -1;
   int npcID = -1;
@@ -36,7 +38,7 @@ public class Abyte0_SAF extends Abyte0_Script {
   // abyte0_saf f=3,n=321,r=25,h=20,e=373,w=1,b=1
   // f=0,n=3,w=1  for Chicken controlled
 
-  public Abyte0_SAF(String e) {
+  private Abyte0_SAF(String e) {
     super(e);
   }
 
@@ -212,13 +214,13 @@ public class Abyte0_SAF extends Abyte0_Script {
     System.out.println("= - - - - - - - - - - - - - - - - - - - - - - - - - - =");
   }
 
-  public final void BuryBigBone() {
+  private void BuryBigBone() {
     int boneIndex = getInventoryIndex(bigBonesID);
     System.out.println("Bury Bones at position : " + boneIndex);
     useItem(boneIndex);
   }
 
-  public int TryPickup() {
+  private int TryPickup() {
     if (isPickupEnabled) {
       int[] item = getItemById(pickupID);
       if (item[0] != -1) {
@@ -235,7 +237,7 @@ public class Abyte0_SAF extends Abyte0_Script {
     return -1;
   }
 
-  public int TryBury() {
+  private int TryBury() {
     if (bury) {
       if (getInventoryCount(bigBonesID) > 0) {
         if (inCombat()) {
@@ -261,11 +263,11 @@ public class Abyte0_SAF extends Abyte0_Script {
     return -1;
   }
 
-  public void RunFromCombat() {
+  private void RunFromCombat() {
     walkTo(startX, startY);
   }
 
-  public int getUntrapped() {
+  private int getUntrapped() {
     for (int i = 1; i < 8; i++) {
       int result = getUntrappedByMaxDistance(i);
       if (result != 0) return result;
@@ -274,7 +276,7 @@ public class Abyte0_SAF extends Abyte0_Script {
     return 0;
   }
 
-  public int getUntrappedByMaxDistance(int maxDistance) {
+  private int getUntrappedByMaxDistance(int maxDistance) {
     // Gate
     int[] Gate = getObjectById(57);
     if (Gate[0] != -1) {

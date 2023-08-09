@@ -5,18 +5,14 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Ice Dungeon Hob/Pirate Killer
+ * <b>Ice Dungeon Hob/Pirate Killer</b>
  *
- * <p>
+ * <p>Start in Fally East bank or in Ice Cave. <br>
+ * Food in bank required. (pots optional).<br>
+ * Use regular Atk/Str Pots Option.<br>
+ * Food Withdraw amount Selection.<br>
  *
- * <p>Start in Fally East bank or in Ice Cave.
- *
- * <p>Food in bank required. (pots optional).
- *
- * <p>Use regular Atk/Str Pots Option.
- *
- * <p>Food Withdraw amount Selection.
- *
+ * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
 public final class K_AsgarnianPirateHobs extends K_kailaScript {
@@ -79,9 +75,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       c.displayMessage("@red@Asgarnian Pirate Hobs - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor");
       c.displayMessage("@red@Sharks IN BANK REQUIRED");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         BankToIce();
@@ -208,7 +202,6 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(640);
       checkInventoryItemCounts();
     }
   }

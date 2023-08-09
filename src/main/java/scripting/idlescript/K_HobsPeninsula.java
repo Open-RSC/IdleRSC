@@ -5,13 +5,16 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Asgarnian Hobs Peninsula - By Kaila
+ * <b>Asgarnian Hobs Peninsula</b>
  *
- * <p>Start in Fally East bank with Armor or Hobs Peninsula Food IN BANK REQUIRED (reg atk str
- * optional) Can Use regular Atk/Str Pots. Food Withdraw amount selection. Type of Food selection.
- * "Sharks", "Swordfish", "Tuna", "Lobsters"
+ * <p>Start in Fally East bank with Armor or Hobs Peninsula
  *
- * <p>Author - Kaila
+ * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
+ * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
+ * and Autostart.
+ *
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_HobsPeninsula extends K_kailaScript {
   private static int totalLimp = 0;
@@ -78,9 +81,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
       c.displayMessage("@red@Asgarnian Hobs Peninsula - By Kaila");
       c.displayMessage("@red@Start in Fally East bank with Armor or Hobs Peninsula");
       c.displayMessage("@red@Food in Bank REQUIRED");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 595) {
         bank();
         BankToPeninsula();
@@ -188,7 +189,6 @@ public final class K_HobsPeninsula extends K_kailaScript {
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 5);
       c.closeBank();
-      c.sleep(640);
       checkInventoryItemCounts();
     }
   }

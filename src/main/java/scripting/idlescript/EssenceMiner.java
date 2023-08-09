@@ -134,7 +134,6 @@ public class EssenceMiner extends IdleScript {
         }
       }
       bankedStones = controller.getBankItemCount(1299);
-      controller.sleep(618);
       controller.closeBank();
       controller.setStatus("@red@Finished Banking");
     }

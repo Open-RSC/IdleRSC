@@ -5,10 +5,10 @@ import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
- * - Coleslaw Trick or' Treat Cracker Opener.
+ * <b>Coleslaw Trick or' Treat Cracker Opener</b>
  *
- * <p>Opens Trick or' Treat Cracker by using them on a 2nd account. Used in conjunction with
- * K_GiftTaker Script!
+ * <p>Opens Trick or' Treat Cracker by using them on a 2nd account. <br>
+ * Used in conjunction with K_GiftTaker Script!<br>
  *
  * <p>Should work in any bank, tested in varrock west. requires 2 accounts. This bot is the present
  * "taker", it will bank when you have 29 items.
@@ -20,7 +20,8 @@ import orsc.ORSCharacter;
  * <p>WARNING: while within 1 tile of the giver, you will continue to recieve presents. WARNING:
  * regardless of how full your inventory is. items WILL drop to the floor.
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public class K_TrickGiver extends IdleScript {
   private static final int[] bankerIds = {95, 224, 268, 540, 617, 792};
@@ -91,7 +92,6 @@ public class K_TrickGiver extends IdleScript {
         c.sleep(1280);
       }
       c.closeBank();
-      c.sleep(640);
     }
   }
 }

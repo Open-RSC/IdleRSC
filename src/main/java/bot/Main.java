@@ -4,6 +4,8 @@ import static org.reflections.scanners.Scanners.Resources;
 import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.util.ClasspathHelper.forJavaClassPath;
 
+import bot.cli.CLIParser;
+import bot.cli.ParseResult;
 import bot.debugger.Debugger;
 import callbacks.DrawCallback;
 import compatibility.apos.Script;
@@ -33,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import listeners.LoginListener;
 import listeners.WindowListener;
+import org.apache.commons.cli.ParseException;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -41,6 +44,7 @@ import orsc.mudclient;
 import reflector.Reflector;
 import scripting.idlescript.IdleScript;
 import utils.Extractor;
+import utils.Version;
 
 /**
  * This is the starting class of the entire IdleRSC project.
@@ -48,7 +52,7 @@ import utils.Extractor;
  * @author Dvorak
  */
 public class Main {
-  public static Config config;
+  public static Config config = new Config();
   private static final Reflections reflections =
       new Reflections(
           new ConfigurationBuilder()
@@ -182,7 +186,36 @@ public class Main {
       throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
           SecurityException, InstantiationException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, InterruptedException {
-    config = new Config(args);
+    CLIParser parser = new CLIParser();
+    ParseResult parseResult = null;
+    Version version = new Version();
+
+    try {
+      parseResult = parser.parse(args);
+    } catch (ParseException e) {
+      System.err.println(e.getMessage() + "\n");
+      parser.printHelp();
+      System.exit(1);
+    }
+
+    if (parseResult.isHelp()) {
+      parser.printHelp();
+      System.exit(0);
+    }
+
+    if (parseResult.isVersion()) {
+      System.out.println(
+          "IdleRSC version "
+              + version.getCommitDate()
+              + "-"
+              + version.getCommitCount()
+              + "-"
+              + version.getCommitHash());
+      System.out.println("Built with JDK " + version.getBuildJDK());
+      System.exit(0);
+    }
+
+    config.absorb(parseResult);
     handleCache(config);
 
     Reflector reflector = new Reflector(); // start up our reflector helper
@@ -210,8 +243,8 @@ public class Main {
     initializeConsoleFrame(consoleFrame);
     initializeScriptFrame(scriptFrame);
 
-    if (config.getHidesidepanel()) {
-      botFrame.setVisible(false);
+    if (config.isSidePanelVisible()) {
+      botFrame.setVisible(true);
     }
 
     log("IdleRSC initialized.");
@@ -219,31 +252,18 @@ public class Main {
     // don't do anything until RSC is loaded.
     while (!controller.isLoaded()) controller.sleep(1);
 
-    if (autoLoginCheckbox.isSelected() != config.getAutologin()) {
-      autoLoginCheckbox.doClick();
+    // Set checkboxes on side panel using "get" methods
+    autoLoginCheckbox.setSelected(config.isAutoLogin());
+    logWindowCheckbox.setSelected(config.isLogWindowVisible());
+    unstickCheckbox.setSelected(!config.isSidePanelSticky());
+    debugCheckbox.setSelected(config.isDebug());
+    botPaintCheckbox.setSelected(config.isBotPaintVisible());
+    graphicsCheckbox.setSelected(config.isGraphicsEnabled());
+
+    if (config.isGraphicsInterlacingEnabled()) {
+      controller.setInterlacer(config.isGraphicsInterlacingEnabled());
     }
-    if (logWindowCheckbox.isSelected() != config.getLogwindow()) {
-      logWindowCheckbox.doClick();
-    }
-    if (unstickCheckbox.isSelected() != config.getUnstick()) {
-      unstickCheckbox.doClick();
-    }
-    if (debugCheckbox.isSelected() != config.getDebug()) {
-      debugCheckbox.doClick();
-    }
-    if (graphicsCheckbox.isSelected() != config.getEnablegfx()) {
-      graphicsCheckbox.doClick();
-    }
-    if (botPaintCheckbox.isSelected() != config.getBotPaint()) {
-      botPaintCheckbox.doClick();
-    }
-    if (interlaceCheckbox.isSelected() != config.getEnableInterlace()) {
-      interlaceCheckbox.doClick();
-    }
-    if (config.getEnableInterlace()) {
-      controller.setInterlacer(config.getEnableInterlace());
-    }
-    if (config.getOpenSelector()) {
+    if (config.isScriptSelectorWindowVisible()) {
       showLoadScript();
     }
 
@@ -443,6 +463,8 @@ public class Main {
         e -> {
           if (controller != null) {
             controller.setDrawing(graphicsCheckbox.isSelected());
+            if (graphicsCheckbox.isSelected()) DrawCallback.nextRefresh = -1;
+            else DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L;
           }
         });
     botPaintCheckbox.addActionListener(
@@ -565,7 +587,7 @@ public class Main {
                     try {
                       return clazz.getSuperclass().equals(compatibility.apos.Script.class)
                           ? clazz.getDeclaredConstructor(String.class).newInstance("")
-                          : clazz.newInstance();
+                          : clazz.getDeclaredConstructor().newInstance();
                     } catch (InstantiationException
                         | IllegalAccessException
                         | NoSuchMethodException
@@ -803,6 +825,7 @@ public class Main {
     cacheFrame.pack();
     cacheFrame.setLocationRelativeTo(null);
     cacheFrame.setVisible(true);
+    cacheFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     while (!cacheDirectory.exists()) {
 

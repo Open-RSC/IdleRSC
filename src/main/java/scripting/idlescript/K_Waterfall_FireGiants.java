@@ -7,15 +7,14 @@ import javax.swing.JLabel;
 import orsc.ORSCharacter;
 
 /**
- * Wildy Fire Giant Killer - By Kaila
+ * <b>Waterfall Fire Giants</b>
  *
- * <p>Start in Edge bank with Armor
+ * <p>Start in Seers bank with Armor <br>
+ * Sharks/Laws/Airs IN BANK REQUIRED<br>
+ * 31 Magic Required for escape tele<br>
  *
- * <p>Sharks/Laws/Airs/Earths IN BANK REQUIRED
- *
- * <p>31 Magic Required for escape tele
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_Waterfall_FireGiants extends K_kailaScript {
   private static int totalBstaff = 0;
@@ -210,7 +209,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       bankItemCheck(airId, 50);
       bankItemCheck(lawId, 10);
       c.closeBank();
-      c.sleep(1280);
     }
     inventoryItemCheck(airId, 30);
     inventoryItemCheck(lawId, 6);

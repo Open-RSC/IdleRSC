@@ -98,7 +98,6 @@ public class SmithGearSet extends IdleScript {
           controller.sleep(1000);
         }
         controller.closeBank();
-        controller.sleep(1280);
         bankTime = false;
       }
 

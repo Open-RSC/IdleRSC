@@ -32,9 +32,7 @@ public class SmithingVarrock extends IdleScript {
     }
 
     if (scriptStarted) {
-      if (controller.isInBank()) {
-        controller.closeBank();
-      }
+      if (controller.isInBank()) controller.closeBank();
       guiSetup = false;
       scriptStarted = false;
       scriptStart();
@@ -112,7 +110,6 @@ public class SmithingVarrock extends IdleScript {
       }
       barsLeft = controller.getBankItemCount(barId);
       controller.closeBank();
-      controller.sleep(200);
     }
   }
 

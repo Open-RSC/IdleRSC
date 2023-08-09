@@ -3,16 +3,15 @@ package scripting.apos;
 // 2012-04-14
 // 2021-07-19 Fixed normal tree id
 
-/*
-To Cut tree
-abyte0_powerwc normal
-abyte0_powerwc oak
-abyte0_powerwc willow
-abyte0_powerwc yew
-abyte0_powerwc magic
-*/
-
-public class Abyte0_PowerWc extends Abyte0_Script {
+/**
+ * To Cut tree <br>
+ * abyte0_powerwc normal<br>
+ * abyte0_powerwc oak<br>
+ * abyte0_powerwc willow<br>
+ * abyte0_powerwc yew<br>
+ * abyte0_powerwc magic<br>
+ */
+public final class Abyte0_PowerWc extends Abyte0_Script {
   final int[] normalTree = {0, 1};
   final int[] oakTree = {306};
   final int[] willowTree = {307};
@@ -23,7 +22,7 @@ public class Abyte0_PowerWc extends Abyte0_Script {
   int[] treeId;
   final int fmode = 1;
 
-  public Abyte0_PowerWc(String e) {
+  private Abyte0_PowerWc(String e) {
     super(e);
   }
 

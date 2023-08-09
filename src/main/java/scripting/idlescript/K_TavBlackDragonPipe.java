@@ -5,23 +5,17 @@ import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
- * Taverly Black dragon (agility Pipe Shortcut) - By Kaila.
+ * <b>Taverly Black dragon (agility Pipe Shortcut)</b>.
  *
- * <p>
+ * <p>Start in Edge bank with Armor. <br>
+ * Uses Coleslaw agility pipe shortcut. (coleslaw only) <br>
+ * 70 Agility required, for the shortcut! <br>
+ * Sharks/prayPots/Laws/Airs/Earths IN BANK REQUIRED.<br>
+ * 31 Magic Required for escape tele.<br>
+ * Bot will attempt to wield dragonfire shield when in blue dragon room.<br>
  *
- * <p>Start in Edge bank with Armor.
- *
- * <p>Uses Coleslaw agility pipe shortcut. (coleslaw only)
- *
- * <p>70 Agility required, for the shortcut!
- *
- * <p>Sharks/prayPots/Laws/Airs/Earths IN BANK REQUIRED.
- *
- * <p>31 Magic Required for escape tele.
- *
- * <p>Bot will attempt to wield dragonfire shield when in blue dragon room.
- *
- * <p>@Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_TavBlackDragonPipe extends K_kailaScript {
   private static int totalRlong = 0;
@@ -77,9 +71,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.displayMessage("@red@Start in Fally west with gear on, or in demon room!");
       c.displayMessage("@red@Sharks, Law, Water, Air IN BANK REQUIRED");
       c.displayMessage("@red@70 Agility required, for the shortcut!");
-      if (c.isInBank()) {
-        c.closeBank();
-      }
+
+      if (c.isInBank()) c.closeBank();
       if (c.currentY() < 2800) {
         bank();
         BankToDragons();
@@ -221,7 +214,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       bankItemCheck(lawId, 10);
       bankCheckAntiDragonShield();
       c.closeBank();
-      c.sleep(1000);
     }
     inventoryItemCheck(airId, 18);
     inventoryItemCheck(waterId, 6);

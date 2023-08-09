@@ -86,7 +86,6 @@ public class FletchnBankBows extends IdleScript {
           controller.sleep(100);
         }
         controller.closeBank();
-        controller.sleep(1000);
       }
       if (controller.getInventoryItemCount(bowId) < 1 && stringTime && !controller.isInBank()
           || controller.getInventoryItemCount(676) < 1 && stringTime && !controller.isInBank()) {
@@ -119,7 +118,6 @@ public class FletchnBankBows extends IdleScript {
           }
           controller.withdrawItem(bowId, 15);
           controller.withdrawItem(676, 15);
-          controller.sleep(1500);
           controller.closeBank();
         }
       }

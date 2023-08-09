@@ -1,40 +1,140 @@
 # IdleRSC
 
-IdleRSC is a bot for OpenRSC. It uses code injection and reflection. It has
-it's own custom scripting API. It also has backwards compatibility with APOS
-and SBot. It also has built in staker bot functionality!
+IdleRSC is a bot for [Open RSC][open-rsc]. It uses code injection and
+reflection. It has it's own custom scripting API called IdleScript, as well as
+backwards compatibility with APOS and SBot scripts. It also provides staker
+bot functionality!
 
-[![IdleRSC Demo Video](https://i.imgur.com/NMU2sbB.png)](https://www.youtube.com/watch?v=Bkp2M3Ja9qc)
+![screenshot of main window](doc/main-window.png "Main Window")
 
 ## Starting IdleRSC
 
-Releases are automatically regenerated upon every commit to the Gitlab
-repository, the last successful build can be found
-[here](https://gitlab.com/open-runescape-classic/idlersc/-/jobs/artifacts/master/browse?job=build).
+---
+Releases are automatically generated upon every commit to the GitLab
+[repository][repository], the last successful build can be downloaded
+[here][download].
 
 1. Modify run.bat/sh.
-2. Select which server you want.
-3. **Optional**: if playing on a different server which allows botting, modify Cache/ip.txt and Cache/port.txt if needed.
-4. Run .bat/.sh file!
+1. Select which server you want.
+1. **Optional**: if playing on a different server which allows botting,
+   modify Cache/ip.txt and Cache/port.txt if needed.
+1. Run .bat/.sh file!
+
+## Commands
+
+---
+![screenshot of in-game help menu](doc/help-menu.png "Help Menu")
+
+### In-game
+
+* `::bothelp` - show help menu with all in-game commands & keyboard shortcuts
+* `::show` - show the bot side-pane
+* `::gfx` - toggle graphics rendering
+* `::screenshot` - take a screenshot
+* `::hidepaint`/`::showpaint` - toggle paint left-side menu
+* `::toggleid` - toggle item/object/npc IDs on right-click
+* `::interlace` - toggle graphics interlacing
+
+### Shortcuts
+
+* `F1` - toggle graphics interlacing
+* `F2` - toggle left-side sub menu
+* `F3` - return camera zoom to default setting
+* `F4` - toggles between first & third person view
+* `F5`/`F6`/`F7` - attack/defense/strength item swapping (stake switching)
+* `F8` - spell id casting
+* `F9` - take a screenshot
+* `F10` - lock the client's camera position until `F10` is pressed or
+  mouse click
+* `F11` - stop the current script and load a new one
+* `F12` - show help menu with all in-game commands & keyboard shortcuts
+
+### CLI Startup Commands
+
+---
+Command Line Interface (CLI) commands can be included following a command line startup
+for example `java -jar IdleRSC.jar` , or added to the `run_windows.bat`or `run_linux.sh`
+script files that execute the same startup command.
+
+* `--script-arguments <arguments>` - pass arguments to the script (e.g. dragonstone) <br>
+* `--auto-login` - Enable automatic log-in with credentials (--username, --password) <br>
+* `--debug` - Enable debug logging <br>
+* `--log-window` - Display log window <br>
+* `--disable-gfx` - Disable graphics refresh <br>
+* `--help` - Show help menu (F12) <br>
+* `--hide-side-panel` - Hide side panel <br>
+* `--init-cache <server>` - Initialise cache for specified server (coleslaw|uranium) <br>
+* `--interlace` - Enable graphics interlacing <br>
+* `--local-ocr` - Enable local OCR <br>
+* `--log-window` - Display log window <br>
+* `--script-name <name>` - Name of the script to run <br>
+* `--password <password>` - Account password <br>
+* `--script-selector` - Display script selector window <br>
+* `--username <username>` - Account username <br>
+* `--unstick` - Unstick side panel from main window <br>
+* `--version` - Show version <br>
+* `--attack-items <item1,item2>` - stake switcher attack item swapping <br>
+* `--defence-items <item1,item2>` - stake switcher defence items swapping <br>
+* `--strength-items <item1,item2>` - stake switcher strength items swapping <br>
+* `--spell-id <id>` - Spell id for stake switcher casting <br>
+
+### Stake Switcher
+
+The stake switcher can only be configured by use of command-line parameters.
+Inside your `run_windows.bat` or `run_linux.sh` script, add the following
+lines:
+
+```
+--attack-items 123,456
+--strength-items 123,456
+--defence-items 123,456
+--spell-id 2
+```
+
+e.g. `java -jar IdleRSC.jar --attack-items 123,456` and so on.
+
+Restart the bot. Press `F5`, `F6`, `F7`, `F8` to validate.
 
 ## Rules
 
-User will NOT use this client to bot on non-botting servers. The only allowed openRSC botting servers are Coleslaw and Uranium. Use of this client to bot on Cabbage or Preservation will result in a BAN of the accounts.
+---
+
+User will NOT use this client to bot on non-botting servers. The only
+allowed openRSC botting servers are Coleslaw and Uranium. Use of this
+client to bot on Cabbage or Preservation will result in a BAN of the
+accounts.
 
 ## Sleeping
 
-IdleRSC uses a sleeper server which is provided free of charge. However, if you would like, you can run the FOCR sleeper locally with --localOCR on the command line. Get the latest copy of FOCR here: [FOCR Resurrection](https://gitlab.com/open-runescape-classic/tools/focr-resurrection).
+---
+
+Note: The below paragraph is out of date. The sleeper server no longer
+runs, and the local OCR functionality has not *yet* been tested by the
+current developers.
+
+IdleRSC uses a sleeper server which is provided free of charge. However,
+if you would like, you can run the FOCR sleeper locally with --localOCR
+on the command line. Get the latest copy of FOCR [here][focr].
 
 ## Account Security
 
-Please be aware that run.bat is not encrypted. If someone has your run.bat, they have your username and password.
-Please be aware that you should not run any .class files from sources you do not trust. Running a rogue .class file is akin to running a .exe file on your computer. IF YOU DON'T TRUST IT, READ THE SOURCE CODE AND COMPILE IT!!!
+---
 
-## Lost Items, Accounts, etc
+Please be aware that run.bat is not encrypted. If someone has your
+run.bat, they have your username and password.
+Please be aware that you should not run any .class files from sources
+you do not trust. Running a rogue .class file is akin to running a .exe
+file on your computer. IF YOU DON'T TRUST IT, READ THE SOURCE CODE AND
+COMPILE IT!!!
 
-Developers of IdleRSC are not responsible for ruined, banned, hacked accounts, or anything else.
+### Lost Items, Accounts, etc
+
+Developers of IdleRSC are not responsible for ruined, banned, hacked accounts,
+or anything else.
 
 ## Compiling Scripts
+
+---
 
 ### Linux
 
@@ -70,11 +170,16 @@ WARNING: This will delete your JAR file!!!
 
 Read "converting SBot scripts" section for compilitation issues.
 
-## Converting APOS Scripts
+## Converting Scripts
 
-APOS scripts require several changes in order to be made compatible. Please see changes made to scripts which were added. I will publish a basic script conversion tutorial at some point.
+---
 
-## Converting SBot Scripts
+### Converting APOS Scripts
+
+APOS scripts require several changes in order to be made compatible.
+Please see changes made to scripts which were added.
+
+### Converting SBot Scripts
 
 1. Open SBot script in a text editor.
 2. Place these lines at the top of the file:
@@ -97,6 +202,8 @@ public alch(mudclient rs)
 
 ## Compiling IdleRSC.jar
 
+---
+
 1. Clone the repository from [GitLab](https://gitlab.com/open-runescape-classic/idlersc).
 2. Open the project in Eclipse or IntelliJ, set up eclipse or gradle (preferred) compiler.
 3. If client JAR is out of date, run patcher utility from the Gitlab [repository](https://gitlab.com/open-runescape-classic/tools/idlersc_patcher) (follow README in that project).
@@ -109,36 +216,51 @@ public alch(mudclient rs)
 
 If you have problems, you can create a new issue or ask for help in the OpenRSC Discord.
 
-## Configuring Stake Switcher
-
-Inside your run_windows.bat or run_linux.sh, add the following lines. Restart the bot. Press F5, F6, F7, F8 to validate.
-
-```
---attack-items 123,456
---strength-items 123,456
---defence-items 123,456
---spell-id 2
-```
 
 ## Contributing
 
-* Please submit issues, questions, bugs on Gitlab. Provide stack traces for crashes, etc.
-* Please submit pull requests to Gitlab.
-* Please do not use this on servers which do not allow botting. There are servers which allow botting, such as those already included UraniumCache/ or ColeslawCache/.
+---
+
+* Please submit issues, questions, bugs on GitLab's [issue tracker][issue-tracker].
+* Provide stack traces for crashes, etc.
+* Please submit pull requests to [GitLab][merge-requests].
 
 ## Discussion
 
-Please join the [OpenRSC discord](https://discord.gg/CutQxDZ8Np) and post in the `#botting-client-development` channel. Other channels are not tied to botting, so please do not discuss botting in those channels.
+---
+
+Please join the [OpenRSC discord][discord] and post in the
+`#botting-client-development` channel. Other channels are not tied to botting,
+so please do not discuss botting in those channels.
 
 ## Donations
 
-IdleRSC is provided for free under [GPLv3](LICENSE), due to passion for RSC botting.
+---
+
+Like [Open RSC][open-rsc], donations are not accepted. IdleRSC is
+provided for free under [GPLv3](LICENSE), due to passion for RSC botting.
 
 ## About
 
-This started as a project in April 2020 due to a distinct lack of botting clients available for RSC post-closure. After Jagex decided to nerf the blowpipe in OSRS, the original coder gained renewed interest in January 2021, and the project was resurrected and released.
+---
 
-The original owner is no longer part of this fork of the project. However all credit for writing the original client goes to DvorakKeys.
-Additional credit goes to various developers including but not limited to:  Damrau, Grawlinson, JonathanB31, Kaila, Kkoemets, and Searos.
+This started as a project in April 2020 due to a distinct lack of botting
+clients available for RSC post-closure. After Jagex decided to nerf the
+blowpipe in OSRS, the original coder gained renewed interest in January 2021,
+and the project was resurrected and released.
 
-The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after APOS, STS, SBot, and AutoRune!
+The original owner is no longer part of this fork of the project. However all
+credit for writing the original client goes to DvorakKeys.
+Additional credit goes to various developers including but not limited to:
+Damrau, Grawlinson, JonathanB31, Kaila Btw, Kkoemets, and Searos.
+
+The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after
+APOS, STS, SBot, and AutoRune!
+
+[open-rsc]: https://rsc.vet
+[repository]: https://gitlab.com/open-runescape-classic/idlersc
+[issue-tracker]: https://gitlab.com/open-runescape-classic/idlersc/-/issues
+[merge-requests]: https://gitlab.com/open-runescape-classic/idlersc/-/merge_requests
+[discord]: https://discord.gg/CutQxDZ8Np
+[focr]: https://gitlab.com/open-runescape-classic/tools/focr-resurrection
+[download]: https://gitlab.com/open-runescape-classic/idlersc/-/jobs/artifacts/master/browse?job=build

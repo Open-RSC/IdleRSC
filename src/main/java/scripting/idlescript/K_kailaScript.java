@@ -3,16 +3,18 @@ package scripting.idlescript;
 import bot.Main;
 import controller.Controller;
 import javax.swing.*;
+import models.entities.ItemId;
 
 /**
  * WIP master file for common commands used in Kaila_Scripts
  *
- * <p>sans - documentation for now!
+ * <p>int trout = ItemId.RAW_TROUT.getId();
  *
- * <p>@Author - Kaila
+ * @author Kaila
  */
 /*
  *       todo
+ *           int trout = ItemId.RAW_TROUT.getId();
  *           fix teleport spot bounding
  *           replace eat food to loot with clearInventorySlot
  *          eat any 1 food script, return true/false to bank?
@@ -27,290 +29,247 @@ import javax.swing.*;
  *
  */
 public class K_kailaScript extends IdleScript {
-  public static final Controller c = Main.getController();
-  public static JFrame scriptFrame = null;
-  public static String foodName = "";
+  protected static final Controller c = Main.getController();
+  protected static JFrame scriptFrame = null;
+  protected static String foodName = "";
   // ~~~~~~~~~~~Boolean~~~~~~~~~~~~
-  public static boolean guiSetup = false;
-  public static boolean scriptStarted = false;
-  public static boolean timeToBank = false;
-  public static boolean timeToBankStay = false;
-  public static boolean lootLowLevel = false;
-  public static boolean lootBones = false;
-  public static boolean buryBones = false;
-  public static boolean lootLimp = false;
-  public static boolean potUp = false;
+  protected static boolean guiSetup = false;
+  protected static boolean scriptStarted = false;
+  protected static boolean timeToBank = false;
+  protected static boolean timeToBankStay = false;
+  protected static boolean lootLowLevel = false;
+  protected static boolean lootBones = false;
+  protected static boolean buryBones = false;
+  protected static boolean lootLimp = false;
+  protected static boolean potUp = false;
   // ~~~~~~~~~~~~OTHER CONSTANTS~~~~~~~~~~~~~
-  public static final long twoHundredFiftySecondsInMillis = 255000L;
-  public static final long nineMinutesInMillis = 540000L;
-  public static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  public static final int GAME_TICK = 640;
-  public static final int EAT_LEVEL = c.getBaseStat(c.getStatId("Hits")) - 20;
+  protected static final long twoHundredFiftySecondsInMillis = 255000L;
+  protected static final long nineMinutesInMillis = 540000L;
+  protected static final long startTimestamp = System.currentTimeMillis() / 1000L;
+  protected static final int GAME_TICK = 640;
+  protected static final int EAT_LEVEL = c.getBaseStat(c.getStatId("Hits")) - 20;
 
   // ~~~~~~~~~~~~~ITEM CONSTANTS~~~~~~~~~~~
-  public static final int UNCUT_SAPP = 160, UNCUT_EMER = 159, UNCUT_RUBY = 158, UNCUT_DIA = 157;
-  public static final int CUT_SAPP = 164, CUT_EMER = 163, CUT_RUBY = 162, CUT_DIA = 161;
-  public static final int UNID_GUAM = 165, UNID_MAR = 435, UNID_TAR = 436, UNID_HAR = 437;
-  public static final int UNID_RANARR = 438, UNID_IRIT = 439, UNID_AVANTOE = 440, UNID_KWUARM = 441;
-  public static final int UNID_CADA = 442, UNID_DWARF = 443, UNID_TORSTOL = 933;
-  public static final int FIRE_RUNE = 31, WATER_RUNE = 32, AIR_RUNE = 33, EARTH_RUNE = 34;
-  public static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
-  public static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
-  public static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
-  public static final int COINS = 10, EMPTY_VIAL = 465, BRONZE_ARROW = 11, SPIN_ROLL = 179;
-  public static final int LIMP_ROOT = 220;
-  public static final int BONES = 20, BAT_BONES = 604, BIG_BONES = 413, DRAGON_BONES = 814;
+  protected static final int UNCUT_SAPP = 160, UNCUT_EMER = 159, UNCUT_RUBY = 158, UNCUT_DIA = 157;
+  protected static final int UNID_GUAM = 165, UNID_MAR = 435, UNID_TAR = 436, UNID_HAR = 437;
+  protected static final int UNID_RANARR = 438,
+      UNID_IRIT = 439,
+      UNID_AVANTOE = 440,
+      UNID_KWUARM = 441;
+  protected static final int UNID_CADA = 442, UNID_DWARF = 443;
+  protected static final int FIRE_RUNE = 31, WATER_RUNE = 32, AIR_RUNE = 33, EARTH_RUNE = 34;
+  protected static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
+  protected static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
+  protected static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
+  protected static final int COINS = 10, EMPTY_VIAL = 465, BRONZE_ARROW = 11, SPIN_ROLL = 179;
+  protected static final int LIMP_ROOT = 220;
+  protected static final int BONES = 20, BIG_BONES = 413;
 
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
 
-  public static long startTime;
-  public static long next_attempt = -1;
-  public static int foodInBank = -1;
-  public static int usedFood = 0;
-  public static int foodWithdrawAmount = -1;
-  public static int prayPotWithdrawAmount = -1;
-  public static int foodId = -1;
-  public static int fightMode = 0;
-  public static int totalTrips = 0;
-  public static int centerX = -1;
-  public static int centerY = -1;
-  public static int centerDistance = -1;
+  protected static long startTime;
+  protected static long next_attempt = -1;
+  protected static int foodInBank = -1;
+  protected static int usedFood = 0;
+  protected static int foodWithdrawAmount = -1;
+  protected static int prayPotWithdrawAmount = -1;
+  protected static int foodId = -1;
+  protected static int fightMode = 0;
+  protected static int totalTrips = 0;
+  protected static int centerX = -1;
+  protected static int centerY = -1;
+  protected static int centerDistance = -1;
   // Inventory Item Counts
   // Herbs
-  public static int inventGuam = 0;
-  public static int inventMar = 0;
-  public static int inventTar = 0;
-  public static int inventHar = 0;
-  public static int inventRan = 0;
-  public static int inventIrit = 0;
-  public static int inventAva = 0;
-  public static int inventKwuarm = 0;
-  public static int inventCada = 0;
-  public static int inventDwarf = 0;
-  public static int inventHerbs = 0;
+  protected static int inventGuam = 0;
+  protected static int inventMar = 0;
+  protected static int inventTar = 0;
+  protected static int inventHar = 0;
+  protected static int inventRan = 0;
+  protected static int inventIrit = 0;
+  protected static int inventAva = 0;
+  protected static int inventKwuarm = 0;
+  protected static int inventCada = 0;
+  protected static int inventDwarf = 0;
+  protected static int inventHerbs = 0;
   // Runes
-  public static int inventMind = 0;
-  public static int inventChaos = 0;
-  public static int inventDeath = 0;
-  public static int inventBlood = 0;
-  public static int inventLaws = 0;
-  public static int inventNats = 0;
-  public static int inventCosmic = 0;
-  public static int inventAir = 0;
-  public static int inventFire = 0;
-  public static int inventWater = 0;
-  public static int inventEarth = 0;
-  public static int inventRunes = 0;
+  protected static int inventMind = 0;
+  protected static int inventChaos = 0;
+  protected static int inventDeath = 0;
+  protected static int inventBlood = 0;
+  protected static int inventLaws = 0;
+  protected static int inventNats = 0;
+  protected static int inventCosmic = 0;
+  protected static int inventAir = 0;
+  protected static int inventFire = 0;
+  protected static int inventWater = 0;
+  protected static int inventEarth = 0;
+  protected static int inventRunes = 0;
   // inventory Gems
-  public static int inventSapphire = 0;
-  public static int inventEmerald = 0;
-  public static int inventRuby = 0;
-  public static int inventDiamond = 0;
-  public static int inventGems = 0;
+  protected static int inventSapphire = 0;
+  protected static int inventEmerald = 0;
+  protected static int inventRuby = 0;
+  protected static int inventDiamond = 0;
+  protected static int inventGems = 0;
   // inventory Rares
-  public static int inventTooth = 0;
-  public static int inventLoop = 0;
-  public static int inventSpear = 0;
-  public static int inventLeft = 0;
+  protected static int inventTooth = 0;
+  protected static int inventLoop = 0;
+  protected static int inventSpear = 0;
+  protected static int inventLeft = 0;
 
   // UNID HERBS
-  public static int totalGuam = 0;
-  public static int totalMar = 0;
-  public static int totalTar = 0;
-  public static int totalHerbs = 0;
-  public static int totalHar = 0;
-  public static int totalRan = 0;
-  public static int totalIrit = 0;
-  public static int totalAva = 0;
-  public static int totalKwuarm = 0;
-  public static int totalCada = 0;
-  public static int totalDwarf = 0;
+  protected static int totalGuam = 0;
+  protected static int totalMar = 0;
+  protected static int totalTar = 0;
+  protected static int totalHerbs = 0;
+  protected static int totalHar = 0;
+  protected static int totalRan = 0;
+  protected static int totalIrit = 0;
+  protected static int totalAva = 0;
+  protected static int totalKwuarm = 0;
+  protected static int totalCada = 0;
+  protected static int totalDwarf = 0;
 
   // OTHER
-  public static int usedBones = 0; // the ones you have buried in the ground
-  public static int bankBones = 0; // the # you have IN the bank
-  public static int totalBones = 0; // the ## you have deposited in the bank
-  public static int totalPlates = 0;
-  public static int totalBars = 0;
+  protected static int usedBones = 0; // the ones you have buried in the ground
+  protected static int bankBones = 0; // the # you have IN the bank
+  protected static int totalBones = 0; // the ## you have deposited in the bank
+  protected static int totalPlates = 0;
+  protected static int totalBars = 0;
 
   // RUNES
-  public static final int airId = 33;
-  public static final int fireId = 31;
-  public static final int waterId = 32;
-  public static final int earthId = 34;
-  public static final int lawId = 42;
-  public static int totalAir = 0;
-  public static int totalFire = 0;
-  public static int totalWater = 0;
-  public static int totalEarth = 0;
-  public static int totalChaos = 0;
-  public static int totalCosmic = 0;
-  public static int totalLaw = 0;
-  public static int totalNat = 0;
-  public static int totalBlood = 0;
-  public static int totalDeath = 0;
+  protected static final int airId = 33;
+  protected static final int fireId = 31;
+  protected static final int waterId = 32;
+  protected static final int earthId = 34;
+  protected static final int lawId = 42;
+  protected static int totalAir = 0;
+  protected static int totalFire = 0;
+  protected static int totalWater = 0;
+  protected static int totalEarth = 0;
+  protected static int totalChaos = 0;
+  protected static int totalCosmic = 0;
+  protected static int totalLaw = 0;
+  protected static int totalNat = 0;
+  protected static int totalBlood = 0;
+  protected static int totalDeath = 0;
 
   // ORE
-  public static int coalInBank = 0;
-  public static int mithInBank = 0;
-  public static int addyInBank = 0;
-  public static int totalCoal = 0;
-  public static int totalMith = 0;
-  public static int totalAddy = 0; // defined in different ways, usually ore/bar depo script
-  public static int barsInBank = 0;
-  public static int logInBank = 0;
+  protected static int coalInBank = 0;
+  protected static int mithInBank = 0;
+  protected static int addyInBank = 0;
+  protected static int totalCoal = 0;
+  protected static int totalMith = 0;
+  protected static int totalAddy = 0; // defined in different ways, usually ore/bar depo script
+  protected static int barsInBank = 0;
+  protected static int logInBank = 0;
   // RDT
-  public static int totalSap = 0;
-  public static int totalEme = 0;
-  public static int totalRub = 0;
-  public static int totalDia = 0;
-  public static int totalLoop = 0;
-  public static int totalTooth = 0;
-  public static int totalLeft = 0;
-  public static int totalSpear = 0;
+  protected static int totalSap = 0;
+  protected static int totalEme = 0;
+  protected static int totalRub = 0;
+  protected static int totalDia = 0;
+  protected static int totalLoop = 0;
+  protected static int totalTooth = 0;
+  protected static int totalLeft = 0;
+  protected static int totalSpear = 0;
 
   // "totals"
-  public static int totalHerb = 0;
-  public static int totalGems = 0;
-  public static int totalLog = 0;
-  public static int totalRunes = 0;
+  protected static int totalHerb = 0;
+  protected static int totalGems = 0;
+  protected static int totalLog = 0;
+  protected static int totalRunes = 0;
   /*
    *
-   *
-   *
-   *
-   *
-   *
-   *      int[]
+   *      int[]  Arrays
    */
   /**
-   *
-   *
-   * <pre>
-   * int[] array of bone id's
-   *
-   * [regular,big,bat,dragon] </pre>
+   * int[] array of <b>bone id</b>'s <br>
+   * [regular,big,bat,dragon]
    */
-  public static final int[] bones = {
+  protected static final int[] bones = {
     20, // regular
     413, // big
     604, // bat?
     814 // dragon
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of regular attack potions
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>regular attack potions</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] attackPot = {
+  protected static final int[] attackPot = {
     476, // reg attack pot (1)
     475, // reg attack pot (2)
     474 // reg attack pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of regular strength potions
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>regular strength potions</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] strengthPot = {
+  protected static final int[] strengthPot = {
     224, // reg str pot (1)
     223, // reg str pot (2)
     222, // reg str pot (3)
     221 // reg str pot (4)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of regular defense potions
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>regular defense potions</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] defensePot = {
+  protected static final int[] defensePot = {
     482, // reg def pot (1)
     481, // reg def pot (2)
     480 // reg def pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of super attack potion
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>super attack potion</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] superAttackPot = {
+  protected static final int[] superAttackPot = {
     488, // super  attack pot (1)
     487, // super  attack pot (2)
     486 // super attack pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of super strength potion
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>super strength potion</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] superStrengthPot = {
+  protected static final int[] superStrengthPot = {
     494, // super str pot (1)
     493, // super str pot (2)
     492 // super str pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of super defense potion
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>super defense potion</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] superDefensePot = {
+  protected static final int[] superDefensePot = {
     497, // super defense pot (1)
     496, // super defense pot (2)
     495 // super defense pot (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of prayer potion
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>prayer potion</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] prayerPot = {
+  protected static final int[] prayerPot = {
     485, // prayer potion (1)
     484, // prayer potion (2)
     483 // prayer potion (3)
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of antidote (the red one)
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>antidote</b><br>
+   * (the red one) [1,2,3] doses
    */
-  public static final int[] antiPot = {
+  protected static final int[] antiPot = {
     571, // 1 dose
     570, // 2 dose
     569 // 3 dose
   };
   /**
-   *
-   *
-   * <pre>
-   *  int[] array of axe Id's
-   *
-   *  [bronze,iron,steel,black,mith,addy,rune] </pre>
+   * int[] array of <b>axe Ids</b><br>
+   * [bronze,iron,steel,black,mith,addy,rune]
    */
-  public static final int[] axeId = {
+  protected static final int[] axeId = {
     87, // bronze axe
     12, // iron axe
     88, // steel axe
@@ -320,14 +279,10 @@ public class K_kailaScript extends IdleScript {
     405 // rune axe
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of bar Ids
-   *
-   * [1,2,3] doses </pre>
+   * int[] array of <b>bar Ids</b><br>
+   * [1,2,3] doses
    */
-  public static final int[] barIds = {
+  protected static final int[] barIds = {
     169, // bronze bar
     170, // iron bar
     171, // steel bar
@@ -336,14 +291,10 @@ public class K_kailaScript extends IdleScript {
     408 // runite bar
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of log Ids
-   *
-   * [normal,oak,willow,maple,yew,magic] </pre>
+   * int[] array of <b>log Ids</b><br>
+   * [normal,oak,willow,maple,yew,magic]
    */
-  public static final int[] logIds = {
+  protected static final int[] logIds = {
     14, // normal logs
     632, // oak logs
     633, // willow logs
@@ -352,15 +303,12 @@ public class K_kailaScript extends IdleScript {
     636 // magic logs
   };
   /**
-   *
-   *
-   * <pre>
-   * int[] array of cooked food IDS
-   *
-   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
-   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
+   * int[] array of cooked <b>food Ids</b><br>
+   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
+   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
-  public static final int[] foodIds = {
+  // todo convert to hashmap
+  protected static final int[] foodIds = {
     1191, // cooked Manta Ray
     1193, // cooked Sea Turtle
     546, // cooked shark
@@ -379,15 +327,12 @@ public class K_kailaScript extends IdleScript {
     132 // cooked Meat
   };
   /**
-   *
-   *
-   * <pre>
-   * String[] array of cooked food NAMES
-   *
-   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,
-   *      cod,pike,herring,salmon,trout,anchovies,shrimp,meat] </pre>
+   * String[] array of <b>cooked food NAMES</b><br>
+   * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
+   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
-  public static final String[] foodTypes = {
+  // todo convert to hashmap
+  protected static final String[] foodTypes = {
     "Manta Ray",
     "Sea Turtle",
     "Shark",
@@ -411,41 +356,41 @@ public class K_kailaScript extends IdleScript {
    * variables. For use with GUI to display the total amount of items gathered between the bank and
    * inventory.
    */
-  public static void checkInventoryItemCounts() {
+  protected static void checkInventoryItemCounts() {
     // Herbs
-    inventGuam = c.getInventoryItemCount(UNID_GUAM);
-    inventMar = c.getInventoryItemCount(UNID_MAR);
-    inventTar = c.getInventoryItemCount(UNID_TAR);
-    inventHar = c.getInventoryItemCount(UNID_HAR);
-    inventRan = c.getInventoryItemCount(UNID_RANARR);
-    inventIrit = c.getInventoryItemCount(UNID_IRIT);
-    inventAva = c.getInventoryItemCount(UNID_AVANTOE);
-    inventKwuarm = c.getInventoryItemCount(UNID_KWUARM);
-    inventCada = c.getInventoryItemCount(UNID_CADA);
-    inventDwarf = c.getInventoryItemCount(UNID_DWARF);
+    inventGuam = c.getInventoryItemCount(ItemId.GUAM_LEAF.getId());
+    inventMar = c.getInventoryItemCount(ItemId.UNID_MARRENTILL.getId());
+    inventTar = c.getInventoryItemCount(ItemId.UNID_TARROMIN.getId());
+    inventHar = c.getInventoryItemCount(ItemId.UNID_HARRALANDER.getId());
+    inventRan = c.getInventoryItemCount(ItemId.UNID_RANARR_WEED.getId());
+    inventIrit = c.getInventoryItemCount(ItemId.UNID_IRIT.getId());
+    inventAva = c.getInventoryItemCount(ItemId.UNID_AVANTOE.getId());
+    inventKwuarm = c.getInventoryItemCount(ItemId.UNID_KWUARM.getId());
+    inventCada = c.getInventoryItemCount(ItemId.UNID_CADANTINE.getId());
+    inventDwarf = c.getInventoryItemCount(ItemId.UNID_DWARF_WEED.getId());
     // Runes
-    inventLaws = c.getInventoryItemCount(LAW_RUNE);
-    inventNats = c.getInventoryItemCount(NATURE_RUNE);
-    inventMind = c.getInventoryItemCount(MIND_RUNE);
-    inventChaos = c.getInventoryItemCount(CHAOS_RUNE);
-    inventDeath = c.getInventoryItemCount(DEATH_RUNE);
-    inventBlood = c.getInventoryItemCount(BLOOD_RUNE);
-    inventCosmic = c.getInventoryItemCount(COSMIC_RUNE);
-    inventAir = c.getInventoryItemCount(AIR_RUNE);
-    inventFire = c.getInventoryItemCount(FIRE_RUNE);
-    inventWater = c.getInventoryItemCount(WATER_RUNE);
-    inventEarth = c.getInventoryItemCount(EARTH_RUNE);
+    inventLaws = c.getInventoryItemCount(ItemId.LAW_RUNE.getId());
+    inventNats = c.getInventoryItemCount(ItemId.NATURE_RUNE.getId());
+    inventMind = c.getInventoryItemCount(ItemId.MIND_RUNE.getId());
+    inventChaos = c.getInventoryItemCount(ItemId.CHAOS_RUNE.getId());
+    inventDeath = c.getInventoryItemCount(ItemId.DEATH_RUNE.getId());
+    inventBlood = c.getInventoryItemCount(ItemId.BLOOD_RUNE.getId());
+    inventCosmic = c.getInventoryItemCount(ItemId.COSMIC_RUNE.getId());
+    inventAir = c.getInventoryItemCount(ItemId.AIR_RUNE.getId());
+    inventFire = c.getInventoryItemCount(ItemId.FIRE_RUNE.getId());
+    inventWater = c.getInventoryItemCount(ItemId.WATER_RUNE.getId());
+    inventEarth = c.getInventoryItemCount(ItemId.EARTH_RUNE.getId());
     // Gems
-    inventSapphire = c.getInventoryItemCount(UNCUT_SAPP);
-    inventEmerald = c.getInventoryItemCount(UNCUT_EMER);
-    inventRuby = c.getInventoryItemCount(UNCUT_RUBY);
-    inventDiamond = c.getInventoryItemCount(UNCUT_DIA);
+    inventSapphire = c.getInventoryItemCount(ItemId.UNCUT_SAPPHIRE.getId());
+    inventEmerald = c.getInventoryItemCount(ItemId.UNCUT_EMERALD.getId());
+    inventRuby = c.getInventoryItemCount(ItemId.UNCUT_RUBY.getId());
+    inventDiamond = c.getInventoryItemCount(ItemId.UNCUT_DIAMOND.getId());
     inventGems = inventSapphire + inventEmerald + inventRuby + inventDiamond;
     // rares
-    inventTooth = c.getInventoryItemCount(TOOTH_HALF);
-    inventLoop = c.getInventoryItemCount(LOOP_HALF);
-    inventLeft = c.getInventoryItemCount(LEFT_HALF);
-    inventSpear = c.getInventoryItemCount(RUNE_SPEAR);
+    inventTooth = c.getInventoryItemCount(ItemId.TOOTH_HALF_KEY.getId());
+    inventLoop = c.getInventoryItemCount(ItemId.LOOP_HALF_KEY.getId());
+    inventLeft = c.getInventoryItemCount(ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId());
+    inventSpear = c.getInventoryItemCount(ItemId.RUNE_SPEAR.getId());
 
     // Totals
     inventRunes =
@@ -472,16 +417,11 @@ public class K_kailaScript extends IdleScript {
             + inventCada
             + inventDwarf;
   }
-  /**
-   *
-   *
-   * <pre>
-   * sets foodName string to the name for the current foodId </pre>
-   */
+  /** sets foodName string to the name for the current foodId <br> */
   /*
-   *  todo refactor to input foodId, output foodName
+   *    todo convert to hashmap
    */
-  public static void whatIsFoodName() {
+  protected static void whatIsFoodName() {
     if (foodId == 1191) {
       foodName = "Manta Ray";
     } else if (foodId == 1193) {
@@ -517,7 +457,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
 
-  /* public static int whatIsMaxBoostLevel(String statName) { //super pots boost effect
+  /* protected static int whatIsMaxBoostLevel(String statName) { //super pots boost effect
     int potionEffect = 6;
     if (statName != null && !statName.equals("")) {
         if (c.getBaseStat(c.getStatId("")) < 14) {
@@ -572,7 +512,7 @@ public class K_kailaScript extends IdleScript {
    * @param y coordinate of point you are checking
    * @return true if point is within radius of center, false if outside radius distance from center.
    */
-  public static boolean isWithinLootzone(int x, int y) {
+  protected static boolean isWithinLootzone(int x, int y) {
     if (centerX == -1 || centerY == -1 || centerDistance == -1) {
       // c.log("ERROR: please set values for centerX, centerY, and centerDistance.");
       return true;
@@ -585,7 +525,7 @@ public class K_kailaScript extends IdleScript {
    *
    * @return ate - true if no need to eat, or if successful. False if out of food items.
    */
-  public static boolean eatFood() {
+  protected static boolean eatFood() {
     boolean ate = false;
     if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
       for (int id : c.getFoodIds()) {
@@ -608,7 +548,7 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    * @param itemId int of itemId to loot. For multiple items use lootItems(boolean, int[]);
    */
-  public static void lootItem(boolean leaveCombat, int itemId) {
+  protected static void lootItem(boolean leaveCombat, int itemId) {
     try {
       int[] coords = c.getNearestItemById(itemId);
       if (coords != null && isWithinLootzone(coords[0], coords[1])) {
@@ -632,7 +572,7 @@ public class K_kailaScript extends IdleScript {
    * @param itemIds int[] array listing itemIds to loot using for loop. Can institize item arrays in
    *     the method parameters with "new int[]{data}" as the value for this param.
    */
-  public static void lootItems(boolean leaveCombat, int[] itemIds) {
+  protected static void lootItems(boolean leaveCombat, int[] itemIds) {
     for (int itemId : itemIds) {
       try {
         int[] coords = c.getNearestItemById(itemId);
@@ -653,7 +593,7 @@ public class K_kailaScript extends IdleScript {
    * Checks fight mode against selected fightMode int, if no fightMode selector is provided, this
    * method would force controlled fight mode. fightMode 0 = controlled
    */
-  public static void checkFightMode() {
+  protected static void checkFightMode() {
     if (c.getFightMode() != fightMode) {
       c.log("@red@Changing fightmode to " + fightMode, "@yel@");
       c.setFightMode(fightMode);
@@ -668,7 +608,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
    */
-  public static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
+  protected static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
     if (c.getInventoryItemCount(itemId) > 0) {
       if (leaveCombat && c.isInCombat()) leaveCombat();
       else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
@@ -678,25 +618,18 @@ public class K_kailaScript extends IdleScript {
       waitForBatching();
     }
   }
-  /** If on coleslaw and batch bars are off, it will toggle ON batch bars */
-  public static void checkBatchBars() {
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
-  }
   /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
-  public static void waitForBatching() {
+  protected static void waitForBatching() {
     while (c.isBatching() && System.currentTimeMillis() < next_attempt && next_attempt != -1) {
       c.sleep(GAME_TICK);
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * Set autologin false,
-   * WHILE logged in attempt to log out,
-   * when not logged in then stop script </pre>
+   * Set autologin false, <br>
+   * WHILE logged in attempt to log out,<br>
+   * when not logged in then stop script <br>
    */
-  public static void endSession() {
+  protected static void endSession() {
     c.setAutoLogin(false);
     while (c.isLoggedIn()) {
       c.logout();
@@ -706,21 +639,17 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** for each itemId in the inventory, deposit all the items. */
-  public static void depositAll() {
+  protected static void depositAll() {
     for (int itemId : c.getInventoryItemIds()) {
       c.depositItem(itemId, c.getInventoryItemCount(itemId));
     }
     c.sleep(650);
   }
   /**
-   *
-   *
-   * <pre>
-   * for all boneIds, attempt to bury bones
-   *
-   * will leave combat to bury bones </pre>
+   * for all boneIds, attempt to bury bones<br>
+   * will leave combat to bury bones <br>
    */
-  public static void buryBones(boolean leaveCombat) {
+  protected static void buryBones(boolean leaveCombat) {
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount(id) > 0) {
@@ -736,13 +665,10 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * attempt to leave combat once per tick for 30 ticks
-   * walks to current tile (async non-blocking) radius 1. </pre>
+   * attempt to leave combat once per tick for 30 ticks<br>
+   * walks to current tile (async non-blocking) radius 1. <br>
    */
-  public static void leaveCombat() {
+  protected static void leaveCombat() {
     for (int i = 0; i <= 30; i++) {
       try {
         if (c.isInCombat()) {
@@ -758,13 +684,13 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Checks for full inventory, if true eat 1 food to make inventory space. Depending on
-   * leaveCombat.
+   * Checks for full inventory, if true eat 1 food to make inventory space. <br>
+   * Depending on leaveCombat.<br>
    *
    * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
    */
-  public static void eatFoodToLoot(boolean leaveCombat) {
+  protected static void eatFoodToLoot(boolean leaveCombat) {
     for (int id : c.getFoodIds()) {
       try {
         if (c.getInventoryItemCount() != 30) return;
@@ -781,13 +707,13 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Checks for full inventory, if true bury bones to make inventory space. Depending on
-   * leaveCombat.
+   * Checks for full inventory, if true bury bones to make inventory space.<br>
+   * Depending on leaveCombat.
    *
    * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
    */
-  public static void buryBonesToLoot(boolean leaveCombat) {
+  protected static void buryBonesToLoot(boolean leaveCombat) {
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount() != 30) return;
@@ -804,13 +730,13 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * Checks for full inventory, if true drops items to make inventory space. Depending on
-   * leaveCombat.
+   * Checks for full inventory, if true drops items to make inventory space.<br>
+   * Depending on leaveCombat.
    *
    * @param leaveCombat boolean - true exits combat in order to drop. False will return, if in
    *     combat.
    */
-  public static void dropItemToLoot(boolean leaveCombat, int amount, int itemId) {
+  protected static void dropItemToLoot(boolean leaveCombat, int amount, int itemId) {
     try {
       if (c.getInventoryItemCount() != 30) return;
       if (c.getInventoryItemCount(itemId) > 0) {
@@ -827,17 +753,6 @@ public class K_kailaScript extends IdleScript {
   }
 
   /*
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
    *      Potion Methods
    */
   /**
@@ -850,26 +765,29 @@ public class K_kailaScript extends IdleScript {
   /*
    * todo add int param to select how far above base to use boost potion
    */
-  public static void attackBoost(int boostAboveBase, boolean leaveCombat) {
+  protected static void attackBoost(int boostAboveBase, boolean leaveCombat) {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
+      final int oneDose = ItemId.ATTACK_POTION_1DOSE.getId();
+      final int twoDose = ItemId.ATTACK_POTION_2DOSE.getId();
+      final int threeDose = ItemId.ATTACK_POTION_3DOSE.getId();
       int attackPotCount =
-          c.getInventoryItemCount(attackPot[0])
-              + c.getInventoryItemCount(attackPot[1])
-              + c.getInventoryItemCount(attackPot[2]);
+          c.getInventoryItemCount(oneDose)
+              + c.getInventoryItemCount(twoDose)
+              + c.getInventoryItemCount(threeDose);
       if (attackPotCount > 0) {
         if (leaveCombat && c.isInCombat()) leaveCombat();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-        if (c.getInventoryItemCount(attackPot[0]) > 0) {
-          c.itemCommand(attackPot[0]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(attackPot[1]) > 0) {
-          c.itemCommand(attackPot[1]);
-          c.sleep(640);
-        } else if (c.getInventoryItemCount(attackPot[2]) > 0) {
-          c.itemCommand(attackPot[2]);
-          c.sleep(640);
+        if (c.getInventoryItemCount(oneDose) > 0) {
+          c.itemCommand(oneDose);
+          c.sleep(GAME_TICK);
+        } else if (c.getInventoryItemCount(twoDose) > 0) {
+          c.itemCommand(twoDose);
+          c.sleep(GAME_TICK);
+        } else if (c.getInventoryItemCount(threeDose) > 0) {
+          c.itemCommand(threeDose);
+          c.sleep(GAME_TICK);
         }
       }
     }
@@ -881,7 +799,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
    */
-  public static void strengthBoost(int boostAboveBase, boolean leaveCombat) {
+  protected static void strengthBoost(int boostAboveBase, boolean leaveCombat) {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
@@ -912,7 +830,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
    */
-  public static void defenseBoost(int boostAboveBase, boolean leaveCombat) {
+  protected static void defenseBoost(int boostAboveBase, boolean leaveCombat) {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
@@ -943,7 +861,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
    */
-  public static void superAttackBoost(int boostAboveBase, boolean leaveCombat) {
+  protected static void superAttackBoost(int boostAboveBase, boolean leaveCombat) {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Attack")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Attack")) == boostAtLvl) {
@@ -974,7 +892,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
    */
-  public static void superStrengthBoost(int boostAboveBase, boolean leaveCombat) {
+  protected static void superStrengthBoost(int boostAboveBase, boolean leaveCombat) {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Strength")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Strength")) == boostAtLvl) {
@@ -1005,7 +923,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
    */
-  public static void superDefenseBoost(int boostAboveBase, boolean leaveCombat) {
+  protected static void superDefenseBoost(int boostAboveBase, boolean leaveCombat) {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Defense")) + boostAboveBase;
     if (c.getCurrentStat(c.getStatId("Defense")) == boostAtLvl) {
@@ -1038,7 +956,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
    */
-  public static void drinkPrayerPotion(int boostBelowBase, boolean leaveCombat) {
+  protected static void drinkPrayerPotion(int boostBelowBase, boolean leaveCombat) {
     int boostAtLvl;
     boostAtLvl = c.getBaseStat(c.getStatId("Prayer")) - boostBelowBase;
     if (c.getCurrentStat(c.getStatId("Prayer")) < boostAtLvl) {
@@ -1069,7 +987,7 @@ public class K_kailaScript extends IdleScript {
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
    */
-  public static void drinkAntidote(boolean leaveCombat) {
+  protected static void drinkAntidote(boolean leaveCombat) {
     int antiPotCount =
         c.getInventoryItemCount(antiPot[0])
             + c.getInventoryItemCount(antiPot[1])
@@ -1104,7 +1022,7 @@ public class K_kailaScript extends IdleScript {
    *
    */
   /** if bank is not open, wait 2 ticks, repeat check. repeats 16 times. */
-  public static void waitForBankOpen() {
+  protected static void waitForBankOpen() {
     for (int i = 0; i <= 15; i++) {
       try {
         if (!c.isInBank()) {
@@ -1126,7 +1044,7 @@ public class K_kailaScript extends IdleScript {
    * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
    * @param withdrawAmount int - number of item to withdraw.
    */
-  public static void withdrawItem(int itemId, int withdrawAmount) {
+  protected static void withdrawItem(int itemId, int withdrawAmount) {
     if (c.getInventoryItemCount(itemId) < withdrawAmount) {
       c.withdrawItem(itemId, withdrawAmount - c.getInventoryItemCount(itemId));
       c.sleep(640);
@@ -1140,7 +1058,7 @@ public class K_kailaScript extends IdleScript {
    * @param bankAmount int - minimum number of item that should be in the bank, before ending
    *     session.
    */
-  public static void bankItemCheck(int itemId, int bankAmount) {
+  protected static void bankItemCheck(int itemId, int bankAmount) {
     if (c.getBankItemCount(itemId) < bankAmount) {
       c.log(
           "Warning: Item (" + itemId + ") not detected in the Bank, in amount (" + bankAmount + ")",
@@ -1154,7 +1072,7 @@ public class K_kailaScript extends IdleScript {
    * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
    * @param itemAmount int - number of item that should be in the inventory.
    */
-  public static void inventoryItemCheck(int itemId, int itemAmount) {
+  protected static void inventoryItemCheck(int itemId, int itemAmount) {
     if (c.getInventoryItemCount(itemId) < itemAmount) {
       c.openBank();
       c.sleep(640);
@@ -1164,7 +1082,6 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
         c.sleep(640);
         c.closeBank();
-        c.sleep(1280);
       }
     }
   }
@@ -1174,7 +1091,7 @@ public class K_kailaScript extends IdleScript {
    * @param foodId int
    * @param foodWithdrawAmount int
    */
-  public static void withdrawFood(int foodId, int foodWithdrawAmount) {
+  protected static void withdrawFood(int foodId, int foodWithdrawAmount) {
     if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) {
       c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
       c.sleep(1280);
@@ -1194,7 +1111,7 @@ public class K_kailaScript extends IdleScript {
   /*
    * todo make it withdraw one 2 dose and one 1 dose instead of 3 dose?
    */
-  public static void withdrawAttack(int withdrawAmount) {
+  protected static void withdrawAttack(int withdrawAmount) {
     int attackPotCount =
         c.getInventoryItemCount(attackPot[0])
             + c.getInventoryItemCount(attackPot[1])
@@ -1219,7 +1136,7 @@ public class K_kailaScript extends IdleScript {
    *
    * @param withdrawAmount int
    */
-  public static void withdrawStrength(int withdrawAmount) {
+  protected static void withdrawStrength(int withdrawAmount) {
     int strengthPotCount =
         c.getInventoryItemCount(strengthPot[0])
             + c.getInventoryItemCount(strengthPot[1])
@@ -1246,7 +1163,7 @@ public class K_kailaScript extends IdleScript {
    *
    * @param withdrawAmount int
    */
-  public static void withdrawDefense(int withdrawAmount) {
+  protected static void withdrawDefense(int withdrawAmount) {
     int defensePotCount =
         c.getInventoryItemCount(defensePot[0])
             + c.getInventoryItemCount(defensePot[1])
@@ -1273,7 +1190,7 @@ public class K_kailaScript extends IdleScript {
    *
    * @param withdrawAmount int
    */
-  public static void withdrawSuperAttack(int withdrawAmount) {
+  protected static void withdrawSuperAttack(int withdrawAmount) {
     int superAttackPotCount =
         c.getInventoryItemCount(superAttackPot[0])
             + c.getInventoryItemCount(superAttackPot[1])
@@ -1300,7 +1217,7 @@ public class K_kailaScript extends IdleScript {
    *
    * @param withdrawAmount int
    */
-  public static void withdrawSuperStrength(int withdrawAmount) {
+  protected static void withdrawSuperStrength(int withdrawAmount) {
     int superStrengthPotCount =
         c.getInventoryItemCount(superStrengthPot[0])
             + c.getInventoryItemCount(superStrengthPot[1])
@@ -1327,7 +1244,7 @@ public class K_kailaScript extends IdleScript {
    *
    * @param withdrawAmount int
    */
-  public static void withdrawSuperDefense(int withdrawAmount) {
+  protected static void withdrawSuperDefense(int withdrawAmount) {
     int superDefensePotCount =
         c.getInventoryItemCount(superDefensePot[0])
             + c.getInventoryItemCount(superDefensePot[1])
@@ -1350,7 +1267,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
-  public static void withdrawAntidote(int withdrawAmount) {
+  protected static void withdrawAntidote(int withdrawAmount) {
     int antidotePotCount =
         c.getInventoryItemCount(antiPot[0])
             + c.getInventoryItemCount(antiPot[1])
@@ -1373,7 +1290,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Withdraw prayer potions (checks for and uses 1 and 2 dose potions first) */
-  public static void withdrawPrayer(int withdrawAmount) {
+  protected static void withdrawPrayer(int withdrawAmount) {
     int prayerPotCount =
         c.getInventoryItemCount(prayerPot[0])
             + c.getInventoryItemCount(prayerPot[1])
@@ -1393,7 +1310,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Checks Inventory for empty slots. If detected, opens bank and withdraws more foodId. */
-  public static void reBankForFullFoodCheck() {
+  protected static void reBankForFullFoodCheck() {
     if (c.getInventoryItemCount() < 30) {
       c.openBank();
       c.sleep(1280);
@@ -1404,14 +1321,13 @@ public class K_kailaScript extends IdleScript {
         c.sleep(640);
       }
       c.closeBank();
-      c.sleep(1280);
     }
   }
   /**
    * Checks equipment for anti dragon shield, if none, checks bank. If none in bank, end session. If
    * anti dragon shield is in bank, withdraw, exit bank, and wield it.
    */
-  public static void bankCheckAntiDragonShield() {
+  protected static void bankCheckAntiDragonShield() {
     if (!c.isItemIdEquipped(420)) {
       c.log("@red@Not Wielding Dragonfire Shield!.", "@red@");
       if (c.getBankItemCount(420) == 0) {
@@ -1421,7 +1337,6 @@ public class K_kailaScript extends IdleScript {
       c.withdrawItem(420, 1);
       c.closeBank();
       c.equipItem(c.getInventoryItemSlotIndex(420));
-      c.sleep(1320);
     }
   }
 
@@ -1440,7 +1355,7 @@ public class K_kailaScript extends IdleScript {
    *      Magic/Other Methods
    */
   /** checks if brass key is in inventory, if not, sets warning message, and shuts down bot. */
-  public static void brassKeyCheck() {
+  protected static void brassKeyCheck() {
     if (c.getInventoryItemCount(99) == 0) {
       c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 30 Seconds");
       c.sleep(10000);
@@ -1454,14 +1369,10 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * (depreciated) while in KBD lair attempt to tele to lumbridge </pre>
-   *
+   * (depreciated) while in KBD lair attempt to tele to lumbridge <br>
    * todo change to "while NOT in lumbridge, attempt to teleport"
    */
-  public static void teleportOutLumbridge() {
+  protected static void teleportOutLumbridge() {
     for (int i = 1; i <= 8; i++) {
       try {
         if (c.currentY() < 400) { // change to lumb tele location
@@ -1477,14 +1388,10 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   *
-   *
-   * <pre>
-   * (depreciated) while in tav dungeon attempt to tele to falador </pre>
-   *
+   * (depreciated) while in tav dungeon attempt to tele to falador <br>
    * todo change to "while NOT in location, then attempt to teleport"
    */
-  public static void teleportOutFalador() {
+  protected static void teleportOutFalador() {
     for (int i = 1; i <= 8; i++) {
       try {
         if (c.currentY() > 2000) { // change to fally tele location
@@ -1501,23 +1408,10 @@ public class K_kailaScript extends IdleScript {
   }
   /*
    *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
    *      Gate Methods
    */
   /** opens wall door in edgeville dungeon that goes to the wilderness tunnel shortcut */
-  public static void edgeWallGate() {
+  protected static void edgeWallGate() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() == 218 && c.currentY() == 3282) {
@@ -1533,7 +1427,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** goes through the wilderness tunnel shortcut */
-  public static void edgeShortcut() {
+  protected static void edgeShortcut() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() > 218 && c.currentY() > 3000) {
@@ -1550,7 +1444,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed gate leading to Tav. (going from east to west) */
-  public static void tavGateEastToWest() {
+  protected static void tavGateEastToWest() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
@@ -1566,7 +1460,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed gate leading to Tav. (going from west to east) */
-  public static void tavGateWestToEast() {
+  protected static void tavGateWestToEast() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() == 342 && c.currentY() < 489 && c.currentY() > 486) {
@@ -1581,7 +1475,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed gate in Yanille dungeon (north to south) */
-  public static void yanilleDungeonDoorExiting() {
+  protected static void yanilleDungeonDoorExiting() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() == 593 && c.currentY() == 3589) {
@@ -1597,7 +1491,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed gate in Yanille dungeon (south to north) */
-  public static void yanilleDungeonDoorEntering() {
+  protected static void yanilleDungeonDoorEntering() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() == 593 && c.currentY() == 3590) {
@@ -1613,7 +1507,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed gate in Edge dungeon leading to wilderness area (north to south) */
-  public static void openEdgeDungGateNorthToSouth() {
+  protected static void openEdgeDungGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentY() == 3265) {
@@ -1630,7 +1524,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** * Goes through the fixed gate in Edge dungeon leading to wilderness area (south to north) */
-  public void openEdgeDungSouthToNorth() {
+  protected void openEdgeDungSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentY() == 3266) {
@@ -1650,7 +1544,7 @@ public class K_kailaScript extends IdleScript {
    * Goes through the fixed door west of varrock (brass key) leading to edge dungeon. Exiting (north
    * to south)
    */
-  public void brassDoorNorthToSouth() {
+  protected void brassDoorNorthToSouth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
       try {
@@ -1669,7 +1563,7 @@ public class K_kailaScript extends IdleScript {
    * Goes through the fixed door west of varrock (brass key) leading to edge dungeon. Entering
    * (south to north)
    */
-  public void brassDoorSouthToNorth() {
+  protected void brassDoorSouthToNorth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
       try {
@@ -1685,7 +1579,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed door leading into the druid tower. Exiting (north to south) */
-  public static void openDruidTowerNorthToSouth() {
+  protected static void openDruidTowerNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentY() == 555) {
@@ -1702,7 +1596,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed door leading into the druid tower. Entering (south to north) */
-  public static void openDruidTowerSouthToNorth() {
+  protected static void openDruidTowerSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentY() == 556) {
@@ -1719,7 +1613,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed gate leading into red dragon isle. Existing (South to North) */
-  public static void redDragGateSouthToNorth() {
+  protected static void redDragGateSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 181) {
@@ -1736,7 +1630,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Goes through the fixed gate leading into red dragon isle. Entering (North to South) */
-  public static void redDragGateNorthToSouth() {
+  protected static void redDragGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 180) {
@@ -1753,7 +1647,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
 }
-  /*public void combineDef() {
+  /*protected void combineDef() {
   	if(!c.isInCombat()) {  //not working
   		if(c.getInventoryItemCount(497) > 1) {
   			c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(497), c.getInventoryItemSlotIndex(497));   //just need to fix this somehow, maby list lost index of item id kinda thing!

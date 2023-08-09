@@ -6,19 +6,18 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * Cuts yew logs in NE ardy, including the far western one, banks in seers.
+ * <b>Gnome Magic Trees</b>
  *
- * <p>todo: reduce walking between locations - pause at each side logic to cut same tree as other
- * players
+ * <p>Cuts Magic Trees in Gnome Tree, including the far eastern one. <br>
+ * Banks the logs at upstairs flax bank<br>
  *
- * <p>Author - Kaila
+ * @see scripting.idlescript.K_kailaScript
+ * @author Kaila
  */
 public final class K_GnomeMagicTree extends K_kailaScript {
   public void startSequence() {
     c.displayMessage("@red@GnomeMagicTree,  start with an axe in inv/equipment");
-    if (c.isInBank()) {
-      c.closeBank();
-    }
+    if (c.isInBank()) c.closeBank();
     if (c.currentY() > 1000) {
       bank();
       c.walkTo(714, 1459);
@@ -26,11 +25,11 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       c.walkTo(722, 507);
       c.sleep(1380);
     }
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {
-    checkBatchBars();
+    c.toggleBatchBarsOn();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Magics", 0);
@@ -213,7 +212,6 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       }
       logInBank = c.getBankItemCount(636);
       c.closeBank();
-      c.sleep(1000);
     }
   }
   // GUI stuff below (icky)

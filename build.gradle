@@ -5,6 +5,10 @@ plugins {
   id 'base'
   // For formatting source-code
   alias(libs.plugins.spotless)
+  // Use metadata from git
+  id 'git-metadata'
+  // Enable additional compiler warnings
+  id 'compiler-warnings'
 }
 
 // Tasks not related to build are split out into their own gradle scripts
@@ -22,11 +26,16 @@ dependencies {
   implementation files('patched_client.jar')
   // Used to find/populate scripts
   implementation libs.reflections
+  // Dependency of reflections spits out an error when it is not included in the jar.
+  // https://www.slf4j.org/codes.html#StaticLoggerBinder
+  implementation libs.slf4j.nop
+  // Used to parse/validate CLI arguments
+  implementation libs.commons.cli
 }
 
 // Moves the compiled jar to the root folder
 base {
-    libsDirectory = getProjectDir()
+  libsDirectory = getProjectDir()
 }
 
 tasks.named('compileJava') {
@@ -36,9 +45,16 @@ tasks.named('compileJava') {
 }
 
 tasks.named('jar') {
-  // Define entry point for application
   manifest {
-    attributes 'Main-Class': 'bot.Main'
+    attributes(
+      // Define entry point for application
+      'Main-Class': 'bot.Main',
+      // Embed version/build information in application
+      'Build-Commit-Hash': "${gitCommitHash()}",
+      'Build-Commit-Date': "${gitCommitDate()}",
+      'Build-Commit-Count': "${gitCommitCount()}",
+      'Build-Jdk' : "${System.properties['java.version']}",
+    )
   }
 
   // Modify jar task to include all dependencies (a.k.a. create a fat jar)
@@ -47,13 +63,16 @@ tasks.named('jar') {
       it.isDirectory() ? it : zipTree(it)
     }
   }
+
+  // FTBFS: Set duplicate handling strategy for module-info.class.
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 // Additional files to clean
 tasks.named('clean') {
   delete 'src/main/resources/cache'
   delete "${project.name}.jar"
-  delete "${project.name}-${commitDate()}-${commitCount()}-${commitHash()}.zip"
+  delete "${project.name}-${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}.zip"
 }
 
 // ensure builds are reproducible

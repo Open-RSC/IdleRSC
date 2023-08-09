@@ -53,7 +53,6 @@ public class FarmTradeEverything extends IdleScript {
           }
 
           controller.closeBank();
-          controller.sleep(1200);
         } else {
           System.exit(0);
         }

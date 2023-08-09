@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -17,6 +19,7 @@ import orsc.ORSCharacter;
  *          Add autostart sequence from fastPlate and change variables
  */
 public final class K_Fast_BowFletcher extends K_kailaScript {
+  private static final Controller con = Main.getController();
   private static int logId = -1;
   private static int logsInBank = 0;
   private static int totalBows = 0;
@@ -26,20 +29,20 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   private static final int[] unstrungIds = {276, 658, 660, 662, 664, 666};
 
   public int start(String[] parameters) {
-    c.quitIfAuthentic();
-    c.toggleBatchBarsOn();
+    con.quitIfAuthentic();
+    con.toggleBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
     }
     if (scriptStarted) {
-      c.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " ~ by Kaila");
-      c.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
-      c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
+      con.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " ~ by Kaila");
+      con.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
+      con.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
 
       guiSetup = false;
       scriptStarted = false;
-      if (c.isInBank()) c.closeBank();
+      if (con.isInBank()) con.closeBank();
       startTime = System.currentTimeMillis();
       scriptStart();
     }
@@ -47,94 +50,94 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   }
 
   private void scriptStart() {
-    while (c.isRunning()) {
-      if (c.getInventoryItemCount(logId) == 0
-          || (stringBows && c.getInventoryItemCount(BOW_STRING) == 0)
-          || c.getInventoryItemCount(KNIFE_ID) == 0) {
-        if (!c.isInBank()) {
+    while (con.isRunning()) {
+      if (con.getInventoryItemCount(logId) == 0
+          || (stringBows && con.getInventoryItemCount(BOW_STRING) == 0)
+          || con.getInventoryItemCount(KNIFE_ID) == 0) {
+        if (!con.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
-          ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
+          ORSCharacter npc = con.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
-            c.setStatus("@yel@Walking to Banker..");
-            c.displayMessage("@yel@Walking to Banker..");
-            c.walktoNPCAsync(npc.serverIndex);
-            c.sleep(200);
+            con.setStatus("@yel@Walking to Banker..");
+            con.displayMessage("@yel@Walking to Banker..");
+            con.walktoNPCAsync(npc.serverIndex);
+            con.sleep(200);
           } else {
-            c.log("@red@walking to Bank Error..");
-            c.sleep(1000);
+            con.log("@red@walking to Bank Error..");
+            con.sleep(1000);
           }
         }
         bank();
       }
-      if (c.getInventoryItemCount(logId) > 0) {
+      if (con.getInventoryItemCount(logId) > 0) {
         if (!stringBows) fletchingScript();
         else stringScript();
-        c.sleep(100);
+        con.sleep(100);
       }
-      // c.sleep(320);
+      // con.sleep(320);
     }
   }
 
   private void stringScript() {
-    c.displayMessage("@gre@Stringing..");
-    c.setStatus("@gre@Stringing.");
-    c.useItemOnItemBySlot(
-        c.getInventoryItemSlotIndex(BOW_STRING), c.getInventoryItemSlotIndex(logId));
-    c.sleep(2 * GAME_TICK);
-    while (c.isBatching()) c.sleep(GAME_TICK);
+    con.displayMessage("@gre@Stringing..");
+    con.setStatus("@gre@Stringing.");
+    con.useItemOnItemBySlot(
+        con.getInventoryItemSlotIndex(BOW_STRING), con.getInventoryItemSlotIndex(logId));
+    con.sleep(2 * GAME_TICK);
+    while (con.isBatching()) con.sleep(GAME_TICK);
   }
 
   private void fletchingScript() {
-    c.displayMessage("@gre@Fletching..");
-    c.setStatus("@gre@Fletching..");
-    c.useItemOnItemBySlot(
-        c.getInventoryItemSlotIndex(KNIFE_ID), c.getInventoryItemSlotIndex(logId));
-    c.sleep(2 * GAME_TICK);
-    c.optionAnswer(2);
-    while (c.isBatching()) c.sleep(GAME_TICK);
+    con.displayMessage("@gre@Fletching..");
+    con.setStatus("@gre@Fletching..");
+    con.useItemOnItemBySlot(
+        con.getInventoryItemSlotIndex(KNIFE_ID), con.getInventoryItemSlotIndex(logId));
+    con.sleep(2 * GAME_TICK);
+    con.optionAnswer(2);
+    while (con.isBatching()) con.sleep(GAME_TICK);
   }
 
   private void bank() {
-    c.setStatus("@gre@Banking..");
-    c.displayMessage("@gre@Banking..");
-    c.openBank();
-    c.sleep(GAME_TICK);
-    if (!c.isInBank()) {
+    con.setStatus("@gre@Banking..");
+    con.displayMessage("@gre@Banking..");
+    con.openBank();
+    con.sleep(GAME_TICK);
+    if (!con.isInBank()) {
       waitForBankOpen();
     } else {
       if (!stringBows) totalBows = totalBows + 29;
       else totalBows = totalBows + 15;
-      if (c.getBankItemCount(logId) < 30 // out of logs or unstrung
-          || (stringBows && c.getBankItemCount(BOW_STRING) < 30) // out of strings
+      if (con.getBankItemCount(logId) < 30 // out of logs or unstrung
+          || (stringBows && con.getBankItemCount(BOW_STRING) < 30) // out of strings
           || (!stringBows
-              && c.getBankItemCount(KNIFE_ID) == 0
-              && c.getInventoryItemCount(KNIFE_ID) == 0)) {
-        c.setStatus("@red@NO Logs in the bank, Logging Out!.");
+              && con.getBankItemCount(KNIFE_ID) == 0
+              && con.getInventoryItemCount(KNIFE_ID) == 0)) {
+        con.setStatus("@red@NO Logs in the bank, Logging Out!.");
         endSession();
       }
-      if (c.getInventoryItemCount() > 0) {
-        for (int itemId : c.getInventoryItemIds()) {
+      if (con.getInventoryItemCount() > 0) {
+        for (int itemId : con.getInventoryItemIds()) {
           if (itemId != KNIFE_ID) {
-            c.depositItem(itemId, c.getInventoryItemCount(itemId));
+            con.depositItem(itemId, con.getInventoryItemCount(itemId));
           }
         }
       }
-      c.sleep(GAME_TICK);
-      if (!stringBows && c.getInventoryItemCount(KNIFE_ID) < 1) {
-        c.withdrawItem(KNIFE_ID, 1);
-        c.sleep(GAME_TICK);
+      con.sleep(GAME_TICK);
+      if (!stringBows && con.getInventoryItemCount(KNIFE_ID) < 1) {
+        con.withdrawItem(KNIFE_ID, 1);
+        con.sleep(GAME_TICK);
       }
-      if (c.getInventoryItemCount() < 30) {
-        if (!stringBows) c.withdrawItem(logId, 29);
+      if (con.getInventoryItemCount() < 30) {
+        if (!stringBows) con.withdrawItem(logId, 29);
         else {
-          c.withdrawItem(logId, 15);
-          c.sleep(GAME_TICK);
-          c.withdrawItem(BOW_STRING, 15);
-          c.sleep(GAME_TICK);
+          con.withdrawItem(logId, 15);
+          con.sleep(GAME_TICK);
+          con.withdrawItem(BOW_STRING, 15);
+          con.sleep(GAME_TICK);
         }
       }
-      logsInBank = c.getBankItemCount(logId);
-      c.closeBank();
+      logsInBank = con.getBankItemCount(logId);
+      con.closeBank();
     }
   }
   // GUI stuff below (icky)
@@ -181,7 +184,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      String runTime = c.msToString(System.currentTimeMillis() - startTime);
+      String runTime = con.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
       try {
@@ -193,26 +196,26 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Fast Bow Fletcher @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
+      con.drawString("@red@Fast Bow Fletcher @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      con.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (!stringBows)
-        c.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
-      else c.drawString("@whi@Unstrung Bows in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
-      c.drawString("@whi@Longbows Made: @yel@" + totalBows, x, y + (14 * 2), 0xFFFFFF, 1);
-      c.drawString(
+        con.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
+      else con.drawString("@whi@Unstrung Bows in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
+      con.drawString("@whi@Longbows Made: @yel@" + totalBows, x, y + (14 * 2), 0xFFFFFF, 1);
+      con.drawString(
           "@whi@Longbows Per Hr: @yel@" + String.format("%,d", successPerHr) + "@yel@/@whi@hr",
           x,
           y + (14 * 3),
           0xFFFFFF,
           1);
-      c.drawString(
-          "@whi@Time Remaining: " + c.timeToCompletion(totalBows, logsInBank, startTime),
+      con.drawString(
+          "@whi@Time Remaining: " + con.timeToCompletion(totalBows, logsInBank, startTime),
           x,
           y + (14 * 4),
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
+      con.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+      con.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
     }
   }
 }

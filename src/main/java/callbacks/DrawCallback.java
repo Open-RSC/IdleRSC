@@ -42,7 +42,8 @@ public class DrawCallback {
     String localStatusText = statusText;
 
     if (toggleOnViewId) {
-      c.getPlayer().groupID = 9;
+      c.getPlayer().groupID = 9; // set developer group id to show itemIds
+      orsc.Config.C_SIDE_MENU_OVERLAY = false; // turn off side menu to fix flickering bug
     } else {
       c.getPlayer().groupID = 10;
     }

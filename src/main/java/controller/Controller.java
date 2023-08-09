@@ -4425,13 +4425,13 @@ public class Controller {
     if (isLoggedIn()) {
       int groupId = getPlayer().groupID;
 
-      if (groupId == 10) { // if off, change to on
+      if (groupId == 10) { // if viewId off, change to on
         if (Config.C_SIDE_MENU_OVERLAY) {
           temporaryToggleSideMenu = true;
           orsc.Config.C_SIDE_MENU_OVERLAY = false; // bugfix for coleslaw flickering
         }
         DrawCallback.toggleOnViewId = true;
-      } else if (groupId == 9) { // if on, change to off
+      } else if (groupId == 9) { // if viewId on, change to off
         DrawCallback.toggleOnViewId = false;
         if (temporaryToggleSideMenu) {
           temporaryToggleSideMenu = false;

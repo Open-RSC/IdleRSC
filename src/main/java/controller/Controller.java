@@ -4530,32 +4530,22 @@ public class Controller {
     final long ttl = (long) (secondsPerItem * remaining);
     return String.format("%d", ttl / 3600);
   }
-  /** Hides Details Menu */
-  public void hideDetails() {
-    // int opcode = 253;
-    mud.setShowContactDialogue(false);
-
-    /*
-            reflector.mudInvoker(mud, "hideDetails");
-            while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
-            mud.packetHandler.getClientStream().newPacket(opcode);
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().finishPacket();
-    */
+  /** Show Recovery Question Menu */
+  public void showRecoveryDetailsMenu() {
+    mud.setShowRecoveryDialogue(true);
+  }
+  /** Hide Recovery Question Menu */
+  public void hideRecoveryDetailsMenu() {
+    mud.setShowRecoveryDialogue(false);
   }
   /** Show Details Menu */
-  public void showDetails() {
-    // int opcode = 253;
+  public void showContactDetailsMenu() {
     mud.setShowContactDialogue(true);
-
-    /*
+  }
+  /** Hides Details Menu */
+  public void hideContactDetailsMenu() { // int opcode = 253;
+    mud.setShowContactDialogue(false);
+    /* packet not required to close coleslaw, but may be needed for uranium
             reflector.mudInvoker(mud, "hideDetails");
             while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
             mud.packetHandler.getClientStream().newPacket(opcode);

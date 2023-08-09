@@ -44,6 +44,8 @@ public class MessageCallback {
       String formerName,
       String colourOverride) {
     Controller con = Main.getController();
+    con.hideRecoveryDetailsMenu();
+    con.hideContactDetailsMenu();
     if (Main.isLogWindowOpen() && DrawCallback.timeNextLogClear == -1) {
       DrawCallback.timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
       // cd.log(String.valueOf((timeNextLogClear - System.currentTimeMillis()) / 1000L) + " s");

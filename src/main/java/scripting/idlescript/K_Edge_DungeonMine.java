@@ -56,7 +56,7 @@ public final class K_Edge_DungeonMine extends K_kailaScript {
       bankToDungeon();
       c.sleep(1380);
     }
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {

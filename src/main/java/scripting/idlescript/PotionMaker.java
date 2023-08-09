@@ -44,7 +44,7 @@ public final class PotionMaker extends IdleScript {
   private static final int[] ingredients = {464, 0, 0, 465, 0, 0};
 
   public int start(String[] parameters) {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
     if (!guiSetup) {
       c.setStatus("@cya@Setting up script");
       setupGUI();

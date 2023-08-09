@@ -210,7 +210,7 @@ public class DamRc extends IdleScript {
   public void scriptStart() {
     while (c.isRunning()) {
       if (mineEss) {
-        if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+        c.toggleBatchBarsOn();
         if (inArea(mineNW, mineSE)) {
           if (c.getInventoryItemCount() >= 30) {
             if (!c.isBatching()) {

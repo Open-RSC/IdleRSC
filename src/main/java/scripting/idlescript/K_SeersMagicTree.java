@@ -36,11 +36,10 @@ public final class K_SeersMagicTree extends K_kailaScript {
       c.walkTo(516, 488);
       c.sleep(1380);
     }
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Magics", 0);

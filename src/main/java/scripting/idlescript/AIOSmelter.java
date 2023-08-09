@@ -108,7 +108,7 @@ public class AIOSmelter extends IdleScript {
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;

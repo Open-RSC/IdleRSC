@@ -36,7 +36,7 @@ public class GnomeFlaxx0r extends IdleScript {
     } else {
       spin = Boolean.parseBoolean(parameters[0]);
     }
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
 
     while (c.isRunning()) {
 

@@ -29,7 +29,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
       BankToGrape();
       c.sleep(1380);
     }
-    checkBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {

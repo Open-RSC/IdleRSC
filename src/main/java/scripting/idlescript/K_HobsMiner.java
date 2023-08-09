@@ -109,7 +109,7 @@ public final class K_HobsMiner extends K_kailaScript {
       eat();
       c.sleep(1380);
     }
-    if (orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {

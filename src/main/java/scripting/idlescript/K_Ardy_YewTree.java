@@ -23,7 +23,6 @@ public final class K_Ardy_YewTree extends K_kailaScript {
   private static int totalLog = 0;
 
   private void startSequence() {
-    checkBatchBars();
     c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
     if (c.isInBank()) c.closeBank();
     if (c.currentY() < 620
@@ -44,6 +43,7 @@ public final class K_Ardy_YewTree extends K_kailaScript {
   }
 
   public int start(String[] parameters) {
+    c.toggleBatchBarsOn();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Yews", 0);

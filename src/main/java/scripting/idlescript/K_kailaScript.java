@@ -618,10 +618,6 @@ public class K_kailaScript extends IdleScript {
       waitForBatching();
     }
   }
-  /** If on coleslaw and batch bars are off, it will toggle ON batch bars */
-  protected static void checkBatchBars() {
-    if (!c.isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
-  }
   /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
   protected static void waitForBatching() {
     while (c.isBatching() && System.currentTimeMillis() < next_attempt && next_attempt != -1) {

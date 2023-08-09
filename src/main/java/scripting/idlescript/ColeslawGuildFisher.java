@@ -26,7 +26,7 @@ public class ColeslawGuildFisher extends K_kailaScript {
   private static int failure = 0;
 
   public int start(String[] parameters) {
-    checkBatchBars();
+    c.toggleBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;

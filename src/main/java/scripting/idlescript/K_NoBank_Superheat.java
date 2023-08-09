@@ -37,7 +37,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     c.displayMessage("@red@No Bank Iron Superheat- By Kaila");
     c.displayMessage("@red@Start in Khazard Mine with nats,hammer,fire staff,pickaxe");
     if (c.isInBank()) c.closeBank();
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
   }
 
   public int start(String[] parameters) {

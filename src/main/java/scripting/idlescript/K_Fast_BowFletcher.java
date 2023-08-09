@@ -27,7 +27,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
-    checkBatchBars();
+    c.toggleBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;

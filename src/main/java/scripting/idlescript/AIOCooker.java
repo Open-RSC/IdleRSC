@@ -87,7 +87,7 @@ public class AIOCooker extends IdleScript {
   }
 
   public int start(String[] parameters) {
-    if (!orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
     String[] splitParams = null;
     if (parameters != null && parameters[0].contains(" ")) {
       splitParams = parameters[0].split(" ");

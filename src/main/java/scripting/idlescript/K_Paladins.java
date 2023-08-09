@@ -146,7 +146,7 @@ public final class K_Paladins extends K_kailaScript {
       BankToPaladins();
       c.sleep(1380);
     }
-    if (orsc.Config.C_BATCH_PROGRESS_BAR) c.toggleBatchBars();
+    c.toggleBatchBarsOn();
     c.displayMessage("@gre@Finished Startup Sequence.");
   }
 

@@ -30,7 +30,7 @@ public final class K_Fast_PlateSmither extends K_kailaScript {
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
-    checkBatchBars();
+    c.toggleBatchBarsOn();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got param " + parameters[0] + ", Auto-starting Steel Plates", 0);

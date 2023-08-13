@@ -25,16 +25,16 @@ public class HarvesterTrainer extends IdleScript {
 
       if (controller.getBaseStat(19) >= 60) objectId = 1263;
 
-      if (controller.getBaseStat(19) >= 85) objectId = 1264;
+      if (controller.currentX() > 450 && controller.getBaseStat(19) >= 85) objectId = 1264;
 
       int[] coords = controller.getNearestObjectById(objectId);
       if (coords != null) {
         controller.setStatus("@yel@Harvesting...");
         controller.atObject(coords[0], coords[1]);
-        controller.sleep(1000);
+        controller.sleep(1280);
 
         while (controller.isBatching()) {
-          controller.sleep(10);
+          controller.sleep(640);
         }
       } else {
         controller.setStatus("@yel@Waiting for spawn..");

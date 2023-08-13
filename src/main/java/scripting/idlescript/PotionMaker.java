@@ -257,7 +257,7 @@ public final class PotionMaker extends IdleScript {
 
   private void withdrawSecondary() {
     if (ingredients[2] == 1410) { // fish oil
-      if (c.getBankItemCount(ingredients[2]) > 1) {  //
+      if (c.getBankItemCount(ingredients[2]) > 1) { //
         if (c.getBankItemCount(ingredients[2]) > 290) {
           c.withdrawItem(ingredients[2], 290);
           c.sleep(300);

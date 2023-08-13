@@ -3557,17 +3557,16 @@ public class Controller {
 
         if (bankerNpc != null) {
           usedBankerNpc = true;
-          int bankerIndex = bankerNpc.serverIndex;
-          int[] coords = getNpcCoordsByServerIndex(bankerIndex);
+          int[] coords = getNpcCoordsByServerIndex(bankerNpc.serverIndex);
 
           walkToAsync(coords[0], coords[1], 0);
 
           while (!isInBank() && Main.isRunning()) {
             if (getNpcCommand1(95).equals("Bank")) { // Can we right click bank? If so, do that.
-              npcCommand1(bankerIndex);
+              npcCommand1(bankerNpc.serverIndex);
               openBank_sleep(200);
             } else {
-              talkToNpc(bankerIndex);
+              talkToNpc(bankerNpc.serverIndex);
               openBank_optionMenu_sleep(500);
               optionAnswer(0);
               openBank_sleep(200);

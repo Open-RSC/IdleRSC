@@ -620,8 +620,8 @@ public class K_kailaScript extends IdleScript {
   }
   /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
   protected static void waitForBatching() {
-    while (c.isBatching() && System.currentTimeMillis() < next_attempt && next_attempt != -1) {
-      c.sleep(GAME_TICK);
+    while (c.isBatching() && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
+      c.sleep(2 * GAME_TICK);
     }
   }
   /**

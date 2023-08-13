@@ -183,12 +183,22 @@ public final class PotionMaker extends IdleScript {
   private void withdrawUnifs() {
     c.setStatus("@cya@Withdrawing Unifs");
     if (c.getBankItemCount(ingredients[5]) > 1) {
-      if (c.getBankItemCount(ingredients[5]) > 15) {
-        c.withdrawItem(ingredients[5], 15);
-        c.sleep(640);
+      if (ingredients[2] == 1410) { // fish oil potions
+        if (c.getBankItemCount(ingredients[5]) > 29) {
+          c.withdrawItem(ingredients[5], 29);
+          c.sleep(640);
+        } else {
+          c.withdrawItem(ingredients[5], c.getBankItemCount(ingredients[5]) - 1);
+          c.sleep(640);
+        }
       } else {
-        c.withdrawItem(ingredients[5], c.getBankItemCount(ingredients[5]) - 1);
-        c.sleep(640);
+        if (c.getBankItemCount(ingredients[5]) > 15) {
+          c.withdrawItem(ingredients[5], 15);
+          c.sleep(640);
+        } else {
+          c.withdrawItem(ingredients[5], c.getBankItemCount(ingredients[5]) - 1);
+          c.sleep(640);
+        }
       }
     }
   }
@@ -247,9 +257,9 @@ public final class PotionMaker extends IdleScript {
 
   private void withdrawSecondary() {
     if (ingredients[2] == 1410) { // fish oil
-      if (c.getBankItemCount(ingredients[2]) > 1) {
-        if (c.getBankItemCount(ingredients[2]) > 100) {
-          c.withdrawItem(ingredients[2], 100);
+      if (c.getBankItemCount(ingredients[2]) > 1) {  //
+        if (c.getBankItemCount(ingredients[2]) > 290) {
+          c.withdrawItem(ingredients[2], 290);
           c.sleep(300);
         } else {
           c.withdrawItem(ingredients[2], c.getBankItemCount(ingredients[2]) - 1);

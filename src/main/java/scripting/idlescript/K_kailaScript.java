@@ -1143,6 +1143,16 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(attackPot[2], withdrawAmount - attackPotCount);
         c.sleep(GAME_TICK);
       }
+      int attackPotRecheck =
+        (c.getInventoryItemCount(attackPot[0])
+          + c.getInventoryItemCount(attackPot[1])
+          + c.getInventoryItemCount(attackPot[2]));
+      if (attackPotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(attackPot[2]) > 0) {
+          c.withdrawItem(attackPot[2], withdrawAmount - attackPotRecheck);
+          c.sleep(GAME_TICK);
+        }
+      }
     }
   }
 
@@ -1171,6 +1181,16 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotCount);
         c.sleep(GAME_TICK);
       }
+      int strengthPotRecheck =
+        (c.getInventoryItemCount(strengthPot[0])
+          + c.getInventoryItemCount(strengthPot[1])
+          + c.getInventoryItemCount(strengthPot[2]));
+      if (strengthPotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(strengthPot[2]) > 0) {
+          c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotRecheck);
+          c.sleep(GAME_TICK);
+        }
+      }
     }
   }
   /**
@@ -1197,6 +1217,16 @@ public class K_kailaScript extends IdleScript {
       } else if (c.getBankItemCount(defensePot[2]) > 0) {
         c.withdrawItem(defensePot[2], withdrawAmount - defensePotCount);
         c.sleep(GAME_TICK);
+      }
+      int defensePotRecheck =
+        (c.getInventoryItemCount(defensePot[0])
+          + c.getInventoryItemCount(defensePot[1])
+          + c.getInventoryItemCount(defensePot[2]));
+      if (defensePotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(defensePot[2]) > 0) {
+          c.withdrawItem(defensePot[2], withdrawAmount - defensePotRecheck);
+          c.sleep(GAME_TICK);
+        }
       }
     }
   }
@@ -1225,6 +1255,16 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotCount);
         c.sleep(GAME_TICK);
       }
+      int superAttackPotRecheck =
+        (c.getInventoryItemCount(superAttackPot[0])
+          + c.getInventoryItemCount(superAttackPot[1])
+          + c.getInventoryItemCount(superAttackPot[2]));
+      if (superAttackPotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(superAttackPot[2]) > 0) {
+          c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotRecheck);
+          c.sleep(GAME_TICK);
+        }
+      }
     }
   }
   /**
@@ -1251,6 +1291,16 @@ public class K_kailaScript extends IdleScript {
       } else if (c.getBankItemCount(superStrengthPot[2]) > 0) {
         c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotCount);
         c.sleep(GAME_TICK);
+      }
+      int superStrengthPotRecheck =
+        (c.getInventoryItemCount(superStrengthPot[0])
+          + c.getInventoryItemCount(superStrengthPot[1])
+          + c.getInventoryItemCount(superStrengthPot[2]));
+      if (superStrengthPotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(superStrengthPot[2]) > 0) {
+          c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotRecheck);
+          c.sleep(GAME_TICK);
+        }
       }
     }
   }
@@ -1279,9 +1329,20 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotCount);
         c.sleep(GAME_TICK);
       }
+      int superDefensePotRecheck =
+        (c.getInventoryItemCount(superDefensePot[0])
+          + c.getInventoryItemCount(superDefensePot[1])
+          + c.getInventoryItemCount(superDefensePot[2]));
+      if (superDefensePotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(superDefensePot[2]) > 0) {
+          c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotRecheck);
+          c.sleep(GAME_TICK);
+        }
+      }
     }
   }
   /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
+  //todo fix partial plus full potion withdraw
   protected static void withdrawAntidote(int withdrawAmount) {
     int antidotePotCount =
         c.getInventoryItemCount(antiPot[0])
@@ -1302,16 +1363,26 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(antiPot[2], withdrawAmount - antidotePotCount);
         c.sleep(GAME_TICK);
       }
+      int antiPotRecheck =
+        (c.getInventoryItemCount(antiPot[0])
+          + c.getInventoryItemCount(antiPot[1])
+          + c.getInventoryItemCount(antiPot[2]));
+      if (antiPotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(antiPot[2]) > 0) {
+          c.withdrawItem(antiPot[2], withdrawAmount - antiPotRecheck);
+          c.sleep(GAME_TICK);
+        }
+      }
     }
   }
   /** Withdraw prayer potions (checks for and uses 1 and 2 dose potions first) */
   protected static void withdrawPrayer(int withdrawAmount) {
     int prayerPotCount =
-        c.getInventoryItemCount(prayerPot[0])
+        (c.getInventoryItemCount(prayerPot[0])
             + c.getInventoryItemCount(prayerPot[1])
-            + c.getInventoryItemCount(prayerPot[2]);
+            + c.getInventoryItemCount(prayerPot[2]));
     int bankPotCount = prayerPot[0] + prayerPot[1] + prayerPot[2];
-    if ((prayerPotCount) < withdrawAmount && (bankPotCount > 0)) {
+    if ((prayerPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(prayerPot[0]) > 0) {
         c.withdrawItem(prayerPot[0], withdrawAmount - prayerPotCount);
         c.sleep(GAME_TICK);
@@ -1321,6 +1392,16 @@ public class K_kailaScript extends IdleScript {
       } else if (c.getBankItemCount(prayerPot[2]) > 0) {
         c.withdrawItem(prayerPot[2], withdrawAmount - prayerPotCount);
         c.sleep(GAME_TICK);
+      }
+      int prayerPotRecheck = // todo refactor this
+        (c.getInventoryItemCount(prayerPot[0])
+          + c.getInventoryItemCount(prayerPot[1])
+          + c.getInventoryItemCount(prayerPot[2]));
+      if (prayerPotRecheck < withdrawAmount) {
+        if (c.getBankItemCount(prayerPot[2]) > 0) {
+          c.withdrawItem(prayerPot[2], withdrawAmount - prayerPotRecheck);
+          c.sleep(GAME_TICK);
+        }
       }
     }
   }

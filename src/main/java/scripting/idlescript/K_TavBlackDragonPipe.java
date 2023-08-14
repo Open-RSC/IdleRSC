@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -18,6 +19,8 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlackDragonPipe extends K_kailaScript {
+  private static boolean useDragonTwoHand = false;
+  private static boolean craftCapeTeleport = false;
   private static int totalRlong = 0;
   private static int totalMed = 0;
   private static int totalDstone = 0;
@@ -92,21 +95,33 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       pray();
       foodCheck();
       checkFightMode();
-      lootItems(true, loot);
+      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(420)) {
+        c.equipItem(c.getInventoryItemSlotIndex(420));
+      }
+      if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(1346)) {
+        c.equipItem(c.getInventoryItemSlotIndex(1346));
+        c.sleep(1280);
+      }
       if (buryBones) buryBones(false);
       if (potUp) {
-        superAttackBoost(5, false);
-        superStrengthBoost(5, false);
+        superAttackBoost(4, false);
+        superStrengthBoost(4, false);
       }
+      lootItems(true, loot);
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
+          if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+            c.equipItem(c.getInventoryItemSlotIndex(420));
+          }
           ORSCharacter npc = c.getNearestNpcById(291, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
             c.sleep(2 * GAME_TICK);
           } else {
-            c.sleep(GAME_TICK);
+            if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+              c.equipItem(c.getInventoryItemSlotIndex(420));
+            }
             lootItems(true, loot);
           }
         } else c.sleep(GAME_TICK);
@@ -190,6 +205,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
             && itemId != 483
             && itemId != 571
             && itemId != 570
+            && itemId != 1346
             && itemId != 569) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
@@ -199,12 +215,15 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
         withdrawSuperAttack(1);
         withdrawSuperStrength(1);
       }
-      withdrawAntidote(1);
-      withdrawPrayer(prayPotWithdrawAmount);
-      withdrawFood(foodId, foodWithdrawAmount);
+      int dragonTwoHand = ItemId.DRAGON_2_HANDED_SWORD.getId();
+      if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))
+        withdrawItem(dragonTwoHand, 1);
       withdrawItem(airId, 18);
       withdrawItem(lawId, 6);
       withdrawItem(waterId, 6);
+      withdrawAntidote(1);
+      withdrawPrayer(prayPotWithdrawAmount);
+      withdrawFood(foodId, foodWithdrawAmount);
       bankBones = c.getBankItemCount(814);
       bankItemCheck(prayerPot[2], 6);
       bankItemCheck(antiPot[2], 1);
@@ -271,6 +290,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.sleep(640);
     c.walkTo(372, 3364);
     c.walkTo(377, 3369);
+    if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+      c.equipItem(c.getInventoryItemSlotIndex(420));
+    }
     c.equipItem(c.getInventoryItemSlotIndex(404));
     c.enablePrayer(c.getPrayerId("Paralyze Monster"));
     c.sleep(320);
@@ -286,6 +308,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(403, 3346);
     c.walkTo(408, 3344);
     c.walkTo(408, 3340);
+    if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+      c.equipItem(c.getInventoryItemSlotIndex(420));
+    }
     drinkAntidote(true);
     eat();
     prayPotCheck();
@@ -356,6 +381,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel label6 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label7 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label8 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JLabel blankLabel = new JLabel("     ");
+    JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword?", true);
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -365,7 +393,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(3));
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(2));
     JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
     JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(6));
 
@@ -387,6 +415,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           buryBones = buryBonesCheckbox.isSelected();
           fightMode = fightModeField.getSelectedIndex();
           foodId = foodIds[foodField.getSelectedIndex()];
+          useDragonTwoHand = dragonTwoHandCheckbox.isSelected();
+          craftCapeTeleport = craftCapeCheckbox.isSelected();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
@@ -407,6 +437,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     scriptFrame.add(label6);
     scriptFrame.add(label7);
     scriptFrame.add(label8);
+    scriptFrame.add(blankLabel);
+    scriptFrame.add(dragonTwoHandCheckbox);
     scriptFrame.add(buryBonesCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);

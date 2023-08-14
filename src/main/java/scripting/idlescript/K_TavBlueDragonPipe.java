@@ -2,6 +2,8 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -18,6 +20,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlueDragonPipe extends K_kailaScript {
+  private static boolean useDragonTwoHand = false;
   private static int totalRdagger = 0;
   private static final int[] loot = {
     UNID_RANARR, // Grimy Ranarr Weed
@@ -92,20 +95,33 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         bank();
         BankToDragons();
       }
+      checkFightMode();
+      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(420)) {
+        c.equipItem(c.getInventoryItemSlotIndex(420));
+      }
+      if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(1346)) {
+        c.equipItem(c.getInventoryItemSlotIndex(1346));
+        c.sleep(1280);
+      }
       if (potUp) {
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
-      checkFightMode();
       lootItems(false, loot);
       if (c.getInventoryItemCount(foodId) > 0 && c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
+          if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+            c.equipItem(c.getInventoryItemSlotIndex(420));
+          }
           ORSCharacter npc = c.getNearestNpcById(202, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
             c.sleep(6 * GAME_TICK);
           } else {
+            if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+              c.equipItem(c.getInventoryItemSlotIndex(420));
+            }
             lootItems(false, loot);
             if (buryBones) buryBones(false);
             if (potUp) {
@@ -194,6 +210,9 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         withdrawSuperAttack(1);
         withdrawSuperStrength(1);
       }
+      int dragonTwoHand = ItemId.DRAGON_2_HANDED_SWORD.getId();
+      if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))
+        withdrawItem(dragonTwoHand, 1);
       withdrawItem(airId, 18);
       withdrawItem(lawId, 6);
       withdrawItem(waterId, 6);
@@ -235,6 +254,9 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     c.atObject(376, 520);
     c.sleep(640);
     c.walkTo(375, 3352);
+    if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+      c.equipItem(c.getInventoryItemSlotIndex(420));
+    }
     c.atObject(374, 3352);
     c.sleep(640);
     c.walkTo(372, 3352);
@@ -266,6 +288,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JLabel label4 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label5 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label6 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JLabel blankLabel = new JLabel("     ");
+    JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -289,6 +313,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           buryBones = buryBonesCheckbox.isSelected();
           fightMode = fightModeField.getSelectedIndex();
           foodId = foodIds[foodField.getSelectedIndex()];
+          useDragonTwoHand = dragonTwoHandCheckbox.isSelected();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
@@ -307,6 +332,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     scriptFrame.add(label4);
     scriptFrame.add(label5);
     scriptFrame.add(label6);
+    scriptFrame.add(blankLabel);
+    scriptFrame.add(dragonTwoHandCheckbox);
     scriptFrame.add(buryBonesCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);

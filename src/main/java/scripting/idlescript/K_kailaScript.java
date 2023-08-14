@@ -1144,9 +1144,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int attackPotRecheck =
-        (c.getInventoryItemCount(attackPot[0])
-          + c.getInventoryItemCount(attackPot[1])
-          + c.getInventoryItemCount(attackPot[2]));
+          (c.getInventoryItemCount(attackPot[0])
+              + c.getInventoryItemCount(attackPot[1])
+              + c.getInventoryItemCount(attackPot[2]));
       if (attackPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(attackPot[2]) > 0) {
           c.withdrawItem(attackPot[2], withdrawAmount - attackPotRecheck);
@@ -1182,9 +1182,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int strengthPotRecheck =
-        (c.getInventoryItemCount(strengthPot[0])
-          + c.getInventoryItemCount(strengthPot[1])
-          + c.getInventoryItemCount(strengthPot[2]));
+          (c.getInventoryItemCount(strengthPot[0])
+              + c.getInventoryItemCount(strengthPot[1])
+              + c.getInventoryItemCount(strengthPot[2]));
       if (strengthPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(strengthPot[2]) > 0) {
           c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotRecheck);
@@ -1219,9 +1219,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int defensePotRecheck =
-        (c.getInventoryItemCount(defensePot[0])
-          + c.getInventoryItemCount(defensePot[1])
-          + c.getInventoryItemCount(defensePot[2]));
+          (c.getInventoryItemCount(defensePot[0])
+              + c.getInventoryItemCount(defensePot[1])
+              + c.getInventoryItemCount(defensePot[2]));
       if (defensePotRecheck < withdrawAmount) {
         if (c.getBankItemCount(defensePot[2]) > 0) {
           c.withdrawItem(defensePot[2], withdrawAmount - defensePotRecheck);
@@ -1256,9 +1256,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int superAttackPotRecheck =
-        (c.getInventoryItemCount(superAttackPot[0])
-          + c.getInventoryItemCount(superAttackPot[1])
-          + c.getInventoryItemCount(superAttackPot[2]));
+          (c.getInventoryItemCount(superAttackPot[0])
+              + c.getInventoryItemCount(superAttackPot[1])
+              + c.getInventoryItemCount(superAttackPot[2]));
       if (superAttackPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(superAttackPot[2]) > 0) {
           c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotRecheck);
@@ -1293,9 +1293,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int superStrengthPotRecheck =
-        (c.getInventoryItemCount(superStrengthPot[0])
-          + c.getInventoryItemCount(superStrengthPot[1])
-          + c.getInventoryItemCount(superStrengthPot[2]));
+          (c.getInventoryItemCount(superStrengthPot[0])
+              + c.getInventoryItemCount(superStrengthPot[1])
+              + c.getInventoryItemCount(superStrengthPot[2]));
       if (superStrengthPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(superStrengthPot[2]) > 0) {
           c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotRecheck);
@@ -1330,9 +1330,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int superDefensePotRecheck =
-        (c.getInventoryItemCount(superDefensePot[0])
-          + c.getInventoryItemCount(superDefensePot[1])
-          + c.getInventoryItemCount(superDefensePot[2]));
+          (c.getInventoryItemCount(superDefensePot[0])
+              + c.getInventoryItemCount(superDefensePot[1])
+              + c.getInventoryItemCount(superDefensePot[2]));
       if (superDefensePotRecheck < withdrawAmount) {
         if (c.getBankItemCount(superDefensePot[2]) > 0) {
           c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotRecheck);
@@ -1342,7 +1342,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
-  //todo fix partial plus full potion withdraw
+  // todo fix partial plus full potion withdraw
   protected static void withdrawAntidote(int withdrawAmount) {
     int antidotePotCount =
         c.getInventoryItemCount(antiPot[0])
@@ -1364,9 +1364,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int antiPotRecheck =
-        (c.getInventoryItemCount(antiPot[0])
-          + c.getInventoryItemCount(antiPot[1])
-          + c.getInventoryItemCount(antiPot[2]));
+          (c.getInventoryItemCount(antiPot[0])
+              + c.getInventoryItemCount(antiPot[1])
+              + c.getInventoryItemCount(antiPot[2]));
       if (antiPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(antiPot[2]) > 0) {
           c.withdrawItem(antiPot[2], withdrawAmount - antiPotRecheck);
@@ -1394,9 +1394,9 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
       }
       int prayerPotRecheck = // todo refactor this
-        (c.getInventoryItemCount(prayerPot[0])
-          + c.getInventoryItemCount(prayerPot[1])
-          + c.getInventoryItemCount(prayerPot[2]));
+          (c.getInventoryItemCount(prayerPot[0])
+              + c.getInventoryItemCount(prayerPot[1])
+              + c.getInventoryItemCount(prayerPot[2]));
       if (prayerPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(prayerPot[2]) > 0) {
           c.withdrawItem(prayerPot[2], withdrawAmount - prayerPotRecheck);

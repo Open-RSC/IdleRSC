@@ -3680,7 +3680,7 @@ public class Controller {
       } else {
         this.itemCommand(1263);
 
-        this.sleep(1000);
+        this.sleep(1280);
         while (this.isSleeping()) sleep(10);
       }
     }

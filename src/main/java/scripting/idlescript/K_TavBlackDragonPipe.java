@@ -117,7 +117,11 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(2 * GAME_TICK);
+            c.sleep(6 * GAME_TICK);
+            if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(1346)) {
+              c.equipItem(c.getInventoryItemSlotIndex(1346));
+              c.sleep(1280);
+            }
           } else {
             if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
               c.equipItem(c.getInventoryItemSlotIndex(420));
@@ -209,7 +213,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
             && itemId != 571
             && itemId != 570
             && itemId != 1346 // d2h
-            && itemId != 1374
+            && itemId != 1374 // attack cape
             && itemId != 1384 // craft cape
             && itemId != 569) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));

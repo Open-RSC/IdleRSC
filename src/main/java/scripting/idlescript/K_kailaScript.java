@@ -630,13 +630,10 @@ public class K_kailaScript extends IdleScript {
    * when not logged in then stop script <br>
    */
   protected static void endSession() {
-    c.setAutoLogin(false);
     while (c.isLoggedIn()) {
       c.logout();
     }
-    if (!c.isLoggedIn()) {
-      c.stop();
-    }
+    c.stop();
   }
   /** for each itemId in the inventory, deposit all the items. */
   protected static void depositAll() {

@@ -122,7 +122,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
             if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
               c.equipItem(c.getInventoryItemSlotIndex(420));
             }
-            lootItems(true, loot);
+            c.sleep(GAME_TICK);
           }
         } else c.sleep(GAME_TICK);
       }
@@ -134,6 +134,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       }
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
         c.setStatus("@red@Full Inv / Out of Food");
+        if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+          c.equipItem(c.getInventoryItemSlotIndex(420));
+        }
         dragonEscape();
         DragonsToBank();
         bank();
@@ -205,22 +208,28 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
             && itemId != 483
             && itemId != 571
             && itemId != 570
-            && itemId != 1346
+            && itemId != 1346 // d2h
+            && itemId != 1374
+            && itemId != 1384 // craft cape
             && itemId != 569) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
       c.sleep(1280); // Important, leave in
+      int dragonTwoHand = ItemId.DRAGON_2_HANDED_SWORD.getId();
+      if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))
+        withdrawItem(dragonTwoHand, 1);
+      int craftCape = ItemId.CRAFTING_CAPE.getId();
+      if (craftCapeTeleport && (c.getInventoryItemCount(craftCape) < 1)) withdrawItem(craftCape, 1);
+      if (!craftCapeTeleport) {
+        withdrawItem(airId, 18);
+        withdrawItem(lawId, 6);
+        withdrawItem(waterId, 6);
+      }
       if (potUp) {
         withdrawSuperAttack(1);
         withdrawSuperStrength(1);
       }
-      int dragonTwoHand = ItemId.DRAGON_2_HANDED_SWORD.getId();
-      if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))
-        withdrawItem(dragonTwoHand, 1);
-      withdrawItem(airId, 18);
-      withdrawItem(lawId, 6);
-      withdrawItem(waterId, 6);
       withdrawAntidote(1);
       withdrawPrayer(prayPotWithdrawAmount);
       withdrawFood(foodId, foodWithdrawAmount);
@@ -228,15 +237,22 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       bankItemCheck(prayerPot[2], 6);
       bankItemCheck(antiPot[2], 1);
       bankItemCheck(foodId, 30);
-      bankItemCheck(airId, 30);
-      bankItemCheck(waterId, 10); // Falador teleport
-      bankItemCheck(lawId, 10);
+      if (!craftCapeTeleport) {
+        bankItemCheck(airId, 30);
+        bankItemCheck(waterId, 10); // Falador teleport
+        bankItemCheck(lawId, 10);
+      }
       bankCheckAntiDragonShield();
       c.closeBank();
+      if (!c.isItemIdEquipped(ItemId.ATTACK_CAPE.getId())) {
+        c.equipItem(c.getInventoryItemSlotIndex(ItemId.ATTACK_CAPE.getId()));
+      }
     }
-    inventoryItemCheck(airId, 18);
-    inventoryItemCheck(waterId, 6);
-    inventoryItemCheck(lawId, 6);
+    if (!craftCapeTeleport) {
+      inventoryItemCheck(airId, 18);
+      inventoryItemCheck(waterId, 6);
+      inventoryItemCheck(lawId, 6);
+    }
   }
 
   private void pray() {
@@ -249,30 +265,93 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.setStatus("We've ran out of Food/prayPots! @gre@Going to safe zone.");
     c.walkTo(408, 3340);
     c.walkTo(408, 3348);
+    c.walkTo(408, 3351);
     c.sleep(1000);
+  }
+
+  private void DragonsToBank() {
+    if (craftCapeTeleport) {
+      c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
+      while (c.currentX() != 347 && c.currentY() != 599) {
+        c.itemCommand(ItemId.CRAFTING_CAPE.getId());
+        c.sleep(4 * GAME_TICK);
+      }
+      c.walkTo(347, 600);
+      if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+        c.equipItem(c.getInventoryItemSlotIndex(420));
+      }
+      c.equipItem(c.getInventoryItemSlotIndex(1384)); // craft cape
+      c.sleep(4 * GAME_TICK);
+      craftCapeDoorEntering();
+      c.sleep(2 * GAME_TICK);
+      c.equipItem(c.getInventoryItemSlotIndex(1374)); // attack cape
+      c.walkTo(347, 607);
+      c.walkTo(346, 608);
+      c.sleep(GAME_TICK);
+    } else {
+      c.setStatus("@gre@Going to Bank. Casting 1st teleport.");
+      c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
+      c.sleep(1000);
+      for (int i = 1; i <= 15; i++) {
+        if (c.currentY() > 3000) {
+          c.setStatus("@gre@Teleport unsuccessful, Casting teleports.");
+          c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
+          c.sleep(1000);
+        }
+        c.sleep(10);
+      }
+      c.sleep(GAME_TICK);
+      c.walkTo(327, 552);
+      if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+        c.equipItem(c.getInventoryItemSlotIndex(420));
+      }
+      c.sleep(GAME_TICK);
+    }
+    c.setStatus("@gre@Done Walking..");
   }
 
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Black Dragons..");
-    c.walkTo(327, 552);
-    c.walkTo(324, 549);
-    c.walkTo(324, 539);
-    c.walkTo(324, 530);
-    c.walkTo(317, 523);
-    c.walkTo(317, 516);
-    c.walkTo(327, 506);
-    c.walkTo(327, 506);
-    c.walkTo(337, 496);
-    c.walkTo(337, 492);
-    c.walkTo(341, 488);
-    tavGateEastToWest();
-    c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
-    c.walkTo(342, 493);
-    c.walkTo(352, 503);
-    c.walkTo(362, 513);
-    c.walkTo(367, 514);
-    c.walkTo(374, 521);
-    c.walkTo(376, 521);
+    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+      while (c.currentX() != 347 && c.currentY() != 599) {
+        c.itemCommand(ItemId.CRAFTING_CAPE.getId());
+        c.sleep(4 * GAME_TICK);
+      }
+      c.walkTo(347, 588);
+      c.walkTo(347, 586);
+      c.walkTo(343, 581);
+      tavGateSouthToNorth();
+      c.walkTo(343, 570);
+      c.walkTo(343, 560);
+      c.walkTo(343, 550);
+      c.walkTo(350, 542);
+      c.walkTo(356, 536);
+      c.walkTo(363, 536);
+      c.walkTo(368, 531);
+      c.walkTo(375, 524);
+      c.walkTo(375, 521);
+      c.walkTo(376, 521);
+    } else {
+      c.walkTo(327, 552);
+      c.walkTo(324, 549);
+      c.walkTo(324, 539);
+      c.walkTo(324, 530);
+      c.walkTo(317, 523);
+      c.walkTo(317, 516);
+      c.walkTo(327, 506);
+      c.walkTo(327, 506);
+      c.walkTo(337, 496);
+      c.walkTo(337, 492);
+      c.walkTo(341, 488);
+      tavGateEastToWest();
+      c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
+      c.walkTo(342, 493);
+      c.walkTo(352, 503);
+      c.walkTo(362, 513);
+      c.walkTo(367, 514);
+      c.walkTo(374, 521);
+      c.walkTo(376, 521);
+    }
     c.equipItem(c.getInventoryItemSlotIndex(420));
     c.sleep(320);
     c.atObject(376, 520);
@@ -353,23 +432,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     }
   }
 
-  private void DragonsToBank() {
-    c.setStatus("@gre@Going to Bank. Casting 1st teleport.");
-    c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-    c.sleep(1000);
-    for (int i = 1; i <= 15; i++) {
-      if (c.currentY() > 3000) {
-        c.setStatus("@gre@Teleport unsuccessful, Casting teleports.");
-        c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-        c.sleep(1000);
-      }
-      c.sleep(10);
-    }
-    c.sleep(308);
-    c.walkTo(327, 552);
-    c.sleep(308);
-    c.setStatus("@gre@Done Walking..");
-  }
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Tavelry Black Dragons (Pipe) - By Kaila");
@@ -393,7 +455,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(2));
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(3));
     JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
     JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(6));
 
@@ -438,6 +500,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     scriptFrame.add(label7);
     scriptFrame.add(label8);
     scriptFrame.add(blankLabel);
+    scriptFrame.add(craftCapeCheckbox);
     scriptFrame.add(dragonTwoHandCheckbox);
     scriptFrame.add(buryBonesCheckbox);
     scriptFrame.add(potUpCheckbox);

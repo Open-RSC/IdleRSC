@@ -1539,6 +1539,72 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
+  /** Goes through the fixed gate leading to Tav from the south (craft guild). (south to north) */
+  protected static void tavGateSouthToNorth() {
+    for (int i = 1; i <= 20; i++) {
+      try {
+        if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 581) {
+          c.setStatus("@red@Crossing Tav Gate..");
+          c.atObject(343, 581); // gate won't break if someone else opens it
+          c.sleep(800);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Goes through the fixed gate leading to Tav from the south (craft guild). (north to south) */
+  protected static void tavGateNorthToSouth() {
+    for (int i = 1; i <= 20; i++) {
+      try {
+        if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 580) {
+          c.setStatus("@red@Crossing Tav Gate..");
+          c.atObject(343, 581); // gate won't break if someone else opens it
+          c.sleep(800);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Enters through the fixed door leading to craft guild. (north to south) */
+  protected static void craftCapeDoorEntering() {
+    // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
+    for (int i = 1; i <= 20; i++) {
+      try {
+        if (c.currentX() == 347 && c.currentY() == 600) {
+          c.setStatus("@red@Entering Crafting Guild..");
+          c.atWallObject(347, 601); // gate won't break if someone else opens it
+          c.sleep(800);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Exits through the fixed door leading to craft guild. (north to south) */
+  protected static void craftCapeDoorExiting() {
+    // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
+    for (int i = 1; i <= 20; i++) {
+      try {
+        if (c.currentX() == 347 && c.currentY() == 600) {
+          c.setStatus("@red@Entering Crafting Guild..");
+          c.atWallObject(347, 601); // gate won't break if someone else opens it
+          c.sleep(800);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
   /** Goes through the fixed gate leading to Tav. (going from east to west) */
   protected static void tavGateEastToWest() {
     for (int i = 1; i <= 20; i++) {
@@ -1555,6 +1621,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
+
   /** Goes through the fixed gate leading to Tav. (going from west to east) */
   protected static void tavGateWestToEast() {
     for (int i = 1; i <= 20; i++) {

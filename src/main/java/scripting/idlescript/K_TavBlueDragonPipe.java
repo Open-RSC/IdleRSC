@@ -22,6 +22,10 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private static boolean useDragonTwoHand = false;
   private static boolean craftCapeTeleport = false;
   private static int totalRdagger = 0;
+  private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
+  private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
+  private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
+  private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int[] loot = {
     UNID_RANARR, // Grimy Ranarr Weed
     UNID_IRIT, // Grimy Irit
@@ -87,45 +91,36 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        pipeEscape();
-        DragonsToBank();
-        bank();
-        BankToDragons();
-      }
+      eat();
       checkFightMode();
-      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(420)) {
-        c.equipItem(c.getInventoryItemSlotIndex(420));
-      }
-      if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(1346)) {
-        c.equipItem(c.getInventoryItemSlotIndex(1346));
+      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+      if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
+        c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
         c.sleep(1280);
       }
       if (potUp) {
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
-      lootItems(false, loot);
+      lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (c.getInventoryItemCount(foodId) > 0 && c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
-          if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
-            c.equipItem(c.getInventoryItemSlotIndex(420));
+          if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+            c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
           }
           ORSCharacter npc = c.getNearestNpcById(202, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
             c.sleep(6 * GAME_TICK);
-            if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(1346)) {
-              c.equipItem(c.getInventoryItemSlotIndex(1346));
+            if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
+              c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
               c.sleep(1280);
             }
           } else {
-            if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
-              c.equipItem(c.getInventoryItemSlotIndex(420));
-            }
+            if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+              c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
             lootItems(false, loot);
             if (buryBones) buryBones(false);
             if (potUp) {
@@ -142,6 +137,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         eatFoodToLoot(false);
       }
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
+        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         pipeEscape();
         c.setStatus("@yel@Banking..");
         timeToBank = false;
@@ -158,7 +155,16 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       }
     }
   }
-
+  private void eat() {
+    boolean ate = eatFood(ANTI_DRAGON_SHIELD, useDragonTwoHand);
+    if (!ate) {
+      c.setStatus("@red@We've ran out of Food! Running Away!.");
+      pipeEscape();
+      DragonsToBank();
+      bank();
+      BankToDragons();
+    }
+  }
   private void walkToCenter() {
     if (!c.isInCombat() && (c.currentX() != 370 || c.currentY() != 3353)) {
       c.walkTo(370, 3353);
@@ -218,6 +224,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         withdrawItem(dragonTwoHand, 1);
       int craftCape = ItemId.CRAFTING_CAPE.getId();
       if (craftCapeTeleport && (c.getInventoryItemCount(craftCape) < 1)) withdrawItem(craftCape, 1);
+      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
+        c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
       if (!craftCapeTeleport) {
         withdrawItem(airId, 18);
         withdrawItem(lawId, 6);
@@ -236,6 +244,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       }
       bankCheckAntiDragonShield();
       c.closeBank();
+      if (!c.isItemIdEquipped(ATTACK_CAPE)) c.equipItem(c.getInventoryItemSlotIndex(ATTACK_CAPE));
     }
     if (!craftCapeTeleport) {
       inventoryItemCheck(airId, 18);
@@ -313,18 +322,19 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       while (c.currentX() != 347 && c.currentY() != 599) {
-        c.itemCommand(ItemId.CRAFTING_CAPE.getId());
+        c.itemCommand(CRAFT_CAPE);
         c.sleep(4 * GAME_TICK);
       }
       c.walkTo(347, 600);
-      if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
-        c.equipItem(c.getInventoryItemSlotIndex(420));
+      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+        c.sleep(3 * GAME_TICK);
       }
-      c.equipItem(c.getInventoryItemSlotIndex(1384)); // craft cape
+      forceEquipItem(CRAFT_CAPE);
       c.sleep(4 * GAME_TICK);
       craftCapeDoorEntering();
       c.sleep(2 * GAME_TICK);
-      c.equipItem(c.getInventoryItemSlotIndex(1374)); // attack cape
+      forceEquipItem(ATTACK_CAPE);
       c.walkTo(347, 607);
       c.walkTo(346, 608);
       totalTrips = totalTrips + 1;

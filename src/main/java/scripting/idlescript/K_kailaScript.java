@@ -542,6 +542,34 @@ public class K_kailaScript extends IdleScript {
     return ate; // return false if not eaten, return true if has eaten.
   }
   /**
+   * eatFood method will eat any food ids in the inventory with a for loop. Always exiting combat.
+   * Use this method to wear an item before eating (like anti-dragon shield)
+   *
+   * @param wearId int item Id to equip
+   * @param swapState boolean whether to use swap or not (pass a boolean from gui)
+   * @return ate - true if no need to eat, or if successful. False if out of food items.
+   */
+  protected static boolean eatFood(int wearId, boolean swapState) {
+    boolean ate = false;
+    if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          leaveCombatForced();
+          if (swapState && !c.isItemIdEquipped(wearId)) {
+            c.equipItem(c.getInventoryItemSlotIndex(wearId));
+            c.sleep(GAME_TICK);
+          }
+          c.setStatus("@red@Eating..");
+          c.itemCommand(id);
+          c.sleep(GAME_TICK);
+          ate = true;
+          break;
+        }
+      }
+    } else return true; // not necessary to eat
+    return ate; // return false if not eaten, return true if has eaten.
+  }
+  /**
    * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots 1 of item.
    *
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
@@ -573,6 +601,35 @@ public class K_kailaScript extends IdleScript {
    *     the method parameters with "new int[]{data}" as the value for this param.
    */
   protected static void lootItems(boolean leaveCombat, int[] itemIds) {
+    for (int itemId : itemIds) {
+      try {
+        int[] coords = c.getNearestItemById(itemId);
+        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+          if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+          else if (leaveCombat && c.isInCombat()) leaveCombat();
+          c.setStatus("@yel@Picking loot...");
+          c.pickupItem(coords[0], coords[1], itemId, true, false);
+          c.sleep(GAME_TICK);
+          return;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /**
+   * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots list of
+   * items Use this method to wear an item before eating (like anti-dragon shield)
+   *
+   * @param wearId int item Id to equip
+   * @param swapState boolean whether to use swap or not (pass a boolean from gui)
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   * @param itemIds int[] array listing itemIds to loot using for loop. Can institize item arrays in
+   *     the method parameters with "new int[]{data}" as the value for this param.
+   */
+  protected static void lootItems(
+      boolean leaveCombat, int[] itemIds, int wearId, boolean swapState) {
     for (int itemId : itemIds) {
       try {
         int[] coords = c.getNearestItemById(itemId);
@@ -979,6 +1036,46 @@ public class K_kailaScript extends IdleScript {
       if (prayerPotCount > 0) {
         if (leaveCombat && c.isInCombat()) leaveCombat();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+
+        if (c.getInventoryItemCount(prayerPot[0]) > 0) {
+          c.itemCommand(prayerPot[0]);
+          c.sleep(320);
+        } else if (c.getInventoryItemCount(prayerPot[1]) > 0) {
+          c.itemCommand(prayerPot[1]);
+          c.sleep(320);
+        } else if (c.getInventoryItemCount(prayerPot[2]) > 0) {
+          c.itemCommand(prayerPot[2]);
+          c.sleep(320);
+        }
+      }
+    }
+  }
+  /**
+   * drinks prayer potions when 31 points below base stat level, leaving combat. Checks for and uses
+   * 1 and 2 dose potions first. Recommend this boolean is ALWAYS true, or bot could die. <br>
+   * Use this method to wear an item before eating (like anti-dragon shield)
+   *
+   * @param wearId int item Id to equip
+   * @param swapState boolean whether to use swap or not (pass a boolean from gui)
+   * @param boostBelowBase int - levels below base stat to boost at. Recommend 31 to not waste
+   *     doses.
+   * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
+   *     combat.
+   */
+  protected static void drinkPrayerPotion(
+      int boostBelowBase, boolean leaveCombat, int wearId, boolean swapState) {
+    int boostAtLvl = c.getBaseStat(c.getStatId("Prayer")) - boostBelowBase;
+    if (c.getCurrentStat(c.getStatId("Prayer")) <= boostAtLvl) {
+      int prayerPotCount =
+          c.getInventoryItemCount(prayerPot[0])
+              + c.getInventoryItemCount(prayerPot[1])
+              + c.getInventoryItemCount(prayerPot[2]);
+      if (prayerPotCount > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+        if (swapState && !c.isItemIdEquipped(wearId)) {
+          c.equipItem(c.getInventoryItemSlotIndex(wearId));
+        }
         if (c.getInventoryItemCount(prayerPot[0]) > 0) {
           c.itemCommand(prayerPot[0]);
           c.sleep(320);
@@ -1459,6 +1556,21 @@ public class K_kailaScript extends IdleScript {
       c.displayMessage("@red@ERROR - No brass Key, shutting down bot");
       c.sleep(1000);
       endSession();
+    }
+  }
+  /** non-while Loop to make sure to equip an item */
+  protected static void forceEquipItem(int itemToEquip) {
+    for (int i = 1; i <= 8; i++) {
+      try {
+        if (!c.isItemIdEquipped(itemToEquip)) {
+          c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
+          c.sleep(3 * GAME_TICK);
+        } else {
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
   }
   /**

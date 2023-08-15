@@ -224,7 +224,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
 
       if (useDragonTwoHand && (c.getInventoryItemCount(DRAGON_TWO_HAND) < 1))
         withdrawItem(DRAGON_TWO_HAND, 1);
-      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) < 1)) withdrawItem(CRAFT_CAPE, 1);
+      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) < 1))
+        withdrawItem(CRAFT_CAPE, 1);
       if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
         c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
       if (!craftCapeTeleport) {
@@ -280,6 +281,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
         c.itemCommand(CRAFT_CAPE);
         c.sleep(4 * GAME_TICK);
       }
+      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));

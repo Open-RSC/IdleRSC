@@ -155,6 +155,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       }
     }
   }
+
   private void eat() {
     boolean ate = eatFood(ANTI_DRAGON_SHIELD, useDragonTwoHand);
     if (!ate) {
@@ -165,6 +166,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       BankToDragons();
     }
   }
+
   private void walkToCenter() {
     if (!c.isInCombat() && (c.currentX() != 370 || c.currentY() != 3353)) {
       c.walkTo(370, 3353);
@@ -325,6 +327,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         c.itemCommand(CRAFT_CAPE);
         c.sleep(4 * GAME_TICK);
       }
+      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));

@@ -1518,15 +1518,18 @@ public class K_kailaScript extends IdleScript {
    * anti dragon shield is in bank, withdraw, exit bank, and wield it.
    */
   protected static void bankCheckAntiDragonShield() {
-    if (!c.isItemIdEquipped(420)) {
-      c.log("@red@Not Wielding Dragonfire Shield!.", "@red@");
-      if (c.getBankItemCount(420) == 0) {
+    final int ANTI_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
+    if (!c.isItemIdEquipped(ANTI_SHIELD)) {
+      if (c.getInventoryItemCount(ANTI_SHIELD) > 0) return;
+      if (c.getBankItemCount(420) > 0) {
+        c.withdrawItem(420, 1);
+        c.closeBank();
+        c.equipItem(c.getInventoryItemSlotIndex(420));
+        c.sleep(GAME_TICK);
+      } else {
         c.log("Warning: Cannot find anti dragon shield, logging OUT", "@red@");
         endSession();
       }
-      c.withdrawItem(420, 1);
-      c.closeBank();
-      c.equipItem(c.getInventoryItemSlotIndex(420));
     }
   }
 
@@ -1573,15 +1576,49 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
+  /** Loop to Use agility cape to teleport<br> */
+  protected static void teleportOutAgilityCape() {
+    for (int i = 1; i <= 10; i++) {
+      try {
+        if (c.currentX() != 591 && c.currentY() != 765) {
+          c.setStatus("@gre@Teleporting..");
+          c.itemCommand(ItemId.AGILITY_CAPE.getId());
+          c.sleep(4 * GAME_TICK);
+        } else {
+          c.sleep(4 * GAME_TICK);
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Loop to Use craft cape to teleport<br> */
+  protected static void teleportOutCraftCape() {
+    for (int i = 1; i <= 10; i++) {
+      try {
+        if (c.currentX() != 347 && c.currentY() != 599) {
+          c.setStatus("@gre@Teleporting..");
+          c.itemCommand(ItemId.CRAFTING_CAPE.getId());
+          c.sleep(4 * GAME_TICK);
+        } else {
+          c.sleep(4 * GAME_TICK);
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
   /**
    * (depreciated) while in KBD lair attempt to tele to lumbridge <br>
    * todo change to "while NOT in lumbridge, attempt to teleport"
    */
   protected static void teleportOutLumbridge() {
-    for (int i = 1; i <= 8; i++) {
+    for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentY() < 400) { // change to lumb tele location
-          c.setStatus("@gre@Done Walking..Teleporting(n)..");
+          c.setStatus("@gre@Done Walking..Teleporting..");
           c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
           c.sleep(2 * GAME_TICK);
         } else {
@@ -1655,7 +1692,7 @@ public class K_kailaScript extends IdleScript {
         if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 581) {
           c.setStatus("@red@Crossing Tav Gate..");
           c.atObject(343, 581); // gate won't break if someone else opens it
-          c.sleep(800);
+          c.sleep(2 * GAME_TICK);
         } else {
           break;
         }
@@ -1671,7 +1708,7 @@ public class K_kailaScript extends IdleScript {
         if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 580) {
           c.setStatus("@red@Crossing Tav Gate..");
           c.atObject(343, 581); // gate won't break if someone else opens it
-          c.sleep(800);
+          c.sleep(2 * GAME_TICK);
         } else {
           break;
         }
@@ -1688,7 +1725,7 @@ public class K_kailaScript extends IdleScript {
         if (c.currentX() == 347 && c.currentY() == 600) {
           c.setStatus("@red@Entering Crafting Guild..");
           c.atWallObject(347, 601); // gate won't break if someone else opens it
-          c.sleep(800);
+          c.sleep(2 * GAME_TICK);
         } else {
           break;
         }
@@ -1705,7 +1742,7 @@ public class K_kailaScript extends IdleScript {
         if (c.currentX() == 347 && c.currentY() == 600) {
           c.setStatus("@red@Entering Crafting Guild..");
           c.atWallObject(347, 601); // gate won't break if someone else opens it
-          c.sleep(800);
+          c.sleep(2 * GAME_TICK);
         } else {
           break;
         }
@@ -1721,7 +1758,7 @@ public class K_kailaScript extends IdleScript {
         if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
           c.setStatus("@red@Crossing Tav Gate..");
           c.atObject(341, 487); // gate won't break if someone else opens it
-          c.sleep(800);
+          c.sleep(2 * GAME_TICK);
         } else {
           break;
         }
@@ -1737,7 +1774,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() == 342 && c.currentY() < 489 && c.currentY() > 486) {
           c.atObject(341, 487); // gate won't break if someone else opens it
-          c.sleep(800);
+          c.sleep(2 * GAME_TICK);
         } else {
           break;
         }
@@ -1752,7 +1789,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() == 593 && c.currentY() == 3589) {
           c.atWallObject2(593, 3590); // locked door
-          c.sleep(1000);
+          c.sleep(2 * GAME_TICK);
           if (c.isBatching()) c.sleep(2 * GAME_TICK);
         } else {
           break;
@@ -1802,7 +1839,7 @@ public class K_kailaScript extends IdleScript {
         if (c.currentY() == 3266) {
           c.setStatus("@gre@Opening Wildy Gate..");
           c.atObject(196, 3266);
-          c.sleep(440);
+          c.sleep(GAME_TICK);
         } else {
           c.setStatus("@gre@Done Opening Wildy Gate..");
           break;

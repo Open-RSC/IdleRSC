@@ -257,11 +257,9 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   // PATHING private voids
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Tav Gate..");
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
-      while (c.currentX() != 347 && c.currentY() != 599) {
-        c.itemCommand(ItemId.CRAFTING_CAPE.getId());
-        c.sleep(4 * GAME_TICK);
-      }
+    if (craftCapeTeleport) {
+      teleportOutCraftCape();
+      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);
       c.walkTo(343, 581);
@@ -323,21 +321,16 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private void DragonsToBank() {
     if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      while (c.currentX() != 347 && c.currentY() != 599) {
-        c.itemCommand(CRAFT_CAPE);
-        c.sleep(4 * GAME_TICK);
-      }
+      teleportOutCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
+      forceEquipItem(CRAFT_CAPE);
+      craftCapeDoorEntering();
+      forceEquipItem(ATTACK_CAPE);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        c.sleep(3 * GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       }
-      forceEquipItem(CRAFT_CAPE);
-      c.sleep(4 * GAME_TICK);
-      craftCapeDoorEntering();
-      c.sleep(2 * GAME_TICK);
-      forceEquipItem(ATTACK_CAPE);
       c.walkTo(347, 607);
       c.walkTo(346, 608);
       totalTrips = totalTrips + 1;
@@ -362,7 +355,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JLabel label6 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel blankLabel = new JLabel("     ");
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", true);
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");

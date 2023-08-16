@@ -1561,7 +1561,7 @@ public class K_kailaScript extends IdleScript {
       endSession();
     }
   }
-  /** non-while Loop to make sure to equip an item */
+  /** Loop to make sure to equip an item */
   protected static void forceEquipItem(int itemToEquip) {
     for (int i = 1; i <= 8; i++) {
       try {
@@ -1576,7 +1576,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /** Loop to Use agility cape to teleport<br> */
+  /** Loop Use agility cape to teleport */
   protected static void teleportOutAgilityCape() {
     for (int i = 1; i <= 10; i++) {
       try {
@@ -1593,7 +1593,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /** Loop to Use craft cape to teleport<br> */
+  /** Loop Use craft cape to teleport */
   protected static void teleportOutCraftCape() {
     for (int i = 1; i <= 10; i++) {
       try {
@@ -1610,18 +1610,16 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /**
-   * (depreciated) while in KBD lair attempt to tele to lumbridge <br>
-   * todo change to "while NOT in lumbridge, attempt to teleport"
-   */
-  protected static void teleportOutLumbridge() {
+  /** Loop teleport to Lumbridge center */
+  protected static void teleportToLumbridge() {
     for (int i = 1; i <= 10; i++) {
       try {
-        if (c.currentY() < 400) { // change to lumb tele location
-          c.setStatus("@gre@Done Walking..Teleporting..");
+        if (c.currentX() != 120 && c.currentY() != 648) {
+          c.setStatus("@gre@Teleporting..");
           c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
-          c.sleep(2 * GAME_TICK);
+          c.sleep(3 * GAME_TICK);
         } else {
+          c.sleep(4 * GAME_TICK);
           break;
         }
       } catch (Exception e) {
@@ -1629,18 +1627,84 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /**
-   * (depreciated) while in tav dungeon attempt to tele to falador <br>
-   * todo change to "while NOT in location, then attempt to teleport"
-   */
-  protected static void teleportOutFalador() {
-    for (int i = 1; i <= 8; i++) {
+  /** Loop teleport to Falador center */
+  protected static void teleportToFalador() {
+    for (int i = 1; i <= 10; i++) {
       try {
-        if (c.currentY() > 2000) { // change to fally tele location
-          c.setStatus("@gre@Done Walking..Teleporting(n)..");
+        if (c.currentX() != 312 && c.currentY() != 552) {
+          c.setStatus("@gre@Teleporting..");
           c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-          c.sleep(2 * GAME_TICK);
+          c.sleep(3 * GAME_TICK);
         } else {
+          c.sleep(4 * GAME_TICK);
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Loop teleport to Varrock center */
+  protected static void teleportToVarrock() {
+    for (int i = 1; i <= 10; i++) {
+      try {
+        if (c.currentX() != 120 && c.currentY() != 504) {
+          c.setStatus("@gre@Teleporting..");
+          c.castSpellOnSelf(c.getSpellIdFromName("Varrock Teleport"));
+          c.sleep(3 * GAME_TICK);
+        } else {
+          c.sleep(4 * GAME_TICK);
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Loop teleport to Camelot Castle */
+  protected static void teleportToCamelot() {
+    for (int i = 1; i <= 10; i++) {
+      try {
+        if (c.currentX() != 456 && c.currentY() != 456) {
+          c.setStatus("@gre@Teleporting..");
+          c.castSpellOnSelf(c.getSpellIdFromName("Camelot Teleport"));
+          c.sleep(3 * GAME_TICK);
+        } else {
+          c.sleep(4 * GAME_TICK);
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Loop teleport to Ardougne */
+  protected static void teleportToArdy() {
+    for (int i = 1; i <= 10; i++) {
+      try {
+        if (c.currentX() != 588 && c.currentY() != 621) {
+          c.setStatus("@gre@Teleporting..");
+          c.castSpellOnSelf(c.getSpellIdFromName("Ardougne Teleport"));
+          c.sleep(3 * GAME_TICK);
+        } else {
+          c.sleep(4 * GAME_TICK);
+          break;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+  /** Loop teleport to Watchtower */
+  protected static void teleportToWatchtower() {
+    for (int i = 1; i <= 10; i++) {
+      try {
+        if (c.currentX() != 493 && c.currentY() != 3525) {
+          c.setStatus("@gre@Teleporting..");
+          c.castSpellOnSelf(c.getSpellIdFromName("Watchtower Teleport"));
+          c.sleep(3 * GAME_TICK);
+        } else {
+          c.sleep(4 * GAME_TICK);
           break;
         }
       } catch (Exception e) {

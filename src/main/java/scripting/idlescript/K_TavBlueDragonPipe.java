@@ -336,13 +336,14 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       totalTrips = totalTrips + 1;
       c.sleep(GAME_TICK);
     } else {
-      teleportOutFalador();
-      totalTrips = totalTrips + 1;
+      teleportToFalador();
+
       c.sleep(308);
       c.walkTo(327, 552);
       c.sleep(308);
-      c.setStatus("@gre@Done Walking..");
     }
+    totalTrips = totalTrips + 1;
+    c.setStatus("@gre@Done Walking..");
   }
   // GUI stuff below (icky)
   private void setupGUI() {
@@ -354,8 +355,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JLabel label5 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label6 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel blankLabel = new JLabel("     ");
-    JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");

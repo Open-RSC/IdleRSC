@@ -443,8 +443,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel label7 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label8 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel blankLabel = new JLabel("     ");
-    JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword?", true);
     JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword?", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");

@@ -271,7 +271,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       }
       c.walkTo(347, 607);
       c.walkTo(346, 608);
-      totalTrips = totalTrips + 1;
     } else {
       for (int i = 1; i <= 12; i++) {
         if (c.currentY() > 3000) {
@@ -280,7 +279,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
           c.sleep(2 * GAME_TICK);
         }
       }
-      totalTrips = totalTrips + 1;
       if (c.isPrayerOn(c.getPrayerId("Paralyze Monster"))) {
         c.disablePrayer(c.getPrayerId("Paralyze Monster"));
       }
@@ -288,6 +286,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.walkTo(327, 552);
       c.sleep(308);
     }
+    totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 

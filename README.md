@@ -249,9 +249,9 @@ clients available for RSC post-closure. After Jagex decided to nerf the
 blowpipe in OSRS, the original coder gained renewed interest in January 2021,
 and the project was resurrected and released.
 
-The original owner is no longer part of this fork of the project. However all
+The original owner is no longer part of this fork of the project. However,
 credit for writing the original client goes to DvorakKeys.
-Additional credit goes to various developers including but not limited to:
+Credit also goes to many developers including but not limited to:
 Damrau, Grawlinson, JonathanB31, Kaila Btw, Kkoemets, and Searos.
 
 The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after

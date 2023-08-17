@@ -899,7 +899,45 @@ public class Main {
       scriptFrame.setVisible(true);
       scriptFrame.requestFocusInWindow();
     } else {
-      JOptionPane.showMessageDialog(null, "Stop the current script first.");
+      // JOptionPane.showMessageDialog(null, "Stop the current script first.");
+
+      JLabel stopLabel = new JLabel("A Script is already running for this account!");
+      JLabel stopLabel2 = new JLabel("You must stop the script before loading a new one");
+      JButton cancelButton = new JButton("Force cancel script");
+      JButton closeWindow = new JButton("Close this warning");
+
+      if (config.getUsername() != null) {
+        scriptFrame = new JFrame(config.getUsername() + "'s Script Running");
+      } else if (controller.getPlayerName() != null) {
+        scriptFrame = new JFrame(controller.getPlayerName() + "'s Script Running");
+      } else {
+        scriptFrame = new JFrame("Script Running");
+      }
+
+      scriptFrame.setLayout(new GridLayout(0, 1));
+      scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      scriptFrame.add(stopLabel);
+      scriptFrame.add(stopLabel2);
+      scriptFrame.add(cancelButton);
+      scriptFrame.add(closeWindow);
+
+      cancelButton.addActionListener(
+          e -> {
+            setRunning(false);
+            scriptFrame.setVisible(false);
+            scriptFrame.dispose();
+          });
+
+      closeWindow.addActionListener(
+          e -> {
+            scriptFrame.setVisible(false);
+            scriptFrame.dispose();
+          });
+
+      scriptFrame.pack();
+      scriptFrame.setLocationRelativeTo(null);
+      scriptFrame.setVisible(true);
+      scriptFrame.requestFocusInWindow();
     }
   }
 }

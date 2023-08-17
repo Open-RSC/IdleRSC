@@ -778,7 +778,7 @@ public class Main {
   /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
   private static void handleCache(Config config) {
     final int COLESLAW_PORT = 43599;
-    final int URANIUM_PORT = 43235;
+    final int URANIUM_PORT = 43601;
     // Does the directory exist?
     File cacheDirectory = new File("Cache/");
 

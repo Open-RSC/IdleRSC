@@ -39,7 +39,7 @@ public final class Abyte0_GetSnape extends Abyte0_Script {
   };
 
   // client extension;
-  private Abyte0_GetSnape(String e) {
+  public Abyte0_GetSnape(String e) {
     super(e);
     // extension = new client();
   }

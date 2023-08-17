@@ -18,7 +18,7 @@ public final class Abyte0_GuildMiner extends Abyte0_Script {
 
   boolean mith = false;
   // Extension myReference = null;
-  private Abyte0_GuildMiner(String e) {
+  public Abyte0_GuildMiner(String e) {
     super(e);
     // myReference = e;
   }

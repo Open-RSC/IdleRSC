@@ -16,7 +16,7 @@ public class Abyte0_FallyMiner extends Script {
   int cptTry = 0;
   int cptInventaireToBank = 30;
 
-  private Abyte0_FallyMiner(String e) {
+  public Abyte0_FallyMiner(String e) {
     // super(e);
   }
 

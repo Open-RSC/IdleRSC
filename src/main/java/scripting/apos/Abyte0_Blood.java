@@ -15,7 +15,7 @@ public final class Abyte0_Blood extends Abyte0_Script {
   int minWait = 30000;
   int maxWait = 90000;
 
-  private Abyte0_Blood(String e) {
+  public Abyte0_Blood(String e) {
     super(e);
   }
 

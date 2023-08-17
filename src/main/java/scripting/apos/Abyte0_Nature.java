@@ -14,7 +14,7 @@ import compatibility.apos.Script;
 public final class Abyte0_Nature extends Script {
   int cpt = 0;
 
-  private Abyte0_Nature(String e) {
+  public Abyte0_Nature(String e) {
     //        super(e);
   }
 

@@ -58,7 +58,7 @@ public final class Abyte0_DarkWizard extends Script {
     System.out.println(txt);
   }
 
-  private Abyte0_DarkWizard(String e) {}
+  public Abyte0_DarkWizard(String e) {} // must be public modifier
 
   public void init(String params) {
 

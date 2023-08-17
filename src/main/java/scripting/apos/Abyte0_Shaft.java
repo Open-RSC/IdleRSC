@@ -7,7 +7,7 @@ public final class Abyte0_Shaft extends Abyte0_Script {
 
   int x, y;
 
-  private Abyte0_Shaft(String e) {
+  public Abyte0_Shaft(String e) {
     super(e);
   }
 

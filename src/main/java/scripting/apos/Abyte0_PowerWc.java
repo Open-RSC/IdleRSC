@@ -22,7 +22,7 @@ public final class Abyte0_PowerWc extends Abyte0_Script {
   int[] treeId;
   final int fmode = 1;
 
-  private Abyte0_PowerWc(String e) {
+  public Abyte0_PowerWc(String e) {
     super(e);
   }
 

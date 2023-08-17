@@ -10,7 +10,7 @@ public class Abyte0_Firemaking extends Abyte0_Script {
   private ArrayList<Point> _lastTree = null;
   private final ArrayList<ArrayList<Point>> _paths = new ArrayList<>();
 
-  private Abyte0_Firemaking(String e) {
+  public Abyte0_Firemaking(String e) {
     super(e);
   }
 

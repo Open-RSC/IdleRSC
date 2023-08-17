@@ -26,7 +26,7 @@ public final class Abyte0_ArdSmelter extends Abyte0_Script {
 
   int[] doorObj;
 
-  private Abyte0_ArdSmelter(String e) {
+  public Abyte0_ArdSmelter(String e) {
     super(e);
   }
 

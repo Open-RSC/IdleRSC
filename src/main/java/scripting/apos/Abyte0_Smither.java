@@ -18,7 +18,7 @@ public final class Abyte0_Smither extends Abyte0_Script {
 
   int cptReponseActuel = 0;
 
-  private Abyte0_Smither(String e) {
+  public Abyte0_Smither(String e) {
     super(e);
   }
 

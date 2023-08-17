@@ -46,7 +46,7 @@ public class Abyte0_ArdThiever extends Abyte0_Script {
         wineId // wine
       };
 
-  private Abyte0_ArdThiever(String e) {
+  public Abyte0_ArdThiever(String e) {
     super(e);
   }
 

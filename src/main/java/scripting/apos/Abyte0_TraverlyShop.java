@@ -24,7 +24,7 @@ public class Abyte0_TraverlyShop extends Abyte0_Script {
   final String[] cptEyesName = {"0", "5", "10", "14", "15", "19", "24", "29"};
   final int[] cptEyesList = {0, 5, 10, 14, 15, 19, 24, 29};
 
-  private Abyte0_TraverlyShop(String e) {
+  public Abyte0_TraverlyShop(String e) {
     super(e);
   }
 

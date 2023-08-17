@@ -60,7 +60,7 @@ public final class Abyte0_Fletch extends Script {
     System.out.println(gameText);
   }
 
-  private Abyte0_Fletch(String e) {}
+  public Abyte0_Fletch(String e) {}
 
   public void init(String param) {
     print("Seer Fletcher by Abyte0");

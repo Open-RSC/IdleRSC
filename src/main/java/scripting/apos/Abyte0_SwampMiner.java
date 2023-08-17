@@ -26,7 +26,7 @@ public final class Abyte0_SwampMiner extends Script {
 
   final int cptInventaireToBank = 30;
 
-  private Abyte0_SwampMiner(String e) {
+  public Abyte0_SwampMiner(String e) {
     // super(e);
   }
 

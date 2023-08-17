@@ -38,7 +38,7 @@ public final class Abyte0_SAF extends Abyte0_Script {
   // abyte0_saf f=3,n=321,r=25,h=20,e=373,w=1,b=1
   // f=0,n=3,w=1  for Chicken controlled
 
-  private Abyte0_SAF(String e) {
+  public Abyte0_SAF(String e) {
     super(e);
   }
 

@@ -41,7 +41,7 @@ public final class Abyte0_MagicSmelter extends Script {
 
   int[] doorObj;
 
-  private Abyte0_MagicSmelter(String e) {
+  public Abyte0_MagicSmelter(String e) {
     // super(e);
   }
 

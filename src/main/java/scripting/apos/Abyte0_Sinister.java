@@ -118,7 +118,7 @@ public final class Abyte0_Sinister extends Abyte0_Script {
   final String[] drinkOrNotName = {"Drink", "No Drink"};
   int drinkOrNot = 0; // Default Setting
 
-  private Abyte0_Sinister(String e) {
+  public Abyte0_Sinister(String e) {
     super(e);
   }
 

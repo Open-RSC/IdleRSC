@@ -29,7 +29,7 @@ public final class Abyte0_ArdMiner extends Abyte0_Script {
     return Mine();
   }
 
-  private int Mine() {
+  public int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }

@@ -14,7 +14,7 @@ public class Abyte0_Flax extends Script {
 
   public Abyte0_Flax(String e) {}
 
-  private void print(String s) {
+  public void print(String s) {
     System.out.println(s);
   }
 

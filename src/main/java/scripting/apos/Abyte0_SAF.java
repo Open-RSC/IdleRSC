@@ -214,13 +214,13 @@ public final class Abyte0_SAF extends Abyte0_Script {
     System.out.println("= - - - - - - - - - - - - - - - - - - - - - - - - - - =");
   }
 
-  private void BuryBigBone() {
+  public void BuryBigBone() {
     int boneIndex = getInventoryIndex(bigBonesID);
     System.out.println("Bury Bones at position : " + boneIndex);
     useItem(boneIndex);
   }
 
-  private int TryPickup() {
+  public int TryPickup() {
     if (isPickupEnabled) {
       int[] item = getItemById(pickupID);
       if (item[0] != -1) {
@@ -237,7 +237,7 @@ public final class Abyte0_SAF extends Abyte0_Script {
     return -1;
   }
 
-  private int TryBury() {
+  public int TryBury() {
     if (bury) {
       if (getInventoryCount(bigBonesID) > 0) {
         if (inCombat()) {
@@ -263,11 +263,11 @@ public final class Abyte0_SAF extends Abyte0_Script {
     return -1;
   }
 
-  private void RunFromCombat() {
+  public void RunFromCombat() {
     walkTo(startX, startY);
   }
 
-  private int getUntrapped() {
+  public int getUntrapped() {
     for (int i = 1; i < 8; i++) {
       int result = getUntrappedByMaxDistance(i);
       if (result != 0) return result;
@@ -276,7 +276,7 @@ public final class Abyte0_SAF extends Abyte0_Script {
     return 0;
   }
 
-  private int getUntrappedByMaxDistance(int maxDistance) {
+  public int getUntrappedByMaxDistance(int maxDistance) {
     // Gate
     int[] Gate = getObjectById(57);
     if (Gate[0] != -1) {

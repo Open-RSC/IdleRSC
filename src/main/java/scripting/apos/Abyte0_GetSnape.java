@@ -184,7 +184,7 @@ public final class Abyte0_GetSnape extends Abyte0_Script {
   //	System.out.println(gameText);
   // }
 
-  private void EatFood() {
+  public void EatFood() {
     int foodIndex = getInventoryIndex(foodId);
     useItem(foodIndex);
   }

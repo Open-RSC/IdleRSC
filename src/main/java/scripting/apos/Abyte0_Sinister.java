@@ -593,16 +593,16 @@ public final class Abyte0_Sinister extends Abyte0_Script {
     return random(2000, 2500);
   }
 
-  private final void EatFood() {
+  public final void EatFood() {
     int foodIndex = getInventoryIndex(foodId);
     useItem(foodIndex);
   }
 
-  private void RunFromCombat() {
+  public void RunFromCombat() {
     walkTo(getX(), getY());
   }
 
-  private void RunSouthOrAttackSouth(int[] npcIds) {
+  public void RunSouthOrAttackSouth(int[] npcIds) {
     boolean npcFound = false;
 
     print("Run or attack V2");

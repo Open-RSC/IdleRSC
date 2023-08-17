@@ -57,7 +57,7 @@ public final class Abyte0_Nature extends Script {
     return random(random(126, 567), 1142);
   }
 
-  private void print(String gameText) {
+  public void print(String gameText) {
     System.out.println(gameText);
   }
 }

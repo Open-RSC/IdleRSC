@@ -56,7 +56,7 @@ public final class Abyte0_Fletch extends Script {
 
   final int fmode = 3;
 
-  private final void print(String gameText) {
+  public final void print(String gameText) {
     System.out.println(gameText);
   }
 
@@ -247,7 +247,7 @@ public final class Abyte0_Fletch extends Script {
     return random(800, 1000);
   }
 
-  private int cut() {
+  public int cut() {
     if (getInventoryCount(logId) > 0) {
       useItemWithItem(getInventoryIndex(knife), getInventoryIndex(logId));
       return random(500, 600);
@@ -255,7 +255,7 @@ public final class Abyte0_Fletch extends Script {
     return 0;
   }
 
-  private int sortirBanque() {
+  public int sortirBanque() {
     if (getX() == 500 && getY() == 453) {
       // si devant porte on ouvre et on sort de la banque
       atObject(500, 454);
@@ -271,7 +271,7 @@ public final class Abyte0_Fletch extends Script {
     return 0;
   }
 
-  private int entreBanque() {
+  public int entreBanque() {
     if (getX() >= 498 && getX() <= 504 && getY() >= 447 && getY() <= 453) {
       // Si dans la banque
       int[] banker = getNpcByIdNotTalk(95);

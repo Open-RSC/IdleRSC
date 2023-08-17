@@ -59,7 +59,7 @@ public final class Abyte0_SwampMiner extends Script {
     return Mine();
   }
 
-  private int Mine() {
+  public int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }
@@ -298,11 +298,11 @@ public final class Abyte0_SwampMiner extends Script {
     }
   }
 
-  private void print(String gameText) {
+  public void print(String gameText) {
     System.out.println(gameText);
   }
 
-  private int mineOre(int id) {
+  public int mineOre(int id) {
     int[] rock = getObjectById(id);
     if (rock[0] != -1) {
       if (rock[1] >= 108 && rock[1] <= 118 && rock[2] >= 695 && rock[2] <= 706) {

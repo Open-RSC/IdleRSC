@@ -54,7 +54,7 @@ public final class Abyte0_DarkWizard extends Script {
   final String[] fModeName = {"Attack", "Defence", "Strength", "Controlled"};
   final int[] fModeIdList = {2, 3, 1, 0};
 
-  private void print(String txt) {
+  public void print(String txt) {
     System.out.println(txt);
   }
 
@@ -188,7 +188,7 @@ public final class Abyte0_DarkWizard extends Script {
     return random(1500, 2000);
   }
 
-  private int goFloor0to1() {
+  public int goFloor0to1() {
     int[] ladder = getObjectById(5);
     if (ladder[0] != -1) {
       atObject(ladder[1], ladder[2]);
@@ -197,7 +197,7 @@ public final class Abyte0_DarkWizard extends Script {
     return 0;
   }
 
-  private int goFloor1to2() {
+  public int goFloor1to2() {
     int[] ladder = getObjectById(5);
     if (ladder[0] != -1) {
       atObject(ladder[1], ladder[2]);
@@ -206,7 +206,7 @@ public final class Abyte0_DarkWizard extends Script {
     return 0;
   }
 
-  private int goFloor2to1() {
+  public int goFloor2to1() {
     int[] ladder = getObjectById(6);
     if (ladder[0] != -1) {
       atObject(ladder[1], ladder[2]);
@@ -215,7 +215,7 @@ public final class Abyte0_DarkWizard extends Script {
     return 0;
   }
 
-  private int goFloor1to0() {
+  public int goFloor1to0() {
     int[] ladder = getObjectById(6);
     if (ladder[0] != -1) {
       atObject(ladder[1], ladder[2]);
@@ -224,7 +224,7 @@ public final class Abyte0_DarkWizard extends Script {
     return 0;
   }
 
-  private void RunFromCombat() {
+  public void RunFromCombat() {
     walkTo(getX(), getY());
   }
 }

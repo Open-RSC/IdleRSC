@@ -289,7 +289,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup");
     JLabel label4 = new JLabel("Combat Styles ::attack :strength ::defense ::c");
-    JLabel label5 = new JLabel("Param Format: \"auto\" for controlled, shark, 1");
+    JLabel label5 = new JLabel("Param Format: \"auto\" for default no_gui start");
     JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);

@@ -11,7 +11,7 @@ package scripting.apos;
  * abyte0_powerwc yew<br>
  * abyte0_powerwc magic<br>
  */
-public final class Abyte0_PowerWc extends Abyte0_Script {
+public class Abyte0_PowerWc extends Abyte0_Script {
   final int[] normalTree = {0, 1};
   final int[] oakTree = {306};
   final int[] willowTree = {307};
@@ -22,7 +22,7 @@ public final class Abyte0_PowerWc extends Abyte0_Script {
   int[] treeId;
   final int fmode = 1;
 
-  private Abyte0_PowerWc(String e) {
+  public Abyte0_PowerWc(String e) {
     super(e);
   }
 

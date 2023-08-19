@@ -16,7 +16,7 @@ public class Abyte0_FallyMiner extends Script {
   int cptTry = 0;
   int cptInventaireToBank = 30;
 
-  private Abyte0_FallyMiner(String e) {
+  public Abyte0_FallyMiner(String e) {
     // super(e);
   }
 
@@ -39,7 +39,7 @@ public class Abyte0_FallyMiner extends Script {
     return Mine();
   }
 
-  private int Mine() {
+  public int Mine() {
     if (getFightMode() != fMode) {
       setFightMode(fMode);
     }
@@ -187,7 +187,7 @@ public class Abyte0_FallyMiner extends Script {
     }
   }
 
-  private void print(String gameText) {
+  public void print(String gameText) {
     System.out.println(gameText);
   }
 }

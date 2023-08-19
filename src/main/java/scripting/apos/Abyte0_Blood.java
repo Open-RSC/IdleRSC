@@ -15,7 +15,7 @@ public final class Abyte0_Blood extends Abyte0_Script {
   int minWait = 30000;
   int maxWait = 90000;
 
-  private Abyte0_Blood(String e) {
+  public Abyte0_Blood(String e) {
     super(e);
   }
 
@@ -250,7 +250,7 @@ public final class Abyte0_Blood extends Abyte0_Script {
     return random(2000, 2500);
   }
 
-  private int walk() {
+  public int walk() {
     if (getInventoryCount(foodId) <= minFoodToBankAt) {
       // we need to bank
       // 617, 558, 609, 565, 603, 582, 600, 595, 588, 598, 590, 578, 581, 574
@@ -287,13 +287,13 @@ public final class Abyte0_Blood extends Abyte0_Script {
     return 1000;
   }
 
-  private void BuryBigBone() {
+  public void BuryBigBone() {
     int boneIndex = getInventoryIndex(413);
     print("Bury Bones at position : " + boneIndex);
     useItem(boneIndex);
   }
 
-  private int TryBury() {
+  public int TryBury() {
     if (BuryOrNot == 0) {
       if (getInventoryCount(413) > 0) {
         if (inCombat()) {
@@ -319,13 +319,13 @@ public final class Abyte0_Blood extends Abyte0_Script {
     return -1;
   }
 
-  private void RunFromCombat() {
+  public void RunFromCombat() {
     int x = getX();
     int y = getY();
     walkTo(x, y);
   }
 
-  private void RunNorthOrAttackNorth() {
+  public void RunNorthOrAttackNorth() {
     int[] npcs = getNpcInRadius(312, getX(), getY() - 1, 0); // ,525,706);
     if (npcs[0] != -1) attackNpc(npcs[0]);
     else {

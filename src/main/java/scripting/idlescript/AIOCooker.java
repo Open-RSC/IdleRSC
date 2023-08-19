@@ -217,7 +217,6 @@ public class AIOCooker extends IdleScript {
   public void setupGUI() {
     JLabel headerLabel = new JLabel("Start in Catherby!");
     JComboBox<String> foodField = new JComboBox<>();
-    foodField.setSelectedIndex(14);
     JCheckBox dropBurntCheckbox = new JCheckBox("Drop Burnt?", false);
     JCheckBox gauntletsCheckbox = new JCheckBox("Cooking Gauntlets?", false);
 

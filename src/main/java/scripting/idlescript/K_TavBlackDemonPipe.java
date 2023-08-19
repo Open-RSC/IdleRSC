@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -20,13 +21,17 @@ import orsc.ORSCharacter;
  */
 public final class K_TavBlackDemonPipe extends K_kailaScript {
   private static boolean d2hWield = false;
-
+  private static boolean craftCapeTeleport = false;
   private static int totalMed = 0;
   private static int totalDstone = 0;
   private static int totalRbar = 0;
   private static int totalRunestuff = 0;
   private static int totalRchain = 0;
   private static int totalRmed = 0;
+  private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
+  private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
+  private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
+  private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int[] loot = {
     UNID_RANARR, // Grimy Ranarr Weed
     UNID_IRIT, // Grimy Irit
@@ -186,85 +191,48 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
             && itemId != 492
             && itemId != 493
             && itemId != 494
-            && itemId != 420
+            && itemId != ANTI_DRAGON_SHIELD
             && itemId != 485
             && itemId != 484
             && itemId != 483
-            && itemId != 1346) {
+            && itemId != DRAGON_TWO_HAND) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
       c.sleep(1400); // Important, leave in
-      if (c.getInventoryItemCount(420) < 1) { // antidragon shield
-        c.withdrawItem(420, 1);
-        c.sleep(640);
+
+      if (d2hWield && (c.getInventoryItemCount(DRAGON_TWO_HAND) < 1))
+        withdrawItem(DRAGON_TWO_HAND, 1);
+      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) < 1))
+        withdrawItem(CRAFT_CAPE, 1);
+      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
+        c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
+      if (!craftCapeTeleport) {
+        withdrawItem(airId, 18);
+        withdrawItem(lawId, 6);
+        withdrawItem(waterId, 6);
       }
-      if (c.getInventoryItemCount(33) < 18) { // 6 air
-        c.withdrawItem(33, 18 - c.getInventoryItemCount(33));
-        c.sleep(1000);
+      withdrawSuperAttack(1);
+      withdrawSuperStrength(1);
+      withdrawPrayer(16);
+      withdrawFood(546, 2);
+
+      if (!craftCapeTeleport) {
+        bankItemCheck(airId, 30);
+        bankItemCheck(waterId, 10); // Falador teleport
+        bankItemCheck(lawId, 10);
       }
-      if (c.getInventoryItemCount(42) < 6) { // 2 law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(32) < 6) { // 2 water
-        c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-        c.sleep(1000);
-      }
-      c.sleep(640); // leave in
-      if (c.getInventoryItemCount(superAttackPot[0]) < 1
-          && c.getInventoryItemCount(superAttackPot[1]) < 1
-          && c.getInventoryItemCount(superAttackPot[2]) < 1) { // withdraw 10 shark if needed
-        c.withdrawItem(superAttackPot[2], 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(superStrengthPot[0]) < 1
-          && c.getInventoryItemCount(superStrengthPot[1]) < 1
-          && c.getInventoryItemCount(superStrengthPot[2]) < 1) { // withdraw 10 shark if needed
-        c.withdrawItem(superStrengthPot[2], 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(483) < 16) { // withdraw 17 ppot
-        c.withdrawItem(
-            483,
-            16
-                - (c.getInventoryItemCount(483)
-                    + c.getInventoryItemCount(484)
-                    + c.getInventoryItemCount(485))); // minus ppot count
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(546) < 2) { // withdraw 2 shark
-        c.withdrawItem(546, 2 - c.getInventoryItemCount(546));
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(33) < 18) { // 6 air
-        c.withdrawItem(33, 18 - c.getInventoryItemCount(33));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(42) < 6) { // 2 law
-        c.withdrawItem(42, 6 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(32) < 6) { // 2 water
-        c.withdrawItem(32, 6 - c.getInventoryItemCount(32));
-        c.sleep(1000);
-      }
-      if (c.getBankItemCount(546) == 0
-          || c.getBankItemCount(33) == 0
-          || c.getBankItemCount(42) == 0
-          || c.getBankItemCount(32) == 0) {
-        c.setStatus("@red@NO Sharks/Laws/Airs in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      bankItemCheck(prayerPot[2], 17);
+      bankItemCheck(546, 10);
+      bankCheckAntiDragonShield();
       c.closeBank();
+      if (!c.isItemIdEquipped(ATTACK_CAPE)) c.equipItem(c.getInventoryItemSlotIndex(ATTACK_CAPE));
     }
-    inventoryItemCheck(airId, 18);
-    inventoryItemCheck(waterId, 6);
-    inventoryItemCheck(lawId, 6);
+    if (!craftCapeTeleport) {
+      inventoryItemCheck(airId, 18);
+      inventoryItemCheck(waterId, 6);
+      inventoryItemCheck(lawId, 6);
+    }
   }
 
   private static void prayParalyze() {
@@ -285,53 +253,90 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   }
 
   private void DemonsToBank() {
-    c.setStatus("@gre@Going to Bank. Casting 1st teleport.");
-    c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-    c.sleep(1000);
-    for (int i = 1; i <= 20; i++) {
-      if (c.currentY() > 3000) {
-        c.setStatus("@gre@Teleport unsuccessful, Casting nth teleport.");
-        c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-        c.sleep(1000);
+    c.setStatus("@gre@Going to Bank");
+    if (craftCapeTeleport) {
+      c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
+      teleportOutCraftCape();
+      c.sleep(4 * GAME_TICK); // cannot do things after teleport
+      if (c.isPrayerOn(c.getPrayerId("Paralyze Monster"))) {
+        c.disablePrayer(c.getPrayerId("Paralyze Monster"));
       }
-      c.sleep(10);
+      c.walkTo(347, 600);
+      forceEquipItem(CRAFT_CAPE);
+      craftCapeDoorEntering();
+      forceEquipItem(ATTACK_CAPE);
+      if (d2hWield && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+        c.sleep(4 * GAME_TICK);
+      }
+      c.walkTo(347, 607);
+      c.walkTo(346, 608);
+    } else {
+      for (int i = 1; i <= 12; i++) {
+        if (c.currentY() > 3000) {
+          c.setStatus("@gre@Teleport unsuccessful, Casting nth teleport.");
+          c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
+          c.sleep(2 * GAME_TICK);
+        }
+      }
+      if (c.isPrayerOn(c.getPrayerId("Paralyze Monster"))) {
+        c.disablePrayer(c.getPrayerId("Paralyze Monster"));
+      }
+      c.sleep(308);
+      c.walkTo(327, 552);
+      c.sleep(308);
     }
     totalTrips = totalTrips + 1;
-    if (c.isPrayerOn(c.getPrayerId("Paralyze Monster"))) {
-      c.disablePrayer(c.getPrayerId("Paralyze Monster"));
-    }
-    c.sleep(308);
-    c.walkTo(327, 552);
-    c.sleep(308);
     c.setStatus("@gre@Done Walking..");
   }
 
   private void BankToDemons() {
     c.setStatus("@gre@Walking to Black Demons..");
-    c.walkTo(327, 552);
-    c.walkTo(324, 549);
-    c.walkTo(324, 539);
-    c.walkTo(324, 530);
-    c.walkTo(317, 523);
-    c.walkTo(317, 516);
-    c.walkTo(327, 506);
-    c.walkTo(337, 496);
-    c.walkTo(337, 492);
-    c.walkTo(341, 488);
-    tavGateEastToWest();
-    c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
-    c.walkTo(342, 493);
-    c.walkTo(352, 503);
-    c.walkTo(362, 513);
-    c.walkTo(367, 514);
-    c.walkTo(374, 521);
-    c.walkTo(376, 521);
-    c.equipItem(c.getInventoryItemSlotIndex(420));
-    c.sleep(320);
+    if (craftCapeTeleport) {
+      teleportOutCraftCape();
+      c.sleep(4 * GAME_TICK); // cannot do things after teleport
+      c.walkTo(347, 588);
+      c.walkTo(347, 586);
+      c.walkTo(343, 581);
+      tavGateSouthToNorth();
+      c.walkTo(343, 570);
+      c.walkTo(343, 560);
+      c.walkTo(343, 550);
+      c.walkTo(350, 542);
+      c.walkTo(356, 536);
+      c.walkTo(363, 536);
+      c.walkTo(368, 531);
+      c.walkTo(375, 524);
+      c.walkTo(375, 521);
+      c.walkTo(376, 521);
+    } else {
+      c.walkTo(327, 552);
+      c.walkTo(324, 549);
+      c.walkTo(324, 539);
+      c.walkTo(324, 530);
+      c.walkTo(317, 523);
+      c.walkTo(317, 516);
+      c.walkTo(327, 506);
+      c.walkTo(337, 496);
+      c.walkTo(337, 492);
+      c.walkTo(341, 488);
+      tavGateEastToWest();
+      c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
+      c.walkTo(342, 493);
+      c.walkTo(352, 503);
+      c.walkTo(362, 513);
+      c.walkTo(367, 514);
+      c.walkTo(374, 521);
+      c.walkTo(376, 521);
+    }
+    if (d2hWield && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+      c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+    }
+    c.sleep(GAME_TICK);
     c.atObject(376, 520);
     c.sleep(640);
     c.walkTo(375, 3352);
-    if (!c.isItemIdEquipped(420)) {
+    if (!c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
       c.setStatus("@red@Not Wielding Dragonfire Shield!.");
       c.setAutoLogin(false);
       c.logout();
@@ -372,12 +377,15 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     JLabel label3 = new JLabel("70 Agility required, for the shortcut!");
     JLabel label4 = new JLabel("Bot will attempt to wield dragonfire shield");
     JLabel label5 = new JLabel("When walking through Blue Dragon Room");
-    JCheckBox d2hCheckbox = new JCheckBox("Check This if using D2H");
+    JLabel blankLabel = new JLabel("     ");
+    JCheckBox d2hCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
           d2hWield = d2hCheckbox.isSelected();
+          craftCapeTeleport = craftCapeCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           startTime = System.currentTimeMillis();
@@ -394,7 +402,9 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     scriptFrame.add(label3);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
+    scriptFrame.add(blankLabel);
     scriptFrame.add(d2hCheckbox);
+    scriptFrame.add(craftCapeCheckbox);
     scriptFrame.add(startScriptButton);
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);

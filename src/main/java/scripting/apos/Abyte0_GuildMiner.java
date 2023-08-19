@@ -18,7 +18,7 @@ public final class Abyte0_GuildMiner extends Abyte0_Script {
 
   boolean mith = false;
   // Extension myReference = null;
-  private Abyte0_GuildMiner(String e) {
+  public Abyte0_GuildMiner(String e) {
     super(e);
     // myReference = e;
   }
@@ -202,7 +202,7 @@ public final class Abyte0_GuildMiner extends Abyte0_Script {
     return random(302, 400);
   }
 
-  private int mineOre(int id) {
+  public int mineOre(int id) {
     int[] rock = getObjectById(id);
     if (rock[0] != -1) {
       if (rock[1] >= 263 && rock[1] <= 277 && rock[2] >= 3387 && rock[2] <= 3400) {
@@ -215,7 +215,7 @@ public final class Abyte0_GuildMiner extends Abyte0_Script {
     return 0;
   }
 
-  private boolean depositGems() {
+  public boolean depositGems() {
     if (getInventoryCount(155) > 0) {
       deposit(155, getInventoryCount(155));
       return false;

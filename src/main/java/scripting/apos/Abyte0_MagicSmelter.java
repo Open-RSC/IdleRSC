@@ -41,7 +41,7 @@ public final class Abyte0_MagicSmelter extends Script {
 
   int[] doorObj;
 
-  private Abyte0_MagicSmelter(String e) {
+  public Abyte0_MagicSmelter(String e) {
     // super(e);
   }
 
@@ -91,7 +91,7 @@ public final class Abyte0_MagicSmelter extends Script {
     return Mine();
   }
 
-  private int Mine() {
+  public int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }
@@ -180,11 +180,11 @@ public final class Abyte0_MagicSmelter extends Script {
     }
   }
 
-  private void print(String gameText) {
+  public void print(String gameText) {
     System.out.println(gameText);
   }
 
-  private int talkBanker() {
+  public int talkBanker() {
     int[] banker = getNpcByIdNotTalk(95);
     if (banker[0] != -1 && !isBanking()) {
       // print("Hello you Banker!");

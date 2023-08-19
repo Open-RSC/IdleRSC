@@ -11,7 +11,7 @@ public final class Abyte0_Paladin extends Script {
   final boolean eatFoodToPickMithBar = false;
   int[] foodIDs = new int[] {330, 333, 335, 895, 897, 138, 142, 373};
 
-  private Abyte0_Paladin(String var1) {
+  public Abyte0_Paladin(String var1) {
     //        super(var1);
   }
 

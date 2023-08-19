@@ -107,7 +107,7 @@ public class AIOSmelter extends IdleScript {
   Map<Integer, Integer> ingredients = null;
 
   public int start(String[] parameters) {
-    c.quitIfAuthentic();
+    // c.quitIfAuthentic();
     c.toggleBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
@@ -206,10 +206,11 @@ public class AIOSmelter extends IdleScript {
           }
           c.setStatus("Smelting!");
           c.sleepHandler(98, true);
-          // if (c.isBatching() == false) {
-          c.useItemIdOnObject(
-              c.getNearestObjectById(118)[0], c.getNearestObjectById(118)[1], oreId);
-          // }
+          if (!c.isBatching()) {
+            c.useItemIdOnObject(
+                c.getNearestObjectById(118)[0], c.getNearestObjectById(118)[1], oreId);
+            c.sleep(640); // added tick to resync the bot before checking batching
+          }
           if (oreId == 171) {
             c.sleep(
                 3000); // cannonballs take way longer and can be interrupted by starting another one
@@ -218,17 +219,14 @@ public class AIOSmelter extends IdleScript {
             c.optionAnswer(mouldAnswer);
             c.sleep(800);
             c.optionAnswer(gemAnswer);
-            c.sleep(600);
+            c.sleep(640);
             if (!c.isAuthentic()) {
               while (c.isBatching()) {
-                c.sleep(600);
+                c.sleep(640);
               }
             }
-          } else {
-            c.sleep(618);
-          }
-
-          while (c.isBatching()) c.sleep(340);
+          } else c.sleep(640);
+          while (c.isBatching()) c.sleep(640);
         }
 
       } else {

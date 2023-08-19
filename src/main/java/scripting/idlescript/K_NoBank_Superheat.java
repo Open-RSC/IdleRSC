@@ -1,10 +1,10 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 
 /**
  * <b>No Bank Superheat</b>
@@ -18,20 +18,10 @@ import javax.swing.JLabel;
  * @author Kaila
  */
 public final class K_NoBank_Superheat extends K_kailaScript {
-  private static String isMining = "none";
   private static int castsRemaining = 0;
   private static int spellsCasted = 0;
   private static final int IRON_ORE = 151, IRON_BAR = 170, SUPERHEAT_ID = 21, IRON_PLATE = 8;
-  private static final int[] currentOre = {0, 0};
   private static final int[] ironIDs = {102, 103};
-
-  private boolean rockEmpty() {
-    if (currentOre[0] != 0) {
-      return c.getObjectAtCoord(currentOre[0], currentOre[1]) == 98;
-    } else {
-      return true;
-    }
-  }
 
   private void startSequence() {
     c.displayMessage("@red@No Bank Iron Superheat- By Kaila");
@@ -58,18 +48,26 @@ public final class K_NoBank_Superheat extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       dropGems();
-      if (c.getInventoryItemCount(IRON_ORE) > 0) {
+      if (!c.isBatching() && c.getInventoryItemCount(IRON_ORE) > 0) {
         c.castSpellOnInventoryItem(
             SUPERHEAT_ID,
             c.getInventoryItemSlotIndex(IRON_ORE)); // c.getSpellIdFromName("Superheat Item") ]21]
         c.sleep(2 * GAME_TICK);
       }
+      if (!c.isBatching() && c.getInventoryItemCount(IRON_PLATE) > 0) {
+        c.dropItem(c.getInventoryItemSlotIndex(IRON_PLATE), c.getInventoryItemCount(IRON_PLATE));
+        c.sleep(5 * GAME_TICK);
+        waitForBatching();
+      }
+      if (!c.isBatching() && c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()) > 0) {
+        c.dropItem(
+            c.getInventoryItemSlotIndex(ItemId.IRON_DAGGER.getId()),
+            c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()));
+        c.sleep(5 * GAME_TICK);
+        waitForBatching();
+      }
       if (c.getInventoryItemCount() < 30) {
-        if (rockEmpty() || !c.isBatching()) {
-          isMining = "none";
-          currentOre[0] = 0;
-          currentOre[1] = 0;
-        }
+        mine();
       }
       if (c.getInventoryItemCount() == 30) {
         goToAnvil();
@@ -79,6 +77,23 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     }
   }
 
+  private static void mine() {
+    int[] oreCoords = c.getNearestObjectByIds(ironIDs);
+    if (oreCoords != null) {
+      c.walkToAsync(oreCoords[0], oreCoords[1], 1);
+      c.atObject(oreCoords[0], oreCoords[1]);
+      c.sleep(6 * GAME_TICK);
+      while (c.isBatching() && c.getInventoryItemCount() < 30) {
+        c.sleep(2 * GAME_TICK);
+      }
+    }
+  }
+
+  private void goToAnvil() {
+    c.setStatus("@yel@Smelting..");
+    oreToAnvil();
+  }
+
   private void smithing() {
     // c.sleepHandler(98, true);
     c.setStatus("@gre@Casting Superheat");
@@ -86,7 +101,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
       c.castSpellOnInventoryItem(
           SUPERHEAT_ID,
           c.getInventoryItemSlotIndex(IRON_ORE)); // c.getSpellIdFromName("Superheat Item") ]21]
-      c.sleep(2 * GAME_TICK);
+      c.sleep(GAME_TICK);
     }
     castsRemaining = c.getInventoryItemCount(NATURE_RUNE);
     totalBars = totalBars + c.getInventoryItemCount(IRON_BAR);
@@ -120,7 +135,14 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     }
     if (c.getInventoryItemCount(IRON_PLATE) > 0) {
       c.dropItem(c.getInventoryItemSlotIndex(IRON_PLATE), c.getInventoryItemCount(IRON_PLATE));
-      c.sleep(GAME_TICK);
+      c.sleep(5 * GAME_TICK);
+      waitForBatching();
+    }
+    if (c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()) > 0) {
+      c.dropItem(
+          c.getInventoryItemSlotIndex(ItemId.IRON_DAGGER.getId()),
+          c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()));
+      c.sleep(5 * GAME_TICK);
       waitForBatching();
     }
   }
@@ -130,27 +152,6 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     dropItemAmount(UNCUT_EMER, -1, true);
     dropItemAmount(UNCUT_RUBY, -1, true);
     dropItemAmount(UNCUT_DIA, -1, true);
-  }
-
-  private void mine(String i) {
-    if (Objects.equals(i, "iron")) {
-      int[] oreCoords = c.getNearestObjectByIds(ironIDs);
-      if (oreCoords != null) {
-        isMining = "iron";
-        c.atObject(oreCoords[0], oreCoords[1]);
-        currentOre[0] = oreCoords[0];
-        currentOre[1] = oreCoords[1];
-      }
-    }
-    c.sleep(1920);
-  }
-
-  private void goToAnvil() {
-    isMining = "none";
-    currentOre[0] = 0;
-    currentOre[1] = 0;
-    c.setStatus("@yel@Smelting..");
-    oreToAnvil();
   }
 
   private void anvilToOre() {

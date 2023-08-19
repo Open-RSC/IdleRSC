@@ -118,7 +118,7 @@ public final class Abyte0_Sinister extends Abyte0_Script {
   final String[] drinkOrNotName = {"Drink", "No Drink"};
   int drinkOrNot = 0; // Default Setting
 
-  private Abyte0_Sinister(String e) {
+  public Abyte0_Sinister(String e) {
     super(e);
   }
 
@@ -593,16 +593,16 @@ public final class Abyte0_Sinister extends Abyte0_Script {
     return random(2000, 2500);
   }
 
-  private final void EatFood() {
+  public final void EatFood() {
     int foodIndex = getInventoryIndex(foodId);
     useItem(foodIndex);
   }
 
-  private void RunFromCombat() {
+  public void RunFromCombat() {
     walkTo(getX(), getY());
   }
 
-  private void RunSouthOrAttackSouth(int[] npcIds) {
+  public void RunSouthOrAttackSouth(int[] npcIds) {
     boolean npcFound = false;
 
     print("Run or attack V2");

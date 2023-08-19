@@ -26,7 +26,7 @@ public final class Abyte0_ArdSmelter extends Abyte0_Script {
 
   int[] doorObj;
 
-  private Abyte0_ArdSmelter(String e) {
+  public Abyte0_ArdSmelter(String e) {
     super(e);
   }
 
@@ -81,7 +81,7 @@ public final class Abyte0_ArdSmelter extends Abyte0_Script {
     return Mine();
   }
 
-  private int Mine() {
+  public int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }

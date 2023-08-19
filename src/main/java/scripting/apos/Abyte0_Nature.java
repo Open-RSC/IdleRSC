@@ -14,7 +14,7 @@ import compatibility.apos.Script;
 public final class Abyte0_Nature extends Script {
   int cpt = 0;
 
-  private Abyte0_Nature(String e) {
+  public Abyte0_Nature(String e) {
     //        super(e);
   }
 
@@ -57,7 +57,7 @@ public final class Abyte0_Nature extends Script {
     return random(random(126, 567), 1142);
   }
 
-  private void print(String gameText) {
+  public void print(String gameText) {
     System.out.println(gameText);
   }
 }

@@ -778,7 +778,7 @@ public class Main {
   /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
   private static void handleCache(Config config) {
     final int COLESLAW_PORT = 43599;
-    final int URANIUM_PORT = 43235;
+    final int URANIUM_PORT = 43601;
     // Does the directory exist?
     File cacheDirectory = new File("Cache/");
 
@@ -899,7 +899,45 @@ public class Main {
       scriptFrame.setVisible(true);
       scriptFrame.requestFocusInWindow();
     } else {
-      JOptionPane.showMessageDialog(null, "Stop the current script first.");
+      // JOptionPane.showMessageDialog(null, "Stop the current script first.");
+
+      JLabel stopLabel = new JLabel("A Script is already running for this account!");
+      JLabel stopLabel2 = new JLabel("You must stop the script before loading a new one");
+      JButton cancelButton = new JButton("Force cancel script");
+      JButton closeWindow = new JButton("Close this warning");
+
+      cancelButton.addActionListener(
+          e -> {
+            setRunning(false);
+            scriptFrame.setVisible(false);
+            scriptFrame.dispose();
+          });
+
+      closeWindow.addActionListener(
+          e -> {
+            scriptFrame.setVisible(false);
+            scriptFrame.dispose();
+          });
+
+      if (config.getUsername() != null) {
+        scriptFrame = new JFrame(config.getUsername() + "'s Script already running");
+      } else if (controller.getPlayerName() != null) {
+        scriptFrame = new JFrame(controller.getPlayerName() + "'s Script already running");
+      } else {
+        scriptFrame = new JFrame("Script already running");
+      }
+
+      scriptFrame.setLayout(new GridLayout(0, 1));
+      scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      scriptFrame.add(stopLabel);
+      scriptFrame.add(stopLabel2);
+      scriptFrame.add(cancelButton);
+      scriptFrame.add(closeWindow);
+
+      scriptFrame.pack();
+      scriptFrame.setLocationRelativeTo(null);
+      scriptFrame.setVisible(true);
+      scriptFrame.requestFocusInWindow();
     }
   }
 }

@@ -13,9 +13,9 @@ public final class Abyte0_ArdMiner extends Abyte0_Script {
   int cptTry = 0;
   int cptInventaireToBank = 30;
 
-  private Abyte0_ArdMiner(String e) {
+  public Abyte0_ArdMiner(String e) {
     super(e);
-  }
+  } // must be public modifier
 
   public void init(String params) {
     mined = 0;
@@ -29,7 +29,7 @@ public final class Abyte0_ArdMiner extends Abyte0_Script {
     return Mine();
   }
 
-  private int Mine() {
+  public int Mine() {
     if (getFightMode() != 2) {
       setFightMode(2);
     }

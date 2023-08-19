@@ -381,7 +381,7 @@ public class Abyte0_Script extends Storm_Script {
   //		return npcS;
   //	}
 
-  private void RunFromCombat() {
+  public void RunFromCombat() {
     walkTo(getX(), getY());
   }
 

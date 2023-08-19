@@ -12,9 +12,9 @@ public class Abyte0_Flax extends Script {
   final int idBanker = 540;
   boolean power = false;
 
-  private Abyte0_Flax(String e) {}
+  public Abyte0_Flax(String e) {}
 
-  private void print(String s) {
+  public void print(String s) {
     System.out.println(s);
   }
 

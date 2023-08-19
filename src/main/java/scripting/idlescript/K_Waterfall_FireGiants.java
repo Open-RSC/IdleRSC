@@ -113,7 +113,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       lootItems(true, loot);
       superAttackBoost(0, false);
       superStrengthBoost(0, false);
-      if (c.getInventoryItemCount(546) > 0) {
+      if (c.getInventoryItemCount(foodId) > 0) {
         if (c.getInventoryItemCount() < 30) {
           if (!c.isInCombat()) {
             ORSCharacter npc = c.getNearestNpcById(344, false);
@@ -133,7 +133,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
           eatFoodToLoot(true);
         }
       }
-      if (c.getInventoryItemCount(546) == 0) {
+      if (c.getInventoryItemCount(foodId) == 0) {
         c.setStatus("@yel@Banking, escaping south..");
         giantEscape();
         GiantsToBank();
@@ -194,7 +194,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
             && itemId != 492
             && itemId != 493
             && itemId != 494
-            && itemId != 546) {
+            && itemId != foodId) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }

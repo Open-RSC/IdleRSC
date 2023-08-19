@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -18,7 +19,13 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlueDragonPipe extends K_kailaScript {
+  private static boolean useDragonTwoHand = false;
+  private static boolean craftCapeTeleport = false;
   private static int totalRdagger = 0;
+  private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
+  private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
+  private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
+  private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int[] loot = {
     UNID_RANARR, // Grimy Ranarr Weed
     UNID_IRIT, // Grimy Irit
@@ -84,36 +91,43 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        pipeEscape();
-        DragonsToBank();
-        bank();
-        BankToDragons();
+      eat();
+      checkFightMode();
+      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+      if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
+        c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
+        c.sleep(1280);
       }
       if (potUp) {
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
-      checkFightMode();
-      lootItems(false, loot);
+      lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (c.getInventoryItemCount(foodId) > 0 && c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {
+          if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+            c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+          }
           ORSCharacter npc = c.getNearestNpcById(202, false);
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(3 * GAME_TICK);
+            c.sleep(6 * GAME_TICK);
+            if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
+              c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
+              c.sleep(1280);
+            }
           } else {
-            c.sleep(GAME_TICK);
+            if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+              c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
             lootItems(false, loot);
             if (buryBones) buryBones(false);
             if (potUp) {
               superAttackBoost(2, false);
               superStrengthBoost(2, false);
             }
-            walkToCenter();
+            // walkToCenter();
           }
         }
       }
@@ -123,6 +137,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         eatFoodToLoot(false);
       }
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
+        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         pipeEscape();
         c.setStatus("@yel@Banking..");
         timeToBank = false;
@@ -137,6 +153,17 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         }
         BankToDragons();
       }
+    }
+  }
+
+  private void eat() {
+    boolean ate = eatFood(ANTI_DRAGON_SHIELD, useDragonTwoHand);
+    if (!ate) {
+      c.setStatus("@red@We've ran out of Food! Running Away!.");
+      pipeEscape();
+      DragonsToBank();
+      bank();
+      BankToDragons();
     }
   }
 
@@ -184,58 +211,99 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
             && itemId != 488
             && itemId != 492
             && itemId != 493
-            && itemId != 494) {
+            && itemId != 494
+            && itemId != 1346 // d2h
+            && itemId != 1374 // attack cape
+            && itemId != 1384) { // craft cape
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
       bankBones = c.getBankItemCount(814);
       c.sleep(1240); // Important, leave in
 
+      int dragonTwoHand = ItemId.DRAGON_2_HANDED_SWORD.getId();
+      if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))
+        withdrawItem(dragonTwoHand, 1);
+      int craftCape = ItemId.CRAFTING_CAPE.getId();
+      if (craftCapeTeleport && (c.getInventoryItemCount(craftCape) < 1)) withdrawItem(craftCape, 1);
+      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
+        c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
+      if (!craftCapeTeleport) {
+        withdrawItem(airId, 18);
+        withdrawItem(lawId, 6);
+        withdrawItem(waterId, 6);
+      }
       if (potUp) {
         withdrawSuperAttack(1);
         withdrawSuperStrength(1);
       }
-      withdrawItem(airId, 18);
-      withdrawItem(lawId, 6);
-      withdrawItem(waterId, 6);
       withdrawFood(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 30);
-      bankItemCheck(airId, 30);
-      bankItemCheck(waterId, 10); // Falador teleport
-      bankItemCheck(lawId, 10);
+      if (!craftCapeTeleport) {
+        bankItemCheck(airId, 30);
+        bankItemCheck(waterId, 10); // Falador teleport
+        bankItemCheck(lawId, 10);
+      }
       bankCheckAntiDragonShield();
       c.closeBank();
+      if (!c.isItemIdEquipped(ATTACK_CAPE)) c.equipItem(c.getInventoryItemSlotIndex(ATTACK_CAPE));
     }
-    inventoryItemCheck(airId, 18);
-    inventoryItemCheck(waterId, 6);
-    inventoryItemCheck(lawId, 6);
+    if (!craftCapeTeleport) {
+      inventoryItemCheck(airId, 18);
+      inventoryItemCheck(waterId, 6);
+      inventoryItemCheck(lawId, 6);
+    }
   }
   // PATHING private voids
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Tav Gate..");
-    c.walkTo(327, 552);
-    c.walkTo(324, 549);
-    c.walkTo(324, 539);
-    c.walkTo(324, 530);
-    c.walkTo(317, 523);
-    c.walkTo(317, 516);
-    c.walkTo(327, 506);
-    c.walkTo(337, 496);
-    c.walkTo(337, 492);
-    c.walkTo(341, 488);
-    tavGateEastToWest();
-    c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
-    c.walkTo(342, 493);
-    c.walkTo(350, 501);
-    c.walkTo(355, 506);
-    c.walkTo(360, 511);
-    c.walkTo(362, 513);
-    c.walkTo(367, 514);
-    c.walkTo(374, 521);
-    c.walkTo(376, 521);
+    if (craftCapeTeleport) {
+      teleportOutCraftCape();
+      c.sleep(4 * GAME_TICK); // cannot do things after teleport
+      c.walkTo(347, 588);
+      c.walkTo(347, 586);
+      c.walkTo(343, 581);
+      tavGateSouthToNorth();
+      c.walkTo(343, 570);
+      c.walkTo(343, 560);
+      c.walkTo(343, 550);
+      c.walkTo(350, 542);
+      c.walkTo(356, 536);
+      c.walkTo(363, 536);
+      c.walkTo(368, 531);
+      c.walkTo(375, 524);
+      c.walkTo(375, 521);
+      c.walkTo(376, 521);
+    } else {
+      c.walkTo(327, 552);
+      c.walkTo(324, 549);
+      c.walkTo(324, 539);
+      c.walkTo(324, 530);
+      c.walkTo(317, 523);
+      c.walkTo(317, 516);
+      c.walkTo(327, 506);
+      c.walkTo(337, 496);
+      c.walkTo(337, 492);
+      c.walkTo(341, 488);
+      tavGateEastToWest();
+      c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
+      c.walkTo(342, 493);
+      c.walkTo(350, 501);
+      c.walkTo(355, 506);
+      c.walkTo(360, 511);
+      c.walkTo(362, 513);
+      c.walkTo(367, 514);
+      c.walkTo(374, 521);
+      c.walkTo(376, 521);
+    }
+    c.equipItem(c.getInventoryItemSlotIndex(420));
+    c.sleep(320);
     c.atObject(376, 520);
     c.sleep(640);
     c.walkTo(375, 3352);
+    if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
+      c.equipItem(c.getInventoryItemSlotIndex(420));
+    }
     c.atObject(374, 3352);
     c.sleep(640);
     c.walkTo(372, 3352);
@@ -251,11 +319,30 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   }
 
   private void DragonsToBank() {
-    teleportOutFalador();
+    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+      c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
+      teleportOutCraftCape();
+      c.sleep(4 * GAME_TICK); // cannot do things after teleport
+      c.walkTo(347, 600);
+      forceEquipItem(CRAFT_CAPE);
+      craftCapeDoorEntering();
+      forceEquipItem(ATTACK_CAPE);
+      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+        c.sleep(4 * GAME_TICK);
+      }
+      c.walkTo(347, 607);
+      c.walkTo(346, 608);
+      totalTrips = totalTrips + 1;
+      c.sleep(GAME_TICK);
+    } else {
+      teleportToFalador();
+
+      c.sleep(308);
+      c.walkTo(327, 552);
+      c.sleep(308);
+    }
     totalTrips = totalTrips + 1;
-    c.sleep(308);
-    c.walkTo(327, 552);
-    c.sleep(308);
     c.setStatus("@gre@Done Walking..");
   }
   // GUI stuff below (icky)
@@ -267,6 +354,9 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JLabel label4 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label5 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label6 = new JLabel("Styles ::attack :strength ::defense ::controlled");
+    JLabel blankLabel = new JLabel("     ");
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -290,6 +380,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           buryBones = buryBonesCheckbox.isSelected();
           fightMode = fightModeField.getSelectedIndex();
           foodId = foodIds[foodField.getSelectedIndex()];
+          useDragonTwoHand = dragonTwoHandCheckbox.isSelected();
+          craftCapeTeleport = craftCapeCheckbox.isSelected();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
@@ -308,6 +400,9 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     scriptFrame.add(label4);
     scriptFrame.add(label5);
     scriptFrame.add(label6);
+    scriptFrame.add(blankLabel);
+    scriptFrame.add(craftCapeCheckbox);
+    scriptFrame.add(dragonTwoHandCheckbox);
     scriptFrame.add(buryBonesCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);

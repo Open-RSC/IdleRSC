@@ -1,6 +1,11 @@
 package models.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum ItemId implements Id {
+
+  NOTHING(-1),
   IRON_MACE(0),
   IRON_SHORT_SWORD(1),
   IRON_KITE_SHIELD(2),
@@ -1588,6 +1593,34 @@ public enum ItemId implements Id {
   RUNE_STONE_CERTIFICATE(1543);
 
   private final int id;
+
+  private static final Map<Integer, ItemId> byId = new HashMap<Integer, ItemId>();
+  private static final Map<String, ItemId> byName = new HashMap<String, ItemId>();
+  static {
+    for (ItemId item : ItemId.values()) {
+      if (byId.put(item.getId(), item) != null) {
+        throw new IllegalArgumentException("duplicate id: " + item.getId());
+      } else {
+        if (byName.put(sanitizeName(item.name()), item) != null) {
+          throw new IllegalArgumentException("duplicate sanitized name: " + item.getId());
+        }
+      }
+    }
+  }
+
+  public static ItemId getById(Integer id) {
+    return byId.getOrDefault(id, ItemId.NOTHING);
+  }
+
+  public static ItemId getByName(String name) {
+    return byName.getOrDefault(sanitizeName(name), NOTHING);
+  }
+
+  private static String sanitizeName(String name) {
+    return name.replaceAll("[\\W]", "")
+      .replaceAll("_", "")
+      .toLowerCase();
+  }
 
   ItemId(int i) {
     this.id = i;

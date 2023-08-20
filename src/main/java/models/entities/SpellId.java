@@ -1,9 +1,13 @@
 package models.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Index independent enums */
 public enum SpellId implements Id {
   // list sorted by (latest) level requirement, if same first taken first released
   // suffixed _R when names collide, _R is for RETRO spell (before 24 May 2001)
+  NOTHING(-1),
   WIND_STRIKE(2),
   CONFUSE(5),
   WATER_STRIKE(8),
@@ -54,6 +58,34 @@ public enum SpellId implements Id {
   CHARGE(56);
 
   private final int id;
+
+  private static final Map<Integer, SpellId> byId = new HashMap<Integer, SpellId>();
+  private static final Map<String, SpellId> byName = new HashMap<String, SpellId>();
+  static {
+    for (SpellId spell : SpellId.values()) {
+      if (byId.put(spell.getId(), spell) != null) {
+        throw new IllegalArgumentException("duplicate id: " + spell.getId());
+      } else {
+        if (byName.put(sanitizeName(spell.name()), spell) != null) {
+          throw new IllegalArgumentException("duplicate sanitized name: " + spell.getId());
+        }
+      }
+    }
+  }
+
+  public static SpellId getById(Integer id) {
+    return byId.getOrDefault(id, SpellId.NOTHING);
+  }
+
+  public static SpellId getByName(String name) {
+    return byName.getOrDefault(sanitizeName(name), NOTHING);
+  }
+
+  private static String sanitizeName(String name) {
+    return name.replaceAll("[\\W]", "")
+      .replaceAll("_", "")
+      .toLowerCase();
+  }
 
   SpellId(int id) {
     this.id = id;

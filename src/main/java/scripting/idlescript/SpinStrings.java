@@ -13,7 +13,7 @@ import javax.swing.JLabel;
  */
 public class SpinStrings extends IdleScript {
   final JComboBox<String> item = new JComboBox<>(new String[] {"Flax", "Wool"});
-  final JComboBox<String> destination = new JComboBox<>(new String[] {"Seers", "Falador"});
+  final JComboBox<String> destination = new JComboBox<>(new String[] {"Falador", "Seers"});
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;

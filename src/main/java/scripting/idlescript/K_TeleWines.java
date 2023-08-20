@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.SpellId;
 
 /**
  * <b>Tele Wines</b>
@@ -55,7 +56,7 @@ public final class K_TeleWines extends K_kailaScript {
       c.setStatus("@yel@Picking Wines..");
       int[] coords = c.getNearestItemById(501);
       if (coords != null) {
-        c.castSpellOnGroundItem(c.getSpellIdFromName("Telekinetic grab"), 501, 333, 434);
+        c.castSpellOnGroundItem(SpellId.TELEKINETIC_GRAB.getId(), 501, 333, 434);
         c.sleep(1500);
         c.walkTo(331, 434);
         c.sleep(100);

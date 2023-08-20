@@ -4,6 +4,7 @@ import bot.Main;
 import controller.Controller;
 import javax.swing.*;
 import models.entities.ItemId;
+import models.entities.SpellId;
 
 /**
  * WIP master file for common commands used in Kaila_Scripts
@@ -1616,7 +1617,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() != 120 && c.currentY() != 648) {
           c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
+          c.castSpellOnSelf(SpellId.LUMBRIDGE_TELEPORT.getId());
           c.sleep(3 * GAME_TICK);
         } else {
           c.sleep(4 * GAME_TICK);
@@ -1633,7 +1634,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() != 312 && c.currentY() != 552) {
           c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
+          c.castSpellOnSelf(SpellId.FALADOR_TELEPORT.getId());
           c.sleep(3 * GAME_TICK);
         } else {
           c.sleep(4 * GAME_TICK);
@@ -1650,7 +1651,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() != 120 && c.currentY() != 504) {
           c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Varrock Teleport"));
+          c.castSpellOnSelf(SpellId.VARROCK_TELEPORT.getId());
           c.sleep(3 * GAME_TICK);
         } else {
           c.sleep(4 * GAME_TICK);
@@ -1667,7 +1668,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() != 456 && c.currentY() != 456) {
           c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Camelot Teleport"));
+          c.castSpellOnSelf(SpellId.CAMELOT_TELEPORT.getId());
           c.sleep(3 * GAME_TICK);
         } else {
           c.sleep(4 * GAME_TICK);
@@ -1684,7 +1685,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() != 588 && c.currentY() != 621) {
           c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Ardougne Teleport"));
+          c.castSpellOnSelf(SpellId.ARDOUGNE_TELEPORT.getId());
           c.sleep(3 * GAME_TICK);
         } else {
           c.sleep(4 * GAME_TICK);
@@ -1701,7 +1702,7 @@ public class K_kailaScript extends IdleScript {
       try {
         if (c.currentX() != 493 && c.currentY() != 3525) {
           c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Watchtower Teleport"));
+          c.castSpellOnSelf(SpellId.WATCHTOWER_TELEPORT.getId());
           c.sleep(3 * GAME_TICK);
         } else {
           c.sleep(4 * GAME_TICK);

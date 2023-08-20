@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.PrayerId;
 import orsc.ORSCharacter;
 
 /**
@@ -218,8 +219,8 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
   }
 
   private void pray() {
-    if (!c.isPrayerOn(c.getPrayerId("Ultimate Strength")) && c.currentY() < 475) {
-      c.enablePrayer(c.getPrayerId("Ultimate Strength"));
+    if (!c.isPrayerOn(PrayerId.ULTIMATE_STRENGTH.getId()) && c.currentY() < 475) {
+      c.enablePrayer(PrayerId.ULTIMATE_STRENGTH.getId());
     }
     // if(!c.isPrayerOn(c.getPrayerId("Incredible Reflexes")) && c.currentY() < 475) {
     //    c.enablePrayer(c.getPrayerId("Incredible Reflexes"));

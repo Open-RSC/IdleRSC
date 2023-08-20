@@ -149,7 +149,7 @@ public final class K_HobsMiner extends K_kailaScript {
         c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
         hobsToTwenty();
         c.sleep(100);
-        c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
+        teleportLumbridge();
         c.sleep(308);
         c.walkTo(120, 644);
         c.atObject(119, 642);

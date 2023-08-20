@@ -225,16 +225,13 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
   }
 
   private void GiantsToBank() {
-    c.setStatus("@gre@Walking to Bank. Casting 1st teleport.");
-    c.castSpellOnSelf(c.getSpellIdFromName("Camelot Teleport"));
-    c.sleep(800);
-    teleport();
+    c.setStatus("@gre@Teleporting to Bank.");
+    teleportCamelot();
     totalTrips = totalTrips + 1;
     c.walkTo(468, 462);
     if (c.getObjectAtCoord(467, 463) == 57) {
       c.setStatus("@gre@Opening Castle Gate..");
       c.walkTo(468, 462);
-      c.sleep(100);
       c.atObject(467, 463);
       c.sleep(1000);
     }
@@ -243,7 +240,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     c.walkTo(488, 464);
     c.walkTo(496, 455);
     c.walkTo(501, 454);
-    c.sleep(308);
     c.setStatus("@gre@Done Walking..");
   }
 
@@ -260,7 +256,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     c.walkTo(592, 458);
     c.setStatus("@gre@Crossing log..");
     c.atObject(593, 458); // log
-    c.sleep(640);
+    c.sleep(2 * 640);
     logScript();
     c.setStatus("@gre@Walkin..");
     c.walkTo(602, 458);
@@ -374,20 +370,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
         c.sleep(800);
       } else {
         c.setStatus("@red@Done opening gate..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
-
-  private void teleport() {
-    for (int i = 1; i <= 20; i++) {
-      if (c.currentY() > 3000) {
-        c.setStatus("@gre@1st Teleport unsuccessful, Casting teleports.");
-        c.castSpellOnSelf(c.getSpellIdFromName("Camelot Teleport"));
-        c.sleep(800);
-      } else {
-        c.setStatus("@red@Done Teleporting..");
         break;
       }
       c.sleep(10);

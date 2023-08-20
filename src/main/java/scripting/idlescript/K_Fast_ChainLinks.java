@@ -88,7 +88,7 @@ public final class K_Fast_ChainLinks extends K_kailaScript {
 
   private void anvilToBank() {
     c.setStatus("@gre@Walking to Fally, Teleporting!");
-    c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
+    teleportFalador();
     c.sleep(1000);
     // walk to east bank here
     c.walkTo(303, 552);

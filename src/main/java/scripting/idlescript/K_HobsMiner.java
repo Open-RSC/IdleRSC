@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 
 /**
  * <b>Hobgoblin Miner</b>
@@ -256,36 +257,12 @@ public final class K_HobsMiner extends K_kailaScript {
       mithInBank = c.getBankItemCount(153);
       addyInBank = c.getBankItemCount(154);
       if (teleportOut) {
-        if (c.getInventoryItemCount(33) < 3) { // withdraw 3 air
-          c.withdrawItem(33, 3);
-          c.sleep(640);
-        }
-        if (c.getInventoryItemCount(34) < 1) { // withdraw 1 earth
-          c.withdrawItem(34, 1);
-          c.sleep(640);
-        }
-        if (c.getInventoryItemCount(42) < 1) { // withdraw 1 law
-          c.withdrawItem(42, 1);
-          c.sleep(640);
-        }
+        withdrawItem(ItemId.AIR_RUNE.getId(), 3);
+        withdrawItem(ItemId.EARTH_RUNE.getId(), 1);
+        withdrawItem(ItemId.LAW_RUNE.getId(), 1);
       }
-      if (c.getInventoryItemCount(546) > 1) {
-        c.depositItem(546, c.getInventoryItemCount(546) - 1);
-        c.sleep(640);
-      }
-      if (c.getInventoryItemCount(546) < 1) { // withdraw 1 shark
-        c.withdrawItem(546, 1);
-        c.sleep(640);
-      }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
-        c.setAutoLogin(false);
-        c.sleep(5000);
-        c.logout();
-        if (!c.isLoggedIn()) {
-          c.stop();
-        }
-      }
+      withdrawItem(ItemId.SHARK.getId(), 1);
+      bankItemCheck(ItemId.SHARK.getId(), 10);
       c.closeBank();
     }
     if (teleportOut) {
@@ -428,13 +405,8 @@ public final class K_HobsMiner extends K_kailaScript {
     JLabel label2 = new JLabel("Sharks in bank REQUIRED");
     JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
     JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
-    JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
-    JLabel label5 = new JLabel("Selected, bot walks to 19 wildy and teleports");
     JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
-    JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
-    JLabel label7 = new JLabel("Selected, bot will grab more food and return");
     JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
-    JLabel label9 = new JLabel("Defaults to Teleport Off, Return On.");
     JButton startScriptButton = new JButton("Start");
     startScriptButton.addActionListener(
         e -> {
@@ -453,13 +425,8 @@ public final class K_HobsMiner extends K_kailaScript {
     scriptFrame.add(label2);
     scriptFrame.add(teleportCheckbox);
     scriptFrame.add(label3);
-    scriptFrame.add(label4);
-    scriptFrame.add(label5);
     scriptFrame.add(escapeCheckbox);
-    scriptFrame.add(label6);
-    scriptFrame.add(label7);
     scriptFrame.add(label8);
-    scriptFrame.add(label9);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();

@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -26,8 +27,11 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_BlackUnicorns extends K_kailaScript {
+  private static final int UNI_HORN = ItemId.UNICORN_HORN.getId();
+  private static final int SHARK = ItemId.SHARK.getId();
+  private static boolean bankTeleport = false;
   private static boolean teleportOut = false;
-  private static boolean returnEscape = true;
+  private static boolean returnEscape = false;
   private static int uniInBank = 0;
   private static int totalUni = 0;
   private static int inventUni = 0;
@@ -79,8 +83,8 @@ public final class K_BlackUnicorns extends K_kailaScript {
         escapePath();
       }
       if (c.getInventoryItemCount() < 30) {
-        lootItem(false, 466);
-        inventUni = c.getBankItemCount(466);
+        lootItem(false, UNI_HORN);
+        inventUni = c.getBankItemCount(UNI_HORN);
         if (!c.isInCombat()) {
           // c.sleepHandler(296, true);
           ORSCharacter npc = c.getNearestNpcById(296, false);
@@ -98,7 +102,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
         dropItemToLoot(false, 1, EMPTY_VIAL);
         buryBonesToLoot(false);
       }
-      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(SHARK) == 0) {
         c.setStatus("@yel@Banking..");
         UniToBank();
         bank();
@@ -111,29 +115,25 @@ public final class K_BlackUnicorns extends K_kailaScript {
   private void bank() {
     c.setStatus("@yel@Banking..");
     c.openBank();
-    c.sleep(640);
+    c.sleep(GAME_TICK);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-      totalUni = totalUni + c.getInventoryItemCount(466);
-      if (c.getInventoryItemCount(466) > 0) { // deposit the uni horns
-        c.depositItem(466, c.getInventoryItemCount(466));
+      totalUni = totalUni + c.getInventoryItemCount(UNI_HORN);
+      if (c.getInventoryItemCount(UNI_HORN) > 0) { // deposit the uni horns
+        c.depositItem(UNI_HORN, c.getInventoryItemCount(UNI_HORN));
         c.sleep(340);
       }
-      if (teleportOut) {
+      if (teleportOut || bankTeleport) {
         withdrawItem(airId, 3);
         withdrawItem(lawId, 1);
         withdrawItem(earthId, 1);
       }
-      if (c.getInventoryItemCount(546) > 1) { // deposit extra shark
-        c.depositItem(546, c.getInventoryItemCount(546) - 1);
-        c.sleep(340);
-      }
-      withdrawFood(546, 1);
-      bankItemCheck(546, 5);
-      uniInBank = c.getBankItemCount(466);
+      withdrawFood(SHARK, 1);
+      bankItemCheck(SHARK, 5);
+      uniInBank = c.getBankItemCount(UNI_HORN);
       c.closeBank();
-      inventUni = c.getBankItemCount(466);
+      inventUni = c.getBankItemCount(UNI_HORN);
     }
   }
 
@@ -147,26 +147,17 @@ public final class K_BlackUnicorns extends K_kailaScript {
       bank();
       BankToUni();
     }
-    if (teleportOut) {
+    if (teleportOut || bankTeleport) {
       c.setStatus("@red@We've ran out of Food! Teleporting Away!.");
       goToTwenty();
       c.setStatus("@red@Teleporting Now!.");
-      teleportOut();
+      teleportLumbridge();
       c.walkTo(120, 644);
       c.atObject(119, 642);
       c.walkTo(217, 447);
     }
     if (!returnEscape) {
-      c.setAutoLogin(
-          false); // uncomment and remove bank and banktoHobs to prevent bot going back to mine
-      // after being attacked
-      c.logout();
-      c.sleep(1000);
-
-      if (!c.isLoggedIn()) {
-        c.stop();
-        c.logout();
-      }
+      endSession();
     }
     if (returnEscape) {
       bank();
@@ -177,23 +168,31 @@ public final class K_BlackUnicorns extends K_kailaScript {
 
   private void UniToBank() {
     c.setStatus("@gre@Walking to Bank..");
-    c.walkTo(121, 311);
-    c.walkTo(131, 321);
-    c.walkTo(135, 326);
-    c.walkTo(145, 336);
-    c.walkTo(146, 340);
-    c.walkTo(158, 352);
-    c.walkTo(175, 369);
-    c.walkTo(183, 372);
-    c.walkTo(199, 388);
-    c.walkTo(205, 393);
-    c.walkTo(216, 405);
-    c.walkTo(216, 426);
-    c.walkTo(220, 440);
-    c.walkTo(218, 447);
+    if (bankTeleport) {
+      goToTwenty();
+      c.setStatus("@red@Teleporting Now!.");
+      teleportLumbridge();
+      c.walkTo(120, 644);
+      c.atObject(119, 642);
+      c.walkTo(217, 447);
+    } else {
+      c.walkTo(121, 311);
+      c.walkTo(131, 321);
+      c.walkTo(135, 326);
+      c.walkTo(145, 336);
+      c.walkTo(146, 340);
+      c.walkTo(158, 352);
+      c.walkTo(175, 369);
+      c.walkTo(183, 372);
+      c.walkTo(199, 388);
+      c.walkTo(205, 393);
+      c.walkTo(216, 405);
+      c.walkTo(216, 426);
+      c.walkTo(220, 440);
+      c.walkTo(218, 447);
+    }
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
-    c.sleep(640);
   }
 
   private void BankToUni() {
@@ -212,7 +211,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
     c.walkTo(131, 321);
     c.walkTo(121, 311);
     c.setStatus("@gre@Done Walking..");
-    c.sleep(640);
   }
 
   private void goToTwenty() {
@@ -229,41 +227,23 @@ public final class K_BlackUnicorns extends K_kailaScript {
     }
   }
 
-  private void teleportOut() {
-    c.setStatus("@gre@Going to Bank. Casting teleport.");
-    c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
-    c.sleep(1000);
-    for (int i = 1; i <= 10; i++) {
-      if (c.currentY() < 420) {
-        c.setStatus("@gre@Going to Bank. Casting teleport.");
-        c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
-        c.sleep(1000);
-      } else {
-        c.setStatus("@gre@Done teleporting..");
-        break;
-      }
-      c.sleep(10);
-    }
-  }
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Black Unicorn Killer ~ By Kaila");
-    JLabel label1 = new JLabel("Start in Edge bank or Uni's with Gear");
+    JLabel label1 = new JLabel("Start in Edge bank or at Uni's with Gear");
     JLabel label2 = new JLabel("Sharks IN BANK REQUIRED");
     JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
     JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
-    JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
-    JLabel label5 = new JLabel("Selected, bot walks to 19 wildy and teleports");
-    JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
-    JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
-    JLabel label7 = new JLabel("Selected, bot will grab more food and return");
+    JCheckBox escapeCheckbox = new JCheckBox("Return to Uni after Escaping?", true);
     JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
-    JLabel label9 = new JLabel("Defaults to Teleport Off, Return On.");
+    JLabel blankLabel = new JLabel("   ");
+    JCheckBox bankTeleCheckbox = new JCheckBox("Use teleport to Bank?");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
           teleportOut = teleportCheckbox.isSelected();
+          bankTeleport = bankTeleCheckbox.isSelected();
           returnEscape = escapeCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
@@ -278,13 +258,10 @@ public final class K_BlackUnicorns extends K_kailaScript {
     scriptFrame.add(label2);
     scriptFrame.add(teleportCheckbox);
     scriptFrame.add(label3);
-    scriptFrame.add(label4);
-    scriptFrame.add(label5);
     scriptFrame.add(escapeCheckbox);
-    scriptFrame.add(label6);
-    scriptFrame.add(label7);
     scriptFrame.add(label8);
-    scriptFrame.add(label9);
+    scriptFrame.add(blankLabel);
+    scriptFrame.add(bankTeleCheckbox);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();

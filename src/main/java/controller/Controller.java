@@ -2421,7 +2421,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves the spellId of the spell name.
+   * Retrieves the spellId of the spell name. (0,1,2,3,4,etc)
    *
    * @param name -- must match spelling of the spell book. case insensitive.
    * @return int -- -1 if spell not found.
@@ -2658,7 +2658,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves the id of the specified prayerName.
+   * Retrieves the id of the specified prayerName. (0,1,2,3,4,etc)
    *
    * @param prayerName -- must match spelling of what is inside prayer book. Case insensitive.
    * @return int -- -1 if the prayer does not exist.

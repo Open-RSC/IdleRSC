@@ -3,6 +3,8 @@ package scripting.idlescript;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
+import models.entities.PrayerId;
+import models.entities.SpellId;
 import orsc.ORSCharacter;
 
 /**
@@ -28,6 +30,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
   private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
+  private static final int PARALYZE_MONSTER = PrayerId.PARALYZE_MONSTER.getId();
   private static final int[] loot = {
     UNID_RANARR, // Grimy Ranarr Weed
     UNID_IRIT, // Grimy Irit
@@ -261,8 +264,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   }
 
   private void pray() {
-    if (!c.isPrayerOn(c.getPrayerId("Paralyze Monster")) && c.currentY() > 3000) {
-      c.enablePrayer(c.getPrayerId("Paralyze Monster"));
+    if (!c.isPrayerOn(PARALYZE_MONSTER) && c.currentY() > 3000) {
+      c.enablePrayer(PARALYZE_MONSTER);
     }
   }
 
@@ -280,6 +283,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
+      if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
       forceEquipItem(CRAFT_CAPE);
       craftCapeDoorEntering();
       forceEquipItem(ATTACK_CAPE);
@@ -290,18 +294,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.walkTo(347, 607);
       c.walkTo(346, 608);
     } else {
-      c.setStatus("@gre@Going to Bank. Casting 1st teleport.");
-      c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-      c.sleep(1000);
-      for (int i = 1; i <= 15; i++) {
-        if (c.currentY() > 3000) {
-          c.setStatus("@gre@Teleport unsuccessful, Casting teleports.");
-          c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-          c.sleep(1000);
-        }
-        c.sleep(10);
-      }
-      c.sleep(GAME_TICK);
+      c.setStatus("@gre@Going to Bank.");
+      teleportFalador();
+      if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
       c.walkTo(327, 552);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
@@ -372,7 +367,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
     }
     c.equipItem(c.getInventoryItemSlotIndex(404));
-    c.enablePrayer(c.getPrayerId("Paralyze Monster"));
+    c.enablePrayer(PARALYZE_MONSTER);
     c.sleep(320);
     c.walkTo(380, 3372);
     eat();

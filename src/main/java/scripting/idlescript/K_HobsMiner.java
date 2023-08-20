@@ -301,33 +301,14 @@ public final class K_HobsMiner extends K_kailaScript {
           twentyToBank();
         }
         if (teleportOut) {
-          c.sleep(100);
-          c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport (1)"));
-          c.sleep(800);
-          if (c.currentY() < 425) {
-            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport (2)"));
-            c.sleep(800);
-          }
-          if (c.currentY() < 425) {
-            c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport (3)"));
-            c.sleep(1000);
-          }
+          teleportLumbridge();
           c.walkTo(120, 644);
           c.atObject(119, 642);
           c.walkTo(217, 447);
           c.sleep(308);
         }
         if (!returnEscape) {
-          c.setAutoLogin(
-              false); // uncomment and remove bank and banktoHobs to prevent bot going back to mine
-          // after being attacked
-          c.logout();
-          c.sleep(1000);
-
-          if (!c.isLoggedIn()) {
-            c.stop();
-            c.logout();
-          }
+          endSession();
         }
         if (returnEscape) {
           bank();
@@ -403,10 +384,10 @@ public final class K_HobsMiner extends K_kailaScript {
     JLabel header = new JLabel("Hobs Miner - By Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");
     JLabel label2 = new JLabel("Sharks in bank REQUIRED");
-    JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
     JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
-    JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
     JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
+    JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
+    JCheckBox escapeCheckbox = new JCheckBox("Return to Hobs Mine after Escaping?", true);
     JButton startScriptButton = new JButton("Start");
     startScriptButton.addActionListener(
         e -> {

@@ -232,12 +232,11 @@ public final class K_BlackUnicorns extends K_kailaScript {
     JLabel header = new JLabel("Black Unicorn Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Edge bank or at Uni's with Gear");
     JLabel label2 = new JLabel("Sharks IN BANK REQUIRED");
-    JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
     JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
-    JCheckBox escapeCheckbox = new JCheckBox("Return to Uni after Escaping?", true);
     JLabel label8 = new JLabel("This bot supports the \"autostart\" parameter");
-    JLabel blankLabel = new JLabel("   ");
-    JCheckBox bankTeleCheckbox = new JCheckBox("Use teleport to Bank?");
+    JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", true);
+    JCheckBox escapeCheckbox = new JCheckBox("Return to Uni after Escaping?", true);
+    JCheckBox bankTeleCheckbox = new JCheckBox("Use teleport to Bank?", true);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
@@ -256,11 +255,10 @@ public final class K_BlackUnicorns extends K_kailaScript {
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(label2);
-    scriptFrame.add(teleportCheckbox);
     scriptFrame.add(label3);
-    scriptFrame.add(escapeCheckbox);
     scriptFrame.add(label8);
-    scriptFrame.add(blankLabel);
+    scriptFrame.add(teleportCheckbox);
+    scriptFrame.add(escapeCheckbox);
     scriptFrame.add(bankTeleCheckbox);
     scriptFrame.add(startScriptButton);
 

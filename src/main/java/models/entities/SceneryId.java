@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum SceneryId implements Id {
-
   NOTHING(-1),
   POINTY_TREE(0),
   LEAFY_TREE(1),
@@ -1314,6 +1313,7 @@ public enum SceneryId implements Id {
 
   private static final Map<Integer, SceneryId> byId = new HashMap<Integer, SceneryId>();
   private static final Map<String, SceneryId> byName = new HashMap<String, SceneryId>();
+
   static {
     for (SceneryId scenery : SceneryId.values()) {
       if (byId.put(scenery.getId(), scenery) != null) {
@@ -1335,9 +1335,7 @@ public enum SceneryId implements Id {
   }
 
   private static String sanitizeName(String name) {
-    return name.replaceAll("[\\W]", "")
-      .replaceAll("_", "")
-      .toLowerCase();
+    return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
 
   SceneryId(int id) {

@@ -27,6 +27,7 @@ public enum PrayerId implements Id {
 
   private static final Map<Integer, PrayerId> byId = new HashMap<Integer, PrayerId>();
   private static final Map<String, PrayerId> byName = new HashMap<String, PrayerId>();
+
   static {
     for (PrayerId prayer : PrayerId.values()) {
       if (byId.put(prayer.getId(), prayer) != null) {
@@ -48,9 +49,7 @@ public enum PrayerId implements Id {
   }
 
   private static String sanitizeName(String name) {
-    return name.replaceAll("[\\W]", "")
-      .replaceAll("_", "")
-      .toLowerCase();
+    return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
 
   PrayerId(int id) {

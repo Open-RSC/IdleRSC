@@ -61,6 +61,7 @@ public enum SpellId implements Id {
 
   private static final Map<Integer, SpellId> byId = new HashMap<Integer, SpellId>();
   private static final Map<String, SpellId> byName = new HashMap<String, SpellId>();
+
   static {
     for (SpellId spell : SpellId.values()) {
       if (byId.put(spell.getId(), spell) != null) {
@@ -82,9 +83,7 @@ public enum SpellId implements Id {
   }
 
   private static String sanitizeName(String name) {
-    return name.replaceAll("[\\W]", "")
-      .replaceAll("_", "")
-      .toLowerCase();
+    return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
 
   SpellId(int id) {

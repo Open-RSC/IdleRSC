@@ -4,7 +4,6 @@ import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
 import models.entities.PrayerId;
-import models.entities.SpellId;
 import orsc.ORSCharacter;
 
 /**

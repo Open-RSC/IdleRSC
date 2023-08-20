@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ItemId implements Id {
-
   NOTHING(-1),
   IRON_MACE(0),
   IRON_SHORT_SWORD(1),
@@ -1596,6 +1595,7 @@ public enum ItemId implements Id {
 
   private static final Map<Integer, ItemId> byId = new HashMap<Integer, ItemId>();
   private static final Map<String, ItemId> byName = new HashMap<String, ItemId>();
+
   static {
     for (ItemId item : ItemId.values()) {
       if (byId.put(item.getId(), item) != null) {
@@ -1617,9 +1617,7 @@ public enum ItemId implements Id {
   }
 
   private static String sanitizeName(String name) {
-    return name.replaceAll("[\\W]", "")
-      .replaceAll("_", "")
-      .toLowerCase();
+    return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
 
   ItemId(int i) {

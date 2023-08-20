@@ -277,7 +277,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private void DragonsToBank() {
     if (craftCapeTeleport) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
       forceEquipItem(CRAFT_CAPE);
@@ -314,7 +314,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Black Dragons..");
     if (craftCapeTeleport) {
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);

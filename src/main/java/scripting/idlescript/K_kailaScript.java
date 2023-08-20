@@ -1577,7 +1577,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop Use agility cape to teleport */
-  protected static void teleportOutAgilityCape() {
+  protected static void teleportAgilityCape() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 591 && c.currentY() != 765) {
@@ -1594,7 +1594,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop Use craft cape to teleport */
-  protected static void teleportOutCraftCape() {
+  protected static void teleportCraftCape() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 347 && c.currentY() != 599) {
@@ -1611,7 +1611,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop teleport to Lumbridge center */
-  protected static void teleportToLumbridge() {
+  protected static void teleportLumbridge() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 120 && c.currentY() != 648) {
@@ -1628,7 +1628,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop teleport to Falador center */
-  protected static void teleportToFalador() {
+  protected static void teleportFalador() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 312 && c.currentY() != 552) {
@@ -1645,7 +1645,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop teleport to Varrock center */
-  protected static void teleportToVarrock() {
+  protected static void teleportVarrock() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 120 && c.currentY() != 504) {
@@ -1662,7 +1662,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop teleport to Camelot Castle */
-  protected static void teleportToCamelot() {
+  protected static void teleportCamelot() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 456 && c.currentY() != 456) {
@@ -1679,7 +1679,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop teleport to Ardougne */
-  protected static void teleportToArdy() {
+  protected static void teleportArdy() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 588 && c.currentY() != 621) {
@@ -1696,7 +1696,7 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop teleport to Watchtower */
-  protected static void teleportToWatchtower() {
+  protected static void teleportWatchtower() {
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 493 && c.currentY() != 3525) {

@@ -256,7 +256,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     c.setStatus("@gre@Going to Bank");
     if (craftCapeTeleport) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       if (c.isPrayerOn(c.getPrayerId("Paralyze Monster"))) {
         c.disablePrayer(c.getPrayerId("Paralyze Monster"));
@@ -293,7 +293,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   private void BankToDemons() {
     c.setStatus("@gre@Walking to Black Demons..");
     if (craftCapeTeleport) {
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);

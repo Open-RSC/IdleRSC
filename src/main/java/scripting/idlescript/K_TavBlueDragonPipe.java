@@ -113,7 +113,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(6 * GAME_TICK);
+            c.sleep(2 * GAME_TICK);
             if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
               c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
               c.sleep(1280);
@@ -258,7 +258,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Tav Gate..");
     if (craftCapeTeleport) {
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);
@@ -321,7 +321,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private void DragonsToBank() {
     if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
       forceEquipItem(CRAFT_CAPE);
@@ -336,7 +336,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       totalTrips = totalTrips + 1;
       c.sleep(GAME_TICK);
     } else {
-      teleportToFalador();
+      teleportFalador();
 
       c.sleep(308);
       c.walkTo(327, 552);

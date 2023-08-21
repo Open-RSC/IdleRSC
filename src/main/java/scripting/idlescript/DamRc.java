@@ -655,7 +655,6 @@ public class DamRc extends IdleScript {
 
   @Override
   public void paintInterrupt() {
-    if (started) {
       String runTime = msToString(System.currentTimeMillis() - startTime);
       int gainedExpRc = c.getStatXp(18) - startExpRc;
       double expHrRc =
@@ -728,6 +727,5 @@ public class DamRc extends IdleScript {
             1);
       }
       c.drawString("@cya@Method: " + method, 7, 25 + 84, 0xFFFFFF, 1);
-    }
   }
 }

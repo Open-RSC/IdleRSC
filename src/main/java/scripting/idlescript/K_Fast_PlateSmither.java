@@ -1,12 +1,11 @@
 package scripting.idlescript;
 
-import models.entities.ItemId;
-
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 
 /**
  * <b>Fast Platebody Smither</b>

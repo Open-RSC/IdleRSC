@@ -4,7 +4,6 @@ import bot.Main;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
-
 import models.entities.ItemId;
 import orsc.ORSCharacter;
 
@@ -44,6 +43,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
     ItemId.YEW_LOGS.getId(),
     ItemId.MAGIC_LOGS.getId()
   };
+
   public int start(String[] parameters) {
     con.quitIfAuthentic();
     con.toggleBatchBarsOn();

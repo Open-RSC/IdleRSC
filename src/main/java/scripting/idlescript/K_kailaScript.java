@@ -172,83 +172,83 @@ public class K_kailaScript extends IdleScript {
    * [regular,big,bat,dragon]
    */
   protected static final int[] bones = {
-    20, // regular
-    413, // big
-    604, // bat?
-    814 // dragon
+    ItemId.BONES.getId(),
+    ItemId.BIG_BONES.getId(),
+    ItemId.BAT_BONES.getId(),
+    ItemId.DRAGON_BONES.getId()
   };
   /**
    * int[] array of <b>regular attack potions</b><br>
    * [1,2,3] doses
    */
   protected static final int[] attackPot = {
-    476, // reg attack pot (1)
-    475, // reg attack pot (2)
-    474 // reg attack pot (3)
+    ItemId.ATTACK_POTION_1DOSE.getId(),
+    ItemId.ATTACK_POTION_2DOSE.getId(),
+    ItemId.ATTACK_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>regular strength potions</b><br>
    * [1,2,3] doses
    */
   protected static final int[] strengthPot = {
-    224, // reg str pot (1)
-    223, // reg str pot (2)
-    222, // reg str pot (3)
-    221 // reg str pot (4)
+    ItemId.STRENGTH_POTION_1DOSE.getId(),
+    ItemId.STRENGTH_POTION_2DOSE.getId(),
+    ItemId.STRENGTH_POTION_3DOSE.getId(),
+    ItemId.STRENGTH_POTION_4DOSE.getId()
   };
   /**
    * int[] array of <b>regular defense potions</b><br>
    * [1,2,3] doses
    */
   protected static final int[] defensePot = {
-    482, // reg def pot (1)
-    481, // reg def pot (2)
-    480 // reg def pot (3)
+    ItemId.DEFENSE_POTION_1DOSE.getId(),
+    ItemId.DEFENSE_POTION_2DOSE.getId(),
+    ItemId.DEFENSE_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>super attack potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] superAttackPot = {
-    488, // super  attack pot (1)
-    487, // super  attack pot (2)
-    486 // super attack pot (3)
+    ItemId.SUPER_ATTACK_POTION_1DOSE.getId(),
+    ItemId.SUPER_ATTACK_POTION_2DOSE.getId(),
+    ItemId.SUPER_ATTACK_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>super strength potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] superStrengthPot = {
-    494, // super str pot (1)
-    493, // super str pot (2)
-    492 // super str pot (3)
+    ItemId.SUPER_STRENGTH_POTION_1DOSE.getId(),
+    ItemId.SUPER_STRENGTH_POTION_2DOSE.getId(),
+    ItemId.SUPER_STRENGTH_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>super defense potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] superDefensePot = {
-    497, // super defense pot (1)
-    496, // super defense pot (2)
-    495 // super defense pot (3)
+    ItemId.SUPER_DEFENSE_POTION_1DOSE.getId(),
+    ItemId.SUPER_DEFENSE_POTION_2DOSE.getId(),
+    ItemId.SUPER_DEFENSE_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>prayer potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] prayerPot = {
-    485, // prayer potion (1)
-    484, // prayer potion (2)
-    483 // prayer potion (3)
+    ItemId.RESTORE_PRAYER_POTION_1DOSE.getId(),
+    ItemId.RESTORE_PRAYER_POTION_2DOSE.getId(),
+    ItemId.RESTORE_PRAYER_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>antidote</b><br>
    * (the red one) [1,2,3] doses
    */
   protected static final int[] antiPot = {
-    571, // 1 dose
-    570, // 2 dose
-    569 // 3 dose
+    ItemId.POISON_ANTIDOTE_1DOSE.getId(),
+    ItemId.POISON_ANTIDOTE_2DOSE.getId(),
+    ItemId.POISON_ANTIDOTE_3DOSE.getId()
   };
   /**
    * int[] array of cooked <b>food Ids</b><br>
@@ -256,22 +256,22 @@ public class K_kailaScript extends IdleScript {
    * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
   protected static final int[] foodIds = {
-    1191, // cooked Manta Ray
-    1193, // cooked Sea Turtle
-    546, // cooked shark
-    370, // cooked swordfish
-    367, // cooked tuna
-    373, // cooked lobster
-    555, // cooked Bass
-    553, // cooked Mackerel
-    551, // cooked Cod
-    364, // cooked Pike
-    362, // cooked Herring
-    357, // cooked Salmon
-    359, // cooked Trout
-    352, // cooked Anchovies
-    350, // cooked Shrimp
-    132 // cooked Meat
+    ItemId.MANTA_RAY.getId(),
+    ItemId.SEA_TURTLE.getId(),
+    ItemId.SHARK.getId(),
+    ItemId.SWORDFISH.getId(),
+    ItemId.TUNA.getId(),
+    ItemId.LOBSTER.getId(),
+    ItemId.BASS.getId(),
+    ItemId.MACKEREL.getId(),
+    ItemId.COD.getId(),
+    ItemId.PIKE.getId(),
+    ItemId.HERRING.getId(),
+    ItemId.SALMON.getId(),
+    ItemId.TROUT.getId(),
+    ItemId.ANCHOVIES.getId(),
+    ItemId.SHRIMP.getId(),
+    ItemId.COOKEDMEAT.getId()
   };
   /**
    * String[] array of <b>cooked food NAMES</b><br>
@@ -279,7 +279,7 @@ public class K_kailaScript extends IdleScript {
    * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]<br>
    * Warning: foodIds and foodTypes need the same order for scripts to use
    */
-  //todo: convert to hashmap
+  // todo: convert to hashmap
   protected static final String[] foodTypes = {
     "Manta Ray",
     "Sea Turtle",

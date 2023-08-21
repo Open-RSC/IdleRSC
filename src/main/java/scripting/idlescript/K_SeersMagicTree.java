@@ -1,11 +1,10 @@
 package scripting.idlescript;
 
-import models.entities.ItemId;
-
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 
 /**
  * <b>Seers Magic Tree</b>
@@ -32,6 +31,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
     ItemId.ADAMANTITE_AXE.getId(),
     ItemId.RUNE_AXE.getId()
   };
+
   private void startSequence() {
     c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
     if (c.isInBank()) c.closeBank();

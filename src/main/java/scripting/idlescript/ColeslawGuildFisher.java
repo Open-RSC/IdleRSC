@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
-import models.entities.ItemId;
-
 import java.awt.*;
 import javax.swing.*;
+import models.entities.ItemId;
 
 /**
  * ColeslawGuildFisher by [unknown author]. Coleslaw only.
@@ -292,13 +291,7 @@ public class ColeslawGuildFisher extends K_kailaScript {
               y + (14 * 3),
               0xFFFFFF,
               1);
-          c.drawString(
-            "@whi@Total fish in Bank: @gre@"
-              + fishInBank,
-            x,
-            y + (14 * 4),
-            0xFFFFFF,
-            1);
+          c.drawString("@whi@Total fish in Bank: @gre@" + fishInBank, x, y + (14 * 4), 0xFFFFFF, 1);
           c.drawString("@whi@Fishing: @gre@Swordfish/Tuna", x, y + (14 * 5), 0xFFFFFF, 1);
           c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 6), 0xFFFFFF, 1);
         } else {
@@ -322,13 +315,7 @@ public class ColeslawGuildFisher extends K_kailaScript {
               y + (14 * 2),
               0xFFFFFF,
               1);
-          c.drawString(
-            "@whi@Total fish in Bank: @gre@"
-              + fishInBank,
-            x,
-            y + (14 * 3),
-            0xFFFFFF,
-            1);
+          c.drawString("@whi@Total fish in Bank: @gre@" + fishInBank, x, y + (14 * 3), 0xFFFFFF, 1);
           c.drawString("@whi@Fishing: @gre@Lobster", x, y + (14 * 4), 0xFFFFFF, 1);
           c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
         }

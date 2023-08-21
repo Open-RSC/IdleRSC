@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -17,22 +18,22 @@ import orsc.ORSCharacter;
 public final class K_Edge_Mankiller extends K_kailaScript {
 
   private static final int[] loot = {
-    UNID_GUAM, // Grimy Guam
-    UNID_MAR, // Grimy mar
-    UNID_TAR, // Grimy tar
-    UNID_HAR, // Grimy har
-    UNID_RANARR, // Grimy ranarr
-    UNID_IRIT, // Grimy irit
-    UNID_AVANTOE, // Grimy ava
-    UNID_KWUARM, // Grimy kwu
-    UNID_CADA, // Grimy cada
-    UNID_DWARF, // Grimy dwarf
-    MIND_RUNE, // mind rune
-    CHAOS_RUNE, // chaos rune
-    EARTH_RUNE, // Earth rune
-    FIRE_RUNE, // fire rune
-    COINS, // coins
-    BRONZE_ARROW // Bronze arrow
+    ItemId.UNID_GUAM_LEAF.getId(),
+    ItemId.UNID_MARRENTILL.getId(),
+    ItemId.UNID_TARROMIN.getId(),
+    ItemId.UNID_HARRALANDER.getId(),
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.MIND_RUNE.getId(), // mind rune
+    ItemId.CHAOS_RUNE.getId(), // chaos rune
+    ItemId.EARTH_RUNE.getId(), // Earth rune
+    ItemId.FIRE_RUNE.getId(), // fire rune
+    ItemId.COINS.getId(), // coins
+    ItemId.BRONZE_ARROWS.getId() // Bronze arrow
   };
 
   public int start(String[] parameters) {
@@ -102,12 +103,12 @@ public final class K_Edge_Mankiller extends K_kailaScript {
           } else {
             c.sleep(GAME_TICK);
             lootItems(false, loot);
-            if (lootBones) lootItem(false, BONES);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
           }
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30

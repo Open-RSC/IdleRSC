@@ -50,22 +50,6 @@ public class K_kailaScript extends IdleScript {
   protected static final int GAME_TICK = 640;
   protected static final int EAT_LEVEL = c.getBaseStat(c.getStatId("Hits")) - 20;
 
-  // ~~~~~~~~~~~~~ITEM CONSTANTS~~~~~~~~~~~
-  protected static final int UNCUT_SAPP = 160, UNCUT_EMER = 159, UNCUT_RUBY = 158, UNCUT_DIA = 157;
-  protected static final int UNID_GUAM = 165, UNID_MAR = 435, UNID_TAR = 436, UNID_HAR = 437;
-  protected static final int UNID_RANARR = 438,
-      UNID_IRIT = 439,
-      UNID_AVANTOE = 440,
-      UNID_KWUARM = 441;
-  protected static final int UNID_CADA = 442, UNID_DWARF = 443;
-  protected static final int FIRE_RUNE = 31, WATER_RUNE = 32, AIR_RUNE = 33, EARTH_RUNE = 34;
-  protected static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
-  protected static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
-  protected static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
-  protected static final int COINS = 10, EMPTY_VIAL = 465, BRONZE_ARROW = 11, SPIN_ROLL = 179;
-  protected static final int LIMP_ROOT = 220;
-  protected static final int BONES = 20, BIG_BONES = 413;
-
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
 
   protected static long startTime;

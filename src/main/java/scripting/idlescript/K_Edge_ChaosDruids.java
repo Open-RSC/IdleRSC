@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -25,51 +26,50 @@ import orsc.ORSCharacter;
  */
 public final class K_Edge_ChaosDruids extends K_kailaScript {
   private static final int[] lowLevelLoot = {
-    UNID_GUAM, // Grimy Guam
-    UNID_MAR, // Grimy Marrentill
-    UNID_TAR, // Grimy Tarromin
-    UNID_HAR, // Grimy Harralander
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    AIR_RUNE, // air rune
-    EARTH_RUNE, // earth runF
-    // 35,	 //mind runes
-    // 36,	 //body runes
-    // 1026, //unholy mould
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_GUAM_LEAF.getId(),
+    ItemId.UNID_MARRENTILL.getId(),
+    ItemId.UNID_TARROMIN.getId(),
+    ItemId.UNID_HARRALANDER.getId(),
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.AIR_RUNE.getId(),
+    ItemId.EARTH_RUNE.getId(),
+    ItemId.MIND_RUNE.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
   };
   private static final int[] highLevelLoot = {
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    AIR_RUNE, // air rune
-    EARTH_RUNE, // earth runF
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.AIR_RUNE.getId(),
+    ItemId.EARTH_RUNE.getId(),
+    ItemId.MIND_RUNE.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
   };
 
   public int start(String[] parameters) {
@@ -140,7 +140,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
           } else {
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
-            if (lootBones) lootItem(false, BONES);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
             if (c.currentX() != 218 || c.currentY() != 3245) {
               c.walkTo(218, 3245);
               c.sleep(GAME_TICK);
@@ -149,7 +149,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(foodId) == 0 || timeToBank) {

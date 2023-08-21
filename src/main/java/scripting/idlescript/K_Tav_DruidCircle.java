@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import models.entities.PrayerId;
 import orsc.ORSCharacter;
 
@@ -18,34 +19,34 @@ import orsc.ORSCharacter;
 public final class K_Tav_DruidCircle extends K_kailaScript {
   private static boolean prayerBoost = true;
   private static final int[] lowLevelLoot = {
-    UNID_GUAM, // Grimy Guam
-    UNID_MAR, // Grimy Marrentill
-    UNID_TAR, // Grimy Tarromin
-    UNID_HAR, // Grimy Harralander
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    LAW_RUNE, // law rune
-    EARTH_RUNE, // earth runF
-    FIRE_RUNE,
-    WATER_RUNE,
-    CHAOS_RUNE // chaos rune
+    ItemId.UNID_GUAM_LEAF.getId(),
+    ItemId.UNID_MARRENTILL.getId(),
+    ItemId.UNID_TARROMIN.getId(),
+    ItemId.UNID_HARRALANDER.getId(),
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.EARTH_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.CHAOS_RUNE.getId()
   };
   private static final int[] highLevelLoot = {
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    LAW_RUNE, // law rune
-    EARTH_RUNE, // earth runF
-    FIRE_RUNE,
-    WATER_RUNE,
-    CHAOS_RUNE // chaos rune
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.EARTH_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.CHAOS_RUNE.getId()
   };
 
   public int start(String[] parameters) {
@@ -127,12 +128,12 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
             c.sleep(GAME_TICK);
             if (lootLowLevel) lootItems(false, lowLevelLoot);
             else lootItems(false, highLevelLoot);
-            if (lootBones) lootItem(false, BONES);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
           }
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30

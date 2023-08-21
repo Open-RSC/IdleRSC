@@ -27,28 +27,28 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
   private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int[] loot = {
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    FIRE_RUNE,
-    WATER_RUNE,
-    814, // D Bones
-    396, // rune dagger
-    154, // Addy Ore
-    795, // D med
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.DRAGON_BONES.getId(),
+    ItemId.RUNE_DAGGER.getId(),
+    ItemId.ADAMANTITE_ORE.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
+    ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
   // STARTing script
   public int start(String[] parameters) {
@@ -132,7 +132,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         }
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
       }

@@ -94,12 +94,12 @@ public final class K_BlackUnicorns extends K_kailaScript {
             c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
-            if (lootBones) lootItem(false, BONES);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
           }
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(SHARK) == 0) {

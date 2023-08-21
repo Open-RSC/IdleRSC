@@ -103,7 +103,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
           c.getInventoryItemSlotIndex(IRON_ORE)); // c.getSpellIdFromName("Superheat Item") ]21]
       c.sleep(GAME_TICK);
     }
-    castsRemaining = c.getInventoryItemCount(NATURE_RUNE);
+    castsRemaining = c.getInventoryItemCount(ItemId.NATURE_RUNE.getId());
     totalBars = totalBars + c.getInventoryItemCount(IRON_BAR);
     c.setStatus("@gre@Smithing");
     if (c.getInventoryItemCount(IRON_BAR) > 0) {
@@ -148,10 +148,10 @@ public final class K_NoBank_Superheat extends K_kailaScript {
   }
 
   private void dropGems() {
-    dropItemAmount(UNCUT_SAPP, -1, true);
-    dropItemAmount(UNCUT_EMER, -1, true);
-    dropItemAmount(UNCUT_RUBY, -1, true);
-    dropItemAmount(UNCUT_DIA, -1, true);
+    dropItemAmount(ItemId.UNCUT_SAPPHIRE.getId(), -1, true);
+    dropItemAmount(ItemId.UNCUT_EMERALD.getId(), -1, true);
+    dropItemAmount(ItemId.UNCUT_RUBY.getId(), -1, true);
+    dropItemAmount(ItemId.UNCUT_DIAMOND.getId(), -1, true);
   }
 
   private void anvilToOre() {

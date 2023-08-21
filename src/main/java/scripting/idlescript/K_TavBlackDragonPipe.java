@@ -31,38 +31,38 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int PARALYZE_MONSTER = PrayerId.PARALYZE_MONSTER.getId();
   private static final int[] loot = {
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    CHAOS_RUNE, // chaos rune
-    DEATH_RUNE, // Death Rune
-    BLOOD_RUNE, // blood rune
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    AIR_RUNE, // air rune
-    FIRE_RUNE,
-    814, // D Bones
-    75, // rune long
-    120, // addy plate body
-    405, // rune axe
-    81, // rune 2h
-    93, // rune battle axe
-    11, // bronze arrows
-    408, // rune bar
-    520, // silver cert
-    518, // coal cert
-    795, // D med
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.CHAOS_RUNE.getId(),
+    ItemId.DEATH_RUNE.getId(),
+    ItemId.BLOOD_RUNE.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.AIR_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.DRAGON_BONES.getId(),
+    ItemId.RUNE_LONG_SWORD.getId(),
+    ItemId.ADAMANTITE_PLATE_MAIL_BODY.getId(),
+    ItemId.RUNE_AXE.getId(),
+    ItemId.RUNITE_BAR.getId(),
+    ItemId.RUNE_2_HANDED_SWORD.getId(),
+    ItemId.RUNE_BATTLE_AXE.getId(),
+    ItemId.SILVER_CERTIFICATE.getId(),
+    ItemId.COAL_CERTIFICATE.getId(),
+    ItemId.BRONZE_ARROWS.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
+    ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
 
   public int start(String[] parameters) {
@@ -136,7 +136,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       }
       if (c.getInventoryItemCount() == 30) {
         prayPotCheck();
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
       }

@@ -44,7 +44,8 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
     centerY = 265;
     centerDistance = 30;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      foodId = 546;
+      foodId = ItemId.SHARK.getId();
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       potUp = false;
@@ -73,7 +74,6 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
         bankToHouse();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
 
@@ -280,6 +280,7 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
           lootBigBones = lootBigBonesCheckbox.isSelected();
           buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);

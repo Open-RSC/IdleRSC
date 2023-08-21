@@ -264,35 +264,10 @@ public class K_kailaScript extends IdleScript {
     405 // rune axe
   };
   /**
-   * int[] array of <b>bar Ids</b><br>
-   * [1,2,3] doses
-   */
-  protected static final int[] barIds = {
-    169, // bronze bar
-    170, // iron bar
-    171, // steel bar
-    173, // mithril bar
-    174, // adamantite bar
-    408 // runite bar
-  };
-  /**
-   * int[] array of <b>log Ids</b><br>
-   * [normal,oak,willow,maple,yew,magic]
-   */
-  protected static final int[] logIds = {
-    14, // normal logs
-    632, // oak logs
-    633, // willow logs
-    634, // maple logs
-    635, // yew logs
-    636 // magic logs
-  };
-  /**
    * int[] array of cooked <b>food Ids</b><br>
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
    * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
-  // todo convert to hashmap
   protected static final int[] foodIds = {
     1191, // cooked Manta Ray
     1193, // cooked Sea Turtle
@@ -314,9 +289,10 @@ public class K_kailaScript extends IdleScript {
   /**
    * String[] array of <b>cooked food NAMES</b><br>
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
-   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
+   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]<br>
+   * Warning: foodIds and foodTypes need the same order for scripts to use
    */
-  // todo convert to hashmap
+  //todo: convert to hashmap
   protected static final String[] foodTypes = {
     "Manta Ray",
     "Sea Turtle",
@@ -402,46 +378,6 @@ public class K_kailaScript extends IdleScript {
             + inventCada
             + inventDwarf;
   }
-  /** sets foodName string to the name for the current foodId <br> */
-  /*
-   *    todo convert to hashmap
-   */
-  protected static void whatIsFoodName() {
-    if (foodId == 1191) {
-      foodName = "Manta Ray";
-    } else if (foodId == 1193) {
-      foodName = "Sea Turtle";
-    } else if (foodId == 546) {
-      foodName = "Shark";
-    } else if (foodId == 370) {
-      foodName = "Swordfish";
-    } else if (foodId == 367) {
-      foodName = "Tuna";
-    } else if (foodId == 373) {
-      foodName = "Lobster";
-    } else if (foodId == 555) {
-      foodName = "Bass";
-    } else if (foodId == 553) {
-      foodName = "Mackerel";
-    } else if (foodId == 551) {
-      foodName = "Cod";
-    } else if (foodId == 364) {
-      foodName = "Pike";
-    } else if (foodId == 362) {
-      foodName = "Herring";
-    } else if (foodId == 357) {
-      foodName = "Salmon";
-    } else if (foodId == 359) {
-      foodName = "Trout";
-    } else if (foodId == 352) {
-      foodName = "Anchovies";
-    } else if (foodId == 350) {
-      foodName = "Shrimp";
-    } else if (foodId == 132) {
-      foodName = "Cooked Meat";
-    }
-  }
-
   /* protected static int whatIsMaxBoostLevel(String statName) { //super pots boost effect
     int potionEffect = 6;
     if (statName != null && !statName.equals("")) {

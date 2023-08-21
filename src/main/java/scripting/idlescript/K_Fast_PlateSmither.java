@@ -27,7 +27,14 @@ import javax.swing.JLabel;
  */
 public final class K_Fast_PlateSmither extends K_kailaScript {
   private static int barId = -1;
-
+  private static final int[] barIds = {
+    169, // bronze bar
+    170, // iron bar
+    171, // steel bar
+    173, // mithril bar
+    174, // adamantite bar
+    408 // runite bar
+  };
   public int start(String[] parameters) {
     c.quitIfAuthentic();
     c.toggleBatchBarsOn();

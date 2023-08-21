@@ -49,7 +49,8 @@ public final class K_Edge_Thugs extends K_kailaScript {
     centerY = 393;
     centerDistance = 16;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      foodId = 546;
+      foodId = ItemId.SHARK.getId();
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       potUp = false;
@@ -77,7 +78,6 @@ public final class K_Edge_Thugs extends K_kailaScript {
         bankToHouse();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
 
@@ -244,6 +244,7 @@ public final class K_Edge_Thugs extends K_kailaScript {
           lootBones = lootBonesCheckbox.isSelected();
           buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);

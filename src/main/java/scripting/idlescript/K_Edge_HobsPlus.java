@@ -82,7 +82,8 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
     centerY = 3302;
     centerDistance = 14;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      foodId = 546;
+      foodId = ItemId.SHARK.getId();
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
@@ -110,7 +111,6 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
         bankToDungeon();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
 
@@ -315,6 +315,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
           lootLimp = lootLimpCheckbox.isSelected();
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);

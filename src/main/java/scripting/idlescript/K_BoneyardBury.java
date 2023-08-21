@@ -16,6 +16,7 @@ public final class K_BoneyardBury extends K_kailaScript {
   public int start(String[] parameters) {
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       c.displayMessage("Got Autostart Parameter");
@@ -41,7 +42,6 @@ public final class K_BoneyardBury extends K_kailaScript {
         bankToHouse();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -184,6 +184,7 @@ public final class K_BoneyardBury extends K_kailaScript {
           if (!foodWithdrawAmountField.getText().equals(""))
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
@@ -257,7 +258,7 @@ public final class K_BoneyardBury extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Boneyard Skeletons @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Boneyard Big Bone Bury @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Total Bones: @gre@"

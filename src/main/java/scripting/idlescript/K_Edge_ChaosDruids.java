@@ -77,7 +77,8 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     centerY = 3249;
     centerDistance = 11;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      foodId = 546;
+      foodId = ItemId.SHARK.getId();
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
@@ -106,7 +107,6 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
         BankToDruid();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -311,6 +311,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
           lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);

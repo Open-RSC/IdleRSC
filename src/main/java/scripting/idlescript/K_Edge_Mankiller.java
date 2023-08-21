@@ -41,7 +41,8 @@ public final class K_Edge_Mankiller extends K_kailaScript {
     centerY = 442;
     centerDistance = 9;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      foodId = 546;
+      foodId = ItemId.SHARK.getId();
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       potUp = false;
@@ -70,7 +71,6 @@ public final class K_Edge_Mankiller extends K_kailaScript {
         bankToHouse();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -227,6 +227,7 @@ public final class K_Edge_Mankiller extends K_kailaScript {
           lootBones = lootBonesCheckbox.isSelected();
           buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);

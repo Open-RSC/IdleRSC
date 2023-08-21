@@ -4,6 +4,8 @@ import bot.Main;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
+
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -27,7 +29,14 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   private static final int BOW_STRING = 676;
   private static final int KNIFE_ID = 13;
   private static final int[] unstrungIds = {276, 658, 660, 662, 664, 666};
-
+  private final int[] logIds = {
+    ItemId.LOGS.getId(),
+    ItemId.OAK_LOGS.getId(),
+    ItemId.WILLOW_LOGS.getId(),
+    ItemId.MAPLE_LOGS.getId(),
+    ItemId.YEW_LOGS.getId(),
+    ItemId.MAGIC_LOGS.getId()
+  };
   public int start(String[] parameters) {
     con.quitIfAuthentic();
     con.toggleBatchBarsOn();

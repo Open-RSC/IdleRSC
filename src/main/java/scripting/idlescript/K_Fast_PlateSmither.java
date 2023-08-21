@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import models.entities.ItemId;
+
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -28,13 +30,14 @@ import javax.swing.JLabel;
 public final class K_Fast_PlateSmither extends K_kailaScript {
   private static int barId = -1;
   private static final int[] barIds = {
-    169, // bronze bar
-    170, // iron bar
-    171, // steel bar
-    173, // mithril bar
-    174, // adamantite bar
-    408 // runite bar
+    ItemId.BRONZE_BAR.getId(),
+    ItemId.IRON_BAR.getId(),
+    ItemId.STEEL_BAR.getId(),
+    ItemId.MITHRIL_BAR.getId(),
+    ItemId.ADAMANTITE_BAR.getId(),
+    ItemId.RUNITE_BAR.getId()
   };
+
   public int start(String[] parameters) {
     c.quitIfAuthentic();
     c.toggleBatchBarsOn();

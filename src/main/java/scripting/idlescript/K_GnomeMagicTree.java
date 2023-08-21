@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import models.entities.ItemId;
+
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +17,15 @@ import javax.swing.JLabel;
  * @author Kaila
  */
 public final class K_GnomeMagicTree extends K_kailaScript {
+  private static final int[] axeId = {
+    ItemId.BRONZE_AXE.getId(),
+    ItemId.IRON_AXE.getId(),
+    ItemId.STEEL_AXE.getId(),
+    ItemId.BLACK_AXE.getId(),
+    ItemId.MITHRIL_AXE.getId(),
+    ItemId.ADAMANTITE_AXE.getId(),
+    ItemId.RUNE_AXE.getId()
+  };
   public void startSequence() {
     c.displayMessage("@red@GnomeMagicTree,  start with an axe in inv/equipment");
     if (c.isInBank()) c.closeBank();

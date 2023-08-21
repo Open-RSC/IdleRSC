@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import models.entities.ItemId;
+
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,7 +23,15 @@ import javax.swing.JLabel;
 public final class K_Ardy_YewTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
-
+  private static final int[] axeId = {
+    ItemId.BRONZE_AXE.getId(),
+    ItemId.IRON_AXE.getId(),
+    ItemId.STEEL_AXE.getId(),
+    ItemId.BLACK_AXE.getId(),
+    ItemId.MITHRIL_AXE.getId(),
+    ItemId.ADAMANTITE_AXE.getId(),
+    ItemId.RUNE_AXE.getId()
+  };
   private void startSequence() {
     c.displayMessage("@red@ArdyYewTrees, start with an axe in inv/equipment");
     if (c.isInBank()) c.closeBank();

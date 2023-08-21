@@ -26,9 +26,16 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   private static int logsInBank = 0;
   private static int totalBows = 0;
   private static boolean stringBows = false;
-  private static final int BOW_STRING = 676;
-  private static final int KNIFE_ID = 13;
-  private static final int[] unstrungIds = {276, 658, 660, 662, 664, 666};
+  private static final int BOW_STRING = ItemId.BOW_STRING.getId();
+  private static final int KNIFE_ID = ItemId.KNIFE.getId();
+  private static final int[] unstrungIds = {
+    ItemId.UNSTRUNG_LONGBOW.getId(),
+    ItemId.UNSTRUNG_OAK_LONGBOW.getId(),
+    ItemId.UNSTRUNG_WILLOW_LONGBOW.getId(),
+    ItemId.UNSTRUNG_MAPLE_LONGBOW.getId(),
+    ItemId.UNSTRUNG_YEW_LONGBOW.getId(),
+    ItemId.UNSTRUNG_MAGIC_LONGBOW.getId()
+  };
   private final int[] logIds = {
     ItemId.LOGS.getId(),
     ItemId.OAK_LOGS.getId(),

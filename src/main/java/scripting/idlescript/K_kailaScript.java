@@ -251,19 +251,6 @@ public class K_kailaScript extends IdleScript {
     569 // 3 dose
   };
   /**
-   * int[] array of <b>axe Ids</b><br>
-   * [bronze,iron,steel,black,mith,addy,rune]
-   */
-  protected static final int[] axeId = {
-    87, // bronze axe
-    12, // iron axe
-    88, // steel axe
-    428, // black axe
-    203, // mith axe
-    204, // addy axe
-    405 // rune axe
-  };
-  /**
    * int[] array of cooked <b>food Ids</b><br>
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
    * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]

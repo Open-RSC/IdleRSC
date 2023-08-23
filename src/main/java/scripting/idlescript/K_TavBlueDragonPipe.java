@@ -160,6 +160,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     boolean ate = eatFood(ANTI_DRAGON_SHIELD, useDragonTwoHand);
     if (!ate) {
       c.setStatus("@red@We've ran out of Food! Running Away!.");
+      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
       pipeEscape();
       DragonsToBank();
       bank();

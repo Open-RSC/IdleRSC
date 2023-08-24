@@ -127,9 +127,10 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
               superAttackBoost(2, false);
               superStrengthBoost(2, false);
             }
+            c.sleep(GAME_TICK);
             // walkToCenter();
           }
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());

@@ -1473,7 +1473,7 @@ public class K_kailaScript extends IdleScript {
   protected static void forceEquipItem(int itemToEquip) {
     for (int i = 1; i <= 8; i++) {
       try {
-        if (!c.isItemIdEquipped(itemToEquip)) {
+        if (!c.isItemIdEquipped(itemToEquip) && c.getInventoryItemCount(itemToEquip) > 0) {
           c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
           c.sleep(3 * GAME_TICK);
         } else {
@@ -1503,7 +1503,7 @@ public class K_kailaScript extends IdleScript {
   }
   /** Loop Use craft cape to teleport */
   protected static void teleportCraftCape() {
-    for (int i = 1; i <= 10; i++) {
+    for (int i = 1; i <= 20; i++) {
       try {
         if (c.currentX() != 347 && c.currentY() != 599) {
           c.setStatus("@gre@Teleporting..");

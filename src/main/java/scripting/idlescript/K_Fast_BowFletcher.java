@@ -52,7 +52,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       guiSetup = true;
     }
     if (scriptStarted) {
-      con.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " ~ by Kaila");
+      con.displayMessage("@gre@Fast Longbow Fletcher ~ by Kaila");
       con.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
       con.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
 
@@ -88,9 +88,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       if (con.getInventoryItemCount(logId) > 0) {
         if (!stringBows) fletchingScript();
         else stringScript();
-        con.sleep(100);
       }
-      // con.sleep(320);
     }
   }
 
@@ -159,8 +157,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Unstrung Longbow Maker ~ Kaila");
-    JLabel knifeLabel = new JLabel("Start with Knife in Inv!");
-    JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
+    JLabel batchLabel = new JLabel("Batch Bars MUST be On, Bot will attempt to enable it.");
     JLabel batchLabel2 = new JLabel("This ensures 29 Items are made per Menu Cycle.");
     JLabel logLabel = new JLabel("Log Type:");
     JComboBox<String> logField =
@@ -183,7 +180,6 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     scriptFrame.add(header);
-    scriptFrame.add(knifeLabel);
     scriptFrame.add(batchLabel);
     scriptFrame.add(batchLabel2);
     scriptFrame.add(logLabel);

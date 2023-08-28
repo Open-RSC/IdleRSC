@@ -26,7 +26,7 @@ import models.entities.ItemId;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Fast_PlateSmither extends K_kailaScript {
+public final class K_Bank_PlateSmither extends K_kailaScript {
   private static int barId = -1;
   private static final int[] barIds = {
     ItemId.BRONZE_BAR.getId(),

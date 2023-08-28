@@ -15,7 +15,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Fast_BankBurn extends K_kailaScript {
+public final class K_Bank_Firemaking extends K_kailaScript {
   private static final Controller c = Main.getController();
   private static int logId = -1;
   private static int burnSuccess = 0;

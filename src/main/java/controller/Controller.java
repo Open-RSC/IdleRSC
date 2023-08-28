@@ -3069,21 +3069,39 @@ public class Controller {
    *
    * @param x int
    * @param y int
-   * @param itemId int
+   * @param slotIndex int (use getInventoryItemSlotIndex)
    * @param groundItemId int
    */
-  public void useItemOnGroundItem(int x, int y, int itemId, int groundItemId) {
-    // TODO: check if item in inventory
+  public void useSlotIndexOnGroundItem(int x, int y, int slotIndex, int groundItemId) {
+    // if (getInventoryItemCount(itemId) < 1) return;
     // TODO: check if item is on ground
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(53);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
-    mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
+    mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
     mud.packetHandler.getClientStream().bufferBits.putShort(groundItemId);
     mud.packetHandler.getClientStream().finishPacket();
   }
-
+  /**
+   * Uses the specified item in the inventory on the specified ground item.
+   *
+   * @param x int
+   * @param y int
+   * @param itemId int
+   * @param groundItemId int
+   */
+  public void useItemOnGroundItem(int x, int y, int itemId, int groundItemId) {
+    // if (getInventoryItemCount(itemId) < 1) return;
+    // TODO: check if item is on ground
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+    mud.packetHandler.getClientStream().newPacket(53);
+    mud.packetHandler.getClientStream().bufferBits.putShort(x);
+    mud.packetHandler.getClientStream().bufferBits.putShort(y);
+    mud.packetHandler.getClientStream().bufferBits.putShort(getInventoryItemSlotIndex(itemId));
+    mud.packetHandler.getClientStream().bufferBits.putShort(groundItemId);
+    mud.packetHandler.getClientStream().finishPacket();
+  }
   /**
    * Retrieves the server index of the player at the specified coordinates.
    *

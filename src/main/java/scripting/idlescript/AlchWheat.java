@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import models.entities.SpellId;
+
 /**
  * High/Low alches wheat anywhere there's wheat.
  *
@@ -18,8 +20,7 @@ public class AlchWheat extends IdleScript {
         controller.setStatus("@gre@Alchin'!");
         if (controller.getCurrentStat(controller.getStatId("Magic")) >= 55)
           controller.castSpellOnInventoryItem(
-              controller.getSpellIdFromName("High level alchemy"),
-              controller.getInventoryItemSlotIndex(29));
+              SpellId.HIGH_LEVEL_ALCHEMY.getId(), controller.getInventoryItemSlotIndex(29));
         else
           controller.castSpellOnInventoryItem(
               controller.getSpellIdFromName("Low level alchemy"),

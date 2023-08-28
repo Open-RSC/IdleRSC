@@ -1,6 +1,10 @@
 package models.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum SceneryId implements Id {
+  NOTHING(-1),
   POINTY_TREE(0),
   LEAFY_TREE(1),
   WELL(2),
@@ -1306,6 +1310,33 @@ public enum SceneryId implements Id {
   	;
   */
   private final int id;
+
+  private static final Map<Integer, SceneryId> byId = new HashMap<Integer, SceneryId>();
+  private static final Map<String, SceneryId> byName = new HashMap<String, SceneryId>();
+
+  static {
+    for (SceneryId scenery : SceneryId.values()) {
+      if (byId.put(scenery.getId(), scenery) != null) {
+        throw new IllegalArgumentException("duplicate id: " + scenery.getId());
+      } else {
+        if (byName.put(sanitizeName(scenery.name()), scenery) != null) {
+          throw new IllegalArgumentException("duplicate sanitized name: " + scenery.getId());
+        }
+      }
+    }
+  }
+
+  public static SceneryId getById(Integer id) {
+    return byId.getOrDefault(id, SceneryId.NOTHING);
+  }
+
+  public static SceneryId getByName(String name) {
+    return byName.getOrDefault(sanitizeName(name), NOTHING);
+  }
+
+  private static String sanitizeName(String name) {
+    return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
+  }
 
   SceneryId(int id) {
     this.id = id;

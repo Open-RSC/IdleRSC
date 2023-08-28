@@ -4,6 +4,7 @@ import bot.Main;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -18,15 +19,30 @@ import orsc.ORSCharacter;
  *      todo
  *          Add autostart sequence from fastPlate and change variables
  */
-public final class K_Fast_BowFletcher extends K_kailaScript {
+public final class K_Bank_BowFletcher extends K_kailaScript {
   private static final Controller con = Main.getController();
   private static int logId = -1;
   private static int logsInBank = 0;
   private static int totalBows = 0;
   private static boolean stringBows = false;
-  private static final int BOW_STRING = 676;
-  private static final int KNIFE_ID = 13;
-  private static final int[] unstrungIds = {276, 658, 660, 662, 664, 666};
+  private static final int BOW_STRING = ItemId.BOW_STRING.getId();
+  private static final int KNIFE_ID = ItemId.KNIFE.getId();
+  private static final int[] unstrungIds = {
+    ItemId.UNSTRUNG_LONGBOW.getId(),
+    ItemId.UNSTRUNG_OAK_LONGBOW.getId(),
+    ItemId.UNSTRUNG_WILLOW_LONGBOW.getId(),
+    ItemId.UNSTRUNG_MAPLE_LONGBOW.getId(),
+    ItemId.UNSTRUNG_YEW_LONGBOW.getId(),
+    ItemId.UNSTRUNG_MAGIC_LONGBOW.getId()
+  };
+  private final int[] logIds = {
+    ItemId.LOGS.getId(),
+    ItemId.OAK_LOGS.getId(),
+    ItemId.WILLOW_LOGS.getId(),
+    ItemId.MAPLE_LOGS.getId(),
+    ItemId.YEW_LOGS.getId(),
+    ItemId.MAGIC_LOGS.getId()
+  };
 
   public int start(String[] parameters) {
     con.quitIfAuthentic();
@@ -36,7 +52,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       guiSetup = true;
     }
     if (scriptStarted) {
-      con.displayMessage("@gre@" + '"' + "Fast Longbow Fletcher" + '"' + " ~ by Kaila");
+      con.displayMessage("@gre@Fast Longbow Fletcher ~ by Kaila");
       con.displayMessage("@gre@Start at any bank, with a KNIFE in Inv");
       con.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
 
@@ -72,9 +88,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
       if (con.getInventoryItemCount(logId) > 0) {
         if (!stringBows) fletchingScript();
         else stringScript();
-        con.sleep(100);
       }
-      // con.sleep(320);
     }
   }
 
@@ -143,8 +157,7 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Unstrung Longbow Maker ~ Kaila");
-    JLabel knifeLabel = new JLabel("Start with Knife in Inv!");
-    JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
+    JLabel batchLabel = new JLabel("Batch Bars MUST be On, Bot will attempt to enable it.");
     JLabel batchLabel2 = new JLabel("This ensures 29 Items are made per Menu Cycle.");
     JLabel logLabel = new JLabel("Log Type:");
     JComboBox<String> logField =
@@ -167,7 +180,6 @@ public final class K_Fast_BowFletcher extends K_kailaScript {
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     scriptFrame.add(header);
-    scriptFrame.add(knifeLabel);
     scriptFrame.add(batchLabel);
     scriptFrame.add(batchLabel2);
     scriptFrame.add(logLabel);

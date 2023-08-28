@@ -655,79 +655,76 @@ public class DamRc extends IdleScript {
 
   @Override
   public void paintInterrupt() {
-    if (started) {
-      String runTime = msToString(System.currentTimeMillis() - startTime);
-      int gainedExpRc = c.getStatXp(18) - startExpRc;
-      double expHrRc =
-          ((double) gainedExpRc * (3600000.0 / (System.currentTimeMillis() - startTime)));
-      double runesHr =
-          ((double) runesMade * (3600000.0 / (System.currentTimeMillis() - startTime)));
-      int gainedExpMining = c.getStatXp(14) - startExpMining;
-      double expHrMining =
-          ((double) gainedExpMining * (3600000.0 / (System.currentTimeMillis() - startTime)));
-      c.setShowCoords(false);
-      c.setShowStatus(false);
-      c.setShowXp(false);
-      c.drawString("@cya@DamRc v1.1 - By Damrau", 7, 25, 0xFFFFFF, 1);
-      c.drawString("@cya@Runtime: " + runTime, 7, 25 + 14, 0xFFFFFF, 1);
-      c.drawString("@cya@Status: " + status, 7, 25 + 28, 0xFFFFFF, 1);
-      if (mineEss) {
-        c.drawString(
-            "@cya@Ess mined: "
-                + NumberFormat.getInstance().format(runesMade)
-                + " ("
-                + NumberFormat.getInstance().format(Math.floor(runesHr))
-                + "/Hr)",
-            7,
-            25 + 42,
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@cya@Total ess: " + NumberFormat.getInstance().format(runesInBank),
-            7,
-            25 + 56,
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@cya@Mining exp gained: "
-                + NumberFormat.getInstance().format(gainedExpMining)
-                + " ("
-                + NumberFormat.getInstance().format(Math.floor(expHrMining))
-                + "/Hr)",
-            7,
-            25 + 70,
-            0xFFFFFF,
-            1);
-      }
-      if (!mineEss) {
-        c.drawString(
-            "@cya@Runes made: "
-                + NumberFormat.getInstance().format(runesMade)
-                + " ("
-                + NumberFormat.getInstance().format(Math.floor(runesHr))
-                + "/Hr)",
-            7,
-            25 + 42,
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@cya@Total runes: " + NumberFormat.getInstance().format(runesInBank),
-            7,
-            25 + 56,
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@cya@Rc exp gained: "
-                + NumberFormat.getInstance().format(gainedExpRc)
-                + " ("
-                + NumberFormat.getInstance().format(Math.floor(expHrRc))
-                + "/Hr)",
-            7,
-            25 + 70,
-            0xFFFFFF,
-            1);
-      }
-      c.drawString("@cya@Method: " + method, 7, 25 + 84, 0xFFFFFF, 1);
+    String runTime = msToString(System.currentTimeMillis() - startTime);
+    int gainedExpRc = c.getStatXp(18) - startExpRc;
+    double expHrRc =
+        ((double) gainedExpRc * (3600000.0 / (System.currentTimeMillis() - startTime)));
+    double runesHr = ((double) runesMade * (3600000.0 / (System.currentTimeMillis() - startTime)));
+    int gainedExpMining = c.getStatXp(14) - startExpMining;
+    double expHrMining =
+        ((double) gainedExpMining * (3600000.0 / (System.currentTimeMillis() - startTime)));
+    c.setShowCoords(false);
+    c.setShowStatus(false);
+    c.setShowXp(false);
+    c.drawString("@cya@DamRc v1.1 - By Damrau", 7, 25, 0xFFFFFF, 1);
+    c.drawString("@cya@Runtime: " + runTime, 7, 25 + 14, 0xFFFFFF, 1);
+    c.drawString("@cya@Status: " + status, 7, 25 + 28, 0xFFFFFF, 1);
+    if (mineEss) {
+      c.drawString(
+          "@cya@Ess mined: "
+              + NumberFormat.getInstance().format(runesMade)
+              + " ("
+              + NumberFormat.getInstance().format(Math.floor(runesHr))
+              + "/Hr)",
+          7,
+          25 + 42,
+          0xFFFFFF,
+          1);
+      c.drawString(
+          "@cya@Total ess: " + NumberFormat.getInstance().format(runesInBank),
+          7,
+          25 + 56,
+          0xFFFFFF,
+          1);
+      c.drawString(
+          "@cya@Mining exp gained: "
+              + NumberFormat.getInstance().format(gainedExpMining)
+              + " ("
+              + NumberFormat.getInstance().format(Math.floor(expHrMining))
+              + "/Hr)",
+          7,
+          25 + 70,
+          0xFFFFFF,
+          1);
     }
+    if (!mineEss) {
+      c.drawString(
+          "@cya@Runes made: "
+              + NumberFormat.getInstance().format(runesMade)
+              + " ("
+              + NumberFormat.getInstance().format(Math.floor(runesHr))
+              + "/Hr)",
+          7,
+          25 + 42,
+          0xFFFFFF,
+          1);
+      c.drawString(
+          "@cya@Total runes: " + NumberFormat.getInstance().format(runesInBank),
+          7,
+          25 + 56,
+          0xFFFFFF,
+          1);
+      c.drawString(
+          "@cya@Rc exp gained: "
+              + NumberFormat.getInstance().format(gainedExpRc)
+              + " ("
+              + NumberFormat.getInstance().format(Math.floor(expHrRc))
+              + "/Hr)",
+          7,
+          25 + 70,
+          0xFFFFFF,
+          1);
+    }
+    c.drawString("@cya@Method: " + method, 7, 25 + 84, 0xFFFFFF, 1);
   }
 }

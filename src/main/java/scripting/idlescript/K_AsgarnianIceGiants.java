@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -20,43 +21,41 @@ import orsc.ORSCharacter;
  */
 public final class K_AsgarnianIceGiants extends K_kailaScript {
   private static final int[] loot = {
-    UNID_GUAM, // Grimy Guam
-    UNID_MAR, // Grimy Marrentill
-    UNID_TAR, // Grimy Tarromin
-    UNID_HAR, // Grimy Harralander
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    AIR_RUNE, // air rune
-    EARTH_RUNE, // earth runF
-    FIRE_RUNE,
-    WATER_RUNE,
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    BODY_RUNE, // body rune  //remove
-    COSMIC_RUNE, // cosmic rune
-    MIND_RUNE, // remove
-    CHAOS_RUNE, // chaos rune
-    DEATH_RUNE, // Death Rune
-    BLOOD_RUNE, // blood rune
-    COINS, // coins
-    153, // mithril ore
-    11, // bronze arrow
-    433, // Black Kite
-    126, // Mithril Square
-    BIG_BONES, // Big bones
-    BONES, // bones
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_GUAM_LEAF.getId(),
+    ItemId.UNID_MARRENTILL.getId(),
+    ItemId.UNID_TARROMIN.getId(),
+    ItemId.UNID_HARRALANDER.getId(),
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.AIR_RUNE.getId(),
+    ItemId.EARTH_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.COSMIC_RUNE.getId(),
+    ItemId.BODY_RUNE.getId(),
+    ItemId.MIND_RUNE.getId(),
+    ItemId.CHAOS_RUNE.getId(),
+    ItemId.DEATH_RUNE.getId(),
+    ItemId.BLOOD_RUNE.getId(),
+    ItemId.COINS.getId(),
+    ItemId.MITHRIL_ORE.getId(),
+    ItemId.BLACK_KITE_SHIELD.getId(),
+    ItemId.BRONZE_ARROWS.getId(),
+    ItemId.MITHRIL_SQUARE_SHIELD.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId()
   };
 
   private void startSequence() {
@@ -113,7 +112,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30) {
         lootItems(true, loot);
-        if (lootBones) lootItem(true, BIG_BONES);
+        if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
         if (potUp) {
           attackBoost(0, true);
           strengthBoost(0, true);
@@ -129,7 +128,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
           } else {
             c.sleep(GAME_TICK);
             lootItems(true, loot);
-            if (lootBones) lootItem(true, BIG_BONES);
+            if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
             // if (c.currentX() != 305 || c.currentY() != 3522) {
             //  c.walkTo(305, 3522);
             //  c.sleep(1000);
@@ -138,7 +137,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount() == 0 || timeToBank) {

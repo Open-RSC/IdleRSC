@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.*;
 import javax.swing.*;
+import models.entities.ItemId;
 
 /**
  * ColeslawGuildFisher by [unknown author]. Coleslaw only.
@@ -9,8 +10,8 @@ import javax.swing.*;
  * @author Searos and Kaila
  */
 public class ColeslawGuildFisher extends K_kailaScript {
-  private static final int HARPOON_ID = 379;
-  private static final int LOBSTER_POT_ID = 375;
+  private static final int HARPOON_ID = ItemId.HARPOON.getId();
+  private static final int LOBSTER_POT_ID = ItemId.LOBSTER_POT.getId();
   private static final int SHARK_FISH_SPOT = 261;
   private static final int LOBSTER_FISH_SPOT = 376;
   private static boolean swordFish = false;
@@ -24,6 +25,9 @@ public class ColeslawGuildFisher extends K_kailaScript {
   private static int tunaSuccess = 0;
   private static int success = 0;
   private static int failure = 0;
+  private static int fishInBank = 0;
+  private static int fishIdOne = 0;
+  private static int fishIdTwo = 0;
 
   public int start(String[] parameters) {
     c.toggleBatchBarsOn();
@@ -47,22 +51,26 @@ public class ColeslawGuildFisher extends K_kailaScript {
         c.displayMessage("Got param " + parameters[0] + ". Fishing Lobsters!", 0);
         equipId = LOBSTER_POT_ID;
         spotId = LOBSTER_FISH_SPOT;
+        fishIdOne = 372;
         guiSetup = true;
         scriptStarted = true;
       } else if (parameters[0].toLowerCase().startsWith("sword")) {
         c.displayMessage("Got param " + parameters[0] + ". Fishing Swordfish!", 0);
         spotId = LOBSTER_FISH_SPOT;
+        fishIdOne = ItemId.RAW_TUNA.getId();
+        fishIdTwo = ItemId.RAW_SWORDFISH.getId();
         swordFish = true;
         guiSetup = true;
         scriptStarted = true;
       } else if (parameters[0].toLowerCase().startsWith("big")) {
         c.displayMessage("Got param " + parameters[0] + ". Fishing Big Net!", 0);
-        equipId = 548;
+        equipId = ItemId.BIG_NET.getId();
         bigNetFishing = true;
         guiSetup = true;
         scriptStarted = true;
       } else {
         c.displayMessage("Got unknown param. Fishing Sharks!", 0);
+        fishIdOne = ItemId.RAW_SHARK.getId();
         guiSetup = true;
         scriptStarted = true;
       }
@@ -141,6 +149,10 @@ public class ColeslawGuildFisher extends K_kailaScript {
         if (itemId != 0 && itemId != equipId && c.getInventoryItemCount(itemId) > 0) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
+      }
+      if (fishIdOne != 0) {
+        fishInBank = c.getBankItemCount(fishIdOne);
+        if (fishIdTwo != 0) fishInBank = fishInBank + c.getBankItemCount(fishIdTwo);
       }
     } else {
       c.openBank();
@@ -279,8 +291,9 @@ public class ColeslawGuildFisher extends K_kailaScript {
               y + (14 * 3),
               0xFFFFFF,
               1);
-          c.drawString("@whi@Fishing: @gre@Swordfish/Tuna", x, y + (14 * 4), 0xFFFFFF, 1);
-          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+          c.drawString("@whi@Total fish in Bank: @gre@" + fishInBank, x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Fishing: @gre@Swordfish/Tuna", x, y + (14 * 5), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 6), 0xFFFFFF, 1);
         } else {
           c.drawString(
               "@whi@Lobsters Caught: @gre@"
@@ -302,8 +315,9 @@ public class ColeslawGuildFisher extends K_kailaScript {
               y + (14 * 2),
               0xFFFFFF,
               1);
-          c.drawString("@whi@Fishing: @gre@Lobster", x, y + (14 * 3), 0xFFFFFF, 1);
-          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Total fish in Bank: @gre@" + fishInBank, x, y + (14 * 3), 0xFFFFFF, 1);
+          c.drawString("@whi@Fishing: @gre@Lobster", x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
         }
       } else if (spotId == SHARK_FISH_SPOT) {
         if (bigNetFishing) {

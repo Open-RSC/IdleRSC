@@ -724,7 +724,7 @@ public abstract class Script implements IScript {
    * @param ground_y the y position of the ground item.
    */
   public void useItemOnGroundItem(int item_slot, int ground_id, int ground_x, int ground_y) {
-    controller.useItemOnGroundItem(ground_x, ground_y, item_slot, ground_id);
+    controller.useSlotIndexOnGroundItem(ground_x, ground_y, item_slot, ground_id);
   }
 
   /**

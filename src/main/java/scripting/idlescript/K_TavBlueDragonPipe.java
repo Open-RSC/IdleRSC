@@ -27,28 +27,28 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
   private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int[] loot = {
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    FIRE_RUNE,
-    WATER_RUNE,
-    814, // D Bones
-    396, // rune dagger
-    154, // Addy Ore
-    795, // D med
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.DRAGON_BONES.getId(),
+    ItemId.RUNE_DAGGER.getId(),
+    ItemId.ADAMANTITE_ORE.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
+    ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
   // STARTing script
   public int start(String[] parameters) {
@@ -113,7 +113,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           if (npc != null) {
             c.setStatus("@yel@Attacking Dragons");
             c.attackNpc(npc.serverIndex);
-            c.sleep(6 * GAME_TICK);
+            c.sleep(2 * GAME_TICK);
             if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
               c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
               c.sleep(1280);
@@ -127,12 +127,13 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
               superAttackBoost(2, false);
               superStrengthBoost(2, false);
             }
+            c.sleep(GAME_TICK);
             // walkToCenter();
           }
-        }
+        } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
       }
@@ -160,6 +161,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     boolean ate = eatFood(ANTI_DRAGON_SHIELD, useDragonTwoHand);
     if (!ate) {
       c.setStatus("@red@We've ran out of Food! Running Away!.");
+      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
       pipeEscape();
       DragonsToBank();
       bank();
@@ -258,7 +261,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Tav Gate..");
     if (craftCapeTeleport) {
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);
@@ -321,7 +324,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private void DragonsToBank() {
     if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
       forceEquipItem(CRAFT_CAPE);
@@ -336,7 +339,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       totalTrips = totalTrips + 1;
       c.sleep(GAME_TICK);
     } else {
-      teleportToFalador();
+      teleportFalador();
 
       c.sleep(308);
       c.walkTo(327, 552);

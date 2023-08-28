@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -17,39 +18,38 @@ import orsc.ORSCharacter;
  */
 public final class K_AsgarnianPirateHobs extends K_kailaScript {
   private static final int[] loot = {
-    UNID_GUAM, // Grimy Guam
-    UNID_MAR, // Grimy Marrentill
-    UNID_TAR, // Grimy Tarromin
-    UNID_HAR, // Grimy Harralander
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    AIR_RUNE, // air rune
-    EARTH_RUNE, // earth runF
-    FIRE_RUNE,
-    WATER_RUNE,
-    MIND_RUNE, // remove
-    CHAOS_RUNE, // chaos rune
-    DEATH_RUNE, // Death Rune
-    BLOOD_RUNE, // blood rune
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    BODY_RUNE, // body rune  //remove
-    COSMIC_RUNE, // cosmic rune
-    BRONZE_ARROW, // bronze arrow
-    COINS,
-    BONES,
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_GUAM_LEAF.getId(),
+    ItemId.UNID_MARRENTILL.getId(),
+    ItemId.UNID_TARROMIN.getId(),
+    ItemId.UNID_HARRALANDER.getId(),
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.AIR_RUNE.getId(),
+    ItemId.EARTH_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.COSMIC_RUNE.getId(),
+    ItemId.BODY_RUNE.getId(),
+    ItemId.MIND_RUNE.getId(),
+    ItemId.CHAOS_RUNE.getId(),
+    ItemId.DEATH_RUNE.getId(),
+    ItemId.BLOOD_RUNE.getId(),
+    ItemId.BRONZE_ARROWS.getId(),
+    ItemId.COINS.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
   };
 
   public int start(String[] parameters) {
@@ -120,7 +120,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
             c.sleep(GAME_TICK);
           } else {
             c.sleep(GAME_TICK);
-            if (lootBones) lootItem(false, BONES);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
             if (c.currentX() != 283 || c.currentY() != 3521) {
               c.walkTo(283, 3521);
               c.sleep(1000);
@@ -131,7 +131,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
         }
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() > 29

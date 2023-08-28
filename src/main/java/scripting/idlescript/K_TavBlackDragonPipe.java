@@ -3,6 +3,7 @@ package scripting.idlescript;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
+import models.entities.PrayerId;
 import orsc.ORSCharacter;
 
 /**
@@ -28,39 +29,40 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
   private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
+  private static final int PARALYZE_MONSTER = PrayerId.PARALYZE_MONSTER.getId();
   private static final int[] loot = {
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    CHAOS_RUNE, // chaos rune
-    DEATH_RUNE, // Death Rune
-    BLOOD_RUNE, // blood rune
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    AIR_RUNE, // air rune
-    FIRE_RUNE,
-    814, // D Bones
-    75, // rune long
-    120, // addy plate body
-    405, // rune axe
-    81, // rune 2h
-    93, // rune battle axe
-    11, // bronze arrows
-    408, // rune bar
-    520, // silver cert
-    518, // coal cert
-    795, // D med
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.CHAOS_RUNE.getId(),
+    ItemId.DEATH_RUNE.getId(),
+    ItemId.BLOOD_RUNE.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.AIR_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.DRAGON_BONES.getId(),
+    ItemId.RUNE_LONG_SWORD.getId(),
+    ItemId.ADAMANTITE_PLATE_MAIL_BODY.getId(),
+    ItemId.RUNE_AXE.getId(),
+    ItemId.RUNITE_BAR.getId(),
+    ItemId.RUNE_2_HANDED_SWORD.getId(),
+    ItemId.RUNE_BATTLE_AXE.getId(),
+    ItemId.SILVER_CERTIFICATE.getId(),
+    ItemId.COAL_CERTIFICATE.getId(),
+    ItemId.BRONZE_ARROWS.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
+    ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
 
   public int start(String[] parameters) {
@@ -134,7 +136,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       }
       if (c.getInventoryItemCount() == 30) {
         prayPotCheck();
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
       }
@@ -154,7 +156,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     boolean ate = eatFood(ANTI_DRAGON_SHIELD, useDragonTwoHand);
     if (!ate) {
       c.setStatus("@red@We've ran out of Food! Running Away!.");
-      c.sleep(308);
+      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
       dragonEscape();
       DragonsToBank();
       bank();
@@ -261,8 +264,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   }
 
   private void pray() {
-    if (!c.isPrayerOn(c.getPrayerId("Paralyze Monster")) && c.currentY() > 3000) {
-      c.enablePrayer(c.getPrayerId("Paralyze Monster"));
+    if (!c.isPrayerOn(PARALYZE_MONSTER) && c.currentY() > 3000) {
+      c.enablePrayer(PARALYZE_MONSTER);
     }
   }
 
@@ -277,9 +280,10 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private void DragonsToBank() {
     if (craftCapeTeleport) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
+      if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
       forceEquipItem(CRAFT_CAPE);
       craftCapeDoorEntering();
       forceEquipItem(ATTACK_CAPE);
@@ -290,18 +294,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.walkTo(347, 607);
       c.walkTo(346, 608);
     } else {
-      c.setStatus("@gre@Going to Bank. Casting 1st teleport.");
-      c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-      c.sleep(1000);
-      for (int i = 1; i <= 15; i++) {
-        if (c.currentY() > 3000) {
-          c.setStatus("@gre@Teleport unsuccessful, Casting teleports.");
-          c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-          c.sleep(1000);
-        }
-        c.sleep(10);
-      }
-      c.sleep(GAME_TICK);
+      c.setStatus("@gre@Going to Bank.");
+      teleportFalador();
+      if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
       c.walkTo(327, 552);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
@@ -314,7 +309,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Black Dragons..");
     if (craftCapeTeleport) {
-      teleportOutCraftCape();
+      teleportCraftCape();
       c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);
@@ -372,7 +367,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
     }
     c.equipItem(c.getInventoryItemSlotIndex(404));
-    c.enablePrayer(c.getPrayerId("Paralyze Monster"));
+    c.enablePrayer(PARALYZE_MONSTER);
     c.sleep(320);
     c.walkTo(380, 3372);
     eat();

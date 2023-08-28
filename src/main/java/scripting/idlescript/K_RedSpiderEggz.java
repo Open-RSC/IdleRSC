@@ -137,16 +137,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       bank();
     }
     if (teleportOut) {
-      c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(1)"));
-      c.sleep(800);
-      if (c.currentY() > 3000) {
-        c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(2)"));
-        c.sleep(800);
-      }
-      if (c.currentY() > 3000) {
-        c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport(3)"));
-        c.sleep(800);
-      }
+      teleportLumbridge();
       c.walkTo(120, 644);
       c.atObject(119, 642);
       c.walkTo(217, 447);

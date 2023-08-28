@@ -1,6 +1,10 @@
 package models.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum ItemId implements Id {
+  NOTHING(-1),
   IRON_MACE(0),
   IRON_SHORT_SWORD(1),
   IRON_KITE_SHIELD(2),
@@ -222,10 +226,10 @@ public enum ItemId implements Id {
   GARLIC(218),
   RED_SPIDERS_EGGS(219),
   LIMPWURT_ROOT(220),
-  FULL_STRENGTH_POTION(221),
-  THREE_STRENGTH_POTION(222),
-  TWO_STRENGTH_POTION(223),
-  ONE_STRENGTH_POTION(224),
+  STRENGTH_POTION_4DOSE(221),
+  STRENGTH_POTION_3DOSE(222),
+  STRENGTH_POTION_2DOSE(223),
+  STRENGTH_POTION_1DOSE(224),
   STEEL_PLATED_SKIRT(225),
   MITHRIL_PLATED_SKIRT(226),
   ADAMANTITE_PLATED_SKIRT(227),
@@ -1588,6 +1592,33 @@ public enum ItemId implements Id {
   RUNE_STONE_CERTIFICATE(1543);
 
   private final int id;
+
+  private static final Map<Integer, ItemId> byId = new HashMap<Integer, ItemId>();
+  private static final Map<String, ItemId> byName = new HashMap<String, ItemId>();
+
+  static {
+    for (ItemId item : ItemId.values()) {
+      if (byId.put(item.getId(), item) != null) {
+        throw new IllegalArgumentException("duplicate id: " + item.getId());
+      } else {
+        if (byName.put(sanitizeName(item.name()), item) != null) {
+          throw new IllegalArgumentException("duplicate sanitized name: " + item.getId());
+        }
+      }
+    }
+  }
+
+  public static ItemId getById(Integer id) {
+    return byId.getOrDefault(id, ItemId.NOTHING);
+  }
+
+  public static ItemId getByName(String name) {
+    return byName.getOrDefault(sanitizeName(name), NOTHING);
+  }
+
+  private static String sanitizeName(String name) {
+    return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
+  }
 
   ItemId(int i) {
     this.id = i;

@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -22,57 +23,43 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
   private static int totalDstone = 0;
   private static int totalMed = 0;
   private static final int[] loot = {
-    // 413,   // big bones //un-comment this to loot and bury dbones, it will reduce Kills per Hr
-    // significantly b/c of Shadow Spiders
-    1346, // d2h
-    795, // D med
-    522, // dragonstone ammy
-    1318, // ring of wealth
-    402, // rune leg
-    1374, // atk cape
-    1318, // ring of wealth
-    402, // rune leg
-    400, // rune chain
-    399, // rune med
-    403, // rune sq
-    404, // rune kite
-    112, // rune full helm
-    522, // dragonstone ammy
-    542, // uncut dstone
-    523, // cut dstone
-    795, // D med
-    526, // tooth half
-    527, // loop half
-    1277, // shield (left) half
-    1092, // rune spear
-    160, // saph
-    159, // emerald
-    158, // ruby
-    157, // diamond
-    438, // Grimy ranarr
-    439, // Grimy irit
-    440, // Grimy ava
-    441, // Grimy kwu
-    442, // Grimy cada
-    443, // Grimy dwu
-    40, // nature rune
-    42, // law rune
-    38, // death rune
-    619, // blood rune
-    41, // chaos rune
-    31, // fire rune
-    404, // rune kite
-    403, // rune square
-    126, // mithril sq
-    405, // rune axe
-    408, // rune bar
-    81, // rune 2h
-    93, // rune battle axe
-    398, // rune scimmy
-    615, // fire bstaff
-    520, // silver cert
-    518, // coal cert
-    373 // lobster (will get eaten)
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.DRAGONSTONE_AMULET.getId(),
+    ItemId.RING_OF_WEALTH.getId(),
+    ItemId.UNCUT_DRAGONSTONE.getId(),
+    ItemId.DRAGONSTONE.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.CHAOS_RUNE.getId(),
+    ItemId.DEATH_RUNE.getId(),
+    ItemId.BLOOD_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.RUNE_KITE_SHIELD.getId(),
+    ItemId.RUNE_SQUARE_SHIELD.getId(),
+    ItemId.MITHRIL_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_AXE.getId(),
+    ItemId.RUNITE_BAR.getId(),
+    ItemId.RUNE_2_HANDED_SWORD.getId(),
+    ItemId.RUNE_BATTLE_AXE.getId(),
+    ItemId.RUNE_SCIMITAR.getId(),
+    ItemId.BATTLESTAFF_OF_FIRE.getId(),
+    ItemId.SILVER_CERTIFICATE.getId(),
+    ItemId.COAL_CERTIFICATE.getId(),
+    ItemId.LOBSTER.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
+    ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
 
   public int start(String[] parameters) {
@@ -135,7 +122,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
           } else c.sleep(GAME_TICK);
         }
         if (c.getInventoryItemCount() == 30) {
-          dropItemToLoot(true, 1, EMPTY_VIAL);
+          dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
           eatFoodToLoot(true);
         }
       }

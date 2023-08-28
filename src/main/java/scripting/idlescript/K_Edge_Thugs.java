@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -17,31 +18,30 @@ import orsc.ORSCharacter;
 public final class K_Edge_Thugs extends K_kailaScript {
 
   private static final int[] loot = {
-    UNID_GUAM, // Grimy Guam
-    UNID_MAR, // Grimy Marrentill
-    UNID_TAR, // Grimy Tarromin
-    UNID_HAR, // Grimy Harralander
-    UNID_RANARR, // Grimy Ranarr Weed
-    UNID_IRIT, // Grimy Irit
-    UNID_AVANTOE, // Grimy Avantoe
-    UNID_KWUARM, // Grimy Kwuarm
-    UNID_CADA, // Grimy Cadantine
-    UNID_DWARF, // Grimy Dwarf Weed
-    COINS, // coins
-    NATURE_RUNE, // nature rune
-    LAW_RUNE, // law rune
-    BODY_RUNE, // body rune  //remove
-    COSMIC_RUNE, // cosmic rune
-    CHAOS_RUNE, // chaos rune
-    DEATH_RUNE, // Death Rune
-    UNCUT_SAPP, // saph
-    UNCUT_EMER, // emerald
-    UNCUT_RUBY, // ruby
-    UNCUT_DIA, // diamond
-    TOOTH_HALF, // tooth half
-    LOOP_HALF, // loop half
-    LEFT_HALF, // shield (left) half
-    RUNE_SPEAR // rune spear
+    ItemId.UNID_GUAM_LEAF.getId(),
+    ItemId.UNID_MARRENTILL.getId(),
+    ItemId.UNID_TARROMIN.getId(),
+    ItemId.UNID_HARRALANDER.getId(),
+    ItemId.UNID_RANARR_WEED.getId(),
+    ItemId.UNID_IRIT.getId(),
+    ItemId.UNID_AVANTOE.getId(),
+    ItemId.UNID_KWUARM.getId(),
+    ItemId.UNID_CADANTINE.getId(),
+    ItemId.UNID_DWARF_WEED.getId(),
+    ItemId.NATURE_RUNE.getId(), // nature rune
+    ItemId.LAW_RUNE.getId(), // law rune
+    ItemId.BODY_RUNE.getId(), // body rune  //remove
+    ItemId.COSMIC_RUNE.getId(), // cosmic rune
+    ItemId.CHAOS_RUNE.getId(), // chaos rune
+    ItemId.DEATH_RUNE.getId(), // Death Rune
+    ItemId.UNCUT_SAPPHIRE.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.TOOTH_HALF_KEY.getId(),
+    ItemId.LOOP_HALF_KEY.getId(),
+    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
+    ItemId.RUNE_SPEAR.getId(),
   };
 
   public int start(String[] parameters) {
@@ -49,7 +49,8 @@ public final class K_Edge_Thugs extends K_kailaScript {
     centerY = 393;
     centerDistance = 16;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      foodId = 546;
+      foodId = ItemId.SHARK.getId();
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       potUp = false;
@@ -77,7 +78,6 @@ public final class K_Edge_Thugs extends K_kailaScript {
         bankToHouse();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
 
@@ -110,12 +110,12 @@ public final class K_Edge_Thugs extends K_kailaScript {
           } else {
             c.sleep(GAME_TICK);
             lootItems(false, loot);
-            if (lootBones) lootItem(false, BONES);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
           }
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30
@@ -244,6 +244,7 @@ public final class K_Edge_Thugs extends K_kailaScript {
           lootBones = lootBonesCheckbox.isSelected();
           buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);

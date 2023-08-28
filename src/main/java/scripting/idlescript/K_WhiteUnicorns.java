@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -18,14 +19,15 @@ import orsc.ORSCharacter;
  */
 public final class K_WhiteUnicorns extends K_kailaScript {
   private static int totalUni = 0, inventUni = 0, uniInBank = 0;
-  private static final int UNI_HORN = 466;
+  private static final int UNI_HORN = ItemId.UNICORN_HORN.getId();
 
   public int start(String[] parameters) {
     centerX = 451;
     centerY = 470;
     centerDistance = 30;
     if (parameters[0].toLowerCase().startsWith("auto")) {
-      foodId = 546;
+      foodId = ItemId.SHARK.getId();
+      foodName = "Shark";
       fightMode = 0;
       foodWithdrawAmount = 1;
       potUp = false;
@@ -53,7 +55,6 @@ public final class K_WhiteUnicorns extends K_kailaScript {
         bankToHouse();
         c.sleep(1380);
       }
-      whatIsFoodName();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -86,12 +87,12 @@ public final class K_WhiteUnicorns extends K_kailaScript {
           } else {
             c.sleep(GAME_TICK);
             lootItem(false, UNI_HORN);
-            if (lootBones) lootItem(false, BONES);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
           }
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, EMPTY_VIAL);
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
       if (c.getInventoryItemCount() == 30
@@ -186,6 +187,7 @@ public final class K_WhiteUnicorns extends K_kailaScript {
           lootBones = lootBonesCheckbox.isSelected();
           buryBones = buryBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);

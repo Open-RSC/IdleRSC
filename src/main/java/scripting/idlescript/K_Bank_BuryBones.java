@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -15,16 +16,14 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-/*
- * todo add gui and statistics.
- */
-public final class K_Fast_BankBury extends K_kailaScript {
+public final class K_Bank_BuryBones extends K_kailaScript {
   private static int boneId = -1;
+  private static int burySuccess = 0;
   private static final int[] boneIds = {
-    20, // regular bones
-    413, // big bones
-    604, // bat bones
-    814 // dragon bones
+    ItemId.BONES.getId(),
+    ItemId.BIG_BONES.getId(),
+    ItemId.BAT_BONES.getId(),
+    ItemId.DRAGON_BONES.getId()
   };
 
   public int start(String[] parameters) {
@@ -35,6 +34,7 @@ public final class K_Fast_BankBury extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      startTime = System.currentTimeMillis();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -79,6 +79,7 @@ public final class K_Fast_BankBury extends K_kailaScript {
       if (c.getInventoryItemCount(boneId) < 30) {
         c.withdrawItem(boneId, 30);
       }
+      bankBones = c.getBankItemCount(boneId);
       c.closeBank();
     }
   }
@@ -113,5 +114,61 @@ public final class K_Fast_BankBury extends K_kailaScript {
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
+  }
+
+  @Override
+  public void serverMessageInterrupt(String message) {
+    if (message.contains("You bury")) {
+      burySuccess++;
+    }
+  }
+
+  @Override
+  public void paintInterrupt() {
+    if (c != null) {
+      String runTime = c.msToString(System.currentTimeMillis() - startTime);
+      int boneSuccessPerHr = 0;
+      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
+
+      try {
+        float timeRan = currentTimeInSeconds - startTimestamp;
+        float scale = (60 * 60) / timeRan;
+        boneSuccessPerHr = (int) (burySuccess * scale);
+      } catch (Exception e) {
+        // divide by zero
+      }
+      int x = 6;
+      int y = 15;
+      c.drawString("@red@Fast Bone Bury @mag@~ Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
+      c.drawString(
+          "@whi@Bones Buried: @gre@"
+              + burySuccess
+              + "@yel@ (@whi@"
+              + String.format("%,d", (boneSuccessPerHr))
+              + "@yel@/@whi@hr@yel@)",
+          x,
+          y + 14,
+          0xFFFFFF,
+          1);
+      c.drawString("@whi@Bones in bank: @yel@" + bankBones, x, y + (14 * 2), 0xFFFFFF, 1);
+      if (boneId == boneIds[0]) {
+        c.drawString("@whi@Burying: @gre@Regular Bones", x, y + (14 * 3), 0xFFFFFF, 1);
+      } else if (boneId == boneIds[1]) {
+        c.drawString("@whi@Burying: @gre@Big Bones", x, y + (14 * 3), 0xFFFFFF, 1);
+      } else if (boneId == boneIds[2]) {
+        c.drawString("@whi@Burying: @gre@Bat Bones", x, y + (14 * 3), 0xFFFFFF, 1);
+      } else if (boneId == boneIds[3]) {
+        c.drawString("@whi@Burying: @gre@Dragon Bones", x, y + (14 * 3), 0xFFFFFF, 1);
+      }
+      c.drawString(
+          "@whi@Time Remaining: " + c.timeToCompletion(burySuccess, bankBones, startTime),
+          x,
+          y + (14 * 4),
+          0xFFFFFF,
+          1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+      c.drawString("@whi@________________________", x, y + (14 * 5) + 3, 0xFFFFFF, 1);
+    }
   }
 }

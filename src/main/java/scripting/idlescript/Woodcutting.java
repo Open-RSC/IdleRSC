@@ -8,6 +8,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
+import models.entities.SceneryId;
 
 /**
  * <b>AIO Woodcutting Bot</b>
@@ -18,8 +20,8 @@ import javax.swing.JLabel;
  */
 public class Woodcutting extends IdleScript {
   private static final Controller c = Main.getController();
-  final JCheckBox bank = new JCheckBox("Bank", true);
-  final JComboBox<String> destination =
+  private final JCheckBox bank = new JCheckBox("Bank", true);
+  private final JComboBox<String> destination =
       new JComboBox<>(
           new String[] {
             "Draynor",
@@ -33,25 +35,41 @@ public class Woodcutting extends IdleScript {
             "South Ardy",
             "Yanille"
           });
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int treeId = -1;
-  int logId = -1;
-  final int[] treeIds = {1, 306, 307, 308, 309, 310};
-  int saveX = 0;
-  int saveY = 0;
-  int bankSelX = -1;
-  int bankSelY = -1;
-  int totalLogs = 0;
-  int bankedLogs = 0;
-  final int[] bankX = {220, 150, 103, 220, 216, 283, 503, 582, 566, 588};
-  final int[] bankY = {635, 504, 511, 365, 450, 569, 452, 576, 600, 754};
-  boolean bankTime = false;
-  boolean chopTime = false;
-  final int[] bankerIds = {95, 224, 268, 485, 540, 617};
+  private JFrame scriptFrame = null;
+  private boolean guiSetup = false;
+  private boolean scriptStarted = false;
+  private int treeId = -1;
+  private int logId = -1;
+  private final int[] treeIds = {
+    SceneryId.LEAFY_TREE.getId(),
+    SceneryId.TREE_OAK.getId(),
+    SceneryId.TREE_WILLOW.getId(),
+    SceneryId.TREE_MAPLE.getId(),
+    SceneryId.TREE_YEW.getId(),
+    SceneryId.TREE_MAGIC.getId()
+  };
+  private final int[] logIds = {
+    ItemId.LOGS.getId(),
+    ItemId.OAK_LOGS.getId(),
+    ItemId.WILLOW_LOGS.getId(),
+    ItemId.MAPLE_LOGS.getId(),
+    ItemId.YEW_LOGS.getId(),
+    ItemId.MAGIC_LOGS.getId()
+  };
+  private int saveX = 0;
+  private int saveY = 0;
+  private int bankSelX = -1;
+  private int bankSelY = -1;
+  private int totalLogs = 0;
+  private int bankedLogs = 0;
+  private int inventLogs = 0;
+  private final int[] bankX = {220, 150, 103, 220, 216, 283, 503, 582, 566, 588};
+  private final int[] bankY = {635, 504, 511, 365, 450, 569, 452, 576, 600, 754};
+  private boolean bankTime = false;
+  private boolean chopTime = false;
+  private final int[] bankerIds = {95, 224, 268, 485, 540, 617};
 
-  final int[] axes = {12, 87, 88, 203, 204, 405, 1263};
+  private final int[] axes = {12, 87, 88, 203, 204, 405, 1263};
 
   public int start(String[] parameters) {
     if (!guiSetup) {
@@ -69,7 +87,7 @@ public class Woodcutting extends IdleScript {
     return 1000; // start() must return an int value now.
   }
 
-  public void startWalking(int x, int y) {
+  private void startWalking(int x, int y) {
     // shitty autowalk
     int newX = x;
     int newY = y;
@@ -97,14 +115,14 @@ public class Woodcutting extends IdleScript {
     }
   }
 
-  public boolean isAxe(int id) {
+  private boolean isAxe(int id) {
     for (int axe : axes) {
       if (axe == id) return true;
     }
     return false;
   }
 
-  public void scriptStart() {
+  private void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() == 30) {
         bankTime = true;
@@ -113,15 +131,12 @@ public class Woodcutting extends IdleScript {
       if (c.getInventoryItemCount() <= 29) {
         bankTime = false;
       }
-      if (c.getNearestObjectById(treeId) != null
-          && chopTime
-          && !c
-              .isBatching()) { // bot spams  getNearestObjectById and goes to 25% cpu, this specific
-        // one
+      if (c.getNearestObjectById(treeId) != null && chopTime && !c.isBatching()) {
         c.sleepHandler(98, true);
         int[] treeCoords = c.getNearestObjectById(treeId);
         c.atObject(treeCoords[0], treeCoords[1]);
         c.sleep(1200); // more sleep to let batching catch up!
+        inventLogs = c.getInventoryItemCount(logId);
         batchingWaitScript();
       } else { // added else so when getNearestObjectById == null this function doesn't repeat and
         // overflow cpu usage
@@ -148,6 +163,7 @@ public class Woodcutting extends IdleScript {
           c.sleep(100);
         }
         bankedLogs = c.getBankItemCount(logId);
+        inventLogs = c.getInventoryItemCount(logId);
         c.sleep(100);
         c.closeBank();
         bankTime = false;
@@ -174,13 +190,13 @@ public class Woodcutting extends IdleScript {
     guiSetup = false;
   }
 
-  public void batchingWaitScript() {
+  private void batchingWaitScript() {
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
       c.sleep(1000);
     }
   }
 
-  public void setupGUI() {
+  private void setupGUI() {
     JLabel header = new JLabel("Woodcutting");
     JLabel treeLabel = new JLabel("Tree Type:");
     JComboBox<String> treeField =
@@ -190,7 +206,7 @@ public class Woodcutting extends IdleScript {
     startScriptButton.addActionListener(
         e -> {
           treeId = treeIds[treeField.getSelectedIndex()];
-          logId = treeIds[treeField.getSelectedIndex()];
+          logId = logIds[treeField.getSelectedIndex()];
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
@@ -226,7 +242,8 @@ public class Woodcutting extends IdleScript {
     if (c != null) {
       c.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       c.drawString("@red@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      c.drawString("@red@Logs Collected: @yel@" + totalLogs, 10, 21 + 14, 0xFFFFFF, 1);
+      c.drawString(
+          "@red@Logs Collected: @yel@" + (totalLogs + inventLogs), 10, 21 + 14, 0xFFFFFF, 1);
       c.drawString("@red@Logs in bank: @yel@" + bankedLogs, 10, 21 + 14 + 14, 0xFFFFFF, 1);
     }
   }

@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 
 /**
  * <b>Fast Platebody Smither</b>
@@ -25,8 +26,16 @@ import javax.swing.JLabel;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Fast_PlateSmither extends K_kailaScript {
+public final class K_Bank_PlateSmither extends K_kailaScript {
   private static int barId = -1;
+  private static final int[] barIds = {
+    ItemId.BRONZE_BAR.getId(),
+    ItemId.IRON_BAR.getId(),
+    ItemId.STEEL_BAR.getId(),
+    ItemId.MITHRIL_BAR.getId(),
+    ItemId.ADAMANTITE_BAR.getId(),
+    ItemId.RUNITE_BAR.getId()
+  };
 
   public int start(String[] parameters) {
     c.quitIfAuthentic();
@@ -91,7 +100,7 @@ public final class K_Fast_PlateSmither extends K_kailaScript {
       if (scriptStarted) {
         guiSetup = false;
         scriptStarted = false;
-        c.displayMessage("@gre@" + '"' + "Fast Platebody Smither" + '"' + " - by Kaila");
+        c.displayMessage("@gre@Fast Platebody Smither - by Kaila");
         c.displayMessage("@gre@Start in Varrock West bank with a HAMMER");
         c.displayMessage("@red@REQUIRES Batch bars be toggle on in settings to work correctly!");
         if (c.isInBank()) c.closeBank();
@@ -180,7 +189,7 @@ public final class K_Fast_PlateSmither extends K_kailaScript {
   private void setupGUI() {
     JLabel header = new JLabel("Platebody Smithing - Kaila");
     JLabel hammerLabel = new JLabel("Start with Hammer in Inv!");
-    JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
+    JLabel batchLabel = new JLabel("Batch Bars MUST be On, Bot will attempt to enable it.");
     JLabel batchLabel2 = new JLabel("This ensures 5 Plates are made per Menu Cycle.");
     JLabel barLabel = new JLabel("Bar Type:");
     JComboBox<String> barField =

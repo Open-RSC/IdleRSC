@@ -4,6 +4,7 @@ import bot.Main;
 import controller.Controller;
 import javax.swing.*;
 import models.entities.ItemId;
+import models.entities.SpellId;
 
 /**
  * WIP master file for common commands used in Kaila_Scripts
@@ -48,22 +49,6 @@ public class K_kailaScript extends IdleScript {
   protected static final long startTimestamp = System.currentTimeMillis() / 1000L;
   protected static final int GAME_TICK = 640;
   protected static final int EAT_LEVEL = c.getBaseStat(c.getStatId("Hits")) - 20;
-
-  // ~~~~~~~~~~~~~ITEM CONSTANTS~~~~~~~~~~~
-  protected static final int UNCUT_SAPP = 160, UNCUT_EMER = 159, UNCUT_RUBY = 158, UNCUT_DIA = 157;
-  protected static final int UNID_GUAM = 165, UNID_MAR = 435, UNID_TAR = 436, UNID_HAR = 437;
-  protected static final int UNID_RANARR = 438,
-      UNID_IRIT = 439,
-      UNID_AVANTOE = 440,
-      UNID_KWUARM = 441;
-  protected static final int UNID_CADA = 442, UNID_DWARF = 443;
-  protected static final int FIRE_RUNE = 31, WATER_RUNE = 32, AIR_RUNE = 33, EARTH_RUNE = 34;
-  protected static final int MIND_RUNE = 35, CHAOS_RUNE = 41, DEATH_RUNE = 38, BLOOD_RUNE = 619;
-  protected static final int LAW_RUNE = 42, NATURE_RUNE = 40, COSMIC_RUNE = 46, BODY_RUNE = 36;
-  protected static final int TOOTH_HALF = 526, LOOP_HALF = 527, RUNE_SPEAR = 1092, LEFT_HALF = 1277;
-  protected static final int COINS = 10, EMPTY_VIAL = 465, BRONZE_ARROW = 11, SPIN_ROLL = 179;
-  protected static final int LIMP_ROOT = 220;
-  protected static final int BONES = 20, BIG_BONES = 413;
 
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
 
@@ -187,151 +172,114 @@ public class K_kailaScript extends IdleScript {
    * [regular,big,bat,dragon]
    */
   protected static final int[] bones = {
-    20, // regular
-    413, // big
-    604, // bat?
-    814 // dragon
+    ItemId.BONES.getId(),
+    ItemId.BIG_BONES.getId(),
+    ItemId.BAT_BONES.getId(),
+    ItemId.DRAGON_BONES.getId()
   };
   /**
    * int[] array of <b>regular attack potions</b><br>
    * [1,2,3] doses
    */
   protected static final int[] attackPot = {
-    476, // reg attack pot (1)
-    475, // reg attack pot (2)
-    474 // reg attack pot (3)
+    ItemId.ATTACK_POTION_1DOSE.getId(),
+    ItemId.ATTACK_POTION_2DOSE.getId(),
+    ItemId.ATTACK_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>regular strength potions</b><br>
    * [1,2,3] doses
    */
   protected static final int[] strengthPot = {
-    224, // reg str pot (1)
-    223, // reg str pot (2)
-    222, // reg str pot (3)
-    221 // reg str pot (4)
+    ItemId.STRENGTH_POTION_1DOSE.getId(),
+    ItemId.STRENGTH_POTION_2DOSE.getId(),
+    ItemId.STRENGTH_POTION_3DOSE.getId(),
+    ItemId.STRENGTH_POTION_4DOSE.getId()
   };
   /**
    * int[] array of <b>regular defense potions</b><br>
    * [1,2,3] doses
    */
   protected static final int[] defensePot = {
-    482, // reg def pot (1)
-    481, // reg def pot (2)
-    480 // reg def pot (3)
+    ItemId.DEFENSE_POTION_1DOSE.getId(),
+    ItemId.DEFENSE_POTION_2DOSE.getId(),
+    ItemId.DEFENSE_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>super attack potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] superAttackPot = {
-    488, // super  attack pot (1)
-    487, // super  attack pot (2)
-    486 // super attack pot (3)
+    ItemId.SUPER_ATTACK_POTION_1DOSE.getId(),
+    ItemId.SUPER_ATTACK_POTION_2DOSE.getId(),
+    ItemId.SUPER_ATTACK_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>super strength potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] superStrengthPot = {
-    494, // super str pot (1)
-    493, // super str pot (2)
-    492 // super str pot (3)
+    ItemId.SUPER_STRENGTH_POTION_1DOSE.getId(),
+    ItemId.SUPER_STRENGTH_POTION_2DOSE.getId(),
+    ItemId.SUPER_STRENGTH_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>super defense potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] superDefensePot = {
-    497, // super defense pot (1)
-    496, // super defense pot (2)
-    495 // super defense pot (3)
+    ItemId.SUPER_DEFENSE_POTION_1DOSE.getId(),
+    ItemId.SUPER_DEFENSE_POTION_2DOSE.getId(),
+    ItemId.SUPER_DEFENSE_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>prayer potion</b><br>
    * [1,2,3] doses
    */
   protected static final int[] prayerPot = {
-    485, // prayer potion (1)
-    484, // prayer potion (2)
-    483 // prayer potion (3)
+    ItemId.RESTORE_PRAYER_POTION_1DOSE.getId(),
+    ItemId.RESTORE_PRAYER_POTION_2DOSE.getId(),
+    ItemId.RESTORE_PRAYER_POTION_3DOSE.getId()
   };
   /**
    * int[] array of <b>antidote</b><br>
    * (the red one) [1,2,3] doses
    */
   protected static final int[] antiPot = {
-    571, // 1 dose
-    570, // 2 dose
-    569 // 3 dose
-  };
-  /**
-   * int[] array of <b>axe Ids</b><br>
-   * [bronze,iron,steel,black,mith,addy,rune]
-   */
-  protected static final int[] axeId = {
-    87, // bronze axe
-    12, // iron axe
-    88, // steel axe
-    428, // black axe
-    203, // mith axe
-    204, // addy axe
-    405 // rune axe
-  };
-  /**
-   * int[] array of <b>bar Ids</b><br>
-   * [1,2,3] doses
-   */
-  protected static final int[] barIds = {
-    169, // bronze bar
-    170, // iron bar
-    171, // steel bar
-    173, // mithril bar
-    174, // adamantite bar
-    408 // runite bar
-  };
-  /**
-   * int[] array of <b>log Ids</b><br>
-   * [normal,oak,willow,maple,yew,magic]
-   */
-  protected static final int[] logIds = {
-    14, // normal logs
-    632, // oak logs
-    633, // willow logs
-    634, // maple logs
-    635, // yew logs
-    636 // magic logs
+    ItemId.POISON_ANTIDOTE_1DOSE.getId(),
+    ItemId.POISON_ANTIDOTE_2DOSE.getId(),
+    ItemId.POISON_ANTIDOTE_3DOSE.getId()
   };
   /**
    * int[] array of cooked <b>food Ids</b><br>
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
    * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
    */
-  // todo convert to hashmap
   protected static final int[] foodIds = {
-    1191, // cooked Manta Ray
-    1193, // cooked Sea Turtle
-    546, // cooked shark
-    370, // cooked swordfish
-    367, // cooked tuna
-    373, // cooked lobster
-    555, // cooked Bass
-    553, // cooked Mackerel
-    551, // cooked Cod
-    364, // cooked Pike
-    362, // cooked Herring
-    357, // cooked Salmon
-    359, // cooked Trout
-    352, // cooked Anchovies
-    350, // cooked Shrimp
-    132 // cooked Meat
+    ItemId.MANTA_RAY.getId(),
+    ItemId.SEA_TURTLE.getId(),
+    ItemId.SHARK.getId(),
+    ItemId.SWORDFISH.getId(),
+    ItemId.TUNA.getId(),
+    ItemId.LOBSTER.getId(),
+    ItemId.BASS.getId(),
+    ItemId.MACKEREL.getId(),
+    ItemId.COD.getId(),
+    ItemId.PIKE.getId(),
+    ItemId.HERRING.getId(),
+    ItemId.SALMON.getId(),
+    ItemId.TROUT.getId(),
+    ItemId.ANCHOVIES.getId(),
+    ItemId.SHRIMP.getId(),
+    ItemId.COOKEDMEAT.getId()
   };
   /**
    * String[] array of <b>cooked food NAMES</b><br>
    * [Manta,turtle,shark,swordfish,tuna,lobster,bass,mackerel,<br>
-   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]
+   * cod,pike,herring,salmon,trout,anchovies,shrimp,meat]<br>
+   * Warning: foodIds and foodTypes need the same order for scripts to use
    */
-  // todo convert to hashmap
+  // todo: convert to hashmap
   protected static final String[] foodTypes = {
     "Manta Ray",
     "Sea Turtle",
@@ -417,46 +365,6 @@ public class K_kailaScript extends IdleScript {
             + inventCada
             + inventDwarf;
   }
-  /** sets foodName string to the name for the current foodId <br> */
-  /*
-   *    todo convert to hashmap
-   */
-  protected static void whatIsFoodName() {
-    if (foodId == 1191) {
-      foodName = "Manta Ray";
-    } else if (foodId == 1193) {
-      foodName = "Sea Turtle";
-    } else if (foodId == 546) {
-      foodName = "Shark";
-    } else if (foodId == 370) {
-      foodName = "Swordfish";
-    } else if (foodId == 367) {
-      foodName = "Tuna";
-    } else if (foodId == 373) {
-      foodName = "Lobster";
-    } else if (foodId == 555) {
-      foodName = "Bass";
-    } else if (foodId == 553) {
-      foodName = "Mackerel";
-    } else if (foodId == 551) {
-      foodName = "Cod";
-    } else if (foodId == 364) {
-      foodName = "Pike";
-    } else if (foodId == 362) {
-      foodName = "Herring";
-    } else if (foodId == 357) {
-      foodName = "Salmon";
-    } else if (foodId == 359) {
-      foodName = "Trout";
-    } else if (foodId == 352) {
-      foodName = "Anchovies";
-    } else if (foodId == 350) {
-      foodName = "Shrimp";
-    } else if (foodId == 132) {
-      foodName = "Cooked Meat";
-    }
-  }
-
   /* protected static int whatIsMaxBoostLevel(String statName) { //super pots boost effect
     int potionEffect = 6;
     if (statName != null && !statName.equals("")) {
@@ -827,6 +735,7 @@ public class K_kailaScript extends IdleScript {
       throw new RuntimeException(e);
     }
   }
+  // TODO check for item (if equipped, else if in invent return true, else withdraw?)
 
   /*
    *      Potion Methods
@@ -1563,12 +1472,13 @@ public class K_kailaScript extends IdleScript {
   }
   /** Loop to make sure to equip an item */
   protected static void forceEquipItem(int itemToEquip) {
-    for (int i = 1; i <= 8; i++) {
+    for (int i = 1; i <= 15; i++) {
       try {
-        if (!c.isItemIdEquipped(itemToEquip)) {
+        if (!c.isItemIdEquipped(itemToEquip) && c.getInventoryItemCount(itemToEquip) > 0) {
           c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
           c.sleep(3 * GAME_TICK);
         } else {
+          c.sleep(4 * GAME_TICK);
           break;
         }
       } catch (Exception e) {
@@ -1577,46 +1487,41 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop Use agility cape to teleport */
-  protected static void teleportOutAgilityCape() {
-    for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 591 && c.currentY() != 765) {
-          c.setStatus("@gre@Teleporting..");
-          c.itemCommand(ItemId.AGILITY_CAPE.getId());
-          c.sleep(4 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+  protected static void teleportAgilityCape() {
+    c.itemCommand(ItemId.AGILITY_CAPE.getId());
+    for (int i = 1; i <= 20; i++) {
+      if (c.currentX() != 591 && c.currentY() != 765) {
+        c.setStatus("@gre@Teleporting..");
+        c.itemCommand(ItemId.AGILITY_CAPE.getId());
+        c.sleep(4 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
   /** Loop Use craft cape to teleport */
-  protected static void teleportOutCraftCape() {
-    for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 347 && c.currentY() != 599) {
-          c.setStatus("@gre@Teleporting..");
-          c.itemCommand(ItemId.CRAFTING_CAPE.getId());
-          c.sleep(4 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+  protected static void teleportCraftCape() {
+    c.itemCommand(ItemId.CRAFTING_CAPE.getId());
+    for (int i = 1; i <= 30; i++) {
+      if (c.currentX() != 347 && c.currentY() != 599) {
+        c.setStatus("@gre@Teleporting..");
+        c.itemCommand(ItemId.CRAFTING_CAPE.getId());
+        c.sleep(4 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
   /** Loop teleport to Lumbridge center */
-  protected static void teleportToLumbridge() {
+  protected static void teleportLumbridge() {
+    c.castSpellOnSelf(SpellId.LUMBRIDGE_TELEPORT.getId());
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 120 && c.currentY() != 648) {
           c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Lumbridge Teleport"));
+          c.castSpellOnSelf(SpellId.LUMBRIDGE_TELEPORT.getId());
           c.sleep(3 * GAME_TICK);
         } else {
           c.sleep(4 * GAME_TICK);
@@ -1628,87 +1533,67 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /** Loop teleport to Falador center */
-  protected static void teleportToFalador() {
+  protected static void teleportFalador() {
     for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 312 && c.currentY() != 552) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Falador Teleport"));
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() != 312 && c.currentY() != 552) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.FALADOR_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
   /** Loop teleport to Varrock center */
-  protected static void teleportToVarrock() {
+  protected static void teleportVarrock() {
     for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 120 && c.currentY() != 504) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Varrock Teleport"));
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() != 120 && c.currentY() != 504) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.VARROCK_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
   /** Loop teleport to Camelot Castle */
-  protected static void teleportToCamelot() {
+  protected static void teleportCamelot() {
     for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 456 && c.currentY() != 456) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Camelot Teleport"));
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() != 456 && c.currentY() != 456) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.CAMELOT_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
   /** Loop teleport to Ardougne */
-  protected static void teleportToArdy() {
+  protected static void teleportArdy() {
     for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 588 && c.currentY() != 621) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Ardougne Teleport"));
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() != 588 && c.currentY() != 621) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.ARDOUGNE_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
   /** Loop teleport to Watchtower */
-  protected static void teleportToWatchtower() {
+  protected static void teleportWatchtower() {
     for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 493 && c.currentY() != 3525) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(c.getSpellIdFromName("Watchtower Teleport"));
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() != 493 && c.currentY() != 3525) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.WATCHTOWER_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
@@ -1719,65 +1604,49 @@ public class K_kailaScript extends IdleScript {
   /** opens wall door in edgeville dungeon that goes to the wilderness tunnel shortcut */
   protected static void edgeWallGate() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 218 && c.currentY() == 3282) {
-          c.setStatus("@gre@Opening Edge Wall Gate..");
-          c.atWallObject(219, 3282);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 218 && c.currentY() == 3282) {
+        c.setStatus("@gre@Opening Edge Wall Gate..");
+        c.atWallObject(219, 3282);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
   /** goes through the wilderness tunnel shortcut */
   protected static void edgeShortcut() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() > 218 && c.currentY() > 3000) {
-          c.setStatus("@gre@ Going through Edge Shortcut..");
-          c.atObject(223, 3281);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          c.setStatus("@red@Done Opening Edge wall..");
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() > 218 && c.currentY() > 3000) {
+        c.setStatus("@gre@ Going through Edge Shortcut..");
+        c.atObject(223, 3281);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        c.setStatus("@red@Done Opening Edge wall..");
+        break;
       }
     }
   }
   /** Goes through the fixed gate leading to Tav from the south (craft guild). (south to north) */
   protected static void tavGateSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 581) {
-          c.setStatus("@red@Crossing Tav Gate..");
-          c.atObject(343, 581); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 581) {
+        c.setStatus("@red@Crossing Tav Gate..");
+        c.atObject(343, 581); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
   /** Goes through the fixed gate leading to Tav from the south (craft guild). (north to south) */
   protected static void tavGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 580) {
-          c.setStatus("@red@Crossing Tav Gate..");
-          c.atObject(343, 581); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 580) {
+        c.setStatus("@red@Crossing Tav Gate..");
+        c.atObject(343, 581); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
@@ -1785,16 +1654,13 @@ public class K_kailaScript extends IdleScript {
   protected static void craftCapeDoorEntering() {
     // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 347 && c.currentY() == 600) {
-          c.setStatus("@red@Entering Crafting Guild..");
-          c.atWallObject(347, 601); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 347 && c.currentY() == 600) {
+        c.setStatus("@red@Entering Crafting Guild..");
+        c.atWallObject(347, 601); // gate won't break if someone else opens it
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(3 * GAME_TICK);
+        break;
       }
     }
   }
@@ -1802,32 +1668,24 @@ public class K_kailaScript extends IdleScript {
   protected static void craftCapeDoorExiting() {
     // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 347 && c.currentY() == 600) {
-          c.setStatus("@red@Entering Crafting Guild..");
-          c.atWallObject(347, 601); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 347 && c.currentY() == 600) {
+        c.setStatus("@red@Entering Crafting Guild..");
+        c.atWallObject(347, 601); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
   /** Goes through the fixed gate leading to Tav. (going from east to west) */
   protected static void tavGateEastToWest() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
-          c.setStatus("@red@Crossing Tav Gate..");
-          c.atObject(341, 487); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
+        c.setStatus("@red@Crossing Tav Gate..");
+        c.atObject(341, 487); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
@@ -1835,81 +1693,61 @@ public class K_kailaScript extends IdleScript {
   /** Goes through the fixed gate leading to Tav. (going from west to east) */
   protected static void tavGateWestToEast() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 342 && c.currentY() < 489 && c.currentY() > 486) {
-          c.atObject(341, 487); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 342 && c.currentY() < 489 && c.currentY() > 486) {
+        c.atObject(341, 487); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
   /** Goes through the fixed gate in Yanille dungeon (north to south) */
   protected static void yanilleDungeonDoorExiting() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 593 && c.currentY() == 3589) {
-          c.atWallObject2(593, 3590); // locked door
-          c.sleep(2 * GAME_TICK);
-          if (c.isBatching()) c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 593 && c.currentY() == 3589) {
+        c.atWallObject2(593, 3590); // locked door
+        c.sleep(2 * GAME_TICK);
+        if (c.isBatching()) c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
   /** Goes through the fixed gate in Yanille dungeon (south to north) */
   protected static void yanilleDungeonDoorEntering() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 593 && c.currentY() == 3590) {
-          c.atWallObject2(593, 3590); // locked door
-          c.sleep(GAME_TICK);
-          if (c.isBatching()) c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 593 && c.currentY() == 3590) {
+        c.atWallObject2(593, 3590); // locked door
+        c.sleep(GAME_TICK);
+        if (c.isBatching()) c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
   /** Goes through the fixed gate in Edge dungeon leading to wilderness area (north to south) */
   protected static void openEdgeDungGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentY() == 3265) {
-          c.setStatus("@gre@Opening Wildy Gate..");
-          c.atObject(196, 3266);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Wildy Gate..");
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentY() == 3265) {
+        c.setStatus("@gre@Opening Wildy Gate..");
+        c.atObject(196, 3266);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Wildy Gate..");
+        break;
       }
     }
   }
   /** * Goes through the fixed gate in Edge dungeon leading to wilderness area (south to north) */
   protected void openEdgeDungSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentY() == 3266) {
-          c.setStatus("@gre@Opening Wildy Gate..");
-          c.atObject(196, 3266);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Wildy Gate..");
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentY() == 3266) {
+        c.setStatus("@gre@Opening Wildy Gate..");
+        c.atObject(196, 3266);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Wildy Gate..");
+        break;
       }
     }
   }
@@ -1920,15 +1758,11 @@ public class K_kailaScript extends IdleScript {
   protected void brassDoorNorthToSouth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 202 && c.currentY() == 484) {
-          c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
-          c.sleep(800);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 202 && c.currentY() == 484) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
+        c.sleep(800);
+      } else {
+        break;
       }
     }
   }
@@ -1939,83 +1773,63 @@ public class K_kailaScript extends IdleScript {
   protected void brassDoorSouthToNorth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() == 202 && c.currentY() == 485) {
-          c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
-          c.sleep(800);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() == 202 && c.currentY() == 485) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
+        c.sleep(800);
+      } else {
+        break;
       }
     }
   }
   /** Goes through the fixed door leading into the druid tower. Exiting (north to south) */
   protected static void openDruidTowerNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentY() == 555) {
-          c.setStatus("@gre@Opening Druid Gate..");
-          c.atWallObject(617, 556);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Druid Gate..");
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentY() == 555) {
+        c.setStatus("@gre@Opening Druid Gate..");
+        c.atWallObject(617, 556);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Druid Gate..");
+        break;
       }
     }
   }
   /** Goes through the fixed door leading into the druid tower. Entering (south to north) */
   protected static void openDruidTowerSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentY() == 556) {
-          c.setStatus("@gre@Opening Druid Gate..");
-          c.atWallObject2(617, 556);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Druid Gate..");
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentY() == 556) {
+        c.setStatus("@gre@Opening Druid Gate..");
+        c.atWallObject2(617, 556);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Druid Gate..");
+        break;
       }
     }
   }
   /** Goes through the fixed gate leading into red dragon isle. Existing (South to North) */
   protected static void redDragGateSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 181) {
-          if (c.isInCombat()) leaveCombat();
-          c.setStatus("@gre@Opening Dragon Gate South to North..");
-          c.atObject(140, 180);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 181) {
+        if (c.isInCombat()) leaveCombat();
+        c.setStatus("@gre@Opening Dragon Gate South to North..");
+        c.atObject(140, 180);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
   /** Goes through the fixed gate leading into red dragon isle. Entering (North to South) */
   protected static void redDragGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-      try {
-        if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 180) {
-          if (c.isInCombat()) leaveCombat();
-          c.setStatus("@gre@Opening Dragon Gate North to South..");
-          c.atObject(140, 180);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 180) {
+        if (c.isInCombat()) leaveCombat();
+        c.setStatus("@gre@Opening Dragon Gate North to South..");
+        c.atObject(140, 180);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }

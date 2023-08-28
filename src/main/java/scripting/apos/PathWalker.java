@@ -215,6 +215,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         new Location("Champions Guild", 151, 551, false),
         new Location("Chaos Temple (Goblin Village)", 309, 434, false),
         new Location("Coal Trucks", 614, 477, false),
+        new Location("Cooking Guild", 179, 489, false),
         new Location("Crafting Guild", 347, 599, false),
         new Location("Dark Wizards' Tower", 355, 572, false),
         new Location("Dark Wizards' Circle", 119, 546, false),
@@ -239,7 +240,6 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         new Location("Lumber Yard", 82, 436, false),
         new Location("Lumbridge", 128, 640, false),
         new Location("Lumbridge Windmill", 175, 608, false),
-        new Location("Makeover Mage", 366, 579, false),
         new Location("Port Khazard", 553, 702, false),
         new Location("Port Sarim", 270, 625, false),
         new Location("Rimmington", 320, 653, false),
@@ -269,10 +269,11 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         new Location(
             "Karamja Only - Shilo Bridge", 449, 843, false), // autowalk cannot cross shilo bridge
         // Wilderness
-        new Location("WILD - Skelli mine", 269, 381, false),
+        new Location("WILD - Skeleton mine", 269, 381, false),
         new Location("WILD - Dark Warriors' Fortress", 271, 352, false),
         new Location("WILD - Black Unicorns", 120, 302, false),
         new Location("WILD - Hobgoblin Mine", 213, 268, false),
+        new Location("WILD - KBD Gate", 287, 185, false),
         new Location("WILD - Mage Bank", 222, 107, false),
         new Location("WILD - Agility Course", 296, 138, false)
       };

@@ -223,7 +223,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       c.closeBank();
     }
   }
-  
+
   // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Bank Firemaking  ~ Kaila");

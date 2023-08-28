@@ -233,6 +233,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
     JLabel logLabel = new JLabel("Log Type:");
     JComboBox<String> logField =
         new JComboBox<>(new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"});
+    logField.setSelectedIndex(4);
     JLabel burnLoc = new JLabel("Burn Location:");
     JComboBox<String> burnLocation =
         new JComboBox<>(

@@ -1488,32 +1488,35 @@ public class K_kailaScript extends IdleScript {
   }
   /** Loop Use agility cape to teleport */
   protected static void teleportAgilityCape() {
+    c.itemCommand(ItemId.AGILITY_CAPE.getId());
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() != 591 && c.currentY() != 765) {
-          c.setStatus("@gre@Teleporting..");
-          c.itemCommand(ItemId.AGILITY_CAPE.getId());
-          c.sleep(4 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() != 591 && c.currentY() != 765) {
+        c.setStatus("@gre@Teleporting..");
+        c.itemCommand(ItemId.AGILITY_CAPE.getId());
+        c.sleep(4 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
+      }
     }
   }
   /** Loop Use craft cape to teleport */
   protected static void teleportCraftCape() {
+    c.itemCommand(ItemId.CRAFTING_CAPE.getId());
     for (int i = 1; i <= 30; i++) {
-        if (c.currentX() != 347 && c.currentY() != 599) {
-          c.setStatus("@gre@Teleporting..");
-          c.itemCommand(ItemId.CRAFTING_CAPE.getId());
-          c.sleep(4 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() != 347 && c.currentY() != 599) {
+        c.setStatus("@gre@Teleporting..");
+        c.itemCommand(ItemId.CRAFTING_CAPE.getId());
+        c.sleep(4 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
+      }
     }
   }
   /** Loop teleport to Lumbridge center */
   protected static void teleportLumbridge() {
+    c.castSpellOnSelf(SpellId.LUMBRIDGE_TELEPORT.getId());
     for (int i = 1; i <= 10; i++) {
       try {
         if (c.currentX() != 120 && c.currentY() != 648) {
@@ -1532,66 +1535,66 @@ public class K_kailaScript extends IdleScript {
   /** Loop teleport to Falador center */
   protected static void teleportFalador() {
     for (int i = 1; i <= 10; i++) {
-        if (c.currentX() != 312 && c.currentY() != 552) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(SpellId.FALADOR_TELEPORT.getId());
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() != 312 && c.currentY() != 552) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.FALADOR_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
+      }
     }
   }
   /** Loop teleport to Varrock center */
   protected static void teleportVarrock() {
     for (int i = 1; i <= 10; i++) {
-        if (c.currentX() != 120 && c.currentY() != 504) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(SpellId.VARROCK_TELEPORT.getId());
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() != 120 && c.currentY() != 504) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.VARROCK_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
+      }
     }
   }
   /** Loop teleport to Camelot Castle */
   protected static void teleportCamelot() {
     for (int i = 1; i <= 10; i++) {
-        if (c.currentX() != 456 && c.currentY() != 456) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(SpellId.CAMELOT_TELEPORT.getId());
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() != 456 && c.currentY() != 456) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.CAMELOT_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
+      }
     }
   }
   /** Loop teleport to Ardougne */
   protected static void teleportArdy() {
     for (int i = 1; i <= 10; i++) {
-        if (c.currentX() != 588 && c.currentY() != 621) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(SpellId.ARDOUGNE_TELEPORT.getId());
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() != 588 && c.currentY() != 621) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.ARDOUGNE_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
+      }
     }
   }
   /** Loop teleport to Watchtower */
   protected static void teleportWatchtower() {
     for (int i = 1; i <= 10; i++) {
-        if (c.currentX() != 493 && c.currentY() != 3525) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(SpellId.WATCHTOWER_TELEPORT.getId());
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() != 493 && c.currentY() != 3525) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.WATCHTOWER_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
+      }
     }
   }
   /*
@@ -1601,151 +1604,151 @@ public class K_kailaScript extends IdleScript {
   /** opens wall door in edgeville dungeon that goes to the wilderness tunnel shortcut */
   protected static void edgeWallGate() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 218 && c.currentY() == 3282) {
-          c.setStatus("@gre@Opening Edge Wall Gate..");
-          c.atWallObject(219, 3282);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() == 218 && c.currentY() == 3282) {
+        c.setStatus("@gre@Opening Edge Wall Gate..");
+        c.atWallObject(219, 3282);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** goes through the wilderness tunnel shortcut */
   protected static void edgeShortcut() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() > 218 && c.currentY() > 3000) {
-          c.setStatus("@gre@ Going through Edge Shortcut..");
-          c.atObject(223, 3281);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          c.setStatus("@red@Done Opening Edge wall..");
-          break;
-        }
+      if (c.currentX() > 218 && c.currentY() > 3000) {
+        c.setStatus("@gre@ Going through Edge Shortcut..");
+        c.atObject(223, 3281);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        c.setStatus("@red@Done Opening Edge wall..");
+        break;
+      }
     }
   }
   /** Goes through the fixed gate leading to Tav from the south (craft guild). (south to north) */
   protected static void tavGateSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 581) {
-          c.setStatus("@red@Crossing Tav Gate..");
-          c.atObject(343, 581); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 581) {
+        c.setStatus("@red@Crossing Tav Gate..");
+        c.atObject(343, 581); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** Goes through the fixed gate leading to Tav from the south (craft guild). (north to south) */
   protected static void tavGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 580) {
-          c.setStatus("@red@Crossing Tav Gate..");
-          c.atObject(343, 581); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 580) {
+        c.setStatus("@red@Crossing Tav Gate..");
+        c.atObject(343, 581); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** Enters through the fixed door leading to craft guild. (north to south) */
   protected static void craftCapeDoorEntering() {
     // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 347 && c.currentY() == 600) {
-          c.setStatus("@red@Entering Crafting Guild..");
-          c.atWallObject(347, 601); // gate won't break if someone else opens it
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(3 * GAME_TICK);
-          break;
-        }
+      if (c.currentX() == 347 && c.currentY() == 600) {
+        c.setStatus("@red@Entering Crafting Guild..");
+        c.atWallObject(347, 601); // gate won't break if someone else opens it
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(3 * GAME_TICK);
+        break;
+      }
     }
   }
   /** Exits through the fixed door leading to craft guild. (north to south) */
   protected static void craftCapeDoorExiting() {
     // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 347 && c.currentY() == 600) {
-          c.setStatus("@red@Entering Crafting Guild..");
-          c.atWallObject(347, 601); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() == 347 && c.currentY() == 600) {
+        c.setStatus("@red@Entering Crafting Guild..");
+        c.atWallObject(347, 601); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** Goes through the fixed gate leading to Tav. (going from east to west) */
   protected static void tavGateEastToWest() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
-          c.setStatus("@red@Crossing Tav Gate..");
-          c.atObject(341, 487); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() == 341 && c.currentY() < 489 && c.currentY() > 486) {
+        c.setStatus("@red@Crossing Tav Gate..");
+        c.atObject(341, 487); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
 
   /** Goes through the fixed gate leading to Tav. (going from west to east) */
   protected static void tavGateWestToEast() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 342 && c.currentY() < 489 && c.currentY() > 486) {
-          c.atObject(341, 487); // gate won't break if someone else opens it
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() == 342 && c.currentY() < 489 && c.currentY() > 486) {
+        c.atObject(341, 487); // gate won't break if someone else opens it
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** Goes through the fixed gate in Yanille dungeon (north to south) */
   protected static void yanilleDungeonDoorExiting() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 593 && c.currentY() == 3589) {
-          c.atWallObject2(593, 3590); // locked door
-          c.sleep(2 * GAME_TICK);
-          if (c.isBatching()) c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() == 593 && c.currentY() == 3589) {
+        c.atWallObject2(593, 3590); // locked door
+        c.sleep(2 * GAME_TICK);
+        if (c.isBatching()) c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** Goes through the fixed gate in Yanille dungeon (south to north) */
   protected static void yanilleDungeonDoorEntering() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 593 && c.currentY() == 3590) {
-          c.atWallObject2(593, 3590); // locked door
-          c.sleep(GAME_TICK);
-          if (c.isBatching()) c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() == 593 && c.currentY() == 3590) {
+        c.atWallObject2(593, 3590); // locked door
+        c.sleep(GAME_TICK);
+        if (c.isBatching()) c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** Goes through the fixed gate in Edge dungeon leading to wilderness area (north to south) */
   protected static void openEdgeDungGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentY() == 3265) {
-          c.setStatus("@gre@Opening Wildy Gate..");
-          c.atObject(196, 3266);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Wildy Gate..");
-          break;
-        }
+      if (c.currentY() == 3265) {
+        c.setStatus("@gre@Opening Wildy Gate..");
+        c.atObject(196, 3266);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Wildy Gate..");
+        break;
+      }
     }
   }
   /** * Goes through the fixed gate in Edge dungeon leading to wilderness area (south to north) */
   protected void openEdgeDungSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentY() == 3266) {
-          c.setStatus("@gre@Opening Wildy Gate..");
-          c.atObject(196, 3266);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Wildy Gate..");
-          break;
-        }
+      if (c.currentY() == 3266) {
+        c.setStatus("@gre@Opening Wildy Gate..");
+        c.atObject(196, 3266);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Wildy Gate..");
+        break;
+      }
     }
   }
   /**
@@ -1755,12 +1758,12 @@ public class K_kailaScript extends IdleScript {
   protected void brassDoorNorthToSouth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 202 && c.currentY() == 484) {
-          c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
-          c.sleep(800);
-        } else {
-          break;
-        }
+      if (c.currentX() == 202 && c.currentY() == 484) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
+        c.sleep(800);
+      } else {
+        break;
+      }
     }
   }
   /**
@@ -1770,64 +1773,64 @@ public class K_kailaScript extends IdleScript {
   protected void brassDoorSouthToNorth() {
     int dustyKey = 99;
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() == 202 && c.currentY() == 485) {
-          c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
-          c.sleep(800);
-        } else {
-          break;
-        }
+      if (c.currentX() == 202 && c.currentY() == 485) {
+        c.useItemOnWall(202, 485, c.getInventoryItemSlotIndex(dustyKey));
+        c.sleep(800);
+      } else {
+        break;
+      }
     }
   }
   /** Goes through the fixed door leading into the druid tower. Exiting (north to south) */
   protected static void openDruidTowerNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-if (c.currentY() == 555) {
-          c.setStatus("@gre@Opening Druid Gate..");
-          c.atWallObject(617, 556);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Druid Gate..");
-          break;
-        }
+      if (c.currentY() == 555) {
+        c.setStatus("@gre@Opening Druid Gate..");
+        c.atWallObject(617, 556);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Druid Gate..");
+        break;
+      }
     }
   }
   /** Goes through the fixed door leading into the druid tower. Entering (south to north) */
   protected static void openDruidTowerSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentY() == 556) {
-          c.setStatus("@gre@Opening Druid Gate..");
-          c.atWallObject2(617, 556);
-          c.sleep(GAME_TICK);
-        } else {
-          c.setStatus("@gre@Done Opening Druid Gate..");
-          break;
-        }
+      if (c.currentY() == 556) {
+        c.setStatus("@gre@Opening Druid Gate..");
+        c.atWallObject2(617, 556);
+        c.sleep(GAME_TICK);
+      } else {
+        c.setStatus("@gre@Done Opening Druid Gate..");
+        break;
+      }
     }
   }
   /** Goes through the fixed gate leading into red dragon isle. Existing (South to North) */
   protected static void redDragGateSouthToNorth() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 181) {
-          if (c.isInCombat()) leaveCombat();
-          c.setStatus("@gre@Opening Dragon Gate South to North..");
-          c.atObject(140, 180);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 181) {
+        if (c.isInCombat()) leaveCombat();
+        c.setStatus("@gre@Opening Dragon Gate South to North..");
+        c.atObject(140, 180);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
   /** Goes through the fixed gate leading into red dragon isle. Entering (North to South) */
   protected static void redDragGateNorthToSouth() {
     for (int i = 1; i <= 20; i++) {
-        if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 180) {
-          if (c.isInCombat()) leaveCombat();
-          c.setStatus("@gre@Opening Dragon Gate North to South..");
-          c.atObject(140, 180);
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
+      if (c.currentX() > 139 && c.currentX() < 142 && c.currentY() == 180) {
+        if (c.isInCombat()) leaveCombat();
+        c.setStatus("@gre@Opening Dragon Gate North to South..");
+        c.atObject(140, 180);
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
     }
   }
 }

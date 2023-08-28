@@ -1,23 +1,20 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
- * <b>Fast Log Burn</b>
+ * <b>Bank Firemaking</b>
  *
- * <p>Start in listed Bank and bury logs
+ * <p>Start in listed Bank and burn logs
  *
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
 public final class K_Bank_Firemaking extends K_kailaScript {
-  private static final Controller c = Main.getController();
-  private static int logId = -1;
+  private static int logId = 0;
   private static int burnSuccess = 0;
   private static int logsInBank = 0;
   private static final int TINDERBOX = ItemId.TINDERBOX.getId();
@@ -40,7 +37,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       guiSetup = true;
     }
     if (scriptStarted) {
-      c.displayMessage("@gre@Fast Log Bury ~ by Kaila");
+      c.displayMessage("@gre@Bank Firemaking ~ by Kaila");
       c.displayMessage("@gre@Do NOT use a firemaking skill cape with this trainer");
       c.displayMessage("@red@REQUIRES Batch bars On, bot will attempt to enable them!");
 
@@ -226,9 +223,10 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       c.closeBank();
     }
   }
+  
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Fast Log Bury  ~ Kaila");
+    JLabel header = new JLabel("Bank Firemaking  ~ Kaila");
     JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures 29 Items are made per Menu Cycle.");
     JLabel capeWarning = new JLabel("Do NOT use a firemaking skill cape with this trainer");
@@ -292,7 +290,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Fast Log Bury @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Bank Firemaking @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@Logs Burned: @yel@" + burnSuccess, x, y + (14 * 2), 0xFFFFFF, 1);

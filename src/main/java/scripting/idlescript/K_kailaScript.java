@@ -3,6 +3,8 @@ package scripting.idlescript;
 import bot.Main;
 import controller.Controller;
 import javax.swing.*;
+
+import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
 import models.entities.SpellId;
 
@@ -1502,7 +1504,7 @@ public class K_kailaScript extends IdleScript {
   protected static void teleportAgilityCape() {
     int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();
     if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1)
-      c.unequipItem(1); // slot 1 is cape slot
+      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
     c.itemCommand(AGILITY_CAPE);
     c.sleep(5 * GAME_TICK);
@@ -1525,7 +1527,7 @@ public class K_kailaScript extends IdleScript {
   protected static void teleportCraftCape() {
     int CRAFTING_CAPE = ItemId.CRAFTING_CAPE.getId();
     if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1)
-      c.unequipItem(1); // slot 1 is cape slot
+      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
     c.itemCommand(CRAFTING_CAPE);
     c.sleep(5 * GAME_TICK);

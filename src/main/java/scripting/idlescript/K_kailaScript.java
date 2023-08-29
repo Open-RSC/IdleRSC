@@ -1486,9 +1486,9 @@ public class K_kailaScript extends IdleScript {
       try {
         if (!c.isItemIdEquipped(itemToEquip) && c.getInventoryItemCount(itemToEquip) > 0) {
           c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
-          c.sleep(6 * GAME_TICK);
+          c.sleep(4 * GAME_TICK);
         } else {
-          c.sleep(6 * GAME_TICK);
+          c.sleep(4 * GAME_TICK);
           break;
         }
       } catch (Exception e) {

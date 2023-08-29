@@ -266,7 +266,6 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     c.setStatus("@gre@Walking to Tav Gate..");
     if (craftCapeTeleport) {
       teleportCraftCape();
-      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);
       c.walkTo(343, 581);
@@ -329,7 +328,6 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
-      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
       forceEquipItem(CRAFT_CAPE);
       craftCapeDoorEntering();

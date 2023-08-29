@@ -280,7 +280,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     if (craftCapeTeleport) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
-      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 600);
       if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
       forceEquipItem(CRAFT_CAPE);
@@ -309,7 +308,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.setStatus("@gre@Walking to Black Dragons..");
     if (craftCapeTeleport) {
       teleportCraftCape();
-      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);
       c.walkTo(343, 581);

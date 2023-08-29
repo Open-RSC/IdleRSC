@@ -1117,7 +1117,7 @@ public class K_kailaScript extends IdleScript {
     if (c.getInventoryItemCount(foodId) < (foodWithdrawAmount - 2)) {
       for (int foodId2 : c.getFoodIds()) {
         c.withdrawItem(foodId2, foodWithdrawAmount - c.getInventoryItemCount(foodId) - 2);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
     }
   }
@@ -1138,14 +1138,15 @@ public class K_kailaScript extends IdleScript {
     if ((attackPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(attackPot[0]) > 0) {
         c.withdrawItem(attackPot[0], withdrawAmount - attackPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK); // 2 ticks
       } else if (c.getBankItemCount(attackPot[1]) > 0) {
         c.withdrawItem(attackPot[1], withdrawAmount - attackPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(attackPot[2]) > 0) {
         c.withdrawItem(attackPot[2], withdrawAmount - attackPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int attackPotRecheck =
           (c.getInventoryItemCount(attackPot[0])
               + c.getInventoryItemCount(attackPot[1])
@@ -1153,7 +1154,7 @@ public class K_kailaScript extends IdleScript {
       if (attackPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(attackPot[2]) > 0) {
           c.withdrawItem(attackPot[2], withdrawAmount - attackPotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1176,14 +1177,15 @@ public class K_kailaScript extends IdleScript {
     if ((strengthPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(strengthPot[0]) > 0) {
         c.withdrawItem(strengthPot[0], withdrawAmount - strengthPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(strengthPot[1]) > 0) {
         c.withdrawItem(strengthPot[1], withdrawAmount - strengthPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(strengthPot[2]) > 0) {
         c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int strengthPotRecheck =
           (c.getInventoryItemCount(strengthPot[0])
               + c.getInventoryItemCount(strengthPot[1])
@@ -1191,7 +1193,7 @@ public class K_kailaScript extends IdleScript {
       if (strengthPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(strengthPot[2]) > 0) {
           c.withdrawItem(strengthPot[2], withdrawAmount - strengthPotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1213,14 +1215,15 @@ public class K_kailaScript extends IdleScript {
     if ((defensePotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(defensePot[0]) > 0) {
         c.withdrawItem(defensePot[0], withdrawAmount - defensePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(defensePot[1]) > 0) {
         c.withdrawItem(defensePot[1], withdrawAmount - defensePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(defensePot[2]) > 0) {
         c.withdrawItem(defensePot[2], withdrawAmount - defensePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int defensePotRecheck =
           (c.getInventoryItemCount(defensePot[0])
               + c.getInventoryItemCount(defensePot[1])
@@ -1228,7 +1231,7 @@ public class K_kailaScript extends IdleScript {
       if (defensePotRecheck < withdrawAmount) {
         if (c.getBankItemCount(defensePot[2]) > 0) {
           c.withdrawItem(defensePot[2], withdrawAmount - defensePotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1250,14 +1253,15 @@ public class K_kailaScript extends IdleScript {
     if ((superAttackPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(superAttackPot[0]) > 0) {
         c.withdrawItem(superAttackPot[0], withdrawAmount - superAttackPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(superAttackPot[1]) > 0) {
         c.withdrawItem(superAttackPot[1], withdrawAmount - superAttackPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(superAttackPot[2]) > 0) {
         c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int superAttackPotRecheck =
           (c.getInventoryItemCount(superAttackPot[0])
               + c.getInventoryItemCount(superAttackPot[1])
@@ -1265,7 +1269,7 @@ public class K_kailaScript extends IdleScript {
       if (superAttackPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(superAttackPot[2]) > 0) {
           c.withdrawItem(superAttackPot[2], withdrawAmount - superAttackPotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1287,14 +1291,15 @@ public class K_kailaScript extends IdleScript {
     if ((superStrengthPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(superStrengthPot[0]) > 0) {
         c.withdrawItem(superStrengthPot[0], withdrawAmount - superStrengthPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(superStrengthPot[1]) > 0) {
         c.withdrawItem(superStrengthPot[1], withdrawAmount - superStrengthPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(superStrengthPot[2]) > 0) {
         c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int superStrengthPotRecheck =
           (c.getInventoryItemCount(superStrengthPot[0])
               + c.getInventoryItemCount(superStrengthPot[1])
@@ -1302,7 +1307,7 @@ public class K_kailaScript extends IdleScript {
       if (superStrengthPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(superStrengthPot[2]) > 0) {
           c.withdrawItem(superStrengthPot[2], withdrawAmount - superStrengthPotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1324,14 +1329,15 @@ public class K_kailaScript extends IdleScript {
     if ((superDefensePotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(superDefensePot[0]) > 0) {
         c.withdrawItem(superDefensePot[0], withdrawAmount - superDefensePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(superDefensePot[1]) > 0) {
         c.withdrawItem(superDefensePot[1], withdrawAmount - superDefensePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(superDefensePot[2]) > 0) {
         c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int superDefensePotRecheck =
           (c.getInventoryItemCount(superDefensePot[0])
               + c.getInventoryItemCount(superDefensePot[1])
@@ -1339,7 +1345,7 @@ public class K_kailaScript extends IdleScript {
       if (superDefensePotRecheck < withdrawAmount) {
         if (c.getBankItemCount(superDefensePot[2]) > 0) {
           c.withdrawItem(superDefensePot[2], withdrawAmount - superDefensePotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1358,14 +1364,15 @@ public class K_kailaScript extends IdleScript {
     if ((antidotePotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(antiPot[0]) > 0) {
         c.withdrawItem(antiPot[0], withdrawAmount - antidotePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(antiPot[1]) > 0) {
         c.withdrawItem(antiPot[1], withdrawAmount - antidotePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(antiPot[2]) > 0) {
         c.withdrawItem(antiPot[2], withdrawAmount - antidotePotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int antiPotRecheck =
           (c.getInventoryItemCount(antiPot[0])
               + c.getInventoryItemCount(antiPot[1])
@@ -1373,7 +1380,7 @@ public class K_kailaScript extends IdleScript {
       if (antiPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(antiPot[2]) > 0) {
           c.withdrawItem(antiPot[2], withdrawAmount - antiPotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1388,14 +1395,15 @@ public class K_kailaScript extends IdleScript {
     if ((prayerPotCount < withdrawAmount) && (bankPotCount > 0)) {
       if (c.getBankItemCount(prayerPot[0]) > 0) {
         c.withdrawItem(prayerPot[0], withdrawAmount - prayerPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(prayerPot[1]) > 0) {
         c.withdrawItem(prayerPot[1], withdrawAmount - prayerPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else if (c.getBankItemCount(prayerPot[2]) > 0) {
         c.withdrawItem(prayerPot[2], withdrawAmount - prayerPotCount);
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
+      c.sleep(GAME_TICK); // necessary for resync
       int prayerPotRecheck = // todo refactor this
           (c.getInventoryItemCount(prayerPot[0])
               + c.getInventoryItemCount(prayerPot[1])
@@ -1403,7 +1411,7 @@ public class K_kailaScript extends IdleScript {
       if (prayerPotRecheck < withdrawAmount) {
         if (c.getBankItemCount(prayerPot[2]) > 0) {
           c.withdrawItem(prayerPot[2], withdrawAmount - prayerPotRecheck);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         }
       }
     }
@@ -1417,7 +1425,7 @@ public class K_kailaScript extends IdleScript {
         waitForBankOpen();
       } else {
         c.withdrawItem(foodId, 30 - c.getInventoryItemCount());
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
       c.closeBank();
     }
@@ -1434,7 +1442,7 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(420, 1);
         c.closeBank();
         c.equipItem(c.getInventoryItemSlotIndex(420));
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       } else {
         c.log("Warning: Cannot find anti dragon shield, logging OUT", "@red@");
         endSession();
@@ -1476,9 +1484,9 @@ public class K_kailaScript extends IdleScript {
       try {
         if (!c.isItemIdEquipped(itemToEquip) && c.getInventoryItemCount(itemToEquip) > 0) {
           c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
-          c.sleep(3 * GAME_TICK);
+          c.sleep(6 * GAME_TICK);
         } else {
-          c.sleep(4 * GAME_TICK);
+          c.sleep(6 * GAME_TICK);
           break;
         }
       } catch (Exception e) {
@@ -1486,30 +1494,48 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /** Loop Use agility cape to teleport */
+  /**
+   * Loop Use agility cape to teleport Note that cape teleports do not work while in combat (unlike
+   * normal teleports) Please ensure bot is in a safe zone before calling method, method will also
+   * attempt to leaveCombat.
+   */
   protected static void teleportAgilityCape() {
-    c.itemCommand(ItemId.AGILITY_CAPE.getId());
+    int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();
+    if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1)
+      c.unequipItem(1); // slot 1 is cape slot
+    if (c.isInCombat()) leaveCombat();
+    c.itemCommand(AGILITY_CAPE);
+    c.sleep(5 * GAME_TICK);
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() != 591 && c.currentY() != 765) {
         c.setStatus("@gre@Teleporting..");
-        c.itemCommand(ItemId.AGILITY_CAPE.getId());
-        c.sleep(4 * GAME_TICK);
+        c.itemCommand(AGILITY_CAPE);
+        c.sleep(5 * GAME_TICK);
       } else {
-        c.sleep(4 * GAME_TICK);
+        c.sleep(5 * GAME_TICK);
         break;
       }
     }
   }
-  /** Loop Use craft cape to teleport */
+  /**
+   * Loop Use craft cape to teleport Note that cape teleports do not work while in combat (unlike
+   * normal teleports) Please ensure bot is in a safe zone before calling method, method will also
+   * attempt to leaveCombat.
+   */
   protected static void teleportCraftCape() {
-    c.itemCommand(ItemId.CRAFTING_CAPE.getId());
-    for (int i = 1; i <= 30; i++) {
+    int CRAFTING_CAPE = ItemId.CRAFTING_CAPE.getId();
+    if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1)
+      c.unequipItem(1); // slot 1 is cape slot
+    if (c.isInCombat()) leaveCombat();
+    c.itemCommand(CRAFTING_CAPE);
+    c.sleep(5 * GAME_TICK);
+    for (int i = 1; i <= 60; i++) {
       if (c.currentX() != 347 && c.currentY() != 599) {
         c.setStatus("@gre@Teleporting..");
-        c.itemCommand(ItemId.CRAFTING_CAPE.getId());
-        c.sleep(4 * GAME_TICK);
+        c.itemCommand(CRAFTING_CAPE);
+        c.sleep(5 * GAME_TICK);
       } else {
-        c.sleep(4 * GAME_TICK);
+        c.sleep(5 * GAME_TICK);
         break;
       }
     }

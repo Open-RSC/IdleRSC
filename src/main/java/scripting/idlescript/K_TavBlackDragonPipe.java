@@ -204,22 +204,18 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       // prayPotCount() = (c.getInventoryItemCount(483) + c.getInventoryItemCount(483)
       // +c.getInventoryItemCount(483));
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 486 // dont bank partial potions
-            && itemId != 487
-            && itemId != 488
-            && itemId != 492
-            && itemId != 493
-            && itemId != 494
+        if (itemId != ItemId.SUPER_ATTACK_POTION_1DOSE.getId()
+            && itemId != ItemId.SUPER_ATTACK_POTION_2DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_1DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_2DOSE.getId()
+            && itemId != ItemId.RESTORE_PRAYER_POTION_1DOSE.getId()
+            && itemId != ItemId.RESTORE_PRAYER_POTION_2DOSE.getId()
+            && itemId != ItemId.POISON_ANTIDOTE_1DOSE.getId()
+            && itemId != ItemId.POISON_ANTIDOTE_2DOSE.getId()
+            && itemId != ItemId.ATTACK_CAPE.getId()
+            && itemId != ItemId.CRAFTING_CAPE.getId()
             && itemId != ANTI_DRAGON_SHIELD
-            && itemId != 485
-            && itemId != 484
-            && itemId != 483
-            && itemId != 571
-            && itemId != 570
-            && itemId != DRAGON_TWO_HAND // d2h
-            && itemId != 1374 // attack cape
-            && itemId != 1384 // craft cape
-            && itemId != 569) {
+            && itemId != DRAGON_TWO_HAND) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
@@ -227,8 +223,11 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
 
       if (useDragonTwoHand && (c.getInventoryItemCount(DRAGON_TWO_HAND) < 1))
         withdrawItem(DRAGON_TWO_HAND, 1);
-      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) < 1))
+      if (craftCapeTeleport
+          && (c.getInventoryItemCount(CRAFT_CAPE) < 1)
+          && !c.isItemIdEquipped(CRAFT_CAPE)) {
         withdrawItem(CRAFT_CAPE, 1);
+      }
       if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
         c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
       if (!craftCapeTeleport) {
@@ -438,7 +437,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel label7 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label8 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel blankLabel = new JLabel("     ");
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport Method?", false);
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword?", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
@@ -448,6 +447,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     fightModeField.setSelectedIndex(0); // sets default to controlled
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(2); // sets default to sharks
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(3));
     JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");

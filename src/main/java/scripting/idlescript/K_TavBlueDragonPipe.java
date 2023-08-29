@@ -228,7 +228,11 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))
         withdrawItem(dragonTwoHand, 1);
       int craftCape = ItemId.CRAFTING_CAPE.getId();
-      if (craftCapeTeleport && (c.getInventoryItemCount(craftCape) < 1)) withdrawItem(craftCape, 1);
+      if (craftCapeTeleport
+          && (c.getInventoryItemCount(craftCape) < 1)
+          && !c.isItemIdEquipped(CRAFT_CAPE)) {
+        withdrawItem(craftCape, 1);
+      }
       if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
         c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
       if (!craftCapeTeleport) {

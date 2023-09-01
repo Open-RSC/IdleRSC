@@ -11,6 +11,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -26,7 +27,8 @@ public class DamRc extends IdleScript {
   final Controller c = Main.getController();
   public boolean started = false;
   public boolean debug;
-  public boolean mineEss = false;
+  private boolean mineEss = false;
+  private boolean noteEss = false;
   public String status, method;
   int[] bankNW, bankSE, spotNW, spotSE, alterNW, alterSE, mineNW, mineSE;
   final int auburyId = 54;
@@ -124,6 +126,16 @@ public class DamRc extends IdleScript {
         started = true;
         guiSetup = true;
       }
+      if (parameters[0].toLowerCase().startsWith("noteess")) {
+        c.displayMessage("Got Autostart, Mine ess noting - Varrock east", 0);
+        System.out.println("Got Autostart, Mine ess noting- Varrock east");
+        parseVariables();
+        essValues();
+        debug = false;
+        crown = false;
+        started = true;
+        guiSetup = true;
+      }
       if (parameters[0].toLowerCase().startsWith("air")) {
         c.displayMessage("Got Autostart, Air - Fally south", 0);
         System.out.println("Got Autostart, Air - Fally south");
@@ -194,6 +206,16 @@ public class DamRc extends IdleScript {
         started = true;
         guiSetup = true;
       }
+      if (parameters[0].toLowerCase().startsWith("note")) {
+        c.displayMessage("Got Autostart, note ess", 0);
+        System.out.println("Got Autostart, note ess");
+        parseVariables();
+        noteEssValues();
+        debug = false;
+        crown = false;
+        started = true;
+        guiSetup = true;
+      }
     }
     if (!guiSetup) {
       setupGUI();
@@ -231,7 +253,11 @@ public class DamRc extends IdleScript {
             if (!inArea(bankNW, bankSE)) {
               walkToBank();
             } else {
-              bank();
+              if (!noteEss) {
+                bank();
+              } else {
+                noteEss();
+              }
             }
           } else {
             if (!inArea(spotNW, spotSE)) {
@@ -276,6 +302,27 @@ public class DamRc extends IdleScript {
       }
     }
     c.sleep(640);
+  }
+
+  private void noteEss() {
+    c.setStatus("@red@Noteing Ess..");
+    if (c.getInventoryItemCount() == 30
+        && c.getInventoryItemCount(ItemId.RUNE_STONE_CERTIFICATE.getId()) < 1) {
+      K_kailaScript.dropItemAmount(
+          c.getInventoryItemSlotIndex(ItemId.RUNE_STONE.getId()), 1, false);
+    }
+    int certAnswer = ((c.getInventoryItemCount(ItemId.RUNE_STONE.getId()) / 5) - 1);
+    ORSCharacter npc = c.getNearestNpcById(823, true); // mortimer
+    if (npc != null) {
+      boolean _talk = c.talkToNpc(npc.serverIndex);
+      if (!_talk) c.log("Unable to talk to mortimer");
+      while (!c.isInOptionMenu()) c.sleep(640);
+      c.optionAnswer(0);
+      c.sleep(5*640);
+      c.optionAnswer(0);
+      c.sleep(3*640);
+      c.optionAnswer(certAnswer);
+    }
   }
 
   public void teleport() {
@@ -387,6 +434,7 @@ public class DamRc extends IdleScript {
           add(new guiObject("Body - Edge"));
           add(new guiObject("Cosmic - Zanaris"));
           add(new guiObject("Mine ess - Varrock east"));
+          add(new guiObject("Mine and Note Ess - Varrock east"));
         }
       };
 
@@ -567,31 +615,42 @@ public class DamRc extends IdleScript {
     c.displayMessage("@cya@" + "We're mining essence");
   }
 
+  public void noteEssValues() {
+    mineEss = true;
+    noteEss = true;
+    portalId = 1226;
+    runeId = essId;
+    toBank = new int[] {107, 518, 112, 510, 125, 510, 129, 510};
+    toSpot = new int[] {125, 510, 112, 510, 107, 522, 102, 525};
+    bankNW = new int[] {137, 506};
+    bankSE = new int[] {123, 513};
+    spotNW = new int[] {104, 522};
+    spotSE = new int[] {100, 525};
+    mineNW = new int[] {705, 5};
+    mineSE = new int[] {685, 27};
+    method = "Mining rune essence noting";
+    c.displayMessage("@cya@" + "We're mining essence and noting it");
+  }
+
   public void setValuesFromGUI(int i) {
     if (i == 0) {
       airValues();
-    }
-    if (i == 1) {
+    } else if (i == 1) {
       mindValues();
-    }
-    if (i == 2) {
+    } else if (i == 2) {
       earthValues();
-    }
-    if (i == 3) {
+    } else if (i == 3) {
       waterValues();
-    }
-    if (i == 4) {
+    } else if (i == 4) {
       fireValues();
-    }
-    if (i == 5) {
+    } else if (i == 5) {
       bodyValues();
-    }
-    // Added Cosmics By Kaila
-    if (i == 6) {
+    } else if (i == 6) {
       cosmicValues();
-    }
-    if (i == 7) {
+    } else if (i == 7) {
       essValues();
+    } else if (i == 8) {
+      noteEssValues();
     }
   }
 

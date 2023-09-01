@@ -536,6 +536,9 @@ public class K_kailaScript extends IdleScript {
         if (coords != null && isWithinLootzone(coords[0], coords[1])) {
           if (!leaveCombat && c.isInCombat()) return; // blocked by combat
           else if (leaveCombat && c.isInCombat()) leaveCombat();
+          if (swapState && !c.isItemIdEquipped(wearId)) {
+            c.equipItem(c.getInventoryItemSlotIndex(wearId));
+          }
           c.setStatus("@yel@Picking loot...");
           c.pickupItem(coords[0], coords[1], itemId, true, false);
           c.sleep(GAME_TICK);
@@ -973,6 +976,7 @@ public class K_kailaScript extends IdleScript {
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (swapState && !c.isItemIdEquipped(wearId)) {
           c.equipItem(c.getInventoryItemSlotIndex(wearId));
+          c.sleep(GAME_TICK);
         }
         if (c.getInventoryItemCount(prayerPot[0]) > 0) {
           c.itemCommand(prayerPot[0]);

@@ -96,10 +96,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       eat();
-      prayPotCheck();
+      prayPotFoodCheck();
       drinkPrayerPotion(31, true, ANTI_DRAGON_SHIELD, useDragonTwoHand);
-      pray();
-      foodCheck();
       checkFightMode();
       if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
@@ -135,7 +133,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
         } else c.sleep(GAME_TICK);
       }
       if (c.getInventoryItemCount() == 30) {
-        prayPotCheck();
+        prayPotFoodCheck();
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
@@ -368,7 +366,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.sleep(320);
     c.walkTo(380, 3372);
     eat();
-    prayPotCheck();
+    prayPotFoodCheck();
     drinkPrayerPotion(31, true);
     pray();
     c.walkTo(386, 3371);
@@ -383,29 +381,21 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     }
     drinkAntidote(true);
     eat();
-    prayPotCheck();
+    prayPotFoodCheck();
     drinkPrayerPotion(31, true);
     pray();
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void prayPotCheck() {
+  private void prayPotFoodCheck() {
     int prayerPotCount =
         c.getInventoryItemCount(prayerPot[0])
             + c.getInventoryItemCount(prayerPot[1])
             + c.getInventoryItemCount(prayerPot[2]);
-    if (prayerPotCount == 0) {
-      c.setStatus("@yel@No prayPots, Banking..");
-      dragonEscape();
-      DragonsToBank();
-      bank();
-      BankToDragons();
-      c.sleep(618);
-    }
-  }
-
-  private void foodCheck() {
-    if (c.getInventoryItemCount(foodId) < 1 || timeToBank || timeToBankStay) {
+    if (c.getInventoryItemCount(foodId) < 1
+      || c.getInventoryItemCount(prayerPotCount) < 1
+      || timeToBank
+      || timeToBankStay) {
       c.setStatus("@yel@No food, Banking..");
       dragonEscape();
       DragonsToBank();
@@ -414,7 +404,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       if (timeToBankStay) {
         timeToBankStay = false;
         c.displayMessage(
-            "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
         c.setStatus("@red@Stopping Script.");
         endSession();
       }

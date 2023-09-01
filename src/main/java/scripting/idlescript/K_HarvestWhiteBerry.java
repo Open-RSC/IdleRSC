@@ -227,6 +227,9 @@ public final class K_HarvestWhiteBerry extends K_kailaScript {
     scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
 
+    foodField.setEnabled(false);
+    foodWithdrawAmountField.setEnabled(false);
+
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);

@@ -33,6 +33,7 @@ public final class K_Paladins extends K_kailaScript {
   private static int openChest = 0;
   private static int thieveFailure = 0;
   private static int thieveCapture = 0;
+  private static int fightMode = 0;
   private static int startCoins;
   private static int startChaos;
   private static final int[] pathToBank = {

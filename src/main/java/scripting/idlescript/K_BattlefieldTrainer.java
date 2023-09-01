@@ -17,6 +17,8 @@ import orsc.ORSCharacter;
  *   todo add food type selection add maging option
  */
 public final class K_BattlefieldTrainer extends K_kailaScript {
+  private int fightMode = 0;
+
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -48,7 +50,7 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
         bank();
         BankToDruid();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);

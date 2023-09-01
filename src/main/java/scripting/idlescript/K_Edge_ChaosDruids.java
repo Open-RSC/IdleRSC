@@ -25,6 +25,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Edge_ChaosDruids extends K_kailaScript {
+  private int fightMode = 0;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -125,7 +126,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       checkInventoryItemCounts();
       if (c.getInventoryItemCount() < 30) {
         if (!c.isInCombat()) {

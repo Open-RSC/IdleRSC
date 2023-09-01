@@ -19,9 +19,10 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlueDragonPipe extends K_kailaScript {
-  private static boolean useDragonTwoHand = false;
-  private static boolean craftCapeTeleport = false;
-  private static int totalRdagger = 0;
+  private int fightMode = 0;
+  private boolean useDragonTwoHand = false;
+  private boolean craftCapeTeleport = false;
+  private int totalRdagger = 0;
   private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
   private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();

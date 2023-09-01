@@ -18,7 +18,8 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_WhiteUnicorns extends K_kailaScript {
-  private static int totalUni = 0, inventUni = 0, uniInBank = 0;
+  private int fightMode = 0;
+  private int totalUni = 0, inventUni = 0, uniInBank = 0;
   private static final int UNI_HORN = ItemId.UNICORN_HORN.getId();
 
   public int start(String[] parameters) {
@@ -69,7 +70,7 @@ public final class K_WhiteUnicorns extends K_kailaScript {
         bank();
         bankToHouse();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);

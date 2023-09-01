@@ -16,7 +16,8 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_BoneyardSkeletons extends K_kailaScript {
-  private static boolean lootBigBones = false;
+  private boolean lootBigBones = false;
+  private int fightMode = 0;
   private static final int[] loot = {
     ItemId.UNID_RANARR_WEED.getId(),
     ItemId.UNID_IRIT.getId(),
@@ -89,7 +90,7 @@ public final class K_BoneyardSkeletons extends K_kailaScript {
         bank();
         bankToHouse();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       checkInventoryItemCounts();
       if (potUp) {
         attackBoost(0, false);

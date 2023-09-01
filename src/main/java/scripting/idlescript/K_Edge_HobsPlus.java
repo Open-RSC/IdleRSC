@@ -17,6 +17,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Edge_HobsPlus extends K_kailaScript {
+  private int fightMode = 0;
   private static final int[] npcIds = {
     NpcId.HOBGOBLIN_LVL32.getId(), // Hobgoblin 67
     NpcId.SKELETON_LVL31.getId(), // Skelli 45
@@ -126,7 +127,7 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
         bank();
         bankToDungeon();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       if (c.currentX() < 186) { // down corridor too much
         c.displayMessage("@red@Error: Too far out of wander range, Walking back!");
         c.walkTo(198, 3299);

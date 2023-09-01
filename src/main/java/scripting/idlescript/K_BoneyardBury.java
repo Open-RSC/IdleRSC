@@ -13,6 +13,8 @@ import javax.swing.*;
  * @author Kaila
  */
 public final class K_BoneyardBury extends K_kailaScript {
+  private int fightMode = 0;
+
   public int start(String[] parameters) {
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
@@ -56,7 +58,7 @@ public final class K_BoneyardBury extends K_kailaScript {
         bank();
         bankToHouse();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       if (c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         lootBones();
         buryBones(true);

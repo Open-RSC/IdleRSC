@@ -20,11 +20,12 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlackDragonPipe extends K_kailaScript {
-  private static boolean useDragonTwoHand = false;
-  private static boolean craftCapeTeleport = false;
-  private static int totalRlong = 0;
-  private static int totalMed = 0;
-  private static int totalDstone = 0;
+  private boolean useDragonTwoHand = false;
+  private boolean craftCapeTeleport = false;
+  private int fightMode = 0;
+  private int totalRlong = 0;
+  private int totalMed = 0;
+  private int totalDstone = 0;
   private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
   private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
@@ -112,7 +113,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
         superAttackBoost(4, false);
         superStrengthBoost(4, false);
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (!c.isInCombat()) {
         if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
@@ -159,19 +160,19 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     } else {
       totalBones = totalBones + c.getInventoryItemCount(814);
       totalGems =
-        totalGems
-          + c.getInventoryItemCount(160)
-          + c.getInventoryItemCount(159)
-          + c.getInventoryItemCount(158)
-          + c.getInventoryItemCount(157);
+          totalGems
+              + c.getInventoryItemCount(160)
+              + c.getInventoryItemCount(159)
+              + c.getInventoryItemCount(158)
+              + c.getInventoryItemCount(157);
       totalHerb =
-        totalHerb
-          + c.getInventoryItemCount(438)
-          + c.getInventoryItemCount(439)
-          + c.getInventoryItemCount(440)
-          + c.getInventoryItemCount(441)
-          + c.getInventoryItemCount(442)
-          + c.getInventoryItemCount(443);
+          totalHerb
+              + c.getInventoryItemCount(438)
+              + c.getInventoryItemCount(439)
+              + c.getInventoryItemCount(440)
+              + c.getInventoryItemCount(441)
+              + c.getInventoryItemCount(442)
+              + c.getInventoryItemCount(443);
       totalFire = totalFire + c.getInventoryItemCount(31);
       totalLaw = totalLaw + c.getInventoryItemCount(42);
       totalNat = totalNat + c.getInventoryItemCount(40);
@@ -189,17 +190,17 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       // +c.getInventoryItemCount(483));
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != ItemId.SUPER_ATTACK_POTION_1DOSE.getId()
-          && itemId != ItemId.SUPER_ATTACK_POTION_2DOSE.getId()
-          && itemId != ItemId.SUPER_STRENGTH_POTION_1DOSE.getId()
-          && itemId != ItemId.SUPER_STRENGTH_POTION_2DOSE.getId()
-          && itemId != ItemId.RESTORE_PRAYER_POTION_1DOSE.getId()
-          && itemId != ItemId.RESTORE_PRAYER_POTION_2DOSE.getId()
-          && itemId != ItemId.POISON_ANTIDOTE_1DOSE.getId()
-          && itemId != ItemId.POISON_ANTIDOTE_2DOSE.getId()
-          && itemId != ItemId.ATTACK_CAPE.getId()
-          && itemId != ItemId.CRAFTING_CAPE.getId()
-          && itemId != ANTI_DRAGON_SHIELD
-          && itemId != DRAGON_TWO_HAND) {
+            && itemId != ItemId.SUPER_ATTACK_POTION_2DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_1DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_2DOSE.getId()
+            && itemId != ItemId.RESTORE_PRAYER_POTION_1DOSE.getId()
+            && itemId != ItemId.RESTORE_PRAYER_POTION_2DOSE.getId()
+            && itemId != ItemId.POISON_ANTIDOTE_1DOSE.getId()
+            && itemId != ItemId.POISON_ANTIDOTE_2DOSE.getId()
+            && itemId != ItemId.ATTACK_CAPE.getId()
+            && itemId != ItemId.CRAFTING_CAPE.getId()
+            && itemId != ANTI_DRAGON_SHIELD
+            && itemId != DRAGON_TWO_HAND) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
@@ -208,8 +209,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       if (useDragonTwoHand && (c.getInventoryItemCount(DRAGON_TWO_HAND) < 1))
         withdrawItem(DRAGON_TWO_HAND, 1);
       if (craftCapeTeleport
-        && (c.getInventoryItemCount(CRAFT_CAPE) < 1)
-        && !c.isItemIdEquipped(CRAFT_CAPE)) {
+          && (c.getInventoryItemCount(CRAFT_CAPE) < 1)
+          && !c.isItemIdEquipped(CRAFT_CAPE)) {
         withdrawItem(CRAFT_CAPE, 1);
       }
       if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))

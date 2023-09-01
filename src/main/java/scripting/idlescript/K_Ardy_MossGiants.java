@@ -16,7 +16,8 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Ardy_MossGiants extends K_kailaScript {
-  private static boolean lootSpinachRoll = false;
+  private boolean lootSpinachRoll = false;
+  private int fightMode = 0;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -130,7 +131,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
         bank();
         bankToDungeon();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);

@@ -18,14 +18,15 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlackDemonPipe extends K_kailaScript {
-  private static boolean d2hWield = false;
-  private static boolean craftCapeTeleport = false;
-  private static int totalMed = 0;
-  private static int totalDstone = 0;
-  private static int totalRbar = 0;
-  private static int totalRunestuff = 0;
-  private static int totalRchain = 0;
-  private static int totalRmed = 0;
+  private boolean d2hWield = false;
+  private boolean craftCapeTeleport = false;
+  private int totalMed = 0;
+  private int totalDstone = 0;
+  private int totalRbar = 0;
+  private int totalRunestuff = 0;
+  private int totalRchain = 0;
+  private int totalRmed = 0;
+  private int fightMode = 0;
   private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
   private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
@@ -107,7 +108,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         bank();
         BankToDemons();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       drinkPrayerPotion(31, true);
       prayParalyze();
       eatFoodToLoot(true);

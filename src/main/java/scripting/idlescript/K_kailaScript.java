@@ -60,7 +60,6 @@ public class K_kailaScript extends IdleScript {
   protected static int foodWithdrawAmount = -1;
   protected static int prayPotWithdrawAmount = -1;
   protected static int foodId = -1;
-  protected static int fightMode = 0;
   protected static int totalTrips = 0;
   protected static int centerX = -1;
   protected static int centerY = -1;
@@ -550,7 +549,7 @@ public class K_kailaScript extends IdleScript {
    * Checks fight mode against selected fightMode int, if no fightMode selector is provided, this
    * method would force controlled fight mode. fightMode 0 = controlled
    */
-  protected static void checkFightMode() {
+  protected static void checkFightMode(int fightMode) {
     if (c.getFightMode() != fightMode) {
       c.log("@red@Changing fightmode to " + fightMode, "@yel@");
       c.setFightMode(fightMode);

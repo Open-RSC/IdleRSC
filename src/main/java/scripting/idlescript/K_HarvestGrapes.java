@@ -97,7 +97,7 @@ public final class K_HarvestGrapes extends K_kailaScript {
           c.displayMessage("@red@You need herb clippers!");
         }
       }
-      if(lowlevel) withdrawFood(foodId, foodWithdrawAmount);
+      if (lowlevel) withdrawFood(foodId, foodWithdrawAmount);
       GrapezInBank = c.getBankItemCount(143);
       c.closeBank();
       if (lowlevel) eatFood();
@@ -174,10 +174,10 @@ public final class K_HarvestGrapes extends K_kailaScript {
           scriptStarted = true;
         });
     lowLevelCheckBox.addActionListener(
-      e -> {
-        foodField.setEnabled(lowLevelCheckBox.isSelected());
-        foodWithdrawAmountField.setEnabled(lowLevelCheckBox.isSelected());
-      });
+        e -> {
+          foodField.setEnabled(lowLevelCheckBox.isSelected());
+          foodWithdrawAmountField.setEnabled(lowLevelCheckBox.isSelected());
+        });
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));

@@ -353,7 +353,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(397, 3343);
     c.walkTo(403, 3346);
     c.walkTo(408, 3344);
-    c.walkTo(408, 3340);
     if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
       c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
     }
@@ -361,6 +360,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     if (!c.isPrayerOn(PARALYZE_MONSTER)) c.enablePrayer(PARALYZE_MONSTER);
     prayPotFoodCheck();
     drinkPrayerPotion(31, true);
+    c.walkTo(408, 3340);
     c.setStatus("@gre@Done Walking..");
   }
 
@@ -412,7 +412,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(3));
     JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
-    JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(6));
+    JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(5));
 
     foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");

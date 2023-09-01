@@ -259,9 +259,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       teleportCraftCape();
       c.walkTo(347, 600);
       if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
-      forceEquipItem(CRAFT_CAPE);
-      craftCapeDoorEntering();
-      forceEquipItem(ATTACK_CAPE);
+      craftGuildDoorEntering(ATTACK_CAPE);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         c.sleep(4 * GAME_TICK);

@@ -486,7 +486,6 @@ public class K_kailaScript extends IdleScript {
    * @param itemId int of itemId to loot. For multiple items use lootItems(boolean, int[]);
    */
   protected static void lootItem(boolean leaveCombat, int itemId) {
-    try {
       int[] coords = c.getNearestItemById(itemId);
       if (coords != null && isWithinLootzone(coords[0], coords[1])) {
         if (!leaveCombat && c.isInCombat()) return; // blocked by combat
@@ -496,9 +495,6 @@ public class K_kailaScript extends IdleScript {
         c.sleep(GAME_TICK);
         return;
       }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
   /**
    * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots list of
@@ -511,7 +507,6 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void lootItems(boolean leaveCombat, int[] itemIds) {
     for (int itemId : itemIds) {
-      try {
         int[] coords = c.getNearestItemById(itemId);
         if (coords != null && isWithinLootzone(coords[0], coords[1])) {
           if (!leaveCombat && c.isInCombat()) return; // blocked by combat
@@ -521,9 +516,6 @@ public class K_kailaScript extends IdleScript {
           c.sleep(GAME_TICK);
           return;
         }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
     }
   }
   /**
@@ -540,7 +532,6 @@ public class K_kailaScript extends IdleScript {
   protected static void lootItems(
       boolean leaveCombat, int[] itemIds, int wearId, boolean swapState) {
     for (int itemId : itemIds) {
-      try {
         int[] coords = c.getNearestItemById(itemId);
         if (coords != null && isWithinLootzone(coords[0], coords[1])) {
           if (!leaveCombat && c.isInCombat()) return; // blocked by combat
@@ -550,9 +541,6 @@ public class K_kailaScript extends IdleScript {
           c.sleep(GAME_TICK);
           return;
         }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
     }
   }
   /**
@@ -1507,15 +1495,13 @@ public class K_kailaScript extends IdleScript {
     if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1)
       c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
-    c.itemCommand(AGILITY_CAPE);
-    c.sleep(5 * GAME_TICK);
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() != 591 && c.currentY() != 765) {
         c.setStatus("@gre@Teleporting..");
         c.itemCommand(AGILITY_CAPE);
-        c.sleep(5 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       } else {
-        c.sleep(5 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
         break;
       }
     }
@@ -1530,15 +1516,13 @@ public class K_kailaScript extends IdleScript {
     if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1)
       c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
-    c.itemCommand(CRAFTING_CAPE);
-    c.sleep(5 * GAME_TICK);
     for (int i = 1; i <= 60; i++) {
       if (c.currentX() != 347 && c.currentY() != 599) {
         c.setStatus("@gre@Teleporting..");
         c.itemCommand(CRAFTING_CAPE);
-        c.sleep(5 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       } else {
-        c.sleep(5 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
         break;
       }
     }
@@ -1679,32 +1663,54 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /** Enters through the fixed door leading to craft guild. (north to south) */
-  protected static void craftCapeDoorEntering() {
-    // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
+  /**
+   * Enters through the fixed door leading to craft guild. (north to south) Bot will auto-detect
+   * craft cape/brown apron and use them.
+   *
+   * @param reEquipItemId the itemId int to re-wield in place of craft cape/brown apron after
+   *     entering
+   */
+  protected static void craftGuildDoorEntering(int reEquipItemId) {
+    final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
+    final int BROWN_APRON = ItemId.BROWN_APRON.getId();
+    if (CRAFT_CAPE > 0) forceEquipItem(CRAFT_CAPE);
+    else if (BROWN_APRON > 0) forceEquipItem(BROWN_APRON);
+    else c.log("No entrance item exits, you need a Crafting Cape or Brown Apron");
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() == 347 && c.currentY() == 600) {
         c.setStatus("@red@Entering Crafting Guild..");
-        c.atWallObject(347, 601); // gate won't break if someone else opens it
+        c.atWallObject(347, 601);
         c.sleep(3 * GAME_TICK);
       } else {
         c.sleep(3 * GAME_TICK);
         break;
       }
     }
+    forceEquipItem(reEquipItemId);
   }
-  /** Exits through the fixed door leading to craft guild. (north to south) */
-  protected static void craftCapeDoorExiting() {
-    // if (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) == 0)
+  /**
+   * Exits through the fixed door leading to craft guild. (north to south) Bot will auto-detect
+   * craft cape/brown apron and use them.
+   *
+   * @param reEquipItemId the itemId int to re-wield in place of craft cape/brown apron after
+   *     entering
+   */
+  protected static void craftGuildDoorExiting(int reEquipItemId) {
+    final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
+    final int BROWN_APRON = ItemId.BROWN_APRON.getId();
+    if (CRAFT_CAPE > 0) forceEquipItem(CRAFT_CAPE);
+    else if (BROWN_APRON > 0) forceEquipItem(BROWN_APRON);
+    else c.log("No entrance item exits, you need a Crafting Cape or Brown Apron");
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() == 347 && c.currentY() == 600) {
         c.setStatus("@red@Entering Crafting Guild..");
-        c.atWallObject(347, 601); // gate won't break if someone else opens it
+        c.atWallObject(347, 601);
         c.sleep(2 * GAME_TICK);
       } else {
         break;
       }
     }
+    forceEquipItem(reEquipItemId);
   }
   /** Goes through the fixed gate leading to Tav. (going from east to west) */
   protected static void tavGateEastToWest() {

@@ -272,9 +272,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       teleportCraftCape();
       if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
       c.walkTo(347, 600);
-      forceEquipItem(CRAFT_CAPE);
-      craftCapeDoorEntering();
-      forceEquipItem(ATTACK_CAPE);
+      craftGuildDoorEntering(ATTACK_CAPE);
       if (d2hWield && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         c.sleep(4 * GAME_TICK);

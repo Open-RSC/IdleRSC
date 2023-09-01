@@ -329,9 +329,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       c.walkTo(347, 600);
-      forceEquipItem(CRAFT_CAPE);
-      craftCapeDoorEntering();
-      forceEquipItem(ATTACK_CAPE);
+      craftGuildDoorEntering(ATTACK_CAPE);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         c.sleep(4 * GAME_TICK);

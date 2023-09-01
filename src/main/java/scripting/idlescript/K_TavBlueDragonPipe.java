@@ -93,68 +93,56 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       eat();
-      checkFightMode();
-      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+      foodCheck();
+      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-      if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
+        c.sleep(GAME_TICK);
+      } else if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
         c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
-        c.sleep(1280);
+        c.sleep(GAME_TICK);
       }
+      if (buryBones) buryBones(false);
       if (potUp) {
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
+      checkFightMode(fightMode);
       lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
-      if (c.getInventoryItemCount(foodId) > 0 && c.getInventoryItemCount() < 30) {
-        if (!c.isInCombat()) {
-          if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
-            c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-          }
-          ORSCharacter npc = c.getNearestNpcById(202, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking Dragons");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(2 * GAME_TICK);
-            if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
-              c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
-              c.sleep(1280);
-            }
-          } else {
-            if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
-              c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-            lootItems(false, loot);
-            if (buryBones) buryBones(false);
-            if (potUp) {
-              superAttackBoost(2, false);
-              superStrengthBoost(2, false);
-            }
-            c.sleep(GAME_TICK);
-            // walkToCenter();
-          }
+      if (!c.isInCombat()) {
+        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+        }
+        ORSCharacter npc = c.getNearestNpcById(202, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Dragons");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
       }
-      if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
-        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
-          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        pipeEscape();
-        c.setStatus("@yel@Banking..");
-        timeToBank = false;
-        DragonsToBank();
-        bank();
-        if (timeToBankStay) {
-          timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          endSession();
-        }
-        BankToDragons();
+    }
+  }
+
+  public void foodCheck() {
+    if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
+      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+      c.setStatus("@yel@Banking..");
+      timeToBank = false;
+      DragonsToBank();
+      bank();
+      if (timeToBankStay) {
+        timeToBankStay = false;
+        c.displayMessage(
+            "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+        c.setStatus("@red@Stopping Script.");
+        endSession();
       }
+      BankToDragons();
     }
   }
 
@@ -164,7 +152,6 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       c.setStatus("@red@We've ran out of Food! Running Away!.");
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-      pipeEscape();
       DragonsToBank();
       bank();
       BankToDragons();
@@ -318,14 +305,11 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void pipeEscape() {
+  private void DragonsToBank() {
     c.setStatus("We've ran out of Food! @gre@Going through Pipe.");
     c.walkTo(372, 3352);
     c.atObject(373, 3352);
     c.sleep(1000);
-  }
-
-  private void DragonsToBank() {
     if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();

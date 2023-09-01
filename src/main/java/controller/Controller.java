@@ -3660,7 +3660,7 @@ public class Controller {
    * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
    */
   public void log(String text, String rsTextColor) {
-    // System.out.println(text);
+    System.out.println(text);
     Main.log(text);
     displayMessage("@" + rsTextColor + "@" + text);
   }

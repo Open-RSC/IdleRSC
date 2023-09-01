@@ -3,7 +3,6 @@ package scripting.idlescript;
 import bot.Main;
 import controller.Controller;
 import javax.swing.*;
-
 import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
 import models.entities.SpellId;
@@ -1083,6 +1082,8 @@ public class K_kailaScript extends IdleScript {
       c.log(
           "Warning: Item (" + itemId + ") not detected in the Bank, in amount (" + bankAmount + ")",
           "@red@");
+      c.setStatus("Item (" + itemId + ") not detected in the Bank");
+      c.sleep(10 * GAME_TICK);
       endSession();
     }
   }

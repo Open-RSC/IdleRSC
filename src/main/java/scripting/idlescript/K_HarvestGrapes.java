@@ -68,8 +68,9 @@ public final class K_HarvestGrapes extends K_kailaScript {
         c.setStatus("@yel@Harvesting...");
         c.atObject(coords[0], coords[1]);
         c.sleep(2000);
-        waitForBatching();
-
+        while (c.isBatching() && c.getInventoryItemCount() != 30) {
+          c.sleep(GAME_TICK);
+        }
       } else {
         c.setStatus("@yel@Waiting for spawn..");
         c.sleep(1000);

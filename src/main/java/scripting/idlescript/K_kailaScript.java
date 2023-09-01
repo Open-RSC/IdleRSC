@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import bot.Main;
 import controller.Controller;
+import java.util.Arrays;
 import javax.swing.*;
 import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
@@ -1577,10 +1578,41 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
-  /*
+  /**
+   * Method to open NON-FIXED doors/gates existing as objects (atObject command is used)
+   * openWallObjectDoors() will handle WALL door/gate objects (atWallObject command is used
    *
-   *      Gate Methods
+   * @param objectId int of the door object when it is CLOSED
+   * @param gateX int x coordinate of the gate
+   * @param gateY int y coordinate of the gate
    */
+  protected static void openDoorObjects(int objectId, int gateX, int gateY) {
+    int[] gateLocation = c.getNearestObjectById(objectId);
+    for (int i = 0; i < 10; i++) {
+      if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
+        c.atObject(gateLocation[0], gateLocation[1]);
+      } else {
+        return;
+      }
+    }
+  }
+  /**
+   * Method to open NON-FIXED doors/gates existing as WALL objects (atWallObject command is used)
+   * openObjectDoors() will handle door/gate objects (atObject command is used
+   *
+   * @param objectId int of the door object when it is CLOSED
+   * @param gateX int x coordinate of the gate
+   * @param gateY int y coordinate of the gate
+   */
+  protected static void openWallDoorObjects(int objectId, int gateX, int gateY) {
+    int[] gateLocation = c.getNearestObjectById(objectId);
+    for (int i = 0; i < 10; i++) {
+      if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
+        c.atWallObject(gateLocation[0], gateLocation[1]);
+      }
+    }
+  }
+  /*      FIXED Gate Methods - i.e. gates that don't "open" and you instead teleport to other side  */
   /** opens wall door in edgeville dungeon that goes to the wilderness tunnel shortcut */
   protected static void edgeWallGate() {
     for (int i = 1; i <= 20; i++) {

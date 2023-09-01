@@ -1,9 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * <b>Grape Harvester</b>
@@ -16,7 +14,9 @@ import javax.swing.JLabel;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_GrapeHarvester extends K_kailaScript {
+public final class K_HarvestGrapes extends K_kailaScript {
+  private boolean lowlevel = false;
+  private boolean ate = true;
   private static int GrapezInBank = 0;
   private static int totalGrapez = 0;
 
@@ -27,7 +27,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
     if (c.currentX() < 240) {
       bank();
       BankToGrape();
-      c.sleep(1380);
     }
     c.toggleBatchBarsOn();
   }
@@ -56,12 +55,12 @@ public final class K_GrapeHarvester extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getInventoryItemCount() == 30) {
+      if (lowlevel) ate = eatFood();
+      if (c.getInventoryItemCount() == 30 || (lowlevel && !ate)) {
         c.setStatus("@red@Banking..");
         GrapeToBank();
         bank();
         BankToGrape();
-        c.sleep(618);
       }
       c.setStatus("@yel@Picking Grapes..");
       int[] coords = c.getNearestObjectById(1283);
@@ -75,7 +74,6 @@ public final class K_GrapeHarvester extends K_kailaScript {
         c.setStatus("@yel@Waiting for spawn..");
         c.sleep(1000);
       }
-      c.sleep(100);
     }
   }
 
@@ -99,8 +97,10 @@ public final class K_GrapeHarvester extends K_kailaScript {
           c.displayMessage("@red@You need herb clippers!");
         }
       }
+      if(lowlevel) withdrawFood(foodId, foodWithdrawAmount);
       GrapezInBank = c.getBankItemCount(143);
       c.closeBank();
+      if (lowlevel) eatFood();
     }
   }
 
@@ -113,6 +113,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
     c.walkTo(255, 433);
     c.walkTo(255, 422);
     c.walkTo(258, 422);
+    if (lowlevel) eatFood();
     c.walkTo(258, 415);
     c.walkTo(252, 421);
     c.walkTo(242, 432);
@@ -133,6 +134,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
     c.walkTo(242, 432);
     c.walkTo(252, 421);
     c.walkTo(258, 415);
+    if (lowlevel) eatFood();
     c.walkTo(258, 422);
     c.walkTo(255, 422);
     c.walkTo(255, 433);
@@ -150,14 +152,32 @@ public final class K_GrapeHarvester extends K_kailaScript {
     JLabel label2 = new JLabel("*Start in Edge Bank with Herb Clippers");
     JLabel label3 = new JLabel("*Recommend Armor against lvl 21 Scorpions");
     JLabel label4 = new JLabel("This bot supports the \"autostart\" parameter");
+    JCheckBox lowLevelCheckBox = new JCheckBox("Below 89 combat?", false);
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
+    foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          lowlevel = lowLevelCheckBox.isSelected();
+          if (lowlevel) {
+            if (!foodWithdrawAmountField.getText().equals(""))
+              foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+            foodId = foodIds[foodField.getSelectedIndex()];
+            foodName = foodTypes[foodField.getSelectedIndex()];
+          }
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
         });
+    lowLevelCheckBox.addActionListener(
+      e -> {
+        foodField.setEnabled(lowLevelCheckBox.isSelected());
+        foodWithdrawAmountField.setEnabled(lowLevelCheckBox.isSelected());
+      });
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -167,6 +187,11 @@ public final class K_GrapeHarvester extends K_kailaScript {
     scriptFrame.add(label2);
     scriptFrame.add(label3);
     scriptFrame.add(label4);
+    scriptFrame.add(lowLevelCheckBox);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(foodWithdrawAmountLabel);
+    scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();

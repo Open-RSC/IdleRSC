@@ -486,15 +486,15 @@ public class K_kailaScript extends IdleScript {
    * @param itemId int of itemId to loot. For multiple items use lootItems(boolean, int[]);
    */
   protected static void lootItem(boolean leaveCombat, int itemId) {
-      int[] coords = c.getNearestItemById(itemId);
-      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-        if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-        else if (leaveCombat && c.isInCombat()) leaveCombat();
-        c.setStatus("@yel@Picking Loot...");
-        c.pickupItem(coords[0], coords[1], itemId, true, false); // always leaves combat to loot
-        c.sleep(GAME_TICK);
-        return;
-      }
+    int[] coords = c.getNearestItemById(itemId);
+    if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+      if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+      else if (leaveCombat && c.isInCombat()) leaveCombat();
+      c.setStatus("@yel@Picking Loot...");
+      c.pickupItem(coords[0], coords[1], itemId, true, false); // always leaves combat to loot
+      c.sleep(GAME_TICK);
+      return;
+    }
   }
   /**
    * Checks for supplied itemId within lootzone (using isWithinLootzone method) and loots list of
@@ -507,15 +507,15 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void lootItems(boolean leaveCombat, int[] itemIds) {
     for (int itemId : itemIds) {
-        int[] coords = c.getNearestItemById(itemId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-          else if (leaveCombat && c.isInCombat()) leaveCombat();
-          c.setStatus("@yel@Picking loot...");
-          c.pickupItem(coords[0], coords[1], itemId, true, false);
-          c.sleep(GAME_TICK);
-          return;
-        }
+      int[] coords = c.getNearestItemById(itemId);
+      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+        if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+        else if (leaveCombat && c.isInCombat()) leaveCombat();
+        c.setStatus("@yel@Picking loot...");
+        c.pickupItem(coords[0], coords[1], itemId, true, false);
+        c.sleep(GAME_TICK);
+        return;
+      }
     }
   }
   /**
@@ -532,18 +532,18 @@ public class K_kailaScript extends IdleScript {
   protected static void lootItems(
       boolean leaveCombat, int[] itemIds, int wearId, boolean swapState) {
     for (int itemId : itemIds) {
-        int[] coords = c.getNearestItemById(itemId);
-        if (coords != null && isWithinLootzone(coords[0], coords[1])) {
-          if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-          else if (leaveCombat && c.isInCombat()) leaveCombat();
-          if (swapState && !c.isItemIdEquipped(wearId)) {
-            c.equipItem(c.getInventoryItemSlotIndex(wearId));
-          }
-          c.setStatus("@yel@Picking loot...");
-          c.pickupItem(coords[0], coords[1], itemId, true, false);
-          c.sleep(GAME_TICK);
-          return;
+      int[] coords = c.getNearestItemById(itemId);
+      if (coords != null && isWithinLootzone(coords[0], coords[1])) {
+        if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+        else if (leaveCombat && c.isInCombat()) leaveCombat();
+        if (swapState && !c.isItemIdEquipped(wearId)) {
+          c.equipItem(c.getInventoryItemSlotIndex(wearId));
         }
+        c.setStatus("@yel@Picking loot...");
+        c.pickupItem(coords[0], coords[1], itemId, true, false);
+        c.sleep(GAME_TICK);
+        return;
+      }
     }
   }
   /**
@@ -605,17 +605,13 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void buryBones(boolean leaveCombat) {
     for (int id : bones) {
-      try {
-        if (c.getInventoryItemCount(id) > 0) {
-          if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-          else if (leaveCombat && c.isInCombat()) leaveCombat();
-          c.setStatus("@yel@Burying bones..");
-          c.itemCommand(id);
-          c.sleep(GAME_TICK);
-          return;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.getInventoryItemCount(id) > 0) {
+        if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+        else if (leaveCombat && c.isInCombat()) leaveCombat();
+        c.setStatus("@yel@Burying bones..");
+        c.itemCommand(id);
+        c.sleep(GAME_TICK);
+        return;
       }
     }
   }
@@ -625,16 +621,12 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void leaveCombat() {
     for (int i = 0; i <= 6; i++) {
-      try {
-        if (c.isInCombat()) {
-          c.setStatus("@red@Leaving combat..");
-          c.walkToAsync(c.currentX(), c.currentY(), 1);
-          c.sleep(GAME_TICK);
-        } else {
-          return;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat..");
+        c.walkToAsync(c.currentX(), c.currentY(), 1);
+        c.sleep(GAME_TICK);
+      } else {
+        return;
       }
     }
   }
@@ -644,16 +636,12 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void leaveCombatForced() {
     for (int i = 0; i <= 30; i++) {
-      try {
-        if (c.isInCombat()) {
-          c.setStatus("@red@Leaving combat..");
-          c.walkToAsync(c.currentX(), c.currentY(), 1);
-          c.sleep(GAME_TICK);
-        } else {
-          return;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat..");
+        c.walkToAsync(c.currentX(), c.currentY(), 1);
+        c.sleep(GAME_TICK);
+      } else {
+        return;
       }
     }
   }
@@ -666,18 +654,14 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void eatFoodToLoot(boolean leaveCombat) {
     for (int id : c.getFoodIds()) {
-      try {
-        if (c.getInventoryItemCount() != 30) return;
-        if (c.getInventoryItemCount(id) > 0) {
-          if (leaveCombat && c.isInCombat()) leaveCombat();
-          else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-          c.setStatus("@red@Eating Food to Loot..");
-          c.itemCommand(id);
-          c.sleep(GAME_TICK);
-          return;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.getInventoryItemCount() != 30) return;
+      if (c.getInventoryItemCount(id) > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+        c.setStatus("@red@Eating Food to Loot..");
+        c.itemCommand(id);
+        c.sleep(GAME_TICK);
+        return;
       }
     }
   }
@@ -690,18 +674,14 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void buryBonesToLoot(boolean leaveCombat) {
     for (int id : bones) {
-      try {
-        if (c.getInventoryItemCount() != 30) return;
-        if (c.getInventoryItemCount(id) > 0) {
-          if (leaveCombat && c.isInCombat()) leaveCombat();
-          else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-          c.setStatus("@yel@Burying bones..");
-          c.itemCommand(id);
-          c.sleep(GAME_TICK);
-          return;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.getInventoryItemCount() != 30) return;
+      if (c.getInventoryItemCount(id) > 0) {
+        if (leaveCombat && c.isInCombat()) leaveCombat();
+        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+        c.setStatus("@yel@Burying bones..");
+        c.itemCommand(id);
+        c.sleep(GAME_TICK);
+        return;
       }
     }
   }
@@ -713,18 +693,14 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    */
   protected static void dropItemToLoot(boolean leaveCombat, int amount, int itemId) {
-    try {
-      if (c.getInventoryItemCount() != 30) return;
-      if (c.getInventoryItemCount(itemId) > 0) {
-        if (amount < 1) amount = 1;
-        if (leaveCombat && c.isInCombat()) leaveCombat();
-        else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-        c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
-        c.sleep(GAME_TICK);
-        waitForBatching();
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    if (c.getInventoryItemCount() != 30) return;
+    if (c.getInventoryItemCount(itemId) > 0) {
+      if (amount < 1) amount = 1;
+      if (leaveCombat && c.isInCombat()) leaveCombat();
+      else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+      c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
+      c.sleep(GAME_TICK);
+      waitForBatching();
     }
   }
   // TODO check for item (if equipped, else if in invent return true, else withdraw?)
@@ -1035,15 +1011,11 @@ public class K_kailaScript extends IdleScript {
   /** if bank is not open, wait 2 ticks, repeat check. repeats 16 times. */
   protected static void waitForBankOpen() {
     for (int i = 0; i <= 15; i++) {
-      try {
-        if (!c.isInBank()) {
-          // c.log("waiting for bank");
-          c.sleep(2 * GAME_TICK);
-        } else {
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (!c.isInBank()) {
+        // c.log("waiting for bank");
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
       }
     }
   }
@@ -1476,16 +1448,12 @@ public class K_kailaScript extends IdleScript {
   /** Loop to make sure to equip an item */
   protected static void forceEquipItem(int itemToEquip) {
     for (int i = 1; i <= 15; i++) {
-      try {
-        if (!c.isItemIdEquipped(itemToEquip) && c.getInventoryItemCount(itemToEquip) > 0) {
-          c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
-          c.sleep(4 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (!c.isItemIdEquipped(itemToEquip) && c.getInventoryItemCount(itemToEquip) > 0) {
+        c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
+        c.sleep(4 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }
@@ -1535,17 +1503,13 @@ public class K_kailaScript extends IdleScript {
   protected static void teleportLumbridge() {
     c.castSpellOnSelf(SpellId.LUMBRIDGE_TELEPORT.getId());
     for (int i = 1; i <= 10; i++) {
-      try {
-        if (c.currentX() != 120 && c.currentY() != 648) {
-          c.setStatus("@gre@Teleporting..");
-          c.castSpellOnSelf(SpellId.LUMBRIDGE_TELEPORT.getId());
-          c.sleep(3 * GAME_TICK);
-        } else {
-          c.sleep(4 * GAME_TICK);
-          break;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (c.currentX() != 120 && c.currentY() != 648) {
+        c.setStatus("@gre@Teleporting..");
+        c.castSpellOnSelf(SpellId.LUMBRIDGE_TELEPORT.getId());
+        c.sleep(3 * GAME_TICK);
+      } else {
+        c.sleep(4 * GAME_TICK);
+        break;
       }
     }
   }

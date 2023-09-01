@@ -21,21 +21,21 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Paladins extends K_kailaScript {
-  private static int totalCoins = 0;
-  private static int totalShark = 0; // raw sharks that we pick up
-  private static int totalAda = 0;
-  private static int totalScim = 0;
-  private static int coinsInBank = -1;
-  private static int chaosInBank = -1;
-  private static int invCoins = 0;
-  private static int invChaos = 0;
-  private static int thieveSuccess = 0;
-  private static int openChest = 0;
-  private static int thieveFailure = 0;
-  private static int thieveCapture = 0;
-  private static int fightMode = 0;
-  private static int startCoins;
-  private static int startChaos;
+  private int totalCoins = 0;
+  private int totalShark = 0; // raw sharks that we pick up
+  private int totalAda = 0;
+  private int totalScim = 0;
+  private int coinsInBank = -1;
+  private int chaosInBank = -1;
+  private int invCoins = 0;
+  private int invChaos = 0;
+  private int thieveSuccess = 0;
+  private int openChest = 0;
+  private int thieveFailure = 0;
+  private int thieveCapture = 0;
+  private int fightMode = 0;
+  private int startCoins;
+  private int startChaos;
   private static final int[] pathToBank = {
     604, 603,
     589, 604,
@@ -73,32 +73,6 @@ public final class K_Paladins extends K_kailaScript {
   };
 
   private void startSequence() {
-    for (int i = 1; i <= 240; i++) {
-      if (i < 5) {
-        if (!c.isLoggedIn()) {
-          int sleepTime = (int) (Math.random() * 1000) + 5000;
-          c.log(
-              "Not Logged In, Waiting to Start Script... trying again in " + sleepTime + " ms...",
-              "cya");
-          c.sleep(sleepTime);
-        } else {
-          c.log("Logged In!", "gre");
-          break;
-        }
-      } else {
-        if (!c.isLoggedIn()) {
-          int sleepTime = (int) (Math.random() * 3000) + (((i * 15) / (i + 60)) * 5000) + 5000;
-          c.log(
-              "Not Logged In, Waiting to Start Script... trying again in \" + sleepTime + \" ms...",
-              "cya");
-          c.sleep(sleepTime);
-        } else {
-          c.log("Logged In!", "gre");
-          break;
-        }
-      }
-      c.sleep(100);
-    }
     c.displayMessage("@ran@Paladin Tower - By Kaila.");
     c.displayMessage("@gre@Beginning Startup Sequence.");
     if (c.isInBank()) c.closeBank();
@@ -108,17 +82,15 @@ public final class K_Paladins extends K_kailaScript {
         && c.currentX() < 565) { // NEAR bank
       bank();
       BankToPaladins();
-      c.sleep(1380);
     }
     if (c.currentY() > 1542
         && c.currentY() < 1548
         && c.currentX() > 607
         && c.currentX() < 614) { // inside paladin antichamber
       c.walkTo(609, 1547);
-      paladinDoor();
+      paladinDoorEntering();
       c.sleep(640);
       c.walkTo(610, 1549);
-      c.sleep(640);
     }
     if (c.currentY() < 650
         && c.currentY() > 550
@@ -127,27 +99,23 @@ public final class K_Paladins extends K_kailaScript {
       witchhavenToBank();
       bank();
       BankToPaladins();
-      c.sleep(1380);
     }
     if (c.currentY() < 650
         && c.currentY() > 550
         && c.currentX() > 564
         && c.currentX() < 620) { // on path
-      pathToBank();
+      c.walkPath(pathToBank);
       bank();
       BankToPaladins();
-      c.sleep(1380);
     }
     if (c.currentY() < 2496
         && c.currentY() > 2486
         && c.currentX() < 614
         && c.currentX() > 607) { // Upstairs
-      TreasureRoomToBank();
+      paladinsToBank(false);
       bank();
       BankToPaladins();
-      c.sleep(1380);
     }
-    c.toggleBatchBarsOn();
     c.displayMessage("@gre@Finished Startup Sequence.");
   }
 
@@ -190,7 +158,12 @@ public final class K_Paladins extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
-      parseVariables();
+      startCoins = c.getInventoryItemCount(10);
+      startChaos = c.getInventoryItemCount(41);
+      invCoins = c.getInventoryItemCount(10);
+      invChaos = c.getInventoryItemCount(41);
+      startTime = System.currentTimeMillis();
+      c.toggleBatchBarsOff();
       startSequence();
       scriptStart();
     }
@@ -202,14 +175,14 @@ public final class K_Paladins extends K_kailaScript {
       if (c.isInCombat()) {
         c.setStatus("@red@Leaving combat..");
         c.walkTo(610, 1549, 0, true);
-        c.sleep(800);
+        c.sleep(640);
       }
       if (!c.isInCombat() && c.getInventoryItemCount(foodId) > 0) {
         c.setStatus("@yel@Thieving Paladins");
         ORSCharacter npc = c.getNearestNpcById(323, false);
         if (npc != null) {
           c.thieveNpc(npc.serverIndex);
-          c.sleep(600); // this sleep time is important //was 300
+          c.sleep(640); // this sleep time is important //was 300
         } else {
           c.sleep(100); // this sleep time is important
         }
@@ -218,19 +191,14 @@ public final class K_Paladins extends K_kailaScript {
       if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
         eat();
       }
-      if (c.getFightMode() != fightMode) {
-        c.log("@red@Changing fightmode to " + fightMode);
-        c.setFightMode(fightMode);
-      }
-      lootScript();
+      checkFightMode(fightMode);
+      lootItems(true, loot);
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank) { // bank if no food-
         c.setStatus("@yel@Banking..");
-        goUpPaladinsLadder();
-        TreasureRoomToBank();
+        paladinsToBank(true);
         bank();
         timeToBank = false;
         BankToPaladins();
-        c.sleep(618);
       }
       if (c.getInventoryItemCount() == 30) {
         leaveCombat();
@@ -240,28 +208,10 @@ public final class K_Paladins extends K_kailaScript {
           c.sleep(700);
         } else {
           c.setStatus("@yel@Banking..");
-          goUpPaladinsLadder();
-          TreasureRoomToBank();
+          paladinsToBank(true);
           bank();
           BankToPaladins();
-          c.sleep(618);
         }
-      }
-    }
-  }
-
-  private void lootScript() {
-    for (int lootId : loot) {
-      try {
-        int[] coords = c.getNearestItemById(lootId);
-        if (coords != null) {
-          c.setStatus("@yel@Looting..");
-          c.walkToAsync(coords[0], coords[1], 0);
-          c.pickupItem(coords[0], coords[1], lootId, true, false);
-          c.sleep(640);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
       }
     }
   }
@@ -270,14 +220,14 @@ public final class K_Paladins extends K_kailaScript {
     if (c.isInCombat()) {
       c.setStatus("@red@Leaving combat..");
       c.walkTo(610, 1549, 0, true);
-      c.sleep(800);
+      c.sleep(640);
     }
     c.setStatus("@red@Eating..");
     boolean ate = false;
     for (int id : c.getFoodIds()) {
       if (c.getInventoryItemCount(id) > 0) {
         c.itemCommand(id);
-        c.sleep(700);
+        c.sleep(640);
         ate = true;
         break;
       }
@@ -285,8 +235,7 @@ public final class K_Paladins extends K_kailaScript {
     if (!ate) {
       c.setStatus("@red@We've ran out of Food! Banking!.");
       c.sleep(308);
-      goUpPaladinsLadder();
-      TreasureRoomToBank();
+      paladinsToBank(true);
       bank();
       BankToPaladins();
     }
@@ -330,54 +279,45 @@ public final class K_Paladins extends K_kailaScript {
     }
   }
   // Pathing Scripts Below
-  private void goUpPaladinsLadder() {
-    c.setStatus("@gre@Walking to Bank..");
-    c.walkTo(611, 1550);
-    c.atObject(611, 1551);
-    c.sleep(640);
-  }
-
-  private void TreasureRoomToBank() {
-    int[] coords = c.getNearestItemById(427);
-    if (coords != null) { // Loot
-      c.setStatus("@yel@Grabbing Black Scimmy..");
-      c.walkTo(coords[0], coords[1]);
+  private void paladinsToBank(boolean goUpLadder) {
+    if (goUpLadder) {
+      c.setStatus("@gre@Walking to Bank..");
+      c.walkTo(611, 1550);
+      c.atObject(611, 1551); // ladder in paladin room
       c.sleep(640);
-      c.pickupItem(coords[0], coords[1], 427, true, true);
     }
-    c.sleep(640);
-    int[] coords2 = c.getNearestObjectById(338);
-    if (coords2 != null) {
+    int[] scimCoords = c.getNearestItemById(427);
+    if (scimCoords != null) { // Loot
+      c.setStatus("@yel@Grabbing Black Scimmy..");
+      c.walkTo(scimCoords[0], scimCoords[1]);
+      c.sleep(640);
+      c.pickupItem(scimCoords[0], scimCoords[1], 427, true, true);
+    }
+    int[] chestCoords = c.getNearestObjectById(338);
+    boolean walkToBank = false;
+    if (chestCoords != null) {
       c.setStatus("@red@Stealing From Chest..");
       c.walkTo(610, 2488);
-      c.sleep(340);
-      c.atObject2(610, 2487);
-      c.sleep(340);
-      c.atObject2(610, 2487);
-      c.sleep(340);
-      if (c.currentX() == 610 && c.currentY() == 2488) { // got stuck here!!!
-        c.atObject2(610, 2487);
-        c.sleep(1340);
-      }
-      witchhavenToBank();
-    }
-    if (coords2 == null) {
+      c.sleep(GAME_TICK);
+      c.atObject2(chestCoords[0], chestCoords[1]);
+      c.sleep(10 * GAME_TICK);
+      if (c.currentX() == 610 && c.currentY() == 2488) {
+        walkToBank = true;
+      } else witchhavenToBank();
+    } else walkToBank = true;
+    if (walkToBank) {
       c.setStatus("@red@Chest Empty, Walking...");
       c.walkTo(611, 2494);
-      c.atObject(611, 2495);
-      c.sleep(320);
-      c.walkTo(609, 1548);
-      c.atWallObject(609, 1548); // added this, some chance of breaking before.....
-      c.sleep(320);
-      if (c.currentX() == 609 && c.currentY() == 1548) {
-        c.atWallObject(609, 1548); // locked door
-        c.sleep(640);
-      }
+      c.atObject(611, 2495); // go down ladder
+      c.sleep(2 * GAME_TICK);
+      c.walkTo(609, 1548); // walk to door
+      paladinDoorExiting(); // go through door
       c.walkTo(611, 1544);
-      c.atObject(611, 1545);
+      c.atObject(611, 1545); // go downstairs
       c.walkTo(608, 603);
+      openDoorObjects(64, 607, 603); // open inner gate
       c.walkTo(599, 603);
-      // add open front gate to castle?
+      openDoorObjects(57, 598, 603); // open outer gate
       c.walkTo(577, 603);
       c.walkTo(574, 606);
       c.walkTo(564, 606);
@@ -391,25 +331,36 @@ public final class K_Paladins extends K_kailaScript {
   }
 
   private void paladinStair() {
-    while (c.currentX() < 615
-        && c.currentX() > 609
-        && c.currentY() < 610
-        && c.currentY() > 600) { // needs to be WHILE to escape paladins
-      c.walkTo(612, 604);
-      c.atObject(
-          611,
-          601); // sometimes get stuck here  CHANGED TO AREA INSTEAD!!!  change coords to caslte
-      // perimeter instead!!
-      c.sleep(1240);
+    for (int i = 1; i <= 50; i++) {
+      if (c.currentX() < 615 && c.currentX() > 609 && c.currentY() < 610 && c.currentY() > 600) {
+        c.walkTo(612, 604);
+        c.atObject(611, 601);
+        c.sleep(320);
+        c.atObject(611, 601);
+        c.sleep(640);
+      } else return;
     }
   }
 
-  private void paladinDoor() {
-    c.walkTo(609, 1547);
-    while (c.currentX() == 609 && c.currentY() == 1547) { // needs to be while incase others open it
-      c.atWallObject2(609, 1548); // locked door
-      c.sleep(1240);
+  private void paladinDoorExiting() { // gate upstairs in paladins
+    for (int i = 1; i <= 20; i++) {
+      if (c.currentX() == 609 && c.currentY() == 1547) {
+        c.atWallObject(609, 1548); // locked door
+        c.sleep(2 * GAME_TICK);
+      }
     }
+  }
+
+  private void paladinDoorEntering() { // gate upstairs in paladins
+    c.toggleBatchBarsOn();
+    for (int i = 1; i <= 20; i++) {
+      if (c.currentX() == 609 && c.currentY() == 1547) {
+        c.atWallObject2(609, 1548); // locked door
+        c.sleep(2 * GAME_TICK);
+        while (c.isBatching()) c.sleep(GAME_TICK);
+      }
+    }
+    c.toggleBatchBarsOff();
   }
 
   private void BankToPaladins() {
@@ -421,12 +372,13 @@ public final class K_Paladins extends K_kailaScript {
     c.walkTo(582, 606);
     c.walkTo(585, 603);
     c.walkTo(598, 603);
-    // insert open outer castle gate?
+    openDoorObjects(57, 598, 603); // open outer gate
     c.walkTo(607, 603);
+    openDoorObjects(64, 607, 603); // open inner gate
     c.walkTo(612, 604); // just below stair
     paladinStair();
     c.walkTo(609, 1547);
-    paladinDoor();
+    paladinDoorEntering();
     c.setStatus("@gre@Done Walking..");
   }
 
@@ -442,19 +394,6 @@ public final class K_Paladins extends K_kailaScript {
     c.walkTo(550, 612);
     c.sleep(320);
     c.setStatus("@gre@Done Walking..");
-  }
-
-  private void pathToBank() {
-    c.walkPath(pathToBank);
-  }
-
-  private void parseVariables() {
-    startCoins = c.getInventoryItemCount(10);
-    startChaos = c.getInventoryItemCount(41);
-    invCoins = c.getInventoryItemCount(10);
-    invChaos = c.getInventoryItemCount(41);
-    startTime = System.currentTimeMillis();
-    // next_attempt = System.currentTimeMillis() + nineMinsInMillis;
   }
 
   private void setupGUI() {
@@ -614,9 +553,9 @@ public final class K_Paladins extends K_kailaScript {
                 + "@yel@ (@whi@"
                 + String.format("%,d", coinSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)"
-                + "@yel@ (@whi@Coins in Bank: @gre@"
+                + "@whi@ Coins in Bank: @gre@"
                 + coinsInBank
-                + " @gre@million@yel@)",
+                + " @gre@million",
             x,
             y + 14,
             0xFFFFFF,
@@ -629,7 +568,7 @@ public final class K_Paladins extends K_kailaScript {
                 + "@yel@ (@whi@"
                 + String.format("%,d", chaosSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)"
-                + "@yel@ (@whi@Chaos in Bank: @gre@ Unknown @yel@)",
+                + "@whi@ Chaos in Bank: @gre@ Unknown",
             x,
             y + (14 * 2),
             0xFFFFFF,
@@ -641,9 +580,8 @@ public final class K_Paladins extends K_kailaScript {
                 + "@yel@ (@whi@"
                 + String.format("%,d", chaosSuccessPerHr)
                 + "@yel@/@whi@hr@yel@)"
-                + "@yel@ (@whi@Chaos in Bank: @gre@"
-                + chaosInBank
-                + "@yel@)",
+                + "@whi@ Chaos in Bank: @gre@"
+                + chaosInBank,
             x,
             y + (14 * 2),
             0xFFFFFF,
@@ -656,7 +594,7 @@ public final class K_Paladins extends K_kailaScript {
                 + "@yel@ (@whi@"
                 + String.format("%,d", foodUsedPerHr)
                 + "@yel@/@whi@hr@yel@)"
-                + "@yel@ (@whi@Food in Bank: @gre@ Unknown@yel@)",
+                + "@whi@ Food in Bank: @gre@ Unknown",
             x,
             y + (14 * 3),
             0xFFFFFF,
@@ -668,7 +606,7 @@ public final class K_Paladins extends K_kailaScript {
                 + "@yel@ (@whi@"
                 + String.format("%,d", foodUsedPerHr)
                 + "@yel@/@whi@hr@yel@)"
-                + "@yel@ (@whi@Food in Bank: @gre@"
+                + "@whi@ Food in Bank: @gre@"
                 + foodInBank
                 + "@yel@)",
             x,
@@ -682,15 +620,13 @@ public final class K_Paladins extends K_kailaScript {
               + "@yel@ (@whi@"
               + String.format("%,d", thieveSuccessPerHr)
               + "@yel@/@whi@hr@yel@)"
-              + "@yel@ (@whi@Fail: @gre@"
+              + "@whi@ Fail: @gre@"
               + thieveFailure
-              + "@yel@)"
               + "@yel@ (@whi@"
               + String.format("%,d", thieveFailurePerHr)
               + "@yel@/@whi@hr@yel@)"
-              + "@yel@ (@whi@Capture: @gre@"
+              + "@whi@ Capture: @gre@"
               + thieveCapture
-              + "@yel@)"
               + "@yel@ (@whi@"
               + String.format("%,d", thieveCapturePerHr)
               + "@yel@/@whi@hr@yel@)" // works off interrupt
@@ -705,9 +641,8 @@ public final class K_Paladins extends K_kailaScript {
               + "@yel@ (@whi@"
               + String.format("%,d", tripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)"
-              + "@yel@ (@whi@Chest's Opened: @gre@"
-              + openChest
-              + "@yel@)",
+              + "@yel@ @whi@Chest's Opened: @gre@"
+              + openChest,
           x,
           y + (14 * 5),
           0xFFFFFF,

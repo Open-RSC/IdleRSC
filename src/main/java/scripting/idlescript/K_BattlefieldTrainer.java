@@ -43,29 +43,21 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        DruidToBank();
-        bank();
-        BankToDruid();
-      }
-      checkFightMode(fightMode);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      if (c.getInventoryItemCount(foodId) > 0) {
-        if (!c.isInCombat()) {
-          ORSCharacter npc = c.getNearestNpcById(407, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking Trooper");
-            // c.walktoNPC(npc.serverIndex,1);
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else c.sleep(GAME_TICK);
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(407, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Trooper");
+          // c.walktoNPC(npc.serverIndex,1);
+          c.attackNpc(npc.serverIndex);
+          c.sleep(GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
         c.setStatus("@yel@Banking..");
         DruidToBank();
@@ -73,9 +65,7 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
           endSession();
         }
         BankToDruid();

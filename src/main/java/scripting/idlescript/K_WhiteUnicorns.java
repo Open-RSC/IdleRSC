@@ -63,39 +63,28 @@ public final class K_WhiteUnicorns extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        houseToBank();
-        bank();
-        bankToHouse();
-      }
-      checkFightMode(fightMode);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      inventUni = c.getInventoryItemCount(466);
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
-        if (!c.isInCombat()) {
-          lootItem(false, UNI_HORN);
-          if (buryBones) buryBones(false);
-          ORSCharacter npc = c.getNearestNpcById(0, true);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            lootItem(false, UNI_HORN);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-          }
+      lootItem(false, UNI_HORN);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      if (buryBones) buryBones(false);
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(0, true);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          inventUni = c.getInventoryItemCount(466);
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -106,11 +95,8 @@ public final class K_WhiteUnicorns extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
+          endSession();
         }
         bankToHouse();
       }

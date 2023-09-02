@@ -108,11 +108,11 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       }
       if (c.isPrayerOn(PARALYZE_MONSTER) && !c.isInCombat()) c.disablePrayer(PARALYZE_MONSTER);
       else if (!c.isPrayerOn(PARALYZE_MONSTER) && c.isInCombat()) c.enablePrayer(PARALYZE_MONSTER);
-      if (buryBones) buryBones(false);
       if (potUp) {
         superAttackBoost(4, false);
         superStrengthBoost(4, false);
       }
+      if (buryBones) buryBones(false);
       checkFightMode(fightMode);
       lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (!c.isInCombat()) {

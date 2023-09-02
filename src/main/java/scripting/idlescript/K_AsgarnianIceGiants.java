@@ -101,48 +101,32 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        IceToBank();
-        bank();
-        BankToIce();
+      if (potUp) {
+        attackBoost(0, true);
+        strengthBoost(0, true);
       }
+      lootItems(true, loot);
+      if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
       buryBones(false);
       checkFightMode(fightMode);
       checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30) {
-        lootItems(true, loot);
-        if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
-        if (potUp) {
-          attackBoost(0, true);
-          strengthBoost(0, true);
-        }
-        if (!c.isInCombat()) {
-          int[] npcIds = {135, 158};
-          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            // c.walktoNPC(npc.serverIndex,1);
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            lootItems(true, loot);
-            if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
-            // if (c.currentX() != 305 || c.currentY() != 3522) {
-            //  c.walkTo(305, 3522);
-            //  c.sleep(1000);
-            // }
-          }
+      if (!c.isInCombat()) {
+        int[] npcIds = {135, 158};
+        ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount() == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
+        timeToBank = false;
         IceToBank();
         bank();
         BankToIce();

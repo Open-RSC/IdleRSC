@@ -120,46 +120,28 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        dungeonToBank();
-        bank();
-        bankToDungeon();
-      }
-      checkFightMode(fightMode);
-      if (c.currentX() < 186) { // down corridor too much
-        c.displayMessage("@red@Error: Too far out of wander range, Walking back!");
-        c.walkTo(198, 3299);
-        c.walkTo(207, 3300);
-        c.sleep(GAME_TICK);
-      }
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
-        if (!c.isInCombat()) {
-          if (lootLowLevel) lootItems(false, lowLevelLoot);
-          else lootItems(false, highLevelLoot);
-          if (lootLimp) lootItem(false, ItemId.LIMPWURT_ROOT.getId());
-          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootLowLevel) lootItems(false, lowLevelLoot);
-            else lootItems(false, highLevelLoot);
-          }
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      if (lootLimp) lootItem(false, ItemId.LIMPWURT_ROOT.getId());
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          checkInventoryItemCounts();
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -170,13 +152,16 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
+          endSession();
         }
         bankToDungeon();
+      }
+      if (c.currentX() < 186) { // down corridor too much
+        c.displayMessage("@red@Error: Too far out of wander range, Walking back!");
+        c.walkTo(198, 3299);
+        c.walkTo(207, 3300);
+        c.sleep(GAME_TICK);
       }
     }
   }

@@ -124,37 +124,29 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        dungeonToBank();
-        bank();
-        bankToDungeon();
-      }
-      checkFightMode(fightMode);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
-        if (!c.isInCombat()) {
-          if (lootLowLevel) lootItems(false, lowLevelLoot);
-          else lootItems(false, highLevelLoot);
-          if (lootSpinachRoll) lootItem(false, ItemId.SPINACH_ROLL.getId());
-          if (lootBones) lootItem(false, ItemId.BIG_BONES.getId());
-          if (buryBones) buryBones(false);
-          ORSCharacter npc = c.getNearestNpcById(104, false);
-          c.setStatus("@yel@Attacking..");
-          if (npc != null) {
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootLowLevel) lootItems(false, lowLevelLoot);
-            else lootItems(false, highLevelLoot);
-          }
-        } else c.sleep(640);
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      if (lootSpinachRoll) lootItem(false, ItemId.SPINACH_ROLL.getId());
+      if (lootBones) lootItem(false, ItemId.BIG_BONES.getId());
+      if (buryBones) buryBones(false);
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(104, false);
+        c.setStatus("@yel@Attacking..");
+        if (npc != null) {
+          c.attackNpc(npc.serverIndex);
+          c.sleep(GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(640);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
+        buryBonesToLoot(false);
       }
+      timeToBank = !eatFood();
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -167,14 +159,9 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
           timeToBankStay = false;
           c.displayMessage(
               "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          endSession();
         }
         bankToDungeon();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }

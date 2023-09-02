@@ -115,44 +115,35 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        DruidToBank();
-        bank();
-        BankToDruid();
-      }
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
       checkFightMode(fightMode);
       checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30) {
-        if (!c.isInCombat()) {
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(270, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else {
+          c.sleep(GAME_TICK);
           if (lootLowLevel) lootItems(false, lowLevelLoot);
           else lootItems(false, highLevelLoot);
-          ORSCharacter npc = c.getNearestNpcById(270, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            // c.walktoNPC(npc.serverIndex,1);
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            if (lootLowLevel) lootItems(false, lowLevelLoot);
-            else lootItems(false, highLevelLoot);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-            if (c.currentX() != 218 || c.currentY() != 3245) {
-              c.walkTo(218, 3245);
-              c.sleep(GAME_TICK);
-            }
+          if (c.currentX() != 218 || c.currentY() != 3245) {
+            c.walkTo(218, 3245);
           }
-        } else c.sleep(GAME_TICK);
-      }
+        }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood();
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(foodId) == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;

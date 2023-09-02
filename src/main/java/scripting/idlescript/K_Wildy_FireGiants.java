@@ -94,39 +94,26 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        GiantsToBank();
-        bank();
-        BankToStair();
-        stairToGiants();
-      }
       buryBones(true);
       lootItems(false, loot);
       superAttackBoost(0, true);
       superStrengthBoost(0, true);
-      if (c.getInventoryItemCount(546) > 0) {
-        if (c.getInventoryItemCount() < 30) {
-          if (!c.isInCombat()) {
-            ORSCharacter npc = c.getNearestNpcById(344, false);
-            if (npc != null) {
-              c.setStatus("@yel@Attacking Giants");
-              c.walktoNPC(npc.serverIndex, 1);
-              c.attackNpc(npc.serverIndex);
-              c.sleep(GAME_TICK);
-            } else {
-              c.sleep(GAME_TICK);
-              lootItems(false, loot);
-            }
-          } else c.sleep(GAME_TICK);
-        }
-        if (c.getInventoryItemCount() == 30) {
-          dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
-          eatFoodToLoot(true);
-        }
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(344, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Giants");
+          c.walktoNPC(npc.serverIndex, 1);
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
+        eatFoodToLoot(true);
       }
-      if (c.getInventoryItemCount(546) == 0
+      timeToBank = !eatFood(); // does the eating checks
+      if (timeToBank
+          || c.getInventoryItemCount(546) == 0
           || c.getInventoryItemCount(795) > 0
           || c.getInventoryItemCount(1277) > 0) { // bank if d med, or left half in inv
         c.setStatus("@yel@Banking..");

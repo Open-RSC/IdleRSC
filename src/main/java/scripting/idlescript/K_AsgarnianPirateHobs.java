@@ -89,53 +89,30 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@yel@Banking..");
-        IceToBank();
-        bank();
-        BankToIce();
-        c.sleep(618);
+      if (potUp) {
+        attackBoost(0, false);
+        strengthBoost(0, false);
       }
+      lootItems(false, loot);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
       buryBones(false);
       checkFightMode(fightMode);
       checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30) {
-        lootItems(false, loot);
-        if (potUp) {
-          attackBoost(0, false);
-          strengthBoost(0, false);
-        }
-        if (c.currentX() > 295 && c.currentY() > 3000) {
-          c.setStatus("@yel@Too far West, walking back..");
-          c.walkTo(283, 3521);
-          c.sleep(1000);
-        }
-        if (!c.isInCombat()) {
-          int[] npcIds = {67, 137};
-          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            // c.walktoNPC(npc.serverIndex,1);
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-            if (c.currentX() != 283 || c.currentY() != 3521) {
-              c.walkTo(283, 3521);
-              c.sleep(1000);
-            }
-          }
-        } else {
-          c.sleep(GAME_TICK);
-        }
-      }
+      if (!c.isInCombat()) {
+        int[] npcIds = {67, 137};
+        ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
-      if (c.getInventoryItemCount() > 29
+      timeToBank = !eatFood(); // does the eating checks
+      if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
           || timeToBankStay) {
@@ -145,12 +122,15 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
           endSession();
         }
         BankToIce();
+      }
+      if (c.currentX() > 295 && c.currentY() > 3000) {
+        c.setStatus("@yel@Too far West, walking back..");
+        c.walkTo(283, 3521);
+        c.sleep(1000);
       }
     }
   }

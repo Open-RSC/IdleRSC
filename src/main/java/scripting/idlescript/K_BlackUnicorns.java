@@ -77,33 +77,25 @@ public final class K_BlackUnicorns extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        escapePath();
-      }
-      if (c.getInventoryItemCount() < 30) {
-        lootItem(false, UNI_HORN);
-        inventUni = c.getBankItemCount(UNI_HORN);
-        if (!c.isInCombat()) {
-          // c.sleepHandler(296, true);
-          ORSCharacter npc = c.getNearestNpcById(296, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-          }
+      lootItem(false, UNI_HORN);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(296, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          inventUni = c.getInventoryItemCount(UNI_HORN);
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
-      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(SHARK) == 0) {
+      timeToBank = !eatFood();
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(SHARK) == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
+        timeToBank = false;
         UniToBank();
         bank();
         BankToUni();
@@ -131,6 +123,9 @@ public final class K_BlackUnicorns extends K_kailaScript {
       }
       withdrawFood(SHARK, 1);
       bankItemCheck(SHARK, 5);
+      inventoryItemCheck(airId, 3);
+      inventoryItemCheck(lawId, 1);
+      inventoryItemCheck(earthId, 1);
       uniInBank = c.getBankItemCount(UNI_HORN);
       c.closeBank();
       inventUni = c.getBankItemCount(UNI_HORN);
@@ -168,7 +163,11 @@ public final class K_BlackUnicorns extends K_kailaScript {
 
   private void UniToBank() {
     c.setStatus("@gre@Walking to Bank..");
-    if (bankTeleport) {
+    boolean hasTeleportRunes =
+        c.getInventoryItemCount(airId) >= 3
+            && c.getInventoryItemCount(lawId) > 0
+            && c.getInventoryItemCount(earthId) > 0;
+    if (bankTeleport && hasTeleportRunes) {
       goToTwenty();
       c.setStatus("@red@Teleporting Now!.");
       teleportLumbridge();

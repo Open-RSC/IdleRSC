@@ -100,14 +100,6 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        demonEscape();
-        DemonsToBank();
-        bank();
-        BankToDemons();
-      }
       checkFightMode(fightMode);
       drinkPrayerPotion(31, true);
       prayParalyze();
@@ -117,21 +109,16 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         superAttackBoost(0, true);
         superStrengthBoost(0, true);
       }
-      if (c.getInventoryItemCount() < 30) {
-        lootItems(true, loot);
-        if (!c.isInCombat()) {
-          ORSCharacter npc = c.getNearestNpcById(290, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking Demons");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            lootItems(true, loot);
-          }
+      lootItems(true, loot);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(290, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Demons");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
-
+      } else c.sleep(GAME_TICK);
+      timeToBank = !eatFood(); // does the food eating
       if (c.getInventoryItemCount(prayerPot[2]) == 0
           || c.getInventoryItemCount(foodId) == 0
           || c.getInventoryItemCount() == 30

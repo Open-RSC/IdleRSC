@@ -94,49 +94,32 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        DruidToBank();
-        bank();
-        BankToDruid();
-      }
-      buryBones(false);
-      if (c.currentY() > 473) {
-        c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
-        c.walkTo(362, 464);
-        c.sleep(640);
-      }
-      checkFightMode(fightMode);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
-        if (!c.isInCombat()) {
-          if (prayerBoost) {
-            recharge();
-            pray();
-          }
-          if (lootLowLevel) lootItems(false, lowLevelLoot);
-          else lootItems(false, highLevelLoot);
-          ORSCharacter npc = c.getNearestNpcById(200, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking Druids");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootLowLevel) lootItems(false, lowLevelLoot);
-            else lootItems(false, highLevelLoot);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-          }
-        } else c.sleep(GAME_TICK);
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      buryBones(false);
+      if (prayerBoost) {
+        recharge();
+        pray();
       }
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(200, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Druids");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -147,13 +130,15 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
+          endSession();
         }
         BankToDruid();
+      }
+      if (c.currentY() > 473) {
+        c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
+        c.walkTo(362, 464);
+        c.sleep(640);
       }
     }
   }

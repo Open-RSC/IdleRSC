@@ -1059,15 +1059,13 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void inventoryItemCheck(int itemId, int itemAmount) {
     if (c.getInventoryItemCount(itemId) < itemAmount) {
-      c.openBank();
-      c.sleep(GAME_TICK);
       if (!c.isInBank()) {
+        c.openBank();
         waitForBankOpen();
-      } else {
-        c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
-        c.sleep(GAME_TICK);
-        c.closeBank();
       }
+      c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
+      c.sleep(GAME_TICK);
+      c.closeBank();
     }
   }
   /**

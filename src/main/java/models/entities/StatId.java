@@ -26,7 +26,7 @@ public enum StatId implements Id {
   THIEVING(17),
   RUNECRAFT(18),
   HARVESTING(19);
-  
+
   private final int id;
 
   private static final Map<Integer, StatId> byId = new HashMap<Integer, StatId>();

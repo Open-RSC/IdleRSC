@@ -42,6 +42,7 @@ public final class K_HarvestWhiteBerry extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
+      next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@White Berry Harvester - By Kaila");
       c.displayMessage("@red@Start in yanille Bank or near Berries");
       if (c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
@@ -72,12 +73,22 @@ public final class K_HarvestWhiteBerry extends K_kailaScript {
         c.setStatus("@yel@Harvesting...");
         c.atObject(coords[0], coords[1]);
         c.sleep(2000);
-        while (c.isBatching() && c.getInventoryItemCount() != 30) {
+        while (c.isBatching()
+            && c.getInventoryItemCount() != 30
+            && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
           c.sleep(GAME_TICK);
         }
       } else {
         c.setStatus("@yel@Waiting for spawn..");
         c.sleep(640);
+      }
+      if (System.currentTimeMillis() > next_attempt) {
+        c.log("@red@Walking to Avoid Logging!");
+        c.walkTo(c.currentX() - 1, c.currentY(), 0, true);
+        c.sleep(640);
+        next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
+        long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
+        c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
       }
     }
   }
@@ -115,6 +126,7 @@ public final class K_HarvestWhiteBerry extends K_kailaScript {
   private void BerryToBank() { // replace
     c.setStatus("@gre@Walking to Bank..");
     if (agilityCapeTeleport && c.getInventoryItemCount(AGILITY_CAPE) != 0) {
+      c.walkTo(608, 3568); // walkTo to exit batching
       teleportAgilityCape();
     } else {
       c.walkTo(608, 3568);
@@ -299,7 +311,14 @@ public final class K_HarvestWhiteBerry extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
+      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
+      c.drawString(
+          "@whi@Time till AutoWalk: " + c.msToShortString(timeRemainingTillAutoWalkAttempt),
+          x,
+          y + (14 * 5),
+          0xFFFFFF,
+          1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
     }
   }
 }

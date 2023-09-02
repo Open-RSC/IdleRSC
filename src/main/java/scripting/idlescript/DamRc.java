@@ -318,9 +318,9 @@ public class DamRc extends IdleScript {
       if (!_talk) c.log("Unable to talk to mortimer");
       while (!c.isInOptionMenu()) c.sleep(640);
       c.optionAnswer(0);
-      c.sleep(5*640);
+      c.sleep(5 * 640);
       c.optionAnswer(0);
-      c.sleep(3*640);
+      c.sleep(3 * 640);
       c.optionAnswer(certAnswer);
     }
   }

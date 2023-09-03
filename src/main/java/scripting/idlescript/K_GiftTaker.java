@@ -22,23 +22,40 @@ package scripting.idlescript;
  */
 public final class K_GiftTaker extends K_kailaScript {
   public int start(String[] parameters) {
+    c.quitIfAuthentic();
+    //    if (!guiSetup) {
+    //      setupGUI();
+    //      guiSetup = true;
+    //    }
+    //    if (scriptStarted) {
     c.displayMessage("@red@present TAKER! Let's party like it's 2004! ~ by Kaila");
     c.setStatus("@gre@Running..");
-    c.openBank();
-    c.sleep(1240);
-    if (!c.isInBank()) {
-      c.openBank();
-      c.sleep(2 * GAME_TICK);
-    }
-    if (c.isInBank()) {
-      if (c.getInventoryItemCount() < 20) {
-        c.sleep(100);
-      }
-      if (c.getInventoryItemCount() > 19) {
-        depositAll();
-      }
-      c.closeBank();
-    }
+    // guiSetup = false;
+    // scriptStarted = false;
+    // if (c.isInBank()) c.closeBank();
+    startTime = System.currentTimeMillis();
+    scriptStart();
+    //   }
     return 1000; // start() must return an int value now.
+  }
+
+  private void scriptStart() {
+    while (c.isRunning()) {
+      c.openBank();
+      c.sleep(1240);
+      if (!c.isInBank()) {
+        c.openBank();
+        c.sleep(2 * GAME_TICK);
+      }
+      if (c.isInBank()) {
+        if (c.getInventoryItemCount() < 20) {
+          c.sleep(100);
+        }
+        if (c.getInventoryItemCount() > 19) {
+          depositAll();
+        }
+        c.closeBank();
+      }
+    }
   }
 }

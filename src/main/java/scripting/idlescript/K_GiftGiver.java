@@ -24,7 +24,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_PresentCrackerTrickGiver extends K_kailaScript {
+public final class K_GiftGiver extends K_kailaScript {
   private final String[] options =
       new String[] {"Xmas Crackers", "Xmas Presents", "Halloween Crackers"};
   private final int[] bankerIds = {95, 224, 268, 540, 617, 792};
@@ -228,7 +228,7 @@ public final class K_PresentCrackerTrickGiver extends K_kailaScript {
   }
 
   private void setupGUI() {
-    JLabel header = new JLabel("Present/Cracker/Trick giver ~ Kaila");
+    JLabel header = new JLabel("Gift giver ~ Kaila");
     JLabel batchLabel = new JLabel("Opens gift item by using them on a 2nd account");
     JLabel batchLabel2 = new JLabel("Used in conjunction with K_GiftTaker");
     JLabel logLabel = new JLabel("WARNING: the taker account will continue to receive items");
@@ -255,6 +255,7 @@ public final class K_PresentCrackerTrickGiver extends K_kailaScript {
     scriptFrame.add(batchLabel2);
     scriptFrame.add(logLabel);
     scriptFrame.add(logLabel2);
+    scriptFrame.add(optionField);
     scriptFrame.add(playerNameField);
     scriptFrame.add(startScriptButton);
 

@@ -160,7 +160,7 @@ public final class K_MonkRobes extends K_kailaScript {
     // next to robes now)
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Monk Robe Picker - By Kaila");
     JLabel label1 = new JLabel("Picks up Monks Robe SETS in Edge Monastery and Banks");

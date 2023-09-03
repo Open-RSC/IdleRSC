@@ -105,7 +105,7 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
       c.closeBank();
     }
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Platebody Smithing @whi@~ @mag@Kaila");
     JLabel hammerLabel = new JLabel("Start with Hammer in Inv!");

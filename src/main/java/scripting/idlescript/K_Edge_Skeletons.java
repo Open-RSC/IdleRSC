@@ -200,7 +200,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Edge Skeletons ~ by Kaila");
     JLabel label1 = new JLabel("Start in Edge House or Edge Bank");

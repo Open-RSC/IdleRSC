@@ -600,6 +600,22 @@ public class K_kailaScript extends IdleScript {
     c.sleep(650);
   }
   /**
+   * for input boneIds, attempt to bury bones<br>
+   * will leave combat to bury bones <br>
+   *
+   * @param leaveCombat
+   * @param boneId
+   */
+  protected static void buryBones(boolean leaveCombat, int boneId) {
+    if (c.getInventoryItemCount(boneId) > 0) {
+      if (!leaveCombat && c.isInCombat()) return; // blocked by combat
+      else if (leaveCombat && c.isInCombat()) leaveCombat();
+      c.setStatus("@yel@Burying bones..");
+      c.itemCommand(boneId);
+      c.sleep(GAME_TICK);
+    }
+  }
+  /**
    * for all boneIds, attempt to bury bones<br>
    * will leave combat to bury bones <br>
    */

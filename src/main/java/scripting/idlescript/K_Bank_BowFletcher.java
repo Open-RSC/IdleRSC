@@ -154,7 +154,7 @@ public final class K_Bank_BowFletcher extends K_kailaScript {
       con.closeBank();
     }
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Unstrung Longbow Maker ~ Kaila");
     JLabel batchLabel = new JLabel("Batch Bars MUST be On, Bot will attempt to enable it.");

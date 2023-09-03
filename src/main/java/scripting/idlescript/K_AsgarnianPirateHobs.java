@@ -248,7 +248,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     c.walkTo(280, 3521);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Ice Dungeon Hob/Pirate Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");

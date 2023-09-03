@@ -169,7 +169,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("NoBank Iron Superheat - By Kaila");
     JLabel label1 = new JLabel("Start in Port Khazard Mine");

@@ -161,7 +161,7 @@ public final class K_TeleWines extends K_kailaScript {
     // next to wine now)
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Zammy Wine Tele Grabber ~ Kaila");
     JLabel label1 = new JLabel("Start in Edge Bank");

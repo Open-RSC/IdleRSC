@@ -243,7 +243,7 @@ public final class K_NatureCrafter extends K_kailaScript {
       c.walkTo(787, 23);
     }
   }
-  // GUI stuff below (icky)
+
   private void parseVariables() {
     startTime = System.currentTimeMillis();
   }

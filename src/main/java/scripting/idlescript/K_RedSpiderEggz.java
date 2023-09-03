@@ -219,7 +219,6 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Red Spider Egg Picker @whi@~ @mag@Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor");
@@ -285,7 +284,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@RedSpiderEggz @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@RedSpiderEggz @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Eggs in Bank: @gre@" + eggzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

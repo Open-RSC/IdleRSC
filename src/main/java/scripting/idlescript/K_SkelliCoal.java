@@ -210,7 +210,7 @@ public final class K_SkelliCoal extends K_kailaScript {
     c.walkTo(269, 380);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Skeleton Coal Miner ~ By Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");

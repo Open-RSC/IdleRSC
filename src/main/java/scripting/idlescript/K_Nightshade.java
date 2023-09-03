@@ -133,7 +133,7 @@ public final class K_Nightshade extends K_kailaScript {
     // ontop of nightshade now
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Nightshade Picker - By Kaila");
     JLabel label1 = new JLabel("Picks Nightshade in northern skavid cave");

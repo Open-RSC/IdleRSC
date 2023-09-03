@@ -201,7 +201,7 @@ public final class K_Edge_Thugs extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Edgeville Thugs ~ by Kaila");
     JLabel label1 = new JLabel("Start by Edge Thugs or Edge Bank");

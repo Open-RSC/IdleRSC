@@ -274,7 +274,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     c.walkTo(210, 3254);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Edge Druid Killer ~ Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Gear, requires food in bank!");

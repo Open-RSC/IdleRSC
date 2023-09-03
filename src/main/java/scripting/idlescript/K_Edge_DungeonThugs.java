@@ -180,7 +180,7 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
       checkInventoryItemCounts();
     }
   }
-  // GUI stuff below (icky)
+
   private void houseToBank() {
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(196, 3265);

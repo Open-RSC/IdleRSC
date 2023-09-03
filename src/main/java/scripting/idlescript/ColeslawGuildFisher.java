@@ -159,7 +159,6 @@ public class ColeslawGuildFisher extends K_kailaScript {
     }
   }
 
-  // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Coleslaw Guild Fisher");
     JLabel knifeLabel = new JLabel("Start with Lobster pot or Harpoon!");

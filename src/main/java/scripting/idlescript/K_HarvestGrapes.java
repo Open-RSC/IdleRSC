@@ -146,7 +146,7 @@ public final class K_HarvestGrapes extends K_kailaScript {
     // (next to Grape now)
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Grape Harvester - By Kaila");
     JLabel label1 = new JLabel("Harvests Grapes near Edge Monastery");

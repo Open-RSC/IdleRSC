@@ -138,7 +138,7 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
     c.walkTo(161, 507);
     c.walkTo(151, 507);
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Fast Barb Fisher - Kaila");
     JLabel label5 = new JLabel("* REQUIRES Batch Bars, bot will autotoggle them!");

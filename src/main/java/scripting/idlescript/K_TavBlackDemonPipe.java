@@ -349,7 +349,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     drinkPrayerPotion(31, true);
     prayParalyze();
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Taverley Black Demon (Pipe Shortcut) ~ Kaila");
     JLabel label1 = new JLabel("Start in Fally west with gear on, or in Demon room!");

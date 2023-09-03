@@ -218,7 +218,7 @@ public final class K_Ardy_YewTree extends K_kailaScript {
       c.closeBank();
     }
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Ardy Yew Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");

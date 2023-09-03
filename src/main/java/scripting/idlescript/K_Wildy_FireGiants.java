@@ -458,8 +458,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
     }
   }
 
-  // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Wildy Fire Giant Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Mage bank OR in Giants room");

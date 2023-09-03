@@ -144,7 +144,7 @@ public final class K_WhiteUnicorns extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("White Unicorns ~ by Kaila");
     JLabel warning = new JLabel("This is inefficient and meant for HCIM");

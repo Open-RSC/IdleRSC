@@ -232,7 +232,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
     c.walkTo(361, 614);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Asgarnian Hobs Peninsula - By Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank with Armor");

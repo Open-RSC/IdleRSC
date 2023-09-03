@@ -140,7 +140,7 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
     c.walkTo(658, 642);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Battlefield Trainer - By Kaila");
     JLabel label1 = new JLabel("Start in Ardy or at Battlefield");

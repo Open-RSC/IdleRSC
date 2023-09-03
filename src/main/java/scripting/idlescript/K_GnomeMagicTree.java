@@ -225,7 +225,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       c.closeBank();
     }
   }
-  // GUI stuff below (icky)
+
   public void setupGUI() {
     JLabel header = new JLabel("Gnome Magic Logs by Kaila");
     JLabel label1 = new JLabel("Start in Gnome Stronghold west of bank, near trees!");

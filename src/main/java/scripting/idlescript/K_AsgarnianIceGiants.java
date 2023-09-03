@@ -256,7 +256,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
     c.walkTo(305, 3522);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Ice Dungeon Ice Giant/Warrior Killer - by Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");

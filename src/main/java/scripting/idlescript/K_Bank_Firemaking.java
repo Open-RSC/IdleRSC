@@ -224,7 +224,6 @@ public final class K_Bank_Firemaking extends K_kailaScript {
     }
   }
 
-  // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Bank Firemaking  ~ Kaila");
     JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");

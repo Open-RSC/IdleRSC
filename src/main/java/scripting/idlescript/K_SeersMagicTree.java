@@ -247,7 +247,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
       c.closeBank();
     }
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Seers Magic Logs by Kaila");
     JLabel label1 = new JLabel("Start in Seers bank, or near trees!");

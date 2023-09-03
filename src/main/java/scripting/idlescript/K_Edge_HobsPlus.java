@@ -271,7 +271,6 @@ public final class K_Edge_HobsPlus extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Edge Dungeon Hob\\\\Skelli\\\\Zombies ~ by Kaila");
     JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");

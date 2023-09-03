@@ -182,7 +182,7 @@ public final class K_CrystalKeyChest extends K_kailaScript {
     c.walkTo(367, 496);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Crystal Key Chest Opener - By Kaila");
     JLabel label1 = new JLabel("Start by Crystal chest or in Catherby Bank!");

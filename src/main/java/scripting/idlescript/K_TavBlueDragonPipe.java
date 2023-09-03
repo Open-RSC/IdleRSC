@@ -339,7 +339,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Tavelry Blue Dragons (Pipe) - By Kaila");
     JLabel label1 = new JLabel("Start in Fally west with gear on, or in Dragon room!");

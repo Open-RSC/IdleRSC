@@ -144,7 +144,7 @@ public final class K_Fast_ChainLinks extends K_kailaScript {
       c.closeBank();
     }
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Platebody Smithing - Kaila");
     JLabel hammerLabel = new JLabel("Start with Hammer in Inv!");

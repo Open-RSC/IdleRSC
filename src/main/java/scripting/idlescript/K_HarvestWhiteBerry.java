@@ -189,7 +189,7 @@ public final class K_HarvestWhiteBerry extends K_kailaScript {
     if (lowlevel) eatFood();
     c.walkTo(611, 3569);
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Berry Harvester - By Kaila");
     JLabel label1 = new JLabel("Harvests Berries near yanille dungeon, with herb clippers");

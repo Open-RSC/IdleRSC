@@ -260,7 +260,7 @@ public final class K_Tav_DruidCircle extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Tav Druid Circle - By Kaila");
     JLabel label1 = new JLabel("Start in Fally west or druid Circle");

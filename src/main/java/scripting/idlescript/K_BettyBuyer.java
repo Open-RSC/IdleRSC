@@ -292,7 +292,7 @@ public class K_BettyBuyer extends K_kailaScript {
 
     c.drawString("@gre@BettyBuyer @whi@~ @mag@Kaila", 10, 21, 0xFFFFFF, 1);
 
-    if (option == 1) {
+    if (option == 2) {
       c.drawString(
           "@whi@Runes bought: @yel@"
               + String.format("%,d", runesBought)
@@ -316,7 +316,7 @@ public class K_BettyBuyer extends K_kailaScript {
           21 + (14 * 3),
           0xFFFFFF,
           1);
-    } else if (option == 0) {
+    } else if (option == 1) {
       c.drawString(
           "@whi@Newts bought: @yel@"
               + String.format("%,d", newtsBought)

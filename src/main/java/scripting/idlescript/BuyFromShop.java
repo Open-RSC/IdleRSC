@@ -91,7 +91,6 @@ public class BuyFromShop extends K_kailaScript {
           startWalking(startX, startY);
         }
         if (c.getNearestNpcByIds(npcId, false) != null && !c.isInShop()) {
-          checkAutowalk();
           if (npcId[0] != 54) {
             c.npcCommand1(c.getNearestNpcByIds(npcId, false).serverIndex);
             c.sleep(640);

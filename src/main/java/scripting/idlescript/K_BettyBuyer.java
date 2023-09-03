@@ -47,9 +47,10 @@ public class K_BettyBuyer extends K_kailaScript {
       guiSetup = true;
     }
     if (scriptStarted) {
-      next_attempt = System.currentTimeMillis() + 5000L;
       guiSetup = false;
       scriptStarted = false;
+      startTime = System.currentTimeMillis();
+      next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@BettyBuyer by Kaila!");
       c.displayMessage("@red@Buys Newts/Runes from Betty (Sarim)");
       c.displayMessage("@red@Start at Betty, Fally south, or Craft Guild!");
@@ -123,6 +124,7 @@ public class K_BettyBuyer extends K_kailaScript {
                 c.sleep(250);
               }
             }
+            checkAutowalk();
           }
         }
 
@@ -133,6 +135,23 @@ public class K_BettyBuyer extends K_kailaScript {
       }
 
       c.sleep(100);
+    }
+  }
+
+  private static void checkAutowalk() {
+    if (System.currentTimeMillis() > next_attempt) {
+      c.log("@red@Walking to Avoid Logging!");
+      int x = c.currentX();
+      int y = c.currentY();
+
+      if (c.isReachable(x + 1, y, true)) c.walkTo(x + 1, y, 0, false);
+      else if (c.isReachable(x - 1, y, true)) c.walkTo(x - 1, y, 0, false);
+      else if (c.isReachable(x, y + 1, true)) c.walkTo(x, y + 1, 0, false);
+      else if (c.isReachable(x, y - 1, true)) c.walkTo(x, y - 1, 0, false);
+      c.sleep(GAME_TICK);
+      next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
+      long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
+      c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
     }
   }
 
@@ -272,74 +291,94 @@ public class K_BettyBuyer extends K_kailaScript {
       height += 14 + 14;
     }
 
-    c.drawBoxAlpha(7, 7, 180, height, 0xFFFFFF, 128);
     c.drawString("@gre@BettyBuyer @whi@~ @mag@Kaila", 10, 21, 0xFFFFFF, 1);
 
     if (option == 1) {
       c.drawString(
-          "@gre@Runes bought: @whi@"
+          "@whi@Runes bought: @yel@"
               + String.format("%,d", runesBought)
-              + " @gre@(@whi@"
+              + "@yel@ (@whi@"
               + String.format("%,d", runesPerHr)
-              + "@gre@/@whi@hr@gre@)",
+              + "@yel@/@whi@hr@yel@)",
           10,
           21 + 14,
           0xFFFFFF,
           1);
       c.drawString(
-          "@gre@Runes in bank: @whi@" + String.format("%,d", runesBanked),
+          "@whi@Runes in bank: @yel@" + String.format("%,d", runesBanked),
           10,
-          21 + 14 + 14,
+          21 + (14 * 2),
+          0xFFFFFF,
+          1);
+      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
+      c.drawString(
+          "@red@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
+          10,
+          21 + (14 * 3),
           0xFFFFFF,
           1);
     } else if (option == 0) {
       c.drawString(
-          "@gre@Newts bought: @whi@"
+          "@whi@Newts bought: @yel@"
               + String.format("%,d", newtsBought)
-              + " @gre@(@whi@"
+              + "@yel@ (@whi@"
               + String.format("%,d", newtsPerHr)
-              + "@gre@/@whi@hr@gre@)",
+              + "@yel@/@whi@hr@yel@)",
           10,
           21 + 14,
           0xFFFFFF,
           1);
       c.drawString(
-          "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
+          "@whi@Newts in bank: @yel@" + String.format("%,d", newtsBanked),
           10,
-          21 + 14 + 14,
+          21 + (14 * 2),
+          0xFFFFFF,
+          1);
+      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
+      c.drawString(
+          "@whi@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
+          10,
+          21 + (14 * 3),
           0xFFFFFF,
           1);
     } else {
       c.drawString(
-          "@gre@Runes bought: @whi@"
+          "@whi@Runes bought: @yel@"
               + String.format("%,d", runesBought)
-              + " @gre@(@whi@"
+              + "@yel@ (@whi@"
               + String.format("%,d", runesPerHr)
-              + "@gre@/@whi@hr@gre@)",
+              + "@yel@/@whi@hr@yel@)",
           10,
           21 + 14,
           0xFFFFFF,
           1);
       c.drawString(
-          "@gre@Runes in bank: @whi@" + String.format("%,d", runesBanked),
+          "@whi@Runes in bank: @yel@" + String.format("%,d", runesBanked),
           10,
-          21 + 14 + 14,
+          21 + (14 * 2),
           0xFFFFFF,
           1);
       c.drawString(
-          "@gre@Newts bought: @whi@"
+          "@whi@Newts bought: @yel@"
               + String.format("%,d", newtsBought)
-              + " @gre@(@whi@"
+              + "@yel@ (@whi@"
               + String.format("%,d", newtsPerHr)
-              + "@gre@/@whi@hr@gre@)",
+              + "@yel@/@whi@hr@yel@)",
           10,
-          21 + 14 + 14 + 14,
+          21 + (14 * 3),
           0xFFFFFF,
           1);
       c.drawString(
-          "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
+          "@whi@Newts in bank: @yel@" + String.format("%,d", newtsBanked),
           10,
-          21 + 14 + 14 + 14 + 14,
+          21 + (14 * 4),
+          0xFFFFFF,
+          1);
+      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
+      c.drawString(
+          "@red@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
+          10,
+          21 + (14 * 5),
           0xFFFFFF,
           1);
     }

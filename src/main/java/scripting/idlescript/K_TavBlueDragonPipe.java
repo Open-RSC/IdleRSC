@@ -92,8 +92,6 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-      eat();
-      foodCheck();
       if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         c.sleep(GAME_TICK);
@@ -124,37 +122,23 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
       }
-    }
-  }
-
-  public void foodCheck() {
-    if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
-      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
-        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-      c.setStatus("@yel@Banking..");
-      timeToBank = false;
-      DragonsToBank();
-      bank();
-      if (timeToBankStay) {
-        timeToBankStay = false;
-        c.displayMessage(
-            "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-        c.setStatus("@red@Stopping Script.");
-        endSession();
+      timeToBank = !eatFood(); // does the eating checks
+      if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
+        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+        c.setStatus("@yel@Banking..");
+        timeToBank = false;
+        DragonsToBank();
+        bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage(
+              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          c.setStatus("@red@Stopping Script.");
+          endSession();
+        }
+        BankToDragons();
       }
-      BankToDragons();
-    }
-  }
-
-  private void eat() {
-    boolean ate = eatFood(ANTI_DRAGON_SHIELD, useDragonTwoHand);
-    if (!ate) {
-      c.setStatus("@red@We've ran out of Food! Running Away!.");
-      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
-        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-      DragonsToBank();
-      bank();
-      BankToDragons();
     }
   }
 
@@ -197,15 +181,13 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       totalSpear = totalSpear + c.getInventoryItemCount(1092);
 
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 486
-            && itemId != 487
-            && itemId != 488
-            && itemId != 492
-            && itemId != 493
-            && itemId != 494
-            && itemId != 1346 // d2h
-            && itemId != 1374 // attack cape
-            && itemId != 1384) { // craft cape
+        if (itemId != ItemId.SUPER_ATTACK_POTION_1DOSE.getId()
+            && itemId != ItemId.SUPER_ATTACK_POTION_2DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_1DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_2DOSE.getId()
+            && itemId != ItemId.DRAGON_2_HANDED_SWORD.getId()
+            && itemId != ATTACK_CAPE
+            && itemId != CRAFT_CAPE) { // craft cape
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
@@ -215,11 +197,10 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       int dragonTwoHand = ItemId.DRAGON_2_HANDED_SWORD.getId();
       if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))
         withdrawItem(dragonTwoHand, 1);
-      int craftCape = ItemId.CRAFTING_CAPE.getId();
       if (craftCapeTeleport
-          && (c.getInventoryItemCount(craftCape) < 1)
+          && (c.getInventoryItemCount(CRAFT_CAPE) < 1)
           && !c.isItemIdEquipped(CRAFT_CAPE)) {
-        withdrawItem(craftCape, 1);
+        withdrawItem(CRAFT_CAPE, 1);
       }
       if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
         c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
@@ -252,7 +233,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   // PATHING private voids
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Tav Gate..");
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       teleportCraftCape();
       c.walkTo(347, 588);
       c.walkTo(347, 586);
@@ -312,19 +293,19 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   }
 
   private void DragonsToBank() {
-    c.setStatus("We've ran out of Food! @gre@Going through Pipe.");
+    c.setStatus("@gre@Walking to Bank.. going through pipe first");
+    if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+      c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+      c.sleep(4 * GAME_TICK);
+    }
     c.walkTo(372, 3352);
     c.atObject(373, 3352);
     c.sleep(1000);
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       c.walkTo(347, 600);
       craftGuildDoorEntering(ATTACK_CAPE);
-      if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
-        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        c.sleep(4 * GAME_TICK);
-      }
       c.walkTo(347, 607);
       c.walkTo(346, 608);
       totalTrips = totalTrips + 1;
@@ -497,7 +478,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Tavelry Blue Dragons @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Tavelry Blue Dragons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@______________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Gathered D.Bones: @gre@"

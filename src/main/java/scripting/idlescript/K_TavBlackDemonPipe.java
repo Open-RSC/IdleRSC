@@ -188,8 +188,8 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
             && itemId != ItemId.SUPER_STRENGTH_POTION_2DOSE.getId()
             && itemId != ItemId.RESTORE_PRAYER_POTION_1DOSE.getId()
             && itemId != ItemId.RESTORE_PRAYER_POTION_2DOSE.getId()
-            && itemId != ItemId.ATTACK_CAPE.getId()
-            && itemId != ItemId.CRAFTING_CAPE.getId()
+            && itemId != ATTACK_CAPE
+            && itemId != CRAFT_CAPE
             && itemId != ANTI_DRAGON_SHIELD
             && itemId != DRAGON_TWO_HAND) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
@@ -255,7 +255,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
 
   private void DemonsToBank() {
     c.setStatus("@gre@Going to Bank");
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
@@ -278,7 +278,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
 
   private void BankToDemons() {
     c.setStatus("@gre@Walking to Black Demons..");
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       teleportCraftCape();
       c.walkTo(347, 588);
       c.walkTo(347, 586);

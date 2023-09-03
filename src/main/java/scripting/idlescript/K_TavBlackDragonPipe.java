@@ -104,10 +104,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           c.sleep(340);
         }
         drinkAntidote(true);
-        eat();
+        timeToBank = !eatFood(); // does the eating checks
       }
-      eat();
-      prayPotFoodCheck();
+      timeToBank = !eatFood(); // does the eating checks
       drinkPrayerPotion(31, true, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
@@ -146,6 +145,28 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           bank();
           BankToDragons();
         }
+      }
+      int prayerPotCount =
+          c.getInventoryItemCount(prayerPot[0])
+              + c.getInventoryItemCount(prayerPot[1])
+              + c.getInventoryItemCount(prayerPot[2]);
+      if (c.getInventoryItemCount(foodId) < 1
+          || prayerPotCount < 1
+          || timeToBank
+          || timeToBankStay) {
+        c.setStatus("@yel@No food, Banking..");
+        DragonsToBank();
+        timeToBank = false;
+        bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage(
+              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          c.setStatus("@red@Stopping Script.");
+          endSession();
+        }
+        BankToDragons();
+        c.sleep(618);
       }
     }
   }
@@ -207,8 +228,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
             && itemId != ItemId.RESTORE_PRAYER_POTION_2DOSE.getId()
             && itemId != ItemId.POISON_ANTIDOTE_1DOSE.getId()
             && itemId != ItemId.POISON_ANTIDOTE_2DOSE.getId()
-            && itemId != ItemId.ATTACK_CAPE.getId()
-            && itemId != ItemId.CRAFTING_CAPE.getId()
+            && itemId != ATTACK_CAPE
+            && itemId != CRAFT_CAPE
             && itemId != ANTI_DRAGON_SHIELD
             && itemId != DRAGON_TWO_HAND) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
@@ -265,7 +286,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(408, 3348);
     c.walkTo(408, 3351);
     c.sleep(1000);
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       c.walkTo(347, 600);
@@ -292,7 +313,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
 
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Black Dragons..");
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       teleportCraftCape();
       c.walkTo(347, 588);
       c.walkTo(347, 586);
@@ -359,8 +380,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.enablePrayer(PARALYZE_MONSTER);
     c.sleep(320);
     c.walkTo(380, 3372);
-    eat();
-    prayPotFoodCheck();
+    timeToBank = !eatFood(); // does the eating checks
     drinkPrayerPotion(31, true);
     if (!c.isPrayerOn(PARALYZE_MONSTER)) c.enablePrayer(PARALYZE_MONSTER);
     c.walkTo(386, 3371);
@@ -373,35 +393,11 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
     }
     if (!c.isPrayerOn(PARALYZE_MONSTER)) c.enablePrayer(PARALYZE_MONSTER);
-    prayPotFoodCheck();
     drinkPrayerPotion(31, true);
     c.walkTo(408, 3340);
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void prayPotFoodCheck() {
-    int prayerPotCount =
-        c.getInventoryItemCount(prayerPot[0])
-            + c.getInventoryItemCount(prayerPot[1])
-            + c.getInventoryItemCount(prayerPot[2]);
-    if (c.getInventoryItemCount(foodId) < 1 || prayerPotCount < 1 || timeToBank || timeToBankStay) {
-      c.setStatus("@yel@No food, Banking..");
-      DragonsToBank();
-      timeToBank = false;
-      bank();
-      if (timeToBankStay) {
-        timeToBankStay = false;
-        c.displayMessage(
-            "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-        c.setStatus("@red@Stopping Script.");
-        endSession();
-      }
-      BankToDragons();
-      c.sleep(618);
-    }
-  }
-
-  // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Tavelry Black Dragons (Pipe) - By Kaila");
     JLabel label1 = new JLabel("Start in Fally west with gear on, or in Demon room!");

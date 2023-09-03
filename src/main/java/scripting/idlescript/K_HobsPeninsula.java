@@ -322,7 +322,7 @@ public final class K_HobsPeninsula extends K_kailaScript {
         // divide by zero
       }
       final int x = 350;
-      c.drawString("@red@Hobgoblin Peninsula @gre@by Kaila", x - 20, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Hobgoblin Peninsula @whi@~ @mag@Kaila", x - 20, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"
               + (totalGuam + inventGuam)

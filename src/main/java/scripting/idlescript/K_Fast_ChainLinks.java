@@ -189,7 +189,7 @@ public final class K_Fast_ChainLinks extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Fast Chain Link Smither @mag@~ by Kaila", x, 12, 0xFFFFFF, 1);
+      c.drawString("@red@Fast Chain Link Smither @whi@~ @mag@Kaila", x, 12, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@D Longs In bank: @gre@" + barsInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@D Longs Used: @gre@" + totalBars, x, y + (14 * 2), 0xFFFFFF, 1);

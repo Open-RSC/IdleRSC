@@ -223,7 +223,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@NoBank Superheat@mag@~ by Kaila", x, 12, 0xFFFFFF, 1);
+      c.drawString("@red@NoBank Superheat @whi@~ @mag@Kaila", x, 12, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Bars Used: @gre@" + totalBars, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

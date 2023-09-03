@@ -418,7 +418,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Waterfall Fire Giants @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Waterfall Fire Giants @whi@~ @mag@Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Laws: @gre@"
               + totalLaw

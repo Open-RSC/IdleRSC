@@ -139,7 +139,7 @@ public final class K_Bank_BuryBones extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Fast Bone Bury @mag@~ Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Fast Bone Bury @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Bones Buried: @gre@"

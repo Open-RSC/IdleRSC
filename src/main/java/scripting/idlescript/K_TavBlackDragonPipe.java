@@ -560,7 +560,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       int x = 6;
       int y = 15;
 
-      c.drawString("@red@Tav Black Dragons @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Tav Black Dragons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@______________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Gathered D.Bones: @gre@"

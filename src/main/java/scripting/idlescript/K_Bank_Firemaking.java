@@ -291,7 +291,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Bank Firemaking @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Bank Firemaking @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@Logs Burned: @yel@" + burnSuccess, x, y + (14 * 2), 0xFFFFFF, 1);

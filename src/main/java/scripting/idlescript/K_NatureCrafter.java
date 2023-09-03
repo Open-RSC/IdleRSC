@@ -305,7 +305,7 @@ public final class K_NatureCrafter extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Nature Rune Crafter@gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Nature Rune Crafter @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Natures Crafted: @gre@"

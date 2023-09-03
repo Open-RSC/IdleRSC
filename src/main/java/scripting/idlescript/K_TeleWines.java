@@ -28,7 +28,7 @@ public final class K_TeleWines extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
-      c.displayMessage("@cya@Wine Telegrab @mag@~ By Kaila");
+      c.displayMessage("@cya@Wine Telegrab @whi@~ @mag@Kaila");
       c.displayMessage("@cya@Start in Edge Bank");
       c.displayMessage("@cya@Laws, Air staff required");
       c.displayMessage("@red@Recommend using grape harvester for coleslaw wines!!!!");
@@ -163,7 +163,7 @@ public final class K_TeleWines extends K_kailaScript {
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Zammy Wine Tele Grabber@mag@~ by Kaila");
+    JLabel header = new JLabel("Zammy Wine Tele Grabber ~ Kaila");
     JLabel label1 = new JLabel("Start in Edge Bank");
     JLabel label2 = new JLabel("Air Staff/Bstaff/etc MUST be Equipped");
     JLabel label3 = new JLabel("Laws in the inv required!");
@@ -212,7 +212,7 @@ public final class K_TeleWines extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Zammy Winez @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Zammy Winez @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Wines in Bank: @gre@" + WinezInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

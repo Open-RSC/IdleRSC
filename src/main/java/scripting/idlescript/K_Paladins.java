@@ -532,7 +532,7 @@ public final class K_Paladins extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Paladins Thiever @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Paladins Thiever @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       if (coinsInBank == -1) {
         c.drawString(

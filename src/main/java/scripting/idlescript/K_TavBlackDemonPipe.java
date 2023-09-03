@@ -502,7 +502,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Tavelry Black Demons @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Tavelry Black Demons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Laws: @gre@"

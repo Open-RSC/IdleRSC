@@ -221,7 +221,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
 
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Red Spider Egg Picker @mag@~ by Kaila");
+    JLabel header = new JLabel("Red Spider Egg Picker @whi@~ @mag@Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor");
     JLabel label2 = new JLabel("Sharks in bank REQUIRED");
     JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);

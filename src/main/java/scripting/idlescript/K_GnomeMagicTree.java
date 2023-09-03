@@ -270,7 +270,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       }
       int x = 6;
       int y = 24;
-      c.drawString("@red@Gnome Magic Logs @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Gnome Magic Logs @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@__________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

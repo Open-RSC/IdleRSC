@@ -182,7 +182,7 @@ public final class K_Nightshade extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Nightshade Picker @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Nightshade Picker @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Nightshade Banked: @gre@" + shadeInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

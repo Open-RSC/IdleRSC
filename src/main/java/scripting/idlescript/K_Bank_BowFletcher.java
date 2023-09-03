@@ -208,7 +208,7 @@ public final class K_Bank_BowFletcher extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      con.drawString("@red@Fast Bow Fletcher @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      con.drawString("@red@Fast Bow Fletcher @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       con.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (!stringBows)
         con.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);

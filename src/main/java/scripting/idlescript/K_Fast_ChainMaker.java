@@ -107,7 +107,7 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Platebody Smithing - Kaila");
+    JLabel header = new JLabel("Platebody Smithing @whi@~ @mag@Kaila");
     JLabel hammerLabel = new JLabel("Start with Hammer in Inv!");
     JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures 5 Plates are made per Menu Cycle.");

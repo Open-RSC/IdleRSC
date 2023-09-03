@@ -522,7 +522,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Wilderness Fire Giants @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Wilderness Fire Giants @whi@~ @mag@Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Laws: @gre@"
               + totalLaw

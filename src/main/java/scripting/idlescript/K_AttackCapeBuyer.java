@@ -169,7 +169,7 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Attack Cape Buyer @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Attack Cape Buyer @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Capes in Bank: @gre@" + TopzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

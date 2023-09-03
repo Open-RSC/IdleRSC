@@ -227,7 +227,7 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Crystal Key Chest Opener @gre@by Kaila", 310, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Crystal Key Chest Opener @whi@~ @mag@Kaila", 310, 48, 0xFFFFFF, 1);
       c.drawString("@whi@Dragonstones in Bank: @gre@" + DragonstonesInBank, 320, 62, 0xFFFFFF, 1);
       c.drawString("@whi@Crystal Keys in Bank: @gre@" + KeysInBank, 320, 76, 0xFFFFFF, 1);
       c.drawString(

@@ -222,7 +222,7 @@ public final class K_HarvestGrapes extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Grape Harvester @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Grape Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Grapes in Bank: @gre@" + GrapezInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

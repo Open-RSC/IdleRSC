@@ -383,7 +383,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Skeletons @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Skeletons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guam: @gre@"

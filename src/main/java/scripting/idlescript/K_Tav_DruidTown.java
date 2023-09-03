@@ -427,7 +427,7 @@ public final class K_Tav_DruidTown extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Taverly Druid Town @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Taverly Druid Town @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

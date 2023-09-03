@@ -287,7 +287,7 @@ public final class K_HarvestWhiteBerry extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Berry Harvester @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Berry Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Berries in Bank: @gre@" + BerryzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

@@ -276,7 +276,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
   }
   // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Druid Killer @mag@~ by Kaila");
+    JLabel header = new JLabel("Edge Druid Killer ~ Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Gear, requires food in bank!");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup");
@@ -450,7 +450,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Chaos Druids @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Chaos Druids @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

@@ -216,7 +216,7 @@ public final class K_MonkRobes extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Monks Robe Picker @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Monks Robe Picker @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Robe Tops Banked: @gre@" + TopzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@Robe Bots Banked:@gre@" + BotzInBank, x, y + (14 * 2), 0xFFFFFF, 1);

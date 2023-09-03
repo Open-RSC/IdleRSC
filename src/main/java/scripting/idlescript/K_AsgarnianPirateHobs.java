@@ -404,7 +404,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Asgarnian Pirate Hobs @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Asgarnian Pirate Hobs @whi@~ @mag@Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"
               + (totalGuam + inventGuam)

@@ -300,7 +300,7 @@ public final class K_WhiteUnicorns extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@White Unicorns @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@White Unicorns @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Horns in Bank: @gre@" + uniInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

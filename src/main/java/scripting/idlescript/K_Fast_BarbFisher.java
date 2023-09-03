@@ -208,7 +208,7 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
       int x = 6;
       int y = 15;
       int totalFish = troutSuccess + salmonSuccess;
-      c.drawString("@red@Fast Barb Fisher @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Fast Barb Fisher @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Trout Caught: @gre@"

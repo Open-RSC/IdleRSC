@@ -400,7 +400,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Asgarnian Ice Slayer @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Asgarnian Ice Slayer @whi@~ @mag@Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"
               + (totalGuam + inventGuam)

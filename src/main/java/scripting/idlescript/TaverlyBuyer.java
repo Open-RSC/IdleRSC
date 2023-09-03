@@ -16,20 +16,17 @@ import orsc.ORSCharacter;
  * @author Dvorak, rewritten by Kaila
  */
 public class TaverlyBuyer extends IdleScript {
-  final String[] options = new String[] {"Newts then Vials", "Vials then newts", "Vials", "Newts"};
-
-  final int[] loot = {465, 270};
-
-  int option = -1;
-  boolean scriptStarted = false;
-  boolean guiSetup = false;
-
-  int vialsBought = 0;
-  int vialsBanked = 0;
-  int newtsBought = 0;
-  int newtsBanked = 0;
-
-  final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private final String[] options =
+      new String[] {"Newts then Vials", "Vials then newts", "Vials", "Newts"};
+  private final int[] loot = {465, 270};
+  private int option = -1;
+  private boolean scriptStarted = false;
+  private boolean guiSetup = false;
+  private int vialsBought = 0;
+  private int vialsBanked = 0;
+  private int newtsBought = 0;
+  private int newtsBanked = 0;
+  private final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public void startSequence() {}
 
@@ -265,12 +262,9 @@ public class TaverlyBuyer extends IdleScript {
     startScriptButton.addActionListener(
         e -> {
           option = optionField.getSelectedIndex();
-
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
-
-          // controller.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
         });
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -343,7 +337,7 @@ public class TaverlyBuyer extends IdleScript {
         controller.drawString(
             "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
             10,
-            21 + 14 + 14,
+            21 + (14 * 2),
             0xFFFFFF,
             1);
       } else {
@@ -360,7 +354,7 @@ public class TaverlyBuyer extends IdleScript {
         controller.drawString(
             "@gre@Vials in bank: @whi@" + String.format("%,d", vialsBanked),
             10,
-            21 + 14 + 14,
+            21 + (14 * 2),
             0xFFFFFF,
             1);
         controller.drawString(
@@ -370,13 +364,13 @@ public class TaverlyBuyer extends IdleScript {
                 + String.format("%,d", newtsPerHr)
                 + "@gre@/@whi@hr@gre@)",
             10,
-            21 + 14 + 14 + 14,
+            21 + (14 * 3),
             0xFFFFFF,
             1);
         controller.drawString(
             "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
             10,
-            21 + 14 + 14 + 14 + 14,
+            21 + (14 * 4),
             0xFFFFFF,
             1);
       }

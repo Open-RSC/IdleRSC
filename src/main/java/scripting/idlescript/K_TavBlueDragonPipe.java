@@ -252,7 +252,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
   // PATHING private voids
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Tav Gate..");
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       teleportCraftCape();
       c.walkTo(347, 588);
       c.walkTo(347, 586);
@@ -269,6 +269,12 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       c.walkTo(375, 521);
       c.walkTo(376, 521);
     } else {
+      controller.walkTo(328, 553);
+      // open bank door
+      if (controller.getObjectAtCoord(327, 552) == 64) {
+        controller.atObject(327, 552);
+        controller.sleep(1000);
+      }
       c.walkTo(327, 552);
       c.walkTo(324, 549);
       c.walkTo(324, 539);

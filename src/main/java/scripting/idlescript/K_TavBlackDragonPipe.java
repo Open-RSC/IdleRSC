@@ -299,6 +299,12 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       c.walkTo(375, 521);
       c.walkTo(376, 521);
     } else {
+      c.walkTo(328, 553);
+      // open bank door
+      if (c.getObjectAtCoord(327, 552) == 64) {
+        c.atObject(327, 552);
+        c.sleep(1000);
+      }
       c.walkTo(327, 552);
       c.walkTo(324, 549);
       c.walkTo(324, 539);

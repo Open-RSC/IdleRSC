@@ -13,7 +13,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public class K_BettyBuyer extends K_kailaScript {
-  private final String[] options = new String[] {"Newts", "Elemental Runes", "Runes then Newts"};
+  private final String[] options = new String[] {"Runes then Newts", "Newts", "Elemental Runes"};
   private final int[] runeIds =
       new int[] {
         ItemId.AIR_RUNE.getId(),
@@ -21,7 +21,6 @@ public class K_BettyBuyer extends K_kailaScript {
         ItemId.WATER_RUNE.getId(),
         ItemId.FIRE_RUNE.getId()
       };
-  private final int[] loot = {465, 270};
   private int option = -1;
   private boolean scriptStarted = false;
   private boolean guiSetup = false;
@@ -33,11 +32,11 @@ public class K_BettyBuyer extends K_kailaScript {
   private final long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String[] parameters) {
-    if (parameters.length > 0 && !parameters[0].equals("")) {
+    if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
-        c.displayMessage("Auto-starting, Newts", 0);
-        System.out.println("Auto-starting, Newts");
-        option = 1;
+        c.displayMessage("Auto-starting, Runes and Newts", 0);
+        System.out.println("Auto-starting, Runes and Newts");
+        option = 0;
         guiSetup = true;
         scriptStarted = true;
       }
@@ -88,7 +87,7 @@ public class K_BettyBuyer extends K_kailaScript {
           }
 
           if (c.getInventoryItemCount() < 30) {
-            if (option == 1) { // only runes
+            if (option == 2) { // only runes
               if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 0
                   || c.getShopItemCount(runeIds[1]) > 0
                   || c.getShopItemCount(runeIds[2]) > 0
@@ -100,18 +99,14 @@ public class K_BettyBuyer extends K_kailaScript {
               } else {
                 c.sleep(250);
               }
-            } else if (option == 0) { // only newts
+            } else if (option == 1) { // only newts
               if (c.isInShop() && c.getShopItemCount(270) > 0) {
                 c.shopBuy(270, c.getShopItemCount(270));
                 c.sleep(250);
               } else {
                 c.sleep(250);
               }
-            } else if (option == 2) { // newts then runes
-              if (c.isInShop() && c.getShopItemCount(270) > 0) {
-                c.shopBuy(270, c.getShopItemCount(270));
-                c.sleep(250);
-              }
+            } else if (option == 0) { // runes then newts
               if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 0
                   || c.getShopItemCount(runeIds[1]) > 0
                   || c.getShopItemCount(runeIds[2]) > 0
@@ -120,6 +115,10 @@ public class K_BettyBuyer extends K_kailaScript {
                   c.shopBuy(runeId, c.getShopItemCount(runeId));
                   c.sleep(250);
                 }
+              }
+              if (c.isInShop() && c.getShopItemCount(270) > 0) {
+                c.shopBuy(270, c.getShopItemCount(270));
+                c.sleep(250);
               } else {
                 c.sleep(250);
               }

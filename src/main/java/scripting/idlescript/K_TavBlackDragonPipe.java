@@ -22,6 +22,7 @@ import orsc.ORSCharacter;
 public final class K_TavBlackDragonPipe extends K_kailaScript {
   private boolean useDragonTwoHand = false;
   private boolean craftCapeTeleport = false;
+  private boolean timeToDrinkAntidote = false;
   private int fightMode = 0;
   private int totalRlong = 0;
   private int totalMed = 0;
@@ -96,6 +97,15 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (timeToDrinkAntidote) {
+        timeToDrinkAntidote = false;
+        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+          c.sleep(340);
+        }
+        drinkAntidote(true);
+        eat();
+      }
       eat();
       prayPotFoodCheck();
       drinkPrayerPotion(31, true, ANTI_DRAGON_SHIELD, useDragonTwoHand);
@@ -362,7 +372,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
       c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
     }
-    drinkAntidote(true);
     if (!c.isPrayerOn(PARALYZE_MONSTER)) c.enablePrayer(PARALYZE_MONSTER);
     prayPotFoodCheck();
     drinkPrayerPotion(31, true);
@@ -478,6 +487,13 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocus();
+  }
+
+  @Override
+  public void serverMessageInterrupt(String message) {
+    if (message.contains("@gr3@You @gr2@are @gr1@poisioned")) { // dont change spelling
+      timeToDrinkAntidote = true;
+    }
   }
 
   @Override

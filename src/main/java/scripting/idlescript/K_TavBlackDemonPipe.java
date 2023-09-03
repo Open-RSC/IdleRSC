@@ -255,7 +255,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
 
   private void DemonsToBank() {
     c.setStatus("@gre@Going to Bank");
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
@@ -278,7 +278,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
 
   private void BankToDemons() {
     c.setStatus("@gre@Walking to Black Demons..");
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       teleportCraftCape();
       c.walkTo(347, 588);
       c.walkTo(347, 586);

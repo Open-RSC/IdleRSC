@@ -1665,7 +1665,7 @@ public class K_kailaScript extends IdleScript {
    * craft cape/brown apron and use them.
    *
    * @param reEquipItemId the itemId int to re-wield in place of craft cape/brown apron after
-   *     entering
+   *     entering. Pass (-1) as variable to just un-equip the entrance item
    */
   protected static void craftGuildDoorEntering(int reEquipItemId) {
     final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
@@ -1683,7 +1683,11 @@ public class K_kailaScript extends IdleScript {
         break;
       }
     }
-    forceEquipItem(reEquipItemId);
+    if (reEquipItemId == -1) {
+      c.unequipItem(EquipSlotIndex.CAPE.getId());
+    } else {
+      forceEquipItem(reEquipItemId);
+    }
   }
   /**
    * Exits through the fixed door leading to craft guild. (north to south) Bot will auto-detect
@@ -1735,10 +1739,10 @@ public class K_kailaScript extends IdleScript {
   }
   /** Goes through the fixed gate in Yanille dungeon (north to south) */
   protected static void yanilleDungeonDoorExiting() {
-    for (int i = 1; i <= 20; i++) {
+    for (int i = 1; i <= 30; i++) {
       if (c.currentX() == 593 && c.currentY() == 3589) {
         c.atWallObject2(593, 3590); // locked door
-        c.sleep(2 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
         if (c.isBatching()) c.sleep(2 * GAME_TICK);
       } else {
         break;
@@ -1747,10 +1751,10 @@ public class K_kailaScript extends IdleScript {
   }
   /** Goes through the fixed gate in Yanille dungeon (south to north) */
   protected static void yanilleDungeonDoorEntering() {
-    for (int i = 1; i <= 20; i++) {
+    for (int i = 1; i <= 30; i++) {
       if (c.currentX() == 593 && c.currentY() == 3590) {
         c.atWallObject2(593, 3590); // locked door
-        c.sleep(GAME_TICK);
+        c.sleep(3 * GAME_TICK);
         if (c.isBatching()) c.sleep(2 * GAME_TICK);
       } else {
         break;

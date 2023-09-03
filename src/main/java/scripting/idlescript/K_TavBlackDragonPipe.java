@@ -255,7 +255,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(408, 3348);
     c.walkTo(408, 3351);
     c.sleep(1000);
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       c.walkTo(347, 600);
@@ -282,7 +282,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
 
   private void BankToDragons() {
     c.setStatus("@gre@Walking to Black Dragons..");
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
       teleportCraftCape();
       c.walkTo(347, 588);
       c.walkTo(347, 586);

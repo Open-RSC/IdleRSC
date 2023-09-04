@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import models.entities.ItemId;
+
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -110,8 +112,10 @@ public class AIOMagic extends IdleScript {
             controller.sleep(618);
           } else {
             controller.setStatus("@blu@Casting!");
-            controller.castSpellOnInventoryItem(
+            if (targetId != ItemId.NATURE_RUNE.getId()) {
+              controller.castSpellOnInventoryItem(
                 spellId, controller.getInventoryItemSlotIndex(targetId));
+            }
             controller.sleep(1300);
           }
 

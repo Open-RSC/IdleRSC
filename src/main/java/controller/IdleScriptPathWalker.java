@@ -123,11 +123,14 @@ class IdleScriptPathWalker {
         atObject(341, 487);
         System.out.println("Opening Tav gate going east");
         wait_time = c_time + 8000;
-      } else if (isAtApproxCoords(343, 591, 10) && (n.y < 581)) {
+      } else if ((isAtApproxCoords(343, 593, 12) || isAtApproxCoords(356, 584, 7)) && (n.y < 581)) {
+        controller.walkTo(343, 581);
         atObject(343, 581);
         System.out.println("Opening Tav gate going north");
         wait_time = c_time + 8000;
-      } else if (isAtApproxCoords(343, 570, 10) && (n.y >= 581)) {
+      } else if ((isAtApproxCoords(343, 570, 11) || isAtApproxCoords(342, 574, 7))
+          && (n.y >= 581)) {
+        controller.walkTo(343, 580);
         atObject(343, 581);
         System.out.println("Opening Tav gate going south");
         wait_time = c_time + 8000;

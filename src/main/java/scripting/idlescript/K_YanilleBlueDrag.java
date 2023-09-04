@@ -322,7 +322,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     }
   }
 
-  private static void teleportAway() {
+  private static void teleportAway() { // either die here
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() != 591 && c.currentY() != 765) {
         c.setStatus("@red@teleporting..");
@@ -334,14 +334,27 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     }
   }
 
-  private static void enterEnclave() {
+  private static void enterEnclave() { // or maby here
     for (int i = 1; i <= 20; i++) {
       if (c.currentY() < 3000) {
-        c.setStatus("@red@entering enclave..");
+        c.setStatus("@red@entering enclave.."); // may have died here
         if (c.isInCombat()) leaveCombat();
         ORSCharacter npc3 = c.getNearestNpcById(684, true);
         c.useItemOnNpc(npc3.serverIndex, NIGHTSHADE);
-        c.sleep(3000);
+        c.sleep(8000);
+      } else {
+        break;
+      }
+    }
+  }
+
+  private static void exitEnclave() {
+    for (int i = 1; i <= 20; i++) {
+      if (c.currentY() > 3000) {
+        c.setStatus("@red@exiting enclave..");
+        if (c.isInCombat()) leaveCombat();
+        c.atObject(666, 772);
+        c.sleep(2000);
       } else {
         break;
       }
@@ -370,7 +383,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     foodField.setSelectedIndex(2); // sets default to sharks
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(12));
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(10));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

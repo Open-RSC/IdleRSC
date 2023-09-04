@@ -285,6 +285,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     c.walkTo(408, 3340);
     c.walkTo(408, 3348);
     c.walkTo(408, 3351);
+    c.walkTo(401, 3346);
     c.sleep(1000);
     if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");

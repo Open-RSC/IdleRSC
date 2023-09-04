@@ -463,8 +463,8 @@ public class Main {
         e -> {
           if (controller != null) {
             controller.setDrawing(graphicsCheckbox.isSelected());
-            if (graphicsCheckbox.isSelected()) DrawCallback.nextRefresh = -1;
-            else DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L;
+            if (graphicsCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
+            else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
           }
         });
     botPaintCheckbox.addActionListener(

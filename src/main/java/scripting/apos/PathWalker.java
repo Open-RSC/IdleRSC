@@ -453,7 +453,9 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
       if (n == null) return true;
       int x = n.x;
       int y = n.y;
-      if (isAtApproxCoords(331, 487, 10) && (n.x > 341)) {
+      // radius can cross into the other side of gate because goal node has to be on the other side
+      // to call if statement
+      if (isAtApproxCoords(331, 487, 10) && (n.x > 341)) { // add point here
         atObject(341, 487);
         System.out.println("Opening Tav gate going west");
         wait_time = c_time + 8000;
@@ -461,17 +463,18 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         atObject(341, 487);
         System.out.println("Opening Tav gate going east");
         wait_time = c_time + 8000;
-      } else if (isAtApproxCoords(343, 591, 10) && (n.y < 581)) {
+      } else if ((isAtApproxCoords(343, 593, 12) || isAtApproxCoords(356, 584, 7)) && (n.y < 581)) {
         atObject(343, 581);
         System.out.println("Opening Tav gate going north");
         wait_time = c_time + 8000;
-      } else if (isAtApproxCoords(343, 570, 10) && (n.y >= 581)) {
+      } else if ((isAtApproxCoords(343, 570, 11) || isAtApproxCoords(342, 574, 7))
+          && (n.y >= 581)) {
         atObject(343, 581);
         System.out.println("Opening Tav gate going south");
         wait_time = c_time + 8000;
       } else if (isAtApproxCoords(703, 542, 10) && (n.y <= 531)) {
         atObject(703, 531);
-        System.out.println("Opening Gnome Tree gate going north");
+        System.out.println("Opening Gnome Tree gate going north"); // add point here
         wait_time = c_time + 8000;
       } else if (isAtApproxCoords(703, 521, 10) && (n.y > 531)) {
         atObject(703, 531);

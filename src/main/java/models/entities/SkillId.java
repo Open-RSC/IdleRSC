@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Index independent enums */
-public enum StatId implements Id {
+public enum SkillId implements Id {
   NOTHING(-1),
   ATTACK(0),
   DEFENSE(1),
@@ -29,26 +29,26 @@ public enum StatId implements Id {
 
   private final int id;
 
-  private static final Map<Integer, StatId> byId = new HashMap<Integer, StatId>();
-  private static final Map<String, StatId> byName = new HashMap<String, StatId>();
+  private static final Map<Integer, SkillId> byId = new HashMap<Integer, SkillId>();
+  private static final Map<String, SkillId> byName = new HashMap<String, SkillId>();
 
   static {
-    for (StatId stat : StatId.values()) {
-      if (byId.put(stat.getId(), stat) != null) {
-        throw new IllegalArgumentException("duplicate id: " + stat.getId());
+    for (SkillId skill : SkillId.values()) {
+      if (byId.put(skill.getId(), skill) != null) {
+        throw new IllegalArgumentException("duplicate id: " + skill.getId());
       } else {
-        if (byName.put(sanitizeName(stat.name()), stat) != null) {
-          throw new IllegalArgumentException("duplicate sanitized name: " + stat.getId());
+        if (byName.put(sanitizeName(skill.name()), skill) != null) {
+          throw new IllegalArgumentException("duplicate sanitized name: " + skill.getId());
         }
       }
     }
   }
 
-  public static StatId getById(Integer id) {
-    return byId.getOrDefault(id, StatId.NOTHING);
+  public static SkillId getById(Integer id) {
+    return byId.getOrDefault(id, SkillId.NOTHING);
   }
 
-  public static StatId getByName(String name) {
+  public static SkillId getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
 
@@ -56,7 +56,7 @@ public enum StatId implements Id {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
 
-  StatId(int id) {
+  SkillId(int id) {
     this.id = id;
   }
 

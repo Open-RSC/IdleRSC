@@ -54,7 +54,8 @@ public class MessageCallback {
       Main.clearLog();
       DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in ms
     }
-    if ((System.currentTimeMillis() > DrawCallback.getNextRefresh()) && DrawCallback.getNextRefresh() != -1) {
+    if ((System.currentTimeMillis() > DrawCallback.getNextRefresh())
+        && DrawCallback.getNextRefresh() != -1) {
       if (!con.isDrawEnabled()) {
         con.setDrawing(true);
         DrawCallback.setNextDeRefresh(System.currentTimeMillis() + 20L); // toggle on gfx 1 frame

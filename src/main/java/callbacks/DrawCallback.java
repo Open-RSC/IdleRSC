@@ -34,7 +34,7 @@ public class DrawCallback {
   /**
    * A description of the entire Java function.
    *
-   * @return         description of return value
+   * @return description of return value
    */
   public static long getNextDeRefresh() {
     return nextDeRefresh;
@@ -50,7 +50,7 @@ public class DrawCallback {
   /**
    * Retrieves the value of the toggleOnViewId variable.
    *
-   * @return  the value of the toggleOnViewId variable
+   * @return the value of the toggleOnViewId variable
    */
   public static boolean getToggleOnViewId() {
     return toggleOnViewId;
@@ -58,7 +58,7 @@ public class DrawCallback {
   /**
    * Sets the value of the nextRefresh variable.
    *
-   * @param  nextRefreshValue  the value to set for the nextRefresh variable
+   * @param nextRefreshValue the value to set for the nextRefresh variable
    */
   public static void setNextRefresh(long nextRefreshValue) {
     nextRefresh = nextRefreshValue;
@@ -66,7 +66,7 @@ public class DrawCallback {
   /**
    * Sets the value of the nextDeRefresh variable.
    *
-   * @param  nextDeRefreshValue  the new value for nextDeRefresh
+   * @param nextDeRefreshValue the new value for nextDeRefresh
    */
   public static void setNextDeRefresh(long nextDeRefreshValue) {
     nextDeRefresh = nextDeRefreshValue;
@@ -74,7 +74,7 @@ public class DrawCallback {
   /**
    * Sets the value of the next log clear time.
    *
-   * @param  nextLogClear  the next log clear time to be set
+   * @param nextLogClear the next log clear time to be set
    */
   public static void setNextLogClear(long nextLogClear) {
     timeNextLogClear = nextLogClear;
@@ -82,12 +82,11 @@ public class DrawCallback {
   /**
    * Sets the value of the toggleOnViewId variable.
    *
-   * @param  toggleOnViewIdValue  the new value for toggleOnViewId
+   * @param toggleOnViewIdValue the new value for toggleOnViewId
    */
   public static void setToggleOnViewId(boolean toggleOnViewIdValue) {
     toggleOnViewId = toggleOnViewIdValue;
   }
-
 
   /** The hook called each frame by the patched client. */
   public static void drawHook() {
@@ -243,9 +242,7 @@ public class DrawCallback {
     levelUpText = "@red@" + level + " @whi@" + statName + "@red@!";
     levelUpTextTimeout = System.currentTimeMillis() / 1000L + 15; // display for 15seconds
   }
-  /**
-   * Resets the XP counter.
-   */
+  /** Resets the XP counter. */
   public static void resetXpCounter() {
     Controller c = Main.getController();
     boolean temporaryToggledGFX = false;

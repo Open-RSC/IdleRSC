@@ -638,6 +638,29 @@ public class Controller {
 
     return closestCoords;
   }
+  /**
+   * Retrieves all the coordinates of the specified object id, if nearby.
+   *
+   * @param objectId int
+   * @return int[] -- [x, y]. returns null if no object nearby.
+   */
+  public int[][] getObjectsById(int objectId) {
+    Main.logMethod("getObjectsById", objectId);
+    int count = getObjectsCount();
+    int[] xs = getObjectsX();
+    int[] zs = getObjectsZ();
+    int[] ids = getObjectsIds();
+    int[][] points = new int[2][count]; // length will be for all objects, not the ones we want...
+
+    for (int i = 0; i < count; i++) {
+      if (ids[i] == objectId) {
+        int x = offsetX(xs[i]);
+        int z = offsetZ(zs[i]);
+        points[i] = new int[] {x, z};
+      }
+    }
+    return points;
+  }
 
   public int[] getNearestObjectByIds(int[] objectIds) {
     int distance = Integer.MAX_VALUE;
@@ -4447,9 +4470,9 @@ public class Controller {
           temporaryToggleSideMenu = true;
           orsc.Config.C_SIDE_MENU_OVERLAY = false; // bugfix for coleslaw flickering
         }
-        DrawCallback.toggleOnViewId = true;
+        DrawCallback.setToggleOnViewId(true);
       } else if (groupId == 9) { // if viewId on, change to off
-        DrawCallback.toggleOnViewId = false;
+        DrawCallback.setToggleOnViewId(false);
         if (temporaryToggleSideMenu) {
           temporaryToggleSideMenu = false;
           orsc.Config.C_SIDE_MENU_OVERLAY = true; // bugfix for coleslaw flickering

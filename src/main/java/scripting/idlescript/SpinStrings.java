@@ -18,8 +18,8 @@ public class SpinStrings extends IdleScript {
   boolean guiSetup = false;
   boolean scriptStarted = false;
   final int[] bankerIds = {95, 224, 268, 485, 540, 617};
-  final int[] bankX = {500, 289};
-  final int[] bankY = {455, 571};
+  final int[] bankX = {289, 500};
+  final int[] bankY = {571, 455};
   final int[] inputIds = {675, 145};
   final int[] outputIds = {676, 207};
   int input = -1;
@@ -86,7 +86,7 @@ public class SpinStrings extends IdleScript {
           && controller.getInventoryItemCount(input) > 0
           && destination.getSelectedIndex() == 0
           && controller.getNearestObjectById(121) != null) {
-        controller.setStatus("@red@Spinning Flax");
+        controller.setStatus("@red@Spinning Flax in falador");
         // if not batching use material on wheel
         while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
           // sleep if you have high fatigue
@@ -104,7 +104,7 @@ public class SpinStrings extends IdleScript {
       }
       // if player is near spinning wheel, not batching, and not banking, and falador selected. spin
       // flax.
-      while (destination.getSelectedIndex() == 1
+      while (destination.getSelectedIndex() == 0
           && controller.getNearestObjectById(121) != null
           && controller.getInventoryItemCount(input) > 0) {
         controller.setStatus("@red@Spinning Flax");
@@ -127,7 +127,7 @@ public class SpinStrings extends IdleScript {
       // if player is in seer's village walk to ladder and go up it
       while (controller.getNearestObjectById(121) == null
           && controller.getInventoryItemCount(input) > 0
-          && destination.getSelectedIndex() == 0) {
+          && destination.getSelectedIndex() == 1) {
         controller.setStatus("@red@Going upstairs");
         // if the ladder at 525,462 is unloaded walk closer to it
         while (controller.isTileEmpty(525, 462)) {
@@ -150,14 +150,14 @@ public class SpinStrings extends IdleScript {
       // go down ladder and walk to seer's village bank
       while (controller.getNearestObjectById(121) != null
           && controller.getInventoryItemCount(input) == 0
-          && destination.getSelectedIndex() == 0) {
+          && destination.getSelectedIndex() == 1) {
         controller.setStatus("@red@Going downstairs");
         controller.atObject(525, 1406);
         controller.sleep(100);
       }
 
       while (controller.getNearestNpcByIds(bankerIds, false) == null
-          && destination.getSelectedIndex() == 1) {
+          && destination.getSelectedIndex() == 0) {
         controller.setStatus("@red@No banker visible, walking closer...");
         controller.walkTo(291, 573);
       }

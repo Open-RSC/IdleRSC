@@ -34,11 +34,12 @@ public enum EquipSlotIndex implements Id {
     }
   }
   /**
-   * Retrieves the slot NAME associated with the given EquipSlotIndex, or NOTHING if no mapping
-   *    * exists for the id.
+   * Retrieves the slot NAME associated with the given EquipSlotIndex, or NOTHING if no mapping *
+   * exists for the id.
    *
-   * @param  id the EquipSlotIndex of the slot
-   * @return slot NAME associated with the given EquipSlotIndex, or NOBODY if no EquipSlotIndex is found
+   * @param id the EquipSlotIndex of the slot
+   * @return slot NAME associated with the given EquipSlotIndex, or NOBODY if no EquipSlotIndex is
+   *     found
    */
   public static EquipSlotIndex getById(Integer id) {
     return byId.getOrDefault(id, EquipSlotIndex.NOTHING);
@@ -46,17 +47,18 @@ public enum EquipSlotIndex implements Id {
   /**
    * Retrieves an 'EquipSlotIndex' int by its NAME.
    *
-   * @param  name  the name of the slot
-   * @return       the EquipSlotIndex corresponding to the given name, or NOBODY if no match is found
+   * @param name the name of the slot
+   * @return the EquipSlotIndex corresponding to the given name, or NOBODY if no match is found
    */
   public static EquipSlotIndex getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
   /**
-   * Sanitizes the given name by removing any non-alphanumeric characters and converting it to lowercase.
+   * Sanitizes the given name by removing any non-alphanumeric characters and converting it to
+   * lowercase.
    *
-   * @param  name  the name to be sanitized
-   * @return       the sanitized name
+   * @param name the name to be sanitized
+   * @return the sanitized name
    */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();

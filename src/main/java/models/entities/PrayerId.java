@@ -40,11 +40,11 @@ public enum PrayerId implements Id {
     }
   }
   /**
-   * Retrieves the prayer NAME associated with the given id, or NOTHING if no mapping
-   *    * exists for the id.
+   * Retrieves the prayer NAME associated with the given id, or NOTHING if no mapping * exists for
+   * the id.
    *
-   * @param  id  the id of the PrayerId to retrieve
-   * @return     the PrayerId associated with the given id, or PrayerId.NOTHING if not found
+   * @param id the id of the PrayerId to retrieve
+   * @return the PrayerId associated with the given id, or PrayerId.NOTHING if not found
    */
   public static PrayerId getById(Integer id) {
     return byId.getOrDefault(id, PrayerId.NOTHING);
@@ -52,17 +52,18 @@ public enum PrayerId implements Id {
   /**
    * Retrieves a `PrayerId` int by its NAME.
    *
-   * @param  name  the name of the prayer
-   * @return       the `PrayerId` associated with the NAME, or `NOTHING` if not found
+   * @param name the name of the prayer
+   * @return the `PrayerId` associated with the NAME, or `NOTHING` if not found
    */
   public static PrayerId getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
   /**
-   * Sanitizes the given name by removing any non-alphanumeric characters and converting it to lowercase.
+   * Sanitizes the given name by removing any non-alphanumeric characters and converting it to
+   * lowercase.
    *
-   * @param  name  the name to be sanitized
-   * @return       the sanitized name
+   * @param name the name to be sanitized
+   * @return the sanitized name
    */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();

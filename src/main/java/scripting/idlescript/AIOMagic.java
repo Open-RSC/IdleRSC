@@ -1,13 +1,12 @@
 package scripting.idlescript;
 
-import models.entities.ItemId;
-
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import models.entities.ItemId;
 
 /**
  * Performs all magic spells that require banking
@@ -69,11 +68,11 @@ public class AIOMagic extends IdleScript {
   boolean scriptStarted = false;
   boolean guiSetup = false;
   /**
-   * This function is the entry point for the program. It takes an array of parameters
-   * and executes script based on the values of the parameters. <br>
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
    * Parameters in this context can be from CLI parsing or in the script options parameters text box
    *
-   * @param  parameters  an array of String values representing the parameters passed to the function
+   * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
     if (!guiSetup) {
@@ -120,7 +119,7 @@ public class AIOMagic extends IdleScript {
             controller.setStatus("@blu@Casting!");
             if (targetId != ItemId.NATURE_RUNE.getId()) {
               controller.castSpellOnInventoryItem(
-                spellId, controller.getInventoryItemSlotIndex(targetId));
+                  spellId, controller.getInventoryItemSlotIndex(targetId));
             }
             controller.sleep(1300);
           }

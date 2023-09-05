@@ -74,10 +74,10 @@ public final class K_Edge_Giants extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
   };
   /**
-   * This function is the entry point for the program. It takes an array of parameters
-   * and executes the corresponding logic based on the values of the parameters.
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * the corresponding logic based on the values of the parameters.
    *
-   * @param  parameters  an array of String values representing the parameters passed to the function
+   * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
     centerX = 208;

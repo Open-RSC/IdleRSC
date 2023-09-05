@@ -55,9 +55,7 @@ public class SleepCallback {
       handleSleep();
     }
   }
-  /**
-   * Handles the sleep (fatigue) functionality. Tries to interface with OCR or upload captcha
-   */
+  /** Handles the sleep (fatigue) functionality. Tries to interface with OCR or upload captcha */
   private static void handleSleep() {
     Controller controller = Main.getController();
     mudclient mud = null;
@@ -109,11 +107,11 @@ public class SleepCallback {
     }
   }
   /**
-   * Uploads a captcha file to the server and returns the result.
-   * Error: remote server currently is not active to process Captcha
+   * Uploads a captcha file to the server and returns the result. Error: remote server currently is
+   * not active to process Captcha
    *
-   * @param  captchaFile  the path of the captcha file to upload
-   * @return              the result of the upload operation
+   * @param captchaFile the path of the captcha file to upload
+   * @return the result of the upload operation
    */
   public static String uploadCaptcha(String captchaFile) {
 
@@ -179,8 +177,8 @@ public class SleepCallback {
   /**
    * Converts the given image to 1-bit per pixel (1bpp) format.
    *
-   * @param  o  the image to be converted
-   * @return    the converted image in 1bpp format
+   * @param o the image to be converted
+   * @return the converted image in 1bpp format
    */
   private static BufferedImage convertImageTo1Bpp(
       BufferedImage
@@ -197,8 +195,8 @@ public class SleepCallback {
   /**
    * Saves a sleep image.
    *
-   * @param  data   the byte array containing the image data
-   * @param  length the length of the image data
+   * @param data the byte array containing the image data
+   * @param length the length of the image data
    */
   private static void saveSleepImage(byte[] data, int length) {
     try {

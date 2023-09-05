@@ -22,9 +22,7 @@ public class KeyCallback {
       this.strength = strength;
       this.defence = defence;
     }
-    /**
-     * Uses CLI provided stake switcher SwitchId to switch between atk/str/def items
-     */
+    /** Uses CLI provided stake switcher SwitchId to switch between atk/str/def items */
     @Override
     public void run() {
       if (attack) {
@@ -79,7 +77,7 @@ public class KeyCallback {
   /**
    * Hook that Handles key presses and calls other methods
    *
-   * @param  key  the KeyEvent to handle
+   * @param key the KeyEvent to handle
    */
   public static void keyHook(KeyEvent key) {
     Controller c = Main.getController();

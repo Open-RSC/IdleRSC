@@ -74,11 +74,11 @@ public enum SpellId implements Id {
     }
   }
   /**
-   * Returns the SpellId NAME associated with the given SpellId, or NOTHING if no mapping
-   * exists for the id.
+   * Returns the SpellId NAME associated with the given SpellId, or NOTHING if no mapping exists for
+   * the id.
    *
-   * @param  id  the id for which to retrieve the SpellId
-   * @return     SpellId NAME
+   * @param id the id for which to retrieve the SpellId
+   * @return SpellId NAME
    */
   public static SpellId getById(Integer id) {
     return byId.getOrDefault(id, SpellId.NOTHING);
@@ -86,17 +86,18 @@ public enum SpellId implements Id {
   /**
    * Retrieves a `SpellId` int by its NAME.
    *
-   * @param  name  the name of the Spell Object
-   * @return       the `SpellId` associated with the NAME, or `NOTHING` if not found
+   * @param name the name of the Spell Object
+   * @return the `SpellId` associated with the NAME, or `NOTHING` if not found
    */
   public static SpellId getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
   /**
-   * Sanitizes the given name by removing all non-alphanumeric characters and converting it to lowercase.
+   * Sanitizes the given name by removing all non-alphanumeric characters and converting it to
+   * lowercase.
    *
-   * @param  name  the name to be sanitized
-   * @return       the sanitized name
+   * @param name the name to be sanitized
+   * @return the sanitized name
    */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();

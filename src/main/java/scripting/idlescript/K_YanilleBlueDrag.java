@@ -49,11 +49,11 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
   /**
-   * This function is the entry point for the program. It takes an array of parameters
-   * and executes script based on the values of the parameters. <br>
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
    * Parameters in this context can be from CLI parsing or in the script options parameters text box
    *
-   * @param  parameters  an array of String values representing the parameters passed to the function
+   * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
     if (!parameters[0].isEmpty()) {
@@ -350,7 +350,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() != 591 && c.currentY() != 765) {
         c.setStatus("@red@teleporting..");
-        if (c.isInCombat()){
+        if (c.isInCombat()) {
           leaveCombat();
           c.setStatus("@gre@leaving combat to teleport..");
         }

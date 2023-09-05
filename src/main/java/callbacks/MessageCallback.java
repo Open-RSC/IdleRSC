@@ -136,9 +136,10 @@ public class MessageCallback {
   }
   /**
    * Handles the level up event. to display level up text and take a screenshot. <br>
-   * Currently bugged on certain level ups not returning the correct statId (invalid statId generated)
+   * Currently bugged on certain level ups not returning the correct statId (invalid statId
+   * generated)
    *
-   * @param  message  the message containing the level up information
+   * @param message the message containing the level up information
    */
   private static void handleLevelUp(String message) {
     Controller c = Main.getController();

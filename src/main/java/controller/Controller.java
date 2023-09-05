@@ -443,8 +443,8 @@ public class Controller {
   /**
    * Determines if the player is currently walking.
    *
-   * @param  serverIndex  the index of the player on the server
-   * @return              true if the player is currently walking, false otherwise
+   * @param serverIndex the index of the player on the server
+   * @return true if the player is currently walking, false otherwise
    */
   public boolean isPlayerCurrentlyWalking(int serverIndex) {
     int x = this.getPlayer(serverIndex).currentX;
@@ -460,8 +460,8 @@ public class Controller {
   /**
    * Checks if an NPC is currently walking.
    *
-   * @param  serverIndex  the server index of the NPC
-   * @return              true if the NPC is currently walking, false otherwise
+   * @param serverIndex the server index of the NPC
+   * @return true if the NPC is currently walking, false otherwise
    */
   public boolean isNpcCurrentlyWalking(int serverIndex) {
     int x = this.getNpc(serverIndex).currentX;
@@ -671,42 +671,42 @@ public class Controller {
     }
     return points;
   }
-//  public int[][] getAllNpcsById(int... ids)
-//  {
-//    int cpt = 0;
-//    for (int i = 0; i < client.getNpcCount(); i++) {
-//      if (inArray(ids, client.getNpcId(client.getNpc(i))))
-//        cpt++;
-//    }
-//
-//    int[][] npcS = new int[cpt][];
-//
-//    int cptAdded = 0;
-//
-//    for (int i = 0; i < client.getNpcCount(); i++) {
-//      if (inArray(ids, client.getNpcId(client.getNpc(i)))) {
-//        final int x = client.getMobLocalX(client.getNpc(i)) + client.getAreaX();
-//        final int y = client.getMobLocalY(client.getNpc(i)) + client.getAreaY();
-//        final int dist = distanceTo(x, y, getX(), getY());
-//        if (dist < 10)
-//        {
-//          final int[] npc = new int[]{-1, -1, -1};
-//
-//          npc[0] = i;
-//          npc[1] = x;
-//          npc[2] = y;
-//
-//          npcS[cptAdded]  = npc;
-//        }
-//      }
-//    }
-//    return npcS;
-//  }
+  //  public int[][] getAllNpcsById(int... ids)
+  //  {
+  //    int cpt = 0;
+  //    for (int i = 0; i < client.getNpcCount(); i++) {
+  //      if (inArray(ids, client.getNpcId(client.getNpc(i))))
+  //        cpt++;
+  //    }
+  //
+  //    int[][] npcS = new int[cpt][];
+  //
+  //    int cptAdded = 0;
+  //
+  //    for (int i = 0; i < client.getNpcCount(); i++) {
+  //      if (inArray(ids, client.getNpcId(client.getNpc(i)))) {
+  //        final int x = client.getMobLocalX(client.getNpc(i)) + client.getAreaX();
+  //        final int y = client.getMobLocalY(client.getNpc(i)) + client.getAreaY();
+  //        final int dist = distanceTo(x, y, getX(), getY());
+  //        if (dist < 10)
+  //        {
+  //          final int[] npc = new int[]{-1, -1, -1};
+  //
+  //          npc[0] = i;
+  //          npc[1] = x;
+  //          npc[2] = y;
+  //
+  //          npcS[cptAdded]  = npc;
+  //        }
+  //      }
+  //    }
+  //    return npcS;
+  //  }
   /**
    * Finds the nearest object coordinates based on the given object IDs.
    *
-   * @param  objectIds  an array of object IDs
-   * @return            an array containing the coordinates of the nearest object
+   * @param objectIds an array of object IDs
+   * @return an array containing the coordinates of the nearest object
    */
   public int[] getNearestObjectByIds(int[] objectIds) {
     int distance = Integer.MAX_VALUE;
@@ -797,13 +797,13 @@ public class Controller {
     return this.distance(currentX(), currentY(), x, y) <= 1;
   }
   /**
-   * Interacts with the object (first option) at the given coordinates with the given id and direction
-   * Private method called by atObject()
+   * Interacts with the object (first option) at the given coordinates with the given id and
+   * direction Private method called by atObject()
    *
-   * @param  x          x coordinate of the object
-   * @param  z          z (y) coordinate of the object
-   * @param  dir        direction of the object
-   * @param  objectId   id of the object
+   * @param x x coordinate of the object
+   * @param z z (y) coordinate of the object
+   * @param dir direction of the object
+   * @param objectId id of the object
    */
   private void objectAt(int x, int z, int dir, int objectId) {
     if (x < 0 || z < 0) return;
@@ -827,10 +827,10 @@ public class Controller {
    * Interacts with the object (2nd option) at the given coordinates with the given id and direction
    * Private method called by atObject()
    *
-   * @param  x          x coordinate of the object
-   * @param  z          z (y) coordinate of the object
-   * @param  dir        direction of the object
-   * @param  objectId   id of the object
+   * @param x x coordinate of the object
+   * @param z z (y) coordinate of the object
+   * @param dir direction of the object
+   * @param objectId id of the object
    */
   private void objectAt2(int x, int z, int dir, int objectId) {
     if (x < 0 || z < 0) return;
@@ -1098,8 +1098,8 @@ public class Controller {
   /**
    * Creates an NPC character object based on the server index provided.
    *
-   * @param  serverIndex  the server index of the NPC (see get
-   * @return              the NPC character with the specified server index, or null if not found
+   * @param serverIndex the server index of the NPC (see get
+   * @return the NPC character with the specified server index, or null if not found
    */
   public ORSCharacter getNpc(int serverIndex) {
     ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
@@ -1127,7 +1127,6 @@ public class Controller {
       int npcZ = (npc.currentZ - 64) / mud.getTileSize();
 
       walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), npcX, npcZ, true);
-
     }
   }
 
@@ -2082,9 +2081,9 @@ public class Controller {
   /**
    * Withdraws a specified amount of an item from the bank. (APOS compatability method)
    *
-   * @param  itemId  the ID of the item to be withdrawn
-   * @param  amount  the amount of the item to be withdrawn
-   * @return         true if the withdrawal was successful, false otherwise
+   * @param itemId the ID of the item to be withdrawn
+   * @param amount the amount of the item to be withdrawn
+   * @return true if the withdrawal was successful, false otherwise
    */
   public boolean withdrawItem_apos(int itemId, int amount) {
     if (!isInBank()) return false;
@@ -3630,9 +3629,10 @@ public class Controller {
     return this.mud;
   }
   /**
-   * Opens the bank and sleeps until the maximum number of ticks is reached or the bank interface is open.
+   * Opens the bank and sleeps until the maximum number of ticks is reached or the bank interface is
+   * open.
    *
-   * @param  maxTicks the maximum number of ticks to sleep for
+   * @param maxTicks the maximum number of ticks to sleep for
    */
   private void openBank_sleep(int maxTicks) {
     int ticks = 0;
@@ -3645,10 +3645,10 @@ public class Controller {
     }
   }
   /**
-   * Opens the bank option menu and sleeps until options menu dialog is visible or the maximum number of ticks is reached.
-   * private method called by openBank()
+   * Opens the bank option menu and sleeps until options menu dialog is visible or the maximum
+   * number of ticks is reached. private method called by openBank()
    *
-   * @param  maxTicks	the maximum number of ticks to wait for the option menu to open
+   * @param maxTicks the maximum number of ticks to wait for the option menu to open
    */
   private void openBank_optionMenu_sleep(int maxTicks) {
     int ticks = 0;
@@ -4252,8 +4252,8 @@ public class Controller {
   /**
    * Checks if the NPC is currently talking.
    *
-   * @param  serverIndex  the index of the NPC on the server
-   * @return              true if the NPC is talking, false otherwise
+   * @param serverIndex the index of the NPC on the server
+   * @return true if the NPC is talking, false otherwise
    */
   public boolean isNpcTalking(int serverIndex) {
     ORSCharacter npc = this.getNpc(serverIndex);
@@ -4293,7 +4293,7 @@ public class Controller {
   /**
    * Retrieves the number of spells (total)
    *
-   * @return  the number of spells
+   * @return the number of spells
    */
   public int getSpellsCount() {
     int result = 0;
@@ -4307,7 +4307,7 @@ public class Controller {
   /**
    * Retrieves the names of all spells.
    *
-   * @return         	an array of strings containing the names of all spells
+   * @return an array of strings containing the names of all spells
    */
   public String[] getSpellNames() {
     int spellsCount = getSpellsCount();
@@ -4320,8 +4320,8 @@ public class Controller {
   /**
    * Retrieves the spell level for the given spell ID.
    *
-   * @param  spellId  the ID of the spell
-   * @return          the required level for the spell, or -1 if the spell ID is invalid
+   * @param spellId the ID of the spell
+   * @return the required level for the spell, or -1 if the spell ID is invalid
    */
   public int getSpellLevel(int spellId) {
     try {
@@ -4333,8 +4333,8 @@ public class Controller {
   /**
    * Gets the spell type for the given spell ID.
    *
-   * @param  spellId  the ID of the spell
-   * @return          the spell type, or -1 if an exception occurs
+   * @param spellId the ID of the spell
+   * @return the spell type, or -1 if an exception occurs
    */
   public int getSpellType(int spellId) {
     try {
@@ -4346,8 +4346,8 @@ public class Controller {
   /**
    * Retrieves the set of spell runes required for a given spell ID.
    *
-   * @param  spellId  the ID of the spell
-   * @return          the set of spell runes required, or null if an exception occurs
+   * @param spellId the ID of the spell
+   * @return the set of spell runes required, or null if an exception occurs
    */
   public Set<Entry<Integer, Integer>> getSpellRunes(int spellId) {
     try {
@@ -4359,8 +4359,8 @@ public class Controller {
   /**
    * Determines if the player can cast a specific spell (high enough stat level and has runes)
    *
-   * @param  spellId  the ID of the spell
-   * @return          true if the player can cast the spell, false otherwise
+   * @param spellId the ID of the spell
+   * @return true if the player can cast the spell, false otherwise
    */
   public boolean canCastSpell(int spellId) {
     if (this.getCurrentStat(6) < this.getSpellLevel(spellId)) return false;
@@ -4378,7 +4378,7 @@ public class Controller {
   /**
    * Returns an array of quest names.
    *
-   * @return  an array of quest names
+   * @return an array of quest names
    */
   public String[] getQuestNames() {
     return ((String[]) reflector.getObjectMember(mud, "questNames"));
@@ -4394,8 +4394,8 @@ public class Controller {
   /**
    * Retrieves the quest stage for the specified quest ID.
    *
-   * @param  questId  the ID of the quest
-   * @return          the quest stage for the specified quest ID
+   * @param questId the ID of the quest
+   * @return the quest stage for the specified quest ID
    */
   public int getQuestStage(int questId) {
     if (questId >= this.getQuestsCount()) return 0;
@@ -4405,8 +4405,8 @@ public class Controller {
   /**
    * Determines if a quest is complete.
    *
-   * @param  questId  the ID of the quest
-   * @return          true if the quest is complete, false otherwise
+   * @param questId the ID of the quest
+   * @return true if the quest is complete, false otherwise
    */
   public boolean isQuestComplete(int questId) {
     return this.getQuestStage(questId) == -1;
@@ -4414,7 +4414,7 @@ public class Controller {
   /**
    * Adds a friend to the user's friend list.
    *
-   * @param  username  the username of the friend to be added
+   * @param username the username of the friend to be added
    */
   public void addFriend(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
@@ -4425,7 +4425,7 @@ public class Controller {
   /**
    * Adds the specified username to the ignore list
    *
-   * @param  username  the username to add to the ignore list
+   * @param username the username to add to the ignore list
    */
   public void addIgnore(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
@@ -4436,7 +4436,8 @@ public class Controller {
   /**
    * Removes a friend from the user's friend list.<br>
    * Does not update on client side
-   * @param  username  the username of the friend to be removed
+   *
+   * @param username the username of the friend to be removed
    */
   public void removeFriend(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
@@ -4447,7 +4448,8 @@ public class Controller {
   /**
    * Removes the specified player from the ignore list. <br>
    * Does not update on client side
-   * @param  username  the username of the user to remove from the ignore list
+   *
+   * @param username the username of the user to remove from the ignore list
    */
   public void removeIgnore(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
@@ -4458,8 +4460,8 @@ public class Controller {
   /**
    * Sends a private message to a specified user.
    *
-   * @param  username  the username of the recipient
-   * @param  message   the message to be sent
+   * @param username the username of the recipient
+   * @param message the message to be sent
    */
   public void sendPrivateMessage(String username, String message) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);

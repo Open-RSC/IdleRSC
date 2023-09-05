@@ -5,9 +5,7 @@ import controller.Controller;
 import scripting.idlescript.IdleScript;
 
 public class CommandCallback {
-  /**
-   * Stores in-game help menu text. (F12)
-   */
+  /** Stores in-game help menu text. (F12) */
   private static final String helpMessageText =
       "@cya@IdleRSC Help Menu:"
           + " %@red@::bothelp - @yel@Shows this help menu"

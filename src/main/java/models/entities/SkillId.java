@@ -46,8 +46,8 @@ public enum SkillId implements Id {
   /**
    * Retrieves the SkillId Name associated with the given id.
    *
-   * @param  id  the id of the SkillId to retrieve
-   * @return     the SkillId name associated with the given id, or SkillId.NOTHING if no mapping exists
+   * @param id the id of the SkillId to retrieve
+   * @return the SkillId name associated with the given id, or SkillId.NOTHING if no mapping exists
    */
   public static SkillId getById(Integer id) {
     return byId.getOrDefault(id, SkillId.NOTHING);
@@ -55,22 +55,23 @@ public enum SkillId implements Id {
   /**
    * Retrieves the SkillId associated with the given name.
    *
-   * @param  name  the name of the skill
-   * @return       the SkillId int corresponding to the given name, or NOTHING if the name is not found
+   * @param name the name of the skill
+   * @return the SkillId int corresponding to the given name, or NOTHING if the name is not found
    */
   public static SkillId getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
   /**
-   * Sanitizes the given name by removing all non-alphanumeric characters, replacing
-   * underscores with empty strings, and converting all characters to lowercase.
+   * Sanitizes the given name by removing all non-alphanumeric characters, replacing underscores
+   * with empty strings, and converting all characters to lowercase.
    *
-   * @param  name  the name to be sanitized
-   * @return       the sanitized name
+   * @param name the name to be sanitized
+   * @return the sanitized name
    */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
+
   SkillId(int id) {
     this.id = id;
   }

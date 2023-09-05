@@ -48,7 +48,13 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
     ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
-  // STARTing script
+  /**
+   * This function is the entry point for the program. It takes an array of parameters
+   * and executes script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param  parameters  an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!parameters[0].isEmpty()) {
       try {
@@ -86,25 +92,30 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+        c.setStatus("@gre@Equip Antishield.");
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         c.sleep(GAME_TICK);
       } else if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
+        c.setStatus("@gre@Equip d2h.");
         c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
         c.sleep(GAME_TICK);
       }
       lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (buryBigBones) {
+        c.setStatus("@gre@Looting/Burying Big Bones.");
         lootItem(false, ItemId.BIG_BONES.getId());
         buryBones(false, ItemId.BIG_BONES.getId());
       }
       if (buryBones) buryBones(false);
       if (potUp) {
+        c.setStatus("@gre@Potting up.");
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
       checkFightMode(fightMode);
       if (!c.isInCombat()) {
         if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+          c.setStatus("@gre@Equip Antishield.");
           c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         }
         ORSCharacter npc = c.getNearestNpcById(202, false);
@@ -116,21 +127,25 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
           c.sleep(2 * GAME_TICK);
           ORSCharacter npc2 = c.getNearestNpcById(201, true);
           if (npc2 == null && !c.isInCombat() && (c.currentX() != 644 && c.currentY() != 3611)) {
+            c.setStatus("@gre@No npc going to center.");
             lootItems(false, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
             c.walkTo(644, 3611);
+            c.setStatus("@gre@at center.");
           }
         }
       } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
+        c.setStatus("@gre@Making inv space.");
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
       }
       timeToBank = !eatFood(); // does the eating checks
+      if (timeToBank) c.setStatus("@red@Out of food!");
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
         if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
           c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        c.setStatus("@yel@Banking..");
+        c.setStatus("@yel@Heading to the Bank..");
         timeToBank = false;
         DragonsToBank();
         bank();
@@ -233,7 +248,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
   }
   // PATHING private voids
   private void BankToDragons() {
-    c.setStatus("@gre@Walking to Tav Gate..");
+    c.setStatus("@gre@Walking to Entrance..");
     if (agilityCapeTeleport && (c.getInventoryItemCount(AGILITY_CAPE) != 0)) {
       teleportAgilityCape(); // 591, 765
       c.walkTo(601, 765);
@@ -265,6 +280,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
       c.atObject(647, 753);
       c.sleep(1000);
     }
+    c.setStatus("@gre@Exiting Yanille..");
     c.walkTo(647, 756);
     c.walkTo(647, 766);
     c.walkTo(641, 771);
@@ -278,15 +294,19 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     c.walkTo(665, 773);
     // ogre door upper
     ogreGateEastToWest();
+    c.setStatus("@gre@Past ogre Gate..");
     c.walkTo(668, 778);
+    c.setStatus("@gre@Danger zone one..");
     if (useDragonTwoHand && !c.isItemIdEquipped(420)) {
       c.equipItem(c.getInventoryItemSlotIndex(420));
     }
     c.walkTo(661, 778);
     c.walkTo(663, 788);
+    c.setStatus("@gre@Entering Enclave..");
     enterEnclave();
     // while out of combat, use item on ogre guard and wait
     // now at 647,3644
+    c.setStatus("@gre@Inside enclave..");
     c.walkTo(647, 3634);
     c.walkTo(650, 3625);
     c.walkTo(654, 3617);
@@ -296,14 +316,18 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
   private void DragonsToBank() {
     c.setStatus("@gre@Walking to Bank..");
     if (agilityCapeTeleport && (c.getInventoryItemCount(AGILITY_CAPE) != 0)) {
+      c.setStatus("@gre@Going to safe zone..");
       c.walkTo(645, 3615);
+      c.setStatus("@gre@teleporting away..");
       teleportAway();
+      c.setStatus("@gre@Done Teleporting..");
       c.walkTo(582, 767);
       c.walkTo(579, 763);
       c.walkTo(584, 754);
       c.walkTo(585, 752);
     } else {
       c.log("error there is no path for this");
+      c.setStatus("@gre@error there is no path for this..");
       c.displayMessage("error there is no path for this");
     }
     totalTrips = totalTrips + 1;
@@ -326,7 +350,10 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() != 591 && c.currentY() != 765) {
         c.setStatus("@red@teleporting..");
-        if (c.isInCombat()) leaveCombat();
+        if (c.isInCombat()){
+          leaveCombat();
+          c.setStatus("@gre@leaving combat to teleport..");
+        }
         teleportAgilityCape();
       } else {
         break;
@@ -373,7 +400,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     JCheckBox agilityCapeCheckbox = new JCheckBox("99 Agility Cape Teleport?", true);
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
-    JCheckBox buryBigBonesCheckbox = new JCheckBox("Bury Big Bones?", true);
+    JCheckBox buryBigBonesCheckbox = new JCheckBox("Bury Big Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =

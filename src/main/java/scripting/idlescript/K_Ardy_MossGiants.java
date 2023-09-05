@@ -80,7 +80,12 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
     ItemId.RUNE_SPEAR.getId(),
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters
+   * and executes the corresponding logic based on the values of the parameters.
+   *
+   * @param  parameters  an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 637;
     centerY = 504;
@@ -121,7 +126,9 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     }
     return 1000; // start() must return an int value now.
   }
-
+  /**
+   * Executes the script by continuously performing a series of actions until the script is stopped.
+   */
   private void scriptStart() {
     while (c.isRunning()) {
       if (potUp) {
@@ -165,7 +172,9 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       }
     }
   }
-
+  /**
+   * Executes the banking functionality.
+   */
   private void bank() {
     c.setStatus("@yel@Banking..");
     c.openBank();
@@ -236,7 +245,9 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       c.closeBank();
     }
   }
-
+  /**
+   * Walks the character from the bank to the dungeon.
+   */
   private void bankToDungeon() {
     c.setStatus("@gre@Walking to Moss Giants..");
     c.walkTo(581, 571);
@@ -250,7 +261,9 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     c.walkTo(633, 516);
     c.setStatus("@gre@Done Walking..");
   }
-
+  /**
+   * Dungeon to bank function that walks the character from the dungeon to the Ardy North Bank.
+   */
   private void dungeonToBank() {
     c.setStatus("@gre@Walking to Ardy North Bank..");
     c.walkTo(633, 516);
@@ -265,7 +278,9 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-
+  /**
+   * Sets up the graphical user interface for the program.
+   */
   private void setupGUI() {
     JLabel header = new JLabel("Ardy Moss Giants ~ by Kaila");
     JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
@@ -334,7 +349,11 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
-
+  /**
+   * Handles chat commands input by the user and changes values in the program
+   *
+   * @param  commandText  the text of the command
+   */
   @Override
   public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
     if (commandText.contains("bank")) {
@@ -415,21 +434,31 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       c.sleep(100);
     }
   }
-
+  /**
+   * Handles quest messages appearing in chat. interrupt to process messages
+   *
+   * @param  message  the text of the message
+   */
   @Override
   public void questMessageInterrupt(String message) {
     if (message.contains("You eat the")) {
       usedFood++;
     }
   }
-
+  /**
+   * Handles server messages appearing in chat. interrupt to process messages
+   *
+   * @param  message  the text of the message
+   */
   @Override
   public void serverMessageInterrupt(String message) {
     if (message.contains("You dig a hole")) {
       usedBones++;
     }
   }
-
+  /**
+   * Overrides paintInterrupt. Displays various statistics
+   */
   @Override
   public void paintInterrupt() {
     if (c != null) {

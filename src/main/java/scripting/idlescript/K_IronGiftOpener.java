@@ -21,7 +21,13 @@ public final class K_IronGiftOpener extends K_kailaScript {
   private final int[] bankerIds = {95, 224, 268, 540, 617, 792};
   private int itemId = -1;
   private int option = -1;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters
+   * and executes script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param  parameters  an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     c.quitIfAuthentic();
     if (!guiSetup) {

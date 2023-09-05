@@ -35,7 +35,13 @@ public final class K_Edge_Mankiller extends K_kailaScript {
     ItemId.COINS.getId(), // coins
     ItemId.BRONZE_ARROWS.getId() // Bronze arrow
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters
+   * and executes script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param  parameters  an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 213;
     centerY = 442;

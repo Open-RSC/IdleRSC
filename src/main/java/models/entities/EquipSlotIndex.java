@@ -23,35 +23,54 @@ public enum EquipSlotIndex implements Id {
   private static final Map<String, EquipSlotIndex> byName = new HashMap<String, EquipSlotIndex>();
 
   static {
-    for (EquipSlotIndex npc : EquipSlotIndex.values()) {
-      if (byId.put(npc.getId(), npc) != null) {
-        throw new IllegalArgumentException("duplicate id: " + npc.getId());
+    for (EquipSlotIndex slot : EquipSlotIndex.values()) {
+      if (byId.put(slot.getId(), slot) != null) {
+        throw new IllegalArgumentException("duplicate id: " + slot.getId());
       } else {
-        if (byName.put(sanitizeName(npc.name()), npc) != null) {
-          throw new IllegalArgumentException("duplicate sanitized name: " + npc.getId());
+        if (byName.put(sanitizeName(slot.name()), slot) != null) {
+          throw new IllegalArgumentException("duplicate sanitized name: " + slot.getId());
         }
       }
     }
   }
-
+  /**
+   * Retrieves the slot NAME associated with the given EquipSlotIndex, or NOTHING if no mapping
+   *    * exists for the id.
+   *
+   * @param  id the EquipSlotIndex of the slot
+   * @return slot NAME associated with the given EquipSlotIndex, or NOBODY if no EquipSlotIndex is found
+   */
   public static EquipSlotIndex getById(Integer id) {
     return byId.getOrDefault(id, EquipSlotIndex.NOTHING);
   }
-
+  /**
+   * Retrieves an 'EquipSlotIndex' int by its NAME.
+   *
+   * @param  name  the name of the slot
+   * @return       the EquipSlotIndex corresponding to the given name, or NOBODY if no match is found
+   */
   public static EquipSlotIndex getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
-
+  /**
+   * Sanitizes the given name by removing any non-alphanumeric characters and converting it to lowercase.
+   *
+   * @param  name  the name to be sanitized
+   * @return       the sanitized name
+   */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
-
   /** @param equipSlot The index of the equip slot. */
   EquipSlotIndex(int equipSlot) {
     this.equipSlot = equipSlot;
   }
-
-  /** @return The npcs ID */
+  /**
+   * Retrieves the 'EquipSlotIndex' int by the slot NAME.<br>
+   * For Example: 'int guard = EquipSlotIndex.GUARD.getId()'
+   *
+   * @return int EquipSlotIndex
+   */
   @Override
   public int getId() {
     return equipSlot;

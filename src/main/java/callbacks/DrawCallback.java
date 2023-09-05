@@ -103,7 +103,9 @@ public class DrawCallback {
   public static void setStatusText(String str) {
     statusText = str;
   }
-
+  /**
+   * Draws the status menu of the bot (the onscreen GUI showing hp/prayer/position/etc)
+   */
   private static void drawBotStatus(Controller c) {
     int y = 130;
     String localStatusText = statusText;
@@ -190,7 +192,9 @@ public class DrawCallback {
       }
     }
   }
-
+  /**
+   * Draws the script on the controller.
+   */
   private static void drawScript(Controller c) {
 
     if (c != null
@@ -242,7 +246,10 @@ public class DrawCallback {
     levelUpText = "@red@" + level + " @whi@" + statName + "@red@!";
     levelUpTextTimeout = System.currentTimeMillis() / 1000L + 15; // display for 15seconds
   }
-  /** Resets the XP counter. */
+  /**
+   * Resets the XP counter and re-initializes the necessary variables.
+   *
+   */
   public static void resetXpCounter() {
     Controller c = Main.getController();
     boolean temporaryToggledGFX = false;

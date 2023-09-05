@@ -72,7 +72,12 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
     ItemId.RUNE_SPEAR.getId(),
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters
+   * and executes the corresponding logic based on the values of the parameters.
+   *
+   * @param  parameters  an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 215;
     centerY = 3249;
@@ -105,14 +110,17 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
-        BankToDruid();
+        bankToDruid();
         c.sleep(1380);
       }
       scriptStart();
     }
     return 1000; // start() must return an int value now.
   }
-
+  /**
+   * Starts the script and executes the main logic in a loop.
+   *
+   */
   private void scriptStart() {
     while (c.isRunning()) {
       if (potUp) {
@@ -147,13 +155,15 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(foodId) == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
-        DruidToBank();
+        druidToBank();
         bank();
-        BankToDruid();
+        bankToDruid();
       }
     }
   }
-
+  /**
+   * Executes the banking process.
+   */
   private void bank() {
     c.setStatus("@yel@Banking..");
     c.openBank();
@@ -210,8 +220,11 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       checkInventoryItemCounts();
     }
   }
-
-  private void DruidToBank() {
+  /**
+   * druidToBank function is responsible for walking to the bank location.
+   * It performs a series of actions to reach the destination.
+   */
+  private void druidToBank() {
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(210, 3254);
     c.walkTo(200, 3254);
@@ -244,8 +257,11 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-
-  private void BankToDruid() {
+  /**
+   * BankToDruid function is responsible for walking to the Druids location.
+   * It performs a series of actions to reach the destination.
+   */
+  private void bankToDruid() {
     c.setStatus("@gre@Walking to Druids..");
     c.walkTo(221, 447);
     c.walkTo(217, 458);
@@ -274,7 +290,9 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     c.walkTo(210, 3254);
     c.setStatus("@gre@Done Walking..");
   }
-
+  /**
+   * Sets up the GUI for the application.
+   */
   private void setupGUI() {
     JLabel header = new JLabel("Edge Druid Killer ~ Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Gear, requires food in bank!");
@@ -337,10 +355,14 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
-
+  /**
+   * Handles chat commands input by the user and changes values in the program
+   *
+   * @param  commandText  the text of the command
+   */
   @Override
   public void chatCommandInterrupt(
-      String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
+    String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
     if (commandText.contains("bank")) {
       c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
       timeToBank = true;
@@ -373,7 +395,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       }
       c.sleep(100);
     } else if (commandText.contains(
-        "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+      "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
       c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
       c.displayMessage("@red@Switching to \"Accurate\" combat style!");
       fightMode = 2;
@@ -395,14 +417,20 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       c.sleep(100);
     }
   }
-
+  /**
+   * Handles quest messages appearing in chat. interrupt to process messages
+   *
+   * @param  message  the text of the message
+   */
   @Override
   public void questMessageInterrupt(String message) {
     if (message.contains("You eat the")) {
       usedFood++;
     }
   }
-
+  /**
+   * Overrides paintInterrupt. Displays various statistics
+   */
   @Override
   public void paintInterrupt() {
     if (c != null) {

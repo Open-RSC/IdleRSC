@@ -27,13 +27,13 @@ public class MessageCallback {
   /**
    * The hook called by the patched client every time a message is printed on screen.
    *
-   * @param crownEnabled
-   * @param sender
-   * @param message
-   * @param type
-   * @param crownID
-   * @param formerName
-   * @param colourOverride
+   * @param crownEnabled for admin crowns
+   * @param sender String name of sender
+   * @param message String text of message
+   * @param type MessageType of message (server, game, etc)
+   * @param crownID Id for admin crowns
+   * @param formerName String
+   * @param colourOverride String color to send message in
    */
   public static void messageHook(
       boolean crownEnabled,
@@ -134,7 +134,12 @@ public class MessageCallback {
       }
     }
   }
-
+  /**
+   * Handles the level up event. to display level up text and take a screenshot. <br>
+   * Currently bugged on certain level ups not returning the correct statId (invalid statId generated)
+   *
+   * @param  message  the message containing the level up information
+   */
   private static void handleLevelUp(String message) {
     Controller c = Main.getController();
     String skillName = null;

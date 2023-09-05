@@ -51,7 +51,13 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
     ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
-  // STARTing script
+  /**
+   * This function is the entry point for the program. It takes an array of parameters
+   * and executes script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param  parameters  an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 361;
     centerY = 3353; // FURTHEST LOOT is 376, 3368, go 361, 3353  (15 tiles)

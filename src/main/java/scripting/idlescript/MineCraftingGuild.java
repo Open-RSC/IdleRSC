@@ -10,7 +10,7 @@ import javax.swing.*;
  *
  * @author Searos bugfixes by kaila
  */
-public class MineGoldCraftingGuild extends IdleScript {
+public class MineCraftingGuild extends IdleScript {
   private static final Controller c = Main.getController();
   private final int[] gold = {112, 113};
   private final int[] clay = {114, 115};

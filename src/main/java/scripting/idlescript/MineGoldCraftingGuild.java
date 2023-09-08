@@ -1,10 +1,9 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * MineGoldCraftinGuild by Searos
@@ -12,15 +11,19 @@ import javax.swing.JLabel;
  * @author Searos bugfixes by kaila
  */
 public class MineGoldCraftingGuild extends IdleScript {
-  final JCheckBox silver2 = new JCheckBox("Mine Silver", true);
-  int a = 0;
-  final int[] gold = {112, 113};
-  final int[] silver = {195, 196, 197};
-  int bankedSilver = 0;
-  int bankedGold = 0;
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
+  private static final Controller c = Main.getController();
+  private final int[] gold = {112, 113};
+  private final int[] clay = {114, 115};
+  private final int[] silver = {195, 196}; // remove 197
+  private int bankedSilver = 0;
+  private int bankedGold = 0;
+  private int bankedClay = 0;
+  private int minedSilver = 0;
+  private int minedGold = 0;
+  private int minedClay = 0;
+  private JFrame scriptFrame = null;
+  private boolean guiSetup = false;
+  private boolean scriptStarted = false;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -33,7 +36,7 @@ public class MineGoldCraftingGuild extends IdleScript {
       setupGUI();
       guiSetup = true;
     }
-    while (controller.isRunning() && scriptStarted) {
+    while (c.isRunning() && scriptStarted) {
       scriptStart();
     }
     return 1000; // start() must return a int value now.
@@ -43,184 +46,237 @@ public class MineGoldCraftingGuild extends IdleScript {
     // shitty autowalk
     int newX = x;
     int newY = y;
-    while (controller.currentX() != x || controller.currentY() != y) {
-      if (controller.currentX() - x > 23) {
-        newX = controller.currentX() - 20;
+    while (c.currentX() != x || c.currentY() != y) {
+      if (c.currentX() - x > 23) {
+        newX = c.currentX() - 20;
       }
-      if (controller.currentY() - y > 23) {
-        newY = controller.currentY() - 20;
+      if (c.currentY() - y > 23) {
+        newY = c.currentY() - 20;
       }
-      if (controller.currentX() - x < -23) {
-        newX = controller.currentX() + 20;
+      if (c.currentX() - x < -23) {
+        newX = c.currentX() + 20;
       }
-      if (controller.currentY() - y < -23) {
-        newY = controller.currentY() + 20;
+      if (c.currentY() - y < -23) {
+        newY = c.currentY() + 20;
       }
-      if (Math.abs(controller.currentX() - x) <= 23) {
+      if (Math.abs(c.currentX() - x) <= 23) {
         newX = x;
       }
-      if (Math.abs(controller.currentY() - y) <= 23) {
+      if (Math.abs(c.currentY() - y) <= 23) {
         newY = y;
       }
-      if (!controller.isTileEmpty(newX, newY)) {
-        controller.walkToAsync(newX, newY, 2);
-        controller.sleep(640);
+      if (!c.isTileEmpty(newX, newY)) {
+        c.walkToAsync(newX, newY, 2);
+        c.sleep(640);
       } else {
-        controller.walkToAsync(newX, newY, 0);
-        controller.sleep(640);
+        c.walkToAsync(newX, newY, 0);
+        c.sleep(640);
       }
     }
   }
 
   public void scriptStart() {
-
-    if (controller.getNearestObjectById(112) != null && controller.getInventoryItemCount() < 30
-        || controller.getNearestObjectById(113) != null
-            && controller.getInventoryItemCount() < 30) {
-      controller.setStatus("Mining Gold");
+    // this is for gold rocks
+    if (miningMode == 0 // just mine gold
+        || (miningMode == 1 // mine gold then silver
+                && c.getNearestObjectById(112) != null
+                && c.getNearestObjectById(113) != null) // has rocks
+            && c.getInventoryItemCount() < 30) {
+      c.setStatus("Mining Gold");
       for (int objId : gold) {
         if (objId != 0) {
-          if (controller.getInventoryItemCount() < 30
-              && controller.getNearestObjectById(objId) != null) {
-            controller.atObject(
-                controller.getNearestObjectById(objId)[0],
-                controller.getNearestObjectById(objId)[1]);
-            controller.sleep(640);
-            while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-              controller.sleep(100);
+          if (c.getInventoryItemCount() < 30 && c.getNearestObjectById(objId) != null) {
+            c.atObject(c.getNearestObjectById(objId)[0], c.getNearestObjectById(objId)[1]);
+            c.sleep(1280);
+            while (c.isBatching() && c.getInventoryItemCount() < 30) {
+              c.sleep(640);
             }
           }
         }
       }
     } else {
-      controller.sleep(340); // should fix high cpu when all rocks depleted
+      c.sleep(340); // should fix high cpu when all rocks depleted
     }
-    if (controller.getNearestObjectById(112) == null
-        && controller.getNearestObjectById(113) == null
-        && controller.getInventoryItemCount() < 30
-        && silver2.isSelected()) {
-      controller.setStatus("Mining Silver");
+    // this is for silver rocks
+    if (((miningMode == 1 // mine gold then silver
+                && c.getNearestObjectById(112) == null // no gold rocks avail
+                && c.getNearestObjectById(113) == null)
+            || (miningMode == 2) // just mine silver, don't check gold ore or clay
+            || (miningMode == 3 // mine silver, then clay (don't check clay)
+                && c.getNearestObjectById(195) != null // has rocks
+                && c.getNearestObjectById(196) != null))
+        && c.getInventoryItemCount() < 30) { // also check inv
+      c.setStatus("Mining Silver");
       for (int objId : silver) {
         if (objId != 0) {
-          if (controller.getInventoryItemCount() < 30
-              && controller.getNearestObjectById(objId) != null
-              && controller.getNearestObjectById(112) == null
-              && controller.getNearestObjectById(113) == null) {
-            controller.atObject(
-                controller.getNearestObjectById(objId)[0],
-                controller.getNearestObjectById(objId)[1]);
-            controller.sleep(640);
-            while (controller.isBatching()
-                && controller.getInventoryItemCount() < 30
-                && controller.getNearestObjectById(112) == null
-                && controller.getNearestObjectById(113) == null) {
-              controller.sleep(340);
+          if (c.getInventoryItemCount() < 30 && c.getNearestObjectById(objId) != null) {
+            c.atObject(c.getNearestObjectById(objId)[0], c.getNearestObjectById(objId)[1]);
+            c.sleep(1280);
+            while (c.isBatching() && c.getInventoryItemCount() < 30) {
+              c.sleep(640);
             }
           }
         }
       }
     } else {
-      controller.sleep(340); // should fix high cpu when all rocks depleted
+      c.sleep(340); // should fix high cpu when all rocks depleted
     }
-    if (!controller.isAuthentic() && controller.getInventoryItemCount() == 30) {
-      controller.setStatus("Banking");
-      if (controller.getInventoryItemCount() == 30
-          && controller.getNearestObjectById(942) != null) {
-        if (!controller.isInBank()) {
-          controller.atObject(
-              controller.getNearestObjectById(942)[0], controller.getNearestObjectById(942)[1]);
-          controller.sleep(640);
+    // this is for mining clay
+    if (((miningMode == 3 // mine silver then clay
+                && c.getNearestObjectById(195) == null // no silver rocks avail
+                && c.getNearestObjectById(196) == null)
+            || (miningMode == 4)) // just mine clay, don't check gold ore or silver
+        && c.getInventoryItemCount() < 30) { // also check inv
+      c.setStatus("Mining Clay");
+      for (int objId : clay) {
+        if (objId != 0) {
+          if (c.getInventoryItemCount() < 30 && c.getNearestObjectById(objId) != null) {
+            c.atObject(c.getNearestObjectById(objId)[0], c.getNearestObjectById(objId)[1]);
+            c.sleep(1280);
+            while (c.isBatching() && c.getInventoryItemCount() < 30) {
+              c.sleep(640);
+            }
+          }
         }
-        if (controller.isInBank()) {
-
-          if (controller.getInventoryItemCount() > 1) {
-            for (int itemId : controller.getInventoryItemIds()) {
+      }
+    } else {
+      c.sleep(340); // should fix high cpu when all rocks depleted
+    }
+    if (!c.isAuthentic() && c.getInventoryItemCount() == 30) {
+      c.setStatus("Banking");
+      if (c.getInventoryItemCount() == 30 && c.getNearestObjectById(942) != null) {
+        if (!c.isInBank()) {
+          c.atObject(c.getNearestObjectById(942)[0], c.getNearestObjectById(942)[1]);
+          c.sleep(640);
+        }
+        if (c.isInBank()) {
+          minedSilver = c.getInventoryItemCount(383);
+          minedGold = c.getInventoryItemCount(152);
+          minedClay = c.getInventoryItemCount(149);
+          if (c.getInventoryItemCount() > 1) {
+            for (int itemId : c.getInventoryItemIds()) {
               if (itemId != 0) {
-                controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+                c.depositItem(itemId, c.getInventoryItemCount(itemId));
               }
             }
           }
-          bankedSilver = controller.getBankItemCount(383);
-          bankedGold = controller.getBankItemCount(152);
-          controller.closeBank();
+          bankedSilver = c.getBankItemCount(383);
+          bankedGold = c.getBankItemCount(152);
+          bankedClay = c.getBankItemCount(149);
+          c.closeBank();
         }
       }
     }
 
-    if (controller.isAuthentic() && controller.getInventoryItemCount() == 30) {
-      controller.setStatus("Leaving Guild");
-      while (controller.currentY() > 600) {
-        controller.openDoor(347, 601);
-        controller.sleep(430);
+    if (c.isAuthentic() && c.getInventoryItemCount() == 30) {
+      c.setStatus("Leaving Guild");
+      while (c.currentY() > 600) {
+        c.openDoor(347, 601);
+        c.sleep(430);
       }
-      while (controller.getNearestNpcById(95, false) == null) {
-        controller.setStatus("Walking to Bank");
-        startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
+      while (c.getNearestNpcById(95, false) == null) {
+        c.setStatus("Walking to Bank");
+        startWalking(c.getNearestBank()[0], c.getNearestBank()[1]);
       }
-      while (controller.getNearestNpcById(95, false) != null
-          && controller.getInventoryItemCount() == 30) {
-        controller.setStatus("Banking");
-        while (!controller.isInBank()) {
-          controller.openBank();
-          controller.sleep(640);
+      while (c.getNearestNpcById(95, false) != null && c.getInventoryItemCount() == 30) {
+        c.setStatus("Banking");
+        while (!c.isInBank()) {
+          c.openBank();
+          c.sleep(640);
         }
-        while (controller.isInBank() && controller.getInventoryItemCount() > 1) {
-          for (int itemId : controller.getInventoryItemIds()) {
+        while (c.isInBank() && c.getInventoryItemCount() > 1) {
+          for (int itemId : c.getInventoryItemIds()) {
             if (itemId != 0) {
-              controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+              c.depositItem(itemId, c.getInventoryItemCount(itemId));
             }
           }
-          bankedSilver = controller.getBankItemCount(383);
-          bankedGold = controller.getBankItemCount(152);
+          bankedSilver = c.getBankItemCount(383);
+          bankedGold = c.getBankItemCount(152);
         }
       }
-      while (controller.currentX() != 347 && controller.currentY() != 600) {
-        controller.setStatus("Walking to Guild");
+      while (c.currentX() != 347 && c.currentY() != 600) {
+        c.setStatus("Walking to Guild");
         startWalking(347, 600);
       }
-      while (controller.currentY() < 601) {
-        controller.setStatus("Entering guild");
-        controller.openDoor(347, 601);
-        controller.sleep(430);
+      while (c.currentY() < 601) {
+        c.setStatus("Entering guild");
+        c.openDoor(347, 601);
+        c.sleep(430);
       }
     }
-    controller.sleep(640);
+    c.sleep(640);
   }
 
-  public void setupGUI() {
-    JLabel header = new JLabel("Mine Gold at crafting guild");
-    JButton startScriptButton = new JButton("Start");
+  private int miningMode = 0;
 
-    startScriptButton.addActionListener(
-        e -> {
-          scriptFrame.setVisible(false);
-          scriptFrame.dispose();
-          scriptStarted = true;
-          controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-          controller.displayMessage("@red@MineGold started");
-        });
+  public void setupGUI() {
+    JLabel header = new JLabel("Mine rocks at crafting guild ");
+    JLabel blankLabel = new JLabel("and bank at the nearby chest");
+    JLabel miningModeLabel = new JLabel("\tMining Mode:");
+    JComboBox<String> miningModeField =
+        new JComboBox<>(
+            new String[] {
+              "Mine Gold",
+              "Mine Gold, then Silver",
+              "Only Mine Silver",
+              "Mine Silver, then Clay",
+              "Only Mine Clay"
+            });
+    JButton startScriptButton = new JButton("Start");
 
     scriptFrame = new JFrame("Script Options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     scriptFrame.add(header);
-    scriptFrame.add(silver2);
+    scriptFrame.add(blankLabel);
+    scriptFrame.add(miningModeLabel);
+    scriptFrame.add(miningModeField);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
+
+    startScriptButton.addActionListener(
+        e -> {
+          miningMode = miningModeField.getSelectedIndex(); // 0 gold,
+          scriptFrame.setVisible(false);
+          scriptFrame.dispose();
+          scriptStarted = true;
+          c.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos and Kaila");
+          c.displayMessage("@whi@MineGold started");
+        });
   }
 
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
-      controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
-      controller.drawString("@red@MineGold @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      controller.drawString("@red@Gold in Bank: @yel@" + this.bankedGold, 10, 35, 0xFFFFFF, 1);
-      controller.drawString("@red@Silver in bank: @yel@" + this.bankedSilver, 10, 49, 0xFFFFFF, 1);
+    if (controller
+        != null) { // 0 = mine gold, 1 = gold then silver, 2 = silver, 3 = silver then clay, 4 =
+      // clay
+      c.drawString("@gre@MineGold by @cya@Searos @gre@and @mag@Kaila", 10, 21 - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", 10, 21, 0xFFFFFF, 1);
+      if (miningMode == 0) { // mine gold
+        c.drawString("@whi@Gold in Bank: @yel@" + bankedGold, 10, 35, 0xFFFFFF, 1);
+        c.drawString("@whi@Mined Gold: @yel@" + minedGold, 10, 49, 0xFFFFFF, 1);
+      } else if (miningMode == 1) { // gold then silver
+        c.drawString("@whi@Gold in Bank: @yel@" + bankedGold, 10, 35, 0xFFFFFF, 1);
+        c.drawString("@whi@Mined Gold: @yel@" + minedGold, 10, 35 + 14, 0xFFFFFF, 1);
+        c.drawString("@whi@Silver in bank: @yel@" + bankedSilver, 10, 35 + (14 * 2), 0xFFFFFF, 1);
+        c.drawString("@whi@Mined Silver: @yel@" + minedSilver, 10, 35 + (14 * 3), 0xFFFFFF, 1);
+      } else if (miningMode == 2) { // just silver
+        c.drawString("@whi@Silver in bank: @yel@" + bankedSilver, 10, 35, 0xFFFFFF, 1);
+        c.drawString("@whi@Mined Silver: @yel@" + minedSilver, 10, 35 + 14, 0xFFFFFF, 1);
+      } else if (miningMode == 3) { // silver then clay
+        c.drawString("@whi@Silver in bank: @yel@" + bankedSilver, 10, 35, 0xFFFFFF, 1);
+        c.drawString("@whi@Mined Silver: @yel@" + minedSilver, 10, 35 + 14, 0xFFFFFF, 1);
+        c.drawString("@whi@Clay in bank: @yel@" + bankedClay, 10, 35 + (14 * 2), 0xFFFFFF, 1);
+        c.drawString("@whi@Mined Clay: @yel@" + minedClay, 10, 35 + (14 * 3), 0xFFFFFF, 1);
+      } else if (miningMode == 4) {
+        c.drawString("@whi@Clay in bank: @yel@" + bankedClay, 10, 35, 0xFFFFFF, 1);
+        c.drawString("@whi@Mined Clay: @yel@" + minedClay, 10, 35 + 14, 0xFFFFFF, 1);
+      }
     }
   }
 }

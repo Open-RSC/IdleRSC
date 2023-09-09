@@ -26,6 +26,7 @@ public class MineCraftingGuild extends IdleScript {
   private JFrame scriptFrame = null;
   private boolean useDewCrown = false;
   private boolean guiSetup = false;
+  private boolean timeToBank = false;
   private boolean scriptStarted = false;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -129,7 +130,8 @@ public class MineCraftingGuild extends IdleScript {
                 && c.getNearestObjectById(195) == null // no silver rocks avail
                 && c.getNearestObjectById(196) == null)
             || (miningMode == 4)) // just mine clay, don't check gold ore or silver
-        && c.getInventoryItemCount() < 30) { // also check inv
+        && c.getInventoryItemCount() < 30
+        && !timeToBank) { // also check inv
       c.setStatus("Mining Clay");
       if (useDewCrown && !c.isItemIdEquipped(DEW_CROWN) && c.isItemInInventory(DEW_CROWN)) {
         c.equipItem(c.getInventoryItemSlotIndex(DEW_CROWN));
@@ -149,8 +151,9 @@ public class MineCraftingGuild extends IdleScript {
     } else {
       c.sleep(340); // should fix high cpu when all rocks depleted
     }
-    if (!c.isAuthentic() && c.getInventoryItemCount() == 30) {
+    if (timeToBank || (!c.isAuthentic() && c.getInventoryItemCount() == 30)) {
       c.setStatus("Banking");
+      timeToBank = false;
       if (c.getInventoryItemCount() == 30 && c.getNearestObjectById(942) != null) {
         if (!c.isInBank()) {
           c.atObject(c.getNearestObjectById(942)[0], c.getNearestObjectById(942)[1]);
@@ -216,6 +219,13 @@ public class MineCraftingGuild extends IdleScript {
       }
     }
     c.sleep(640);
+  }
+  // the crown of dew shatters
+  @Override
+  public void serverMessageInterrupt(String message) {
+    if (message.contains("The crown of dew shatters")) {
+      timeToBank = true; //bank if crown breaks
+    }
   }
 
   private int miningMode = 0;

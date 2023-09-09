@@ -4,6 +4,7 @@ import bot.Main;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.ItemId;
 
 /**
  * MineGoldCraftinGuild by Searos
@@ -21,7 +22,9 @@ public class MineCraftingGuild extends IdleScript {
   private int minedSilver = 0;
   private int minedGold = 0;
   private int minedClay = 0;
+  private final int DEW_CROWN = ItemId.CROWN_OF_DEW.getId();
   private JFrame scriptFrame = null;
+  private boolean useDewCrown = false;
   private boolean guiSetup = false;
   private boolean scriptStarted = false;
   /**
@@ -128,6 +131,10 @@ public class MineCraftingGuild extends IdleScript {
             || (miningMode == 4)) // just mine clay, don't check gold ore or silver
         && c.getInventoryItemCount() < 30) { // also check inv
       c.setStatus("Mining Clay");
+      if (useDewCrown && !c.isItemIdEquipped(DEW_CROWN) && c.isItemInInventory(DEW_CROWN)) {
+        c.equipItem(c.getInventoryItemSlotIndex(DEW_CROWN));
+        c.sleep(640);
+      }
       for (int objId : clay) {
         if (objId != 0) {
           if (c.getInventoryItemCount() < 30 && c.getNearestObjectById(objId) != null) {
@@ -150,15 +157,19 @@ public class MineCraftingGuild extends IdleScript {
           c.sleep(640);
         }
         if (c.isInBank()) {
-          minedSilver = c.getInventoryItemCount(383);
-          minedGold = c.getInventoryItemCount(152);
-          minedClay = c.getInventoryItemCount(149);
+          minedSilver = minedSilver + c.getInventoryItemCount(383);
+          minedGold = minedGold + c.getInventoryItemCount(152);
+          minedClay = minedClay + c.getInventoryItemCount(149);
           if (c.getInventoryItemCount() > 1) {
             for (int itemId : c.getInventoryItemIds()) {
               if (itemId != 0) {
                 c.depositItem(itemId, c.getInventoryItemCount(itemId));
               }
             }
+          }
+          if (useDewCrown && !c.isItemIdEquipped(DEW_CROWN) && c.getBankItemCount(DEW_CROWN) > 0) {
+            c.withdrawItem(DEW_CROWN, 1);
+            c.sleep(640);
           }
           bankedSilver = c.getBankItemCount(383);
           bankedGold = c.getBankItemCount(152);
@@ -222,6 +233,7 @@ public class MineCraftingGuild extends IdleScript {
               "Mine Silver, then Clay",
               "Only Mine Clay"
             });
+    JCheckBox dewCrownCheckBox = new JCheckBox("Use crown of Dew?");
     JButton startScriptButton = new JButton("Start");
 
     scriptFrame = new JFrame("Script Options");
@@ -232,6 +244,7 @@ public class MineCraftingGuild extends IdleScript {
     scriptFrame.add(blankLabel);
     scriptFrame.add(miningModeLabel);
     scriptFrame.add(miningModeField);
+    scriptFrame.add(dewCrownCheckBox);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
@@ -239,9 +252,18 @@ public class MineCraftingGuild extends IdleScript {
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
 
+    dewCrownCheckBox.setEnabled(false);
+
+    miningModeField.addActionListener(
+        e -> {
+          dewCrownCheckBox.setEnabled(
+              miningModeField.getSelectedIndex() == 3 || miningModeField.getSelectedIndex() == 4);
+        });
+
     startScriptButton.addActionListener(
         e -> {
           miningMode = miningModeField.getSelectedIndex(); // 0 gold,
+          useDewCrown = dewCrownCheckBox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;

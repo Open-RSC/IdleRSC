@@ -1081,7 +1081,6 @@ public class K_kailaScript extends IdleScript {
       }
       c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
       c.sleep(GAME_TICK);
-      c.closeBank();
     }
   }
   /**
@@ -1405,8 +1404,8 @@ public class K_kailaScript extends IdleScript {
       if (!c.isInBank()) {
         waitForBankOpen();
       } else {
-        c.withdrawItem(foodId, 30 - c.getInventoryItemCount());
-        c.sleep(2 * GAME_TICK);
+        c.withdrawItem(foodId, 30);
+        c.sleep(GAME_TICK);
       }
       c.closeBank();
     }
@@ -1481,9 +1480,10 @@ public class K_kailaScript extends IdleScript {
     if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1)
       c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
-    for (int i = 1; i <= 20; i++) {
+    for (int i = 1; i <= 100; i++) {
       if (c.currentX() != 591 && c.currentY() != 765) {
         c.setStatus("@gre@Teleporting..");
+        if (c.isInCombat()) leaveCombat();
         c.itemCommand(AGILITY_CAPE);
         c.sleep(3 * GAME_TICK);
       } else {
@@ -1502,9 +1502,10 @@ public class K_kailaScript extends IdleScript {
     if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1)
       c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
-    for (int i = 1; i <= 60; i++) {
+    for (int i = 1; i <= 100; i++) {
       if (c.currentX() != 347 && c.currentY() != 599) {
         c.setStatus("@gre@Teleporting..");
+        if (c.isInCombat()) leaveCombat();
         c.itemCommand(CRAFTING_CAPE);
         c.sleep(3 * GAME_TICK);
       } else {

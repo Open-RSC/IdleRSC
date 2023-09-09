@@ -31,7 +31,12 @@ public class ShearSheep extends IdleScript {
 
     return 1000; // start() must return a int value now.
   }
-
+  /**
+   * Starts walking to the specified coordinates.
+   *
+   * @param x the x-coordinate to walk to
+   * @param y the y-coordinate to walk to
+   */
   public void startWalking(int x, int y) {
     // shitty autowalk
     int newX = x;
@@ -74,7 +79,7 @@ public class ShearSheep extends IdleScript {
         controller.setStatus("Shearing sheep");
         controller.sleep(642);
         while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-          controller.sleep(10);
+          controller.sleep(640);
         }
       } else if (controller.getNearestNpcById(2, false) == null) {
         controller.setStatus("Finding sheep");

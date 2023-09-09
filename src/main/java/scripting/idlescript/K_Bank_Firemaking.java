@@ -118,7 +118,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       if (vWestStart[i] < 140) {
         c.walkTo(138, 508);
       }
-      if (c.getObjectAtCoord(vWestStart[i], vWestStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(vWestStart[i], vWestStart[i + 1]) != 97) { // can use c.isTileEmpty
         c.walkTo(vWestStart[i], vWestStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);
@@ -142,7 +142,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       if (vEastStart[i] < 80) {
         c.walkTo(84, 509);
       }
-      if (c.getObjectAtCoord(vEastStart[i], vEastStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(vEastStart[i], vEastStart[i + 1]) != 97) { // can use c.isTileEmpty
         c.walkTo(vEastStart[i], vEastStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);
@@ -166,7 +166,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       if (seersStart[i] < 489) {
         c.walkTo(490, 460);
       }
-      if (c.getObjectAtCoord(seersStart[i], seersStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(seersStart[i], seersStart[i + 1]) != 97) { // can use c.isTileEmpty
         c.walkTo(seersStart[i], seersStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);
@@ -187,7 +187,8 @@ public final class K_Bank_Firemaking extends K_kailaScript {
     c.setStatus("@gre@Burning logs..");
     for (int i = 0; i < (ardougneStart.length); i += 2) {
       if (c.getInventoryItemCount(logId) < 1) break;
-      if (c.getObjectAtCoord(ardougneStart[i], ardougneStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(ardougneStart[i], ardougneStart[i + 1])
+          != 97) { // can use c.isTileEmpty
         c.walkTo(ardougneStart[i], ardougneStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);

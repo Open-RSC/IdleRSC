@@ -224,7 +224,7 @@ public class MineCraftingGuild extends IdleScript {
   @Override
   public void serverMessageInterrupt(String message) {
     if (message.contains("The crown of dew shatters")) {
-      timeToBank = true; //bank if crown breaks
+      timeToBank = true; // bank if crown breaks
     }
   }
 
@@ -237,7 +237,7 @@ public class MineCraftingGuild extends IdleScript {
     JComboBox<String> miningModeField =
         new JComboBox<>(
             new String[] {
-              "Mine Gold",
+              "Only Mine Gold",
               "Mine Gold, then Silver",
               "Only Mine Silver",
               "Mine Silver, then Clay",

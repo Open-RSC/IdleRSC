@@ -1080,7 +1080,7 @@ public class K_kailaScript extends IdleScript {
         waitForBankOpen();
       }
       c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
-      c.sleep(GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
   }
   /**

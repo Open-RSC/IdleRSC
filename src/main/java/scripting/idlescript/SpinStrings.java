@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 
 /**
  * SpinStrings by Searos
@@ -21,8 +22,8 @@ public class SpinStrings extends IdleScript {
   final int[] bankerIds = {95, 224, 268, 485, 540, 617};
   final int[] bankX = {289, 500, 346};
   final int[] bankY = {571, 455, 608};
-  final int[] inputIds = {675, 145};
-  final int[] outputIds = {676, 207};
+  final int[] inputIds = {ItemId.FLAX.getId(), ItemId.WOOL.getId()};
+  final int[] outputIds = {ItemId.BOW_STRING.getId(), ItemId.BALL_OF_WOOL.getId()};
   int input = -1;
   int output = -1;
   int totalString = 0;

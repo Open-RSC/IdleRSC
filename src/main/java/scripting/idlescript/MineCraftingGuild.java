@@ -287,7 +287,8 @@ public class MineCraftingGuild extends IdleScript {
     if (controller
         != null) { // 0 = mine gold, 1 = gold then silver, 2 = silver, 3 = silver then clay, 4 =
       // clay
-      c.drawString("@gre@MineGold by @cya@Searos @gre@and @mag@Kaila", 10, 21 - 3, 0xFFFFFF, 1);
+      c.drawString(
+          "@gre@MineCraftingGuild by @cya@Searos @gre@and @mag@Kaila", 10, 21 - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", 10, 21, 0xFFFFFF, 1);
       if (miningMode == 0) { // mine gold
         c.drawString("@whi@Gold in Bank: @yel@" + bankedGold, 10, 35, 0xFFFFFF, 1);

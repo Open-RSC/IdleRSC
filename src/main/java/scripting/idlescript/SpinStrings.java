@@ -258,14 +258,14 @@ public class SpinStrings extends IdleScript {
               controller.sleep(618);
             }
           }
+          // withdraw materials
+          bankedString = controller.getBankItemCount(output);
+          controller.withdrawItem(input, 30 - controller.getInventoryItemCount());
+          controller.sleep(640);
+          controller.closeBank();
+          controller.setStatus("@red@Finished Banking");
         } else break;
       }
-      bankedString = controller.getBankItemCount(output);
-      // withdraw materials
-      controller.withdrawItem(input, 30 - controller.getInventoryItemCount());
-      controller.sleep(640);
-      controller.closeBank();
-      controller.setStatus("@red@Finished Banking");
     }
   }
 
@@ -306,8 +306,8 @@ public class SpinStrings extends IdleScript {
     if (controller != null) {
       controller.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       controller.drawString("@red@Spin Strings @gre@by Searos", 10, 21, 0xFFFFFF, 1);
-      controller.drawString("@red@Strings Spun: @yel@" + this.totalString, 10, 35, 0xFFFFFF, 1);
-      controller.drawString("@red@String in Bank: @yel@" + this.bankedString, 10, 49, 0xFFFFFF, 1);
+      controller.drawString("@red@Strings Spun: @yel@" + totalString, 10, 35, 0xFFFFFF, 1);
+      controller.drawString("@red@String in Bank: @yel@" + bankedString, 10, 49, 0xFFFFFF, 1);
     }
   }
 }

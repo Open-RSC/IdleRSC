@@ -149,6 +149,19 @@ public class AIOThiever extends IdleScript {
   public void scriptStart() {
     while (c.isRunning()) {
 
+      if (goToOtherSide) {
+        int oldSide = randomSide;
+        randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+        if (randomSide == oldSide) {
+          randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+        }
+        if (randomSide == oldSide) {
+          randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+        }
+        goToOtherSide = false;
+        c.sleep(100);
+      }
+
       eat();
 
       if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
@@ -174,10 +187,6 @@ public class AIOThiever extends IdleScript {
       while (c.isBatching()) c.sleep(GAME_TICK);
 
       if (!c.isInCombat()) {
-        if (goToOtherSide) {
-          randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
-          goToOtherSide = false;
-        }
         if (target.isNpc) {
           c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(target.id, false);
@@ -200,7 +209,7 @@ public class AIOThiever extends IdleScript {
               c.walkTo(90, 519);
             }
             c.atObject(91, 518);
-            c.sleep(GAME_TICK);
+            c.sleep(4 * GAME_TICK);
           }
         } else if ((target.name.contains("Gems") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
@@ -230,7 +239,7 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK);
           }
           c.atObject(551, 599);
-          c.sleep(GAME_TICK);
+          c.sleep(4 * GAME_TICK);
         } else if ((target.name.contains("Silver") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(555, 593) == 325) {
@@ -260,7 +269,33 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK);
           }
           c.atObject(555, 593);
-          c.sleep(GAME_TICK);
+          c.sleep(4 * GAME_TICK);
+        } else if ((target.name.contains("Bakers") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(544, 599) == 322) {
+          c.setStatus("@red@Stealing from bakers stall..");
+          if (randomSide <= 3
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 544 && c.currentY() != 601)) { // south
+            c.walkTo(544, 601);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 543 && c.currentY() != 600)) { // east
+            c.walkTo(543, 600);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 546 && c.currentY() != 599)) { // west
+            c.walkTo(546, 599);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 544 && c.currentY() != 598)) { // north
+            c.walkTo(543, 600);
+          }
+          c.atObject(544, 599);
+          c.sleep(4 * GAME_TICK);
         } else if ((target.name.contains("Spices") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(544, 590) == 326) {
@@ -289,33 +324,7 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK);
           }
           c.atObject(544, 590);
-          c.sleep(GAME_TICK);
-        } else if ((target.name.contains("Bakers") || target.name.contains("All"))
-            && c.getInventoryItemCount() < 30
-            && c.getObjectAtCoord(544, 599) == 322) {
-          c.setStatus("@red@Stealing from bakers stall..");
-          if (randomSide <= 3
-              && c.getObjectAtCoord(544, 599) == 322
-              && (c.currentX() != 544 && c.currentY() != 601)) { // south
-            c.walkTo(544, 601);
-            c.sleep(GAME_TICK);
-          } else if (randomSide >= 4
-              && randomSide <= 6
-              && c.getObjectAtCoord(544, 599) == 322
-              && (c.currentX() != 543 && c.currentY() != 600)) { // east
-            c.walkTo(543, 600);
-          } else if (randomSide >= 7
-              && randomSide <= 8
-              && c.getObjectAtCoord(544, 599) == 322
-              && (c.currentX() != 546 && c.currentY() != 599)) { // west
-            c.walkTo(546, 599);
-          } else if (randomSide > 8
-              && c.getObjectAtCoord(544, 599) == 322
-              && (c.currentX() != 544 && c.currentY() != 598)) { // north
-            c.walkTo(543, 600);
-          }
-          c.atObject(544, 599);
-          c.sleep(GAME_TICK);
+          c.sleep(4 * GAME_TICK);
         } else if ((target.name.contains("Fur") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(551, 583) == 324) {
@@ -344,7 +353,7 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK);
           }
           c.atObject(551, 583);
-          c.sleep(GAME_TICK);
+          c.sleep(4 * GAME_TICK);
         } else if ((target.name.contains("Silk") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(566, 594) == 323) {
@@ -370,8 +379,8 @@ public class AIOThiever extends IdleScript {
             c.walkTo(567, 596);
           }
           c.atObject(566, 594);
-          c.sleep(GAME_TICK);
-        } else if (target.isObject && !target.name.contains("All")) { // (if stall)
+          c.sleep(4 * GAME_TICK);
+        } else if (target.isObject || !target.name.contains("All")) { // (if obj or chest)
           int[] coords = c.getNearestObjectById(target.id);
           if (coords != null) {
             c.setStatus("@red@Stealing..");
@@ -561,10 +570,8 @@ public class AIOThiever extends IdleScript {
   @Override
   public void questMessageInterrupt(String message) {
     if (message.contains("You pick") || message.contains("You steal")) success++;
-    else if (message.contains("You fail")
-        || (message.contains("hands off there") && !target.name.contains("All"))) failure++;
-    if (message.contains("Hey thats mine")
-        || (message.contains("hands off there") && target.name.contains("All"))) {
+    else if (message.contains("You fail")) failure++;
+    else if (message.contains("Hey thats mine") || (message.contains("hands off there"))) {
       failure++;
       goToOtherSide = true;
     }

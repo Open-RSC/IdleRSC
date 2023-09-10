@@ -5,7 +5,6 @@ import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,6 +31,9 @@ public class AIOThiever extends IdleScript {
   int failure = 0;
   private final int GAME_TICK = 640;
   private boolean goToOtherSide = false;
+  private String bankSpot;
+  private String[] bankSpots =
+      new String[] {"None", "Ardougne Square", "Varrock West", "Varrock East"};
 
   static class ThievingObject {
     final String name;
@@ -64,7 +66,6 @@ public class AIOThiever extends IdleScript {
   ThievingObject target = null;
   int fightMode = 0;
   int eatingHealth = 0;
-  boolean doBank = false;
   int foodWithdrawAmount = 0;
 
   final ArrayList<ThievingObject> objects =
@@ -127,7 +128,6 @@ public class AIOThiever extends IdleScript {
             if (obj.name.equals(parameters[2])) target = obj;
           }
 
-          doBank = Boolean.parseBoolean(parameters[3]);
           foodWithdrawAmount = Integer.parseInt(parameters[4]);
 
           if (target == null) throw new Exception("Could not parse thieving target!");
@@ -186,24 +186,25 @@ public class AIOThiever extends IdleScript {
             c.sleep(200);
           }
         } else if (target.name.contains("Tea") && c.getInventoryItemCount() < 30) {
-          if (c.getObjectAtCoord(544, 599) == 322) { // fix coords
-            c.setStatus("@red@Stealing from bakers stall..");
-            if (goToOtherSide && (c.currentX() != 543 && c.currentY() != 600)) {
-
-            } else if (!goToOtherSide
-                && (c.currentX() != 543 && c.currentY() != 600)) { // fix coords
-              c.walkTo(543, 600); // fix coords
+          if (c.getObjectAtCoord(91, 518) == 1183) {
+            c.setStatus("@red@Stealing from tea stall..");
+            if (goToOtherSide && (c.currentX() != 93 && c.currentY() != 518)) {
+              goToOtherSide = false;
+              c.walkTo(93, 518);
+              c.sleep(GAME_TICK);
+            } else if (!goToOtherSide && (c.currentX() != 90 && c.currentY() != 519)) {
+              c.walkTo(90, 519);
             }
-            c.atObject(544, 599); // fix coords
+            c.atObject(91, 518);
             c.sleep(GAME_TICK);
           }
         } else if ((target.name.contains("Silver") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(555, 593) == 325) {
           c.setStatus("@red@Stealing from silver stall..");
-          if (goToOtherSide && (c.currentX() != 554 && c.currentY() != 593)) {
+          if (goToOtherSide && (c.currentX() != 555 && c.currentY() != 592)) {
             goToOtherSide = false;
-            c.walkTo(554, 593);
+            c.walkTo(555, 592);
             c.sleep(GAME_TICK);
           } else if (!goToOtherSide
               && (c.currentX() != 557 && c.currentY() != 594)) { // walk out of guard range
@@ -280,6 +281,7 @@ public class AIOThiever extends IdleScript {
             c.walkTo(566, 593);
             c.sleep(GAME_TICK);
           } else if (!goToOtherSide
+              && c.getObjectAtCoord(566, 594) == 323
               && (c.currentX() != 567 && c.currentY() != 596)) { // walk out of guard range
             c.walkTo(567, 596);
           }
@@ -300,25 +302,28 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK);
           }
         }
-        if (doBank && (c.getInventoryItemCount() == 30 || countFood() == 0)) {
+        if (!bankSpot.equals(bankSpots[0]) //not the "None" option
+            && (c.getInventoryItemCount() == 30 || countFood() == 0)) {
           c.setStatus("@red@Banking...");
-          c.walkTo(548, 589);
-          c.walkTo(547, 607);
+          // walk near to bank
+          if (bankSpot.equals(bankSpots[1])) { // ardy
+            if (c.currentY() < 590) c.walkTo(548, 589);
+            c.walkTo(547, 607);
+          } else if (bankSpot.equals(bankSpots[2])) { // var west
+            c.walkTo(151, 507);
+          } else if (bankSpot.equals(bankSpots[3])) { // var east
+            c.walkTo(96, 509);
+            c.walkTo(102, 509);
+          }
           c.openBank();
 
-          for (int id : lootIds) {
-            if (c.getInventoryItemCount(id) > 0) {
-              c.depositItem(id, c.getInventoryItemCount(id));
+          for (int itemId : c.getInventoryItemIds()) {
+            if (c.getInventoryItemCount() > 0) {
+              c.depositItem(itemId, c.getInventoryItemCount(itemId));
               c.sleep(GAME_TICK);
             }
           }
-
-          for (int id : c.getFoodIds()) {
-            if (c.getInventoryItemCount(id) > 0) {
-              c.depositItem(id, c.getInventoryItemCount(id));
-              c.sleep(GAME_TICK);
-            }
-          }
+          c.sleep(2000); // Important, leave in
 
           for (int id : c.getFoodIds()) {
             if (c.getBankItemCount(id) > 0) {
@@ -327,8 +332,15 @@ public class AIOThiever extends IdleScript {
               break;
             }
           }
-
-          c.walkTo(548, 605);
+          // walk back to thieve spots
+          if (bankSpot.equals(bankSpots[1])) { // ardy
+            c.walkTo(548, 605);
+          } else if (bankSpot.equals(bankSpots[2])) { // var west
+            c.walkTo(151, 507);
+          } else if (bankSpot.equals(bankSpots[3])) { // var east
+            c.walkTo(102, 509);
+            c.walkTo(93, 511);
+          }
         }
       } else {
         c.setStatus("@red@Leaving combat..");
@@ -356,7 +368,7 @@ public class AIOThiever extends IdleScript {
         }
       }
 
-      while (!doBank && !ate) {
+      while (bankSpot.equals(bankSpots[0]) && !ate) {
         c.setStatus("@red@Logging out..");
         leaveCombat();
         c.setAutoLogin(false);
@@ -401,12 +413,14 @@ public class AIOThiever extends IdleScript {
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
     JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
+    JLabel thieveLabel = new JLabel("Select thieving option:");
     JTextField eatAtHpField =
         new JTextField(String.valueOf(c.getBaseStat(c.getStatId("Hits")) / 2));
     JComboBox<String> targetField = new JComboBox<>();
-    JCheckBox doBankCheckbox = new JCheckBox("Bank? (Ardougne Square only)");
-    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (Ardougne Square only)");
-    JTextField foodWithdrawAmountField = new JTextField();
+    JLabel bankLabel = new JLabel("Select banking option:");
+    JComboBox<String> doBankCombobox = new JComboBox<>(bankSpots);
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (banking only)");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(0));
     JLabel weaponWarningLabel =
         new JLabel("Never wear weapon for pickpocketing, do wear for stalls");
     JButton startScriptButton = new JButton("Start");
@@ -420,9 +434,9 @@ public class AIOThiever extends IdleScript {
           fightMode = fightModeField.getSelectedIndex();
           eatingHealth = Integer.parseInt(eatAtHpField.getText());
           target = objects.get(targetField.getSelectedIndex());
-          doBank = doBankCheckbox.isSelected();
+          bankSpot = bankSpots[doBankCombobox.getSelectedIndex()];
 
-          if (!foodWithdrawAmountField.getText().equals(""))
+          if (!foodWithdrawAmountField.getText().isEmpty())
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
 
           scriptFrame.setVisible(false);
@@ -440,8 +454,10 @@ public class AIOThiever extends IdleScript {
     scriptFrame.add(fightModeField);
     scriptFrame.add(eatAtHpLabel);
     scriptFrame.add(eatAtHpField);
+    scriptFrame.add(thieveLabel);
     scriptFrame.add(targetField);
-    scriptFrame.add(doBankCheckbox);
+    scriptFrame.add(bankLabel);
+    scriptFrame.add(doBankCombobox);
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(weaponWarningLabel);

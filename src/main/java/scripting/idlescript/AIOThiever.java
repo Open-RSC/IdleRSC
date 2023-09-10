@@ -25,7 +25,7 @@ public class AIOThiever extends IdleScript {
 
   final int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
   int[] doorObjectIds = {60, 64};
-
+  int randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
   final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
   int failure = 0;
@@ -174,6 +174,10 @@ public class AIOThiever extends IdleScript {
       while (c.isBatching()) c.sleep(GAME_TICK);
 
       if (!c.isInCombat()) {
+        if (goToOtherSide) {
+          randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+          goToOtherSide = false;
+        }
         if (target.isNpc) {
           c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(target.id, false);
@@ -188,56 +192,126 @@ public class AIOThiever extends IdleScript {
         } else if (target.name.contains("Tea") && c.getInventoryItemCount() < 30) {
           if (c.getObjectAtCoord(91, 518) == 1183) {
             c.setStatus("@red@Stealing from tea stall..");
-            if (goToOtherSide && (c.currentX() != 93 && c.currentY() != 518)) {
-              goToOtherSide = false;
+            if (randomSide < 5
+                && (c.currentX() != 93 && c.currentY() != 518)) { // needs random sides
               c.walkTo(93, 518);
               c.sleep(GAME_TICK);
-            } else if (!goToOtherSide && (c.currentX() != 90 && c.currentY() != 519)) {
+            } else if (randomSide >= 5 && (c.currentX() != 90 && c.currentY() != 519)) {
               c.walkTo(90, 519);
             }
             c.atObject(91, 518);
             c.sleep(GAME_TICK);
           }
-        } else if ((target.name.contains("Silver") || target.name.contains("All"))
-            && c.getInventoryItemCount() < 30
-            && c.getObjectAtCoord(555, 593) == 325) {
-          c.setStatus("@red@Stealing from silver stall..");
-          if (goToOtherSide && (c.currentX() != 555 && c.currentY() != 592)) {
-            goToOtherSide = false;
-            c.walkTo(555, 592);
-            c.sleep(GAME_TICK);
-          } else if (!goToOtherSide
-              && (c.currentX() != 557 && c.currentY() != 594)) { // walk out of guard range
-            c.walkTo(557, 594);
-            c.sleep(GAME_TICK);
-          }
-          c.atObject(555, 593);
-          c.sleep(GAME_TICK);
         } else if ((target.name.contains("Gems") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(551, 599) == 327) {
           c.setStatus("@red@Stealing from Gems stall..");
-          if (goToOtherSide && (c.currentX() != 552 && c.currentY() != 601)) {
-            goToOtherSide = false;
+          if (randomSide <= 3
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 552 && c.currentY() != 601)) { // south
             c.walkTo(552, 601);
             c.sleep(GAME_TICK);
-          } else if (!goToOtherSide
-              && (c.currentX() != 553 && c.currentY() != 599)) { // walk out of guard range
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 553 && c.currentY() != 599)) { // west
             c.walkTo(553, 599);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 552 && c.currentY() != 598)) { // north
+            c.walkTo(552, 598);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 550 && c.currentY() != 600)) { // east
+            c.walkTo(552, 598);
             c.sleep(GAME_TICK);
           }
           c.atObject(551, 599);
+          c.sleep(GAME_TICK);
+        } else if ((target.name.contains("Silver") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(555, 593) == 325) {
+          c.setStatus("@red@Stealing from silver stall..");
+
+          if (randomSide <= 3 // more weight for better sides
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 555 && c.currentY() != 592)) { // north
+            c.walkTo(555, 592);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6 // more weight for better sides
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 557 && c.currentY() != 594)) { // west
+            c.walkTo(557, 594);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8 // less weight
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 556 && c.currentY() != 596)) { // south
+            c.walkTo(556, 595);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8 // less weight
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 554 && c.currentY() != 593)) { // east
+            c.walkTo(554, 593);
+            c.sleep(GAME_TICK);
+          }
+          c.atObject(555, 593);
+          c.sleep(GAME_TICK);
+        } else if ((target.name.contains("Spices") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(544, 590) == 326) {
+          c.setStatus("@red@Stealing from spices stall..");
+          if (randomSide <= 3
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 543 && c.currentY() != 591)) { // east
+            c.walkTo(543, 591);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 544 && c.currentY() != 589)) { // north
+            c.walkTo(544, 589);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 544 && c.currentY() != 592)) { // south
+            c.walkTo(544, 592);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 546 && c.currentY() != 590)) { // north
+            c.walkTo(544, 592);
+            c.sleep(GAME_TICK);
+          }
+          c.atObject(544, 590);
           c.sleep(GAME_TICK);
         } else if ((target.name.contains("Bakers") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(544, 599) == 322) {
           c.setStatus("@red@Stealing from bakers stall..");
-          if (goToOtherSide && (c.currentX() != 544 && c.currentY() != 601)) {
-            goToOtherSide = false;
+          if (randomSide <= 3
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 544 && c.currentY() != 601)) { // south
             c.walkTo(544, 601);
             c.sleep(GAME_TICK);
-          } else if (!goToOtherSide
-              && (c.currentX() != 543 && c.currentY() != 600)) { // walk out of guard range
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 543 && c.currentY() != 600)) { // east
+            c.walkTo(543, 600);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 546 && c.currentY() != 599)) { // west
+            c.walkTo(546, 599);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 544 && c.currentY() != 598)) { // north
             c.walkTo(543, 600);
           }
           c.atObject(544, 599);
@@ -246,43 +320,53 @@ public class AIOThiever extends IdleScript {
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(551, 583) == 324) {
           c.setStatus("@red@Stealing from fur stall..");
-          if (goToOtherSide && (c.currentX() != 553 && c.currentY() != 584)) {
-            goToOtherSide = false;
+          if (randomSide <= 3
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 553 && c.currentY() != 584)) { // west
             c.walkTo(553, 584);
             c.sleep(GAME_TICK);
-          } else if (!goToOtherSide
-              && (c.currentX() != 552 && c.currentY() != 582)) { // walk out of guard range
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 552 && c.currentY() != 582)) { // north
             c.walkTo(552, 582);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 550 && c.currentY() != 583)) { // east
+            c.walkTo(550, 583);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 552 && c.currentY() != 585)) { // south
+            c.walkTo(552, 585);
             c.sleep(GAME_TICK);
           }
           c.atObject(551, 583);
-          c.sleep(GAME_TICK);
-        } else if ((target.name.contains("Spices") || target.name.contains("All"))
-            && c.getInventoryItemCount() < 30
-            && c.getObjectAtCoord(544, 590) == 326) {
-          c.setStatus("@red@Stealing from spices stall..");
-          if (goToOtherSide && (c.currentX() != 543 && c.currentY() != 591)) {
-            goToOtherSide = false;
-            c.walkTo(543, 591);
-            c.sleep(GAME_TICK);
-          } else if (!goToOtherSide
-              && (c.currentX() != 544 && c.currentY() != 589)) { // walk out of guard range
-            c.walkTo(544, 589);
-            c.sleep(GAME_TICK);
-          }
-          c.atObject(544, 590);
           c.sleep(GAME_TICK);
         } else if ((target.name.contains("Silk") || target.name.contains("All"))
             && c.getInventoryItemCount() < 30
             && c.getObjectAtCoord(566, 594) == 323) {
           c.setStatus("@red@Stealing from silk stall..");
-          if (goToOtherSide && (c.currentX() != 566 && c.currentY() != 593)) {
-            goToOtherSide = false;
+          if (randomSide <= 3
+              && c.getObjectAtCoord(566, 594) == 323
+              && (c.currentX() != 566 && c.currentY() != 593)) { // north
             c.walkTo(566, 593);
             c.sleep(GAME_TICK);
-          } else if (!goToOtherSide
+          } else if (randomSide >= 4
+              && randomSide <= 6
               && c.getObjectAtCoord(566, 594) == 323
-              && (c.currentX() != 567 && c.currentY() != 596)) { // walk out of guard range
+              && (c.currentX() != 565 && c.currentY() != 594)) { // east
+            c.walkTo(565, 594);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(566, 594) == 323
+              && (c.currentX() != 568 && c.currentY() != 595)) { // west
+            c.walkTo(567, 596);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(566, 594) == 323
+              && (c.currentX() != 567 && c.currentY() != 596)) { // south
             c.walkTo(567, 596);
           }
           c.atObject(566, 594);
@@ -302,7 +386,7 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK);
           }
         }
-        if (!bankSpot.equals(bankSpots[0]) //not the "None" option
+        if (!bankSpot.equals(bankSpots[0]) // not the "None" option
             && (c.getInventoryItemCount() == 30 || countFood() == 0)) {
           c.setStatus("@red@Banking...");
           // walk near to bank
@@ -477,8 +561,10 @@ public class AIOThiever extends IdleScript {
   @Override
   public void questMessageInterrupt(String message) {
     if (message.contains("You pick") || message.contains("You steal")) success++;
-    else if (message.contains("You fail") || message.contains("hands off there")) failure++;
-    if (message.contains("Hey thats mine")) {
+    else if (message.contains("You fail")
+        || (message.contains("hands off there") && !target.name.contains("All"))) failure++;
+    if (message.contains("Hey thats mine")
+        || (message.contains("hands off there") && target.name.contains("All"))) {
       failure++;
       goToOtherSide = true;
     }

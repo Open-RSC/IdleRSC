@@ -1560,7 +1560,7 @@ public class K_kailaScript extends IdleScript {
       if (c.currentX() != 456 && c.currentY() != 456) {
         c.setStatus("@gre@Teleporting..");
         c.castSpellOnSelf(SpellId.CAMELOT_TELEPORT.getId());
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
         c.sleep(4 * GAME_TICK);
         break;
@@ -1634,7 +1634,7 @@ public class K_kailaScript extends IdleScript {
       if (c.currentX() == 218 && c.currentY() == 3282) {
         c.setStatus("@gre@Opening Edge Wall Gate..");
         c.atWallObject(219, 3282);
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
         break;
       }
@@ -1646,7 +1646,7 @@ public class K_kailaScript extends IdleScript {
       if (c.currentX() > 218 && c.currentY() > 3000) {
         c.setStatus("@gre@ Going through Edge Shortcut..");
         c.atObject(223, 3281);
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
         c.setStatus("@red@Done Opening Edge wall..");
         break;
@@ -1659,7 +1659,7 @@ public class K_kailaScript extends IdleScript {
       if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 581) {
         c.setStatus("@red@Crossing Tav Gate..");
         c.atObject(343, 581); // gate won't break if someone else opens it
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
         break;
       }
@@ -1671,7 +1671,7 @@ public class K_kailaScript extends IdleScript {
       if (c.currentX() > 342 && c.currentX() < 345 && c.currentY() == 580) {
         c.setStatus("@red@Crossing Tav Gate..");
         c.atObject(343, 581); // gate won't break if someone else opens it
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
         break;
       }
@@ -1694,9 +1694,9 @@ public class K_kailaScript extends IdleScript {
       if (c.currentX() == 347 && c.currentY() == 600) {
         c.setStatus("@red@Entering Crafting Guild..");
         c.atWallObject(347, 601);
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
         break;
       }
     }
@@ -1723,9 +1723,9 @@ public class K_kailaScript extends IdleScript {
       if (c.currentX() == 347 && c.currentY() == 600) {
         c.setStatus("@red@Entering Crafting Guild..");
         c.atWallObject(347, 601);
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
         break;
       }
     }
@@ -1786,7 +1786,7 @@ public class K_kailaScript extends IdleScript {
       if (c.currentY() == 3265) {
         c.setStatus("@gre@Opening Wildy Gate..");
         c.atObject(196, 3266);
-        c.sleep(4*GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
         c.setStatus("@gre@Done Opening Wildy Gate..");
         break;
@@ -1799,7 +1799,7 @@ public class K_kailaScript extends IdleScript {
       if (c.currentY() == 3266) {
         c.setStatus("@gre@Opening Wildy Gate..");
         c.atObject(196, 3266);
-        c.sleep(4* GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       } else {
         c.setStatus("@gre@Done Opening Wildy Gate..");
         break;

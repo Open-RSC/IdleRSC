@@ -248,23 +248,20 @@ public class SpinStrings extends IdleScript {
       }
       // deposit anything that is not a sleeping bag
       totalString = totalString + controller.getInventoryItemCount(output);
-      for (int i = 1; i <= 200; i++) {
-        if (controller.getInventoryItemCount(input) == 0
-            && controller.getInventoryItemCount() > 1
-            && controller.isInBank()) {
-          for (int itemId : controller.getInventoryUniqueItemIds()) {
-            if (itemId != 0 && itemId != 1263) {
-              controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-              controller.sleep(618);
-            }
+      if (controller.getInventoryItemCount(input) == 0 && controller.isInBank()) {
+        for (int itemId : controller.getInventoryUniqueItemIds()) {
+          if (itemId != 0 && itemId != 1263) {
+            controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+            controller.sleep(640);
           }
-          // withdraw materials
-          bankedString = controller.getBankItemCount(output);
-          controller.withdrawItem(input, 30 - controller.getInventoryItemCount());
-          controller.sleep(640);
-          controller.closeBank();
-          controller.setStatus("@red@Finished Banking");
-        } else break;
+        }
+        controller.sleep(2000);
+        // withdraw materials
+        bankedString = controller.getBankItemCount(output);
+        controller.withdrawItem(input, 30);
+        controller.sleep(640);
+        controller.closeBank();
+        controller.setStatus("@red@Finished Banking");
       }
     }
   }

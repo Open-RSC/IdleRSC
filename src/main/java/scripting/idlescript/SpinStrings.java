@@ -90,154 +90,175 @@ public class SpinStrings extends IdleScript {
     while (controller.isRunning()) {
       // if player is near spinning wheel, not batching, and not banking, and seer's village
       // selected. spin material.
-      while (controller.getNearestObjectById(121) != null
-          && controller.getInventoryItemCount(input) > 0
-          && destination.getSelectedIndex() == 1) { // seers
-        controller.setStatus("@red@Spinning Flax in falador");
-        // if not batching use material on wheel
-        while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
-          // sleep if you have high fatigue
-          controller.sleepHandler(98, true);
-          controller.useItemIdOnObject(
-              controller.getNearestObjectById(121)[0],
-              controller.getNearestObjectById(121)[1],
-              input);
-          controller.sleep(640);
-        }
-        // if batching do nothing
-        while (controller.isBatching()) {
-          controller.sleep(340);
-        }
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestObjectById(121) != null
+            && controller.getInventoryItemCount(input) > 0
+            && destination.getSelectedIndex() == 1) { // seers
+          controller.setStatus("@red@Spinning Flax in falador");
+          // if not batching use material on wheel
+          while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
+            // sleep if you have high fatigue
+            controller.sleepHandler(98, true);
+            controller.useItemIdOnObject(
+                controller.getNearestObjectById(121)[0],
+                controller.getNearestObjectById(121)[1],
+                input);
+            controller.sleep(640);
+          }
+          // if batching do nothing
+          while (controller.isBatching()) {
+            controller.sleep(340);
+          }
+        } else break;
       }
       // if player is near spinning wheel, not batching, and not banking, and falador selected. spin
       // flax.
-      while (destination.getSelectedIndex() == 0 // falador
-          && controller.getNearestObjectById(121) != null
-          && controller.getInventoryItemCount(input) > 0) {
-        controller.setStatus("@red@Spinning Flax");
-        // if not batching use material on wheel
-        while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
-          // sleep if you have high fatigue
-          controller.sleepHandler(98, true);
-          controller.useItemIdOnObject(
-              controller.getNearestObjectById(121)[0],
-              controller.getNearestObjectById(121)[1],
-              input);
-          controller.sleep(640);
-        }
-        // if batching do nothing
-        while (controller.isBatching()) {
-          controller.sleep(340);
-        }
+      for (int i = 1; i <= 200; i++) {
+        if (destination.getSelectedIndex() == 0 // falador
+            && controller.getNearestObjectById(121) != null
+            && controller.getInventoryItemCount(input) > 0) {
+          controller.setStatus("@red@Spinning Flax");
+          // if not batching use material on wheel
+          while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
+            // sleep if you have high fatigue
+            controller.sleepHandler(98, true);
+            controller.useItemIdOnObject(
+                controller.getNearestObjectById(121)[0],
+                controller.getNearestObjectById(121)[1],
+                input);
+            controller.sleep(640);
+          }
+          // if batching do nothing
+          while (controller.isBatching()) {
+            controller.sleep(340);
+          }
+        } else break;
       }
       // if player is near spinning wheel, not batching, and not banking, and Craft guild
       // selected. spin material.
-      while (controller.getNearestObjectById(121) != null
-          && controller.getInventoryItemCount(input) > 0
-          && destination.getSelectedIndex() == 2) { // craft guild
-        controller.setStatus("@red@Spinning Flax in craft guild");
-        // if not batching use material on wheel
-        while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
-          // sleep if you have high fatigue
-          controller.sleepHandler(98, true);
-          controller.useItemIdOnObject(
-              controller.getNearestObjectById(121)[0],
-              controller.getNearestObjectById(121)[1],
-              input);
-          controller.sleep(640);
-        }
-        // if batching do nothing
-        while (controller.isBatching()) {
-          controller.sleep(340);
-        }
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestObjectById(121) != null
+            && controller.getInventoryItemCount(input) > 0
+            && destination.getSelectedIndex() == 2) { // craft guild
+          controller.setStatus("@red@Spinning Flax in craft guild");
+          // if not batching use material on wheel
+          while (!controller.isBatching() && controller.getInventoryItemCount(input) > 0) {
+            // sleep if you have high fatigue
+            controller.sleepHandler(98, true);
+            controller.useItemIdOnObject(
+                controller.getNearestObjectById(121)[0],
+                controller.getNearestObjectById(121)[1],
+                input);
+            controller.sleep(640);
+          }
+          // if batching do nothing
+          while (controller.isBatching()) {
+            controller.sleep(340);
+          }
+        } else break;
       }
       // if player is not near spinning wheel and has materials, walk to spinning wheel
       // if player is in seer's village walk to ladder and go up it
-      while (controller.getNearestObjectById(121) == null
-          && controller.getInventoryItemCount(input) > 0
-          && destination.getSelectedIndex() == 1) { // seers
-        controller.setStatus("@red@Going upstairs");
-        // if the ladder at 525,462 is unloaded walk closer to it
-        while (controller.isTileEmpty(525, 462)) {
-          startWalking(524, 463);
-        }
-        // if the ladder is loaded climb up
-        while (!controller.isTileEmpty(525, 462)) {
-          controller.atObject(525, 462);
-          controller.sleep(1280);
-        }
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestObjectById(121) == null
+            && controller.getInventoryItemCount(input) > 0
+            && destination.getSelectedIndex() == 1) { // seers
+          controller.setStatus("@red@Going upstairs");
+          // if the ladder at 525,462 is unloaded walk closer to it
+          while (controller.isTileEmpty(525, 462)) {
+            startWalking(524, 463);
+          }
+          // if the ladder is loaded climb up
+          while (!controller.isTileEmpty(525, 462)) {
+            controller.atObject(525, 462);
+            controller.sleep(1280);
+          }
+        } else break;
       }
       // if player is not near spinning wheel and has materials, walk to spinning wheel
       // if player is in CRAFT GUILD walk to ladder and go up it
-      while (controller.getNearestObjectById(121) == null
-          && controller.getInventoryItemCount(input) > 0
-          && destination.getSelectedIndex() == 2) { // craft guild
-        controller.setStatus("@red@Going upstairs");
-        // if the ladder is loaded climb up
-        while (!controller.isTileEmpty(349, 612)) {
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestObjectById(121) == null
+            && controller.getInventoryItemCount(input) > 0
+            && destination.getSelectedIndex() == 2) { // craft guild
+          controller.setStatus("@red@Going upstairs");
+          // if the ladder is loaded climb up
           controller.walkTo(349, 611);
           controller.atObject(349, 612);
           controller.sleep(1280);
-        }
+        } else break;
       }
       // if player is in falador, walk to the spinning wheel
-      while (controller.getInventoryItemCount(input) > 0
-          && destination.getSelectedIndex() == 0 // falador id
-          && controller.getNearestObjectById(121) == null) {
-        startWalking(577, 295);
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getInventoryItemCount(input) > 0
+            && destination.getSelectedIndex() == 0 // falador id
+            && controller.getNearestObjectById(121) == null) {
+          startWalking(577, 295);
+        } else break;
       }
       // when player has no more materials left, walk to the bank
       // go down ladder and walk to seer's village bank
-      while (controller.getNearestObjectById(121) != null
-          && controller.getInventoryItemCount(input) == 0
-          && destination.getSelectedIndex() == 1) { // seers
-        controller.setStatus("@red@Going downstairs");
-        controller.atObject(525, 1406);
-        controller.sleep(640);
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestObjectById(121) != null
+            && controller.getInventoryItemCount(input) == 0
+            && destination.getSelectedIndex() == 1) { // seers
+          controller.setStatus("@red@Going downstairs");
+          controller.atObject(525, 1406);
+          controller.sleep(2 * 640);
+        } else break;
       }
       // when player has no more materials left, walk to the bank
-      // go down ladder and walk to seer's village bank
-      while (controller.getNearestObjectById(121) != null
-          && controller.getInventoryItemCount(input) == 0
-          && destination.getSelectedIndex() == 2) { // craft guild
-        controller.setStatus("@red@Going downstairs");
-        controller.atObject(349, 1556);
-        controller.sleep(640);
+      // go down ladder and walk to craft guild bank
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestObjectById(121) != null
+            && controller.getInventoryItemCount(input) == 0
+            && destination.getSelectedIndex() == 2) { // craft guild
+          controller.setStatus("@red@Going downstairs");
+          controller.atObject(349, 1556);
+          controller.sleep(2 * 640);
+        } else break;
       }
       // walk to seers bank
-      while (controller.getNearestNpcByIds(bankerIds, false) == null
-          && destination.getSelectedIndex() == 1) { // seers
-        controller.setStatus("@red@No banker visible, walking closer...");
-        controller.walkTo(291, 573);
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestNpcByIds(bankerIds, false) == null
+            && destination.getSelectedIndex() == 1) { // seers
+          controller.setStatus("@red@No banker visible, walking closer...");
+          controller.walkTo(291, 573);
+        } else break;
       }
-
       // walk to falador bank
-      while (controller.getNearestNpcByIds(bankerIds, false) == null
-          && controller.getInventoryItemCount(input) == 0
-          && destination.getSelectedIndex() == 0) {
-        controller.setStatus("@red@Walking to bank");
-        startWalking(bankSelX, bankSelY);
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getNearestNpcByIds(bankerIds, false) == null
+            && controller.getInventoryItemCount(input) == 0
+            && destination.getSelectedIndex() == 0) {
+          controller.setStatus("@red@Walking to bank");
+          startWalking(bankSelX, bankSelY);
+        } else break;
       }
 
       // open bank
-      controller.setStatus("@red@Banking");
-      while (!controller.isInBank()
-          && (controller.getNearestNpcByIds(bankerIds, false) != null
-              || controller.getObjectAtCoord(346, 609) == 942)
-          && controller.getInventoryItemCount(input) == 0) {
-        controller.openBank();
+      for (int i = 1; i <= 200; i++) {
+        if (!controller.isInBank()
+            && (controller.getNearestNpcByIds(bankerIds, false) != null
+                || controller.getObjectAtCoord(346, 609) == 942)
+            && controller.getInventoryItemCount(input) == 0) {
+          controller.setStatus("@red@Banking");
+          controller.openBank();
+        } else break;
       }
       // deposit anything that is not a sleeping bag
       totalString = totalString + controller.getInventoryItemCount(output);
-      while (controller.getInventoryItemCount(input) == 0
-          && controller.getInventoryItemCount() > 1
-          && controller.isInBank()) {
-        for (int itemId : controller.getInventoryUniqueItemIds()) {
-          if (itemId != 0 && itemId != 1263) {
-            controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
-            controller.sleep(618);
+      for (int i = 1; i <= 200; i++) {
+        if (controller.getInventoryItemCount(input) == 0
+            && controller.getInventoryItemCount() > 1
+            && controller.isInBank()) {
+          for (int itemId : controller.getInventoryUniqueItemIds()) {
+            if (itemId != 0 && itemId != 1263) {
+              controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+              controller.sleep(618);
+            }
           }
-        }
+        } else break;
       }
       bankedString = controller.getBankItemCount(output);
       // withdraw materials

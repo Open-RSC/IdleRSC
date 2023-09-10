@@ -16,7 +16,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila.
  */
-public final class K_AttackCapeBuyer extends K_kailaScript {
+public final class K_Buy_AttackCape extends K_kailaScript {
   private static int totalTopz = 0;
   private static int totalTrips = 0;
   private static int TopzInBank = 0;

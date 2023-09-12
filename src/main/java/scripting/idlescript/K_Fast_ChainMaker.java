@@ -34,10 +34,10 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
-      c.displayMessage("@gre@Chain Link Crafter" + '"' + " - by Kaila");
-      c.displayMessage("@gre@Start in Fally East");
-
+      c.displayMessage("@gre@Dragon scale mail maker" + '"' + " - by Kaila");
+      c.displayMessage("@gre@Start in Fally east bank");
       c.quitIfAuthentic();
+      if (c.currentX() < 299) bankToSpot();
       if (c.isInBank()) c.closeBank();
       scriptStart();
     }
@@ -46,7 +46,12 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getInventoryItemCount(1366) > 0) {
+      if (c.getInventoryItemCount() == 30) {
+        spotToBank();
+        bank();
+        bankToSpot();
+      }
+      if (c.getInventoryItemCount(1366) > 0 && c.getInventoryItemCount() < 30) {
         c.setStatus("@gre@Talking to Wayne..");
         ORSCharacter npc = c.getNearestNpcById(141, false);
         c.talkToNpc(npc.serverIndex);
@@ -64,6 +69,18 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
     }
   }
 
+  private void spotToBank() {
+    c.walkTo(303, 576);
+    c.walkTo(294, 572);
+    c.walkTo(286, 571);
+  }
+
+  private void bankToSpot() {
+    c.walkTo(286, 571);
+    c.walkTo(294, 572);
+    c.walkTo(303, 576);
+  }
+
   private void bank() {
     c.setStatus("@gre@Banking..");
     c.openBank();
@@ -74,40 +91,15 @@ public final class K_Fast_ChainMaker extends K_kailaScript {
 
       totalBars = totalBars + 26;
 
-      if (c.getBankItemCount(593)
-          < 2) { // stops making when 30 in bank to not mess up alignments/organization of bank!!!
-        c.setStatus("@red@NO D Longs in the bank, Stopping!.");
-        c.stop();
-      }
-      if (c.getInventoryItemCount() > 1) {
+      if (c.getInventoryItemCount() > 3) {
         for (int itemId : c.getInventoryItemIds()) {
-          if (itemId != 168 && itemId != 33 && itemId != 42 && itemId != 32) {
+          if (itemId != 1366 && itemId != 1367 && itemId != 10) {
             c.depositItem(itemId, c.getInventoryItemCount(itemId));
           }
         }
         c.sleep(100);
       }
-      c.sleep(1240);
-      if (c.getInventoryItemCount(168) < 1) { // hammer
-        c.withdrawItem(168, 1 - c.getInventoryItemCount(168));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(33) < 300) { // air
-        c.withdrawItem(33, 300 - c.getInventoryItemCount(33));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(42) < 100) { // law
-        c.withdrawItem(42, 100 - c.getInventoryItemCount(42));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(32) < 100) { // water
-        c.withdrawItem(32, 100 - c.getInventoryItemCount(32));
-        c.sleep(1000);
-      }
-      if (c.getInventoryItemCount(593) < 25) { // dlong
-        c.withdrawItem(593, 25);
-        c.sleep(100);
-      }
+      c.sleep(2000);
       c.closeBank();
     }
   }

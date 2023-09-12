@@ -23,16 +23,21 @@ public class HarvesterTrainer extends IdleScript {
     controller.quitIfAuthentic();
 
     while (controller.isRunning()) {
-      int objectId = 1265;
+      // pots and garlic are in the same western patch
+      int objectId = 1265; // potatoes
 
-      if (controller.getBaseStat(19) >= 9) objectId = 1267;
+      if (controller.getBaseStat(19) >= 9) objectId = 1267; // garlic
 
-      if (controller.getBaseStat(19) >= 20) objectId = 1269;
+      if (controller.getBaseStat(19) >= 20) objectId = 1269; //corn
 
-      if (controller.getBaseStat(19) >= 60) objectId = 1263;
+      if (controller.getBaseStat(19) >= 60) objectId = 1263; //red cabbage
 
       if (controller.currentX() > 450 && controller.getBaseStat(19) >= 85) objectId = 1264;
 
+      if ((objectId == 1269 || objectId == 1263) && controller.currentX() > 179) {
+        controller.walkTo(178, 607);
+        controller.walkTo(170, 609);
+      }
       int[] coords = controller.getNearestObjectById(objectId);
       if (coords != null) {
         controller.setStatus("@yel@Harvesting...");

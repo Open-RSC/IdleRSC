@@ -28,9 +28,9 @@ public class HarvesterTrainer extends IdleScript {
 
       if (controller.getBaseStat(19) >= 9) objectId = 1267; // garlic
 
-      if (controller.getBaseStat(19) >= 20) objectId = 1269; //corn
+      if (controller.getBaseStat(19) >= 20) objectId = 1269; // corn
 
-      if (controller.getBaseStat(19) >= 60) objectId = 1263; //red cabbage
+      if (controller.getBaseStat(19) >= 60) objectId = 1263; // red cabbage
 
       if (controller.currentX() > 450 && controller.getBaseStat(19) >= 85) objectId = 1264;
 

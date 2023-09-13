@@ -1,308 +1,276 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
+
+/**
+ * VialCrafter
+ *
+ * <p>Craft Vials on Entrana
+ *
+ * <p>Items Required: 1 Glassblowing Pipe 1 Herb Clippers Up to 13 Buckets
+ *
+ * <p>Levels Required: 23 Harvesting 33 Crafting
+ *
+ * @author Seatta with fixes by Kaila
+ */
 public class VialCrafter extends IdleScript {
-  // VialCrafter Script by Seatta
-  Integer vials = 0;
-  Integer buckets = 0;
-  Boolean stopped = false;
-  final Integer[] coords = {0, 0};
+  protected static final Controller c = Main.getController();
 
   public int start(String[] param) {
-    vials = controller.getInventoryItemCount(465);
-    // Check for required levels
-    if (controller.getBaseStat(controller.getStatId("Harvesting")) < 23
-        || controller.getBaseStat(controller.getStatId("Crafting")) < 33
-            && controller.isRunning()) {
+
+    // Quits if the required items are missing
+    if ((c.isRunning() && c.getInventoryItemCount(1357) < 1)
+        || c.getInventoryItemCount(621) < 1
+        || getBucketCount() < 1
+        || getBucketCount() > 13) {
+      quit(2);
+    }
+
+    // Quits if the player does not have the required levels
+    if ((c.isRunning() && c.getBaseStat(c.getStatId("Harvesting")) < 23)
+        || (c.getBaseStat(c.getStatId("Crafting")) < 33 && c.isRunning())) {
       quit(3);
     }
-    // Check if on Entrana
-    if (controller.currentY() > 573
-        || controller.currentY() < 526
-        || controller.currentX() > 441
-        || controller.currentX() < 396 && controller.isRunning()) {
+
+    // Quits if the player is not on Entrana
+    if ((c.isRunning() && c.currentY() > 573)
+        || c.currentY() < 526
+        || c.currentX() > 441
+        || (c.currentX() < 396 && c.isRunning())) {
       quit(4);
     }
 
-    while (controller.isRunning()) {
-      controller.setStatus("@Cya@Getting Ready");
-      // Checks inventory for herb clippers and glassblowing pipe
-      if (controller.getInventoryItemCount(1357) == 1
-          && controller.getInventoryItemCount(621) == 1) {
-        buckets = (controller.getInventoryItemCount(21) + controller.getInventoryItemCount(625));
-        // Checks inventory for buckets
-        if (buckets > 0 && controller.isRunning()) {
-          // drop extra items just to make sure everything works
-          dropExtra();
-          // Fill Buckets
-          while (controller.getInventoryItemCount(21) > 0 && controller.isRunning()) {
-            fillBuckets();
-            controller.setStatus("@Cya@Filling Buckets");
-          }
-          // Harvest Seaweed
-          while (controller.getInventoryItemCount(622) + controller.getInventoryItemCount(624)
-                  < controller.getInventoryItemCount(625)
-              && controller.isRunning()) {
-            controller.setStatus("@Cya@Harvesting Seaweed");
-            harvest();
-          }
-          // walk to range if on Northern side of Entrana
-          if (controller.currentY() < 550) {
-            controller.setStatus("@Cya@Walking to range");
-            walkSouth();
-          }
-          // Cook Seaweed
-          while (controller.getInventoryItemCount(622) > 0 && controller.isRunning()) {
-            controller.setStatus("@Cya@Making Soda Ash");
-            makeSodaAsh();
-          }
-          // Make Molten Glass
-          while (controller.getInventoryItemCount(625) > 0 && controller.isRunning()) {
-            controller.setStatus("@Cya@Making Molten Glass");
-            makeMoltenGlass();
-          }
-
-          // Blow Molten Glass Into Vials
-          while (controller.getInventoryItemCount(623) > 0 && controller.isRunning()) {
-            controller.setStatus("Making Vials");
-            makeVials();
-          }
-          vials = controller.getInventoryItemCount(465);
-        } else {
-          quit(2);
-        }
+    while (c.isRunning()) {
+      // Fill empty buckets
+      while (c.getInventoryItemCount(21) > 0 && c.isRunning()) {
+        fillBuckets();
+      }
+      // Harvest or pick up seaweed
+      while (!evenBucketsAndSeaweed() && c.isRunning()) {
+        harvest();
+      }
+      // Walk to range if on the northern side of Entrana
+      if (c.currentY() < 550 && c.isRunning()) {
+        c.setStatus("@Cya@Walking to range");
+        walkSouth();
+      }
+      // Make soda ash
+      while (c.getInventoryItemCount(622) > 0 && c.isRunning()) {
+        makeSodaAsh();
+      }
+      // Make molten glass
+      while (c.getInventoryItemCount(625) > 0 && c.isRunning()) {
+        makeMoltenGlass();
+      }
+      // Make vials
+      while (c.getInventoryItemCount(623) > 0 && c.isRunning()) {
+        makeVials();
       }
     }
-    if (buckets > 0) {
-      quit(1);
-    }
-
-    return 1000; // start() must return a int value now.
+    quit(1);
+    return 1000;
   }
 
-  public void fillBuckets() {
-    if (controller.currentY() < 550) {
-      walkSouth();
+  public void harvest() {
+    // Drop edible seaweed if inventory is full
+    if (c.getInventoryItemCount(1245) > 0 && c.getInventoryItemCount() == 30) {
+      dropEdibleSeaweed();
     }
-    controller.useItemIdOnObject(429, 566, 21);
-    controller.sleep(1280);
-    while (controller.isBatching()) {
-      controller.sleep(1280);
+    // Get seaweed until amount matches number of buckets
+    if (!evenBucketsAndSeaweed()) {
+      getSeaweed();
+    } else {
+      // Forcefully stop batching once getting enough seaweed
+      if (c.isBatching()) {
+        c.walkTo(c.currentX(), c.currentY());
+        c.sleep(640);
+      }
+      // Drop any remaining edible seaweed after collecting seaweed
+      if (c.getInventoryItemCount(1245) > 0) {
+        dropEdibleSeaweed();
+      }
     }
   }
 
-  public void harvest() { // Could be way better
-    if (!controller.isBatching() && controller.isRunning()) {
-      // Drop Edible Seaweed
-      while (controller.getInventoryItemCount(1245) > 0) {
-        controller.dropItem(
-            controller.getInventoryItemSlotIndex(1245), controller.getInventoryItemCount(1245));
-        controller.sleep(640);
-      }
-      // Pick up seaweed spawns if on northern side of the island
-      if (controller.currentY() < 550 && controller.getInventoryItemCount() < 30) {
+  public void getSeaweed() {
+    if (!c.isBatching() || !c.isCurrentlyWalking()) {
+
+      // Pick up ground-spawned seaweed if on the northern side of Entrana
+      if (c.currentY() < 550 && c.getNearestItemById(622) != null) {
         pickupSeaweed();
       }
-      // Finds and harvests nearest seaweed plant
-      if (controller.getInventoryItemCount(622) < controller.getInventoryItemCount(625)) {
-        try {
-          int[] plantCoords = controller.getNearestObjectById(1280);
-          coords[0] = plantCoords[0];
-          coords[1] = plantCoords[1];
-        } catch (Exception e) {
-          controller.walkTo(423, 555);
-          while (controller.isCurrentlyWalking()) {
-            controller.sleep(640);
-          }
+
+      int[] coords = c.getNearestObjectById(1280);
+      if (coords != null) {
+        c.setStatus("@Cya@Harvesting Seaweed (" + coords[0] + "," + coords[1] + ")");
+
+        // Travel to the other side of the island if target seaweed is over there
+        if (coords[1] > 550 && c.currentY() < 550) {
+          walkSouth();
+        } else if (coords[1] < 550 & c.currentY() > 550) {
+          walkNorth();
         }
-        if (coords != null && coords[1] > 550) {
-          if (controller.currentY() < 550) {
-            walkSouth();
-          }
-          controller.atObject(coords[0], coords[1]);
+
+        // Harvest seaweed if not already batching or walking
+        if (!c.isBatching() && !c.isCurrentlyWalking()) {
+          c.atObject(coords[0], coords[1]);
+          c.sleep(1280);
         }
-        if (coords != null && coords[1] < 550) {
-          if (controller.currentY() > 550) {
-            walkNorth();
-          }
-          controller.atObject(coords[0], coords[1]);
-        }
+
+      } else if ((c.currentX() != 423 && c.currentY() != 559) || !c.isCurrentlyWalking()) {
+        // Walk to reset point to check both sides of Entrana for seaweed plants if none are found
+        c.setStatus("@Cya@Walking to reset point");
+        int[][] checkTile = {{423, 559}};
+        walk(checkTile);
       }
-      controller.sleep(1280);
-    } else if (controller.isBatching()
-        && controller.getInventoryItemCount(622) < controller.getInventoryItemCount(625)) {
-      controller.sleep(640);
-    }
-    if (controller.isBatching()
-        && controller.getInventoryItemCount(622) == controller.getInventoryItemCount(625)) {
-      controller.walkTo(controller.currentX(), controller.currentY());
-      controller.sleep(640);
+    } else {
+      // Sleep while batching or walking
+      c.sleep(1280);
     }
   }
 
   public void pickupSeaweed() {
-    for (int i = 0; i < 4; i++) {
-      int[] groundSeaweed = controller.getNearestItemById(622);
-      if (groundSeaweed != null) {
-        controller.pickupItem(groundSeaweed[0], groundSeaweed[1], 622, true, false);
-        while (controller.isCurrentlyWalking()) {
-          controller.sleep(640);
-        }
-        controller.sleep(640);
+    int[] groundSeaweed = c.getNearestItemById(622);
+    if (groundSeaweed != null) {
+      c.setStatus("@Cya@Picking Up Seaweed (" + groundSeaweed[0] + "," + groundSeaweed[1] + ")");
+      c.pickupItem(groundSeaweed[0], groundSeaweed[1], 622, true, false);
+      while (c.isCurrentlyWalking()) {
+        c.sleep(640);
       }
+      c.sleep(640);
     }
   }
 
-  public void walkNorth() {
-    int[] pointFurnace = {423, 559};
-    int[] pointSS = {434, 551};
-    int[] shortcut = {434, 550};
-    int[] pointChicken = {409, 552};
-    int[] pointBeach = {431, 539};
-    if (controller.getBaseStat(controller.getStatId("Agility")) >= 55) {
-      controller.walkTo(pointFurnace[0], pointFurnace[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-      controller.walkTo(pointSS[0], pointSS[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-      controller.atObject(shortcut[0], shortcut[1]);
-      controller.sleep(2560);
-    } else {
-      controller.walkTo(pointFurnace[0], pointFurnace[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-      controller.walkTo(pointChicken[0], pointChicken[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-      controller.walkTo(pointBeach[0], pointBeach[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-    }
+  public void dropEdibleSeaweed() {
+    c.walkTo(c.currentX(), c.currentY());
+    c.setStatus("@Cya@Dropping Edible Seaweed");
+    c.dropItem(c.getInventoryItemSlotIndex(1245), c.getInventoryItemCount(1245));
+    c.sleep(1280);
   }
 
-  public void walkSouth() {
-    int[] pointFurnace = {423, 559};
-    int[] pointSN = {434, 549};
-    int[] shortcut = {434, 550};
-    int[] pointChicken = {409, 552};
-    int[] pointBeach = {431, 539};
-    if (controller.getBaseStat(controller.getStatId("Agility")) >= 55) {
-      controller.walkTo(pointSN[0], pointSN[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-      controller.atObject(shortcut[0], shortcut[1]);
-      controller.sleep(2560);
-      controller.walkTo(pointFurnace[0], pointFurnace[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-    } else {
-      controller.walkTo(pointBeach[0], pointBeach[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-      controller.walkTo(pointChicken[0], pointChicken[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
-      controller.walkTo(pointFurnace[0], pointFurnace[1]);
-      while (controller.isCurrentlyWalking() && controller.isRunning()) {
-        controller.sleep(1280);
-      }
+  public void fillBuckets() {
+    c.setStatus("@Cya@Filling Buckets");
+    c.useItemIdOnObject(429, 566, 21);
+    c.sleep(1280);
+    while (c.isBatching() || c.isCurrentlyWalking()) {
+      c.sleep(1280);
     }
   }
 
   public void makeSodaAsh() {
-    controller.useItemIdOnObject(426, 560, 622);
-    controller.sleep(1280);
-    while (controller.isBatching()) {
-      controller.sleep(640);
+    c.setStatus("@Cya@Making Soda Ash");
+    c.useItemIdOnObject(426, 560, 622);
+    c.sleep(1280);
+    while (c.isBatching() || c.isCurrentlyWalking()) {
+      c.sleep(640);
     }
   }
 
   public void makeMoltenGlass() {
-    controller.useItemIdOnObject(419, 559, 625);
-    controller.sleep(1280);
-    while (controller.isBatching()) {
-      controller.sleep(640);
+    c.setStatus("@Cya@Making Molten Glass");
+    c.useItemIdOnObject(419, 559, 625);
+    c.sleep(1280);
+    while (c.isBatching() || c.isCurrentlyWalking()) {
+      c.sleep(640);
     }
   }
 
   public void makeVials() {
-    controller.useItemOnItemBySlot(
-        controller.getInventoryItemSlotIndex(621), controller.getInventoryItemSlotIndex(623));
-    controller.sleep(1280);
-    controller.optionAnswer(0);
-    while (controller.isBatching()) {
-      controller.sleep(640);
+    c.setStatus("@Cya@Making Vials");
+    c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(621), c.getInventoryItemSlotIndex(623));
+    c.sleep(1280);
+    c.optionAnswer(0);
+    while (c.isBatching()) {
+      c.sleep(640);
     }
   }
 
-  public void dropExtra() {
-    // drop extra materials (just to start fresh)
-    // seaweed
-    while (controller.getInventoryItemCount(622) > 0 && controller.isRunning()) {
-      controller.dropItem(
-          controller.getInventoryItemSlotIndex(622), controller.getInventoryItemCount(622));
-      controller.sleep(640);
+  public void walkNorth() {
+    // Use the shortcut if the player has the required agility level
+    if (c.getBaseStat(c.getStatId("Agility")) >= 55) {
+      int[][] walkPath = {{423, 559}, {434, 549}};
+      walk(walkPath);
+      c.atObject(434, 550);
+    } else {
+      int[][] walkPath = {{423, 559}, {409, 552}, {431, 539}};
+      walk(walkPath);
     }
-    // edible seaweed
-    while (controller.getInventoryItemCount(1245) > 0 && controller.isRunning()) {
-      controller.dropItem(
-          controller.getInventoryItemSlotIndex(1245), controller.getInventoryItemCount(1245));
-      controller.sleep(640);
+  }
+
+  public void walkSouth() {
+    // Use the shortcut if the player has the required agility level
+    if (c.getBaseStat(c.getStatId("Agility")) >= 55) {
+      int[][] walkPath = {{434, 549}};
+      walk(walkPath);
+      c.atObject(434, 550);
+      walkPath = new int[][] {{423, 559}};
+      walk(walkPath);
+    } else {
+      int[][] walkPath = {{431, 539}, {409, 552}, {423, 559}};
+      walk(walkPath);
     }
-    // soda ash
-    while (controller.getInventoryItemCount(624) > 0 && controller.isRunning()) {
-      controller.dropItem(
-          controller.getInventoryItemSlotIndex(624), controller.getInventoryItemCount(624));
-      controller.sleep(640);
+  }
+
+  public void walk(int[][] walkPath) {
+    // Follows a path along given tile coordinates
+    // Pass in an int[][]:
+    //      int[][] path = {{Tile1X,Tile1Y},{Tile2X,Tile2Y},{Tile3X,Tile3Y}...}
+    //      walk(path);
+    // Singles tile work too, but still require it to be an int[][]
+    //      int[][] path = {{Tile1X,Tile1Y}}
+    //      walk(path);
+    for (int i = 0; i < walkPath.length; ++i) {
+      c.walkTo(walkPath[i][0], walkPath[i][1]);
+      c.sleep(1280);
+      while (c.isCurrentlyWalking() && c.isRunning()) {
+        c.sleep(640);
+      }
     }
-    // molten glass
-    while (controller.getInventoryItemCount(623) > 0 && controller.isRunning()) {
-      controller.dropItem(
-          controller.getInventoryItemSlotIndex(623), controller.getInventoryItemCount(623));
-      controller.sleep(640);
-    }
+  }
+
+  public boolean evenBucketsAndSeaweed() {
+    return c.getInventoryItemCount(622) + c.getInventoryItemCount(624) == getBucketCount();
+  }
+
+  public int getBucketCount() {
+    return c.getInventoryItemCount(21) + c.getInventoryItemCount(625);
   }
 
   public void quit(int i) {
-    if (!stopped) {
-      if (i == 1) {
-        controller.displayMessage("@red@Script has been stopped!");
-      } else if (i == 2) {
-        controller.displayMessage(
+    switch (i) {
+      case 1:
+        c.displayMessage("@red@Script has been stopped!");
+        break;
+      case 2:
+        c.displayMessage(
             "@red@Please start the script with the following items in your inventory:");
-        controller.displayMessage("@red@Herb Clippers, Glass Blowing Pipe, and");
-        controller.displayMessage("@red@up to 13 buckets");
-      } else if (i == 3) {
-        controller.displayMessage(
-            "@red@You need level 23 harvesting and 33 crafting to use this script.");
-      } else if (i == 4) {
-        controller.displayMessage("@red@Start the script on Entrana.");
-      }
+        c.displayMessage("@red@Herb Clippers, Glass Blowing Pipe, and");
+        c.displayMessage("@red@up to 13 buckets");
+        break;
+      case 3:
+        c.displayMessage("@red@You need level 23 harvesting and 33 crafting to use this script.");
+        break;
+      case 4:
+        c.displayMessage("@red@Start the script on Entrana.");
+        break;
+      default:
+        c.displayMessage("@red@The script has unexpectedly stopped!");
+        break;
     }
-    controller.stop();
-    stopped = true;
+    c.stop();
   }
 
-  @Override
   public void paintInterrupt() {
-    if (controller != null) {
-      controller.drawBoxAlpha(7, 7, 124, 21 + 20, 0xFFFFFF, 64);
-      controller.drawString("@whi@_________________", 10, 7, 0xFFFFFF, 1);
-      controller.drawString("  @gre@VialCrafter @whi@- @cya@Seatta", 10, 21, 0xFFFFFF, 1);
-      controller.drawString("@whi@_________________", 10, 21 + 3, 0xFFFFFF, 1);
-      controller.drawString("@cya@Vials Held", 10, 21 + 19, 0xFFFFFF, 1);
-      controller.drawString("@whi@_________________", 10, 21 + 23, 0xFFFFFF, 1);
-      controller.drawString("@whi@|", 68, 21 + 19, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + vials, 74, 21 + 19, 0xFFFFFF, 1);
+    if (c != null) {
+      c.drawBoxAlpha(7, 7, 124, 41, 16777215, 64);
+      c.drawString("@whi@_________________", 10, 7, 16777215, 1);
+      c.drawString("  @gre@VialCrafter @whi@- @cya@Seatta", 10, 21, 16777215, 1);
+      c.drawString("@whi@_________________", 10, 24, 16777215, 1);
+      c.drawString("@cya@Vials Held", 10, 40, 16777215, 1);
+      c.drawString("@whi@_________________", 10, 44, 16777215, 1);
+      c.drawString("@whi@|", 68, 40, 16777215, 1);
+      c.drawString("@whi@" + c.getInventoryItemCount(465), 74, 40, 16777215, 1);
     }
   }
 }

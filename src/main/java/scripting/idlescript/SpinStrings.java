@@ -171,7 +171,7 @@ public class SpinStrings extends IdleScript {
           // if the ladder is loaded climb up
           while (!controller.isTileEmpty(525, 462)) {
             controller.atObject(525, 462);
-            controller.sleep(1280);
+            controller.sleep(5 * 640);
           }
         } else break;
       }
@@ -186,7 +186,7 @@ public class SpinStrings extends IdleScript {
           controller.walkTo(349, 611);
           controller.sleep(640);
           controller.atObject(349, 612);
-          controller.sleep(3000);
+          controller.sleep(5 * 640);
         } else break;
       }
       // if player is in falador, walk to the spinning wheel
@@ -205,7 +205,7 @@ public class SpinStrings extends IdleScript {
             && destination.getSelectedIndex() == 1) { // seers
           controller.setStatus("@red@Going downstairs");
           controller.atObject(525, 1406);
-          controller.sleep(3 * 640);
+          controller.sleep(5 * 640);
         } else break;
       }
       // when player has no more materials left, walk to the bank
@@ -216,7 +216,7 @@ public class SpinStrings extends IdleScript {
             && destination.getSelectedIndex() == 2) { // craft guild
           controller.setStatus("@red@Going downstairs");
           controller.atObject(349, 1556);
-          controller.sleep(3000);
+          controller.sleep(5 * 640);
         } else break;
       }
       // walk to seers bank

@@ -125,7 +125,6 @@ public class K_kailaScript extends IdleScript {
 
   // RUNES
   protected static final int airId = 33;
-  protected static final int fireId = 31;
   protected static final int waterId = 32;
   protected static final int earthId = 34;
   protected static final int lawId = 42;
@@ -1038,7 +1037,8 @@ public class K_kailaScript extends IdleScript {
 
   /**
    * Withdraw amount of item from the bank, accepts any itemId or withdraw Amount. For potions or
-   * food use withdrawFood() or other methods below this.
+   * food use withdrawFood() or other methods below this. Withdraws none if inventory count is the
+   * same or greater than withdraw amount.
    *
    * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
    * @param withdrawAmount int - number of item to withdraw.
@@ -1080,7 +1080,21 @@ public class K_kailaScript extends IdleScript {
         waitForBankOpen();
       }
       c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
-      c.sleep(2 * GAME_TICK);
+      c.sleep(3 * GAME_TICK);
+    }
+  }
+
+  /**
+   * Deposit itemId amounts that are greater than itemAmount provided. i.e shark, 5 deposits any
+   * sharks over 5
+   *
+   * @param itemId int itemId to check
+   * @param keepAmount int itemAmount to keep
+   */
+  protected static void depositExtra(int itemId, int keepAmount) {
+    if (c.getInventoryItemCount(itemId) > keepAmount) {
+      c.depositItem(itemId, c.getInventoryItemCount(itemId) - keepAmount);
+      c.sleep(GAME_TICK);
     }
   }
   /**
@@ -1593,6 +1607,7 @@ public class K_kailaScript extends IdleScript {
       }
     }
   }
+
   /**
    * Method to open NON-FIXED doors/gates existing as objects (atObject command is used)
    * openWallObjectDoors() will handle WALL door/gate objects (atWallObject command is used
@@ -1606,6 +1621,7 @@ public class K_kailaScript extends IdleScript {
     for (int i = 0; i < 100; i++) {
       if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
         c.atObject(gateLocation[0], gateLocation[1]);
+        c.sleep(2000);
       } else {
         return;
       }
@@ -1624,6 +1640,7 @@ public class K_kailaScript extends IdleScript {
     for (int i = 0; i < 100; i++) {
       if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
         c.atWallObject(gateLocation[0], gateLocation[1]);
+        c.sleep(2000);
       }
     }
   }

@@ -202,6 +202,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
             && itemId != ATTACK_CAPE
             && itemId != AGILITY_CAPE) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
+          c.sleep(GAME_TICK);
         }
       }
       bankFood = c.getBankItemCount(foodId);

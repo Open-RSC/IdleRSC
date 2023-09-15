@@ -247,7 +247,8 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     c.sleep(640);
     c.walkTo(217, 458);
     c.walkTo(221, 447);
-    c.walkTo(217, 448);
+    c.walkTo(217, 447); // outside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.sleep(640);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
@@ -258,6 +259,8 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
    */
   private void bankToDruid() {
     c.setStatus("@gre@Walking to Druids..");
+    c.walkTo(217, 448); // inside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.walkTo(221, 447);
     c.walkTo(217, 458);
     c.walkTo(215, 467);

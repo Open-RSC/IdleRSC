@@ -258,10 +258,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     } else {
       controller.walkTo(328, 553);
       // open bank door
-      if (controller.getObjectAtCoord(327, 552) == 64) {
-        controller.atObject(327, 552);
-        controller.sleep(1000);
-      }
+      openDoorObjects(64, 327, 552);
+
       c.walkTo(327, 552);
       c.walkTo(324, 549);
       c.walkTo(324, 539);

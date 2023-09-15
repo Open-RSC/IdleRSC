@@ -183,7 +183,8 @@ public final class K_Edge_Thugs extends K_kailaScript {
 
   private void bankToHouse() {
     c.setStatus("@gre@Walking to Edge Skeletons..");
-    c.walkTo(217, 447);
+    c.walkTo(217, 448); // inside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.walkTo(210, 447);
     c.walkTo(200, 435);
     c.walkTo(192, 435);
@@ -203,7 +204,8 @@ public final class K_Edge_Thugs extends K_kailaScript {
     c.walkTo(192, 435);
     c.walkTo(200, 435);
     c.walkTo(210, 447);
-    c.walkTo(217, 447);
+    c.walkTo(217, 447); // outside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }

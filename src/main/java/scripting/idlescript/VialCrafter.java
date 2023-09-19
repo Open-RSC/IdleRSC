@@ -15,7 +15,6 @@ import models.entities.ItemId;
  *
  * @author Seatta with fixes by Kaila
  */
-
 public class VialCrafter extends IdleScript {
   protected static final Controller c = Main.getController();
 
@@ -37,7 +36,7 @@ public class VialCrafter extends IdleScript {
   private static final Integer EDIBLE_SEAWEED = ItemId.EDIBLE_SEAWEED.getId();
   private static final Integer SODA_ASH = ItemId.SODA_ASH.getId();
   private static final Integer MOLTEN_GLASS = ItemId.MOLTEN_GLASS.getId();
-  private static final Integer VIAL = ItemId.VIAL.getId();
+  private static final Integer EMPTY_VIAL = ItemId.EMPTY_VIAL.getId();
 
   // OBJECT IDS
   private static final Integer SEAWEED_PLANT = 1280;
@@ -334,7 +333,7 @@ public class VialCrafter extends IdleScript {
       c.drawString("@cya@Vials Held", 10, 40, 16777215, 1);
       c.drawString("@whi@_________________", 10, 44, 16777215, 1);
       c.drawString("@whi@|", 68, 40, 16777215, 1);
-      c.drawString("@whi@" + c.getInventoryItemCount(VIAL), 74, 40, 16777215, 1);
+      c.drawString("@whi@" + c.getInventoryItemCount(EMPTY_VIAL), 74, 40, 16777215, 1);
     }
   }
 }

@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import bot.Main;
 import controller.Controller;
+import models.entities.ItemId;
 
 /**
  * VialCrafter
@@ -14,22 +15,51 @@ import controller.Controller;
  *
  * @author Seatta with fixes by Kaila
  */
+
 public class VialCrafter extends IdleScript {
   protected static final Controller c = Main.getController();
+
+  // TILE COORDINATES
+  private static final Integer[] NORTH_OF_SHORTCUT = {434, 549};
+  private static final Integer[] SHORTCUT = {434, 550};
+  private static final Integer[] SOUTH_OF_SHORTCUT = {434, 551};
+  private static final Integer[] RESET_TILE = {431, 554};
+  private static final Integer[] FURNACE = {423, 555};
+  private static final Integer[] CHICKEN_PEN = {409, 552};
+  private static final Integer[] NORTH_WEST = {431, 539};
+
+  // ITEM IDS
+  private static final Integer GLASSBLOWING_PIPE = ItemId.GLASSBLOWING_PIPE.getId();
+  private static final Integer HERB_CLIPPERS = ItemId.HERB_CLIPPERS.getId();
+  private static final Integer BUCKET = ItemId.BUCKET.getId();
+  private static final Integer SAND = ItemId.SAND.getId();
+  private static final Integer SEAWEED = ItemId.SEAWEED.getId();
+  private static final Integer EDIBLE_SEAWEED = ItemId.EDIBLE_SEAWEED.getId();
+  private static final Integer SODA_ASH = ItemId.SODA_ASH.getId();
+  private static final Integer MOLTEN_GLASS = ItemId.MOLTEN_GLASS.getId();
+  private static final Integer VIAL = ItemId.VIAL.getId();
+
+  // OBJECT IDS
+  private static final Integer SEAWEED_PLANT = 1280;
+
+  // LEVEL REQUIREMENTS
+  private static final Integer HARVESTING_LEVEL = 23;
+  private static final Integer CRAFTING_LEVEL = 33;
+  private static final Integer AGILITY_LEVEL = 55; // OPTIONAL FOR SHORTCUT
 
   public int start(String[] param) {
 
     // Quits if the required items are missing
-    if ((c.isRunning() && c.getInventoryItemCount(1357) < 1)
-        || c.getInventoryItemCount(621) < 1
+    if ((c.isRunning() && c.getInventoryItemCount(HERB_CLIPPERS) < 1)
+        || c.getInventoryItemCount(GLASSBLOWING_PIPE) < 1
         || getBucketCount() < 1
         || getBucketCount() > 13) {
       quit(2);
     }
 
     // Quits if the player does not have the required levels
-    if ((c.isRunning() && c.getBaseStat(c.getStatId("Harvesting")) < 23)
-        || (c.getBaseStat(c.getStatId("Crafting")) < 33 && c.isRunning())) {
+    if ((c.isRunning() && !hasSkillLevel("Harvesting", HARVESTING_LEVEL))
+        || !hasSkillLevel("Crafting", CRAFTING_LEVEL)) {
       quit(3);
     }
 
@@ -43,38 +73,41 @@ public class VialCrafter extends IdleScript {
 
     while (c.isRunning()) {
       // Fill empty buckets
-      while (c.getInventoryItemCount(21) > 0 && c.isRunning()) {
+      while (c.getInventoryItemCount(BUCKET) > 0 && c.isRunning()) {
         fillBuckets();
       }
       // Harvest or pick up seaweed
       while (!evenBucketsAndSeaweed() && c.isRunning()) {
         harvest();
       }
+      // Drop any remaining edible seaweed after collecting seaweed
+      dropEdibleSeaweed();
       // Walk to range if on the northern side of Entrana
-      if (c.currentY() < 550 && c.isRunning()) {
+      if (c.currentY() < 550) {
         c.setStatus("@Cya@Walking to range");
         walkSouth();
       }
       // Make soda ash
-      while (c.getInventoryItemCount(622) > 0 && c.isRunning()) {
+      while (c.getInventoryItemCount(SEAWEED) > 0 && c.isRunning()) {
         makeSodaAsh();
       }
       // Make molten glass
-      while (c.getInventoryItemCount(625) > 0 && c.isRunning()) {
+      while (c.getInventoryItemCount(SODA_ASH) >= getBucketCount() && c.isRunning()) {
         makeMoltenGlass();
       }
       // Make vials
-      while (c.getInventoryItemCount(623) > 0 && c.isRunning()) {
+      while (c.getInventoryItemCount(MOLTEN_GLASS) > 0 && c.isRunning()) {
         makeVials();
       }
     }
+    // Quits if the controller is stopped.
     quit(1);
     return 1000;
   }
 
   public void harvest() {
     // Drop edible seaweed if inventory is full
-    if (c.getInventoryItemCount(1245) > 0 && c.getInventoryItemCount() == 30) {
+    if (c.getInventoryItemCount() == 30) {
       dropEdibleSeaweed();
     }
     // Get seaweed until amount matches number of buckets
@@ -86,43 +119,44 @@ public class VialCrafter extends IdleScript {
         c.walkTo(c.currentX(), c.currentY());
         c.sleep(640);
       }
-      // Drop any remaining edible seaweed after collecting seaweed
-      if (c.getInventoryItemCount(1245) > 0) {
-        dropEdibleSeaweed();
-      }
     }
   }
 
   public void getSeaweed() {
     if (!c.isBatching() || !c.isCurrentlyWalking()) {
-
-      // Pick up ground-spawned seaweed if on the northern side of Entrana
-      if (c.currentY() < 550 && c.getNearestItemById(622) != null) {
-        pickupSeaweed();
-      }
-
-      int[] coords = c.getNearestObjectById(1280);
-      if (coords != null) {
-        c.setStatus("@Cya@Harvesting Seaweed (" + coords[0] + "," + coords[1] + ")");
-
+      int[] PLANT_COORDINATES = c.getNearestObjectById(1280);
+      if (PLANT_COORDINATES != null) {
+        c.setStatus(
+            "@Cya@Harvesting Seaweed (" + PLANT_COORDINATES[0] + "," + PLANT_COORDINATES[1] + ")");
         // Travel to the other side of the island if target seaweed is over there
-        if (coords[1] > 550 && c.currentY() < 550) {
+        if (PLANT_COORDINATES[1] > 550 && c.currentY() < 550) {
           walkSouth();
-        } else if (coords[1] < 550 & c.currentY() > 550) {
+        } else if (PLANT_COORDINATES[1] < 550 & c.currentY() > 550) {
           walkNorth();
         }
-
         // Harvest seaweed if not already batching or walking
         if (!c.isBatching() && !c.isCurrentlyWalking()) {
-          c.atObject(coords[0], coords[1]);
+          c.atObject(PLANT_COORDINATES[0], PLANT_COORDINATES[1]);
           c.sleep(1280);
         }
-
-      } else if ((c.currentX() != 423 && c.currentY() != 559) || !c.isCurrentlyWalking()) {
-        // Walk to reset point to check both sides of Entrana for seaweed plants if none are found
-        c.setStatus("@Cya@Walking to reset point");
-        int[][] checkTile = {{423, 559}};
-        walk(checkTile);
+      } else {
+        if (c.getNearestItemById(SEAWEED) != null && !c.isBatching()) {
+          if (c.currentY() > 550) {
+            walkNorth();
+          }
+          pickupSeaweed();
+        } else {
+          if (!c.isCurrentlyWalking() && c.currentX() != RESET_TILE[0]
+              || c.currentY() != RESET_TILE[1]) {
+            c.setStatus("@Cya@Walking to reset point");
+            if (c.currentY() < 550) {
+              walkSouth();
+            }
+            int[][] path = {{RESET_TILE[0], RESET_TILE[1]}};
+            walk(path);
+            c.setStatus("@Cya@Waiting for seaweed");
+          }
+        }
       }
     } else {
       // Sleep while batching or walking
@@ -131,10 +165,10 @@ public class VialCrafter extends IdleScript {
   }
 
   public void pickupSeaweed() {
-    int[] groundSeaweed = c.getNearestItemById(622);
+    int[] groundSeaweed = c.getNearestItemById(SEAWEED);
     if (groundSeaweed != null) {
       c.setStatus("@Cya@Picking Up Seaweed (" + groundSeaweed[0] + "," + groundSeaweed[1] + ")");
-      c.pickupItem(groundSeaweed[0], groundSeaweed[1], 622, true, false);
+      c.pickupItem(groundSeaweed[0], groundSeaweed[1], SEAWEED, true, false);
       while (c.isCurrentlyWalking()) {
         c.sleep(640);
       }
@@ -143,15 +177,24 @@ public class VialCrafter extends IdleScript {
   }
 
   public void dropEdibleSeaweed() {
-    c.walkTo(c.currentX(), c.currentY());
-    c.setStatus("@Cya@Dropping Edible Seaweed");
-    c.dropItem(c.getInventoryItemSlotIndex(1245), c.getInventoryItemCount(1245));
-    c.sleep(1280);
+    if (c.getInventoryItemCount(EDIBLE_SEAWEED) > 0) {
+      c.walkTo(c.currentX(), c.currentY());
+      while (c.isBatching()) {
+        c.sleep(640);
+      }
+      c.setStatus("@Cya@Dropping Edible Seaweed");
+      c.dropItem(
+          c.getInventoryItemSlotIndex(EDIBLE_SEAWEED), c.getInventoryItemCount(EDIBLE_SEAWEED));
+      c.sleep(1280);
+      while (c.getInventoryItemCount(EDIBLE_SEAWEED) > 0 && c.isRunning()) {
+        c.sleep(640);
+      }
+    }
   }
 
   public void fillBuckets() {
     c.setStatus("@Cya@Filling Buckets");
-    c.useItemIdOnObject(429, 566, 21);
+    c.useItemIdOnObject(429, 566, BUCKET);
     c.sleep(1280);
     while (c.isBatching() || c.isCurrentlyWalking()) {
       c.sleep(1280);
@@ -160,7 +203,7 @@ public class VialCrafter extends IdleScript {
 
   public void makeSodaAsh() {
     c.setStatus("@Cya@Making Soda Ash");
-    c.useItemIdOnObject(426, 560, 622);
+    c.useItemIdOnObject(426, 560, SEAWEED);
     c.sleep(1280);
     while (c.isBatching() || c.isCurrentlyWalking()) {
       c.sleep(640);
@@ -169,7 +212,7 @@ public class VialCrafter extends IdleScript {
 
   public void makeMoltenGlass() {
     c.setStatus("@Cya@Making Molten Glass");
-    c.useItemIdOnObject(419, 559, 625);
+    c.useItemIdOnObject(419, 559, SAND);
     c.sleep(1280);
     while (c.isBatching() || c.isCurrentlyWalking()) {
       c.sleep(640);
@@ -178,7 +221,8 @@ public class VialCrafter extends IdleScript {
 
   public void makeVials() {
     c.setStatus("@Cya@Making Vials");
-    c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(621), c.getInventoryItemSlotIndex(623));
+    c.useItemOnItemBySlot(
+        c.getInventoryItemSlotIndex(GLASSBLOWING_PIPE), c.getInventoryItemSlotIndex(MOLTEN_GLASS));
     c.sleep(1280);
     c.optionAnswer(0);
     while (c.isBatching()) {
@@ -188,26 +232,36 @@ public class VialCrafter extends IdleScript {
 
   public void walkNorth() {
     // Use the shortcut if the player has the required agility level
-    if (c.getBaseStat(c.getStatId("Agility")) >= 55) {
-      int[][] walkPath = {{423, 559}, {434, 549}};
+    if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
+      int[][] walkPath = {{SOUTH_OF_SHORTCUT[0], SOUTH_OF_SHORTCUT[1]}};
       walk(walkPath);
-      c.atObject(434, 550);
+      c.atObject(SHORTCUT[0], SHORTCUT[1]);
+      c.sleep(1280);
     } else {
-      int[][] walkPath = {{423, 559}, {409, 552}, {431, 539}};
+      int[][] walkPath = {
+        {FURNACE[0], FURNACE[1]},
+        {CHICKEN_PEN[0], CHICKEN_PEN[1]},
+        {NORTH_WEST[0], NORTH_WEST[1]}
+      };
       walk(walkPath);
     }
   }
 
   public void walkSouth() {
     // Use the shortcut if the player has the required agility level
-    if (c.getBaseStat(c.getStatId("Agility")) >= 55) {
-      int[][] walkPath = {{434, 549}};
+    if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
+      int[][] walkPath = {{NORTH_OF_SHORTCUT[0], NORTH_OF_SHORTCUT[1]}};
       walk(walkPath);
-      c.atObject(434, 550);
-      walkPath = new int[][] {{423, 559}};
+      c.atObject(SHORTCUT[0], SHORTCUT[1]);
+      c.sleep(1280);
+      walkPath = new int[][] {{RESET_TILE[0], RESET_TILE[1]}};
       walk(walkPath);
     } else {
-      int[][] walkPath = {{431, 539}, {409, 552}, {423, 559}};
+      int[][] walkPath = {
+        {NORTH_WEST[0], NORTH_WEST[1]},
+        {CHICKEN_PEN[0], CHICKEN_PEN[1]},
+        {FURNACE[0], FURNACE[1]}
+      };
       walk(walkPath);
     }
   }
@@ -221,20 +275,29 @@ public class VialCrafter extends IdleScript {
     //      int[][] path = {{Tile1X,Tile1Y}}
     //      walk(path);
     for (int i = 0; i < walkPath.length; ++i) {
+      if (c.isCurrentlyWalking()) {
+        while (c.isCurrentlyWalking() && c.isRunning()) {
+          c.sleep(640);
+        }
+      }
       c.walkTo(walkPath[i][0], walkPath[i][1]);
       c.sleep(1280);
       while (c.isCurrentlyWalking() && c.isRunning()) {
-        c.sleep(640);
+        c.sleep(1280);
       }
     }
   }
 
   public boolean evenBucketsAndSeaweed() {
-    return c.getInventoryItemCount(622) + c.getInventoryItemCount(624) == getBucketCount();
+    return c.getInventoryItemCount(SEAWEED) + c.getInventoryItemCount(SODA_ASH) == getBucketCount();
   }
 
   public int getBucketCount() {
-    return c.getInventoryItemCount(21) + c.getInventoryItemCount(625);
+    return c.getInventoryItemCount(BUCKET) + c.getInventoryItemCount(SAND);
+  }
+
+  public boolean hasSkillLevel(String skillName, Integer requiredLevel) {
+    return c.getBaseStat(c.getStatId(skillName)) >= requiredLevel;
   }
 
   public void quit(int i) {
@@ -261,6 +324,7 @@ public class VialCrafter extends IdleScript {
     c.stop();
   }
 
+  @Override
   public void paintInterrupt() {
     if (c != null) {
       c.drawBoxAlpha(7, 7, 124, 41, 16777215, 64);
@@ -270,7 +334,7 @@ public class VialCrafter extends IdleScript {
       c.drawString("@cya@Vials Held", 10, 40, 16777215, 1);
       c.drawString("@whi@_________________", 10, 44, 16777215, 1);
       c.drawString("@whi@|", 68, 40, 16777215, 1);
-      c.drawString("@whi@" + c.getInventoryItemCount(465), 74, 40, 16777215, 1);
+      c.drawString("@whi@" + c.getInventoryItemCount(VIAL), 74, 40, 16777215, 1);
     }
   }
 }

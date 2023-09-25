@@ -44,11 +44,11 @@ public class AIOMagic extends IdleScript {
   final String[] bars =
       new String[] {"Bronze", "Iron", "Silver", "Steel", "Gold", "Mithril", "Adamantite", "Runite"};
 
-  final String[] jewelry = new String[] {"Amulet", "Ring"};
+  final String[] jewelry = new String[] {"Amulet", "Ring", "Crown"};
   JFrame scriptFrame = null;
   final int[] lootIds = {
     10, 169, 170, 171, 172, 173, 174, 384, 314, 315, 316, 317, 408, 522, 1314, 1315, 1316, 1317,
-    1318
+    1318, 1510, 1511, 1512, 1513, 1514
   }; // dragonstone items not supported. not like anyone will have thousands of those, right? xd
 
   int spellId = -1;
@@ -170,7 +170,7 @@ public class AIOMagic extends IdleScript {
         case 42:
           return 522;
       }
-    } else {
+    } else if (selectedJewelryId == 1) {
       // rings
       switch (spellId) {
         case 3:
@@ -183,6 +183,20 @@ public class AIOMagic extends IdleScript {
           return 287;
         case 42:
           return 610;
+      }
+    } else if (selectedJewelryId == 2) {
+      // crowns
+      switch (spellId) {
+        case 3:
+          return 1504;
+        case 13:
+          return 1505;
+        case 24:
+          return 1506;
+        case 30:
+          return 1507;
+        case 42:
+          return 1508;
       }
     }
 

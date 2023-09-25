@@ -9,7 +9,7 @@ import models.entities.ItemId;
  *
  * @author Dvorak and Kaila
  */
-public class VialFiller extends K_kailaScript {
+public class WaterFiller extends K_kailaScript {
   int itemsFilled = 0;
   int fullItems = 0;
   int emptyItems = 0;

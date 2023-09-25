@@ -9,7 +9,13 @@ public class HarvesterTrainer extends IdleScript {
 
   int harvested = 0;
   final long startTimestamp = System.currentTimeMillis() / 1000L;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     controller.displayMessage("@red@HarvesterTrainer by Dvorak. Let's party like it's 2004!");
     controller.displayMessage("@red@If less than 85 harvesting, start in Draynor/Lumbridge field.");
@@ -17,16 +23,21 @@ public class HarvesterTrainer extends IdleScript {
     controller.quitIfAuthentic();
 
     while (controller.isRunning()) {
-      int objectId = 1265;
+      // pots and garlic are in the same western patch
+      int objectId = 1265; // potatoes
 
-      if (controller.getBaseStat(19) >= 9) objectId = 1267;
+      if (controller.getBaseStat(19) >= 9) objectId = 1267; // garlic
 
-      if (controller.getBaseStat(19) >= 20) objectId = 1269;
+      if (controller.getBaseStat(19) >= 20) objectId = 1269; // corn
 
-      if (controller.getBaseStat(19) >= 60) objectId = 1263;
+      if (controller.getBaseStat(19) >= 60) objectId = 1263; // red cabbage
 
       if (controller.currentX() > 450 && controller.getBaseStat(19) >= 85) objectId = 1264;
 
+      if ((objectId == 1269 || objectId == 1263) && controller.currentX() > 179) {
+        controller.walkTo(178, 607);
+        controller.walkTo(170, 609);
+      }
       int[] coords = controller.getNearestObjectById(objectId);
       if (coords != null) {
         controller.setStatus("@yel@Harvesting...");

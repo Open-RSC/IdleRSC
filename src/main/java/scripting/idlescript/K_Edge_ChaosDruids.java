@@ -25,6 +25,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Edge_ChaosDruids extends K_kailaScript {
+  private int fightMode = 0;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -71,7 +72,12 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
     ItemId.RUNE_SPEAR.getId(),
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * the corresponding logic based on the values of the parameters.
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 215;
     centerY = 3249;
@@ -104,64 +110,55 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
-        BankToDruid();
+        bankToDruid();
         c.sleep(1380);
       }
       scriptStart();
     }
     return 1000; // start() must return an int value now.
   }
-
+  /** Starts the script and executes the main logic in a loop. */
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        DruidToBank();
-        bank();
-        BankToDruid();
-      }
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      checkFightMode();
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      checkFightMode(fightMode);
       checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30) {
-        if (!c.isInCombat()) {
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(270, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else {
+          c.sleep(GAME_TICK);
           if (lootLowLevel) lootItems(false, lowLevelLoot);
           else lootItems(false, highLevelLoot);
-          ORSCharacter npc = c.getNearestNpcById(270, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            // c.walktoNPC(npc.serverIndex,1);
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            if (lootLowLevel) lootItems(false, lowLevelLoot);
-            else lootItems(false, highLevelLoot);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-            if (c.currentX() != 218 || c.currentY() != 3245) {
-              c.walkTo(218, 3245);
-              c.sleep(GAME_TICK);
-            }
+          if (c.currentX() != 218 || c.currentY() != 3245) {
+            c.walkTo(218, 3245);
           }
-        } else c.sleep(GAME_TICK);
-      }
+        }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood();
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(foodId) == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
-        DruidToBank();
+        druidToBank();
         bank();
-        BankToDruid();
+        bankToDruid();
       }
     }
   }
-
+  /** Executes the banking process. */
   private void bank() {
     c.setStatus("@yel@Banking..");
     c.openBank();
@@ -218,8 +215,11 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       checkInventoryItemCounts();
     }
   }
-
-  private void DruidToBank() {
+  /**
+   * druidToBank function is responsible for walking to the bank location. It performs a series of
+   * actions to reach the destination.
+   */
+  private void druidToBank() {
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(210, 3254);
     c.walkTo(200, 3254);
@@ -247,14 +247,20 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     c.sleep(640);
     c.walkTo(217, 458);
     c.walkTo(221, 447);
-    c.walkTo(217, 448);
+    c.walkTo(217, 447); // outside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.sleep(640);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-
-  private void BankToDruid() {
+  /**
+   * BankToDruid function is responsible for walking to the Druids location. It performs a series of
+   * actions to reach the destination.
+   */
+  private void bankToDruid() {
     c.setStatus("@gre@Walking to Druids..");
+    c.walkTo(217, 448); // inside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.walkTo(221, 447);
     c.walkTo(217, 458);
     c.walkTo(215, 467);
@@ -282,9 +288,9 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     c.walkTo(210, 3254);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+  /** Sets up the GUI for the application. */
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Druid Killer @mag@~ by Kaila");
+    JLabel header = new JLabel("Edge Druid Killer ~ Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Gear, requires food in bank!");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup");
@@ -345,7 +351,11 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
-
+  /**
+   * Handles chat commands input by the user and changes values in the program
+   *
+   * @param commandText the text of the command
+   */
   @Override
   public void chatCommandInterrupt(
       String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
@@ -403,14 +413,18 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       c.sleep(100);
     }
   }
-
+  /**
+   * Handles quest messages appearing in chat. interrupt to process messages
+   *
+   * @param message the text of the message
+   */
   @Override
   public void questMessageInterrupt(String message) {
     if (message.contains("You eat the")) {
       usedFood++;
     }
   }
-
+  /** Overrides paintInterrupt. Displays various statistics */
   @Override
   public void paintInterrupt() {
     if (c != null) {
@@ -458,7 +472,7 @@ public final class K_Edge_ChaosDruids extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Chaos Druids @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Chaos Druids @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

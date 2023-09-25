@@ -22,7 +22,13 @@ public final class K_MonkRobes extends K_kailaScript {
   private static int totalBotz = 0;
   private static int TopzInBank = 0;
   private static int BotzInBank = 0;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -160,7 +166,7 @@ public final class K_MonkRobes extends K_kailaScript {
     // next to robes now)
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Monk Robe Picker - By Kaila");
     JLabel label1 = new JLabel("Picks up Monks Robe SETS in Edge Monastery and Banks");
@@ -216,7 +222,7 @@ public final class K_MonkRobes extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Monks Robe Picker @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Monks Robe Picker @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Robe Tops Banked: @gre@" + TopzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@Robe Bots Banked:@gre@" + BotzInBank, x, y + (14 * 2), 0xFFFFFF, 1);

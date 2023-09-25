@@ -48,7 +48,13 @@ public final class K_BlackUnicorns extends K_kailaScript {
       c.sleep(1380);
     }
   }
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
@@ -77,33 +83,25 @@ public final class K_BlackUnicorns extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        escapePath();
-      }
-      if (c.getInventoryItemCount() < 30) {
-        lootItem(false, UNI_HORN);
-        inventUni = c.getBankItemCount(UNI_HORN);
-        if (!c.isInCombat()) {
-          // c.sleepHandler(296, true);
-          ORSCharacter npc = c.getNearestNpcById(296, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-          }
+      lootItem(false, UNI_HORN);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(296, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          inventUni = c.getInventoryItemCount(UNI_HORN);
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
-      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(SHARK) == 0) {
+      timeToBank = !eatFood();
+      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(SHARK) == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
+        timeToBank = false;
         UniToBank();
         bank();
         BankToUni();
@@ -131,6 +129,9 @@ public final class K_BlackUnicorns extends K_kailaScript {
       }
       withdrawFood(SHARK, 1);
       bankItemCheck(SHARK, 5);
+      inventoryItemCheck(airId, 3);
+      inventoryItemCheck(lawId, 1);
+      inventoryItemCheck(earthId, 1);
       uniInBank = c.getBankItemCount(UNI_HORN);
       c.closeBank();
       inventUni = c.getBankItemCount(UNI_HORN);
@@ -168,7 +169,11 @@ public final class K_BlackUnicorns extends K_kailaScript {
 
   private void UniToBank() {
     c.setStatus("@gre@Walking to Bank..");
-    if (bankTeleport) {
+    boolean hasTeleportRunes =
+        c.getInventoryItemCount(airId) >= 3
+            && c.getInventoryItemCount(lawId) > 0
+            && c.getInventoryItemCount(earthId) > 0;
+    if (bankTeleport && hasTeleportRunes) {
       goToTwenty();
       c.setStatus("@red@Teleporting Now!.");
       teleportLumbridge();
@@ -227,7 +232,6 @@ public final class K_BlackUnicorns extends K_kailaScript {
     }
   }
 
-  // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Black Unicorn Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Edge bank or at Uni's with Gear");
@@ -286,7 +290,7 @@ public final class K_BlackUnicorns extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Black Unicorns @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Black Unicorns @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Horns in Bank: @gre@" + uniInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

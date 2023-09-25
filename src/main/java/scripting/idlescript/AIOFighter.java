@@ -74,7 +74,13 @@ public class AIOFighter extends IdleScript {
   final long startTimestamp = System.currentTimeMillis() / 1000L;
   int bonesBuried = 0;
   int spellsCasted = 0;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -455,6 +461,7 @@ public class AIOFighter extends IdleScript {
   }
 
   public void setupGUI() {
+
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
@@ -483,49 +490,6 @@ public class AIOFighter extends IdleScript {
         new JLabel("Switch ID (weapon to switch to if in melee combat while ranging)");
     JTextField switchIdField = new JTextField("81");
     JButton startScriptButton = new JButton("Start");
-
-    startScriptButton.addActionListener(
-        e -> {
-          if (validateFields(
-              npcIdsField,
-              maxWanderField,
-              eatAtHpField,
-              lootTableField,
-              spellNameField,
-              arrowIdField,
-              switchIdField)) {
-            setValuesFromGUI(
-                fightModeField,
-                npcIdsField,
-                maxWanderField,
-                eatAtHpField,
-                lootTableField,
-                openDoorsCheckbox,
-                buryBonesCheckbox,
-                prioritizeBonesCheckbox,
-                magingCheckbox,
-                spellNameField,
-                rangingCheckbox,
-                arrowIdField,
-                switchIdField);
-
-            c.displayMessage("@red@AIOFighter by Dvorak. Let's party like it's 2004!");
-            c.setStatus("@red@Started...");
-
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-          }
-        });
-
-    magingCheckbox.addActionListener(e -> spellNameField.setEnabled(magingCheckbox.isSelected()));
-    buryBonesCheckbox.addActionListener(
-        e -> prioritizeBonesCheckbox.setEnabled(buryBonesCheckbox.isSelected()));
-    rangingCheckbox.addActionListener(
-        e -> {
-          arrowIdField.setEnabled(rangingCheckbox.isSelected());
-          switchIdField.setEnabled(rangingCheckbox.isSelected());
-        });
 
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
@@ -570,6 +534,50 @@ public class AIOFighter extends IdleScript {
     scriptFrame.requestFocusInWindow();
 
     c.setStatus("@red@Waiting for start...");
+
+    // action listeners below
+    startScriptButton.addActionListener(
+        e -> {
+          if (validateFields(
+              npcIdsField,
+              maxWanderField,
+              eatAtHpField,
+              lootTableField,
+              spellNameField,
+              arrowIdField,
+              switchIdField)) {
+            setValuesFromGUI(
+                fightModeField,
+                npcIdsField,
+                maxWanderField,
+                eatAtHpField,
+                lootTableField,
+                openDoorsCheckbox,
+                buryBonesCheckbox,
+                prioritizeBonesCheckbox,
+                magingCheckbox,
+                spellNameField,
+                rangingCheckbox,
+                arrowIdField,
+                switchIdField);
+
+            c.displayMessage("@red@AIOFighter by Dvorak. Let's party like it's 2004!");
+            c.setStatus("@red@Started...");
+
+            scriptFrame.setVisible(false);
+            scriptFrame.dispose();
+            scriptStarted = true;
+          }
+        });
+
+    magingCheckbox.addActionListener(e -> spellNameField.setEnabled(magingCheckbox.isSelected()));
+    buryBonesCheckbox.addActionListener(
+        e -> prioritizeBonesCheckbox.setEnabled(buryBonesCheckbox.isSelected()));
+    rangingCheckbox.addActionListener(
+        e -> {
+          arrowIdField.setEnabled(rangingCheckbox.isSelected());
+          switchIdField.setEnabled(rangingCheckbox.isSelected());
+        });
   }
 
   @Override

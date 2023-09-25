@@ -63,7 +63,13 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
     ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -90,40 +96,26 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        giantEscape();
-        GiantsToBank();
-        bank();
-        BankToGiants();
-      }
-      buryBones(false);
       lootItems(true, loot);
+      buryBones(false);
       superAttackBoost(0, false);
       superStrengthBoost(0, false);
-      if (c.getInventoryItemCount(foodId) > 0) {
-        if (c.getInventoryItemCount() < 30) {
-          if (!c.isInCombat()) {
-            ORSCharacter npc = c.getNearestNpcById(344, false);
-            if (npc != null) {
-              c.setStatus("@yel@Attacking Giants");
-              c.attackNpc(npc.serverIndex);
-              c.sleep(GAME_TICK);
-            } else {
-              c.sleep(GAME_TICK);
-              buryBones(false);
-              lootItems(true, loot);
-            }
-          } else c.sleep(640);
-        }
-        if (c.getInventoryItemCount() == 30) {
-          dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
-          eatFoodToLoot(true);
-        }
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(344, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Giants");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(640);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
+        eatFoodToLoot(true);
       }
-      if (c.getInventoryItemCount(foodId) == 0) {
+      timeToBank = !eatFood();
+      if (c.getInventoryItemCount(foodId) == 0 || timeToBank) {
         c.setStatus("@yel@Banking, escaping south..");
+        timeToBank = false;
         giantEscape();
         GiantsToBank();
         bank();
@@ -432,7 +424,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Waterfall Fire Giants @gre@by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Waterfall Fire Giants @whi@~ @mag@Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Laws: @gre@"
               + totalLaw

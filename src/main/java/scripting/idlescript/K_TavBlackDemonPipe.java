@@ -1,10 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 import models.entities.ItemId;
 import models.entities.PrayerId;
 import orsc.ORSCharacter;
@@ -21,14 +18,15 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlackDemonPipe extends K_kailaScript {
-  private static boolean d2hWield = false;
-  private static boolean craftCapeTeleport = false;
-  private static int totalMed = 0;
-  private static int totalDstone = 0;
-  private static int totalRbar = 0;
-  private static int totalRunestuff = 0;
-  private static int totalRchain = 0;
-  private static int totalRmed = 0;
+  private boolean d2hWield = false;
+  private boolean craftCapeTeleport = false;
+  private int totalMed = 0;
+  private int totalDstone = 0;
+  private int totalRbar = 0;
+  private int totalRunestuff = 0;
+  private int totalRchain = 0;
+  private int totalRmed = 0;
+  private int fightMode = 0;
   private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
   private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
   private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
@@ -73,7 +71,13 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
     ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
-  // STARTing script
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 390;
     centerY = 3371;
@@ -102,42 +106,39 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        demonEscape();
-        DemonsToBank();
-        bank();
-        BankToDemons();
-      }
-      foodPotCheck();
+      checkFightMode(fightMode);
       drinkPrayerPotion(31, true);
       prayParalyze();
-      superAttackBoost(0, false);
-      superStrengthBoost(0, false);
       eatFoodToLoot(true);
-      if (c.getInventoryItemCount() == 30) dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
-      if (c.getInventoryItemCount() < 30) {
-        lootItems(true, loot);
-        if (!c.isInCombat()) {
-          ORSCharacter npc = c.getNearestNpcById(290, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking Demons");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            lootItems(true, loot);
-          }
-        } else c.sleep(GAME_TICK);
+      dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
+      if (potUp) {
+        superAttackBoost(0, true);
+        superStrengthBoost(0, true);
       }
-
-      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(546) == 0) {
-        c.setStatus("@red@Full Inv / Out of Food");
-        c.sleep(308);
+      lootItems(true, loot);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(290, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Demons");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
+      timeToBank = !eatFood(); // does the food eating
+      if (c.getInventoryItemCount(prayerPot[2]) == 0
+          || c.getInventoryItemCount(foodId) == 0
+          || c.getInventoryItemCount() == 30
+          || timeToBank
+          || timeToBankStay) {
+        c.setStatus("@red@Full Inv / Out of Food or pots / time to bank");
+        timeToBank = false;
         demonEscape();
         DemonsToBank();
         bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          endSession();
+        }
         BankToDemons();
       }
     }
@@ -187,26 +188,28 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       totalRmed = totalMed + c.getInventoryItemCount(399);
       totalMed = totalMed + c.getInventoryItemCount(795);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 486
-            && itemId != 487
-            && itemId != 488
-            && itemId != 492
-            && itemId != 493
-            && itemId != 494
+        if (itemId != ItemId.SUPER_ATTACK_POTION_1DOSE.getId()
+            && itemId != ItemId.SUPER_ATTACK_POTION_2DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_1DOSE.getId()
+            && itemId != ItemId.SUPER_STRENGTH_POTION_2DOSE.getId()
+            && itemId != ItemId.RESTORE_PRAYER_POTION_1DOSE.getId()
+            && itemId != ItemId.RESTORE_PRAYER_POTION_2DOSE.getId()
+            && itemId != ATTACK_CAPE
+            && itemId != CRAFT_CAPE
             && itemId != ANTI_DRAGON_SHIELD
-            && itemId != 485
-            && itemId != 484
-            && itemId != 483
             && itemId != DRAGON_TWO_HAND) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      c.sleep(1400); // Important, leave in
+      c.sleep(2000); // Important, leave in
 
       if (d2hWield && (c.getInventoryItemCount(DRAGON_TWO_HAND) < 1))
         withdrawItem(DRAGON_TWO_HAND, 1);
-      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) < 1))
+      if (craftCapeTeleport
+          && (c.getInventoryItemCount(CRAFT_CAPE) < 1)
+          && !c.isItemIdEquipped(CRAFT_CAPE)) {
         withdrawItem(CRAFT_CAPE, 1);
+      }
       if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
         c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
       if (!craftCapeTeleport) {
@@ -214,21 +217,23 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         withdrawItem(lawId, 6);
         withdrawItem(waterId, 6);
       }
-      withdrawSuperAttack(1);
-      withdrawSuperStrength(1);
-      withdrawPrayer(16);
-      withdrawFood(546, 2);
-
+      if (potUp) {
+        withdrawSuperAttack(1);
+        withdrawSuperStrength(1);
+      }
+      withdrawPrayer(prayPotWithdrawAmount);
+      withdrawFood(foodId, foodWithdrawAmount);
       if (!craftCapeTeleport) {
         bankItemCheck(airId, 30);
         bankItemCheck(waterId, 10); // Falador teleport
         bankItemCheck(lawId, 10);
       }
-      bankItemCheck(prayerPot[2], 17);
-      bankItemCheck(546, 10);
+      bankItemCheck(prayerPot[2], prayPotWithdrawAmount);
+      bankItemCheck(foodId, foodWithdrawAmount);
       bankCheckAntiDragonShield();
       c.closeBank();
-      if (!c.isItemIdEquipped(ATTACK_CAPE)) c.equipItem(c.getInventoryItemSlotIndex(ATTACK_CAPE));
+      if (!c.isItemIdEquipped(ATTACK_CAPE) && craftCapeTeleport)
+        c.equipItem(c.getInventoryItemSlotIndex(ATTACK_CAPE));
     }
     if (!craftCapeTeleport) {
       inventoryItemCheck(airId, 18);
@@ -244,27 +249,24 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   }
   // PATHING private voids
   private void demonEscape() {
-    c.setStatus("We've ran out of Food! @gre@Going to safe zone.");
+    c.setStatus("We've ran out of Stuff! @gre@Going to safe zone.");
     c.walkTo(382, 3372);
-    c.walkTo(375, 3372);
+    c.walkTo(372, 3372);
     c.sleep(640);
-    if (c.currentX() > 376) {
-      c.walkTo(375, 3372);
+    if (c.currentX() > 374) {
+      c.walkTo(372, 3372);
       c.sleep(640);
     }
   }
 
   private void DemonsToBank() {
     c.setStatus("@gre@Going to Bank");
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
-      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
       c.walkTo(347, 600);
-      forceEquipItem(CRAFT_CAPE);
-      craftCapeDoorEntering();
-      forceEquipItem(ATTACK_CAPE);
+      craftGuildDoorEntering(ATTACK_CAPE);
       if (d2hWield && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         c.sleep(4 * GAME_TICK);
@@ -282,9 +284,8 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
 
   private void BankToDemons() {
     c.setStatus("@gre@Walking to Black Demons..");
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       teleportCraftCape();
-      c.sleep(4 * GAME_TICK); // cannot do things after teleport
       c.walkTo(347, 588);
       c.walkTo(347, 586);
       c.walkTo(343, 581);
@@ -300,6 +301,12 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       c.walkTo(375, 521);
       c.walkTo(376, 521);
     } else {
+      c.walkTo(328, 553);
+      // open bank door
+      if (c.getObjectAtCoord(327, 552) == 64) {
+        c.atObject(327, 552);
+        c.sleep(1000);
+      }
       c.walkTo(327, 552);
       c.walkTo(324, 549);
       c.walkTo(324, 539);
@@ -348,34 +355,48 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     drinkPrayerPotion(31, true);
     prayParalyze();
   }
-  // BOOST private voids
-  private void foodPotCheck() {
-    if (c.getInventoryItemCount(483) == 0 || c.getInventoryItemCount(546) == 0) {
-      c.setStatus("@yel@No Ppots/food, Banking..");
-      demonEscape();
-      DemonsToBank();
-      bank();
-      BankToDemons();
-      c.sleep(618);
-    }
-  }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
-    JLabel header = new JLabel("Taverley Black Demon (Pipe) - By Kaila");
+    JLabel header = new JLabel("Taverley Black Demon (Pipe Shortcut) ~ Kaila");
     JLabel label1 = new JLabel("Start in Fally west with gear on, or in Demon room!");
-    JLabel label2 = new JLabel("Sharks, Law, Water, Air IN BANK required");
-    JLabel label3 = new JLabel("70 Agility required, for the shortcut!");
+    JLabel label2 = new JLabel("Food, P.pots, and teleport method is required");
+    JLabel label3 = new JLabel("70 Agility required, for the pipe shortcut");
     JLabel label4 = new JLabel("Bot will attempt to wield dragonfire shield");
     JLabel label5 = new JLabel("When walking through Blue Dragon Room");
     JLabel blankLabel = new JLabel("     ");
     JCheckBox d2hCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport Method?", false);
+    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
+    JLabel fightModeLabel = new JLabel("Fight Mode:");
+    JComboBox<String> fightModeField =
+        new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(0); // sets default to controlled
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(2); // sets default to sharks
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(2));
+    JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
+    JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(15));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          if (!foodWithdrawAmountField.getText().equals("")) {
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          } else {
+            foodWithdrawAmount = 3;
+          }
+          if (!prayPotWithdrawAmountField.getText().equals("")) {
+            prayPotWithdrawAmount = Integer.parseInt(prayPotWithdrawAmountField.getText());
+          } else {
+            prayPotWithdrawAmount = 6;
+          }
           d2hWield = d2hCheckbox.isSelected();
           craftCapeTeleport = craftCapeCheckbox.isSelected();
+          fightMode = fightModeField.getSelectedIndex();
+          foodId = foodIds[foodField.getSelectedIndex()];
+          potUp = potUpCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           startTime = System.currentTimeMillis();
@@ -395,11 +416,63 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
     scriptFrame.add(blankLabel);
     scriptFrame.add(d2hCheckbox);
     scriptFrame.add(craftCapeCheckbox);
+    scriptFrame.add(potUpCheckbox);
+    scriptFrame.add(fightModeLabel);
+    scriptFrame.add(fightModeField);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(foodWithdrawAmountLabel);
+    scriptFrame.add(foodWithdrawAmountField);
+    scriptFrame.add(prayPotWithdrawAmountLabel);
+    scriptFrame.add(prayPotWithdrawAmountField);
     scriptFrame.add(startScriptButton);
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
+  }
+
+  @Override
+  public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
+    if (commandText.contains("bank")) {
+      c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
+      timeToBank = true;
+      c.sleep(100);
+    } else if (commandText.contains("bankstay")) {
+      c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
+      timeToBankStay = true;
+      c.sleep(100);
+    } else if (commandText.contains("potup")) {
+      if (!potUp) {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
+        potUp = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
+        potUp = false;
+      }
+      c.sleep(100);
+    } else if (commandText.contains(
+        "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+      c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
+      c.displayMessage("@red@Switching to \"Accurate\" combat style!");
+      fightMode = 2;
+      c.sleep(100);
+    } else if (commandText.contains("strength")) {
+      c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
+      c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
+      fightMode = 1;
+      c.sleep(100);
+    } else if (commandText.contains("defense")) {
+      c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
+      c.displayMessage("@red@Switching to \"Defensive\" combat style!");
+      fightMode = 3;
+      c.sleep(100);
+    } else if (commandText.contains("controlled")) {
+      c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
+      c.displayMessage("@red@Switching to \"Controlled\" combat style!");
+      fightMode = 0;
+      c.sleep(100);
+    }
   }
 
   @Override
@@ -441,7 +514,7 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Tavelry Black Demons @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Tavelry Black Demons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Laws: @gre@"

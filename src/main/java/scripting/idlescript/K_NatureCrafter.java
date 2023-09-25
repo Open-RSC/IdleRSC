@@ -47,7 +47,13 @@ public final class K_NatureCrafter extends K_kailaScript {
       c.walkTo(787, 23);
     }
   }
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
@@ -243,7 +249,7 @@ public final class K_NatureCrafter extends K_kailaScript {
       c.walkTo(787, 23);
     }
   }
-  // GUI stuff below (icky)
+
   private void parseVariables() {
     startTime = System.currentTimeMillis();
   }
@@ -305,7 +311,7 @@ public final class K_NatureCrafter extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Nature Rune Crafter@gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Nature Rune Crafter @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Natures Crafted: @gre@"

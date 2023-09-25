@@ -27,7 +27,7 @@ public class LoginListener implements Runnable {
           if (!controller.isLoggedIn()) {
             controller.log("Logged out! Logging back in...");
             controller.login();
-
+            controller.sleep(640);
             /*
              * Math.random returns value between 0.0 and 1.0
              *
@@ -60,33 +60,20 @@ public class LoginListener implements Runnable {
              * <p>~ Kaila ~
              */
             if (!controller.isLoggedIn()) {
-              // for (int i = 1; i <= 500; i++) {
-              loginCount++;
-              int i = Math.toIntExact(loginCount);
-              if (loginCount <= 10) {
-                int sleepTime = (int) (Math.random() * 20000) + 60000;
-                int sleepTimeInSeconds = sleepTime / 1000;
-                controller.log(
-                    "Looks like we could not login... trying again in "
-                        + sleepTimeInSeconds
-                        + " seconds...",
-                    "cya");
-                controller.sleep(sleepTime);
-              } else {
-                if (!controller.isLoggedIn()) {
-                  int sleepTime =
-                      (int) (Math.random() * 30000) + (((i * 15) / (i + 60)) * 30000) + 60000;
-                  int sleepTimeInSeconds = sleepTime / 1000;
-                  controller.log(
-                      "Looks like we could not login... trying again in "
-                          + sleepTimeInSeconds
-                          + " seconds...",
-                      "cya");
-                  controller.sleep(sleepTime);
-                }
+              int i = (int) loginCount;
+              int sleepTime = (int) ((Math.random() * 20000) + 60000);
+              if (loginCount > 10) {
+                sleepTime = sleepTime + (((i * 30) / (i + 60)) * 30000);
               }
-              controller.sleep(100);
-            }
+              int sleepTimeInSeconds = sleepTime / 1000;
+              controller.log(
+                  "Looks like we could not login... trying again in "
+                      + sleepTimeInSeconds
+                      + " seconds...",
+                  "cya");
+              controller.sleep(sleepTime);
+              loginCount++;
+            } else loginCount = 0;
           }
         }
 
@@ -109,12 +96,12 @@ public class LoginListener implements Runnable {
     int x = c.currentX();
     int y = c.currentY();
 
-    if (c.isReachable(x + 1, y, true)) c.walkTo(x + 1, y, 0, false);
-    else if (c.isReachable(x - 1, y, true)) c.walkTo(x - 1, y, 0, false);
-    else if (c.isReachable(x, y + 1, true)) c.walkTo(x, y + 1, 0, false);
-    else if (c.isReachable(x, y - 1, true)) c.walkTo(x, y - 1, 0, false);
+    if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
+    else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
+    else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
+    else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
 
-    c.sleep(1000);
+    c.sleep(1280);
 
     c.walkTo(x, y, 0, false);
   }

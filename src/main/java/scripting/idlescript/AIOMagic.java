@@ -6,6 +6,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import models.entities.ItemId;
 
 /**
  * Performs all magic spells that require banking
@@ -43,11 +44,11 @@ public class AIOMagic extends IdleScript {
   final String[] bars =
       new String[] {"Bronze", "Iron", "Silver", "Steel", "Gold", "Mithril", "Adamantite", "Runite"};
 
-  final String[] jewelry = new String[] {"Amulet", "Ring"};
+  final String[] jewelry = new String[] {"Amulet", "Ring", "Crown"};
   JFrame scriptFrame = null;
   final int[] lootIds = {
     10, 169, 170, 171, 172, 173, 174, 384, 314, 315, 316, 317, 408, 522, 1314, 1315, 1316, 1317,
-    1318
+    1318, 1509, 1510, 1511, 1512, 1513, 1514
   }; // dragonstone items not supported. not like anyone will have thousands of those, right? xd
 
   int spellId = -1;
@@ -66,7 +67,13 @@ public class AIOMagic extends IdleScript {
 
   boolean scriptStarted = false;
   boolean guiSetup = false;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -110,8 +117,10 @@ public class AIOMagic extends IdleScript {
             controller.sleep(618);
           } else {
             controller.setStatus("@blu@Casting!");
-            controller.castSpellOnInventoryItem(
-                spellId, controller.getInventoryItemSlotIndex(targetId));
+            if (targetId != ItemId.NATURE_RUNE.getId()) {
+              controller.castSpellOnInventoryItem(
+                  spellId, controller.getInventoryItemSlotIndex(targetId));
+            }
             controller.sleep(1300);
           }
 
@@ -161,7 +170,7 @@ public class AIOMagic extends IdleScript {
         case 42:
           return 522;
       }
-    } else {
+    } else if (selectedJewelryId == 1) {
       // rings
       switch (spellId) {
         case 3:
@@ -174,6 +183,20 @@ public class AIOMagic extends IdleScript {
           return 287;
         case 42:
           return 610;
+      }
+    } else if (selectedJewelryId == 2) {
+      // crowns
+      switch (spellId) {
+        case 3:
+          return 1504;
+        case 13:
+          return 1505;
+        case 24:
+          return 1506;
+        case 30:
+          return 1507;
+        case 42:
+          return 1508;
       }
     }
 

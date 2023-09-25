@@ -843,25 +843,45 @@ public enum NpcId implements Id {
       }
     }
   }
-
+  /**
+   * Retrieves the npc NAME associated with the given npcId, or NOTHING if no mapping * exists for
+   * the id.
+   *
+   * @param id the npcId of the NPC
+   * @return npc NAME associated with the given npcId, or NOBODY if no npcId is found
+   */
   public static NpcId getById(Integer id) {
     return byId.getOrDefault(id, NpcId.NOBODY);
   }
-
+  /**
+   * Retrieves an 'NpcId' int by its NAME.
+   *
+   * @param name the name of the NPC
+   * @return the NpcId corresponding to the given name, or NOBODY if no match is found
+   */
   public static NpcId getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOBODY);
   }
-
+  /**
+   * Sanitizes the given name by removing any non-alphanumeric characters and converting it to
+   * lowercase.
+   *
+   * @param name the name to be sanitized
+   * @return the sanitized name
+   */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
 
-  /** @param npcId The ID of the npc. */
   NpcId(int npcId) {
     this.npcId = npcId;
   }
-
-  /** @return The npcs ID */
+  /**
+   * Retrieves the 'NpcId' int by the npc NAME.<br>
+   * For Example: 'int guard = NpcId.GUARD.getId()'
+   *
+   * @return int NpcId
+   */
   @Override
   public int getId() {
     return npcId;

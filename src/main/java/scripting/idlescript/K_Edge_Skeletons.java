@@ -16,6 +16,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Edge_Skeletons extends K_kailaScript {
+  private int fightMode = 0;
   private static final int[] loot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -44,7 +45,13 @@ public final class K_Edge_Skeletons extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
     ItemId.RUNE_SPEAR.getId(),
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 229;
     centerY = 407;
@@ -88,39 +95,28 @@ public final class K_Edge_Skeletons extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        houseToBank();
-        bank();
-        bankToHouse();
-      }
-      checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
+      lootItems(false, loot);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      if (buryBones) buryBones(false);
+      checkFightMode(fightMode);
       checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
-        if (!c.isInCombat()) {
-          lootItems(false, loot);
-          if (buryBones) buryBones(false);
-          ORSCharacter npc = c.getNearestNpcById(46, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            lootItems(false, loot);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-          }
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(46, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -131,11 +127,8 @@ public final class K_Edge_Skeletons extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
+          endSession();
         }
         bankToHouse();
       }
@@ -194,7 +187,8 @@ public final class K_Edge_Skeletons extends K_kailaScript {
 
   private void bankToHouse() {
     c.setStatus("@gre@Walking to Edge Skeletons..");
-    c.walkTo(218, 447);
+    c.walkTo(217, 448); // inside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.walkTo(220, 444);
     c.walkTo(220, 430);
     c.walkTo(220, 422);
@@ -209,11 +203,12 @@ public final class K_Edge_Skeletons extends K_kailaScript {
     c.walkTo(220, 422);
     c.walkTo(220, 430);
     c.walkTo(220, 444);
-    c.walkTo(218, 447);
+    c.walkTo(217, 447); // outside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Edge Skeletons ~ by Kaila");
     JLabel label1 = new JLabel("Start in Edge House or Edge Bank");
@@ -396,7 +391,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Skeletons @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Skeletons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guam: @gre@"

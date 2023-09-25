@@ -25,7 +25,13 @@ public final class K_Bank_BuryBones extends K_kailaScript {
     ItemId.BAT_BONES.getId(),
     ItemId.DRAGON_BONES.getId()
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -139,7 +145,7 @@ public final class K_Bank_BuryBones extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Fast Bone Bury @mag@~ Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Fast Bone Bury @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Bones Buried: @gre@"

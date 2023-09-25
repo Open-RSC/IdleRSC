@@ -1607,15 +1607,32 @@ public enum ItemId implements Id {
       }
     }
   }
-
+  /**
+   * Retrieves the Item NAME associated with the given ItemId, or NOTHING if no mapping * exists for
+   * the id.
+   *
+   * @param id the id to retrieve the name for
+   * @return the name associated with the given id, or ItemId.NOTHING if no mapping exists
+   */
   public static ItemId getById(Integer id) {
     return byId.getOrDefault(id, ItemId.NOTHING);
   }
-
+  /**
+   * Retrieves an 'ItemId' int by its NAME.
+   *
+   * @param name the name of the ItemId
+   * @return the corresponding ItemId int, or -1 if not found
+   */
   public static ItemId getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
-
+  /**
+   * Sanitizes the given name by removing any non-alphanumeric characters and converting it to
+   * lowercase.
+   *
+   * @param name the name to be sanitized
+   * @return the sanitized name
+   */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
@@ -1623,7 +1640,12 @@ public enum ItemId implements Id {
   ItemId(int i) {
     this.id = i;
   }
-
+  /**
+   * Retrieves the 'ItemId' int by the item NAME.<br>
+   * For Example: 'int coins = ItemId.COINS.getId()'
+   *
+   * @return int ItemId
+   */
   @Override
   public int getId() {
     return id;

@@ -16,7 +16,8 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Ardy_MossGiants extends K_kailaScript {
-  private static boolean lootSpinachRoll = false;
+  private boolean lootSpinachRoll = false;
+  private int fightMode = 0;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -79,7 +80,12 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
     ItemId.RUNE_SPEAR.getId(),
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * the corresponding logic based on the values of the parameters.
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 637;
     centerY = 504;
@@ -120,40 +126,34 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     }
     return 1000; // start() must return an int value now.
   }
-
+  /**
+   * Executes the script by continuously performing a series of actions until the script is stopped.
+   */
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        dungeonToBank();
-        bank();
-        bankToDungeon();
-      }
-      checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
-        if (!c.isInCombat()) {
-          if (lootLowLevel) lootItems(false, lowLevelLoot);
-          else lootItems(false, highLevelLoot);
-          if (lootSpinachRoll) lootItem(false, ItemId.SPINACH_ROLL.getId());
-          if (lootBones) lootItem(false, ItemId.BIG_BONES.getId());
-          if (buryBones) buryBones(false);
-          ORSCharacter npc = c.getNearestNpcById(104, false);
-          c.setStatus("@yel@Attacking..");
-          if (npc != null) {
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootLowLevel) lootItems(false, lowLevelLoot);
-            else lootItems(false, highLevelLoot);
-          }
-        } else c.sleep(640);
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      if (lootSpinachRoll) lootItem(false, ItemId.SPINACH_ROLL.getId());
+      if (lootBones) lootItem(false, ItemId.BIG_BONES.getId());
+      if (buryBones) buryBones(false);
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(104, false);
+        c.setStatus("@yel@Attacking..");
+        if (npc != null) {
+          c.attackNpc(npc.serverIndex);
+          c.sleep(GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(640);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
+        buryBonesToLoot(false);
       }
+      timeToBank = !eatFood();
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -166,18 +166,13 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
           timeToBankStay = false;
           c.displayMessage(
               "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          endSession();
         }
         bankToDungeon();
-        c.sleep(618);
-      } else {
-        c.sleep(100);
       }
     }
   }
-
+  /** Executes the banking functionality. */
   private void bank() {
     c.setStatus("@yel@Banking..");
     c.openBank();
@@ -248,7 +243,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       c.closeBank();
     }
   }
-
+  /** Walks the character from the bank to the dungeon. */
   private void bankToDungeon() {
     c.setStatus("@gre@Walking to Moss Giants..");
     c.walkTo(581, 571);
@@ -262,7 +257,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     c.walkTo(633, 516);
     c.setStatus("@gre@Done Walking..");
   }
-
+  /** Dungeon to bank function that walks the character from the dungeon to the Ardy North Bank. */
   private void dungeonToBank() {
     c.setStatus("@gre@Walking to Ardy North Bank..");
     c.walkTo(633, 516);
@@ -277,7 +272,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+  /** Sets up the graphical user interface for the program. */
   private void setupGUI() {
     JLabel header = new JLabel("Ardy Moss Giants ~ by Kaila");
     JLabel label1 = new JLabel("Start in Varrock West or in Edge Dungeon");
@@ -346,7 +341,11 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
-
+  /**
+   * Handles chat commands input by the user and changes values in the program
+   *
+   * @param commandText the text of the command
+   */
   @Override
   public void chatCommandInterrupt(String commandText) { // ::bank ::lowlevel :potup ::prayer
     if (commandText.contains("bank")) {
@@ -427,21 +426,29 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       c.sleep(100);
     }
   }
-
+  /**
+   * Handles quest messages appearing in chat. interrupt to process messages
+   *
+   * @param message the text of the message
+   */
   @Override
   public void questMessageInterrupt(String message) {
     if (message.contains("You eat the")) {
       usedFood++;
     }
   }
-
+  /**
+   * Handles server messages appearing in chat. interrupt to process messages
+   *
+   * @param message the text of the message
+   */
   @Override
   public void serverMessageInterrupt(String message) {
     if (message.contains("You dig a hole")) {
       usedBones++;
     }
   }
-
+  /** Overrides paintInterrupt. Displays various statistics */
   @Override
   public void paintInterrupt() {
     if (c != null) {
@@ -493,7 +500,7 @@ public final class K_Ardy_MossGiants extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Ardy Moss Giants @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Ardy Moss Giants @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

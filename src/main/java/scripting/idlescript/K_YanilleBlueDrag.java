@@ -202,13 +202,12 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
             && itemId != ATTACK_CAPE
             && itemId != AGILITY_CAPE) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
-          c.sleep(GAME_TICK);
         }
       }
       bankFood = c.getBankItemCount(foodId);
       bankBones = c.getBankItemCount(814);
       bankNightshade = c.getBankItemCount(NIGHTSHADE);
-      c.sleep(1240); // Important, leave in
+      c.sleep(3000); // Important, leave in
 
       int dragonTwoHand = ItemId.DRAGON_2_HANDED_SWORD.getId();
       if (useDragonTwoHand && (c.getInventoryItemCount(dragonTwoHand) < 1))

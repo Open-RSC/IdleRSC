@@ -18,10 +18,76 @@ public class DrawCallback {
   private static String levelUpText = "";
   private static long levelUpTextTimeout = 0;
   private static boolean screenshotTaken = true;
-  public static boolean toggleOnViewId = false;
-  public static long nextRefresh = -1;
-  public static long nextDeRefresh = -1;
-  public static long timeNextLogClear = -1;
+  private static boolean toggleOnViewId = false;
+  private static long nextRefresh = -1;
+  private static long nextDeRefresh = -1;
+  private static long timeNextLogClear = -1;
+
+  /**
+   * Returns the value of the next refresh.
+   *
+   * @return the value of the next refresh
+   */
+  public static long getNextRefresh() {
+    return nextRefresh;
+  }
+  /**
+   * A description of the entire Java function.
+   *
+   * @return description of return value
+   */
+  public static long getNextDeRefresh() {
+    return nextDeRefresh;
+  }
+  /**
+   * Retrieves the next time the log will be cleared.
+   *
+   * @return the next time the log will be cleared
+   */
+  public static long getNextLogClear() {
+    return timeNextLogClear;
+  }
+  /**
+   * Retrieves the value of the toggleOnViewId variable.
+   *
+   * @return the value of the toggleOnViewId variable
+   */
+  public static boolean getToggleOnViewId() {
+    return toggleOnViewId;
+  }
+  /**
+   * Sets the value of the nextRefresh variable.
+   *
+   * @param nextRefreshValue the value to set for the nextRefresh variable
+   */
+  public static void setNextRefresh(long nextRefreshValue) {
+    nextRefresh = nextRefreshValue;
+  }
+  /**
+   * Sets the value of the nextDeRefresh variable.
+   *
+   * @param nextDeRefreshValue the new value for nextDeRefresh
+   */
+  public static void setNextDeRefresh(long nextDeRefreshValue) {
+    nextDeRefresh = nextDeRefreshValue;
+  }
+  /**
+   * Sets the value of the next log clear time.
+   *
+   * @param nextLogClear the next log clear time to be set
+   */
+  public static void setNextLogClear(long nextLogClear) {
+    timeNextLogClear = nextLogClear;
+  }
+  /**
+   * Sets the value of the toggleOnViewId variable.
+   *
+   * @param toggleOnViewIdValue the new value for toggleOnViewId
+   */
+  public static void setToggleOnViewId(boolean toggleOnViewIdValue) {
+    toggleOnViewId = toggleOnViewIdValue;
+  }
+
   /** The hook called each frame by the patched client. */
   public static void drawHook() {
     Controller c = Main.getController();
@@ -37,7 +103,7 @@ public class DrawCallback {
   public static void setStatusText(String str) {
     statusText = str;
   }
-
+  /** Draws the status menu of the bot (the onscreen GUI showing hp/prayer/position/etc) */
   private static void drawBotStatus(Controller c) {
     int y = 130;
     String localStatusText = statusText;
@@ -124,7 +190,7 @@ public class DrawCallback {
       }
     }
   }
-
+  /** Draws the script on the controller. */
   private static void drawScript(Controller c) {
 
     if (c != null
@@ -145,7 +211,11 @@ public class DrawCallback {
       }
     }
   }
-
+  /**
+   * Returns the total XP by summing up the player experience for each stat.
+   *
+   * @return the total XP as a long value
+   */
   private static long getTotalXp() {
     Controller c = Main.getController();
 
@@ -172,7 +242,7 @@ public class DrawCallback {
     levelUpText = "@red@" + level + " @whi@" + statName + "@red@!";
     levelUpTextTimeout = System.currentTimeMillis() / 1000L + 15; // display for 15seconds
   }
-
+  /** Resets the XP counter and re-initializes the necessary variables. */
   public static void resetXpCounter() {
     Controller c = Main.getController();
     boolean temporaryToggledGFX = false;

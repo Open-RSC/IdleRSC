@@ -13,6 +13,14 @@ import javax.swing.*;
  * @author Kaila
  */
 public final class K_BoneyardBury extends K_kailaScript {
+  private int fightMode = 0;
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = 546;
@@ -56,7 +64,7 @@ public final class K_BoneyardBury extends K_kailaScript {
         bank();
         bankToHouse();
       }
-      checkFightMode();
+      checkFightMode(fightMode);
       if (c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
         lootBones();
         buryBones(true);
@@ -163,7 +171,7 @@ public final class K_BoneyardBury extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Boneyard Bury ~ by Kaila");
     JLabel label1 = new JLabel("Start in Boneyard or Edge Bank");
@@ -258,7 +266,7 @@ public final class K_BoneyardBury extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Boneyard Big Bone Bury @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Boneyard Big Bone Bury @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Total Bones: @gre@"

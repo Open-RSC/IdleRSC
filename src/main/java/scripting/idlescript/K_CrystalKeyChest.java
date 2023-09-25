@@ -22,7 +22,13 @@ public final class K_CrystalKeyChest extends K_kailaScript {
   private static int KeysInBank = 0;
   private static int DragonstonesInBank = 0;
   private static final int[] loot = {542, 408, 526, 527};
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -182,7 +188,7 @@ public final class K_CrystalKeyChest extends K_kailaScript {
     c.walkTo(367, 496);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Crystal Key Chest Opener - By Kaila");
     JLabel label1 = new JLabel("Start by Crystal chest or in Catherby Bank!");
@@ -227,7 +233,7 @@ public final class K_CrystalKeyChest extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Crystal Key Chest Opener @gre@by Kaila", 310, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Crystal Key Chest Opener @whi@~ @mag@Kaila", 310, 48, 0xFFFFFF, 1);
       c.drawString("@whi@Dragonstones in Bank: @gre@" + DragonstonesInBank, 320, 62, 0xFFFFFF, 1);
       c.drawString("@whi@Crystal Keys in Bank: @gre@" + KeysInBank, 320, 76, 0xFFFFFF, 1);
       c.drawString(

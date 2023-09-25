@@ -5,7 +5,6 @@ import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,10 +25,15 @@ public class AIOThiever extends IdleScript {
 
   final int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
   int[] doorObjectIds = {60, 64};
-
+  int randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
   final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
   int failure = 0;
+  private final int GAME_TICK = 640;
+  private boolean goToOtherSide = false;
+  private String bankSpot;
+  private String[] bankSpots =
+      new String[] {"None", "Ardougne Square", "Varrock West", "Varrock East"};
 
   static class ThievingObject {
     final String name;
@@ -43,11 +47,16 @@ public class AIOThiever extends IdleScript {
       isNpc = _isNpc;
       isObject = _isObject;
     }
-
+    /**
+     * Determines if this object's is equal to another object.
+     *
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
-    public boolean equals(Object o) {
-      if (o instanceof ThievingObject) {
-        return ((ThievingObject) o).name.equals(this.name);
+    public boolean equals(Object obj) {
+      if (obj instanceof ThievingObject) {
+        return ((ThievingObject) obj).name.equals(this.name);
       }
 
       return false;
@@ -57,7 +66,6 @@ public class AIOThiever extends IdleScript {
   ThievingObject target = null;
   int fightMode = 0;
   int eatingHealth = 0;
-  boolean doBank = false;
   int foodWithdrawAmount = 0;
 
   final ArrayList<ThievingObject> objects =
@@ -76,9 +84,9 @@ public class AIOThiever extends IdleScript {
           add(new ThievingObject("Gnome", 592, true, false));
           add(new ThievingObject("Hero", 324, true, false));
 
+          add(new ThievingObject("All Stalls (Ardougne)", 327, false, true));
           add(new ThievingObject("Tea Stall", 1183, false, true));
           add(new ThievingObject("Bakers Stall", 322, false, true));
-          add(new ThievingObject("Bakers Stall (Banking)", 322, false, true));
           // add(new ThievingObject("Rock Cake Stall", , false, true)); //be my guest
           add(new ThievingObject("Silk Stall", 323, false, true));
           add(new ThievingObject("Fur Stall", 324, false, true));
@@ -92,7 +100,13 @@ public class AIOThiever extends IdleScript {
           add(new ThievingObject("Hemenster Chest", 379, false, true));
         }
       };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (scriptStarted) {
       guiSetup = false;
@@ -114,7 +128,6 @@ public class AIOThiever extends IdleScript {
             if (obj.name.equals(parameters[2])) target = obj;
           }
 
-          doBank = Boolean.parseBoolean(parameters[3]);
           foodWithdrawAmount = Integer.parseInt(parameters[4]);
 
           if (target == null) throw new Exception("Could not parse thieving target!");
@@ -136,6 +149,19 @@ public class AIOThiever extends IdleScript {
   public void scriptStart() {
     while (c.isRunning()) {
 
+      if (goToOtherSide) {
+        int oldSide = randomSide;
+        randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+        if (randomSide == oldSide) {
+          randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+        }
+        if (randomSide == oldSide) {
+          randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+        }
+        goToOtherSide = false;
+        c.sleep(100);
+      }
+
       eat();
 
       if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
@@ -155,10 +181,10 @@ public class AIOThiever extends IdleScript {
       if (c.getInventoryItemCount(140) > 0) { // drop jugs from heroes
         c.setStatus("@red@Dropping empty jugs..");
         c.dropItem(c.getInventoryItemSlotIndex(140));
-        c.sleep(500);
+        c.sleep(GAME_TICK);
       }
 
-      while (c.isBatching()) c.sleep(10);
+      while (c.isBatching()) c.sleep(GAME_TICK);
 
       if (!c.isInCombat()) {
         if (target.isNpc) {
@@ -172,73 +198,249 @@ public class AIOThiever extends IdleScript {
             c.setStatus("@red@Waiting for NPC to become available..");
             c.sleep(200);
           }
-        }
-
-        if (doBank) {
-          if (target.name.contains("Bakers")) {
-            if (c.getInventoryItemCount() < 30) {
-              c.setStatus("@red@Stealing..");
-
-              if (c.currentX() != 543 && c.currentY() != 600) c.walkTo(543, 600);
-
-              c.atObject(544, 599);
+        } else if (target.name.contains("Tea") && c.getInventoryItemCount() < 30) {
+          if (c.getObjectAtCoord(91, 518) == 1183) {
+            c.setStatus("@red@Stealing from tea stall..");
+            if (randomSide < 5
+                && (c.currentX() != 93 && c.currentY() != 518)) { // needs random sides
+              c.walkTo(93, 518);
+              c.sleep(GAME_TICK);
+            } else if (randomSide >= 5 && (c.currentX() != 90 && c.currentY() != 519)) {
+              c.walkTo(90, 519);
             }
+            c.atObject(91, 518);
+            c.sleep(4 * GAME_TICK);
           }
-
-          if (c.getInventoryItemCount() == 30 || countFood() == 0) {
-            c.setStatus("@red@Banking...");
-            c.walkTo(548, 589);
-            c.walkTo(547, 607);
-            c.openBank();
-
-            for (int id : lootIds) {
-              if (c.getInventoryItemCount(id) > 0) {
-                c.depositItem(id, c.getInventoryItemCount(id));
-                c.sleep(500);
-              }
-            }
-
-            for (int id : c.getFoodIds()) {
-              if (c.getInventoryItemCount(id) > 0) {
-                c.depositItem(id, c.getInventoryItemCount(id));
-                c.sleep(500);
-              }
-            }
-
-            for (int id : c.getFoodIds()) {
-              if (c.getBankItemCount(id) > 0) {
-                c.withdrawItem(id, foodWithdrawAmount);
-                c.sleep(500);
-                break;
-              }
-            }
-
-            c.walkTo(548, 605);
+        } else if ((target.name.contains("Gems") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(551, 599) == 327) {
+          c.setStatus("@red@Stealing from Gems stall..");
+          if (randomSide <= 3
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 552 && c.currentY() != 601)) { // south
+            c.walkTo(552, 601);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 553 && c.currentY() != 599)) { // west
+            c.walkTo(553, 599);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 552 && c.currentY() != 598)) { // north
+            c.walkTo(552, 598);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(551, 599) == 327
+              && (c.currentX() != 550 && c.currentY() != 600)) { // east
+            c.walkTo(552, 598);
+            c.sleep(GAME_TICK);
           }
+          c.atObject(551, 599);
+          c.sleep(4 * GAME_TICK);
+        } else if ((target.name.contains("Silver") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(555, 593) == 325) {
+          c.setStatus("@red@Stealing from silver stall..");
 
-        } else { // we are not banking
-          if (target.isObject) {
-            int[] coords = c.getNearestObjectById(target.id);
-            if (coords != null) {
-              c.setStatus("@red@Stealing..");
-              if (target.name.contains("Chest")) {
-                c.atObject2(coords[0], coords[1]);
-              } else {
-                c.atObject(coords[0], coords[1]);
-                c.sleep(200);
-              }
+          if (randomSide <= 3 // more weight for better sides
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 555 && c.currentY() != 592)) { // north
+            c.walkTo(555, 592);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6 // more weight for better sides
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 557 && c.currentY() != 594)) { // west
+            c.walkTo(557, 594);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8 // less weight
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 556 && c.currentY() != 596)) { // south
+            c.walkTo(556, 595);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8 // less weight
+              && c.getObjectAtCoord(555, 593) == 325
+              && (c.currentX() != 554 && c.currentY() != 593)) { // east
+            c.walkTo(554, 593);
+            c.sleep(GAME_TICK);
+          }
+          c.atObject(555, 593);
+          c.sleep(4 * GAME_TICK);
+        } else if ((target.name.contains("Bakers") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(544, 599) == 322) {
+          c.setStatus("@red@Stealing from bakers stall..");
+          if (randomSide <= 3
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 544 && c.currentY() != 601)) { // south
+            c.walkTo(544, 601);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 543 && c.currentY() != 600)) { // east
+            c.walkTo(543, 600);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 546 && c.currentY() != 599)) { // west
+            c.walkTo(546, 599);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(544, 599) == 322
+              && (c.currentX() != 544 && c.currentY() != 598)) { // north
+            c.walkTo(543, 600);
+          }
+          c.atObject(544, 599);
+          c.sleep(4 * GAME_TICK);
+        } else if ((target.name.contains("Spices") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(544, 590) == 326) {
+          c.setStatus("@red@Stealing from spices stall..");
+          if (randomSide <= 3
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 543 && c.currentY() != 591)) { // east
+            c.walkTo(543, 591);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 544 && c.currentY() != 589)) { // north
+            c.walkTo(544, 589);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 544 && c.currentY() != 592)) { // south
+            c.walkTo(544, 592);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(544, 590) == 326
+              && (c.currentX() != 546 && c.currentY() != 590)) { // north
+            c.walkTo(544, 592);
+            c.sleep(GAME_TICK);
+          }
+          c.atObject(544, 590);
+          c.sleep(4 * GAME_TICK);
+        } else if ((target.name.contains("Fur") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(551, 583) == 324) {
+          c.setStatus("@red@Stealing from fur stall..");
+          if (randomSide <= 3
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 553 && c.currentY() != 584)) { // west
+            c.walkTo(553, 584);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 552 && c.currentY() != 582)) { // north
+            c.walkTo(552, 582);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 550 && c.currentY() != 583)) { // east
+            c.walkTo(550, 583);
+            c.sleep(GAME_TICK);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(551, 583) == 324
+              && (c.currentX() != 552 && c.currentY() != 585)) { // south
+            c.walkTo(552, 585);
+            c.sleep(GAME_TICK);
+          }
+          c.atObject(551, 583);
+          c.sleep(4 * GAME_TICK);
+        } else if ((target.name.contains("Silk") || target.name.contains("All"))
+            && c.getInventoryItemCount() < 30
+            && c.getObjectAtCoord(566, 594) == 323) {
+          c.setStatus("@red@Stealing from silk stall..");
+          if (randomSide <= 3
+              && c.getObjectAtCoord(566, 594) == 323
+              && (c.currentX() != 566 && c.currentY() != 593)) { // north
+            c.walkTo(566, 593);
+            c.sleep(GAME_TICK);
+          } else if (randomSide >= 4
+              && randomSide <= 6
+              && c.getObjectAtCoord(566, 594) == 323
+              && (c.currentX() != 565 && c.currentY() != 594)) { // east
+            c.walkTo(565, 594);
+          } else if (randomSide >= 7
+              && randomSide <= 8
+              && c.getObjectAtCoord(566, 594) == 323
+              && (c.currentX() != 568 && c.currentY() != 595)) { // west
+            c.walkTo(567, 596);
+          } else if (randomSide > 8
+              && c.getObjectAtCoord(566, 594) == 323
+              && (c.currentX() != 567 && c.currentY() != 596)) { // south
+            c.walkTo(567, 596);
+          }
+          c.atObject(566, 594);
+          c.sleep(4 * GAME_TICK);
+        } else if (target.isObject || !target.name.contains("All")) { // (if obj or chest)
+          int[] coords = c.getNearestObjectById(target.id);
+          if (coords != null) {
+            c.setStatus("@red@Stealing..");
+            if (target.name.contains("Chest")) {
+              c.atObject2(coords[0], coords[1]);
             } else {
-              c.setStatus("@red@Waiting for respawn..");
-              c.sleep(800);
+              c.atObject(coords[0], coords[1]);
+              c.sleep(GAME_TICK);
             }
+          } else {
+            c.setStatus("@red@Waiting for respawn..");
+            c.sleep(GAME_TICK);
+          }
+        }
+        if (!bankSpot.equals(bankSpots[0]) // not the "None" option
+            && (c.getInventoryItemCount() == 30 || countFood() == 0)) {
+          c.setStatus("@red@Banking...");
+          // walk near to bank
+          if (bankSpot.equals(bankSpots[1])) { // ardy
+            if (c.currentY() < 590) c.walkTo(548, 589);
+            c.walkTo(547, 607);
+          } else if (bankSpot.equals(bankSpots[2])) { // var west
+            c.walkTo(151, 507);
+          } else if (bankSpot.equals(bankSpots[3])) { // var east
+            c.walkTo(96, 509);
+            c.walkTo(102, 509);
+          }
+          c.openBank();
+
+          for (int itemId : c.getInventoryItemIds()) {
+            if (c.getInventoryItemCount() > 0) {
+              c.depositItem(itemId, c.getInventoryItemCount(itemId));
+              c.sleep(GAME_TICK);
+            }
+          }
+          c.sleep(2000); // Important, leave in
+
+          for (int id : c.getFoodIds()) {
+            if (c.getBankItemCount(id) > 0) {
+              c.withdrawItem(id, foodWithdrawAmount);
+              c.sleep(GAME_TICK);
+              break;
+            }
+          }
+          // walk back to thieve spots
+          if (bankSpot.equals(bankSpots[1])) { // ardy
+            c.walkTo(548, 605);
+          } else if (bankSpot.equals(bankSpots[2])) { // var west
+            c.walkTo(151, 507);
+          } else if (bankSpot.equals(bankSpots[3])) { // var east
+            c.walkTo(102, 509);
+            c.walkTo(93, 511);
           }
         }
       } else {
         c.setStatus("@red@Leaving combat..");
         leaveCombat();
-        c.sleep(640);
+        c.sleep(GAME_TICK);
       }
-      c.sleep(250);
+      c.sleep(GAME_TICK);
     }
   }
 
@@ -259,7 +461,7 @@ public class AIOThiever extends IdleScript {
         }
       }
 
-      while (!doBank && !ate) {
+      while (bankSpot.equals(bankSpots[0]) && !ate) {
         c.setStatus("@red@Logging out..");
         leaveCombat();
         c.setAutoLogin(false);
@@ -304,12 +506,16 @@ public class AIOThiever extends IdleScript {
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
     JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
+    JLabel thieveLabel = new JLabel("Select thieving option:");
     JTextField eatAtHpField =
         new JTextField(String.valueOf(c.getBaseStat(c.getStatId("Hits")) / 2));
     JComboBox<String> targetField = new JComboBox<>();
-    JCheckBox doBankCheckbox = new JCheckBox("Bank? (Ardougne Square only)");
-    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (Ardougne Square only)");
-    JTextField foodWithdrawAmountField = new JTextField();
+    JLabel bankLabel = new JLabel("Select banking option:");
+    JComboBox<String> doBankCombobox = new JComboBox<>(bankSpots);
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (banking only)");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(0));
+    JLabel weaponWarningLabel =
+        new JLabel("Never wear weapon for pickpocketing, do wear for stalls");
     JButton startScriptButton = new JButton("Start");
 
     for (ThievingObject obj : objects) {
@@ -321,9 +527,9 @@ public class AIOThiever extends IdleScript {
           fightMode = fightModeField.getSelectedIndex();
           eatingHealth = Integer.parseInt(eatAtHpField.getText());
           target = objects.get(targetField.getSelectedIndex());
-          doBank = doBankCheckbox.isSelected();
+          bankSpot = bankSpots[doBankCombobox.getSelectedIndex()];
 
-          if (!foodWithdrawAmountField.getText().equals(""))
+          if (!foodWithdrawAmountField.getText().isEmpty())
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
 
           scriptFrame.setVisible(false);
@@ -341,10 +547,13 @@ public class AIOThiever extends IdleScript {
     scriptFrame.add(fightModeField);
     scriptFrame.add(eatAtHpLabel);
     scriptFrame.add(eatAtHpField);
+    scriptFrame.add(thieveLabel);
     scriptFrame.add(targetField);
-    scriptFrame.add(doBankCheckbox);
+    scriptFrame.add(bankLabel);
+    scriptFrame.add(doBankCombobox);
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
+    scriptFrame.add(weaponWarningLabel);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
@@ -361,9 +570,11 @@ public class AIOThiever extends IdleScript {
   @Override
   public void questMessageInterrupt(String message) {
     if (message.contains("You pick") || message.contains("You steal")) success++;
-    else if (message.contains("You fail")
-        || message.contains("Hey thats mine")
-        || message.contains("hands off there")) failure++;
+    else if (message.contains("You fail")) failure++;
+    else if (message.contains("Hey thats mine") || (message.contains("hands off there"))) {
+      failure++;
+      goToOtherSide = true;
+    }
   }
 
   @Override

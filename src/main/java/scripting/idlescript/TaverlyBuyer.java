@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
@@ -15,42 +16,34 @@ import orsc.ORSCharacter;
  * @author Dvorak, rewritten by Kaila
  */
 public class TaverlyBuyer extends IdleScript {
-  final String[] options = new String[] {"Vials", "Newts", "Newts then Vials", "Vials then newts"};
+  private final String[] options =
+      new String[] {"Newts then Vials", "Vials then newts", "Vials", "Newts"};
+  private final int[] loot = {465, 270};
+  private int option = -1;
+  private boolean scriptStarted = false;
+  private boolean guiSetup = false;
+  private int vialsBought = 0;
+  private int vialsBanked = 0;
+  private int newtsBought = 0;
+  private int newtsBanked = 0;
+  private final long startTimestamp = System.currentTimeMillis() / 1000L;
 
-  final int[] loot = {465, 270};
-
-  int option = -1;
-  boolean scriptStarted = false;
-  boolean guiSetup = false;
-
-  int vialsBought = 0;
-  int vialsBanked = 0;
-  int newtsBought = 0;
-  int newtsBanked = 0;
-
-  final long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public void startSequence() {
-    controller.displayMessage("@red@TaverlyBuyer by Dvorak. Fixed by Kaila!");
-    controller.displayMessage("@red@Start in Taverly or Fally West with GP!");
-    controller.displayMessage("@red@This bot supports the \"autostart\" Parameter");
-    controller.displayMessage("@red@autostart collects Newts then Vials");
-    if (controller.isInBank()) controller.closeBank();
-    if (controller.currentY() > 545) {
-      bank();
-      walkToTaverly();
-      controller.sleep(1380);
-    }
-  }
-
+  public void startSequence() {}
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         controller.displayMessage("Auto-starting, Newts then Vials", 0);
         System.out.println("Auto-starting, Newts then Vials");
         option = 2;
-        startSequence();
-        scriptStart();
+        scriptStarted = true;
+        guiSetup = true;
       }
     }
     if (!guiSetup) {
@@ -61,7 +54,16 @@ public class TaverlyBuyer extends IdleScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
-      startSequence();
+      controller.displayMessage("@red@TaverlyBuyer by Dvorak. Fixed by Kaila!");
+      controller.displayMessage("@red@Start in Taverly or Fally West with GP!");
+      controller.displayMessage("@red@This bot supports the \"autostart\" Parameter");
+      controller.displayMessage("@red@autostart collects Newts then Vials");
+      if (controller.isInBank()) controller.closeBank();
+      if (controller.currentY() > 545) {
+        bank();
+        walkToTaverly();
+        controller.sleep(1380);
+      }
       scriptStart();
     }
 
@@ -93,18 +95,21 @@ public class TaverlyBuyer extends IdleScript {
             if (option == 0) { // only vials
               if (controller.isInShop() && controller.getShopItemCount(465) > 0) {
                 controller.shopBuy(465, controller.getShopItemCount(465));
+                controller.sleep(250);
               } else {
                 controller.sleep(250);
               }
             } else if (option == 1) { // only newts
               if (controller.isInShop() && controller.getShopItemCount(270) > 0) {
                 controller.shopBuy(270, controller.getShopItemCount(270));
+                controller.sleep(250);
               } else {
                 controller.sleep(250);
               }
             } else if (option == 2) { // newts then  vials
               if (controller.isInShop() && controller.getShopItemCount(270) > 0) {
                 controller.shopBuy(270, controller.getShopItemCount(270));
+                controller.sleep(100);
               }
               if (controller.isInShop() && controller.getShopItemCount(465) > 0) {
                 controller.shopBuy(465, controller.getShopItemCount(465));
@@ -119,6 +124,7 @@ public class TaverlyBuyer extends IdleScript {
               }
               if (controller.isInShop() && controller.getShopItemCount(270) > 0) {
                 controller.shopBuy(270, controller.getShopItemCount(270));
+                controller.sleep(250);
               } else {
                 controller.sleep(250);
               }
@@ -133,6 +139,29 @@ public class TaverlyBuyer extends IdleScript {
       }
 
       controller.sleep(100);
+    }
+  }
+
+  public void bank() {
+
+    controller.setStatus("@yel@Banking..");
+    controller.openBank();
+    controller.sleep(640);
+
+    vialsBought += controller.getInventoryItemCount(465);
+    newtsBought += controller.getInventoryItemCount(270);
+
+    if (controller.isInBank()) {
+
+      for (int itemId : controller.getInventoryItemIds()) {
+        if (itemId != ItemId.COINS.getId()) {
+          controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
+        }
+      }
+      vialsBanked = controller.getBankItemCount(465);
+      newtsBanked = controller.getBankItemCount(270);
+      controller.sleep(100);
+      controller.closeBank();
     }
   }
 
@@ -156,15 +185,11 @@ public class TaverlyBuyer extends IdleScript {
     controller.walkTo(347, 497);
     controller.walkTo(342, 492);
     controller.walkTo(342, 488);
-    controller.sleep(340);
 
-    // Open Tav gate, "while" gate wont break if someone else opens it
-    while (controller.currentX() == 342
-        && controller.currentY() < 490
-        && controller.currentY() > 485) {
-      controller.atObject(341, 487);
-      controller.sleep(640);
-    }
+    controller.walkTo(342, 487);
+    controller.setStatus("@red@Crossing Tav Gate..");
+    K_kailaScript.tavGateWestToEast();
+    controller.setStatus("@gre@Walking to Fally West..");
 
     controller.walkTo(341, 488);
     controller.walkTo(337, 492);
@@ -186,42 +211,6 @@ public class TaverlyBuyer extends IdleScript {
     controller.walkTo(328, 553);
     controller.sleep(340);
     controller.setStatus("@red@Done Walking..");
-  }
-
-  public int countLoot() {
-    int count = 0;
-    for (int j : loot) {
-      count += controller.getInventoryItemCount(j);
-    }
-
-    return count;
-  }
-
-  public void bank() {
-
-    controller.setStatus("@yel@Banking..");
-    controller.openBank();
-    controller.sleep(640);
-
-    vialsBought += controller.getInventoryItemCount(465);
-    newtsBought += controller.getInventoryItemCount(270);
-
-    if (controller.isInBank()) {
-
-      while (countLoot() > 0) {
-        for (int j : loot) {
-          if (controller.getInventoryItemCount(j) > 0) {
-            controller.depositItem(
-                j, controller.getInventoryItemCount(j)); // /////////////////////////////
-            controller.sleep(250);
-          }
-        }
-      }
-      vialsBanked = controller.getBankItemCount(465);
-      newtsBanked = controller.getBankItemCount(270);
-      controller.sleep(100);
-      controller.closeBank();
-    }
   }
 
   public void walkToTaverly() {
@@ -244,17 +233,12 @@ public class TaverlyBuyer extends IdleScript {
     controller.walkTo(327, 506);
     controller.walkTo(337, 496);
     controller.walkTo(337, 492);
+
     controller.walkTo(341, 488);
-    controller.sleep(340);
-
-    // Open Tav gate, "while" gate wont break if someone else opens it
-    while (controller.currentX() == 341
-        && controller.currentY() < 489
-        && controller.currentY() > 486) {
-      controller.atObject(341, 487);
-      controller.sleep(640);
-    }
-
+    controller.setStatus("@red@Crossing Tav Gate..");
+    K_kailaScript.tavGateEastToWest(); // this should fix bug getting stuck on near gate
+    // Open Tav gate, gate wont break if someone else opens it
+    controller.setStatus("@gre@Walking to Shop..");
     controller.walkTo(342, 492);
     controller.walkTo(347, 497);
     controller.walkTo(357, 497);
@@ -269,7 +253,6 @@ public class TaverlyBuyer extends IdleScript {
       controller.atObject(371, 506);
       controller.sleep(1000);
     }
-    controller.sleep(340);
     controller.setStatus("@red@Done Walking..");
   }
 
@@ -285,12 +268,9 @@ public class TaverlyBuyer extends IdleScript {
     startScriptButton.addActionListener(
         e -> {
           option = optionField.getSelectedIndex();
-
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
-
-          // controller.displayMessage("@red@AIOCooker by Dvorak. Let's party like it's 2004!");
         });
 
     scriptFrame.setLayout(new GridLayout(0, 1));
@@ -363,7 +343,7 @@ public class TaverlyBuyer extends IdleScript {
         controller.drawString(
             "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
             10,
-            21 + 14 + 14,
+            21 + (14 * 2),
             0xFFFFFF,
             1);
       } else {
@@ -380,7 +360,7 @@ public class TaverlyBuyer extends IdleScript {
         controller.drawString(
             "@gre@Vials in bank: @whi@" + String.format("%,d", vialsBanked),
             10,
-            21 + 14 + 14,
+            21 + (14 * 2),
             0xFFFFFF,
             1);
         controller.drawString(
@@ -390,13 +370,13 @@ public class TaverlyBuyer extends IdleScript {
                 + String.format("%,d", newtsPerHr)
                 + "@gre@/@whi@hr@gre@)",
             10,
-            21 + 14 + 14 + 14,
+            21 + (14 * 3),
             0xFFFFFF,
             1);
         controller.drawString(
             "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
             10,
-            21 + 14 + 14 + 14 + 14,
+            21 + (14 * 4),
             0xFFFFFF,
             1);
       }

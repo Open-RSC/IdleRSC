@@ -12,6 +12,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import models.entities.ItemId;
 import utils.Extractor;
 
 class IdleScriptPathWalker {
@@ -113,46 +114,118 @@ class IdleScriptPathWalker {
       int y = n.y;
 
       // TODO: Those if statements can be turned into an abstraction, e.g PathWalkerObstacle
-      if (isAtApproxCoords(331, 487, 10) && (n.x > 341)) {
+      if (isAtApproxCoords(329, 487, 12)
+          && (n.x > 341)) { // moved 2 tiles east, increase radius by 2
         atObject(341, 487);
-        System.out.println("doing a gate to tav, line 448");
+        System.out.println("Opening Tav gate going west");
         wait_time = c_time + 8000;
       } else if (isAtApproxCoords(352, 487, 10) && (n.x <= 341)) {
         atObject(341, 487);
-        System.out.println("doing a gate to fally");
+        System.out.println("Opening Tav gate going east");
         wait_time = c_time + 8000;
-      } else if (isAtApproxCoords(343, 591, 10) && (n.y < 581)) {
+      } else if ((isAtApproxCoords(343, 593, 12) || isAtApproxCoords(356, 584, 7)) && (n.y < 581)) {
+        controller.walkTo(343, 581);
         atObject(343, 581);
-        System.out.println("doing a gate to tav");
+        System.out.println("Opening Tav gate going north");
         wait_time = c_time + 8000;
-      } else if (isAtApproxCoords(343, 570, 10) && (n.y >= 581)) {
+      } else if ((isAtApproxCoords(343, 570, 11) || isAtApproxCoords(342, 574, 7))
+          && (n.y >= 581)) {
+        controller.walkTo(343, 580);
         atObject(343, 581);
-        System.out.println("doing a gate to fally");
+        System.out.println("Opening Tav gate going south");
         wait_time = c_time + 8000;
       } else if (isAtApproxCoords(703, 542, 10) && (n.y <= 531)) {
         atObject(703, 531);
-        System.out.println("doing a gate to gnome tree");
+        System.out.println("Opening Gnome Tree gate going north");
         wait_time = c_time + 8000;
       } else if (isAtApproxCoords(703, 521, 10) && (n.y > 531)) {
         atObject(703, 531);
-        System.out.println("doing a gate from gnome tree");
+        System.out.println("Opening Gnome Tree gate going south");
         wait_time = c_time + 8000;
       } else if (isAtApproxCoords(445, 682, 10) && (n.x < 435)) {
         atObject(434, 682);
-        System.out.println("doing a gate to f2p karajammin");
+        System.out.println("Opening Karamja gate, going East");
         wait_time = c_time + 8000;
       } else if (isAtApproxCoords(424, 521, 10) && (n.x >= 435)) {
         atObject(434, 682);
-        System.out.println("doing a gate to p2p karajammin");
-        wait_time = c_time + 8000;
+        System.out.println("Opening Karamja gate, going West");
+        wait_time = c_time + 10000;
       } else if (isAtApproxCoords(111, 152, 10) && (n.y < 142)) {
         atObject(111, 142);
-        System.out.println("doing a gate to p2p wild");
-        c_time = wait_time;
+        System.out.println("Opening Wilderness gate, going north");
+        wait_time = c_time + 1280;
       } else if (isAtApproxCoords(117, 131, 10) && (n.y >= 142)) {
         atObject(111, 142);
-        System.out.println("doing a gate to f2p wild");
-        c_time = wait_time;
+        System.out.println("Opening Wilderness gate, going south");
+        wait_time = c_time + 1280;
+      } else if (isAtApproxCoords(102, 649, 10) && (n.x < 92)) {
+        // node.x represents value on the other side of the gate
+        //  radius puts the circle zone so the furthest left tile on the inside of the gate
+        if (controller.getInventoryItemCount(ItemId.COINS.getId()) < 10) {
+          System.out.println("Not enough coins, going north");
+          controller.walkTo(101, 636); // refactor this eventually, functional for now
+          controller.walkTo(107, 625);
+          controller.walkTo(113, 611);
+          controller.walkTo(113, 599);
+          controller.walkTo(104, 583);
+          controller.walkTo(91, 574);
+          controller.walkTo(77, 574); // at crossroads
+          controller.walkTo(77, 579);
+          controller.walkTo(85, 590);
+          controller.walkTo(87, 615);
+          controller.walkTo(87, 634);
+          controller.walkTo(88, 644);
+          controller.walkTo(
+              88, 650); // bot needs to go back to the goal node, or you get pathing failure
+        }
+        int npcId = 161;
+        // if prince ali resQ is completed, no response is required, this is negative
+        if (controller.isInOptionMenu()
+            && controller.getInventoryItemCount(ItemId.COINS.getId()) > 9) {
+          controller.optionAnswer(2);
+          wait_time = c_time + 4000; // wait to open gate
+        }
+        if (controller.getNearestNpcById(npcId, false) != null
+            && !controller.isInOptionMenu()
+            && controller.getInventoryItemCount(ItemId.COINS.getId()) > 9) {
+          System.out.println("Entering Al-Kharid Gate");
+          controller.npcCommand1(controller.getNearestNpcById(npcId, false).serverIndex);
+          wait_time = c_time + 9000; // wait to open gate
+        }
+      } else if ((isAtApproxCoords(79, 655, 10) || isAtApproxCoords(86, 669, 10)) && (n.x >= 92)) {
+        // node.x represents value on the other side of the gate
+        //  radius puts the circle zone so the furthest left tile on the inside of the gate
+        if (controller.getInventoryItemCount(10) < 10) { // need 10 coins to pass
+          System.out.println("Not enough coins, going north");
+          controller.walkTo(88, 650); // refactor this eventually, functional for now
+          controller.walkTo(88, 644);
+          controller.walkTo(87, 634);
+          controller.walkTo(87, 615);
+          controller.walkTo(85, 590);
+          controller.walkTo(77, 579);
+          controller.walkTo(77, 574); // at crossroads
+          controller.walkTo(91, 574);
+          controller.walkTo(104, 583);
+          controller.walkTo(113, 599);
+          controller.walkTo(113, 611);
+          controller.walkTo(107, 625);
+          controller.walkTo(
+              101, 636); // bot needs to go back to the goal node, or you get pathing failure
+        }
+        int npcId = 162;
+        // if prince ali resQ is completed, no response is required, this is negative
+        if (controller.isInOptionMenu()
+            && controller.getInventoryItemCount(ItemId.COINS.getId()) > 9) {
+          controller.optionAnswer(2);
+          wait_time = c_time + 4000; // wait to open gate
+        }
+        if (controller.getNearestNpcById(npcId, false) != null
+            && !controller.isInOptionMenu()
+            && controller.getInventoryItemCount(ItemId.COINS.getId()) > 9) {
+          System.out.println("Entering Al-Kharid Gate");
+          controller.npcCommand1(controller.getNearestNpcById(npcId, false).serverIndex);
+          wait_time = c_time + 9000; // wait to open gate
+        }
       } else {
         controller.walkTo(x, y);
       }

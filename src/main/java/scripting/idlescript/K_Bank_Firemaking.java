@@ -28,7 +28,13 @@ public final class K_Bank_Firemaking extends K_kailaScript {
     ItemId.YEW_LOGS.getId(),
     ItemId.MAGIC_LOGS.getId()
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     c.quitIfAuthentic();
     c.toggleBatchBarsOn();
@@ -112,7 +118,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       if (vWestStart[i] < 140) {
         c.walkTo(138, 508);
       }
-      if (c.getObjectAtCoord(vWestStart[i], vWestStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(vWestStart[i], vWestStart[i + 1]) != 97) { // can use c.isTileEmpty
         c.walkTo(vWestStart[i], vWestStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);
@@ -136,7 +142,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       if (vEastStart[i] < 80) {
         c.walkTo(84, 509);
       }
-      if (c.getObjectAtCoord(vEastStart[i], vEastStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(vEastStart[i], vEastStart[i + 1]) != 97) { // can use c.isTileEmpty
         c.walkTo(vEastStart[i], vEastStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);
@@ -160,7 +166,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       if (seersStart[i] < 489) {
         c.walkTo(490, 460);
       }
-      if (c.getObjectAtCoord(seersStart[i], seersStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(seersStart[i], seersStart[i + 1]) != 97) { // can use c.isTileEmpty
         c.walkTo(seersStart[i], seersStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);
@@ -181,7 +187,8 @@ public final class K_Bank_Firemaking extends K_kailaScript {
     c.setStatus("@gre@Burning logs..");
     for (int i = 0; i < (ardougneStart.length); i += 2) {
       if (c.getInventoryItemCount(logId) < 1) break;
-      if (c.getObjectAtCoord(ardougneStart[i], ardougneStart[i + 1]) != 97) {
+      if (c.getObjectAtCoord(ardougneStart[i], ardougneStart[i + 1])
+          != 97) { // can use c.isTileEmpty
         c.walkTo(ardougneStart[i], ardougneStart[i + 1]);
         c.dropItem(c.getInventoryItemSlotIndex(logId), 1);
         c.sleep(GAME_TICK);
@@ -224,7 +231,6 @@ public final class K_Bank_Firemaking extends K_kailaScript {
     }
   }
 
-  // GUI stuff below (icky)
   private void setupGUI() {
     JLabel header = new JLabel("Bank Firemaking  ~ Kaila");
     JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
@@ -291,7 +297,7 @@ public final class K_Bank_Firemaking extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Bank Firemaking @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Bank Firemaking @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString("@whi@Logs Burned: @yel@" + burnSuccess, x, y + (14 * 2), 0xFFFFFF, 1);

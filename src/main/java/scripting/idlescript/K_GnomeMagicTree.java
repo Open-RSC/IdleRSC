@@ -38,7 +38,13 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     }
     c.toggleBatchBarsOn();
   }
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     c.toggleBatchBarsOn();
     if (parameters.length > 0 && !parameters[0].equals("")) {
@@ -225,7 +231,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       c.closeBank();
     }
   }
-  // GUI stuff below (icky)
+
   public void setupGUI() {
     JLabel header = new JLabel("Gnome Magic Logs by Kaila");
     JLabel label1 = new JLabel("Start in Gnome Stronghold west of bank, near trees!");
@@ -270,7 +276,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       }
       int x = 6;
       int y = 24;
-      c.drawString("@red@Gnome Magic Logs @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Gnome Magic Logs @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@__________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

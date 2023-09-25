@@ -29,7 +29,13 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     if (c.isInBank()) c.closeBank();
     c.toggleBatchBarsOn();
   }
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -169,7 +175,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("NoBank Iron Superheat - By Kaila");
     JLabel label1 = new JLabel("Start in Port Khazard Mine");
@@ -223,7 +229,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@NoBank Superheat@mag@~ by Kaila", x, 12, 0xFFFFFF, 1);
+      c.drawString("@red@NoBank Superheat @whi@~ @mag@Kaila", x, 12, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Bars Used: @gre@" + totalBars, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

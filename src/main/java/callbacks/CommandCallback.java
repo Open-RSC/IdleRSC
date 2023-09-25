@@ -5,7 +5,7 @@ import controller.Controller;
 import scripting.idlescript.IdleScript;
 
 public class CommandCallback {
-
+  /** Stores in-game help menu text. (F12) */
   private static final String helpMessageText =
       "@cya@IdleRSC Help Menu:"
           + " %@red@::bothelp - @yel@Shows this help menu"
@@ -26,6 +26,11 @@ public class CommandCallback {
           + " %@red@F11 - @yel@Stop the current script and load a new one"
           + " %@red@F12 - @yel@Show this help menu";
 
+  /**
+   * Command hook that processes the given command.
+   *
+   * @param command the command to be processed
+   */
   public static void commandHook(String command) {
     Controller c = Main.getController();
     command = command.toLowerCase();

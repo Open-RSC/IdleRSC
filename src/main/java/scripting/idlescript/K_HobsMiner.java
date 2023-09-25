@@ -112,7 +112,13 @@ public final class K_HobsMiner extends K_kailaScript {
     }
     c.toggleBatchBarsOn();
   }
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 225;
     centerY = 251;
@@ -200,7 +206,11 @@ public final class K_HobsMiner extends K_kailaScript {
       }
     }
   }
-
+  /**
+   * Mines a specific type of ore based on the provided input.
+   *
+   * @param i The type of ore to mine (adamantite, mithril, or coal).
+   */
   private void mine(String i) {
     if (Objects.equals(i, "adamantite")) {
       int[] oreCoords = c.getNearestObjectByIds(addyIDs);
@@ -229,7 +239,7 @@ public final class K_HobsMiner extends K_kailaScript {
     }
     c.sleep(1920);
   }
-
+  /** The primary banking loop */
   private void bank() {
     c.setStatus("@yel@Banking..");
     c.openBank();
@@ -271,7 +281,7 @@ public final class K_HobsMiner extends K_kailaScript {
       inventoryItemCheck(lawId, 1);
     }
   }
-
+  /** Executes the eat logic. */
   private void eat() {
     int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
     if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
@@ -318,7 +328,7 @@ public final class K_HobsMiner extends K_kailaScript {
       }
     }
   }
-
+  /** Logic forgoing to the bank and perform banking operations. */
   private void goToBank() {
     isMining = "none";
     currentOre[0] = 0;
@@ -330,7 +340,11 @@ public final class K_HobsMiner extends K_kailaScript {
     bankToHobs();
     c.sleep(618);
   }
-
+  /**
+   * Sets the status to indicate that the character is walking to 19 wildy. Then walks the character
+   * to the specified coordinates: (221, 314). Increments the totalTrips variable by 1. Sets the
+   * status to indicate that the character is done walking to 19.
+   */
   private void hobsToTwenty() {
     c.setStatus("@gre@Walking to 19 wildy..");
     c.walkTo(221, 262);
@@ -340,7 +354,7 @@ public final class K_HobsMiner extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking to 19..");
   }
-
+  /** The function that walks the character to the bank. */
   private void twentyToBank() {
     c.setStatus("@gre@Walking to Bank..");
     eat();
@@ -356,7 +370,7 @@ public final class K_HobsMiner extends K_kailaScript {
     c.walkTo(217, 448);
     c.setStatus("@gre@Done Walking..");
   }
-
+  /** Walks from the bank to the Hobs Mine. */
   private void bankToHobs() {
     c.setStatus("@gre@Walking to Hobs Mine..");
     c.walkTo(218, 447);
@@ -379,7 +393,7 @@ public final class K_HobsMiner extends K_kailaScript {
     c.walkTo(221, 262);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+  /** Sets up the graphical user interface (GUI) for the application. */
   private void setupGUI() {
     JLabel header = new JLabel("Hobs Miner - By Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor and Pickaxe");
@@ -415,7 +429,10 @@ public final class K_HobsMiner extends K_kailaScript {
     scriptFrame.setVisible(true);
     scriptFrame.requestFocusInWindow();
   }
-
+  /**
+   * Overrides paintInterrupt. Displays various mining statistics such as coal mined, mithril mined,
+   * addy mined, sapphires, emeralds, rubies, diamonds, total trips, and runtime.
+   */
   @Override
   public void paintInterrupt() {
     if (c != null) {
@@ -445,7 +462,7 @@ public final class K_HobsMiner extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Hobs Miner @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Hobs Miner @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Coal Mined: @gre@"

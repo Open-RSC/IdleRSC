@@ -267,7 +267,7 @@ public class Main {
       showLoadScript();
     }
 
-    if (!config.getScriptName().equals("")) {
+    if (!config.getScriptName().isEmpty()) {
       if (!loadAndRunScript(config.getScriptName())) {
         System.out.println("Could not find script: " + config.getScriptName());
         System.exit(1);
@@ -463,8 +463,8 @@ public class Main {
         e -> {
           if (controller != null) {
             controller.setDrawing(graphicsCheckbox.isSelected());
-            if (graphicsCheckbox.isSelected()) DrawCallback.nextRefresh = -1;
-            else DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L;
+            if (graphicsCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
+            else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
           }
         });
     botPaintCheckbox.addActionListener(
@@ -785,7 +785,7 @@ public class Main {
     if (cacheDirectory.exists()) return;
 
     // If --init-cache argument is used, bypass the GUI
-    if (!config.getInitCache().equals("")) {
+    if (!config.getInitCache().isEmpty()) {
       if (config.getInitCache().equals("uranium")) {
         // Create Uranium cache
         createCache(URANIUM_PORT);

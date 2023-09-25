@@ -27,7 +27,13 @@ public final class K_RedSpiderEggz extends K_kailaScript {
   private static boolean returnEscape = true;
   private static int eggzInBank = 0;
   private static int totalEggz = 0;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -185,7 +191,8 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     c.sleep(640);
     c.walkTo(217, 458);
     c.walkTo(221, 447);
-    c.walkTo(217, 448);
+    c.walkTo(217, 447); // outside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.sleep(640);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
@@ -193,6 +200,8 @@ public final class K_RedSpiderEggz extends K_kailaScript {
 
   private void BankToEgg() {
     c.setStatus("@gre@Walking to Eggs..");
+    c.walkTo(217, 448); // inside bank door
+    openDoorObjects(64, 217, 447); // open bank door
     c.walkTo(221, 447);
     c.walkTo(217, 458);
     c.walkTo(215, 467);
@@ -219,9 +228,8 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  // GUI stuff below (icky)
   private void setupGUI() {
-    JLabel header = new JLabel("Red Spider Egg Picker @mag@~ by Kaila");
+    JLabel header = new JLabel("Red Spider Egg Picker @whi@~ @mag@Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor");
     JLabel label2 = new JLabel("Sharks in bank REQUIRED");
     JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
@@ -285,7 +293,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@RedSpiderEggz @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@RedSpiderEggz @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Eggs in Bank: @gre@" + eggzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

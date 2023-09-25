@@ -11,7 +11,13 @@ public class ShearSheep extends IdleScript {
   int totalWool = 0;
   int bankedWool = 0;
   int a = 0;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (a == 0) {
       controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
@@ -25,7 +31,12 @@ public class ShearSheep extends IdleScript {
 
     return 1000; // start() must return a int value now.
   }
-
+  /**
+   * Starts walking to the specified coordinates.
+   *
+   * @param x the x-coordinate to walk to
+   * @param y the y-coordinate to walk to
+   */
   public void startWalking(int x, int y) {
     // shitty autowalk
     int newX = x;
@@ -68,7 +79,7 @@ public class ShearSheep extends IdleScript {
         controller.setStatus("Shearing sheep");
         controller.sleep(642);
         while (controller.isBatching() && controller.getInventoryItemCount() < 30) {
-          controller.sleep(10);
+          controller.sleep(640);
         }
       } else if (controller.getNearestNpcById(2, false) == null) {
         controller.setStatus("Finding sheep");

@@ -20,6 +20,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_AsgarnianIceGiants extends K_kailaScript {
+  private int fightMode = 0;
   private static final int[] loot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -70,7 +71,13 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
       c.sleep(1380);
     }
   } // param 0 - type of food, param 1 - number of food, param 2 - potUp
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 308;
     centerY = 3520;
@@ -100,48 +107,32 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        IceToBank();
-        bank();
-        BankToIce();
+      if (potUp) {
+        attackBoost(0, true);
+        strengthBoost(0, true);
       }
+      lootItems(true, loot);
+      if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
       buryBones(false);
-      checkFightMode();
+      checkFightMode(fightMode);
       checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30) {
-        lootItems(true, loot);
-        if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
-        if (potUp) {
-          attackBoost(0, true);
-          strengthBoost(0, true);
-        }
-        if (!c.isInCombat()) {
-          int[] npcIds = {135, 158};
-          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            // c.walktoNPC(npc.serverIndex,1);
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            lootItems(true, loot);
-            if (lootBones) lootItem(true, ItemId.BIG_BONES.getId());
-            // if (c.currentX() != 305 || c.currentY() != 3522) {
-            //  c.walkTo(305, 3522);
-            //  c.sleep(1000);
-            // }
-          }
+      if (!c.isInCombat()) {
+        int[] npcIds = {135, 158};
+        ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount() == 0 || timeToBank) {
         c.setStatus("@yel@Banking..");
+        timeToBank = false;
         IceToBank();
         bank();
         BankToIce();
@@ -271,7 +262,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
     c.walkTo(305, 3522);
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Ice Dungeon Ice Giant/Warrior Killer - by Kaila");
     JLabel label1 = new JLabel("Start in Fally East bank or In Ice Cave");
@@ -415,7 +406,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Asgarnian Ice Slayer @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Asgarnian Ice Slayer @whi@~ @mag@Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guams: @gre@"
               + (totalGuam + inventGuam)

@@ -1,9 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * <b>Grape Harvester</b>
@@ -16,7 +14,9 @@ import javax.swing.JLabel;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_GrapeHarvester extends K_kailaScript {
+public final class K_HarvestGrapes extends K_kailaScript {
+  private boolean lowlevel = false;
+  private boolean ate = true;
   private static int GrapezInBank = 0;
   private static int totalGrapez = 0;
 
@@ -27,11 +27,16 @@ public final class K_GrapeHarvester extends K_kailaScript {
     if (c.currentX() < 240) {
       bank();
       BankToGrape();
-      c.sleep(1380);
     }
     c.toggleBatchBarsOn();
   }
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
@@ -56,12 +61,12 @@ public final class K_GrapeHarvester extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getInventoryItemCount() == 30) {
+      if (lowlevel) ate = eatFood();
+      if (c.getInventoryItemCount() == 30 || (lowlevel && !ate)) {
         c.setStatus("@red@Banking..");
         GrapeToBank();
         bank();
         BankToGrape();
-        c.sleep(618);
       }
       c.setStatus("@yel@Picking Grapes..");
       int[] coords = c.getNearestObjectById(1283);
@@ -69,13 +74,13 @@ public final class K_GrapeHarvester extends K_kailaScript {
         c.setStatus("@yel@Harvesting...");
         c.atObject(coords[0], coords[1]);
         c.sleep(2000);
-        waitForBatching();
-
+        while (c.isBatching() && c.getInventoryItemCount() != 30) {
+          c.sleep(GAME_TICK);
+        }
       } else {
         c.setStatus("@yel@Waiting for spawn..");
         c.sleep(1000);
       }
-      c.sleep(100);
     }
   }
 
@@ -99,8 +104,10 @@ public final class K_GrapeHarvester extends K_kailaScript {
           c.displayMessage("@red@You need herb clippers!");
         }
       }
+      if (lowlevel) withdrawFood(foodId, foodWithdrawAmount);
       GrapezInBank = c.getBankItemCount(143);
       c.closeBank();
+      if (lowlevel) eatFood();
     }
   }
 
@@ -113,6 +120,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
     c.walkTo(255, 433);
     c.walkTo(255, 422);
     c.walkTo(258, 422);
+    if (lowlevel) eatFood();
     c.walkTo(258, 415);
     c.walkTo(252, 421);
     c.walkTo(242, 432);
@@ -133,6 +141,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
     c.walkTo(242, 432);
     c.walkTo(252, 421);
     c.walkTo(258, 415);
+    if (lowlevel) eatFood();
     c.walkTo(258, 422);
     c.walkTo(255, 422);
     c.walkTo(255, 433);
@@ -143,20 +152,38 @@ public final class K_GrapeHarvester extends K_kailaScript {
     // (next to Grape now)
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Grape Harvester - By Kaila");
     JLabel label1 = new JLabel("Harvests Grapes near Edge Monastery");
     JLabel label2 = new JLabel("*Start in Edge Bank with Herb Clippers");
     JLabel label3 = new JLabel("*Recommend Armor against lvl 21 Scorpions");
     JLabel label4 = new JLabel("This bot supports the \"autostart\" parameter");
+    JCheckBox lowLevelCheckBox = new JCheckBox("Below 89 combat?", false);
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
+    foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          lowlevel = lowLevelCheckBox.isSelected();
+          if (lowlevel) {
+            if (!foodWithdrawAmountField.getText().equals(""))
+              foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+            foodId = foodIds[foodField.getSelectedIndex()];
+            foodName = foodTypes[foodField.getSelectedIndex()];
+          }
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
+        });
+    lowLevelCheckBox.addActionListener(
+        e -> {
+          foodField.setEnabled(lowLevelCheckBox.isSelected());
+          foodWithdrawAmountField.setEnabled(lowLevelCheckBox.isSelected());
         });
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
@@ -167,7 +194,15 @@ public final class K_GrapeHarvester extends K_kailaScript {
     scriptFrame.add(label2);
     scriptFrame.add(label3);
     scriptFrame.add(label4);
+    scriptFrame.add(lowLevelCheckBox);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(foodWithdrawAmountLabel);
+    scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
+
+    foodField.setEnabled(false);
+    foodWithdrawAmountField.setEnabled(false);
 
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);
@@ -193,7 +228,7 @@ public final class K_GrapeHarvester extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Grape Harvester @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Grape Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Grapes in Bank: @gre@" + GrapezInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

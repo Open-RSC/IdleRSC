@@ -20,6 +20,7 @@ import orsc.ORSCharacter;
  *        Door support to prevent trapping. Not a hurry.
  */
 public final class K_Tav_DruidTown extends K_kailaScript {
+  private int fightMode = 0;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -50,7 +51,13 @@ public final class K_Tav_DruidTown extends K_kailaScript {
     ItemId.WATER_RUNE.getId(),
     ItemId.CHAOS_RUNE.getId()
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 371;
     centerY = 490;
@@ -95,47 +102,28 @@ public final class K_Tav_DruidTown extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        DruidToBank();
-        bank();
-        BankToDruid();
-      }
-      buryBones(false);
-      if (c.currentY() < 480) {
-        c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
-        c.walkTo(371, 490);
-        c.sleep(640);
-      }
-      checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
-        if (!c.isInCombat()) {
-          if (lootLowLevel) lootItems(false, lowLevelLoot);
-          else lootItems(false, highLevelLoot);
-          ORSCharacter npc = c.getNearestNpcById(200, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking Druids");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            if (lootLowLevel) lootItems(false, lowLevelLoot);
-            else lootItems(false, highLevelLoot);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-          }
-        } else {
-          c.sleep(640);
-        }
-      }
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      buryBones(false);
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(200, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Druids");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood();
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -146,14 +134,15 @@ public final class K_Tav_DruidTown extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
+          endSession();
         }
         BankToDruid();
-        c.sleep(618);
+      }
+      if (c.currentY() < 480) {
+        c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");
+        c.walkTo(371, 490);
+        c.sleep(640);
       }
     }
   }
@@ -256,7 +245,7 @@ public final class K_Tav_DruidTown extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  // GUI stuff below (icky)
+
   private void setupGUI() {
     JLabel header = new JLabel("Tav Druid Circle - By Kaila");
     JLabel label1 = new JLabel("Start in Fally west or druid Circle");
@@ -444,7 +433,7 @@ public final class K_Tav_DruidTown extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Taverly Druid Town @gre@by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Taverly Druid Town @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

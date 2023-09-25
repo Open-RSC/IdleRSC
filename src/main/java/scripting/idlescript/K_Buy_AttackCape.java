@@ -16,11 +16,17 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila.
  */
-public final class K_AttackCapeBuyer extends K_kailaScript {
+public final class K_Buy_AttackCape extends K_kailaScript {
   private static int totalTopz = 0;
   private static int totalTrips = 0;
   private static int TopzInBank = 0;
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -169,7 +175,7 @@ public final class K_AttackCapeBuyer extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Attack Cape Buyer @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Attack Cape Buyer @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString("@whi@Capes in Bank: @gre@" + TopzInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(

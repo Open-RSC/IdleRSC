@@ -23,7 +23,13 @@ public class EssenceMiner extends IdleScript {
   boolean bankTime = false;
 
   final int[] pickaxes = {12, 87, 88, 203, 204, 405, 1263};
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
     while (controller.isRunning()) {

@@ -61,7 +61,13 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
     ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 269;
     centerY = 2949;
@@ -94,39 +100,26 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        GiantsToBank();
-        bank();
-        BankToStair();
-        stairToGiants();
-      }
       buryBones(true);
       lootItems(false, loot);
       superAttackBoost(0, true);
       superStrengthBoost(0, true);
-      if (c.getInventoryItemCount(546) > 0) {
-        if (c.getInventoryItemCount() < 30) {
-          if (!c.isInCombat()) {
-            ORSCharacter npc = c.getNearestNpcById(344, false);
-            if (npc != null) {
-              c.setStatus("@yel@Attacking Giants");
-              c.walktoNPC(npc.serverIndex, 1);
-              c.attackNpc(npc.serverIndex);
-              c.sleep(GAME_TICK);
-            } else {
-              c.sleep(GAME_TICK);
-              lootItems(false, loot);
-            }
-          } else c.sleep(GAME_TICK);
-        }
-        if (c.getInventoryItemCount() == 30) {
-          dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
-          eatFoodToLoot(true);
-        }
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(344, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Giants");
+          c.walktoNPC(npc.serverIndex, 1);
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
+        eatFoodToLoot(true);
       }
-      if (c.getInventoryItemCount(546) == 0
+      timeToBank = !eatFood(); // does the eating checks
+      if (timeToBank
+          || c.getInventoryItemCount(546) == 0
           || c.getInventoryItemCount(795) > 0
           || c.getInventoryItemCount(1277) > 0) { // bank if d med, or left half in inv
         c.setStatus("@yel@Banking..");
@@ -471,8 +464,6 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
     }
   }
 
-  // GUI stuff below (icky)
-
   private void setupGUI() {
     JLabel header = new JLabel("Wildy Fire Giant Killer ~ By Kaila");
     JLabel label1 = new JLabel("Start in Mage bank OR in Giants room");
@@ -535,7 +526,7 @@ public final class K_Wildy_FireGiants extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawString("@red@Wilderness Fire Giants @mag@~ by Kaila", 330, 48, 0xFFFFFF, 1);
+      c.drawString("@red@Wilderness Fire Giants @whi@~ @mag@Kaila", 330, 48, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Laws: @gre@"
               + totalLaw

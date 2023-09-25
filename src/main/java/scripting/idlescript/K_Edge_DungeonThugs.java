@@ -16,7 +16,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Edge_DungeonThugs extends K_kailaScript {
-
+  private int fightMode = 0;
   private static final int[] loot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -45,7 +45,13 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(), // shield (left) half
     ItemId.RUNE_SPEAR.getId() // rune spear
   };
-
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
     centerX = 199;
     centerY = 3254;
@@ -89,39 +95,28 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        c.setStatus("@red@We've ran out of Food! Running Away!.");
-        houseToBank();
-        bank();
-        bankToHouse();
-      }
-      checkFightMode();
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
-      checkInventoryItemCounts();
-      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0 && !timeToBank) {
-        if (!c.isInCombat()) {
-          lootItems(false, loot);
-          if (buryBones) buryBones(false);
-          ORSCharacter npc = c.getNearestNpcById(251, false);
-          if (npc != null) {
-            c.setStatus("@yel@Attacking..");
-            c.attackNpc(npc.serverIndex);
-            c.sleep(GAME_TICK);
-          } else {
-            c.sleep(GAME_TICK);
-            lootItems(false, loot);
-            if (lootBones) lootItem(false, ItemId.BONES.getId());
-          }
+      lootItems(false, loot);
+      if (lootBones) lootItem(false, ItemId.BONES.getId());
+      if (buryBones) buryBones(false);
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(251, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking..");
+          c.attackNpc(npc.serverIndex);
+          checkInventoryItemCounts();
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
-      }
+      } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+      timeToBank = !eatFood(); // does the eating checks
       if (c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
@@ -132,11 +127,8 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
         bank();
         if (timeToBankStay) {
           timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          c.setAutoLogin(false);
-          c.stop();
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
+          endSession();
         }
         bankToHouse();
       }
@@ -194,7 +186,7 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
       checkInventoryItemCounts();
     }
   }
-  // GUI stuff below (icky)
+
   private void houseToBank() {
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(196, 3265);
@@ -439,7 +431,7 @@ public final class K_Edge_DungeonThugs extends K_kailaScript {
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Dungeon Thugs @mag@~ by Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Dungeon Thugs @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guam: @gre@"

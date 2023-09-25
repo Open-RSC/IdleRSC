@@ -1325,15 +1325,32 @@ public enum SceneryId implements Id {
       }
     }
   }
-
+  /**
+   * Returns the SceneryId NAME associated with the given SceneryId, or NOTHING if no mapping exists
+   * for the id.
+   *
+   * @param id the id for which to retrieve the SceneryId
+   * @return SceneryId NAME
+   */
   public static SceneryId getById(Integer id) {
     return byId.getOrDefault(id, SceneryId.NOTHING);
   }
-
+  /**
+   * Retrieves a `SceneryId` int by its NAME.
+   *
+   * @param name the name of the Scenery Object
+   * @return the `SceneryId` associated with the NAME, or `NOTHING` if not found
+   */
   public static SceneryId getByName(String name) {
     return byName.getOrDefault(sanitizeName(name), NOTHING);
   }
-
+  /**
+   * Sanitizes the given name by removing any non-word characters and underscores, and converting it
+   * to lowercase.
+   *
+   * @param name the name to be sanitized
+   * @return the sanitized name
+   */
   private static String sanitizeName(String name) {
     return name.replaceAll("[\\W]", "").replaceAll("_", "").toLowerCase();
   }
@@ -1341,7 +1358,12 @@ public enum SceneryId implements Id {
   SceneryId(int id) {
     this.id = id;
   }
-
+  /**
+   * Retrieves the 'SceneryId' int by the scenery NAME.<br>
+   * For Example: 'int comftBed = SceneryId.COMFY_BED.getId()'
+   *
+   * @return int ItemId
+   */
   @Override
   public int getId() {
     return id;

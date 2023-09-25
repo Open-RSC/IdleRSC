@@ -440,7 +440,12 @@ public class Controller {
 
     return x != 0 || z != 0;
   }
-
+  /**
+   * Determines if the player is currently walking.
+   *
+   * @param serverIndex the index of the player on the server
+   * @return true if the player is currently walking, false otherwise
+   */
   public boolean isPlayerCurrentlyWalking(int serverIndex) {
     int x = this.getPlayer(serverIndex).currentX;
     int z = this.getPlayer(serverIndex).currentZ;
@@ -452,7 +457,12 @@ public class Controller {
 
     return x != 0 || z != 0;
   }
-
+  /**
+   * Checks if an NPC is currently walking.
+   *
+   * @param serverIndex the server index of the NPC
+   * @return true if the NPC is currently walking, false otherwise
+   */
   public boolean isNpcCurrentlyWalking(int serverIndex) {
     int x = this.getNpc(serverIndex).currentX;
     int z = this.getNpc(serverIndex).currentZ;
@@ -638,7 +648,66 @@ public class Controller {
 
     return closestCoords;
   }
+  /**
+   * Retrieves all the coordinates of the specified object id, if nearby.
+   *
+   * @param objectId int
+   * @return int[] -- [x, y]. returns null if no object nearby.
+   */
+  public int[][] getObjectsById(int objectId) {
+    Main.logMethod("getObjectsById", objectId);
+    int count = getObjectsCount();
+    int[] xs = getObjectsX();
+    int[] zs = getObjectsZ();
+    int[] ids = getObjectsIds();
+    int[][] points = new int[2][count]; // length will be for all objects, not the ones we want...
 
+    for (int i = 0; i < count; i++) {
+      if (ids[i] == objectId) {
+        int x = offsetX(xs[i]);
+        int z = offsetZ(zs[i]);
+        points[i] = new int[] {x, z};
+      }
+    }
+    return points;
+  }
+  //  public int[][] getAllNpcsById(int... ids)
+  //  {
+  //    int cpt = 0;
+  //    for (int i = 0; i < client.getNpcCount(); i++) {
+  //      if (inArray(ids, client.getNpcId(client.getNpc(i))))
+  //        cpt++;
+  //    }
+  //
+  //    int[][] npcS = new int[cpt][];
+  //
+  //    int cptAdded = 0;
+  //
+  //    for (int i = 0; i < client.getNpcCount(); i++) {
+  //      if (inArray(ids, client.getNpcId(client.getNpc(i)))) {
+  //        final int x = client.getMobLocalX(client.getNpc(i)) + client.getAreaX();
+  //        final int y = client.getMobLocalY(client.getNpc(i)) + client.getAreaY();
+  //        final int dist = distanceTo(x, y, getX(), getY());
+  //        if (dist < 10)
+  //        {
+  //          final int[] npc = new int[]{-1, -1, -1};
+  //
+  //          npc[0] = i;
+  //          npc[1] = x;
+  //          npc[2] = y;
+  //
+  //          npcS[cptAdded]  = npc;
+  //        }
+  //      }
+  //    }
+  //    return npcS;
+  //  }
+  /**
+   * Finds the nearest object coordinates based on the given object IDs.
+   *
+   * @param objectIds an array of object IDs
+   * @return an array containing the coordinates of the nearest object
+   */
   public int[] getNearestObjectByIds(int[] objectIds) {
     int distance = Integer.MAX_VALUE;
     int[] result = null;
@@ -727,7 +796,15 @@ public class Controller {
     System.out.println(distance(currentX(), currentY(), x, y));
     return this.distance(currentX(), currentY(), x, y) <= 1;
   }
-
+  /**
+   * Interacts with the object (first option) at the given coordinates with the given id and
+   * direction Private method called by atObject()
+   *
+   * @param x x coordinate of the object
+   * @param z z (y) coordinate of the object
+   * @param dir direction of the object
+   * @param objectId id of the object
+   */
   private void objectAt(int x, int z, int dir, int objectId) {
     if (x < 0 || z < 0) return;
 
@@ -746,7 +823,15 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putShort(z);
     mud.packetHandler.getClientStream().finishPacket();
   }
-
+  /**
+   * Interacts with the object (2nd option) at the given coordinates with the given id and direction
+   * Private method called by atObject()
+   *
+   * @param x x coordinate of the object
+   * @param z z (y) coordinate of the object
+   * @param dir direction of the object
+   * @param objectId id of the object
+   */
   private void objectAt2(int x, int z, int dir, int objectId) {
     if (x < 0 || z < 0) return;
 
@@ -1010,7 +1095,12 @@ public class Controller {
     // TODO: return null for consistency and update scripts.
     return new int[] {-1, -1};
   }
-
+  /**
+   * Creates an NPC character object based on the server index provided.
+   *
+   * @param serverIndex the server index of the NPC (see get
+   * @return the NPC character with the specified server index, or null if not found
+   */
   public ORSCharacter getNpc(int serverIndex) {
     ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
 
@@ -1037,8 +1127,6 @@ public class Controller {
       int npcZ = (npc.currentZ - 64) / mud.getTileSize();
 
       walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), npcX, npcZ, true);
-
-    } else {
     }
   }
 
@@ -1057,7 +1145,6 @@ public class Controller {
       int npcZ = (npc.currentZ - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
 
       walkTo(npcX, npcZ, radius, true);
-    } else {
     }
   }
 
@@ -1991,7 +2078,13 @@ public class Controller {
 
     return false;
   }
-
+  /**
+   * Withdraws a specified amount of an item from the bank. (APOS compatability method)
+   *
+   * @param itemId the ID of the item to be withdrawn
+   * @param amount the amount of the item to be withdrawn
+   * @return true if the withdrawal was successful, false otherwise
+   */
   public boolean withdrawItem_apos(int itemId, int amount) {
     if (!isInBank()) return false;
 
@@ -3535,8 +3628,12 @@ public class Controller {
   public mudclient getMud() {
     return this.mud;
   }
-
-  /** This will sleep for max 2000ms, unless bank window comes open first. */
+  /**
+   * Opens the bank and sleeps until the maximum number of ticks is reached or the bank interface is
+   * open.
+   *
+   * @param maxTicks the maximum number of ticks to sleep for
+   */
   private void openBank_sleep(int maxTicks) {
     int ticks = 0;
 
@@ -3547,7 +3644,12 @@ public class Controller {
       ticks++;
     }
   }
-
+  /**
+   * Opens the bank option menu and sleeps until options menu dialog is visible or the maximum
+   * number of ticks is reached. private method called by openBank()
+   *
+   * @param maxTicks the maximum number of ticks to wait for the option menu to open
+   */
   private void openBank_optionMenu_sleep(int maxTicks) {
     int ticks = 0;
 
@@ -3660,7 +3762,7 @@ public class Controller {
    * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
    */
   public void log(String text, String rsTextColor) {
-    // System.out.println(text);
+    System.out.println(text);
     Main.log(text);
     displayMessage("@" + rsTextColor + "@" + text);
   }
@@ -4147,7 +4249,12 @@ public class Controller {
   public int getGameWidth() {
     return mud.getGameWidth();
   }
-
+  /**
+   * Checks if the NPC is currently talking.
+   *
+   * @param serverIndex the index of the NPC on the server
+   * @return true if the NPC is talking, false otherwise
+   */
   public boolean isNpcTalking(int serverIndex) {
     ORSCharacter npc = this.getNpc(serverIndex);
 
@@ -4183,7 +4290,11 @@ public class Controller {
       return "";
     }
   }
-
+  /**
+   * Retrieves the number of spells (total)
+   *
+   * @return the number of spells
+   */
   public int getSpellsCount() {
     int result = 0;
     try {
@@ -4193,7 +4304,11 @@ public class Controller {
       return result;
     }
   }
-
+  /**
+   * Retrieves the names of all spells.
+   *
+   * @return an array of strings containing the names of all spells
+   */
   public String[] getSpellNames() {
     int spellsCount = getSpellsCount();
     String[] result = new String[spellsCount];
@@ -4202,7 +4317,12 @@ public class Controller {
 
     return result;
   }
-
+  /**
+   * Retrieves the spell level for the given spell ID.
+   *
+   * @param spellId the ID of the spell
+   * @return the required level for the spell, or -1 if the spell ID is invalid
+   */
   public int getSpellLevel(int spellId) {
     try {
       return EntityHandler.getSpellDef(spellId).getReqLevel();
@@ -4210,7 +4330,12 @@ public class Controller {
       return -1;
     }
   }
-
+  /**
+   * Gets the spell type for the given spell ID.
+   *
+   * @param spellId the ID of the spell
+   * @return the spell type, or -1 if an exception occurs
+   */
   public int getSpellType(int spellId) {
     try {
       return EntityHandler.getSpellDef(spellId).getSpellType();
@@ -4218,7 +4343,12 @@ public class Controller {
       return -1;
     }
   }
-
+  /**
+   * Retrieves the set of spell runes required for a given spell ID.
+   *
+   * @param spellId the ID of the spell
+   * @return the set of spell runes required, or null if an exception occurs
+   */
   public Set<Entry<Integer, Integer>> getSpellRunes(int spellId) {
     try {
       return EntityHandler.getSpellDef(spellId).getRunesRequired();
@@ -4226,7 +4356,12 @@ public class Controller {
       return null;
     }
   }
-
+  /**
+   * Determines if the player can cast a specific spell (high enough stat level and has runes)
+   *
+   * @param spellId the ID of the spell
+   * @return true if the player can cast the spell, false otherwise
+   */
   public boolean canCastSpell(int spellId) {
     if (this.getCurrentStat(6) < this.getSpellLevel(spellId)) return false;
 
@@ -4240,55 +4375,94 @@ public class Controller {
 
     return true;
   }
-
+  /**
+   * Returns an array of quest names.
+   *
+   * @return an array of quest names
+   */
   public String[] getQuestNames() {
     return ((String[]) reflector.getObjectMember(mud, "questNames"));
   }
-
+  /**
+   * Returns the number of quests (total)
+   *
+   * @return the number of quests
+   */
   public int getQuestsCount() {
     return this.getQuestNames().length;
   }
-
+  /**
+   * Retrieves the quest stage for the specified quest ID.
+   *
+   * @param questId the ID of the quest
+   * @return the quest stage for the specified quest ID
+   */
   public int getQuestStage(int questId) {
     if (questId >= this.getQuestsCount()) return 0;
 
     return ((int[]) reflector.getObjectMember(mud, "questStages"))[questId];
   }
-
+  /**
+   * Determines if a quest is complete.
+   *
+   * @param questId the ID of the quest
+   * @return true if the quest is complete, false otherwise
+   */
   public boolean isQuestComplete(int questId) {
     return this.getQuestStage(questId) == -1;
   }
-
+  /**
+   * Adds a friend to the user's friend list.
+   *
+   * @param username the username of the friend to be added
+   */
   public void addFriend(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(195);
     mud.packetHandler.getClientStream().bufferBits.putString(username);
     mud.packetHandler.getClientStream().finishPacket();
   }
-
+  /**
+   * Adds the specified username to the ignore list
+   *
+   * @param username the username to add to the ignore list
+   */
   public void addIgnore(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(132);
     mud.packetHandler.getClientStream().bufferBits.putString(username);
     mud.packetHandler.getClientStream().finishPacket();
   }
-
-  /** Does not update on client side */
+  /**
+   * Removes a friend from the user's friend list.<br>
+   * Does not update on client side
+   *
+   * @param username the username of the friend to be removed
+   */
   public void removeFriend(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(167);
     mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, 110);
     mud.packetHandler.getClientStream().finishPacket();
   }
-
-  /** Does not update on client side */
+  /**
+   * Removes the specified player from the ignore list. <br>
+   * Does not update on client side
+   *
+   * @param username the username of the user to remove from the ignore list
+   */
   public void removeIgnore(String username) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(241);
     mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, -78);
     mud.packetHandler.getClientStream().finishPacket();
   }
-
+  /**
+   * Sends a private message to a specified user.
+   *
+   * @param username the username of the recipient
+   * @param message the message to be sent
+   */
   public void sendPrivateMessage(String username, String message) {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(218);
@@ -4447,9 +4621,9 @@ public class Controller {
           temporaryToggleSideMenu = true;
           orsc.Config.C_SIDE_MENU_OVERLAY = false; // bugfix for coleslaw flickering
         }
-        DrawCallback.toggleOnViewId = true;
+        DrawCallback.setToggleOnViewId(true);
       } else if (groupId == 9) { // if viewId on, change to off
-        DrawCallback.toggleOnViewId = false;
+        DrawCallback.setToggleOnViewId(false);
         if (temporaryToggleSideMenu) {
           temporaryToggleSideMenu = false;
           orsc.Config.C_SIDE_MENU_OVERLAY = true; // bugfix for coleslaw flickering

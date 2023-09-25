@@ -1,7 +1,5 @@
 package scripting.idlescript;
 
-import bot.Main;
-import controller.Controller;
 import orsc.ORSCharacter;
 
 /**
@@ -13,19 +11,38 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_WineDrinker extends IdleScript {
-  private static final Controller c = Main.getController();
-  private static final long nineMinutesInMillis = 540000L;
-
+public final class K_WineDrinker extends K_kailaScript {
+  /**
+   * This function is the entry point for the program. It takes an array of parameters and executes
+   * script based on the values of the parameters. <br>
+   * Parameters in this context can be from CLI parsing or in the script options parameters text box
+   *
+   * @param parameters an array of String values representing the parameters passed to the function
+   */
   public int start(String[] parameters) {
+    // c.quitIfAuthentic();
+    //    if (!guiSetup) {
+    //      setupGUI();
+    //      guiSetup = true;
+    //    }
+    //    if (scriptStarted) {
     c.displayMessage("@red@Wine Drinker!!");
     long next_attempt = System.currentTimeMillis() + 5000L;
+    // guiSetup = false;
+    // scriptStarted = false;
+    if (c.isInBank()) c.closeBank();
+    startTime = System.currentTimeMillis();
+    scriptStart();
+    //   }
+    return 1000; // start() must return an int value now.
+  }
+
+  private void scriptStart() {
     while (c.isRunning()) {
       if (System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
         int x = c.currentX();
         int y = c.currentY();
-
         if (c.isReachable(x + 1, y, true)) c.walkTo(x + 1, y, 0, false);
         else if (c.isReachable(x - 1, y, true)) c.walkTo(x - 1, y, 0, false);
         else if (c.isReachable(x, y + 1, true)) c.walkTo(x, y + 1, 0, false);
@@ -59,7 +76,6 @@ public final class K_WineDrinker extends IdleScript {
         c.sleep(100);
       }
     }
-    return 1000; // start() must return an int value now.
   }
 
   private void bank() {

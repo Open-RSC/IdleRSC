@@ -27,13 +27,13 @@ public class MessageCallback {
   /**
    * The hook called by the patched client every time a message is printed on screen.
    *
-   * @param crownEnabled
-   * @param sender
-   * @param message
-   * @param type
-   * @param crownID
-   * @param formerName
-   * @param colourOverride
+   * @param crownEnabled for admin crowns
+   * @param sender String name of sender
+   * @param message String text of message
+   * @param type MessageType of message (server, game, etc)
+   * @param crownID Id for admin crowns
+   * @param formerName String
+   * @param colourOverride String color to send message in
    */
   public static void messageHook(
       boolean crownEnabled,
@@ -46,22 +46,23 @@ public class MessageCallback {
     Controller con = Main.getController();
     con.hideRecoveryDetailsMenu();
     con.hideContactDetailsMenu();
-    if (Main.isLogWindowOpen() && DrawCallback.timeNextLogClear == -1) {
-      DrawCallback.timeNextLogClear = System.currentTimeMillis() + 86400000L; // set 24 hrs in ms
+    if (Main.isLogWindowOpen() && DrawCallback.getNextLogClear() == -1) {
+      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in ms
       // cd.log(String.valueOf((timeNextLogClear - System.currentTimeMillis()) / 1000L) + " s");
     }
-    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > DrawCallback.timeNextLogClear)) {
+    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > DrawCallback.getNextLogClear())) {
       Main.clearLog();
-      DrawCallback.timeNextLogClear = System.currentTimeMillis() + 86400000L; // add 24 hrs in ms
+      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in ms
     }
-    if ((System.currentTimeMillis() > DrawCallback.nextRefresh) && DrawCallback.nextRefresh != -1) {
+    if ((System.currentTimeMillis() > DrawCallback.getNextRefresh())
+        && DrawCallback.getNextRefresh() != -1) {
       if (!con.isDrawEnabled()) {
         con.setDrawing(true);
-        DrawCallback.nextDeRefresh = System.currentTimeMillis() + 20L; // toggle on gfx 1 frame
-        DrawCallback.nextRefresh = System.currentTimeMillis() + 30000L; // wait 1 min for refresh
+        DrawCallback.setNextDeRefresh(System.currentTimeMillis() + 20L); // toggle on gfx 1 frame
+        DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L); // wait 1 min for refresh
         /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
         System.currentTimeMillis()) / 1000L) + "s");*/
-      } else DrawCallback.nextRefresh = -1;
+      } else DrawCallback.setNextRefresh(-1);
     }
     if (type == MessageType.GAME) {
       if (message.contains("You just advanced")) {
@@ -133,7 +134,13 @@ public class MessageCallback {
       }
     }
   }
-
+  /**
+   * Handles the level up event. to display level up text and take a screenshot. <br>
+   * Currently bugged on certain level ups not returning the correct statId (invalid statId
+   * generated)
+   *
+   * @param message the message containing the level up information
+   */
   private static void handleLevelUp(String message) {
     Controller c = Main.getController();
     String skillName = null;

@@ -26,10 +26,10 @@ public class Reflector {
    */
   public OpenRSC createClient() {
     try {
-      Class loadedMyClass = classLoader.loadClass("orsc.OpenRSC");
+      Class<?> loadedMyClass = classLoader.loadClass("orsc.OpenRSC");
 
       // Create a new instance from the loaded class
-      Constructor constructor = loadedMyClass.getConstructor();
+      Constructor<?> constructor = loadedMyClass.getConstructor();
       Object myClassObject = constructor.newInstance();
 
       // Getting the target method from the loaded class and invoke it using its name
@@ -49,7 +49,6 @@ public class Reflector {
   /**
    * Given the OpenRSC client, this function returns the `mudclient`
    *
-   * @param client
    * @return mudclient
    */
   public mudclient getMud(OpenRSC client) {
@@ -131,7 +130,7 @@ public class Reflector {
       ClassLoader classLoader = this.getClass().getClassLoader();
 
       // Load the target class using its binary name
-      Class cli = classLoader.loadClass(className);
+      Class<?> cli = classLoader.loadClass(className);
 
       Field mudclientField = cli.getDeclaredField(member);
       mudclientField.setAccessible(true);
@@ -179,7 +178,7 @@ public class Reflector {
    */
   private <T> List<Field> getFields(T t) {
     List<Field> fields = new ArrayList<>();
-    Class clazz = t.getClass();
+    Class<?> clazz = t.getClass();
     while (clazz != Object.class) {
       fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
       clazz = clazz.getSuperclass();
@@ -201,8 +200,7 @@ public class Reflector {
       for (Field f : fields) {
         if (f.getName().equals("bankItems")) {
           f.setAccessible(true);
-          Object result = f.get(obj);
-          return result;
+          return f.get(obj);
         }
       }
     } catch (IllegalArgumentException | IllegalAccessException e) {

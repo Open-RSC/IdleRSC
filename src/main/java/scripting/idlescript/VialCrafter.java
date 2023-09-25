@@ -19,13 +19,13 @@ public class VialCrafter extends IdleScript {
   protected static final Controller c = Main.getController();
 
   // TILE COORDINATES
-  private static final Integer[] NORTH_OF_SHORTCUT = { 434, 549 };
-  private static final Integer[] SOUTH_OF_SHORTCUT = { 434, 551 };
-  private static final Integer[] CHICKEN_PEN = { 409, 552 };
-  private static final Integer[] NORTH_WEST = { 431, 539 };
-  private static final Integer[] RESET_TILE = { 431, 554 };
-  private static final Integer[] SHORTCUT = { 434, 550 };
-  private static final Integer[] FURNACE = { 423, 555 };
+  private static final Integer[] NORTH_OF_SHORTCUT = {434, 549};
+  private static final Integer[] SOUTH_OF_SHORTCUT = {434, 551};
+  private static final Integer[] CHICKEN_PEN = {409, 552};
+  private static final Integer[] NORTH_WEST = {431, 539};
+  private static final Integer[] RESET_TILE = {431, 554};
+  private static final Integer[] SHORTCUT = {434, 550};
+  private static final Integer[] FURNACE = {423, 555};
 
   // ITEM IDS
   private static final Integer GLASSBLOWING_PIPE = ItemId.GLASSBLOWING_PIPE.getId();
@@ -151,7 +151,7 @@ public class VialCrafter extends IdleScript {
             if (c.currentY() < 550) {
               walkSouth();
             }
-            Integer[][] path = { RESET_TILE };
+            Integer[][] path = {RESET_TILE};
             walk(path);
             c.setStatus("@Cya@Waiting for seaweed");
           }
@@ -232,12 +232,12 @@ public class VialCrafter extends IdleScript {
   public void walkNorth() {
     // Use the shortcut if the player has the required agility level
     if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
-      Integer[][] walkPath = { SOUTH_OF_SHORTCUT };
+      Integer[][] walkPath = {SOUTH_OF_SHORTCUT};
       walk(walkPath);
       c.atObject(SHORTCUT[0], SHORTCUT[1]);
       c.sleep(1280);
     } else {
-      Integer[][] walkPath = { FURNACE, CHICKEN_PEN, NORTH_WEST };
+      Integer[][] walkPath = {FURNACE, CHICKEN_PEN, NORTH_WEST};
       walk(walkPath);
     }
   }
@@ -245,14 +245,14 @@ public class VialCrafter extends IdleScript {
   public void walkSouth() {
     // Use the shortcut if the player has the required agility level
     if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
-      Integer[][] walkPath = { NORTH_OF_SHORTCUT };
+      Integer[][] walkPath = {NORTH_OF_SHORTCUT};
       walk(walkPath);
       c.atObject(SHORTCUT[0], SHORTCUT[1]);
       c.sleep(1280);
-      walkPath = new Integer[][] { RESET_TILE };
+      walkPath = new Integer[][] {RESET_TILE};
       walk(walkPath);
     } else {
-      Integer[][] walkPath = { NORTH_WEST, CHICKEN_PEN, FURNACE };
+      Integer[][] walkPath = {NORTH_WEST, CHICKEN_PEN, FURNACE};
       walk(walkPath);
     }
   }
@@ -260,7 +260,7 @@ public class VialCrafter extends IdleScript {
   /**
    * Follows a given path of tile coordinates
    *
-   * @param walkPath Integer[][] -- Integer Tile[] or seperate tile X and Y values per index 
+   * @param walkPath Integer[][] -- Integer Tile[] or seperate tile X and Y values per index
    */
   public void walk(Integer[][] walkPath) {
     for (int i = 0; i < walkPath.length; ++i) {

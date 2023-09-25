@@ -15,11 +15,11 @@ import orsc.ORSCharacter;
 public class K_BettyBuyer extends K_kailaScript {
   private final String[] options = new String[] {"Runes then Newts", "Newts", "Elemental Runes"};
   private final int[] runeIds = {
-        ItemId.AIR_RUNE.getId(),
-        ItemId.EARTH_RUNE.getId(),
-        ItemId.WATER_RUNE.getId(),
-        ItemId.FIRE_RUNE.getId()
-      };
+    ItemId.AIR_RUNE.getId(),
+    ItemId.EARTH_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId()
+  };
   private int option = -1;
   private boolean scriptStarted = false;
   private boolean guiSetup = false;

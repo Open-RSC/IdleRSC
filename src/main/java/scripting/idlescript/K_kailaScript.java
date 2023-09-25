@@ -596,7 +596,7 @@ public class K_kailaScript extends IdleScript {
     for (int itemId : c.getInventoryItemIds()) {
       c.depositItem(itemId, c.getInventoryItemCount(itemId));
     }
-    c.sleep(2*GAME_TICK);
+    c.sleep(2 * GAME_TICK);
   }
   /**
    * for input boneIds, attempt to bury bones<br>

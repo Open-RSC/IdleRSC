@@ -671,37 +671,6 @@ public class Controller {
     }
     return points;
   }
-  //  public int[][] getAllNpcsById(int... ids)
-  //  {
-  //    int cpt = 0;
-  //    for (int i = 0; i < client.getNpcCount(); i++) {
-  //      if (inArray(ids, client.getNpcId(client.getNpc(i))))
-  //        cpt++;
-  //    }
-  //
-  //    int[][] npcS = new int[cpt][];
-  //
-  //    int cptAdded = 0;
-  //
-  //    for (int i = 0; i < client.getNpcCount(); i++) {
-  //      if (inArray(ids, client.getNpcId(client.getNpc(i)))) {
-  //        final int x = client.getMobLocalX(client.getNpc(i)) + client.getAreaX();
-  //        final int y = client.getMobLocalY(client.getNpc(i)) + client.getAreaY();
-  //        final int dist = distanceTo(x, y, getX(), getY());
-  //        if (dist < 10)
-  //        {
-  //          final int[] npc = new int[]{-1, -1, -1};
-  //
-  //          npc[0] = i;
-  //          npc[1] = x;
-  //          npc[2] = y;
-  //
-  //          npcS[cptAdded]  = npc;
-  //        }
-  //      }
-  //    }
-  //    return npcS;
-  //  }
   /**
    * Finds the nearest object coordinates based on the given object IDs.
    *
@@ -1063,6 +1032,52 @@ public class Controller {
     return npc;
   }
 
+  /**
+   * Method to make a 2D array with all [x,y,npcId] positions of the supplied npcIds[] array<br>
+   * Other methods only return the closest npc, this will return all of them in a nx3 matrix
+   *
+   * @param npcIds int[n] of npcIds you would like to search for
+   * @param inCombatAllowed boolean if in-combat npcs should be recorded
+   * @return int[n][3] 2D array of x,y,npcId values for the supplied npc Ids
+   */
+  public int[][] getAllNpcsById(int[] npcIds, boolean inCombatAllowed) {
+    ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
+    int[][] result = new int[npcs.length][3]; // length of all (n x 2 matrix)
+    int npcCount = (int) reflector.getObjectMember(mud, "npcCount");
+    int resultActiveSlot = 0; // the slot of our result array we are iterating through
+
+    for (int i = 0; i < npcCount; i++) {
+
+      ORSCharacter curNpc = npcs[i];
+      for (int npcId : npcIds) {
+        if (curNpc.npcId == npcId) {
+
+          if (!inCombatAllowed) {
+            if (this.isNpcInCombat(curNpc.serverIndex)) {
+              continue;
+            }
+          }
+          result[resultActiveSlot][0] = curNpc.currentX;
+          result[resultActiveSlot][1] = curNpc.currentZ;
+          result[resultActiveSlot][2] = curNpc.npcId;
+          resultActiveSlot++;
+        }
+      }
+      int resultLength =
+          (resultActiveSlot + 1); // length is 1 more than the index value, so 8 index is 9 values.
+      if (result.length > resultLength) {
+        // now we need to shrink our array and remove null cells, then return shortened string
+        int[][] newResult = new int[resultLength][3];
+        for (int j = 0; j < resultLength; j++) {
+          newResult[j][0] = result[j][0];
+          newResult[j][1] = result[j][1];
+          newResult[j][2] = result[j][2];
+        }
+        return newResult;
+      }
+    }
+    return result;
+  }
   /**
    * Retrieves the character object of the nearest npc.
    *

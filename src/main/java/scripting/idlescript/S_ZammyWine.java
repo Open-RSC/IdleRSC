@@ -157,8 +157,6 @@ public final class S_ZammyWine extends K_kailaScript {
     startScriptButton.addActionListener(
         e -> {
           stringBows = stringBowsCheckbox.isSelected();
-          if (!stringBows) logId = logIds[logField.getSelectedIndex()];
-          else logId = unstrungIds[logField.getSelectedIndex()];
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;

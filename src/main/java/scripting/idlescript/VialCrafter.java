@@ -306,7 +306,7 @@ public class VialCrafter extends IdleScript {
         break;
       case 2:
         c.displayMessage(
-          "@red@Please start the script with the following items in your inventory:");
+            "@red@Please start the script with the following items in your inventory:");
         c.displayMessage("@red@Herb Clippers, Glass Blowing Pipe, and");
         c.displayMessage("@red@up to 13 buckets");
         break;

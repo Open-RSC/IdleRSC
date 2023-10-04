@@ -427,7 +427,6 @@ public class QH__QuestHandler extends IdleScript {
    *
    * @param coords - int[][] -- Each index is a different Object's tile coordinates. Either
    *     {{X,Y},{X2,Y2}} or {TILE1[],TILE2[]}
-   * @return boolean -- Returns if the object was found within 30 tiles
    */
   public void atObjectSequence(int[][] coords) {
     int maxDistance = 30;

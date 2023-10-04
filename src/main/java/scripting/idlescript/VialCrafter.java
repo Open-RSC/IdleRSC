@@ -20,23 +20,23 @@ public class VialCrafter extends IdleScript {
 
   // TILE COORDINATES
   private static final Integer[] NORTH_OF_SHORTCUT = {434, 549};
-  private static final Integer[] SHORTCUT = {434, 550};
   private static final Integer[] SOUTH_OF_SHORTCUT = {434, 551};
-  private static final Integer[] RESET_TILE = {431, 554};
-  private static final Integer[] FURNACE = {423, 555};
   private static final Integer[] CHICKEN_PEN = {409, 552};
   private static final Integer[] NORTH_WEST = {431, 539};
+  private static final Integer[] RESET_TILE = {431, 554};
+  private static final Integer[] SHORTCUT = {434, 550};
+  private static final Integer[] FURNACE = {423, 555};
 
   // ITEM IDS
   private static final Integer GLASSBLOWING_PIPE = ItemId.GLASSBLOWING_PIPE.getId();
-  private static final Integer HERB_CLIPPERS = ItemId.HERB_CLIPPERS.getId();
-  private static final Integer BUCKET = ItemId.BUCKET.getId();
-  private static final Integer SAND = ItemId.SAND.getId();
-  private static final Integer SEAWEED = ItemId.SEAWEED.getId();
   private static final Integer EDIBLE_SEAWEED = ItemId.EDIBLE_SEAWEED.getId();
-  private static final Integer SODA_ASH = ItemId.SODA_ASH.getId();
+  private static final Integer HERB_CLIPPERS = ItemId.HERB_CLIPPERS.getId();
   private static final Integer MOLTEN_GLASS = ItemId.MOLTEN_GLASS.getId();
   private static final Integer EMPTY_VIAL = ItemId.EMPTY_VIAL.getId();
+  private static final Integer SODA_ASH = ItemId.SODA_ASH.getId();
+  private static final Integer SEAWEED = ItemId.SEAWEED.getId();
+  private static final Integer BUCKET = ItemId.BUCKET.getId();
+  private static final Integer SAND = ItemId.SAND.getId();
 
   // OBJECT IDS
   private static final Integer SEAWEED_PLANT = 1280;
@@ -49,24 +49,24 @@ public class VialCrafter extends IdleScript {
   public int start(String[] param) {
 
     // Quits if the required items are missing
-    if ((c.isRunning() && c.getInventoryItemCount(HERB_CLIPPERS) < 1)
-        || c.getInventoryItemCount(GLASSBLOWING_PIPE) < 1
-        || getBucketCount() < 1
-        || getBucketCount() > 13) {
+    if (c.isRunning()
+        && (c.getInventoryItemCount(HERB_CLIPPERS) < 1
+            || c.getInventoryItemCount(GLASSBLOWING_PIPE) < 1
+            || getBucketCount() < 1
+            || getBucketCount() > 13)) {
       quit(2);
     }
 
     // Quits if the player does not have the required levels
-    if ((c.isRunning() && !hasSkillLevel("Harvesting", HARVESTING_LEVEL))
-        || !hasSkillLevel("Crafting", CRAFTING_LEVEL)) {
+    if (c.isRunning()
+        && (!hasSkillLevel("Harvesting", HARVESTING_LEVEL)
+            || !hasSkillLevel("Crafting", CRAFTING_LEVEL))) {
       quit(3);
     }
 
     // Quits if the player is not on Entrana
-    if ((c.isRunning() && c.currentY() > 573)
-        || c.currentY() < 526
-        || c.currentX() > 441
-        || (c.currentX() < 396 && c.isRunning())) {
+    if (c.isRunning()
+        && (c.currentY() > 573 || c.currentY() < 526 || c.currentX() > 441 || c.currentX() < 396)) {
       quit(4);
     }
 
@@ -123,7 +123,7 @@ public class VialCrafter extends IdleScript {
 
   public void getSeaweed() {
     if (!c.isBatching() || !c.isCurrentlyWalking()) {
-      int[] PLANT_COORDINATES = c.getNearestObjectById(1280);
+      int[] PLANT_COORDINATES = c.getNearestObjectById(SEAWEED_PLANT);
       if (PLANT_COORDINATES != null) {
         c.setStatus(
             "@Cya@Harvesting Seaweed (" + PLANT_COORDINATES[0] + "," + PLANT_COORDINATES[1] + ")");
@@ -151,7 +151,7 @@ public class VialCrafter extends IdleScript {
             if (c.currentY() < 550) {
               walkSouth();
             }
-            int[][] path = {{RESET_TILE[0], RESET_TILE[1]}};
+            Integer[][] path = {RESET_TILE};
             walk(path);
             c.setStatus("@Cya@Waiting for seaweed");
           }
@@ -232,16 +232,12 @@ public class VialCrafter extends IdleScript {
   public void walkNorth() {
     // Use the shortcut if the player has the required agility level
     if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
-      int[][] walkPath = {{SOUTH_OF_SHORTCUT[0], SOUTH_OF_SHORTCUT[1]}};
+      Integer[][] walkPath = {SOUTH_OF_SHORTCUT};
       walk(walkPath);
       c.atObject(SHORTCUT[0], SHORTCUT[1]);
       c.sleep(1280);
     } else {
-      int[][] walkPath = {
-        {FURNACE[0], FURNACE[1]},
-        {CHICKEN_PEN[0], CHICKEN_PEN[1]},
-        {NORTH_WEST[0], NORTH_WEST[1]}
-      };
+      Integer[][] walkPath = {FURNACE, CHICKEN_PEN, NORTH_WEST};
       walk(walkPath);
     }
   }
@@ -249,30 +245,24 @@ public class VialCrafter extends IdleScript {
   public void walkSouth() {
     // Use the shortcut if the player has the required agility level
     if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
-      int[][] walkPath = {{NORTH_OF_SHORTCUT[0], NORTH_OF_SHORTCUT[1]}};
+      Integer[][] walkPath = {NORTH_OF_SHORTCUT};
       walk(walkPath);
       c.atObject(SHORTCUT[0], SHORTCUT[1]);
       c.sleep(1280);
-      walkPath = new int[][] {{RESET_TILE[0], RESET_TILE[1]}};
+      walkPath = new Integer[][] {RESET_TILE};
       walk(walkPath);
     } else {
-      int[][] walkPath = {
-        {NORTH_WEST[0], NORTH_WEST[1]},
-        {CHICKEN_PEN[0], CHICKEN_PEN[1]},
-        {FURNACE[0], FURNACE[1]}
-      };
+      Integer[][] walkPath = {NORTH_WEST, CHICKEN_PEN, FURNACE};
       walk(walkPath);
     }
   }
 
-  public void walk(int[][] walkPath) {
-    // Follows a path along given tile coordinates
-    // Pass in an int[][]:
-    //      int[][] path = {{Tile1X,Tile1Y},{Tile2X,Tile2Y},{Tile3X,Tile3Y}...}
-    //      walk(path);
-    // Singles tile work too, but still require it to be an int[][]
-    //      int[][] path = {{Tile1X,Tile1Y}}
-    //      walk(path);
+  /**
+   * Follows a given path of tile coordinates
+   *
+   * @param walkPath Integer[][] -- Integer Tile[] or seperate tile X and Y values per index
+   */
+  public void walk(Integer[][] walkPath) {
     for (int i = 0; i < walkPath.length; ++i) {
       if (c.isCurrentlyWalking()) {
         while (c.isCurrentlyWalking() && c.isRunning()) {

@@ -55,7 +55,8 @@ public enum QuestId implements Id {
   GERTRUDES_CAT(48),
   LEGENDS_QUEST(49),
   RUNE_MYSTERIES(50),
-  PEELING_THE_ONION(51);
+  PEELING_THE_ONION(51),
+  THE_ODYSSEY(52);
 
   private final int id;
 

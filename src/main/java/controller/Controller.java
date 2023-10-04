@@ -3879,8 +3879,8 @@ public class Controller {
    * @param y int
    * @param width int
    * @param height int
-   * @param topColor -- RGB "HTML" Color
-   * @param bottomColor -- RGB "HTML" Color
+   * @param topColor -- RGB "HTML" Color Example: 0x36E2D7
+   * @param bottomColor -- RGB "HTML" Color Example: 0x36E2D7
    */
   public void drawVerticalGradient(
       int x, int y, int width, int height, int topColor, int bottomColor) {
@@ -3895,7 +3895,7 @@ public class Controller {
    * @param y int
    * @param width int
    * @param height int
-   * @param color -- RGB "HTML" Color
+   * @param color -- RGB "HTML" Color Example: 0x36E2D7
    * @param transparency -- must be between 0 and 255
    */
   public void drawBoxAlpha(int x, int y, int width, int height, int color, int transparency) {
@@ -3909,7 +3909,7 @@ public class Controller {
    * @param y int
    * @param width int
    * @param height int
-   * @param color -- RGB "HTML" Color
+   * @param color -- RGB "HTML" Color Example: 0x36E2D7
    */
   public void drawBoxBorder(int x, int y, int width, int height, int color) {
     mud.getSurface().drawBoxBorder(x, width, y, height, color); // rearranged per source!
@@ -3922,7 +3922,7 @@ public class Controller {
    * @param x int
    * @param y int
    * @param radius int
-   * @param color -- RGB "HTML" Color
+   * @param color -- RGB "HTML" Color Example: 0x36E2D7
    * @param transparency -- must be between 0 and 255
    * @param dummy int
    */
@@ -3937,7 +3937,7 @@ public class Controller {
    * @param x int
    * @param y int
    * @param width int
-   * @param color -- RGB "HTML" Color
+   * @param color -- RGB "HTML" Color Example: 0x36E2D7
    */
   public void drawLineHoriz(int x, int y, int width, int color) {
     mud.getSurface().drawLineHoriz(x, y, width, color);
@@ -3949,7 +3949,7 @@ public class Controller {
    * @param x int
    * @param y int
    * @param height int
-   * @param color -- RGB "HTML" Color
+   * @param color -- RGB "HTML" Color Example: 0x36E2D7
    */
   public void drawLineVert(int x, int y, int height, int color) {
     mud.getSurface().drawLineVert(x, y, color, height); // rearrenged per source!
@@ -3961,7 +3961,7 @@ public class Controller {
    * @param str -- you may use @col@ colors here.
    * @param x int
    * @param y int
-   * @param color -- RGB "HTML" Color
+   * @param color -- RGB "HTML" Color Example: 0x36E2D7
    * @param font -- 1 or greater
    */
   public void drawString(String str, int x, int y, int color, int font) {
@@ -3974,7 +3974,7 @@ public class Controller {
    * @param text -- you may use @col@ colors here.
    * @param x int
    * @param y int
-   * @param textColor int -- RGB "HTML" color
+   * @param textColor int -- RGB "HTML" color Example: 0x36E2D7
    * @param fontSize int -- 1 or greater
    * @param center boolean
    */
@@ -4180,6 +4180,57 @@ public class Controller {
    * @param radius -- within how many tiles to find said door
    */
   public void openNearbyDoor(int radius) {
+    int x = this.currentX();
+    int y = this.currentY();
+
+    int objectId = -1;
+    int wallObjectId = -1;
+
+    for (int id : this.closedObjectDoorIds) {
+      int[] coords = this.getNearestObjectById(id);
+      if (coords != null) {
+        if (this.distance(x, y, coords[0], coords[1]) <= radius) {
+          objectId = id;
+          break;
+        }
+      }
+    }
+
+    if (objectId != -1) {
+      int[] coords = this.getNearestObjectById(objectId);
+      if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
+        this.atObject(coords[0], coords[1]);
+        this.sleep(250);
+      }
+      return;
+    }
+
+    for (int id : this.closedWallDoorIds) {
+      int[] coords = this.getNearestWallObjectById(id);
+      if (coords != null) {
+        if (this.distance(x, y, coords[0], coords[1]) <= radius) {
+          wallObjectId = id;
+          break;
+        }
+      }
+    }
+
+    if (wallObjectId != -1) {
+      int[] coords = this.getNearestWallObjectById(wallObjectId);
+      if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
+        this.openDoor(coords[0], coords[1]);
+        this.sleep(250);
+      }
+      return;
+    }
+  }
+
+  /**
+   * Opens all reachable doors with the same id that match the ids in the radius.
+   *
+   * @param radius -- within how many tiles to find said door
+   */
+  public void openNearbyDoors(int radius) {
     int x = this.currentX();
     int y = this.currentY();
 

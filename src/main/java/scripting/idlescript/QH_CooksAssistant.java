@@ -62,6 +62,9 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
   private static final int COW_ID = NpcId.COW_ATTACKABLE.getId();
   private static final int COOK_ID = NpcId.COOK.getId();
 
+  // NPC DIALOGS
+  private static final String[] COOK_START_QUEST_DIALOG = {"What's wrong?", "Yes, I'll help you"};
+
   public int start(String[] param) {
     QUEST_NAME = "Cook's Assistant";
     START_RECTANGLE = LUMBRIDGE_CASTLE_COURTYARD;
@@ -75,30 +78,31 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
       switch (QUEST_STAGE) {
         case 0:
           // Gather pot and bucket if needed
-          while ((!hasItemAmount(POT_ID, 1) && !hasItemAmount(POT_OF_FLOUR_ID, 1))
-              || (!hasItemAmount(BUCKET_ID, 1) && !hasItemAmount(MILK_ID, 1)) && c.isRunning()) {
+          while ((!hasAtLeastItemAmount(POT_ID, 1) && !hasAtLeastItemAmount(POT_OF_FLOUR_ID, 1))
+              || (!hasAtLeastItemAmount(BUCKET_ID, 1) && !hasAtLeastItemAmount(MILK_ID, 1))
+                  && c.isRunning()) {
             STEP_ITEMS =
                 new int[][] {
                   {POT_ID, 1},
                   {BUCKET_ID, 1}
                 };
-            if (!hasItemAmount(POT_ID, 1) && !hasItemAmount(POT_OF_FLOUR_ID, 1)) {
+            if (!hasAtLeastItemAmount(POT_ID, 1) && !hasAtLeastItemAmount(POT_OF_FLOUR_ID, 1)) {
               CURRENT_QUEST_STEP = "Getting a pot";
               walkPath(COURTYARD_TO_KITCHEN);
-              pickupUnreachableItem(POT_ID, KITCHEN);
+              pickupUnreachableItem(POT_ID, KITCHEN, 1);
               walkPath(KITCHEN_TO_COURTYARD);
             }
-            if (!hasItemAmount(BUCKET_ID, 1) && !hasItemAmount(MILK_ID, 1)) {
+            if (!hasAtLeastItemAmount(BUCKET_ID, 1) && !hasAtLeastItemAmount(MILK_ID, 1)) {
               CURRENT_QUEST_STEP = "Getting a bucket";
               walkPath(COURTYARD_TO_PENS);
               walkPath(PENS_TO_CHICKENS);
-              pickupGroundItem(BUCKET_ID);
+              pickupGroundItem(BUCKET_ID, 1);
             }
           }
           // Gather egg, milk, and flour
-          while (!hasItemAmount(EGG_ID, 1)
-              || !hasItemAmount(MILK_ID, 1)
-              || !hasItemAmount(POT_OF_FLOUR_ID, 1) && c.isRunning()) {
+          while (!hasAtLeastItemAmount(EGG_ID, 1)
+              || !hasAtLeastItemAmount(MILK_ID, 1)
+              || !hasAtLeastItemAmount(POT_OF_FLOUR_ID, 1) && c.isRunning()) {
             STEP_ITEMS =
                 new int[][] {
                   {EGG_ID, 1},
@@ -106,15 +110,15 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
                   {POT_OF_FLOUR_ID, 1}
                 };
             CURRENT_QUEST_STEP = "Getting ingredients";
-            while (!hasItemAmount(EGG_ID, 1) && c.isRunning()) {
+            while (!hasAtLeastItemAmount(EGG_ID, 1) && c.isRunning()) {
               CURRENT_QUEST_STEP = "Getting an egg";
               if (isInRectangle(START_RECTANGLE)) {
                 walkPath(COURTYARD_TO_PENS);
                 walkPath(PENS_TO_CHICKENS);
               }
-              pickupGroundItem(EGG_ID);
+              pickupGroundItem(EGG_ID, 1);
             }
-            while (!hasItemAmount(MILK_ID, 1) && c.isRunning()) {
+            while (!hasAtLeastItemAmount(MILK_ID, 1) && c.isRunning()) {
               CURRENT_QUEST_STEP = "Getting milk";
               if (isInRectangle(START_RECTANGLE)) {
                 walkPath(COURTYARD_TO_PENS);
@@ -124,7 +128,7 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
               }
               useItemOnNearestNpcId(COW_ID, BUCKET_ID);
             }
-            while (!hasItemAmount(POT_OF_FLOUR_ID, 1) && c.isRunning()) {
+            while (!hasAtLeastItemAmount(POT_OF_FLOUR_ID, 1) && c.isRunning()) {
               CURRENT_QUEST_STEP = "Getting flour";
               if (isInRectangle(START_RECTANGLE)) {
                 walkPathReverse(MILL_TO_COURTYARD);
@@ -132,12 +136,12 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
                 walkPath(COWS_TO_MILL);
               }
 
-              if (!hasItemAmount(GRAIN_ID, 1)) {
+              if (!hasAtLeastItemAmount(GRAIN_ID, 1)) {
                 walkPath(MILL_TO_WHEAT_FIELD);
                 c.atObject2(WHEAT_PLANT[0], WHEAT_PLANT[1]);
-                while (!hasItemAmount(GRAIN_ID, 1)) c.sleep(640);
+                while (!hasAtLeastItemAmount(GRAIN_ID, 1)) c.sleep(640);
                 c.walkTo(c.currentX(), c.currentY());
-                dropAllButOne(GRAIN_ID);
+                dropAllButAmount(GRAIN_ID, 1);
                 walkPathReverse(MILL_TO_WHEAT_FIELD);
               }
               walkPath(INTO_MILL);
@@ -152,26 +156,26 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
                     MILL_HOPPER, MILL_LADDER_DOWN_THIRD_FLOOR, MILL_LADDER_DOWN_SECOND_FLOOR
                   };
               atObjectSequence(objectSeq);
-              pickupUnreachableItem(FLOUR_ID, MILL_FLOUR);
+              pickupUnreachableItem(FLOUR_ID, MILL_FLOUR, 1);
               walkPathReverse(INTO_MILL);
             }
           }
           CURRENT_QUEST_STEP = "Returning to the Cook";
           walkPath(MILL_TO_COURTYARD);
           walkPath(COURTYARD_TO_KITCHEN);
-          DIALOG_CHOICES = new String[] {"What's wrong?", "Yes, I'll help you"};
-          followNPCDialog(COOK_ID, DIALOG_CHOICES);
+          followNPCDialog(COOK_ID, COOK_START_QUEST_DIALOG);
           break;
         case 1:
           CURRENT_QUEST_STEP = "Handing in items to the Cook";
-          DIALOG_CHOICES = new String[] {};
-          followNPCDialog(COOK_ID, DIALOG_CHOICES);
+          followNPCDialog(COOK_ID, new String[] {});
           talkToNpcId(COOK_ID);
           break;
         case -1:
-          quit("Quest Completed");
+          quit("Quest completed");
+          break;
         default:
           quit("");
+          break;
       }
     }
     quit("Script stopped");

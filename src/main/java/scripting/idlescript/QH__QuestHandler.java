@@ -26,7 +26,7 @@ public class QH__QuestHandler extends IdleScript {
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT
   protected String QUEST_NAME, START_DESCRIPTION, CURRENT_QUEST_STEP = "";
-  protected String[] QUEST_REQUIREMENTS, DIALOG_CHOICES = {};
+  protected String[] QUEST_REQUIREMENTS = {};
   protected String[][] SKILL_REQUIREMENTS = {};
   protected int QUEST_ID, QUEST_STAGE, INVENTORY_SPACES_NEEDED;
   protected int[][] START_RECTANGLE, STEP_ITEMS = {};
@@ -125,7 +125,7 @@ public class QH__QuestHandler extends IdleScript {
    * @param amount int -- The amount to check for
    * @return boolean
    */
-  public boolean hasItemAmount(int id, int amount) {
+  public boolean hasAtLeastItemAmount(int id, int amount) {
     return (c.getInventoryItemCount(id) >= amount);
   }
 
@@ -187,32 +187,35 @@ public class QH__QuestHandler extends IdleScript {
    * Drops all of a given item id except one.
    *
    * @param itemId int -- Id of the item to drop
+   * @param amountToKeep int -- Amount of item to keep
    */
-  public void dropAllButOne(int itemId) {
+  public void dropAllButAmount(int itemId, int amountToKeep) {
     while (c.isCurrentlyWalking()) c.sleep(640);
     c.sleep(1280);
-    if (c.getInventoryItemCount(itemId) > 1) {
-      c.dropItem(c.getInventoryItemSlotIndex(itemId), c.getInventoryItemCount(itemId) - 1);
+    if (c.getInventoryItemCount(itemId) > amountToKeep) {
+      c.dropItem(
+          c.getInventoryItemSlotIndex(itemId), c.getInventoryItemCount(itemId) - amountToKeep);
       c.sleep(1280);
-      while (c.getInventoryItemCount(itemId) > 1) {
+      while (c.getInventoryItemCount(itemId) > amountToKeep) {
         c.sleep(640);
       }
     }
   }
   /**
    * Walks to specified tile and picks up an item id from an unreachable tile. Keeps retrying every
-   * 2 ticks until one is picked up.
+   * 2 ticks until the specified amount is picked up.
    *
    * @param itemId int -- Id of the item to pick up
    * @param standTile int[] -- Tile to stand at to pick up item
+   * @param amount int -- The amount to pick up
    */
-  public void pickupUnreachableItem(int itemId, int[] standTile) {
+  public void pickupUnreachableItem(int itemId, int[] standTile, int amount) {
     int newId = changingIdCheck(itemId);
     if (c.getInventoryItemCount() == 30) {
       c.displayMessage("@red@Inventory is full");
     } else {
       int itemStartCount = c.getInventoryItemCount(newId);
-      while (c.getInventoryItemCount(newId) <= itemStartCount && c.isRunning()) {
+      while (c.getInventoryItemCount(newId) < itemStartCount + amount && c.isRunning()) {
         int[] item = c.getNearestItemById(itemId);
         if (item != null) {
           if (distanceFrom(standTile) > 1) {
@@ -227,18 +230,19 @@ public class QH__QuestHandler extends IdleScript {
   }
 
   /**
-   * Picks up the nearest item matching the given item id. Keeps retrying every 2 ticks until one is
-   * picked up.
+   * Picks up the nearest item matching the given item id. Keeps retrying every 2 ticks until the
+   * specified amount is picked up.
    *
    * @param itemId int -- Id of the item to pick up
+   * @param amount int -- The amount to pick up
    */
-  public void pickupGroundItem(int itemId) {
+  public void pickupGroundItem(int itemId, int amount) {
     int newId = changingIdCheck(itemId);
     if (c.getInventoryItemCount() == 30) {
       c.displayMessage("@red@Inventory is full");
     } else {
       int itemStartCount = c.getInventoryItemCount(newId);
-      while (c.getInventoryItemCount(newId) <= itemStartCount) {
+      while (c.getInventoryItemCount(newId) < itemStartCount + amount) {
         int[] item = c.getNearestItemById(itemId);
         if (item != null) {
           if (distanceFrom(item) > 1) {
@@ -366,17 +370,20 @@ public class QH__QuestHandler extends IdleScript {
    */
   public void walkPath(int[][] path) {
     for (int i = 0; i < path.length; ++i) {
-      if (!c.isReachable(path[i][0], path[i][1], false)) quit("Path tile not reachable");
-      if (c.isCurrentlyWalking()) {
-        while (c.isCurrentlyWalking() && c.isRunning()) {
+      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      if (c.isRunning()) {
+        c.sleep(640);
+        while (c.isNearbyDoorClosed(1) && c.isRunning()) {
+          c.openNearbyDoor(1);
           c.sleep(640);
         }
-      }
-      if (c.isRunning()) {
-        c.openNearbyDoor(1);
-        c.sleep(640);
-        c.walkTo(path[i][0], path[i][1]);
-        c.sleep(640);
+        if (!c.isReachable(path[i][0], path[i][1], false)) {
+          c.log("Tile unreachable: " + path[i][0] + "," + path[i][1]);
+          quit("Path tile not reachable");
+        } else {
+          c.walkTo(path[i][0], path[i][1]);
+          c.sleep(640);
+        }
       }
       while (c.isCurrentlyWalking() && c.isRunning()) {
         c.sleep(640);
@@ -393,17 +400,20 @@ public class QH__QuestHandler extends IdleScript {
    */
   public void walkPathReverse(int[][] path) {
     for (int i = path.length - 1; i >= 0; i--) {
-      if (!c.isReachable(path[i][0], path[i][1], false)) quit("Path tile not reachable");
-      if (c.isCurrentlyWalking()) {
-        while (c.isCurrentlyWalking() && c.isRunning()) {
+      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      if (c.isRunning()) {
+        c.sleep(640);
+        while (c.isNearbyDoorClosed(1) && c.isRunning()) {
+          c.openNearbyDoor(1);
           c.sleep(640);
         }
-      }
-      if (c.isRunning()) {
-        c.openNearbyDoor(1);
-        c.sleep(640);
-        c.walkTo(path[i][0], path[i][1]);
-        c.sleep(640);
+        if (!c.isReachable(path[i][0], path[i][1], false)) {
+          c.log("Tile unreachable: " + path[i][0] + "," + path[i][1]);
+          quit("Path tile not reachable");
+        } else {
+          c.walkTo(path[i][0], path[i][1]);
+          c.sleep(640);
+        }
       }
       while (c.isCurrentlyWalking() && c.isRunning()) {
         c.sleep(640);
@@ -464,63 +474,64 @@ public class QH__QuestHandler extends IdleScript {
    */
   public void quit(String reason) {
     String quitMessage = "";
-    if (c.isRunning()) {
-      switch (reason) {
-        case "Script stopped":
-          quitMessage = "The script has been stopped!";
-          break;
-        case "Missing levels":
-          c.displayMessage("@red@You are missing the following levels for this quest:");
-          for (int i = 0; i < MISSING_LEVELS.size(); i++) {
-            c.displayMessage(MISSING_LEVELS.get(i));
-          }
-          break;
-        case "Missing quests":
-          c.displayMessage("@red@This quest requires you to complete the following quests first:");
-          for (int i = 0; i < MISSING_QUESTS.size(); i++) {
-            c.displayMessage(MISSING_QUESTS.get(i));
-          }
-          break;
-        case "Not enough empty inventory spaces":
-          quitMessage =
-              String.format("You need at least %s empty inventory spaces", INVENTORY_SPACES_NEEDED);
-          break;
-        case "Not in start area":
-          quitMessage = "Start the script at: " + START_DESCRIPTION;
-          break;
-        case "Quest already complete":
-          quitMessage = "This quest has already been completed";
-          break;
-        case "Quest completed":
-          quitMessage = "@gre@Quest Completed";
-          break;
-        case "Ran handler":
-          quitMessage = "Do not run this script. Run a QH_ quest script instead";
-          break;
-          // Players should never see the messages after this point if quest scripts are written
-          // correctly
-        case "Npc not found":
-          quitMessage = "May be too far away or have the wrong npc id";
-          break;
-        case "Object not found":
-          quitMessage = "An object was not found. Check the coordinates";
-          break;
-        case "Path tile not reachable":
-          quitMessage = "The walk path tile was not reachable";
-          break;
-        case "Start location description array mismatch":
-          quitMessage = "Descriptions and locations arrays have mismatched lengths";
-          break;
-        case "Start location not found in locations array":
-          quitMessage = "The start location is not defined in the locations array";
-          break;
-        default:
-          quitMessage = "The script has unexpectedly stopped!";
-          break;
-      }
-      if (quitMessage.length() > 0) c.displayMessage("@red@" + quitMessage);
-      c.stop();
+    switch (reason.toLowerCase()) {
+      case "script stopped":
+        quitMessage = "The script has been stopped";
+        break;
+      case "missing levels":
+        c.displayMessage("@red@You are missing the following levels for this quest:");
+        for (int i = 0; i < MISSING_LEVELS.size(); i++) {
+          c.displayMessage(MISSING_LEVELS.get(i));
+        }
+        break;
+      case "missing quests":
+        c.displayMessage("@red@This quest requires you to complete the following quests first:");
+        for (int i = 0; i < MISSING_QUESTS.size(); i++) {
+          c.displayMessage(MISSING_QUESTS.get(i));
+        }
+        break;
+      case "not enough empty inventory spaces":
+        quitMessage =
+            String.format("You need at least %s empty inventory spaces", INVENTORY_SPACES_NEEDED);
+        break;
+      case "not in start area":
+        quitMessage = "Start the script at: " + START_DESCRIPTION;
+        break;
+      case "quest already complete":
+        quitMessage = "This quest has already been completed";
+        break;
+      case "quest completed":
+        quitMessage = "@gre@Quest Completed";
+        break;
+      case "ran handler":
+        quitMessage = "Do not run this script. Run a QH_ quest script instead";
+        break;
+        // Players should never see the messages after this point if quest scripts are written
+        // correctly
+      case "npc not found":
+        quitMessage = "May be too far away or have the wrong npc id";
+        break;
+      case "object not found":
+        quitMessage = "An object was not found. Check the coordinates";
+        break;
+      case "path tile not reachable":
+        quitMessage = "The walk path tile was not reachable";
+        break;
+      case "start location description array mismatch":
+        quitMessage = "Descriptions and locations arrays have mismatched lengths";
+        break;
+      case "start location not found in locations array":
+        quitMessage = "The start location is not defined in the locations array";
+        break;
+      default:
+        quitMessage = "The script has unexpectedly stopped!";
+        break;
     }
+    if ((quitMessage.length() > 0 && c.isRunning())
+        || (quitMessage.length() > 0 && reason.toLowerCase() == "script stopped")) {
+      c.displayMessage("@red@" + quitMessage);
+    }
+    c.stop();
   }
 
   /*
@@ -682,6 +693,7 @@ public class QH__QuestHandler extends IdleScript {
         }
       }
       c.drawBoxBorder(left, top, paintWidth, paintHeight, borderColor);
+      /* if (IS_TESTING) c.drawLineVert((paintWidth / 2) + left, top, paintHeight, borderColor); */
     }
   }
 }

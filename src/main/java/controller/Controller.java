@@ -1352,6 +1352,55 @@ public class Controller {
   }
 
   /**
+   * Checks in the radius for a closed door
+   *
+   * @param radius int -- Radius to check
+   * @return boolean -- If a closed door was found
+   */
+  public boolean isNearbyDoorClosed(int radius) {
+    int x = this.currentX();
+    int y = this.currentY();
+
+    int objectId = -1;
+    int wallObjectId = -1;
+
+    for (int id : this.closedObjectDoorIds) {
+      int[] coords = this.getNearestObjectById(id);
+      if (coords != null) {
+        if (this.distance(x, y, coords[0], coords[1]) <= radius) {
+          objectId = id;
+          break;
+        }
+      }
+    }
+
+    if (objectId != -1) {
+      int[] coords = this.getNearestObjectById(objectId);
+      if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
+        return true;
+      }
+    }
+
+    for (int id : this.closedWallDoorIds) {
+      int[] coords = this.getNearestWallObjectById(id);
+      if (coords != null) {
+        if (this.distance(x, y, coords[0], coords[1]) <= radius) {
+          wallObjectId = id;
+          break;
+        }
+      }
+    }
+
+    if (wallObjectId != -1) {
+      int[] coords = this.getNearestWallObjectById(wallObjectId);
+      if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Retrieves the id of the wall object at the specified coordinates.
    *
    * @param x int
@@ -4201,8 +4250,8 @@ public class Controller {
       if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
         this.atObject(coords[0], coords[1]);
         this.sleep(250);
+        return;
       }
-      return;
     }
 
     for (int id : this.closedWallDoorIds) {
@@ -4220,8 +4269,8 @@ public class Controller {
       if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
         this.openDoor(coords[0], coords[1]);
         this.sleep(250);
+        return;
       }
-      return;
     }
   }
 

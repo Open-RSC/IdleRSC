@@ -2990,7 +2990,27 @@ public class Controller {
   }
 
   /**
-   * Retrieves the price of the item in the shop.
+   * Retrieves the price of the stack of items in the shop.
+   *
+   * @param itemId int
+   * @return int -- price. -1 if item is not in the shop at all.
+   */
+  public int getShopItemStackPrice(int itemId) {
+    int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
+    int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
+    int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
+
+    for (int i = 0; i < ids.length; i++) {
+      if (ids[i] == itemId) {
+        return prices[i];
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Retrieves the price of a single item in the shop.
    *
    * @param itemId int
    * @return int -- price. -1 if item is not in the shop at all.
@@ -3002,7 +3022,9 @@ public class Controller {
 
     for (int i = 0; i < ids.length; i++) {
       if (ids[i] == itemId) {
-        return prices[i];
+        int shopStock = getShopItemCount(itemId);
+        int stackPrice = prices[i];
+        return stackPrice / shopStock;
       }
     }
 

@@ -49,7 +49,7 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
   private static final int[] MILL_HOPPER = {166, 2487};
   private static final int[] WHEAT_PLANT = {172, 605};
 
-  // ITEM REQUIREMENTS IDS
+  // ITEM IDS
   private static final int POT_OF_FLOUR_ID = ItemId.POT_OF_FLOUR.getId();
   private static final int BUCKET_ID = ItemId.BUCKET.getId();
   private static final int GRAIN_ID = ItemId.GRAIN.getId();
@@ -68,8 +68,9 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
   public int start(String[] param) {
     QUEST_NAME = "Cook's Assistant";
     START_RECTANGLE = LUMBRIDGE_CASTLE_COURTYARD;
-    SKILL_REQUIREMENTS = new String[][] {};
     QUEST_REQUIREMENTS = new String[] {};
+    SKILL_REQUIREMENTS = new int[][] {};
+    ITEM_REQUIREMENTS = new int[][] {};
     INVENTORY_SPACES_NEEDED = 4;
     doQuestChecks();
 
@@ -164,10 +165,10 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
           walkPath(MILL_TO_COURTYARD);
           walkPath(COURTYARD_TO_KITCHEN);
           followNPCDialog(COOK_ID, COOK_START_QUEST_DIALOG);
+          sleepUntilQuestStageChanges();
           break;
         case 1:
           CURRENT_QUEST_STEP = "Handing in items to the Cook";
-          followNPCDialog(COOK_ID, new String[] {});
           talkToNpcId(COOK_ID);
           break;
         case -1:

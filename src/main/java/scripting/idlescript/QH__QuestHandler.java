@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import models.entities.ItemId;
 import models.entities.QuestId;
+import models.entities.SkillId;
 import orsc.ORSCharacter;
 
 public class QH__QuestHandler extends IdleScript {
@@ -14,26 +15,23 @@ public class QH__QuestHandler extends IdleScript {
 
   // QUEST START COORDINATES AND DESCRIPTIONS
   protected int[][] LUMBRIDGE_CASTLE_COURTYARD = {{120, 650}, {128, 665}};
+  protected int[][] FALADOR_WEST_BANK = {{328, 549}, {334, 557}};
 
   // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align to correctly set
   // the START_DESCRIPTION in getStartDescriptions()
-  private int[][][] QUEST_START_LOCATIONS = {
-    LUMBRIDGE_CASTLE_COURTYARD,
-  };
-  private String[] QUEST_START_DESCRIPTIONS = {
-    "Lumbridge Castle Courtyard",
-  };
+  private int[][][] QUEST_START_LOCATIONS = {LUMBRIDGE_CASTLE_COURTYARD, FALADOR_WEST_BANK};
+  private String[] QUEST_START_DESCRIPTIONS = {"Lumbridge Castle Courtyard", "Falador West Bank"};
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT
   protected String QUEST_NAME, START_DESCRIPTION, CURRENT_QUEST_STEP = "";
   protected String[] QUEST_REQUIREMENTS = {};
-  protected String[][] SKILL_REQUIREMENTS = {};
   protected int QUEST_ID, QUEST_STAGE, INVENTORY_SPACES_NEEDED;
-  protected int[][] START_RECTANGLE, STEP_ITEMS = {};
+  protected int[][] START_RECTANGLE, SKILL_REQUIREMENTS, ITEM_REQUIREMENTS, STEP_ITEMS = {};
 
   // PRIVATE VARIABLES
   private List<String> MISSING_LEVELS = new ArrayList<String>();
   private List<String> MISSING_QUESTS = new ArrayList<String>();
+  private List<String> MISSING_ITEMS = new ArrayList<String>();
   private boolean IS_TESTING = false;
 
   /** Used for testing */
@@ -46,7 +44,7 @@ public class QH__QuestHandler extends IdleScript {
       loops++;
       c.displayMessage("@yel@Starting testing loop: " + loops);
       /** Start test stuff here */
-
+      
       /** End test stuff here */
       c.displayMessage("@yel@Loops completed: " + loops);
       c.sleep(640);
@@ -69,14 +67,40 @@ public class QH__QuestHandler extends IdleScript {
     } else {
       requiredQuestsCheck();
       requiredLevelsCheck();
+      requiredStartItemsCheck();
       if (INVENTORY_SPACES_NEEDED > 30 - c.getInventoryItemCount()) {
         quit("Not enough empty inventory spaces");
       }
       if (!isInRectangle(START_RECTANGLE)) {
         quit("Not in start area");
       } else {
-        c.displayMessage("@gre@Start location correct");
+        if (c.isRunning()) {
+          c.displayMessage("@gre@Start location correct");
+        }
       }
+    }
+  }
+  /** Checks if the player has the required starting items for the quest */
+  // CURRENTLY ONLY CHECKS INVENTORY ITEMS. WILL NEED TO BE EXPANDED LATER TO
+  // CHECK BANKS FOR MORE COMPLEX QUESTS
+  private void requiredStartItemsCheck() {
+    MISSING_ITEMS = new ArrayList<String>();
+    for (int[] item : ITEM_REQUIREMENTS) {
+      int itemId = item[0];
+      int amount = item[1];
+      c.log(String.format("NEEDED: %s HELD: %s", amount, c.getInventoryItemCount(itemId)));
+      String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
+      itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
+
+      if (c.getInventoryItemCount(itemId) < amount) {
+        String missingString = String.format("@red@- %sx %s", amount, itemName);
+        MISSING_ITEMS.add(missingString);
+      }
+    }
+    if (MISSING_ITEMS.size() > 0) {
+      quit("Missing items");
+    } else {
+      c.displayMessage("@gre@All item requirements met");
     }
   }
 
@@ -84,8 +108,10 @@ public class QH__QuestHandler extends IdleScript {
   private void requiredLevelsCheck() {
     MISSING_LEVELS = new ArrayList<String>();
     for (int i = 0; i < SKILL_REQUIREMENTS.length; i++) {
-      String skillName = SKILL_REQUIREMENTS[i][0];
-      int skillLevel = Integer.parseInt(SKILL_REQUIREMENTS[i][1]);
+      String skillName = String.valueOf(SkillId.getById(SKILL_REQUIREMENTS[i][0])).toLowerCase();
+      skillName = skillName.substring(0, 1).toUpperCase() + skillName.substring(1);
+
+      int skillLevel = SKILL_REQUIREMENTS[i][1];
       if (!hasSkillLevel(skillName, skillLevel)) {
         String missingString = String.format("@red@- %s %s", skillName, skillLevel);
         MISSING_LEVELS.add(missingString);
@@ -190,15 +216,178 @@ public class QH__QuestHandler extends IdleScript {
    * @param amountToKeep int -- Amount of item to keep
    */
   public void dropAllButAmount(int itemId, int amountToKeep) {
-    while (c.isCurrentlyWalking()) c.sleep(640);
+    while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
     c.sleep(1280);
-    if (c.getInventoryItemCount(itemId) > amountToKeep) {
+    if (c.getInventoryItemCount(itemId) > amountToKeep && c.isRunning()) {
       c.dropItem(
           c.getInventoryItemSlotIndex(itemId), c.getInventoryItemCount(itemId) - amountToKeep);
       c.sleep(1280);
-      while (c.getInventoryItemCount(itemId) > amountToKeep) {
+      while (c.getInventoryItemCount(itemId) > amountToKeep && c.isRunning()) {
         c.sleep(640);
       }
+    }
+  }
+
+  /**
+   * Opens the shop for the closest NPC with a given id and sells items to them.
+   *
+   * @param npcIds int[] -- Ids of npcs to look for
+   * @param sellItems int[][] -- ItemId/amount pairs. Example: {{SILK_ID, 1}, {EGG_ID, 12}}
+   */
+  public void openShopThenSell(int[] npcIds, int[][] sellItems) {
+    if (c.isRunning()) {
+      c.npcCommand1(c.getNearestNpcByIds(npcIds, false).serverIndex);
+      c.sleep(1280);
+      while (!c.isInShop() && c.isRunning()) c.sleep(640);
+
+      for (int[] item : sellItems) {
+        int itemId = item[0];
+        int sellAmount = item[1];
+        int startAmount = c.getInventoryItemCount(itemId);
+
+        String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
+        itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
+
+        if (startAmount < sellAmount) {
+          c.log(String.format("Only had %sx %s to sell", startAmount, itemName));
+        }
+        c.shopSell(itemId, sellAmount);
+        c.sleep(1280);
+      }
+      c.closeShop();
+      while (c.isInShop() && c.isRunning()) c.sleep(640);
+    }
+  }
+
+  /**
+   * Opens the shop for the closest NPC with a given id and buys items from them.
+   *
+   * @param npcIds int[] -- Ids of npcs to look for
+   * @param buyItems int[][] -- ItemId/amount pairs. Example: {{SILK_ID, 1}, {EGG_ID, 12}}
+   */
+  public void openShopThenBuy(int[] npcIds, int[][] buyItems) {
+    if (c.isRunning()) {
+      c.npcCommand1(c.getNearestNpcByIds(npcIds, false).serverIndex);
+      c.sleep(1280);
+      while (!c.isInShop() && c.isRunning()) c.sleep(640);
+
+      for (int[] item : buyItems) {
+        int itemId = item[0];
+        int buyAmount = item[1];
+        int startAmount = c.getInventoryItemCount(itemId);
+        int emptySpaces = 30 - c.getInventoryItemCount();
+        int price = c.getShopItemPrice(itemId);
+        int heldGold = c.getInventoryItemCount(ItemId.COINS.getId());
+
+        String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
+        itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
+
+        // Skip this loop if the player doesn't have enough gold
+        if (heldGold < (price * buyAmount)) {
+          c.log(String.format("Not enough coins to buy %sx %s", buyAmount, itemName));
+          continue;
+        }
+        // Skip this loop if the player doesn't have enough empty inventory spaces
+        if (emptySpaces == 0) {
+          if (c.isItemStackable(itemId) && c.getInventoryItemCount(itemId) == 0
+              || !c.isItemStackable(itemId)) {
+            c.log(String.format("Not enough space for %sx %s", buyAmount, itemName));
+            continue;
+          }
+        }
+        while (c.getInventoryItemCount(itemId) < startAmount + buyAmount && c.isRunning()) {
+          while (c.getShopItemCount(itemId) < 1 && c.isRunning()) c.sleep(640);
+          c.shopBuy(itemId, buyAmount - (c.getInventoryItemCount(itemId) - startAmount));
+          c.sleep(1280);
+        }
+      }
+      c.closeShop();
+      while (c.isInShop() && c.isRunning()) c.sleep(640);
+    }
+  }
+
+  /**
+   * Opens the shop for the closest NPC with a given id and sells then buys items.
+   *
+   * @param npcIds int[] -- Ids of npcs to look for
+   * @param sellItems int[][] -- ItemId/amount pairs. Example: {{SILK_ID, 1}, {EGG_ID, 12}}
+   * @param buyItems int[][] -- ItemId/amount pairs. Example: {{SILK_ID, 1}, {EGG_ID, 12}}
+   */
+  public void openShopThenSellAndBuy(int[] npcIds, int[][] sellItems, int[][] buyItems) {
+    if (c.isRunning()) {
+      c.npcCommand1(c.getNearestNpcByIds(npcIds, false).serverIndex);
+      c.sleep(1280);
+      while (!c.isInShop() && c.isRunning()) c.sleep(640);
+
+      // Sell Items
+      for (int[] item : sellItems) {
+        int itemId = item[0];
+        int sellAmount = item[1];
+        int startAmount = c.getInventoryItemCount(itemId);
+
+        String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
+        itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
+
+        if (startAmount < sellAmount) {
+          c.log(String.format("Only had %sx %s to sell", startAmount, itemName));
+        }
+        c.shopSell(itemId, sellAmount);
+        c.sleep(1280);
+      }
+
+      // Buy items
+      for (int[] item : buyItems) {
+        int itemId = item[0];
+        int buyAmount = item[1];
+        int startAmount = c.getInventoryItemCount(itemId);
+        int emptySpaces = 30 - c.getInventoryItemCount();
+        int price = c.getShopItemPrice(itemId);
+        int heldGold = c.getInventoryItemCount(ItemId.COINS.getId());
+
+        String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
+        itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
+
+        // Skip this loop if the player doesn't have enough gold
+        if (heldGold < (price * buyAmount)) {
+          c.log(String.format("Not enough coins to buy %sx %s", buyAmount, itemName));
+          continue;
+        }
+        // Skip this loop if the player doesn't have enough empty inventory spaces
+        if (emptySpaces == 0) {
+          if (c.isItemStackable(itemId) && c.getInventoryItemCount(itemId) == 0
+              || !c.isItemStackable(itemId)) {
+            c.log(String.format("Not enough space for %sx %s", buyAmount, itemName));
+            continue;
+          }
+        }
+        while (c.getInventoryItemCount(itemId) < startAmount + buyAmount && c.isRunning()) {
+          while (c.getShopItemCount(itemId) < 1 && c.isRunning()) c.sleep(640);
+          c.shopBuy(itemId, buyAmount - (c.getInventoryItemCount(itemId) - startAmount));
+          c.sleep(1280);
+        }
+      }
+      c.closeShop();
+      while (c.isInShop() && c.isRunning()) c.sleep(640);
+    }
+  }
+
+  public void openShopThenBuyAndSellItems(
+      int[] npcIds, int sellId, int sellAmount, int buyId, int buyAmount) {
+    if (c.isRunning()) {
+      int startingItemCount = c.getInventoryItemCount(buyId);
+
+      c.npcCommand1(c.getNearestNpcByIds(npcIds, false).serverIndex);
+      c.sleep(1280);
+      while (!c.isInShop() && c.isRunning()) c.sleep(640);
+      c.shopSell(sellId, sellAmount);
+      c.sleep(1280);
+      while (c.getInventoryItemCount(buyId) < startingItemCount + buyAmount && c.isRunning()) {
+        while (c.getShopItemCount(buyId) < 1 && c.isRunning()) c.sleep(640);
+        c.shopBuy(buyId, buyAmount - (c.getInventoryItemCount(buyId) - startingItemCount));
+        c.sleep(1280);
+      }
+      c.closeShop();
+      while (c.isInShop() && c.isRunning()) c.sleep(640);
     }
   }
   /**
@@ -242,7 +431,7 @@ public class QH__QuestHandler extends IdleScript {
       c.displayMessage("@red@Inventory is full");
     } else {
       int itemStartCount = c.getInventoryItemCount(newId);
-      while (c.getInventoryItemCount(newId) < itemStartCount + amount) {
+      while (c.getInventoryItemCount(newId) < itemStartCount + amount && c.isRunning()) {
         int[] item = c.getNearestItemById(itemId);
         if (item != null) {
           if (distanceFrom(item) > 1) {
@@ -309,6 +498,8 @@ public class QH__QuestHandler extends IdleScript {
       ORSCharacter npc = c.getNearestNpcByIds(npc_id, false);
       if (npc != null) {
         c.talkToNpc(npc.serverIndex);
+        c.sleep(640);
+        while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
         while (c.isRunning()) {
           String oldMessage = npc.message;
           c.sleep(2560);
@@ -319,6 +510,7 @@ public class QH__QuestHandler extends IdleScript {
         quit("Npc not found");
       }
     }
+    c.sleep(2560);
   }
 
   /**
@@ -333,8 +525,8 @@ public class QH__QuestHandler extends IdleScript {
     ORSCharacter npc = c.getNearestNpcByIds(npc_id, false);
     if (npc != null) {
       c.talkToNpc(npc.serverIndex);
-      // Sleep while walking to the npc
-      while (!c.isNpcTalking(npc.serverIndex) && c.isRunning()) c.sleep(640);
+      c.sleep(640);
+      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
       if (dialogChoices.length > 0) {
         for (int choiceIndex = 0; choiceIndex < dialogChoices.length; choiceIndex++) {
           // Sleep until a dialog menu appears
@@ -355,13 +547,17 @@ public class QH__QuestHandler extends IdleScript {
         c.sleep(2560);
         if (oldMessage == npc.message) break;
       }
-
     } else {
       c.log(String.format("Could not find NPC: %s", npcId));
       quit("Npc not found");
     }
+    c.sleep(2560);
   }
 
+  public void sleepUntilQuestStageChanges() {
+    int oldStage = QUEST_STAGE;
+    while (c.getQuestStage(QUEST_ID) == oldStage && c.isRunning()) c.sleep(640);
+  }
   /**
    * Follows a given path while checking for and opening closed doors next to given tiles.
    *
@@ -488,6 +684,12 @@ public class QH__QuestHandler extends IdleScript {
         c.displayMessage("@red@This quest requires you to complete the following quests first:");
         for (int i = 0; i < MISSING_QUESTS.size(); i++) {
           c.displayMessage(MISSING_QUESTS.get(i));
+        }
+        break;
+      case "missing items":
+        c.displayMessage("@red@You need the following items in your inventory:");
+        for (int i = 0; i < MISSING_ITEMS.size(); i++) {
+          c.displayMessage(MISSING_ITEMS.get(i));
         }
         break;
       case "not enough empty inventory spaces":

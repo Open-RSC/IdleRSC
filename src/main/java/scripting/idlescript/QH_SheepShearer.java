@@ -44,7 +44,7 @@ public final class QH_SheepShearer extends QH__QuestHandler {
   };
   private static final int[][] COURTYARD_TO_LADDER = {COURTYARD_OUTER, COURTYARD_INNER, LADDER};
 
-  // OBJECT IDS
+  // OBJECT COORDINATES
   private static final int[] LADDER_UP_GROUND_FLOOR = {139, 666};
   private static final int[] LADDER_UP_SECOND_FLOOR = {138, 1612};
   private static final int[] LADDER_DOWN_THIRD_FLOOR = {138, 2556};
@@ -55,7 +55,7 @@ public final class QH_SheepShearer extends QH__QuestHandler {
   private static final int[][] UP_LADDER = {LADDER_UP_GROUND_FLOOR, LADDER_UP_SECOND_FLOOR};
   private static final int[][] DOWN_LADDER = {LADDER_DOWN_THIRD_FLOOR, LADDER_DOWN_SECOND_FLOOR};
 
-  // ITEM REQUIREMENTS IDS
+  // ITEM IDS
   private static final int WOOL_ID = ItemId.WOOL.getId();
   private static final int BALL_OF_WOOL_ID = ItemId.BALL_OF_WOOL.getId();
   private static final int SHEARS_ID = ItemId.SHEARS.getId();
@@ -72,8 +72,9 @@ public final class QH_SheepShearer extends QH__QuestHandler {
   public int start(String[] param) {
     QUEST_NAME = "Sheep Shearer";
     START_RECTANGLE = LUMBRIDGE_CASTLE_COURTYARD;
-    SKILL_REQUIREMENTS = new String[][] {};
     QUEST_REQUIREMENTS = new String[] {};
+    SKILL_REQUIREMENTS = new int[][] {};
+    ITEM_REQUIREMENTS = new int[][] {};
     INVENTORY_SPACES_NEEDED = 21;
     doQuestChecks();
 
@@ -93,13 +94,8 @@ public final class QH_SheepShearer extends QH__QuestHandler {
             pickupUnreachableItem(MIND_RUNE_ID, MIND_RUNE_TILE, 1);
             walkPathReverse(COURTYARD_TO_LADDER);
             walkPath(COURTYARD_TO_GENERAL_STORE);
-            c.npcCommand1(c.getNearestNpcByIds(new int[] {55, 83}, false).serverIndex);
-            while (!c.isInShop() && c.isRunning()) c.sleep(640);
-            c.shopSell(MIND_RUNE_ID, 1);
-            c.sleep(640);
-            while (c.getShopItemCount(SHEARS_ID) < 1 && c.isRunning()) c.sleep(640);
-            c.shopBuy(SHEARS_ID, 1);
-            c.closeShop();
+            openShopThenSellAndBuy(
+                new int[] {55, 83}, new int[][] {{MIND_RUNE_ID, 1}}, new int[][] {{SHEARS_ID, 1}});
             walkPath(GENERAL_STORE_TO_SHEEP);
           } else {
             CURRENT_QUEST_STEP = "Walking to sheep";
@@ -138,10 +134,12 @@ public final class QH_SheepShearer extends QH__QuestHandler {
           if (c.isRunning()) {
             walkPath(COURTYARD_TO_FRED);
             followNPCDialog(FRED_ID, FRED_START_QUEST_DIALOG);
+            sleepUntilQuestStageChanges();
           }
           break;
         case 1:
           if (c.isRunning()) talkToNpcId(FRED_ID);
+          c.sleep(640);
           break;
         case -1:
           quit("quest completed");

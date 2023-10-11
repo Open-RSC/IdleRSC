@@ -44,7 +44,7 @@ public class QH__QuestHandler extends IdleScript {
       loops++;
       c.displayMessage("@yel@Starting testing loop: " + loops);
       /** Start test stuff here */
-      
+
       /** End test stuff here */
       c.displayMessage("@yel@Loops completed: " + loops);
       c.sleep(640);

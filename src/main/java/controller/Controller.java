@@ -1940,7 +1940,7 @@ public class Controller {
     return (boolean) reflector.getObjectMember(mud, "showDialogBank");
   }
 
-  /** Closes the bank window. No effect if window is not currently open. */
+  /** Closes the bank window. N o effect if window is not currently open. */
   public void closeBank() {
     reflector.setObjectMember(mud, "showDialogBank", false);
     sleep(GAME_TICK);
@@ -4265,7 +4265,7 @@ public class Controller {
     if (objectId != -1) {
       int[] coords = this.getNearestObjectById(objectId);
 
-      while (coords != null && Main.isRunning()) {
+      if (coords != null && Main.isRunning()) {
         this.atObject(coords[0], coords[1]);
         this.sleep(250);
         coords = this.getNearestObjectById(objectId);

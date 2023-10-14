@@ -47,7 +47,8 @@ public class AIOFighter extends IdleScript {
   boolean openDoors = false;
   boolean buryBones = true;
   boolean prioritizeBones = false;
-
+  private long next_attempt = -1;
+  private final long nineMinutesInMillis = 540000L;
   boolean maging = true;
   int spellId = 0;
 
@@ -90,6 +91,7 @@ public class AIOFighter extends IdleScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      next_attempt = System.currentTimeMillis() + 5000L;
       scriptStart();
     }
 
@@ -121,6 +123,17 @@ public class AIOFighter extends IdleScript {
         // 7th priority: maging
 
         c.sleep(618); // wait 1 tick
+
+        if (c.isCurrentlyWalking()) {
+          next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
+        }
+        if (System.currentTimeMillis() > next_attempt) {
+          c.log("@red@Walking to Avoid Logging!");
+          moveCharacter();
+          next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
+          long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
+          c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
+        }
 
         if (!isWithinWander(c.currentX(), c.currentY())) {
           c.setStatus("@red@Out of range! Walking back.");
@@ -305,6 +318,21 @@ public class AIOFighter extends IdleScript {
     }
   }
 
+  private static void moveCharacter() {
+    Controller c = Main.getController();
+    int x = c.currentX();
+    int y = c.currentY();
+
+    if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
+    else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
+    else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
+    else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
+
+    c.sleep(1280);
+
+    c.walkTo(x, y, 0, false);
+  }
+
   public boolean isWithinWander(int x, int y) {
     if (maxWander < 0) return true;
 
@@ -473,7 +501,7 @@ public class AIOFighter extends IdleScript {
     JTextField eatAtHpField =
         new JTextField(String.valueOf(c.getCurrentStat(c.getStatId("Hits")) / 2));
     JLabel lootTableLabel = new JLabel("Loot Table: (comma separated)");
-    JTextField lootTableField = new JTextField("381");
+    JTextField lootTableField = new JTextField("-1");
     JCheckBox openDoorsCheckbox =
         new JCheckBox("Open doors/gates? (if On, then set a max wander!)");
     JCheckBox buryBonesCheckbox =

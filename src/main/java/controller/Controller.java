@@ -1351,6 +1351,32 @@ public class Controller {
     return true;
   }
 
+  public int[][] getNearbyClosedDoors(int radius) {
+    List<int[]> doors = new ArrayList<int[]>();
+
+    for (int id : this.closedObjectDoorIds) {
+      int[] coords = this.getNearestObjectById(id);
+      if (coords != null) {
+        if (this.distance(currentX(), currentY(), coords[0], coords[1]) <= radius) {
+          doors.add(coords);
+        }
+      }
+    }
+
+    for (int id : this.closedWallDoorIds) {
+      int[] coords = this.getNearestWallObjectById(id);
+      if (coords != null) {
+        if (this.distance(currentX(), currentY(), coords[0], coords[1]) <= radius) {
+          doors.add(coords);
+        }
+      }
+    }
+
+    int[][] doorArray = new int[doors.size()][2];
+    doors.toArray(doorArray);
+    return doorArray;
+  }
+
   /**
    * Checks in the radius for a closed door
    *
@@ -3970,7 +3996,8 @@ public class Controller {
    * @param transparency -- must be between 0 and 255
    */
   public void drawBoxAlpha(int x, int y, int width, int height, int color, int transparency) {
-    mud.getSurface().drawBoxAlpha(x, y, width, height, color, transparency);
+    int clampedTransparency = Math.min(255, Math.max(0, transparency));
+    mud.getSurface().drawBoxAlpha(x, y, width, height, color, clampedTransparency);
   }
 
   /**
@@ -3998,7 +4025,8 @@ public class Controller {
    * @param dummy int
    */
   public void drawCircle(int x, int y, int radius, int color, int transparency, int dummy) {
-    mud.getSurface().drawCircle(x, y, radius, color, transparency, dummy);
+    int clampedTransparency = Math.min(255, Math.max(0, transparency));
+    mud.getSurface().drawCircle(x, y, radius, color, clampedTransparency, dummy);
   }
 
   /**
@@ -4033,10 +4061,10 @@ public class Controller {
    * @param x int
    * @param y int
    * @param color -- RGB "HTML" Color Example: 0x36E2D7
-   * @param font -- 1 or greater
+   * @param fontSize -- 1 or greater
    */
-  public void drawString(String str, int x, int y, int color, int font) {
-    mud.getSurface().drawString(str, x, y, color, font);
+  public void drawString(String str, int x, int y, int color, int fontSize) {
+    mud.getSurface().drawString(str, x, y, color, Math.max(1, fontSize));
   }
 
   /**
@@ -4051,7 +4079,7 @@ public class Controller {
    */
   public void drawShadowText(
       String text, int x, int y, int textColor, int fontSize, boolean center) {
-    mud.getSurface().drawShadowText(text, x, y, textColor, fontSize, center);
+    mud.getSurface().drawShadowText(text, x, y, textColor, Math.max(1, fontSize), center);
   }
 
   /**

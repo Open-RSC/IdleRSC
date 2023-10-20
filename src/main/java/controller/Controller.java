@@ -1353,7 +1353,7 @@ public class Controller {
 
   /**
    * Returns an int[][] of closed door coordinates
-   * 
+   *
    * @param radius int -- Radius to check for doors
    * @return int[][] -- Door coordinates
    */

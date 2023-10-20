@@ -35,12 +35,12 @@ public class QH__QuestHandler extends IdleScript {
   private List<String> MISSING_LEVELS = new ArrayList<String>();
   private List<String> MISSING_QUESTS = new ArrayList<String>();
   private List<String> MISSING_ITEMS = new ArrayList<String>();
-  private boolean IS_TESTING = false;
+  protected boolean IS_TESTING = false;
 
   /** Used for testing only */
   public void doTestLoop() {
     // DO TEST STUFF HERE!!
-    
+
   }
 
   public int start(String[] param) {

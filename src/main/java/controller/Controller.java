@@ -1351,6 +1351,12 @@ public class Controller {
     return true;
   }
 
+  /**
+   * Returns an int[][] of closed door coordinates
+   * 
+   * @param radius int -- Radius to check for doors
+   * @return int[][] -- Door coordinates
+   */
   public int[][] getNearbyClosedDoors(int radius) {
     List<int[]> doors = new ArrayList<int[]>();
 

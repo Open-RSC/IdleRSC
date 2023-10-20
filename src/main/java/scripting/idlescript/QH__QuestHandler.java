@@ -1,17 +1,20 @@
 package scripting.idlescript;
 
 import bot.Main;
+import controller.BotController;
 import controller.Controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import models.entities.ItemId;
+import models.entities.MapPoint;
 import models.entities.QuestId;
 import models.entities.SkillId;
 import orsc.ORSCharacter;
 
 public class QH__QuestHandler extends IdleScript {
   protected static final Controller c = Main.getController();
+  private static final BotController bc = new BotController(c);
 
   // QUEST START COORDINATES AND DESCRIPTIONS
   protected int[][] LUMBRIDGE_CASTLE_COURTYARD = {{120, 650}, {128, 665}};
@@ -34,7 +37,12 @@ public class QH__QuestHandler extends IdleScript {
   private List<String> MISSING_ITEMS = new ArrayList<String>();
   private boolean IS_TESTING = false;
 
-  /** Used for testing */
+  /** Used for testing only */
+  public void doTestLoop() {
+    // DO TEST STUFF HERE!!
+    
+  }
+
   public int start(String[] param) {
     QUEST_NAME = "Quest Handler";
     CURRENT_QUEST_STEP = "This is only ran for testing.";
@@ -43,9 +51,7 @@ public class QH__QuestHandler extends IdleScript {
     while (c.isRunning() && IS_TESTING) {
       loops++;
       c.displayMessage("@yel@Starting testing loop: " + loops);
-      /** Start test stuff here */
-
-      /** End test stuff here */
+      doTestLoop();
       c.displayMessage("@yel@Loops completed: " + loops);
       c.sleep(640);
     }
@@ -62,7 +68,7 @@ public class QH__QuestHandler extends IdleScript {
     QUEST_ID = QuestId.getByName(QUEST_NAME).getId();
     QUEST_STAGE = c.getQuestStage(QUEST_ID);
     START_DESCRIPTION = getStartDescription();
-    if (QUEST_STAGE == -1) {
+    if (QUEST_STAGE == -1 && !IS_TESTING) {
       quit("Quest already complete");
     } else {
       requiredQuestsCheck();
@@ -80,9 +86,10 @@ public class QH__QuestHandler extends IdleScript {
       }
     }
   }
-  /** Checks if the player has the required starting items for the quest */
-  // CURRENTLY ONLY CHECKS INVENTORY ITEMS. WILL NEED TO BE EXPANDED LATER TO
-  // CHECK BANKS FOR MORE COMPLEX QUESTS
+  /* Checks if the player has the required starting items for the quest
+   * CURRENTLY ONLY CHECKS INVENTORY ITEMS. WILL NEED TO BE EXPANDED LATER TO
+   * CHECK BANKS FOR MORE COMPLEX QUESTS
+   */
   private void requiredStartItemsCheck() {
     MISSING_ITEMS = new ArrayList<String>();
     for (int[] item : ITEM_REQUIREMENTS) {
@@ -104,14 +111,14 @@ public class QH__QuestHandler extends IdleScript {
     }
   }
 
-  /** Checks if the player has the required levels for the quest. */
+  /* Checks if the player has the required levels for the quest. */
   private void requiredLevelsCheck() {
     MISSING_LEVELS = new ArrayList<String>();
-    for (int i = 0; i < SKILL_REQUIREMENTS.length; i++) {
-      String skillName = String.valueOf(SkillId.getById(SKILL_REQUIREMENTS[i][0])).toLowerCase();
+    for (int[] skill : SKILL_REQUIREMENTS) {
+      String skillName = String.valueOf(SkillId.getById(skill[0])).toLowerCase();
       skillName = skillName.substring(0, 1).toUpperCase() + skillName.substring(1);
+      int skillLevel = skill[1];
 
-      int skillLevel = SKILL_REQUIREMENTS[i][1];
       if (!hasSkillLevel(skillName, skillLevel)) {
         String missingString = String.format("@red@- %s %s", skillName, skillLevel);
         MISSING_LEVELS.add(missingString);
@@ -124,17 +131,14 @@ public class QH__QuestHandler extends IdleScript {
     }
   }
 
-  /** Checks if the player has the required quests for the quest */
+  /* Checks if the player has the required quests for the quest */
   private void requiredQuestsCheck() {
     MISSING_QUESTS = new ArrayList<String>();
-    if (QUEST_REQUIREMENTS.length > 0) {
-      for (int i = 0; i < QUEST_REQUIREMENTS.length; i++) {
-        String questName = QUEST_REQUIREMENTS[i];
-        int id = QuestId.getByName(QUEST_REQUIREMENTS[i]).getId();
-        if (c.getQuestStage(id) != -1) {
-          String missingString = String.format("@red@- %s", questName);
-          MISSING_QUESTS.add(missingString);
-        }
+    for (String quest : QUEST_REQUIREMENTS) {
+      int id = QuestId.getByName(quest).getId();
+      if (c.getQuestStage(id) != -1) {
+        String missingString = String.format("@red@- %s", quest);
+        MISSING_QUESTS.add(missingString);
       }
     }
     if (MISSING_QUESTS.size() > 0) {
@@ -371,25 +375,6 @@ public class QH__QuestHandler extends IdleScript {
     }
   }
 
-  public void openShopThenBuyAndSellItems(
-      int[] npcIds, int sellId, int sellAmount, int buyId, int buyAmount) {
-    if (c.isRunning()) {
-      int startingItemCount = c.getInventoryItemCount(buyId);
-
-      c.npcCommand1(c.getNearestNpcByIds(npcIds, false).serverIndex);
-      c.sleep(1280);
-      while (!c.isInShop() && c.isRunning()) c.sleep(640);
-      c.shopSell(sellId, sellAmount);
-      c.sleep(1280);
-      while (c.getInventoryItemCount(buyId) < startingItemCount + buyAmount && c.isRunning()) {
-        while (c.getShopItemCount(buyId) < 1 && c.isRunning()) c.sleep(640);
-        c.shopBuy(buyId, buyAmount - (c.getInventoryItemCount(buyId) - startingItemCount));
-        c.sleep(1280);
-      }
-      c.closeShop();
-      while (c.isInShop() && c.isRunning()) c.sleep(640);
-    }
-  }
   /**
    * Walks to specified tile and picks up an item id from an unreachable tile. Keeps retrying every
    * 2 ticks until the specified amount is picked up.
@@ -407,7 +392,7 @@ public class QH__QuestHandler extends IdleScript {
       while (c.getInventoryItemCount(newId) < itemStartCount + amount && c.isRunning()) {
         int[] item = c.getNearestItemById(itemId);
         if (item != null) {
-          if (distanceFrom(standTile) > 1) {
+          if (distanceFromTile(standTile) > 1) {
             int[][] path = {standTile};
             walkPath(path);
           }
@@ -434,7 +419,7 @@ public class QH__QuestHandler extends IdleScript {
       while (c.getInventoryItemCount(newId) < itemStartCount + amount && c.isRunning()) {
         int[] item = c.getNearestItemById(itemId);
         if (item != null) {
-          if (distanceFrom(item) > 1) {
+          if (distanceFromTile(item) > 1) {
             int[][] path = {item};
             walkPath(path);
           }
@@ -558,6 +543,45 @@ public class QH__QuestHandler extends IdleScript {
     int oldStage = QUEST_STAGE;
     while (c.getQuestStage(QUEST_ID) == oldStage && c.isRunning()) c.sleep(640);
   }
+
+  /**
+   * Uses PathWalkerApi to walk to a tile
+   *
+   * @param mapPoint MapPoint -- Coordinates of the tile to walk to
+   */
+  public void pathWalker(MapPoint mapPoint) {
+    while (distanceFromTile(mapPoint) > 0 && c.isRunning()) {
+      c.openNearbyDoor(1);
+      bc.pathWalkerApi.walkTo(mapPoint);
+    }
+  }
+  /**
+   * Uses PathWalkerApi to walk to a tile
+   *
+   * @param coords int[] -- Coordinates of the tile to walk to
+   */
+  public void pathWalker(int[] coords) {
+    MapPoint mapPoint = new MapPoint(coords[0], coords[1]);
+    while (distanceFromTile(mapPoint) > 0 && c.isRunning()) {
+      c.openNearbyDoor(1);
+      bc.pathWalkerApi.walkTo(mapPoint);
+    }
+  }
+
+  /**
+   * Uses PathWalkerApi to walk to a tile
+   *
+   * @param x int -- X coordinate of the tile to walk to
+   * @param y int -- Y coordinate of the tile to walk to
+   */
+  public void pathWalker(int x, int y) {
+    MapPoint mapPoint = new MapPoint(x, y);
+    while (distanceFromTile(mapPoint) > 0 && c.isRunning()) {
+      c.openNearbyDoor(1);
+      bc.pathWalkerApi.walkTo(mapPoint);
+    }
+  }
+
   /**
    * Follows a given path while checking for and opening closed doors next to given tiles.
    *
@@ -623,8 +647,57 @@ public class QH__QuestHandler extends IdleScript {
    * @param coords int[] -- Coordinates to specified tile
    * @return boolean -- Returns the distance from the tile
    */
-  public int distanceFrom(int[] coords) {
+  public int distanceFromTile(int[] coords) {
     return c.distance(c.currentX(), c.currentY(), coords[0], coords[1]);
+  }
+
+  /**
+   * Returns the distance the player is from the specified Map Point
+   *
+   * @param mapPoint MapPoint -- MapPoint to check
+   * @return int -- Returns the distance from the MapPoint
+   */
+  public int distanceFromTile(MapPoint mapPoint) {
+    MapPoint current = new MapPoint(c.currentX(), c.currentY());
+    return MapPoint.distance(current, mapPoint);
+  }
+
+  /**
+   * Climbs a ladder or stairs and sleeps until you are moved to the destination
+   *
+   * @param coords int[] -- Coordinates of climbable object
+   */
+  public void climb(int[] coords) {
+    c.log("Entered climb");
+    while (c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(String.format("Attempting to climb ladder or stairs at (%s,%s)", coords[0], coords[1]));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      c.atObject(coords[0], coords[1]);
+      c.sleep(640);
+    }
+    c.log("Successfully climbed");
+  }
+
+  /**
+   * Climbs a ladder or stairs and sleeps until you are moved to the destination
+   *
+   * @param x int -- X coordinate of climbable object
+   * @param y int -- Y coordinate of climbable object
+   */
+  public void climb(int x, int y) {
+    if (c.isRunning()) {
+      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      int startX = c.currentX();
+      int startY = c.currentY();
+      c.log(String.format("Attempting to climb object at (%s,%s)", x, y));
+      while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+        c.atObject(x, y);
+        c.sleep(640);
+      }
+      c.log("Successfully climbed");
+    }
   }
 
   /**
@@ -639,7 +712,7 @@ public class QH__QuestHandler extends IdleScript {
     for (int i = 0; i < coords.length; i++) {
       int[] coord = coords[i];
       // returns if the item is not found nearby
-      if (distanceFrom(coord) > maxDistance) quit("Object not found");
+      if (distanceFromTile(coord) > maxDistance) quit("Object not found");
       while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
       // Walks to and performs atObject at the current coords
       if (c.isRunning()) {
@@ -649,7 +722,7 @@ public class QH__QuestHandler extends IdleScript {
         if (i + 1 < coords.length) {
           // If the player is not within maxDistance of the next object sleep for up to 20 ticks
           for (int j = 0; j < 5; j++) {
-            if (distanceFrom(coords[i + 1]) > maxDistance && c.isRunning()) {
+            if (distanceFromTile(coords[i + 1]) > maxDistance && c.isRunning()) {
               c.atObject(coord[0], coord[1]);
               c.sleep(2560);
             } else {
@@ -676,21 +749,16 @@ public class QH__QuestHandler extends IdleScript {
         break;
       case "missing levels":
         c.displayMessage("@red@You are missing the following levels for this quest:");
-        for (int i = 0; i < MISSING_LEVELS.size(); i++) {
-          c.displayMessage(MISSING_LEVELS.get(i));
-        }
+        for (String item : MISSING_LEVELS) c.displayMessage(item);
         break;
       case "missing quests":
         c.displayMessage("@red@This quest requires you to complete the following quests first:");
-        for (int i = 0; i < MISSING_QUESTS.size(); i++) {
-          c.displayMessage(MISSING_QUESTS.get(i));
-        }
+
+        for (String item : MISSING_QUESTS) c.displayMessage(item);
         break;
       case "missing items":
         c.displayMessage("@red@You need the following items in your inventory:");
-        for (int i = 0; i < MISSING_ITEMS.size(); i++) {
-          c.displayMessage(MISSING_ITEMS.get(i));
-        }
+        for (String item : MISSING_ITEMS) c.displayMessage(item);
         break;
       case "not enough empty inventory spaces":
         quitMessage =
@@ -779,15 +847,21 @@ public class QH__QuestHandler extends IdleScript {
    * Draws a centered drawString.
    *
    * @param str String -- Text to be drawn
-   * @param widthOfPaintArea int -- The width of your the area you want your string centered in.
+   * @param widthOfPaintArea int -- The width of the area you want your string centered in.
    * @param y int -- Distance from the top of the screen to draw the string
    * @param leftPadding int -- The padding for the left side of the paint
    * @param color int -- RGB "HTML" Color Example: 0x36E2D7
-   * @param font int -- Font size. Greater than 1
+   * @param fontSize int -- Font size. 1 or greater
    */
   private void drawCenteredString(
-      String str, int widthOfPaintArea, int y, int leftPadding, int color, int font) {
-    c.drawString(str, spacingFromLength(str, widthOfPaintArea) + (leftPadding * 2), y, color, font);
+      String str, int widthOfPaintArea, int y, int leftPadding, int color, int fontSize) {
+    int adjustedFontSize = Math.max(1, fontSize);
+    c.drawString(
+        str,
+        spacingFromLength(str, widthOfPaintArea) + (leftPadding * 2),
+        y,
+        color,
+        adjustedFontSize);
   }
 
   /**
@@ -895,6 +969,7 @@ public class QH__QuestHandler extends IdleScript {
         }
       }
       c.drawBoxBorder(left, top, paintWidth, paintHeight, borderColor);
+      // Used to check if the paint text is centered
       /* if (IS_TESTING) c.drawLineVert((paintWidth / 2) + left, top, paintHeight, borderColor); */
     }
   }

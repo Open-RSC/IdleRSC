@@ -302,7 +302,7 @@ public class SmithingVarrock extends IdleScript {
       controller.drawString("@red@Smithing Varrock", 10, 21, 0xFFFFFF, 1);
       controller.drawString("@gre@by Searos, fixed by Kaila", 10, 21 + 14, 0xFFFFFF, 1);
       controller.drawString(
-          "@red@Items Smithed: @yel@" + this.totalSmithed, 10, 21 + 14 + 14, 0xFFFFFF, 1);
+          "@red@Bars Smithed: @yel@" + this.totalSmithed, 10, 21 + 14 + 14, 0xFFFFFF, 1);
     }
   }
 }

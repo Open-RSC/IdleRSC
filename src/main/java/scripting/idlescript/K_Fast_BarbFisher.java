@@ -65,6 +65,9 @@ public final class K_Fast_BarbFisher extends K_kailaScript {
       c.atObject(spot[0], spot[1]);
       c.sleep(2000);
       waitForBatching();
+      if (c.isCurrentlyWalking()) {
+        next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
+      }
       if (System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
         c.walkTo(c.currentX() + 1, c.currentY(), 0, true);

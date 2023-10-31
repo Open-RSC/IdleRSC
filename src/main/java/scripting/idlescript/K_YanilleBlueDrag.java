@@ -365,10 +365,10 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     for (int i = 1; i <= 20; i++) {
       if (c.currentY() < 3000) {
         c.setStatus("@red@entering enclave.."); // may have died here
-        if (c.isInCombat()) leaveCombat();
+        if (c.isInCombat() && c.currentY() > 3000) leaveCombat();
         ORSCharacter npc3 = c.getNearestNpcById(684, true);
         c.useItemOnNpc(npc3.serverIndex, NIGHTSHADE);
-        c.sleep(8000);
+        c.sleep(14000);
       } else {
         break;
       }

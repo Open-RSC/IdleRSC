@@ -635,10 +635,10 @@ public class K_kailaScript extends IdleScript {
    * walks to current tile (async non-blocking) radius 1. <br>
    */
   protected static void leaveCombat() {
-    for (int i = 0; i <= 6; i++) {
+    for (int i = 0; i <= 10; i++) {
       if (c.isInCombat()) {
         c.setStatus("@red@Leaving combat..");
-        c.walkToAsync(c.currentX(), c.currentY(), 1);
+        c.walkToAsync(c.currentX(), c.currentY(), 0);
         c.sleep(GAME_TICK);
       } else {
         return;

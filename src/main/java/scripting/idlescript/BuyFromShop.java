@@ -149,10 +149,10 @@ public class BuyFromShop extends K_kailaScript {
       int x = c.currentX();
       int y = c.currentY();
 
-      if (c.isReachable(x + 1, y, true)) c.walkTo(x + 1, y, 0, false);
-      else if (c.isReachable(x - 1, y, true)) c.walkTo(x - 1, y, 0, false);
-      else if (c.isReachable(x, y + 1, true)) c.walkTo(x, y + 1, 0, false);
-      else if (c.isReachable(x, y - 1, true)) c.walkTo(x, y - 1, 0, false);
+      if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
+      else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
+      else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
+      else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
       c.sleep(GAME_TICK);
       next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
       long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;

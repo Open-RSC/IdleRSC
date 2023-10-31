@@ -14,7 +14,7 @@ public class MiningGuild extends IdleScript {
   private static final JCheckBox mithrilCheck = new JCheckBox("Mine Mithril", true);
   private static final JCheckBox coalCheck = new JCheckBox("Mine Coal", true);
 
-  private static final int[] rockIDs = {210, 109, 107, 110, 98};
+  private static final int[] rockIDs = {210, 109, 107, 110, 98, 111};
   private static final int[] oreIDs = {409, 154, 153, 155};
   private static final int[] gemIDs = {157, 158, 159, 160};
   private static final int[] banked = {0, 0, 0, 0};
@@ -143,7 +143,7 @@ public class MiningGuild extends IdleScript {
         currentOre[1] = oreCoords[1];
       }
     } else if (Objects.equals(i, "coal")) {
-      int[] oreCoords = controller.getNearestObjectById(rockIDs[3]);
+      int[] oreCoords = controller.getNearestObjectByIds(new int[] {rockIDs[3], rockIDs[5]});
       if (oreCoords != null && oreCoords[1] > 3383) {
         isMining = "coal";
         controller.atObject(oreCoords[0], oreCoords[1]);

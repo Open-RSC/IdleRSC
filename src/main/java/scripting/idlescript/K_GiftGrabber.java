@@ -27,6 +27,9 @@ bot gets stuck too far north in draynor (add exception)
  */
 
 public final class K_GiftGrabber extends K_kailaScript {
+  private final int[] pos = {
+    211, 611, 610, 653, 185, 502, 88, 549, 444, 477
+  }; // remove pos 0 and pos 1
   private int totalCrackers = 0;
   private int CrackersInBank = 0;
   private int location = 0; // 0 is draynor
@@ -49,10 +52,14 @@ public final class K_GiftGrabber extends K_kailaScript {
       scriptStarted = false;
       c.displayMessage("@red@Cracker Picker - By Kaila");
       if (c.isInBank()) c.closeBank();
-      //      if (c.currentY() < 1000 && c.currentX() < 245) {
-      //        bank();
-      //        bankToDray();
-      //        c.sleep(1380);
+      //      Random rand = new Random();
+      //      int offsetX = rand.nextInt(9) - 4; // offset by +/- 4
+      //      int offsetY = rand.nextInt(9) - 4;
+      //      for (int i = 0; i < pos.length / 2; i = i + 2) {
+      //        if ((i + 1) < pos.length) { // null safer
+      //          pos[i] = pos[i] + offsetX;
+      //          pos[i + 1] = pos[i + 1] + offsetY;
+      //        }
       //      }
       scriptStart();
     }
@@ -70,26 +77,43 @@ public final class K_GiftGrabber extends K_kailaScript {
       } else { // change to a for:each loop or something.
 
         int timeInMins = Calendar.getInstance().get(Calendar.MINUTE);
-        //c.log(String.valueOf(timeInMins));
+        // c.log(String.valueOf(timeInMins));
         if (c.getInventoryItemCount(H_CRACKER) > 0
             && (timeInMins > waveTime + 10 || timeInMins < waveTime - 10)) {
 
           goToBank();
         }
-        if (location == 0 && c.currentX() != 210 && c.currentY() != 653) {
+        // check if > 40 tiles away for all?
+        if (location == 0 && c.currentX() != pos[2] && c.currentY() != pos[3]) {
           if (c.currentY() < 610) { // walk south if too far north
-            c.walkTo(211, 611); // check if > 40 tiles away for all
+            if (c.currentX() < 180) { // northeast near cow field
+              c.walkTo(179, 593);
+              c.walkTo(193, 593);
+            }
+            c.walkTo(211, 611); // if near mansion
+          } else if (c.currentX() < 177 && c.currentY() > 668) { // in dray swamp
+            c.walkTo(178, 667);
+            // north of swamp but far east
+          } else if (c.currentX() < 177 && c.currentY() < 668 && c.currentY() > 610) {
+            if (c.currentX() < 145) { // near castle, walk west
+              c.walkTo(157, 650);
+            }
+            c.walkTo(178, 647);
           }
-          c.walkTo(210, 653);
+          c.walkTo(pos[2], pos[3]);
           c.sleep(GAME_TICK);
-        } else if (location == 1 && c.currentX() != 185 && c.currentY() != 502) {
-          c.walkTo(185, 502);
+        } else if (location == 1 && c.currentX() != pos[4] && c.currentY() != pos[5]) { // var west
+          if (c.currentX()
+              > 207) { // west of spot in barb village (seems to be the only stuck spot)
+            c.walkTo(207, 512);
+          }
+          c.walkTo(pos[4], pos[5]);
           c.sleep(GAME_TICK);
-        } else if (location == 2 && c.currentX() != 88 && c.currentY() != 549) {
-          c.walkTo(88, 549);
+        } else if (location == 2 && c.currentX() != pos[6] && c.currentY() != pos[7]) {
+          c.walkTo(pos[6], pos[7]);
           c.sleep(GAME_TICK);
-        } else if (location == 3 && c.currentX() != 444 && c.currentY() != 477) {
-          c.walkTo(444, 477);
+        } else if (location == 3 && c.currentX() != pos[8] && c.currentY() != pos[9]) {
+          c.walkTo(pos[8], pos[9]);
           c.sleep(GAME_TICK);
         } else {
           c.sleep(5 * GAME_TICK);

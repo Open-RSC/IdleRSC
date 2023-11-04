@@ -48,12 +48,6 @@ public final class K_GiftTaker extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      c.openBank();
-      c.sleep(1240);
-      if (!c.isInBank()) {
-        c.openBank();
-        c.sleep(2 * GAME_TICK);
-      }
       if (c.isInBank()) {
         if (c.getInventoryItemCount() < 20) {
           c.sleep(100);
@@ -61,7 +55,10 @@ public final class K_GiftTaker extends K_kailaScript {
         if (c.getInventoryItemCount() > 19) {
           depositAll();
         }
-        c.closeBank();
+        // c.closeBank();
+      } else if (!c.isInBank()) {
+        c.openBank();
+        c.sleep(2 * GAME_TICK);
       }
     }
   }

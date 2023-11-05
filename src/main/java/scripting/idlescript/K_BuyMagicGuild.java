@@ -19,8 +19,8 @@ public class K_BuyMagicGuild extends K_kailaScript {
     ItemId.EARTH_RUNE.getId(),
     ItemId.WATER_RUNE.getId(),
     ItemId.FIRE_RUNE.getId(),
-    ItemId.SOUL_RUNE.getId()
   };
+  private int soulId = ItemId.SOUL_RUNE.getId();
   private int bStaff = ItemId.BATTLESTAFF.getId();
   private int shopkeeperId = 514;
   private int option = -1;
@@ -38,6 +38,9 @@ public class K_BuyMagicGuild extends K_kailaScript {
    * Parameters in this context can be from CLI parsing or in the script options parameters text box
    *
    * @param parameters an array of String values representing the parameters passed to the function
+   */
+  /*
+   * todo: add a "buy to 0" option, way more expensive so not a priority, only helps when crashed
    */
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].isEmpty()) {
@@ -96,39 +99,45 @@ public class K_BuyMagicGuild extends K_kailaScript {
 
           if (c.getInventoryItemCount() < 30) {
             if (option == 2) { // only runes
-              if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 0
-                  || c.getShopItemCount(runeIds[1]) > 0
-                  || c.getShopItemCount(runeIds[2]) > 0
-                  || c.getShopItemCount(runeIds[3]) > 0) {
-                for (int runeId : runeIds) {
-                  c.shopBuy(runeId, c.getShopItemCount(runeId));
-                  c.sleep(250);
-                }
-              } else {
-                c.sleep(250);
+              if (c.getShopItemCount(soulId) == 30) {
+                c.shopBuy(soulId, 1); // only buy 1 at a time
+                c.sleep(100);
               }
+              if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 0
+                  || c.getShopItemCount(runeIds[1]) > 20
+                  || c.getShopItemCount(runeIds[2]) > 20
+                  || c.getShopItemCount(runeIds[3]) > 20) {
+                for (int runeId : runeIds) {
+                  c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
+                  c.sleep(100);
+                }
+              } else c.sleep(200);
             } else if (option == 1) { // only staffs
-              if (c.isInShop() && c.getShopItemCount(bStaff) > 0) {
-                c.shopBuy(bStaff, c.getShopItemCount(bStaff));
-                c.sleep(250);
+              if (c.isInShop() && c.getShopItemCount(bStaff) == 5) {
+                c.shopBuy(bStaff, 1); // c.getShopItemCount(bStaff)
+                c.sleep(100);
               } else {
-                c.sleep(250);
+                c.sleep(200);
               }
             } else if (option == 0) { // runes then staffs
-              if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 0
-                  || c.getShopItemCount(runeIds[1]) > 0
-                  || c.getShopItemCount(runeIds[2]) > 0
-                  || c.getShopItemCount(runeIds[3]) > 0) {
+              if (c.getShopItemCount(soulId) == 30) {
+                c.shopBuy(soulId, 1); // only buy 1 at a time
+                c.sleep(100);
+              }
+              if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 20
+                  || c.getShopItemCount(runeIds[1]) > 20
+                  || c.getShopItemCount(runeIds[2]) > 20
+                  || c.getShopItemCount(runeIds[3]) > 20) {
                 for (int runeId : runeIds) {
-                  c.shopBuy(runeId, c.getShopItemCount(runeId));
-                  c.sleep(250);
+                  c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
+                  c.sleep(100);
                 }
               }
-              if (c.isInShop() && c.getShopItemCount(bStaff) > 0) {
-                c.shopBuy(bStaff, c.getShopItemCount(bStaff));
-                c.sleep(250);
+              if (c.isInShop() && c.getShopItemCount(bStaff) == 5) {
+                c.shopBuy(bStaff, 1);
+                c.sleep(100);
               } else {
-                c.sleep(250);
+                c.sleep(200);
               }
             }
             checkAutowalk();
@@ -196,7 +205,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
 
   private void magicGuildDoorExit() {
     for (int i = 1; i <= 200; i++) {
-      if (c.currentX() > 598) {
+      if (c.currentX() > 598 && c.currentX() < 601) {
         c.setStatus("@red@Crossing guild Gate..");
         c.atWallObject(599, 757); // gate won't break if someone else opens it
         c.sleep(4 * GAME_TICK);
@@ -208,7 +217,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
 
   private void magicGuildDoorEnter() {
     for (int i = 1; i <= 200; i++) {
-      if (c.currentX() < 599) {
+      if (c.currentX() < 599 && c.currentX() > 596) {
         c.setStatus("@red@Crossing guild Gate..");
         c.atWallObject(599, 757); // gate won't break if someone else opens it
         c.sleep(4 * GAME_TICK);
@@ -220,7 +229,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
 
   private void goUpStairs() {
     for (int i = 1; i <= 200; i++) {
-      if (c.currentY() < 1500) {
+      if (c.currentY() < 1500 && c.currentX() > 598) {
         c.setStatus("@red@Crossing guild Gate..");
         c.atObject(602, 756); // gate won't break if someone else opens it
         c.sleep(4 * GAME_TICK);
@@ -256,7 +265,6 @@ public class K_BuyMagicGuild extends K_kailaScript {
     } else {
       c.walkTo(602, 1699);
       goDownStairs();
-      c.sleep(2000);
       c.walkTo(599, 757);
       magicGuildDoorExit();
       c.walkTo(591, 749);
@@ -276,8 +284,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
     magicGuildDoorEnter();
     c.walkTo(602, 759);
     goUpStairs();
-    c.walkTo(602, 1699);
-    c.sleep(2000);
+    c.walkTo(600, 1702);
     c.setStatus("@red@Done Walking..");
   }
 

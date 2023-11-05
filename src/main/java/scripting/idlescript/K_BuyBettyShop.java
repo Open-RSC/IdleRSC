@@ -12,7 +12,7 @@ import orsc.ORSCharacter;
  *
  * @author Kaila
  */
-public class K_Buy_BettyBuyer extends K_kailaScript {
+public class K_BuyBettyShop extends K_kailaScript {
   private final String[] options = new String[] {"Runes then Newts", "Newts", "Elemental Runes"};
   private final int[] runeIds = {
     ItemId.AIR_RUNE.getId(),

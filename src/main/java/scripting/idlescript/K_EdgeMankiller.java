@@ -6,7 +6,7 @@ import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
- * <b>Edgeville Skeletons (in wilderness) </b>
+ * <b>Edge Man Killer</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Reg pots, Alter Prayer Boost, Food Type, and Food
  * Withdraw Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option,
@@ -15,7 +15,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Edge_Skeletons extends K_kailaScript {
+public final class K_EdgeMankiller extends K_kailaScript {
   private int fightMode = 0;
   private static final int[] loot = {
     ItemId.UNID_GUAM_LEAF.getId(),
@@ -28,22 +28,12 @@ public final class K_Edge_Skeletons extends K_kailaScript {
     ItemId.UNID_KWUARM.getId(),
     ItemId.UNID_CADANTINE.getId(),
     ItemId.UNID_DWARF_WEED.getId(),
-    ItemId.NATURE_RUNE.getId(), // nature rune
-    ItemId.LAW_RUNE.getId(), // law rune
+    ItemId.MIND_RUNE.getId(), // mind rune
     ItemId.CHAOS_RUNE.getId(), // chaos rune
-    ItemId.AIR_RUNE.getId(), // air rune
-    ItemId.EARTH_RUNE.getId(), // earth runF
-    ItemId.FIRE_RUNE.getId(),
-    ItemId.WATER_RUNE.getId(),
-    ItemId.BRONZE_ARROWS.getId(),
-    ItemId.UNCUT_SAPPHIRE.getId(),
-    ItemId.UNCUT_EMERALD.getId(),
-    ItemId.UNCUT_RUBY.getId(),
-    ItemId.UNCUT_DIAMOND.getId(),
-    ItemId.TOOTH_HALF_KEY.getId(),
-    ItemId.LOOP_HALF_KEY.getId(),
-    ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
-    ItemId.RUNE_SPEAR.getId(),
+    ItemId.EARTH_RUNE.getId(), // Earth rune
+    ItemId.FIRE_RUNE.getId(), // fire rune
+    ItemId.COINS.getId(), // coins
+    ItemId.BRONZE_ARROWS.getId() // Bronze arrow
   };
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -53,9 +43,9 @@ public final class K_Edge_Skeletons extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    centerX = 229;
-    centerY = 407;
-    centerDistance = 18;
+    centerX = 213;
+    centerY = 442;
+    centerDistance = 9;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = ItemId.SHARK.getId();
       foodName = "Shark";
@@ -78,7 +68,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Edge Skeletons ~ Kaila");
+      c.displayMessage("@red@Edge Man Killer ~ Kaila");
       c.displayMessage("@red@Start in Edge bank with Armor");
 
       if (c.isInBank()) c.closeBank();
@@ -89,7 +79,6 @@ public final class K_Edge_Skeletons extends K_kailaScript {
       }
       scriptStart();
     }
-
     return 1000; // start() must return an int value now.
   }
 
@@ -103,12 +92,12 @@ public final class K_Edge_Skeletons extends K_kailaScript {
       if (lootBones) lootItem(false, ItemId.BONES.getId());
       if (buryBones) buryBones(false);
       checkFightMode(fightMode);
-      checkInventoryItemCounts();
       if (!c.isInCombat()) {
-        ORSCharacter npc = c.getNearestNpcById(46, false);
+        ORSCharacter npc = c.getNearestNpcById(11, false);
         if (npc != null) {
           c.setStatus("@yel@Attacking..");
           c.attackNpc(npc.serverIndex);
+          checkInventoryItemCounts();
           c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
       } else c.sleep(GAME_TICK);
@@ -186,31 +175,24 @@ public final class K_Edge_Skeletons extends K_kailaScript {
   }
 
   private void bankToHouse() {
-    c.setStatus("@gre@Walking to Edge Skeletons..");
-    c.walkTo(217, 448); // inside bank door
-    openDoorObjects(64, 217, 447); // open bank door
-    c.walkTo(220, 444);
-    c.walkTo(220, 430);
-    c.walkTo(220, 422);
-    c.walkTo(227, 416);
-    c.walkTo(229, 407); // 229,407
+    c.setStatus("@gre@Walking to Edge House..");
+    c.walkTo(217, 447);
+    c.walkTo(209, 446);
+    c.walkTo(209, 443);
     c.setStatus("@gre@Done Walking..");
   }
 
   private void houseToBank() {
     c.setStatus("@gre@Walking to Edge Bank..");
-    c.walkTo(227, 416);
-    c.walkTo(220, 422);
-    c.walkTo(220, 430);
-    c.walkTo(220, 444);
-    c.walkTo(217, 447); // outside bank door
-    openDoorObjects(64, 217, 447); // open bank door
+    c.walkTo(209, 443);
+    c.walkTo(209, 446);
+    c.walkTo(217, 447);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 
   private void setupGUI() {
-    JLabel header = new JLabel("Edge Skeletons ~ by Kaila");
+    JLabel header = new JLabel("Edge Mankiller ~ by Kaila");
     JLabel label1 = new JLabel("Start in Edge House or Edge Bank");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label3 = new JLabel("::bank ::potup ::lootbones ::burybones");
@@ -349,6 +331,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
+
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -380,18 +363,19 @@ public final class K_Edge_Skeletons extends K_kailaScript {
         kwuSuccessPerHr = (int) ((totalKwuarm + inventKwuarm) * scale);
         cadaSuccessPerHr = (int) ((totalCada + inventCada) * scale);
         dwarSuccessPerHr = (int) ((totalDwarf + inventDwarf) * scale);
-        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
-        runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
+        herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
+        runeSuccessPerHr = (int) (totalRunes * scale);
         boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
+
       } catch (Exception e) {
         // divide by zero
       }
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Edge Skeletons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Edge Mankiller @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Guam: @gre@"
@@ -464,7 +448,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Total Herbs: @gre@"
+          "@whi@Total herbs: @gre@"
               + (totalHerbs + inventHerbs)
               + "@yel@ (@whi@"
               + String.format("%,d", herbSuccessPerHr)
@@ -475,7 +459,7 @@ public final class K_Edge_Skeletons extends K_kailaScript {
           1);
       c.drawString(
           "@whi@Total Runes: @gre@"
-              + totalRunes
+              + (totalRunes + inventRunes)
               + "@yel@ (@whi@"
               + String.format("%,d", runeSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",

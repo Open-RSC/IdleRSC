@@ -19,7 +19,7 @@ import orsc.ORSCharacter;
  *       todo
  *        Door support to prevent trapping. Not a hurry.
  */
-public final class K_Tav_DruidTown extends K_kailaScript {
+public final class K_TavDruidTown extends K_kailaScript {
   private int fightMode = 0;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),

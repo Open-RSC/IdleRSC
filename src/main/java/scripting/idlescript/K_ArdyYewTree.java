@@ -19,7 +19,7 @@ import models.entities.ItemId;
  * todo:
  *   logic to cut same tree as other players.
  */
-public final class K_Ardy_YewTree extends K_kailaScript {
+public final class K_ArdyYewTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
   private static final int[] axeId = {

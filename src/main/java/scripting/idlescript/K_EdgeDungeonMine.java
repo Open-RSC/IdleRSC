@@ -17,7 +17,7 @@ import javax.swing.JLabel;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Edge_DungeonMine extends K_kailaScript {
+public final class K_EdgeDungeonMine extends K_kailaScript {
   private static String isMining = "none";
   private static final int[] currentOre = {0, 0};
   private static final int[] addyIDs = {108, 231, 109};

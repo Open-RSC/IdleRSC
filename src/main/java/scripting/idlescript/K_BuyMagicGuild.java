@@ -12,7 +12,7 @@ import orsc.ORSCharacter;
  *
  * @author Kaila
  */
-public class K_Buy_MagicGuild extends K_kailaScript {
+public class K_BuyMagicGuild extends K_kailaScript {
   private final String[] options = new String[] {"Runes then Battlestaff", "Battlestaff", "Runes"};
   private final int[] runeIds = {
     ItemId.AIR_RUNE.getId(),

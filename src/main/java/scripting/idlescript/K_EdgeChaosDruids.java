@@ -24,7 +24,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Edge_ChaosDruids extends K_kailaScript {
+public final class K_EdgeChaosDruids extends K_kailaScript {
   private int fightMode = 0;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),

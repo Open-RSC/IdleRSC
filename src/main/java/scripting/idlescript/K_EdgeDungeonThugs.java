@@ -15,7 +15,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Edge_DungeonThugs extends K_kailaScript {
+public final class K_EdgeDungeonThugs extends K_kailaScript {
   private int fightMode = 0;
   private static final int[] loot = {
     ItemId.UNID_GUAM_LEAF.getId(),

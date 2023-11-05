@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Fast_ChainMaker extends K_kailaScript {
+public final class K_FastChainMaker extends K_kailaScript {
   private static int totalBars = 0;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes

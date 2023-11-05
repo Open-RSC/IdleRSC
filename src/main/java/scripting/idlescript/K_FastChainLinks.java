@@ -13,7 +13,7 @@ import javax.swing.JLabel;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Fast_ChainLinks extends K_kailaScript {
+public final class K_FastChainLinks extends K_kailaScript {
   private static int barsInBank = 0;
   private static int totalBars = 0;
   /**

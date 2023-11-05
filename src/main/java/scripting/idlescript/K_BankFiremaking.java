@@ -13,7 +13,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Bank_Firemaking extends K_kailaScript {
+public final class K_BankFiremaking extends K_kailaScript {
   private static int logId = 0;
   private static int burnSuccess = 0;
   private static int logsInBank = 0;

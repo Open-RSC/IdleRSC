@@ -16,7 +16,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Edge_HobsPlus extends K_kailaScript {
+public final class K_EdgeHobsPlus extends K_kailaScript {
   private int fightMode = 0;
   private static final int[] npcIds = {
     NpcId.HOBGOBLIN_LVL32.getId(), // Hobgoblin 67

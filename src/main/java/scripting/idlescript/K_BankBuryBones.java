@@ -16,7 +16,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_Bank_BuryBones extends K_kailaScript {
+public final class K_BankBuryBones extends K_kailaScript {
   private static int boneId = -1;
   private static int burySuccess = 0;
   private static final int[] boneIds = {

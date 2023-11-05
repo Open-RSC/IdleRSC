@@ -12,8 +12,8 @@ import orsc.ORSCharacter;
  *
  * @author Kaila
  */
-public class K_BettyBuyer extends K_kailaScript {
-  private final String[] options = new String[] {"Runes then Newts", "Newts", "Elemental Runes"};
+public class K_Buy_MagicGuild extends K_kailaScript {
+  private final String[] options = new String[] {"Runes then Battlestaff", "Battlestaff", "Runes"};
   private final int[] runeIds = {
     ItemId.AIR_RUNE.getId(),
     ItemId.EARTH_RUNE.getId(),
@@ -145,13 +145,13 @@ public class K_BettyBuyer extends K_kailaScript {
   private static void checkAutowalk() {
     if (System.currentTimeMillis() > next_attempt) {
       c.log("@red@Walking to Avoid Logging!");
-      int x = c.currentX();
-      int y = c.currentY();
-
-      if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
-      else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
-      else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
-      else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
+      //      int x = c.currentX();
+      //      int y = c.currentY();
+      //      if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
+      //      else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
+      //      else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
+      //      else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
+      c.walkTo(270, 632); // walk to just outside doorway
       c.sleep(GAME_TICK);
       next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
       long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;

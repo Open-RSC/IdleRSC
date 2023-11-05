@@ -6,9 +6,9 @@ import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
- * Buys newts or runes or newts and runes from Betty in port sarim
+ * Buys staffs or runes or staffs and runes from magicGuild
  *
- * <p>This bot supports the autostart Parameter autostart collects Newts
+ * <p>This bot supports the autostart Parameter autostart collects staffs
  *
  * @author Kaila
  */
@@ -18,16 +18,19 @@ public class K_BuyMagicGuild extends K_kailaScript {
     ItemId.AIR_RUNE.getId(),
     ItemId.EARTH_RUNE.getId(),
     ItemId.WATER_RUNE.getId(),
-    ItemId.FIRE_RUNE.getId()
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.SOUL_RUNE.getId()
   };
+  private int bStaff = ItemId.BATTLESTAFF.getId();
+  private int shopkeeperId = 514;
   private int option = -1;
   private boolean scriptStarted = false;
   private boolean guiSetup = false;
-  private boolean craftCapeTeleport = false;
+  private boolean agilityCapeTeleport = false;
   private int runesBought = 0;
   private int runesBanked = 0;
-  private int newtsBought = 0;
-  private int newtsBanked = 0;
+  private int staffsBought = 0;
+  private int staffsBanked = 0;
   private final long startTimestamp = System.currentTimeMillis() / 1000L;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -39,8 +42,8 @@ public class K_BuyMagicGuild extends K_kailaScript {
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
-        c.displayMessage("Auto-starting, Runes and Newts", 0);
-        System.out.println("Auto-starting, Runes and Newts");
+        c.displayMessage("Auto-starting, Runes and staffs", 0);
+        System.out.println("Auto-starting, Runes and staffs");
         option = 0;
         guiSetup = true;
         scriptStarted = true;
@@ -55,12 +58,12 @@ public class K_BuyMagicGuild extends K_kailaScript {
       scriptStarted = false;
       startTime = System.currentTimeMillis();
       next_attempt = System.currentTimeMillis() + 5000L;
-      c.displayMessage("@red@BettyBuyer by Kaila!");
-      c.displayMessage("@red@Buys Newts/Runes from Betty (Sarim)");
-      c.displayMessage("@red@Start at Betty, Fally south, or Craft Guild!");
+      c.displayMessage("@red@magicGuildBuyer by Kaila!");
+      c.displayMessage("@red@Buys staffs/Runes from magic Guild");
+      c.displayMessage("@red@Start at magicGuild, or yanille bank!");
       c.displayMessage("@red@This bot supports the \"autostart\" Parameter");
       if (c.isInBank()) c.closeBank();
-      if (c.currentY() < 625 || c.currentX() > 275) {
+      if (c.currentY() < 1500) {
         bank();
         walkToSpot();
         c.sleep(1380);
@@ -75,7 +78,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() < 30) {
         c.setStatus("@gre@Buying stuff..");
-        ORSCharacter npc = c.getNearestNpcById(149, false);
+        ORSCharacter npc = c.getNearestNpcById(shopkeeperId, false);
 
         if (npc != null) {
 
@@ -104,14 +107,14 @@ public class K_BuyMagicGuild extends K_kailaScript {
               } else {
                 c.sleep(250);
               }
-            } else if (option == 1) { // only newts
-              if (c.isInShop() && c.getShopItemCount(270) > 0) {
-                c.shopBuy(270, c.getShopItemCount(270));
+            } else if (option == 1) { // only staffs
+              if (c.isInShop() && c.getShopItemCount(bStaff) > 0) {
+                c.shopBuy(bStaff, c.getShopItemCount(bStaff));
                 c.sleep(250);
               } else {
                 c.sleep(250);
               }
-            } else if (option == 0) { // runes then newts
+            } else if (option == 0) { // runes then staffs
               if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 0
                   || c.getShopItemCount(runeIds[1]) > 0
                   || c.getShopItemCount(runeIds[2]) > 0
@@ -121,8 +124,8 @@ public class K_BuyMagicGuild extends K_kailaScript {
                   c.sleep(250);
                 }
               }
-              if (c.isInShop() && c.getShopItemCount(270) > 0) {
-                c.shopBuy(270, c.getShopItemCount(270));
+              if (c.isInShop() && c.getShopItemCount(bStaff) > 0) {
+                c.shopBuy(bStaff, c.getShopItemCount(bStaff));
                 c.sleep(250);
               } else {
                 c.sleep(250);
@@ -151,7 +154,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
       //      else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
       //      else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
       //      else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
-      c.walkTo(270, 632); // walk to just outside doorway
+      c.walkTo(600, 1702); // walk to just outside doorway
       c.sleep(GAME_TICK);
       next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
       long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
@@ -171,12 +174,12 @@ public class K_BuyMagicGuild extends K_kailaScript {
             + c.getInventoryItemCount(runeIds[1])
             + c.getInventoryItemCount(runeIds[2])
             + c.getInventoryItemCount(runeIds[3]);
-    newtsBought += c.getInventoryItemCount(270);
+    staffsBought += c.getInventoryItemCount(bStaff);
 
     if (c.isInBank()) {
 
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != ItemId.COINS.getId() && itemId != ItemId.CRAFTING_CAPE.getId()) {
+        if (itemId != ItemId.COINS.getId() && itemId != ItemId.AGILITY_CAPE.getId()) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
@@ -185,29 +188,80 @@ public class K_BuyMagicGuild extends K_kailaScript {
               + c.getBankItemCount(runeIds[1])
               + c.getBankItemCount(runeIds[2])
               + c.getBankItemCount(runeIds[3]);
-      newtsBanked = c.getBankItemCount(270);
+      staffsBanked = c.getBankItemCount(bStaff);
       c.sleep(100);
       c.closeBank();
     }
   }
 
+  private void magicGuildDoorExit() {
+    for (int i = 1; i <= 200; i++) {
+      if (c.currentX() > 598) {
+        c.setStatus("@red@Crossing guild Gate..");
+        c.atWallObject(599, 757); // gate won't break if someone else opens it
+        c.sleep(4 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+
+  private void magicGuildDoorEnter() {
+    for (int i = 1; i <= 200; i++) {
+      if (c.currentX() < 599) {
+        c.setStatus("@red@Crossing guild Gate..");
+        c.atWallObject(599, 757); // gate won't break if someone else opens it
+        c.sleep(4 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+
+  private void goUpStairs() {
+    for (int i = 1; i <= 200; i++) {
+      if (c.currentY() < 1500) {
+        c.setStatus("@red@Crossing guild Gate..");
+        c.atObject(602, 756); // gate won't break if someone else opens it
+        c.sleep(4 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+
+  private void goDownStairs() {
+    for (int i = 1; i <= 200; i++) {
+      if (c.currentY() > 1500) {
+        c.setStatus("@red@Going up Stairs..");
+        c.atObject(599, 757); // gate won't break if someone else opens it
+        c.sleep(4 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+
   public void walkToBank() {
     c.setStatus("@gre@Walking to bank..");
-    c.walkTo(270, 632);
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
-      c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportCraftCape();
-      c.walkTo(347, 600);
-      craftGuildDoorEntering(-1);
-      c.walkTo(347, 607);
-      c.walkTo(346, 608);
+    c.walkTo(600, 1702);
+    if (agilityCapeTeleport && (c.getInventoryItemCount(ItemId.AGILITY_CAPE.getId()) != 0)) {
+      c.setStatus("@gre@Going to Bank. Casting agility cape teleport.");
+      teleportAgilityCape();
+      c.setStatus("@gre@Done Teleporting..");
+      c.walkTo(582, 767);
+      c.walkTo(579, 763);
+      c.walkTo(584, 754);
+      c.walkTo(585, 752);
     } else {
-      c.walkTo(270, 622);
-      c.walkTo(270, 613);
-      c.walkTo(276, 607);
-      c.walkTo(282, 601);
-      c.walkTo(282, 591);
-      c.walkTo(287, 572);
+      c.walkTo(602, 1699);
+      goDownStairs();
+      c.sleep(2000);
+      c.walkTo(599, 757);
+      magicGuildDoorExit();
+      c.walkTo(591, 749);
+      c.walkTo(584, 749);
+      c.walkTo(584, 752);
     }
     totalTrips = totalTrips + 1;
     c.setStatus("@red@Done Walking..");
@@ -215,44 +269,32 @@ public class K_BuyMagicGuild extends K_kailaScript {
 
   public void walkToSpot() {
     c.setStatus("@gre@Walking back to Spot..");
-    if (craftCapeTeleport && (c.getInventoryItemCount(ItemId.CRAFTING_CAPE.getId()) != 0)) {
-      teleportCraftCape();
-      c.walkTo(340, 598);
-      c.walkTo(335, 598);
-      c.walkTo(325, 608);
-      c.walkTo(320, 615);
-      c.walkTo(310, 625);
-      c.walkTo(300, 625);
-      c.walkTo(290, 625);
-      c.walkTo(285, 625);
-      c.walkTo(281, 629);
-      c.walkTo(270, 629);
-    } else {
-      c.walkTo(287, 572);
-      c.walkTo(282, 591);
-      c.walkTo(282, 601);
-      c.walkTo(276, 607);
-      c.walkTo(270, 613);
-      c.walkTo(270, 622);
-    }
-    c.walkTo(270, 632); // at door
+    c.walkTo(584, 752);
+    c.walkTo(584, 749);
+    c.walkTo(591, 749);
+    c.walkTo(597, 757);
+    magicGuildDoorEnter();
+    c.walkTo(602, 759);
+    goUpStairs();
+    c.walkTo(602, 1699);
+    c.sleep(2000);
     c.setStatus("@red@Done Walking..");
   }
 
   public void setupGUI() {
-    final JFrame scriptFrame = new JFrame("Betty Buyer ~ Kaila");
-    JLabel headerLabel = new JLabel("Buys Newts/Runes from Betty (Sarim)");
-    JLabel Label1 = new JLabel("Start at Betty, Fally south, or Craft Guild!");
+    final JFrame scriptFrame = new JFrame("magicGuild Buyer ~ Kaila");
+    JLabel headerLabel = new JLabel("Buys staffs/Runes from magicGuild");
+    JLabel Label1 = new JLabel("Start at magicGuild or yanille bank");
     JLabel Label2 = new JLabel("This bot supports the \"autostart\" Parameter");
-    JLabel Label3 = new JLabel("autostart collects Newts");
+    JLabel Label3 = new JLabel("autostart collects staffs");
     JComboBox<String> optionField = new JComboBox<>(options);
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox agilityCapeCheckbox = new JCheckBox("99 agility Cape Teleport?", false);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
           option = optionField.getSelectedIndex();
-          craftCapeTeleport = craftCapeCheckbox.isSelected();
+          agilityCapeTeleport = agilityCapeCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
@@ -267,7 +309,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
     scriptFrame.add(Label2);
     scriptFrame.add(Label3);
     scriptFrame.add(optionField);
-    scriptFrame.add(craftCapeCheckbox);
+    scriptFrame.add(agilityCapeCheckbox);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
@@ -279,13 +321,13 @@ public class K_BuyMagicGuild extends K_kailaScript {
   @Override
   public void paintInterrupt() {
     int runesPerHr = 0;
-    int newtsPerHr = 0;
+    int staffsPerHr = 0;
     long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
     try {
       float timeRan = currentTimeInSeconds - startTimestamp;
       float scale = (60 * 60) / timeRan;
       runesPerHr = (int) (runesBought * scale);
-      newtsPerHr = (int) (newtsBought * scale);
+      staffsPerHr = (int) (staffsBought * scale);
     } catch (Exception e) {
       // divide by zero
     }
@@ -295,7 +337,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
       height += 14 + 14;
     }
 
-    c.drawString("@gre@BettyBuyer @whi@~ @mag@Kaila", 10, 21, 0xFFFFFF, 1);
+    c.drawString("@gre@magicGuildBuyer @whi@~ @mag@Kaila", 10, 21, 0xFFFFFF, 1);
 
     if (option == 2) {
       c.drawString(
@@ -323,17 +365,17 @@ public class K_BuyMagicGuild extends K_kailaScript {
           1);
     } else if (option == 1) {
       c.drawString(
-          "@whi@Newts bought: @yel@"
-              + String.format("%,d", newtsBought)
+          "@whi@staffs bought: @yel@"
+              + String.format("%,d", staffsBought)
               + "@yel@ (@whi@"
-              + String.format("%,d", newtsPerHr)
+              + String.format("%,d", staffsPerHr)
               + "@yel@/@whi@hr@yel@)",
           10,
           21 + 14,
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Newts in bank: @yel@" + String.format("%,d", newtsBanked),
+          "@whi@staffs in bank: @yel@" + String.format("%,d", staffsBanked),
           10,
           21 + (14 * 2),
           0xFFFFFF,
@@ -363,17 +405,17 @@ public class K_BuyMagicGuild extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Newts bought: @yel@"
-              + String.format("%,d", newtsBought)
+          "@whi@staffs bought: @yel@"
+              + String.format("%,d", staffsBought)
               + "@yel@ (@whi@"
-              + String.format("%,d", newtsPerHr)
+              + String.format("%,d", staffsPerHr)
               + "@yel@/@whi@hr@yel@)",
           10,
           21 + (14 * 3),
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Newts in bank: @yel@" + String.format("%,d", newtsBanked),
+          "@whi@staffs in bank: @yel@" + String.format("%,d", staffsBanked),
           10,
           21 + (14 * 4),
           0xFFFFFF,

@@ -4,9 +4,9 @@ import bot.Main;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
 import javax.swing.*;
 import models.entities.ItemId;
+import models.entities.SkillId;
 
 /**
  * <b>Berry Harvester</b>
@@ -20,18 +20,24 @@ import models.entities.ItemId;
  * @author Kaila
  * @author Kaila
  */
-public class K_HarvestClass extends K_kailaScript {
+public class K_AIOHarvester extends K_kailaScript {
   private boolean capeTeleport = false;
-  private boolean lowlevel = false;
+  private boolean bringFood = false;
   private boolean ate = true;
-  private final int WHITE_BERRIES = ItemId.WHITE_BERRIES.getId();
-  private final int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();
-  private final int LOCKPICK = ItemId.LOCKPICK.getId();
-  private final int HERB_CLIPPERS = ItemId.HERB_CLIPPERS.getId();
-  private int BerryzInBank = 0;
-  private int totalBerryz = 0;
-  private ItemListener acquire_box_listener;
-  private ItemListener dispose_box_listener;
+  private int harvestedItemInBank = 0;
+  private int totalHarvestedCount = 0;
+  /** 0 = grapes 1 = whiteberries */
+  private int scriptSelect = -1;
+
+  private int harvestItemId = -1;
+  private int teleportItemId = -1;
+  private int accessItemId = -1;
+  private int harvestToolId = -1;
+  private int harvestObjectId = -1;
+  private boolean autoWalk = false;
+
+  public K_AIOHarvester() {}
+
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -55,14 +61,22 @@ public class K_HarvestClass extends K_kailaScript {
       Main.setGuiSetup(false);
       Main.setScriptStarted(false);
       startTime = System.currentTimeMillis();
-      next_attempt = System.currentTimeMillis() + 5000L;
-      c.displayMessage("@red@White Berry Harvester - By Kaila");
-      c.displayMessage("@red@Start in yanille Bank or near Berries");
-      if (c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
+      if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
+      if (scriptSelect == 0 && c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
+      c.displayMessage("@red@AIOHarvester ~ By @mag@Kaila");
+      if (c.getBaseStat(SkillId.HARVESTING.getId()) == 99
+          && !c.isItemIdEquipped(ItemId.HARVESTING_CAPE.getId())) {
+        c.displayMessage("@red@Looks like you have 99 Harvesting");
+        c.displayMessage("@red@Talk to Lily in Lumbridge to get a harvesting skill cape");
+        c.displayMessage("@red@It will increase your harvesting yeild to wear it.");
+      }
       if (c.isInBank()) c.closeBank();
-      if (c.currentY() < 3000) {
-        bank();
-        BankToBerry();
+      for (int bankerId : c.bankerIds) {
+        if (c.getNearestNpcById(bankerId, false) != null) {
+          bank();
+          bankToSpot();
+          break;
+        }
       }
       c.toggleBatchBarsOn();
       scriptStart();
@@ -72,16 +86,17 @@ public class K_HarvestClass extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (lowlevel) ate = eatFood();
-      if (c.getInventoryItemCount() == 30 || timeToBank || (lowlevel && !ate)) {
+      if (bringFood) ate = eatFood();
+      if (c.getInventoryItemCount() == 30 || timeToBank || (bringFood && !ate)) {
         c.setStatus("@red@Banking..");
+        timeToBank = false;
         if (!ate) ate = true;
-        BerryToBank();
+        spotToBank();
         bank();
-        BankToBerry();
+        bankToSpot();
       }
-      c.setStatus("@yel@Picking Berries..");
-      int[] coords = c.getNearestObjectById(1260);
+      c.setStatus("@yel@Harvesting Items..");
+      int[] coords = c.getNearestObjectById(harvestObjectId);
       if (coords != null) {
         c.setStatus("@yel@Harvesting...");
         c.atObject(coords[0], coords[1]);
@@ -93,12 +108,12 @@ public class K_HarvestClass extends K_kailaScript {
         }
       } else {
         c.setStatus("@yel@Waiting for spawn..");
-        c.sleep(640);
+        c.sleep(GAME_TICK);
       }
-      if (System.currentTimeMillis() > next_attempt) {
+      if (autoWalk && System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
         c.walkTo(c.currentX() - 1, c.currentY(), 0, true);
-        c.sleep(640);
+        c.sleep(GAME_TICK);
         next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
         long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
         c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
@@ -106,39 +121,67 @@ public class K_HarvestClass extends K_kailaScript {
     }
   }
 
-  private void bank() {
+  private void bank() { // works for all
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(GAME_TICK);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-      totalBerryz = totalBerryz + c.getInventoryItemCount(WHITE_BERRIES);
+      totalHarvestedCount = totalHarvestedCount + c.getInventoryItemCount(harvestItemId);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != AGILITY_CAPE && itemId != LOCKPICK && itemId != HERB_CLIPPERS) {
+        if (itemId != teleportItemId && itemId != accessItemId && itemId != harvestToolId) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      if (capeTeleport) withdrawItem(AGILITY_CAPE, 1);
-      withdrawItem(LOCKPICK, 1);
-      if (c.getInventoryItemCount(HERB_CLIPPERS) < 1) { // withdraw herb clippers
-        if (c.getBankItemCount(HERB_CLIPPERS) > 0) {
-          c.withdrawItem(HERB_CLIPPERS, 1);
+      if (capeTeleport) withdrawItem(teleportItemId, 1);
+      if (accessItemId != -1 && c.getInventoryItemCount(accessItemId) < 1)
+        withdrawItem(accessItemId, 1);
+      if (c.getInventoryItemCount(harvestToolId) < 1) { // withdraw harvest tool
+        if (c.getBankItemCount(harvestToolId) > 0) {
+          c.withdrawItem(harvestToolId, 1);
           c.sleep(GAME_TICK);
         } else {
-          c.displayMessage("@red@You need herb clippers!");
+          c.displayMessage("@red@You need a harvesting tool for this!");
         }
       }
-      if (lowlevel) withdrawFood(foodId, foodWithdrawAmount);
-      BerryzInBank = c.getBankItemCount(WHITE_BERRIES);
+      if (bringFood) withdrawFood(foodId, foodWithdrawAmount);
+      harvestedItemInBank = c.getBankItemCount(harvestItemId);
       c.closeBank();
-      if (lowlevel) eatFood();
+      c.sleep(GAME_TICK);
+      if (bringFood) eatFood();
     }
   }
 
-  private void BerryToBank() { // replace
+  private void bankToSpot() {
+    switch (scriptSelect) {
+      case 0: // grapes
+        bankToGrape();
+        break;
+      case 1: // whiteberries
+        bankToBerry();
+        break;
+      default:
+        throw new Error("unknown banking location");
+    }
+  }
+
+  private void spotToBank() {
+    switch (scriptSelect) {
+      case 0: // grapes
+        grapeToBank();
+        break;
+      case 1: // whiteberries
+        berryToBank();
+        break;
+      default:
+        throw new Error("unknown banking location");
+    }
+  }
+
+  private void berryToBank() { // replace
     c.setStatus("@gre@Walking to Bank..");
-    if (capeTeleport && c.getInventoryItemCount(AGILITY_CAPE) != 0) {
+    if (capeTeleport && c.getInventoryItemCount(teleportItemId) != 0) {
       c.walkTo(608, 3568); // walkTo to exit batching
       teleportAgilityCape();
     } else {
@@ -152,7 +195,7 @@ public class K_HarvestClass extends K_kailaScript {
       c.sleep(300);
       c.atObject(598, 3582); // Rope Swing  (make a loop)
       c.sleep(3000);
-      if (lowlevel) eatFood();
+      if (bringFood) eatFood();
       c.walkTo(595, 3585);
       c.walkTo(593, 3587);
       c.walkTo(593, 3589);
@@ -172,9 +215,9 @@ public class K_HarvestClass extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void BankToBerry() {
+  private void bankToBerry() {
     c.setStatus("@gre@Walking to Berry bush..");
-    if (capeTeleport && c.getInventoryItemCount(AGILITY_CAPE) != 0) {
+    if (capeTeleport && c.getInventoryItemCount(teleportItemId) != 0) {
       teleportAgilityCape();
     } else {
       c.walkTo(584, 754);
@@ -183,6 +226,7 @@ public class K_HarvestClass extends K_kailaScript {
       c.walkTo(591, 765);
     }
     c.walkTo(590, 762);
+    if (!Main.isRunning()) return;
     c.atObject(591, 761);
     c.sleep(2000);
     c.walkTo(593, 3590);
@@ -199,9 +243,52 @@ public class K_HarvestClass extends K_kailaScript {
     c.walkTo(605, 3568);
     c.atObject(606, 3568); // go through pipe  (make a loop)
     c.sleep(3000);
-    if (lowlevel) eatFood();
+    if (bringFood) eatFood();
     c.walkTo(611, 3569);
   }
+
+  private void grapeToBank() { // replace
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(251, 454);
+    c.walkTo(254, 454);
+    c.walkTo(256, 451);
+    c.walkTo(255, 444);
+    c.walkTo(255, 433);
+    c.walkTo(255, 422);
+    c.walkTo(258, 422);
+    if (bringFood) eatFood();
+    c.walkTo(258, 415);
+    c.walkTo(252, 421);
+    c.walkTo(242, 432);
+    c.walkTo(225, 432);
+    c.walkTo(220, 437);
+    c.walkTo(220, 445);
+    c.walkTo(218, 447);
+    totalTrips = totalTrips + 1;
+    c.setStatus("@gre@Done Walking..");
+  }
+
+  private void bankToGrape() {
+    c.setStatus("@gre@Walking to Grapes..");
+    c.walkTo(218, 447);
+    c.walkTo(220, 445);
+    c.walkTo(220, 437);
+    c.walkTo(225, 432);
+    c.walkTo(242, 432);
+    c.walkTo(252, 421);
+    c.walkTo(258, 415);
+    if (bringFood) eatFood();
+    c.walkTo(258, 422);
+    c.walkTo(255, 422);
+    c.walkTo(255, 433);
+    c.walkTo(255, 444);
+    c.walkTo(256, 451);
+    c.walkTo(254, 454);
+    c.walkTo(251, 454);
+    // (next to Grape now)
+    c.setStatus("@gre@Done Walking..");
+  }
+
 
   private void setupGUI() {
 
@@ -211,9 +298,7 @@ public class K_HarvestClass extends K_kailaScript {
     final Panel containerInfobox = new Panel(new GridLayout(0, 1));
     Font bold_title = new Font(Font.SANS_SERIF, Font.BOLD, 14);
     Font small_info = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
-    // final java.util.List<Checkbox> acquire_boxes = new ArrayList<>();
-    // final CheckboxGroup acquire_group = new CheckboxGroup();
-    scriptFrame = new JFrame(c.getPlayerName() + " - AIO_Harvester");
+    scriptFrame = new JFrame(c.getPlayerName() + " - AIO Harvester");
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     // Add in the top infobox Stuff
@@ -274,7 +359,7 @@ public class K_HarvestClass extends K_kailaScript {
     scriptOptions_label.setFont(bold_title);
     checkboxes.add(agilityCapeCheckBox);
     checkboxes.add(bringFoodCheckBox);
-    checkboxes.add(doStuff);
+    // checkboxes.add(doStuff);
     checkboxes.add(foodAmountsLabel);
     checkboxes.add(foodAmountsField);
     checkboxes.add(foodTypeLabel);
@@ -357,38 +442,48 @@ public class K_HarvestClass extends K_kailaScript {
         });
 
     // Add run button
-    Button ok = new Button("Start Script");
-    ok.addActionListener( // parse results and run
+    Button startButton = new Button("Start Script");
+    startButton.addActionListener( // parse results and run
         new ActionListener() {
           private void set_ids() {
-            lowlevel = bringFoodCheckBox.getState();
-            if (lowlevel) {
+            bringFood = bringFoodCheckBox.getState();
+            if (bringFood) {
+              c.log("bringing food");
               if (!foodAmountsField.getText().isEmpty()) {
                 foodWithdrawAmount = Integer.parseInt(foodAmountsField.getText());
-              } else {
-                foodWithdrawAmount = 1;
-              }
+              } else foodWithdrawAmount = 1;
               foodId = foodIds[foodType.getSelectedIndex()];
               foodName = foodTypes[foodType.getSelectedIndex()];
             }
+            // assign item ids to harvest, paths, etc
             switch (list.getSelectedItem()) {
               case "Grapes":
+                scriptSelect = 0;
+                harvestItemId = ItemId.GRAPES.getId();
+                harvestToolId = ItemId.HERB_CLIPPERS.getId();
+                harvestObjectId = 1283;
 
-                // assign item ids to harvest, paths, etc
+                break;
               case "Whiteberries":
-                // do stuff
+                scriptSelect = 1;
+                harvestToolId = ItemId.HERB_CLIPPERS.getId();
+                harvestItemId = ItemId.WHITE_BERRIES.getId();
+                teleportItemId = ItemId.AGILITY_CAPE.getId();
+                accessItemId = ItemId.LOCKPICK.getId();
+                harvestObjectId = 1260;
+                autoWalk = true;
+                capeTeleport = true;
+
+                break;
               default:
                 throw new Error("unknown option");
             }
           }
-
-          @Override
+          // @Override
           public void actionPerformed(ActionEvent e) {
             set_ids();
-
             scriptFrame.setVisible(false);
             scriptFrame.dispose();
-            Main.setGuiSetup(false);
             Main.setScriptStarted(true);
           }
         });
@@ -406,17 +501,14 @@ public class K_HarvestClass extends K_kailaScript {
 
     // Implement Run and Cancel Buttons
     Panel buttons = new Panel();
-    buttons.add(ok);
+    buttons.add(startButton);
     buttons.add(cancel);
-    buttons.add(new Label("\t"));
-    buttons.add(new Label("by Kaila"));
 
     // Arrange the Full Layout
     Panel middle = new Panel(new GridBagLayout());
 
     GridBagConstraints constraints = new GridBagConstraints();
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    // constraints.anchor = GridBagConstraints.PAGE_START; // bottom of space
     constraints.weightx = 1.0; // request any extra horizontal space
     constraints.gridwidth = 2;
     constraints.gridx = 0;
@@ -425,8 +517,6 @@ public class K_HarvestClass extends K_kailaScript {
     middle.add(containerInfobox, constraints);
 
     constraints.fill = GridBagConstraints.VERTICAL;
-    // constraints.anchor = GridBagConstraints.WEST; // bottom of space
-    // constraints.gridheight = 3;
     constraints.weightx = 0.5; // request any extra horizontal space
     constraints.gridwidth = 1;
     constraints.gridx = 0;
@@ -435,15 +525,16 @@ public class K_HarvestClass extends K_kailaScript {
     middle.add(list, constraints);
 
     constraints.fill = GridBagConstraints.VERTICAL;
-    // constraints.anchor = GridBagConstraints.EAST; // bottom of space
     constraints.weightx = 0.5; // request any extra horizontal space
     constraints.gridwidth = 1;
     constraints.gridx = 1;
     constraints.gridy = 1;
     middle.add(checkboxes, constraints);
 
-    containerInfobox.add(grapeInfobox); // only add the first list option
+    // only add the first top infobox option (from list)
+    containerInfobox.add(grapeInfobox);
 
+    // Setup window
     scriptFrame.setSize(370, 460); // was 415, 550?
     scriptFrame.setMinimumSize(scriptFrame.getSize());
 
@@ -463,18 +554,11 @@ public class K_HarvestClass extends K_kailaScript {
       c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
       timeToBank = true;
       c.sleep(100);
-    } else if (commandText.contains("cape")) {
-      if (!capeTeleport) {
-        c.displayMessage("@or1@Got toggle @red@Agility Cape@or1@, turning on cape teleport!");
-        capeTeleport = true;
-      } else {
-        c.displayMessage("@or1@Got toggle @red@Agility Cape@or1@, turning off cape teleport!");
-        capeTeleport = false;
-      }
-      c.sleep(100);
     }
   }
-
+  //todo add custom labels to on screen gui
+  //todo locations[scriptSelect]
+  private String[] locations = {"Grapes", "Whiteberries"};
   @Override
   public void paintInterrupt() {
     if (c != null) {
@@ -486,19 +570,19 @@ public class K_HarvestClass extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        successPerHr = (int) (totalBerryz * scale);
+        successPerHr = (int) (totalHarvestedCount * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
       } catch (Exception e) {
         // divide by zero
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@Berry Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@AIO Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
-      c.drawString("@whi@Berries in Bank: @gre@" + BerryzInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString("@whi@Item Bank Count: @gre@" + harvestedItemInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(
-          "@whi@Berries Picked: @gre@"
-              + totalBerryz
+          "@whi@Harvested Count: @gre@"
+              + totalHarvestedCount
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -517,14 +601,18 @@ public class K_HarvestClass extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-      c.drawString(
-          "@whi@Time till AutoWalk: " + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-          x,
-          y + (14 * 5),
-          0xFFFFFF,
-          1);
-      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
+      if (autoWalk) {
+        long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
+        c.drawString(
+            "@whi@Time till AutoWalk: " + c.msToShortString(timeRemainingTillAutoWalkAttempt),
+            x,
+            y + (14 * 5),
+            0xFFFFFF,
+            1);
+        c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
+      } else {
+        c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
+      }
     }
   }
 }

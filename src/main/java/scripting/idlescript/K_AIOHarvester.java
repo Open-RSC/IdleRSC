@@ -26,8 +26,15 @@ public class K_AIOHarvester extends K_kailaScript {
   private boolean ate = true;
   private int harvestedItemInBank = 0;
   private int totalHarvestedCount = 0;
-  /** 0 = grapes 1 = whiteberries */
-  private int scriptSelect = -1;
+  /**
+   *
+   *
+   * <pre>
+   * 0 = grapes
+   * 1 = whiteberries
+   * </pre>
+   */
+  private int scriptSelect = 0;
 
   private int harvestItemId = -1;
   private int teleportItemId = -1;
@@ -35,6 +42,7 @@ public class K_AIOHarvester extends K_kailaScript {
   private int harvestToolId = -1;
   private int harvestObjectId = -1;
   private boolean autoWalk = false;
+  private final String[] locations = {"Grapes", "Whiteberries"};
 
   public K_AIOHarvester() {}
 
@@ -49,17 +57,17 @@ public class K_AIOHarvester extends K_kailaScript {
     if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Auto-starting, Picking Berries", 0);
-        Main.setScriptStarted(true);
-        Main.setGuiSetup(false);
+        scriptStarted = true;
+        guiSetup = false;
       }
     }
-    if (!Main.getGuiSetup()) {
-      Main.setGuiSetup(true);
+    if (!guiSetup) {
+      guiSetup = true;
       setupGUI();
     }
-    if (Main.getScriptStarted()) {
-      Main.setGuiSetup(false);
-      Main.setScriptStarted(false);
+    if (scriptStarted) {
+      guiSetup = false;
+      scriptStarted = false;
       startTime = System.currentTimeMillis();
       if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
       if (scriptSelect == 0 && c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
@@ -289,7 +297,6 @@ public class K_AIOHarvester extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-
   private void setupGUI() {
 
     final Panel checkboxes = new Panel(new GridLayout(0, 1));
@@ -484,7 +491,7 @@ public class K_AIOHarvester extends K_kailaScript {
             set_ids();
             scriptFrame.setVisible(false);
             scriptFrame.dispose();
-            Main.setScriptStarted(true);
+            scriptStarted = true;
           }
         });
 
@@ -494,8 +501,8 @@ public class K_AIOHarvester extends K_kailaScript {
         e -> {
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
-          Main.setScriptStarted(false);
-          Main.setGuiSetup(false);
+          scriptStarted = false;
+          guiSetup = false;
           Main.setRunning(false);
         });
 
@@ -556,9 +563,7 @@ public class K_AIOHarvester extends K_kailaScript {
       c.sleep(100);
     }
   }
-  //todo add custom labels to on screen gui
-  //todo locations[scriptSelect]
-  private String[] locations = {"Grapes", "Whiteberries"};
+
   @Override
   public void paintInterrupt() {
     if (c != null) {
@@ -579,9 +584,16 @@ public class K_AIOHarvester extends K_kailaScript {
       int y = 21;
       c.drawString("@red@AIO Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
-      c.drawString("@whi@Item Bank Count: @gre@" + harvestedItemInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(
-          "@whi@Harvested Count: @gre@"
+          "@whi@" + locations[scriptSelect] + " Bank Count: @gre@" + harvestedItemInBank,
+          x,
+          y + 14,
+          0xFFFFFF,
+          1);
+      c.drawString(
+          "@whi@"
+              + locations[scriptSelect]
+              + " Harvest Count: @gre@"
               + totalHarvestedCount
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)

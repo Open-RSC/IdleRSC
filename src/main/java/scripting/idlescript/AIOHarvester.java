@@ -21,7 +21,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  * @author Kaila
  */
-public class K_AIOHarvester extends K_kailaScript {
+public class AIOHarvester extends K_kailaScript {
   private boolean capeTeleport = false;
   private boolean bringFood = false;
   private boolean ate = true;
@@ -45,8 +45,6 @@ public class K_AIOHarvester extends K_kailaScript {
   private int harvestObjectId = -1;
   private boolean autoWalk = false;
   private final String[] locations = {"Grapes", "Whiteberries", "Coconuts"};
-
-  public K_AIOHarvester() {}
 
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -354,7 +352,7 @@ public class K_AIOHarvester extends K_kailaScript {
         c.setStatus("@red@Taking boat to Karamja..");
         // c.talkToNpc(npc.serverIndex); //click on ship to skip 1 dialog
         c.atObject(468, 646);
-        c.sleep(4000);
+        c.sleep(5000);
         c.optionAnswer(1);
         c.sleep(9000);
         c.optionAnswer(0);
@@ -399,7 +397,7 @@ public class K_AIOHarvester extends K_kailaScript {
     Label wBerriesLabel3 = new Label("*Recommend level 109+ combat so Skellies are non aggressive");
     Label wBerriesLabel4 = new Label("*Requires 77 agility to not fail rope swing");
 
-    Label cocoLabel1 = new Label("Harvests Whiteberries in Yanille dungeon");
+    Label cocoLabel1 = new Label("Harvests Coconuts in Karamja");
     Label cocoLabel2 = new Label("*Start in Yanille Bank with Herb Clippers and Lockpick");
     Label cocoLabel3 = new Label("*Recommend level 109+ combat so Skellies are non aggressive");
     Label cocoLabel4 = new Label("*Requires 77 agility to not fail rope swing");

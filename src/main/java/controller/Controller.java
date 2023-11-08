@@ -3790,6 +3790,12 @@ public class Controller {
 
       boolean usedBankerNpc = false;
 
+      if (getObjectAtCoord(58, 731) == 942) { // handle shantay chest
+        atObject(58, 731);
+        sleep(5000);
+        return;
+      }
+
       for (int bankerId : bankerIds) {
         ORSCharacter bankerNpc = getNearestNpcById(bankerId, false);
 

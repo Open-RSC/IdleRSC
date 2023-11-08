@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import models.entities.ItemId;
+import models.entities.SceneryId;
 import models.entities.SkillId;
 import orsc.ORSCharacter;
 
@@ -22,7 +23,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public class AIOHarvester extends K_kailaScript {
-  private boolean capeTeleport = false;
+  private boolean teleportBanking = false;
   private boolean bringFood = false;
   private boolean ate = true;
   private int harvestedItemInBank = 0;
@@ -38,23 +39,27 @@ public class AIOHarvester extends K_kailaScript {
   private int scriptSelect = 0;
 
   private int harvestItemId = -1;
-  private int teleportItemId = -1;
-  private int accessItemId = -1;
-  private int accessItemAmount = 0;
+  private int[] teleportItemIds;
+  private int[] teleportItemAmounts;
+  private int[] accessItemId;
+  private int[] accessItemAmount;
   private int harvestToolId = -1;
   private int harvestObjectId = -1;
   private boolean autoWalk = false;
   private final String[] locations = {
     "Grapes",
-    "Whiteberries",
-    "Coconuts",
     "Pineapple",
     "Papaya",
+    "Coconuts",
+    "Dragonfruit",
     "Jangerberries",
+    "Whiteberries",
+    "Tav Herbs",
     "Tav Limps/Snapes",
     "Ardy Limps/Snapes",
-    "Tav Herbs",
-    "Dragon Fruit"
+    "Corn",
+    "Red Cabbage",
+    "White Pumpkin"
   };
 
   /**
@@ -81,7 +86,7 @@ public class AIOHarvester extends K_kailaScript {
       scriptStarted = false;
       startTime = System.currentTimeMillis();
       if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
-      if (scriptSelect == 0 && c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
+      if (scriptSelect == 6 && c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
       c.displayMessage("@red@AIOHarvester ~ By @mag@Kaila");
       if (c.getBaseStat(SkillId.HARVESTING.getId()) == 99
           && !c.isItemIdEquipped(ItemId.HARVESTING_CAPE.getId())) {
@@ -91,7 +96,7 @@ public class AIOHarvester extends K_kailaScript {
       }
       if (c.isInBank()) c.closeBank();
       for (int bankerId : c.bankerIds) {
-        if (c.getNearestNpcById(bankerId, false) != null) {
+        if (c.getNearestNpcById(bankerId, false) != null || c.getNearestObjectById(942) != null) {
           bank();
           bankToSpot();
           break;
@@ -114,6 +119,8 @@ public class AIOHarvester extends K_kailaScript {
         bank();
         bankToSpot();
       }
+      // drop empty water skins
+      if (c.getInventoryItemCount(1085) > 0) c.dropItem(c.getInventoryItemSlotIndex(1085));
       if (!harvestLoop()) { // if nothing to harvest
         c.setStatus("@yel@Waiting for spawn..");
         walkToCenter();
@@ -156,13 +163,21 @@ public class AIOHarvester extends K_kailaScript {
     } else {
       totalHarvestedCount = totalHarvestedCount + c.getInventoryItemCount(harvestItemId);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != teleportItemId && itemId != accessItemId && itemId != harvestToolId) {
+        if (itemId != teleportItemIds[0] && itemId != accessItemId[0] && itemId != harvestToolId) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      if (capeTeleport) withdrawItem(teleportItemId, 1);
-      if (accessItemId != -1 && c.getInventoryItemCount(accessItemId) < accessItemAmount)
-        withdrawItem(accessItemId, accessItemAmount);
+      if (teleportBanking) {
+        for (int i = 0; i < teleportItemIds.length; i++) {
+          withdrawItem(teleportItemIds[i], teleportItemAmounts[i]);
+        }
+      }
+      for (int i = 0; i < accessItemId.length; i++) {
+        if (accessItemId[i] != 0
+            && c.getInventoryItemCount(accessItemId[i]) < accessItemAmount[i]) {
+          withdrawItem(accessItemId[i], accessItemAmount[i]);
+        }
+      }
       if (c.getInventoryItemCount(harvestToolId) < 1) { // withdraw harvest tool
         if (c.getBankItemCount(harvestToolId) > 0) {
           c.withdrawItem(harvestToolId, 1);
@@ -181,15 +196,11 @@ public class AIOHarvester extends K_kailaScript {
 
   private void walkToCenter() {
     switch (scriptSelect) {
-      case 2: // coconuts
-        c.walkTo(453, 693); // walk to a point you can see both
-        c.sleep(1240);
-        break;
-      case 3: // pine
+      case 1: // pine
         c.walkTo(461, 664); // walk to a point you can see both
         c.sleep(1240);
         break;
-      case 4: // papaya
+      case 2: // papaya
         c.walkTo(448, 694); // walk to south papayas
         if (!harvestLoop()) {
           c.walkTo(462, 685); // walk to west papaya
@@ -197,8 +208,13 @@ public class AIOHarvester extends K_kailaScript {
         }
         c.sleep(1240);
         break;
+      case 3: // coconuts
+        c.walkTo(453, 693); // walk to a point you can see both
+        c.sleep(1240);
+        break;
       default:
-        throw new Error("unknown center location");
+        c.sleep(1240);
+        //c.log("Error, no walkback location");
     }
   }
 
@@ -207,13 +223,16 @@ public class AIOHarvester extends K_kailaScript {
       case 0: // grapes
         bankToGrape();
         break;
-      case 1: // whiteberries
-        bankToBerry();
-        break;
-      case 2: // coconuts
-      case 3: // pine
-      case 4: // papaya
+      case 1: // pine
+      case 2: // papaya
+      case 3: // coconuts
         bankToKaram();
+        break;
+      case 4: // dragonfruit
+        bankToDf();
+        break;
+      case 6: // whiteberries
+        bankToBerry();
         break;
       default:
         throw new Error("unknown banking location");
@@ -225,22 +244,92 @@ public class AIOHarvester extends K_kailaScript {
       case 0: // grapes
         grapeToBank();
         break;
-      case 1: // whiteberries
-        berryToBank();
-        break;
-      case 2: // coconuts
-      case 3: // pine
-      case 4: // papaya
+      case 1: // pine
+      case 2: // papaya
+      case 3: // coconuts
         karamToBank();
+        break;
+      case 4: // dragonfruit
+        dfToBank();
+        break;
+      case 6: // whiteberries
+        berryToBank();
         break;
       default:
         throw new Error("unknown banking location");
     }
   }
 
+  private void dfToBank() {
+    c.walkTo(166, 802);
+    c.walkTo(153, 789);
+    c.walkTo(145, 789);
+    c.walkTo(135, 789);
+    c.walkTo(125, 789);
+    c.walkTo(115, 789);
+    c.walkTo(105, 789);
+    c.walkTo(95, 789);
+    c.walkTo(88, 781);
+    c.walkTo(78, 771);
+    c.walkTo(78, 761);
+    c.walkTo(78, 751);
+    c.walkTo(62, 735);
+    desertToShantayLoop();
+    c.walkTo(59, 731);
+    totalTrips = totalTrips + 1;
+    c.setStatus("@gre@Done Walking..");
+  }
+
+  private void bankToDf() {
+    c.walkTo(62, 732);
+    shantayToDesertLoop();
+    c.walkTo(71, 744);
+    c.dropItem(c.getInventoryItemSlotIndex(1099));
+    c.walkTo(78, 751);
+    c.walkTo(78, 761);
+    c.walkTo(78, 771);
+    c.walkTo(88, 781);
+    c.walkTo(95, 789);
+    c.walkTo(105, 789);
+    c.walkTo(115, 789);
+    c.walkTo(125, 789);
+    c.walkTo(135, 789);
+    c.walkTo(145, 789);
+    c.walkTo(153, 789);
+    c.walkTo(166, 802);
+
+    c.setStatus("@gre@Done Walking..");
+  }
+
+  private void shantayToDesertLoop() {
+    for (int i = 0; i < 100; i++) {
+      if (!c.isRunning()) break;
+      if (c.currentY() < 733) {
+        c.setStatus("@red@Crossing Shantay Gate..");
+        // c.talkToNpc(npc.serverIndex); //click on ship to skip 1 dialog
+        c.atObject(62, 733);
+        c.sleep(12000);
+        c.optionAnswer(0);
+        c.sleep(10000);
+      } else break;
+    }
+  }
+
+  private void desertToShantayLoop() {
+    for (int i = 0; i < 100; i++) {
+      if (!c.isRunning()) break;
+      if (c.currentY() > 732) {
+        c.setStatus("@red@Crossing Shantay Gate..");
+        // c.talkToNpc(npc.serverIndex); //click on ship to skip 1 dialog
+        c.atObject(62, 733);
+        c.sleep(4000);
+      } else break;
+    }
+  }
+
   private void berryToBank() { // replace
     c.setStatus("@gre@Walking to Bank..");
-    if (capeTeleport && c.getInventoryItemCount(teleportItemId) != 0) {
+    if (teleportBanking && c.getInventoryItemCount(teleportItemIds[0]) != 0) {
       c.walkTo(608, 3568); // walkTo to exit batching
       teleportAgilityCape();
     } else {
@@ -276,7 +365,7 @@ public class AIOHarvester extends K_kailaScript {
 
   private void bankToBerry() {
     c.setStatus("@gre@Walking to Berry bush..");
-    if (capeTeleport && c.getInventoryItemCount(teleportItemId) != 0) {
+    if (teleportBanking && c.getInventoryItemCount(teleportItemIds[0]) != 0) {
       teleportAgilityCape();
     } else {
       c.walkTo(584, 754);
@@ -350,6 +439,7 @@ public class AIOHarvester extends K_kailaScript {
 
   private void boatToKaramLoop() {
     for (int i = 0; i < 100; i++) {
+      if (!c.isRunning()) break;
       ORSCharacter npc = c.getNearestNpcById(316, true);
       if (npc != null && c.currentX() > 450) {
         c.setStatus("@red@Taking boat to Karamja..");
@@ -369,7 +459,7 @@ public class AIOHarvester extends K_kailaScript {
     // c.walkTo(468,658);
     c.walkTo(467, 662);
     c.walkTo(473, 667); // at pineapple
-    if (scriptSelect == 2 || scriptSelect == 4) { // coco or papaya
+    if (scriptSelect == 2 || scriptSelect == 3) { // coco or papaya
       c.walkTo(477, 671);
       c.walkTo(477, 681);
     }
@@ -378,6 +468,7 @@ public class AIOHarvester extends K_kailaScript {
 
   private void boatToArdyLoop() {
     for (int i = 0; i < 100; i++) {
+      if (!c.isRunning()) break;
       ORSCharacter npc = c.getNearestNpcById(317, true);
       if (npc != null) {
         c.setStatus("@red@Taking boat to Ardy..");
@@ -395,7 +486,7 @@ public class AIOHarvester extends K_kailaScript {
   private void karamToBank() {
     c.setStatus("@gre@Walking to Bank..");
     // add special walking for the 3
-    if (scriptSelect == 2 || scriptSelect == 4) { // coco or papaya
+    if (scriptSelect == 2 || scriptSelect == 3) { // coco or papaya
       // c.walkTo(467, 685);
       c.walkTo(477, 681);
       c.walkTo(477, 671);
@@ -405,7 +496,7 @@ public class AIOHarvester extends K_kailaScript {
     boatToArdyLoop();
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(549, 612);
-    // (next to Grape now)
+    totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 
@@ -413,10 +504,13 @@ public class AIOHarvester extends K_kailaScript {
 
     final Panel checkboxes = new Panel(new GridLayout(0, 1));
     final Panel grapeInfobox = new Panel(new GridLayout(0, 1));
-    final Panel wBerriesInfobox = new Panel(new GridLayout(0, 1));
-    final Panel cocoInfobox = new Panel(new GridLayout(0, 1));
-    final Panel papayaInfobox = new Panel(new GridLayout(0, 1));
     final Panel pineInfobox = new Panel(new GridLayout(0, 1));
+    final Panel papayaInfobox = new Panel(new GridLayout(0, 1));
+    final Panel cocoInfobox = new Panel(new GridLayout(0, 1));
+    final Panel dfInfobox = new Panel(new GridLayout(0, 1));
+    final Panel jangerInfobox = new Panel(new GridLayout(0, 1));
+    final Panel wBerriesInfobox = new Panel(new GridLayout(0, 1));
+
     final Panel containerInfobox = new Panel(new GridLayout(0, 1));
     Font bold_title = new Font(Font.SANS_SERIF, Font.BOLD, 14);
     Font small_info = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
@@ -430,28 +524,49 @@ public class AIOHarvester extends K_kailaScript {
     Label grapeLabel1 = new Label("*Start in Edge Bank with Herb Clippers");
     Label grapeLabel2 = new Label("*Recommend Armor against lvl 21 Scorpions");
 
+    Label pineTitle = new Label("Harvest Pineapple in Karamja");
+    Label pineLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
+    Label pineLabel2 = new Label("*Ardy teleport has not been implemented yet");
+
+    Label papayaTitle = new Label("Harvest Papaya in Karamja");
+    Label papayaLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
+    Label papayaLabel2 = new Label("*Ardy teleport has not been implemented yet");
+
+    Label cocoTitle = new Label("Harvest Coconuts in Karamja");
+    Label cocoLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
+    Label cocoLabel2 = new Label("*Ardy teleport has not been implemented yet");
+
+    Label dfTitle = new Label("Harvest Dragonfruit in Bededin Camp");
+    Label dfLabel1 = new Label("*Start near Shantay w/ Fruit Picker, Shantay Passes");
+    Label dfLabel2 = new Label("*Wear Desert robes and bring Water Skin.");
+    Label dfLabel3 = new Label("*Recommend 63 cmb against aggressives");
+
+    Label jangerTitle = new Label("Harvest Jangerberries in Feldip Hills");
+    Label jangerLabel1 = new Label("*Start in Yanille Bank with Herb Clippers");
+    Label jangerLabel2 = new Label("*Recommend Armor against lvl 21 Scorpions");
+
     Label wBerriesTitle = new Label("Harvest Whiteberries in Yanille dungeon");
     Label wBerriesLabel1 = new Label("*Start in Yanille Bank with Herb Clippers and Lockpick");
     Label wBerriesLabel2 = new Label("*Recommend level 109+ combat so Skellies are non aggressive");
     Label wBerriesLabel3 = new Label("*Requires 77 agility to not fail rope swing");
 
-    Label cocoTitle = new Label("Harvest Coconuts in Karamja");
-    Label cocoLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label cocoLabel2 = new Label("*Ardy teleport has not been implemented yet");
-    Label papayaTitle = new Label("Harvest Papaya in Karamja");
-    Label papayaLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label papayaLabel2 = new Label("*Ardy teleport has not been implemented yet");
-    Label pineTitle = new Label("Harvest Pineapple in Karamja");
-    Label pineLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label pineLabel2 = new Label("*Ardy teleport has not been implemented yet");
-
-    Panel[] infoBoxes = {grapeInfobox, wBerriesInfobox, cocoInfobox, papayaInfobox, pineInfobox};
+    Panel[] infoBoxes = {
+      grapeInfobox,
+      pineInfobox,
+      papayaInfobox,
+      cocoInfobox,
+      dfInfobox,
+      jangerInfobox,
+      wBerriesInfobox
+    };
     Label[][] allLabels = {
       {grapeTitle, grapeLabel1, grapeLabel2},
-      {wBerriesTitle, wBerriesLabel1, wBerriesLabel2, wBerriesLabel3},
-      {cocoTitle, cocoLabel1, cocoLabel2},
+      {pineTitle, pineLabel1, pineLabel2},
       {papayaTitle, papayaLabel1, papayaLabel2},
-      {pineTitle, pineLabel1, pineLabel2}
+      {cocoTitle, cocoLabel1, cocoLabel2},
+      {dfTitle, dfLabel1, dfLabel2, dfLabel3},
+      {jangerTitle, jangerLabel1, jangerLabel2},
+      {wBerriesTitle, wBerriesLabel1, wBerriesLabel2, wBerriesLabel3},
     };
 
     // Set up our infoboxes and format
@@ -467,6 +582,7 @@ public class AIOHarvester extends K_kailaScript {
     // add in the checkbox options on the right
     final Checkbox agilityCapeCheckBox = new Checkbox("99 Agility Cape Teleport?", true);
     final Checkbox ardyTeleCheckBox = new Checkbox("Teleport to Ardy?", false);
+    final Checkbox lumbTeleCheckBox = new Checkbox("Teleport to Lumbridge?", false);
     final Checkbox bringFoodCheckBox = new Checkbox("Bring food?", false);
     final Checkbox doStuff = new Checkbox("doStuff?", false);
     final Label foodAmountsLabel = new Label("Food Amount:");
@@ -475,6 +591,11 @@ public class AIOHarvester extends K_kailaScript {
     final Label space_saver_b = new Label();
     final Label space_saver_c = new Label();
     final Label space_saver_d = new Label();
+
+    Checkbox[] checkboxList =
+        new Checkbox[] {
+          agilityCapeCheckBox, ardyTeleCheckBox, lumbTeleCheckBox, bringFoodCheckBox, doStuff
+        };
 
     // Introduce right side options panel fields
     Choice foodType = new Choice();
@@ -511,28 +632,30 @@ public class AIOHarvester extends K_kailaScript {
     // Add left side script select options
     final java.awt.List list = new java.awt.List();
     list.add("Grapes");
-    list.add("Whiteberries");
-    list.add("Coconuts");
     list.add("Pineapple");
     list.add("Papaya");
-    list.add("Jangerberries");
-    list.add("Tav Limps/Snapes");
-    list.add("Ardy Limps/Snapes");
-    list.add("Tav Herbs");
+    list.add("Coconuts");
+    list.add("Dragonfruit");
+    // list.add("Jangerberries");
+    list.add("Whiteberries");
+    // list.add("Tav Limps/Snapes");
+    // list.add("Ardy Limps/Snapes");
+    // list.add("Tav Herbs");
+    // list.add("Corn");
+    // list.add("Red Cabbage");
+    // list.add("White Pumpkin");
     list.select(0);
     list.addItemListener(
         e -> {
           containerInfobox.invalidate();
-          containerInfobox.remove(grapeInfobox);
-          containerInfobox.remove(wBerriesInfobox);
-          containerInfobox.remove(cocoInfobox);
-          containerInfobox.remove(papayaInfobox);
-          containerInfobox.remove(pineInfobox);
           checkboxes.invalidate();
-          checkboxes.remove(bringFoodCheckBox);
-          checkboxes.remove(ardyTeleCheckBox);
-          checkboxes.remove(doStuff);
-          checkboxes.remove(agilityCapeCheckBox);
+
+          for (Panel infobox : infoBoxes) {
+            containerInfobox.remove(infobox);
+          }
+          for (Checkbox checkbox : checkboxList) {
+            checkboxes.remove(checkbox);
+          }
           checkboxes.remove(foodAmountsLabel);
           checkboxes.remove(foodAmountsField);
           checkboxes.remove(foodTypeLabel);
@@ -551,6 +674,25 @@ public class AIOHarvester extends K_kailaScript {
               checkboxes.add(foodTypeLabel);
               checkboxes.add(foodType);
               break;
+            case "Pineapple":
+              containerInfobox.add(pineInfobox);
+              checkboxes.add(ardyTeleCheckBox);
+              break;
+            case "Papaya":
+              containerInfobox.add(papayaInfobox);
+              checkboxes.add(ardyTeleCheckBox);
+              break;
+            case "Coconuts":
+              containerInfobox.add(cocoInfobox);
+              checkboxes.add(ardyTeleCheckBox);
+              break;
+            case "Dragonfruit":
+              containerInfobox.add(dfInfobox);
+              // checkboxes.add(lumbTeleCheckBox);
+              break;
+            case "Jangerberries":
+              containerInfobox.add(jangerInfobox);
+              break;
             case "Whiteberries":
               containerInfobox.add(wBerriesInfobox);
               checkboxes.add(agilityCapeCheckBox);
@@ -559,18 +701,6 @@ public class AIOHarvester extends K_kailaScript {
               checkboxes.add(foodAmountsField);
               checkboxes.add(foodTypeLabel);
               checkboxes.add(foodType);
-              break;
-            case "Coconuts":
-              containerInfobox.add(cocoInfobox);
-              checkboxes.add(ardyTeleCheckBox);
-              break;
-            case "Papaya":
-              containerInfobox.add(papayaInfobox);
-              checkboxes.add(ardyTeleCheckBox);
-              break;
-            case "Pineapple":
-              containerInfobox.add(pineInfobox);
-              checkboxes.add(ardyTeleCheckBox);
               break;
           }
           checkboxes.add(space_saver_a);
@@ -602,43 +732,83 @@ public class AIOHarvester extends K_kailaScript {
                 harvestItemId = ItemId.GRAPES.getId();
                 harvestToolId = ItemId.HERB_CLIPPERS.getId();
                 harvestObjectId = 1283;
-
                 break;
-              case "Whiteberries":
+              case "Pineapple":
                 scriptSelect = 1;
-                harvestToolId = ItemId.HERB_CLIPPERS.getId();
-                harvestItemId = ItemId.WHITE_BERRIES.getId();
-                teleportItemId = ItemId.AGILITY_CAPE.getId();
-                accessItemId = ItemId.LOCKPICK.getId();
-                accessItemAmount = 1;
-                harvestObjectId = 1260;
-                autoWalk = true;
-                capeTeleport = true;
+                harvestObjectId = SceneryId.PINEAPPLE_PLANT.getId();
+                harvestToolId = ItemId.FRUIT_PICKER.getId();
+                harvestItemId = ItemId.PINEAPPLE.getId();
+                accessItemId = new int[] {ItemId.COINS.getId()};
+                accessItemAmount = new int[] {1000};
+                break;
+              case "Papaya":
+                scriptSelect = 2;
+                harvestObjectId = SceneryId.PAPAYA_PALM.getId();
+                harvestToolId = ItemId.FRUIT_PICKER.getId();
+                harvestItemId = ItemId.PAPAYA.getId();
+                accessItemId = new int[] {ItemId.COINS.getId()};
+                accessItemAmount = new int[] {1000};
 
                 break;
               case "Coconuts":
-                scriptSelect = 2;
+                scriptSelect = 3;
+                harvestObjectId = SceneryId.COCONUT_PALM.getId();
                 harvestToolId = ItemId.FRUIT_PICKER.getId();
                 harvestItemId = ItemId.COCONUT.getId();
-                accessItemId = ItemId.COINS.getId();
-                accessItemAmount = 1000;
-                harvestObjectId = 1249;
+                accessItemId = new int[] {ItemId.COINS.getId()};
+                teleportItemIds =
+                    new int[] {
+                      ItemId.LAW_RUNE.getId(), ItemId.EARTH_RUNE.getId(), ItemId.AIR_RUNE.getId()
+                    };
+                teleportItemAmounts = new int[] {1, 1, 3};
+                accessItemAmount = new int[] {1000};
                 break;
-              case "Pineapple":
-                scriptSelect = 3;
-                harvestToolId = ItemId.FRUIT_PICKER.getId();
-                harvestItemId = ItemId.PINEAPPLE.getId();
-                accessItemId = ItemId.COINS.getId();
-                accessItemAmount = 1000;
-                harvestObjectId = 1251;
-                break;
-              case "Papaya":
+              case "Dragonfruit":
                 scriptSelect = 4;
                 harvestToolId = ItemId.FRUIT_PICKER.getId();
-                harvestItemId = ItemId.PAPAYA.getId();
-                accessItemId = ItemId.COINS.getId();
-                accessItemAmount = 1000;
-                harvestObjectId = 1250;
+                harvestItemId = ItemId.DRAGONFRUIT.getId();
+                //                teleportItemIds =
+                //                    new int[] {
+                //                      ItemId.LAW_RUNE.getId(), ItemId.EARTH_RUNE.getId(),
+                // ItemId.AIR_RUNE.getId()
+                //                    };
+                //                teleportItemAmounts = new int[] {1, 1, 3};
+                //                teleportBanking = lumbTeleCheckBox.getState();
+                //                if (teleportBanking) {
+                //                  accessItemAmount = new int[] {1000, 1, 1};
+                //                  accessItemId =
+                //                      new int[] {
+                //                        ItemId.COINS.getId(),
+                //                        ItemId.SHANTAY_DESERT_PASS.getId(),
+                //                        ItemId.FULL_WATER_SKIN.getId()
+                //                      };
+                //                } else {
+                accessItemAmount = new int[] {1, 1};
+                accessItemId =
+                    new int[] {ItemId.SHANTAY_DESERT_PASS.getId(), ItemId.FULL_WATER_SKIN.getId()};
+                // }
+                harvestObjectId = SceneryId.DRAGONFRUIT_TREE.getId();
+                break;
+              case "Jangerberries":
+                scriptSelect = 5;
+                harvestObjectId = SceneryId.JANGERBERRY_BUSH.getId();
+                harvestToolId = ItemId.FRUIT_PICKER.getId();
+                harvestItemId = ItemId.JANGERBERRIES.getId();
+                // accessItemId = ItemId.COINS.getId();
+                // accessItemAmount = new int[] {1000};
+                break;
+              case "Whiteberries":
+                scriptSelect = 6;
+                harvestObjectId = SceneryId.WHITEBERRY_BUSH.getId();
+                harvestToolId = ItemId.HERB_CLIPPERS.getId();
+                harvestItemId = ItemId.WHITE_BERRIES.getId();
+                accessItemId = new int[] {ItemId.LOCKPICK.getId()};
+                teleportItemIds = new int[] {ItemId.AGILITY_CAPE.getId()};
+                teleportItemAmounts = new int[] {1};
+                teleportBanking = agilityCapeCheckBox.getState();
+                accessItemAmount = new int[] {1};
+                autoWalk = true;
+
                 break;
               default:
                 throw new Error("unknown option");

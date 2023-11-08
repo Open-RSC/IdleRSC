@@ -12,6 +12,10 @@ import models.entities.QuestId;
 import models.entities.SkillId;
 import orsc.ORSCharacter;
 
+/* TODO: Add a method for atObjectUntilItemAmount(int[][] objectCoords, int itemId, int amount) for stuff like picking berries until getting amount
+ * TODO: Add a method for atObjectUntilItemAmount(int objectX, int objectY, int itemId, int amount) for stuff like picking berries until getting amount
+ */
+
 public class QH__QuestHandler extends IdleScript {
   protected static final Controller c = Main.getController();
   private static final BotController bc = new BotController(c);
@@ -19,11 +23,16 @@ public class QH__QuestHandler extends IdleScript {
   // QUEST START COORDINATES AND DESCRIPTIONS
   protected int[][] LUMBRIDGE_CASTLE_COURTYARD = {{120, 650}, {128, 665}};
   protected int[][] FALADOR_WEST_BANK = {{328, 549}, {334, 557}};
+  protected int[][] VARROCK_SQUARE = {{126, 505}, {137, 511}};
 
-  // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align to correctly set
-  // the START_DESCRIPTION in getStartDescriptions()
-  private int[][][] QUEST_START_LOCATIONS = {LUMBRIDGE_CASTLE_COURTYARD, FALADOR_WEST_BANK};
-  private String[] QUEST_START_DESCRIPTIONS = {"Lumbridge Castle Courtyard", "Falador West Bank"};
+  // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align
+  // to correctly set the START_DESCRIPTION in getStartDescriptions()
+  private int[][][] QUEST_START_LOCATIONS = {
+    LUMBRIDGE_CASTLE_COURTYARD, FALADOR_WEST_BANK, VARROCK_SQUARE
+  };
+  private String[] QUEST_START_DESCRIPTIONS = {
+    "Lumbridge Castle Courtyard", "Falador West Bank", "Varrock Square"
+  };
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT
   protected String QUEST_NAME, START_DESCRIPTION, CURRENT_QUEST_STEP = "";
@@ -77,7 +86,9 @@ public class QH__QuestHandler extends IdleScript {
       if (INVENTORY_SPACES_NEEDED > 30 - c.getInventoryItemCount()) {
         quit("Not enough empty inventory spaces");
       }
-      if (!isInRectangle(START_RECTANGLE)) {
+      if (START_RECTANGLE.length < 2) {
+        quit("no start area");
+      } else if (!isInRectangle(START_RECTANGLE)) {
         quit("Not in start area");
       } else {
         if (c.isRunning()) {
@@ -778,6 +789,9 @@ public class QH__QuestHandler extends IdleScript {
         break;
         // Players should never see the messages after this point if quest scripts are written
         // correctly
+      case "no start area":
+        quitMessage = "Start area was not defined";
+        break;
       case "npc not found":
         quitMessage = "May be too far away or have the wrong npc id";
         break;
@@ -834,10 +848,10 @@ public class QH__QuestHandler extends IdleScript {
       case 1:
         String itemName = c.getItemName(STEP_ITEMS[i][0]);
         itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
-        text = String.format("  %s %s", color, itemName);
+        text = String.format("%s %s", color, itemName);
         break;
       case 2:
-        text = String.format("  %s %s/%s", color, held, STEP_ITEMS[i][1]);
+        text = String.format("%s %s/%s", color, held, STEP_ITEMS[i][1]);
         break;
     }
     return text;
@@ -947,7 +961,13 @@ public class QH__QuestHandler extends IdleScript {
       int nextTop = 0;
 
       c.drawBoxAlpha(left, top, paintWidth, alphaBoxHeight * 2, bgColorMain, bgOpacity);
-      drawCenteredString("@whi@" + QUEST_NAME, paintWidth, top + 13, left, bgColorMain, 1);
+      drawCenteredString(
+          !IS_TESTING ? "@whi@" + QUEST_NAME : "@whi@" + QUEST_NAME + "   @gre@S:" + QUEST_STAGE,
+          paintWidth,
+          top + 13,
+          left,
+          bgColorMain,
+          1);
       drawCenteredString(
           "@yel@" + CURRENT_QUEST_STEP,
           paintWidth,
@@ -959,18 +979,25 @@ public class QH__QuestHandler extends IdleScript {
       if (STEP_ITEMS.length > 0) {
         for (int i = 0; i < STEP_ITEMS.length; i++) {
           String itemCount = getQuestStepItems(i, 2);
-          int itemCountSpacing = 160 - (7 * (itemCount.length() - 10));
+
+          // Is this terrible? Yes.... Does it work? YES!
+          // It was the only way I could get itemCountSpacing to scale with paintWidth while having
+          // the item amounts 6px from the right side.
+          int itemCountSpacing =
+              (paintWidth - (left * 2))
+                  - (int) (Math.round(7.34) * (itemCount.length() - 8))
+                  - (itemCount.length() == 9 ? 1 : 2);
 
           paintHeight += alphaBoxHeight;
           nextTop = top + (alphaBoxHeight * 2) + (i * alphaBoxHeight);
           c.drawBoxAlpha(left, nextTop, paintWidth, alphaBoxHeight, bgColorItems, bgOpacity);
-          c.drawString(getQuestStepItems(i, 1), left + 2, nextTop + 12, bgColorMain, 1);
+          c.drawString(getQuestStepItems(i, 1), (left * 2) - 2, nextTop + 12, bgColorMain, 1);
           c.drawString(itemCount, itemCountSpacing, nextTop + 12, bgColorMain, 1);
         }
       }
       c.drawBoxBorder(left, top, paintWidth, paintHeight, borderColor);
       // Used to check if the paint text is centered
-      /* if (IS_TESTING) c.drawLineVert((paintWidth / 2) + left, top, paintHeight, borderColor); */
+      if (IS_TESTING) c.drawLineVert((paintWidth / 2) + left, top, paintHeight, borderColor);
     }
   }
 }

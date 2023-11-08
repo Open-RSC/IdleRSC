@@ -214,7 +214,7 @@ public class AIOHarvester extends K_kailaScript {
         break;
       default:
         c.sleep(1240);
-        //c.log("Error, no walkback location");
+        // c.log("Error, no walkback location");
     }
   }
 
@@ -537,8 +537,8 @@ public class AIOHarvester extends K_kailaScript {
     Label cocoLabel2 = new Label("*Ardy teleport has not been implemented yet");
 
     Label dfTitle = new Label("Harvest Dragonfruit in Bededin Camp");
-    Label dfLabel1 = new Label("*Start near Shantay w/ Fruit Picker, Shantay Passes");
-    Label dfLabel2 = new Label("*Wear Desert robes and bring Water Skin.");
+    Label dfLabel1 = new Label("*Start near Shantay w/ Fruit Picker, Shantay Pass");
+    Label dfLabel2 = new Label("*Wear desert robes, but won't need waterskins");
     Label dfLabel3 = new Label("*Recommend 63 cmb against aggressives");
 
     Label jangerTitle = new Label("Harvest Jangerberries in Feldip Hills");
@@ -783,9 +783,11 @@ public class AIOHarvester extends K_kailaScript {
                 //                        ItemId.FULL_WATER_SKIN.getId()
                 //                      };
                 //                } else {
-                accessItemAmount = new int[] {1, 1};
+                accessItemAmount = new int[] {1}; // 1
                 accessItemId =
-                    new int[] {ItemId.SHANTAY_DESERT_PASS.getId(), ItemId.FULL_WATER_SKIN.getId()};
+                    new int[] {
+                      ItemId.SHANTAY_DESERT_PASS.getId()
+                    }; // , ItemId.FULL_WATER_SKIN.getId()
                 // }
                 harvestObjectId = SceneryId.DRAGONFRUIT_TREE.getId();
                 break;

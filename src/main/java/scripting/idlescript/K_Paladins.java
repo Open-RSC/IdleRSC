@@ -289,24 +289,30 @@ public final class K_Paladins extends K_kailaScript {
     if (goUpLadder) {
       c.setStatus("@gre@Walking to Bank..");
       c.walkTo(611, 1550);
-      c.atObject(611, 1551); // ladder in paladin room
-      c.sleep(640);
+      for (int i = 0; i < 10; i++) {
+        if (c.currentY() < 2000 && c.getNearestObjectById(5) != null) {
+          c.atObject(611, 1551); // ladder in paladin room
+          c.sleep(3 * GAME_TICK);
+        }
+      }
     }
     int[] scimCoords = c.getNearestItemById(427);
     if (scimCoords != null) { // Loot
       c.setStatus("@yel@Grabbing Black Scimmy..");
       c.walkTo(scimCoords[0], scimCoords[1]);
-      c.sleep(640);
       c.pickupItem(scimCoords[0], scimCoords[1], 427, true, true);
+      c.sleep(640);
     }
     int[] chestCoords = c.getNearestObjectById(338);
     boolean walkToBank = false;
     if (chestCoords != null) {
       c.setStatus("@red@Stealing From Chest..");
       c.walkTo(610, 2488);
-      c.sleep(GAME_TICK);
+      if (c.getInventoryItemCount() > 27 && c.getInventoryItemCount(foodId) > 0) {
+        dropItemAmount(foodId, c.getInventoryItemCount(foodId), true);
+      }
       c.atObject2(chestCoords[0], chestCoords[1]);
-      c.sleep(10 * GAME_TICK);
+      c.sleep(8 * GAME_TICK);
       if (c.currentX() == 610 && c.currentY() == 2488) {
         walkToBank = true;
       } else witchhavenToBank();
@@ -314,8 +320,14 @@ public final class K_Paladins extends K_kailaScript {
     if (walkToBank) {
       c.setStatus("@red@Chest Empty, Walking...");
       c.walkTo(611, 2494);
+      for (int i = 0; i < 10; i++) {
+        if (c.currentY() > 2000 && c.getNearestObjectById(6) != null) {
+          c.atObject(611, 2495); // go down ladder
+          c.sleep(3 * GAME_TICK);
+        }
+      }
       c.atObject(611, 2495); // go down ladder
-      c.sleep(2 * GAME_TICK);
+      c.sleep(10 * GAME_TICK);
       c.walkTo(609, 1548); // walk to door
       paladinDoorExiting(); // go through door
       c.walkTo(611, 1544);
@@ -350,9 +362,9 @@ public final class K_Paladins extends K_kailaScript {
 
   private void paladinDoorExiting() { // gate upstairs in paladins
     for (int i = 1; i <= 20; i++) {
-      if (c.currentX() == 609 && c.currentY() == 1547) {
+      if (c.currentX() == 609 && c.currentY() == 1548) {
         c.atWallObject(609, 1548); // locked door
-        c.sleep(2 * GAME_TICK);
+        c.sleep(4 * GAME_TICK);
       }
     }
   }
@@ -362,7 +374,7 @@ public final class K_Paladins extends K_kailaScript {
     for (int i = 1; i <= 20; i++) {
       if (c.currentX() == 609 && c.currentY() == 1547) {
         c.atWallObject2(609, 1548); // locked door
-        c.sleep(2 * GAME_TICK);
+        c.sleep(4 * GAME_TICK);
         while (c.isBatching()) c.sleep(GAME_TICK);
       }
     }

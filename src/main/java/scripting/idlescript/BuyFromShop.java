@@ -50,36 +50,28 @@ public class BuyFromShop extends K_kailaScript {
   }
 
   public void startWalking(int x, int y) {
-    // shitty autowalk
+    // *very* shitty autowalk
     int newX = x;
     int newY = y;
-    while (c.currentX() != x || c.currentY() != y) {
-      if (c.currentX() - x > 23) {
-        newX = c.currentX() - 10;
-      }
-      if (c.currentY() - y > 23) {
-        newY = c.currentY() - 10;
-      }
-      if (c.currentX() - x < -23) {
-        newX = c.currentX() + 10;
-      }
-      if (c.currentY() - y < -23) {
-        newY = c.currentY() + 10;
-      }
-      if (Math.abs(c.currentX() - x) <= 13) {
-        newX = x;
-      }
-      if (Math.abs(c.currentY() - y) <= 13) {
-        newY = y;
-      }
-      if (!c.isTileEmpty(newX, newY)) {
-        c.walkToAsync(newX, newY, 2);
-        c.sleep(640);
-      } else {
-        c.walkToAsync(newX, newY, 0);
-        c.sleep(640);
-      }
+    // while (c.currentX() != x || c.currentY() != y) {
+    if (c.currentX() - x > 23) {
+      newX = c.currentX() - 20;
+    } else if (c.currentX() - x < -23) {
+      newX = c.currentX() + 20;
     }
+    if (c.currentY() - y > 23) {
+      newY = c.currentY() - 20;
+    } else if (c.currentY() - y < -23) {
+      newY = c.currentY() + 20;
+    }
+    if (!c.isTileEmpty(newX, newY)) {
+      c.walkToAsync(newX, newY, 2);
+      c.sleep(2000);
+    } else {
+      c.walkTo(newX, newY);
+      c.sleep(2000);
+    }
+    // }
   }
 
   public boolean isSellable(int id) {
@@ -93,8 +85,12 @@ public class BuyFromShop extends K_kailaScript {
   public void scriptStart() {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() < 30) {
-        if (c.getNearestNpcByIds(npcId, false) == null) {
-          startWalking(startX, startY);
+        for (int i = 0; i < 100; i++) {
+          if (c.getNearestNpcByIds(npcId, false) == null) {
+            startWalking(startX, startY);
+          } else {
+            break;
+          }
         }
         if (c.getNearestNpcByIds(npcId, false) != null && !c.isInShop()) {
           if (npcId[0] != 54) {
@@ -121,9 +117,14 @@ public class BuyFromShop extends K_kailaScript {
         c.sleep(640);
       }
       if (c.getInventoryItemCount() == 30) {
-        startWalking(c.getNearestBank()[0], c.getNearestBank()[1]);
-        if (c.getNearestNpcById(95, false) == null) {
-          startWalking(c.getNearestBank()[0], c.getNearestBank()[1]);
+        if (c.currentX() > 65 || c.currentY() < 724) {
+          for (int i = 0; i < 100; i++) {
+            if (c.getNearestNpcByIds(c.bankerIds, false) == null) {
+              startWalking(c.getNearestBank()[0], c.getNearestBank()[1]);
+            } else {
+              break;
+            }
+          }
         }
         if (!c.isInBank()) {
           c.openBank();
@@ -132,9 +133,8 @@ public class BuyFromShop extends K_kailaScript {
         if (c.isInBank() && c.getInventoryItemCount() == 30) {
           for (int itemId : c.getInventoryItemIds()) {
             if (itemId != 0 && itemId != 10) {
-              c.depositItem(itemId, c.getInventoryItemCount(itemId));
-              c.sleep(640);
               purchased = purchased + c.getInventoryItemCount(itemId);
+              c.depositItem(itemId, c.getInventoryItemCount(itemId));
             }
           }
         }
@@ -149,10 +149,10 @@ public class BuyFromShop extends K_kailaScript {
       int x = c.currentX();
       int y = c.currentY();
 
-      if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
-      else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
-      else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
-      else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
+      if (c.isReachable(x + 1, y, false)) c.walkToAsync(x + 1, y, 0);
+      else if (c.isReachable(x - 1, y, false)) c.walkToAsync(x - 1, y, 0);
+      else if (c.isReachable(x, y + 1, false)) c.walkToAsync(x, y + 1, 0);
+      else if (c.isReachable(x, y - 1, false)) c.walkToAsync(x, y - 1, 0);
       c.sleep(GAME_TICK);
       next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
       long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;

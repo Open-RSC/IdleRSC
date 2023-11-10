@@ -20,14 +20,16 @@ import orsc.ORSCharacter;
  *          Add autostart sequence from fastPlate and change variables
  */
 public final class K_BankBowFletcher extends K_kailaScript {
-  private static final Controller con = Main.getController();
-  private static int logId = -1;
-  private static int logsInBank = 0;
-  private static int totalBows = 0;
-  private static boolean stringBows = false;
-  private static final int BOW_STRING = ItemId.BOW_STRING.getId();
-  private static final int KNIFE_ID = ItemId.KNIFE.getId();
-  private static final int[] unstrungIds = {
+  private final Controller con = Main.getController();
+  private int logId = -1;
+  private int logsInBank = 0;
+  private int logsCut = 0;
+  private int scriptOption = 0;
+  private int dialogOption = 0;
+  private int secondaryId = 0;
+  private final int BOW_STRING = ItemId.BOW_STRING.getId();
+  private final int KNIFE_ID = ItemId.KNIFE.getId();
+  private final int[] unstrungIds = {
     ItemId.UNSTRUNG_LONGBOW.getId(),
     ItemId.UNSTRUNG_OAK_LONGBOW.getId(),
     ItemId.UNSTRUNG_WILLOW_LONGBOW.getId(),
@@ -74,7 +76,7 @@ public final class K_BankBowFletcher extends K_kailaScript {
   private void scriptStart() {
     while (con.isRunning()) {
       if (con.getInventoryItemCount(logId) == 0
-          || (stringBows && con.getInventoryItemCount(BOW_STRING) == 0)
+          || (scriptOption == 1 && con.getInventoryItemCount(BOW_STRING) == 0)
           || con.getInventoryItemCount(KNIFE_ID) == 0) {
         if (!con.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
@@ -91,29 +93,17 @@ public final class K_BankBowFletcher extends K_kailaScript {
         }
         bank();
       }
-      if (con.getInventoryItemCount(logId) > 0) {
-        if (!stringBows) fletchingScript();
-        else stringScript();
-      }
+      if (con.getInventoryItemCount(logId) > 0) fletchingLoop();
     }
   }
 
-  private void stringScript() {
-    con.displayMessage("@gre@Stringing..");
-    con.setStatus("@gre@Stringing.");
+  private void fletchingLoop() {
+    con.displayMessage("@gre@Fletching arrow Shafts..");
+    con.setStatus("@gre@Fletching arrow Shafts..");
     con.useItemOnItemBySlot(
-        con.getInventoryItemSlotIndex(BOW_STRING), con.getInventoryItemSlotIndex(logId));
+        con.getInventoryItemSlotIndex(secondaryId), con.getInventoryItemSlotIndex(logId));
     con.sleep(2 * GAME_TICK);
-    while (con.isBatching()) con.sleep(GAME_TICK);
-  }
-
-  private void fletchingScript() {
-    con.displayMessage("@gre@Fletching..");
-    con.setStatus("@gre@Fletching..");
-    con.useItemOnItemBySlot(
-        con.getInventoryItemSlotIndex(KNIFE_ID), con.getInventoryItemSlotIndex(logId));
-    con.sleep(2 * GAME_TICK);
-    con.optionAnswer(2);
+    if (scriptOption == 0 || scriptOption == 2) con.optionAnswer(dialogOption);
     while (con.isBatching()) con.sleep(GAME_TICK);
   }
 
@@ -125,30 +115,27 @@ public final class K_BankBowFletcher extends K_kailaScript {
     if (!con.isInBank()) {
       waitForBankOpen();
     } else {
-      if (!stringBows) totalBows = totalBows + 29;
-      else totalBows = totalBows + 15;
+      if (scriptOption == 0 || scriptOption == 2) logsCut = logsCut + 29;
+      else logsCut = logsCut + 15;
       if (con.getBankItemCount(logId) < 30 // out of logs or unstrung
-          || (stringBows && con.getBankItemCount(BOW_STRING) < 30) // out of strings
-          || (!stringBows
+          || (scriptOption == 0 && con.getBankItemCount(BOW_STRING) < 30) // out of strings
+          || (scriptOption == 2
               && con.getBankItemCount(KNIFE_ID) == 0
               && con.getInventoryItemCount(KNIFE_ID) == 0)) {
-        con.setStatus("@red@NO Logs in the bank, Logging Out!.");
+        con.setStatus("@red@NO Logs/Strings/Knife in the bank, Logging Out!.");
         endSession();
       }
       if (con.getInventoryItemCount() > 0) {
         for (int itemId : con.getInventoryItemIds()) {
-          if (itemId != KNIFE_ID) {
-            con.depositItem(itemId, con.getInventoryItemCount(itemId));
-          }
+          con.depositItem(itemId, con.getInventoryItemCount(itemId));
         }
       }
       con.sleep(GAME_TICK);
-      if (!stringBows && con.getInventoryItemCount(KNIFE_ID) < 1) {
+      if ((scriptOption == 0 || scriptOption == 2) && con.getInventoryItemCount(KNIFE_ID) < 1) {
         con.withdrawItem(KNIFE_ID, 1);
-        con.sleep(GAME_TICK);
       }
       if (con.getInventoryItemCount() < 30) {
-        if (!stringBows) con.withdrawItem(logId, 29);
+        if (scriptOption == 0 || scriptOption == 2) con.withdrawItem(logId, 29);
         else {
           con.withdrawItem(logId, 15);
           con.sleep(GAME_TICK);
@@ -168,14 +155,26 @@ public final class K_BankBowFletcher extends K_kailaScript {
     JLabel logLabel = new JLabel("Log Type:");
     JComboBox<String> logField =
         new JComboBox<>(new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"});
-    JCheckBox stringBowsCheckbox = new JCheckBox("String Bows?", true);
+    JLabel optionLabel = new JLabel("Select Fletching Type:");
+    JComboBox<String> optionsField =
+        new JComboBox<>(new String[] {"Fletch Bows", "String Bows", "Make Arrow Shafts"});
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
-          stringBows = stringBowsCheckbox.isSelected();
-          if (!stringBows) logId = logIds[logField.getSelectedIndex()];
-          else logId = unstrungIds[logField.getSelectedIndex()];
+          scriptOption = optionsField.getSelectedIndex();
+          if (scriptOption == 0) { // fletching
+            logId = logIds[logField.getSelectedIndex()];
+            dialogOption = 2;
+            secondaryId = KNIFE_ID;
+          } else if (scriptOption == 1) { // stringing
+            logId = unstrungIds[logField.getSelectedIndex()];
+            secondaryId = BOW_STRING;
+          } else if (scriptOption == 2) { // arrow shafts
+            logId = logIds[logField.getSelectedIndex()];
+            dialogOption = 0;
+            secondaryId = KNIFE_ID;
+          } else c.log("Error in script option");
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
@@ -190,7 +189,8 @@ public final class K_BankBowFletcher extends K_kailaScript {
     scriptFrame.add(batchLabel2);
     scriptFrame.add(logLabel);
     scriptFrame.add(logField);
-    scriptFrame.add(stringBowsCheckbox);
+    scriptFrame.add(optionLabel);
+    scriptFrame.add(optionsField);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
@@ -208,7 +208,7 @@ public final class K_BankBowFletcher extends K_kailaScript {
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        successPerHr = (int) (totalBows * scale);
+        successPerHr = (int) (logsCut * scale);
       } catch (Exception e) {
         // divide by zero
       }
@@ -216,10 +216,10 @@ public final class K_BankBowFletcher extends K_kailaScript {
       int y = 21;
       con.drawString("@red@Fast Bow Fletcher @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       con.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
-      if (!stringBows)
+      if (scriptOption == 0 || scriptOption == 2)
         con.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
       else con.drawString("@whi@Unstrung Bows in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
-      con.drawString("@whi@Longbows Made: @yel@" + totalBows, x, y + (14 * 2), 0xFFFFFF, 1);
+      con.drawString("@whi@Logs Cut: @yel@" + logsCut, x, y + (14 * 2), 0xFFFFFF, 1);
       con.drawString(
           "@whi@Longbows Per Hr: @yel@" + String.format("%,d", successPerHr) + "@yel@/@whi@hr",
           x,
@@ -227,7 +227,7 @@ public final class K_BankBowFletcher extends K_kailaScript {
           0xFFFFFF,
           1);
       con.drawString(
-          "@whi@Time Remaining: " + con.timeToCompletion(totalBows, logsInBank, startTime),
+          "@whi@Time Remaining: " + con.timeToCompletion(logsCut, logsInBank, startTime),
           x,
           y + (14 * 4),
           0xFFFFFF,

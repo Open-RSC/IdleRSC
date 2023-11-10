@@ -19,7 +19,7 @@ import orsc.ORSCharacter;
  *      todo
  *          Add autostart sequence from fastPlate and change variables
  */
-public final class K_BankBowFletcher extends K_kailaScript {
+public final class K_BankFletcher extends K_kailaScript {
   private final Controller con = Main.getController();
   private int logId = -1;
   private int logsInBank = 0;

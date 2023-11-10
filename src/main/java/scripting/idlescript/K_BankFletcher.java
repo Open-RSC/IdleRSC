@@ -103,7 +103,7 @@ public final class K_BankFletcher extends K_kailaScript {
     con.useItemOnItemBySlot(
         con.getInventoryItemSlotIndex(secondaryId), con.getInventoryItemSlotIndex(logId));
     con.sleep(2 * GAME_TICK);
-    if (scriptOption == 0 || scriptOption == 2) con.optionAnswer(dialogOption);
+    if (scriptOption == 0 || scriptOption == 2 || scriptOption == 3) con.optionAnswer(dialogOption);
     while (con.isBatching()) con.sleep(GAME_TICK);
   }
 
@@ -115,7 +115,7 @@ public final class K_BankFletcher extends K_kailaScript {
     if (!con.isInBank()) {
       waitForBankOpen();
     } else {
-      if (scriptOption == 0 || scriptOption == 2) logsCut = logsCut + 29;
+      if (scriptOption == 0 || scriptOption == 2 || scriptOption == 3) logsCut = logsCut + 29;
       else logsCut = logsCut + 15;
       if (con.getBankItemCount(logId) < 30 // out of logs or unstrung
           || (scriptOption == 0 && con.getBankItemCount(BOW_STRING) < 30) // out of strings
@@ -131,11 +131,11 @@ public final class K_BankFletcher extends K_kailaScript {
         }
       }
       con.sleep(GAME_TICK);
-      if ((scriptOption == 0 || scriptOption == 2) && con.getInventoryItemCount(KNIFE_ID) < 1) {
+      if ((scriptOption == 0 || scriptOption == 2 || scriptOption == 3) && con.getInventoryItemCount(KNIFE_ID) < 1) {
         con.withdrawItem(KNIFE_ID, 1);
       }
       if (con.getInventoryItemCount() < 30) {
-        if (scriptOption == 0 || scriptOption == 2) con.withdrawItem(logId, 29);
+        if (scriptOption == 0 || scriptOption == 2 || scriptOption == 3) con.withdrawItem(logId, 29);
         else {
           con.withdrawItem(logId, 15);
           con.sleep(GAME_TICK);
@@ -157,7 +157,7 @@ public final class K_BankFletcher extends K_kailaScript {
         new JComboBox<>(new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"});
     JLabel optionLabel = new JLabel("Select Fletching Type:");
     JComboBox<String> optionsField =
-        new JComboBox<>(new String[] {"Fletch Bows", "String Bows", "Make Arrow Shafts"});
+        new JComboBox<>(new String[] {"Fletch Longbows", "String Bows", "Make Arrow Shafts", "Fletch Shortbows(less xp)"});
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
@@ -173,6 +173,10 @@ public final class K_BankFletcher extends K_kailaScript {
           } else if (scriptOption == 2) { // arrow shafts
             logId = logIds[logField.getSelectedIndex()];
             dialogOption = 0;
+            secondaryId = KNIFE_ID;
+          } else if (scriptOption == 3) { // shortbow
+            logId = logIds[logField.getSelectedIndex()];
+            dialogOption = 1;
             secondaryId = KNIFE_ID;
           } else c.log("Error in script option");
           scriptFrame.setVisible(false);
@@ -216,7 +220,7 @@ public final class K_BankFletcher extends K_kailaScript {
       int y = 21;
       con.drawString("@red@Fast Bow Fletcher @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       con.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
-      if (scriptOption == 0 || scriptOption == 2)
+      if (scriptOption == 0 || scriptOption == 2 || scriptOption == 3)
         con.drawString("@whi@Logs in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
       else con.drawString("@whi@Unstrung Bows in bank: @yel@" + logsInBank, x, y + 14, 0xFFFFFF, 1);
       con.drawString("@whi@Logs Cut: @yel@" + logsCut, x, y + (14 * 2), 0xFFFFFF, 1);

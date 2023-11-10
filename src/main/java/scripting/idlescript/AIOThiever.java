@@ -9,6 +9,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import models.entities.EquipSlotIndex;
 import orsc.ORSCharacter;
 
 /**
@@ -191,6 +193,12 @@ public class AIOThiever extends IdleScript {
           c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(target.id, false);
           if (npc != null && npc.serverIndex > 0) {
+            //add warning about weilding weapon
+            if(c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
+              c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
+              c.log("weapons when thieving, it severely drops xp rates for everyone, including you!");
+              if(c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
+            }
             c.setStatus("@red@Stealing..");
             c.npcCommand1(npc.serverIndex);
             c.sleep(5);
@@ -515,7 +523,7 @@ public class AIOThiever extends IdleScript {
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (banking only)");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(0));
     JLabel weaponWarningLabel =
-        new JLabel("Never wear weapon for pickpocketing, do wear for stalls");
+        new JLabel("NEVER WEAR WEAPONS for pickpocketing, only wear for stalls");
     JButton startScriptButton = new JButton("Start");
 
     for (ThievingObject obj : objects) {

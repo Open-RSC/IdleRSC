@@ -106,8 +106,8 @@ public final class K_ArdyMossGiants extends K_kailaScript {
       scriptStarted = true;
     }
     if (!guiSetup) {
-      setupGUI();
       guiSetup = true;
+      setupGUI();
     }
     if (scriptStarted) {
       guiSetup = false;

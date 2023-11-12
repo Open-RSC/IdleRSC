@@ -58,7 +58,7 @@ public class FarmMassGive extends IdleScript {
 
             return 8000; // liberal timing for synchronizaiton
           } else {
-            controller.setTradeItems(new int[] {id}, new int[] {amount});
+            controller.setTradeItems(new int[] {id}, new int[] {amount}, false);
             controller.sleep(3000);
             controller.acceptTrade();
             return 3000;

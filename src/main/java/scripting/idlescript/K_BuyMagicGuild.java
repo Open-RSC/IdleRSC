@@ -163,7 +163,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
       //      else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
       //      else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
       //      else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
-      c.walkTo(600, 1702); // walk to just outside doorway
+      c.walkTo(600, 1700); // walk to just outside doorway
       c.sleep(GAME_TICK);
       next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
       long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;

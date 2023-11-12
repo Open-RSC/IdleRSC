@@ -163,7 +163,7 @@ public class AIOHarvester extends K_kailaScript {
     } else {
       totalHarvestedCount = totalHarvestedCount + c.getInventoryItemCount(harvestItemId);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != teleportItemIds[0] && itemId != accessItemId[0] && itemId != harvestToolId) {
+        if (itemId != harvestToolId) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
@@ -539,7 +539,7 @@ public class AIOHarvester extends K_kailaScript {
     Label dfTitle = new Label("Harvest Dragonfruit in Bededin Camp");
     Label dfLabel1 = new Label("*Start near Shantay w/ Fruit Picker, Shantay Pass");
     Label dfLabel2 = new Label("*Wear desert robes, but won't need waterskins");
-    Label dfLabel3 = new Label("*Recommend 63 cmb against aggressives");
+    Label dfLabel3 = new Label("*Recommend 63+ cmb against aggressive wolfs");
 
     Label jangerTitle = new Label("Harvest Jangerberries in Feldip Hills");
     Label jangerLabel1 = new Label("*Start in Yanille Bank with Herb Clippers");
@@ -689,6 +689,11 @@ public class AIOHarvester extends K_kailaScript {
             case "Dragonfruit":
               containerInfobox.add(dfInfobox);
               // checkboxes.add(lumbTeleCheckBox);
+              checkboxes.add(bringFoodCheckBox);
+              checkboxes.add(foodAmountsLabel);
+              checkboxes.add(foodAmountsField);
+              checkboxes.add(foodTypeLabel);
+              checkboxes.add(foodType);
               break;
             case "Jangerberries":
               containerInfobox.add(jangerInfobox);

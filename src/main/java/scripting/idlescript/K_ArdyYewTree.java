@@ -69,8 +69,8 @@ public final class K_ArdyYewTree extends K_kailaScript {
       }
     }
     if (!guiSetup) {
-      setupGUI();
       guiSetup = true;
+      setupGUI();
     }
     if (scriptStarted) {
       guiSetup = false;

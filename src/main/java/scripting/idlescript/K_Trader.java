@@ -171,6 +171,8 @@ public class K_Trader extends K_kailaScript {
   public void setupGUI() {
     JLabel title = new JLabel("K_Trader ~ by Kaila");
     JLabel label1 = new JLabel("Trade items to another player (coleslaw only)");
+    JLabel label2 = new JLabel("Withdraw 1 of each item, run with PrintIds");
+    JLabel label3 = new JLabel("Copy Id string from console and paste to ItemIds");
     JLabel traderTypeLabel = new JLabel("Trader type Select, or PrintIds");
     JComboBox<String> traderTypeField =
         new JComboBox<>(new String[] {"Giver", "Receiver", "Print inventory itemIds in Console"});
@@ -208,6 +210,8 @@ public class K_Trader extends K_kailaScript {
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     scriptFrame.add(title);
     scriptFrame.add(label1);
+    scriptFrame.add(label2);
+    scriptFrame.add(label3);
     scriptFrame.add(traderTypeLabel);
     scriptFrame.add(traderTypeField);
     scriptFrame.add(playerNameLabel);

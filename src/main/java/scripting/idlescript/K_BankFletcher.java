@@ -131,11 +131,13 @@ public final class K_BankFletcher extends K_kailaScript {
         }
       }
       con.sleep(GAME_TICK);
-      if ((scriptOption == 0 || scriptOption == 2 || scriptOption == 3) && con.getInventoryItemCount(KNIFE_ID) < 1) {
+      if ((scriptOption == 0 || scriptOption == 2 || scriptOption == 3)
+          && con.getInventoryItemCount(KNIFE_ID) < 1) {
         con.withdrawItem(KNIFE_ID, 1);
       }
       if (con.getInventoryItemCount() < 30) {
-        if (scriptOption == 0 || scriptOption == 2 || scriptOption == 3) con.withdrawItem(logId, 29);
+        if (scriptOption == 0 || scriptOption == 2 || scriptOption == 3)
+          con.withdrawItem(logId, 29);
         else {
           con.withdrawItem(logId, 15);
           con.sleep(GAME_TICK);
@@ -157,7 +159,10 @@ public final class K_BankFletcher extends K_kailaScript {
         new JComboBox<>(new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"});
     JLabel optionLabel = new JLabel("Select Fletching Type:");
     JComboBox<String> optionsField =
-        new JComboBox<>(new String[] {"Fletch Longbows", "String Bows", "Make Arrow Shafts", "Fletch Shortbows(less xp)"});
+        new JComboBox<>(
+            new String[] {
+              "Fletch Longbows", "String Bows", "Make Arrow Shafts", "Fletch Shortbows(less xp)"
+            });
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

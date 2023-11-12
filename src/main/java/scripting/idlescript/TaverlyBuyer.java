@@ -386,7 +386,7 @@ public class TaverlyBuyer extends IdleScript {
             1);
       } else { // pestal
         controller.drawString(
-            "@gre@Pestal's bought: @whi@"
+            "@gre@Pestals bought: @whi@"
                 + String.format("%,d", pestalBought)
                 + " @gre@(@whi@"
                 + String.format("%,d", pestalPerHr)
@@ -396,7 +396,7 @@ public class TaverlyBuyer extends IdleScript {
             0xFFFFFF,
             1);
         controller.drawString(
-            "@gre@Newts in bank: @whi@" + String.format("%,d", pestalBanked),
+            "@gre@Pestals in bank: @whi@" + String.format("%,d", pestalBanked),
             10,
             21 + (14 * 2),
             0xFFFFFF,

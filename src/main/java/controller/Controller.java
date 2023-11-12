@@ -2519,7 +2519,18 @@ public class Controller {
       return false;
     }
   }
-
+  /**
+   * Retrieves whether or not the item is notable.
+   *
+   * @param itemId int
+   */
+  public boolean isItemNotable(int itemId) {
+    try {
+      return EntityHandler.getItemDef(itemId).noteable;
+    } catch (Exception e) {
+      return false;
+    }
+  }
   /**
    * Retrieves the name of the specified item.
    *
@@ -3562,10 +3573,11 @@ public class Controller {
    *
    * @param itemIds -- int[]
    * @param amounts -- int[]
+   * @param notableItems -- boolean if trade will contain noted items
    * @return boolean -- returns true on success. false on mismatched array lengths or if you do not
    *     have enough of an item.
    */
-  public boolean setTradeItems(int[] itemIds, int[] amounts) {
+  public boolean setTradeItems(int[] itemIds, int[] amounts, boolean notableItems) {
     if (itemIds.length != amounts.length) return false;
 
     for (int i = 0; i < itemIds.length; i++)
@@ -3578,7 +3590,12 @@ public class Controller {
     for (int i = 0; i < itemIds.length; i++) {
       mud.packetHandler.getClientStream().bufferBits.putShort(itemIds[i]);
       mud.packetHandler.getClientStream().bufferBits.putInt(amounts[i]);
-      mud.packetHandler.getClientStream().bufferBits.putShort(0); // TODO: fix for noted, 1 = noted
+      if (isItemStackable(itemIds[i]) || !notableItems) {
+        mud.packetHandler.getClientStream().bufferBits.putShort(0);
+      } else {
+        // TODO: fix for noted,0 = unnoted 1 = noted
+        mud.packetHandler.getClientStream().bufferBits.putShort(1);
+      }
     }
 
     mud.packetHandler.getClientStream().finishPacket();
@@ -3587,10 +3604,9 @@ public class Controller {
 
     return true;
   }
-
   /** Removes all trade items from the current trade window. */
   public void removeAllTradeItems() {
-    setTradeItems(new int[] {}, new int[] {});
+    setTradeItems(new int[] {}, new int[] {}, true);
   }
 
   /**

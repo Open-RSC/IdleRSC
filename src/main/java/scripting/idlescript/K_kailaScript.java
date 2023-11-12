@@ -1023,18 +1023,65 @@ public class K_kailaScript extends IdleScript {
    *
    *
    */
-  /** if bank is not open, wait 2 ticks, repeat check. repeats 16 times. */
+  /** if bank is not open, wait 2 ticks, repeat check. repeats 20 times. */
   protected static void waitForBankOpen() {
-    for (int i = 0; i <= 15; i++) {
+    for (int i = 0; i <= 20; i++) {
+      if (!c.isRunning()) break;
       if (!c.isInBank()) {
-        // c.log("waiting for bank");
         c.sleep(2 * GAME_TICK);
       } else {
         break;
       }
     }
   }
+  /** if trade screen is not open, wait 3 ticks, trade again, repeat check. repeats 200 times. */
+  protected static void waitForTradeOpen(String playerName) {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (!c.isInTrade()) {
+        c.tradePlayer(c.getPlayerServerIndexByName(playerName));
+        c.sleep(3 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
 
+  /** if trade confirmation screen is not open, wait 2 ticks, repeat check. repeats 200 times. */
+  protected static void waitForTradeConfirmation() {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (!c.isInTradeConfirmation()) {
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+  /** if trade confirmation screen is not open, wait 2 ticks, repeat check. repeats 200 times. */
+  protected static void waitForTradeConfirmationToClose() {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (c.isInTradeConfirmation()) {
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+  /**
+   * if trade is not confirmed by the other player, wait 2 ticks, repeat check. repeats 200 times.
+   */
+  protected static void waitForTradeRecipientAccepting() {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (!c.isTradeRecipientAccepting()) {
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
   /**
    * Withdraw amount of item from the bank, accepts any itemId or withdraw Amount. For potions or
    * food use withdrawFood() or other methods below this. Withdraws none if inventory count is the

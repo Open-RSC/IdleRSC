@@ -255,7 +255,7 @@ public abstract class Script {
    */
   public void TradeArray(int[] item, int[] amount) {
     Main.logMethod("TradeArray", item, amount);
-    controller.setTradeItems(item, amount);
+    controller.setTradeItems(item, amount, false);
   }
   /** Not used, but remains for compatability; trades will automatically update. */
   void UpdateTrade() {

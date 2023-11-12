@@ -5,7 +5,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
 import models.entities.EquipSlotIndex;
 import orsc.ORSCharacter;
 
@@ -189,10 +188,11 @@ public final class K_Paladins extends K_kailaScript {
         c.setStatus("@yel@Thieving Paladins");
         ORSCharacter npc = c.getNearestNpcById(323, false);
         if (npc != null) {
-          if(c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
+          if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
             c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
             c.log("weapons when thieving, it severely drops xp rates for everyone, including you!");
-            if(c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
+            c.chatMessage("I did something bad and tried to wield a weapon while thieving");
+            if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
           }
           c.thieveNpc(npc.serverIndex);
           c.sleep(640); // this sleep time is important //was 300

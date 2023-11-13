@@ -101,6 +101,7 @@ public class WaterFiller extends K_kailaScript {
     startScriptButton.addActionListener(
         e -> {
           if (itemField.getSelectedIndex() == 0) {
+            c.log("The varrock apothecary can fill all vials for a small fee.");
             emptyId = ItemId.EMPTY_VIAL.getId();
             fullId = ItemId.VIAL.getId();
           } else if (itemField.getSelectedIndex() == 1) {

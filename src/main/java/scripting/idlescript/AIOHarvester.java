@@ -585,8 +585,15 @@ public class AIOHarvester extends K_kailaScript {
     final Checkbox lumbTeleCheckBox = new Checkbox("Teleport to Lumbridge?", false);
     final Checkbox bringFoodCheckBox = new Checkbox("Bring food?", false);
     final Checkbox doStuff = new Checkbox("doStuff?", false);
+
     final Label foodAmountsLabel = new Label("Food Amount:");
+    TextField foodAmountsField = new TextField(String.valueOf(1));
     final Label foodTypeLabel = new Label("Food Type:");
+    Choice foodType = new Choice();
+    for (String str : foodTypes) {
+      foodType.add(str);
+    }
+
     final Label space_saver_a = new Label();
     final Label space_saver_b = new Label();
     final Label space_saver_c = new Label();
@@ -597,13 +604,8 @@ public class AIOHarvester extends K_kailaScript {
           agilityCapeCheckBox, ardyTeleCheckBox, lumbTeleCheckBox, bringFoodCheckBox, doStuff
         };
 
-    // Introduce right side options panel fields
-    Choice foodType = new Choice();
-    for (String str : foodTypes) {
-      foodType.add(str);
-    }
+    // set defaults
     foodType.select(2);
-    TextField foodAmountsField = new TextField(String.valueOf(1));
     ardyTeleCheckBox.setEnabled(false);
     foodType.setEnabled(false);
     foodAmountsField.setEnabled(false);

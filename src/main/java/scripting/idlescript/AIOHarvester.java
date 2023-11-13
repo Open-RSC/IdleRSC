@@ -879,7 +879,7 @@ public class AIOHarvester extends K_kailaScript {
     containerInfobox.add(grapeInfobox);
 
     // Setup window
-    scriptFrame.setSize(370, 460); // was 415, 550?
+    scriptFrame.setSize(350, 420); // was 415, 550?
     scriptFrame.setMinimumSize(scriptFrame.getSize());
 
     scriptFrame.add(middle, BorderLayout.CENTER);

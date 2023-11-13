@@ -318,7 +318,7 @@ public class AIOFighter extends IdleScript {
     }
   }
 
-  private static void moveCharacter() {
+  private void moveCharacter() {
     Controller c = Main.getController();
     int x = c.currentX();
     int y = c.currentY();

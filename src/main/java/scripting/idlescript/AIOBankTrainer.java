@@ -6,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import models.entities.ItemId;
-import models.entities.SceneryId;
-import models.entities.SkillId;
 
 /**
  * <b>Berry Harvester</b>
@@ -41,13 +39,12 @@ public class AIOBankTrainer extends K_kailaScript {
   private int[] accessItemId;
   private int[] accessItemAmount;
   private int primaryItemId = 0;
-  private int primaryItemAmount = -1;
+  private String processedItemName = "";
+  private int primaryItemAmount = 0;
   private int secondaryItemId = -1;
-  private int secondaryItemAmount = -1;
+  private int secondaryItemAmount = 0;
   private int dialogOption = -1;
   private int resultItemId = -1;
-  private int harvestToolId = -1;
-  private int harvestObjectId = -1;
   private boolean autoWalk = false;
 
   /**
@@ -58,13 +55,6 @@ public class AIOBankTrainer extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    if (parameters.length > 0 && !parameters[0].isEmpty()) {
-      if (parameters[0].toLowerCase().startsWith("auto")) {
-        c.displayMessage("Auto-starting, Picking Berries", 0);
-        scriptStarted = true;
-        guiSetup = false;
-      }
-    }
     if (!guiSetup) {
       guiSetup = true;
       setupGUI();
@@ -74,21 +64,15 @@ public class AIOBankTrainer extends K_kailaScript {
       scriptStarted = false;
       startTime = System.currentTimeMillis();
       if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
-      if (scriptSelect == 6 && c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
-      c.displayMessage("@red@AIOHarvester ~ By @mag@Kaila");
-      if (c.getBaseStat(SkillId.HARVESTING.getId()) == 99
-          && !c.isItemIdEquipped(ItemId.HARVESTING_CAPE.getId())) {
-        c.displayMessage("@red@Looks like you have 99 Harvesting");
-        c.displayMessage("@red@Talk to Lily in Lumbridge to get a harvesting skill cape");
-        c.displayMessage("@red@It will increase your harvesting yeild to wear it.");
-      }
+      c.displayMessage("@red@AIO Bank Trainer ~ By @mag@Kaila");
       if (c.isInBank()) c.closeBank();
-      for (int bankerId : c.bankerIds) {
-        if (c.getNearestNpcById(bankerId, false) != null || c.getNearestObjectById(942) != null) {
-          bank();
-          break;
-        }
-      }
+      //      for (int bankerId : c.bankerIds) {
+      //        if (c.getNearestNpcById(bankerId, false) != null || c.getNearestObjectById(942) !=
+      // null) {
+      //          bank();
+      //          break;
+      //        }
+      //      }
       c.toggleBatchBarsOn();
       scriptStart();
     }
@@ -97,22 +81,20 @@ public class AIOBankTrainer extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (bringFood) ate = eatFood();
-      if (c.getInventoryItemCount() == 30 || timeToBank || (bringFood && !ate)) {
+      // if (bringFood) ate = eatFood();
+      if (c.getInventoryItemCount(primaryItemId) == 0
+          || c.getInventoryItemCount(secondaryItemId) == 0) { // (bringFood && !ate)
         c.setStatus("@red@Banking..");
-        timeToBank = false;
         bank();
       }
-      // drop empty water skins
-      if (c.getInventoryItemCount(1085) > 0) c.dropItem(c.getInventoryItemSlotIndex(1085));
-      if (!harvestLoop()) { // if nothing to harvest
-        c.setStatus("@yel@Waiting for spawn..");
-        c.sleep(GAME_TICK);
+      if (scriptSelect == 2) { // bury bones
+        buryLoop();
+      } else {
+        inventoryProcessLoop();
       }
       if (autoWalk && System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
-        c.walkTo(c.currentX() - 1, c.currentY(), 0, true);
-        c.sleep(GAME_TICK);
+        moveCharacter();
         next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
         long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
         c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
@@ -120,21 +102,26 @@ public class AIOBankTrainer extends K_kailaScript {
     }
   }
 
-  private boolean harvestLoop() {
-    c.setStatus("@yel@Harvesting Items..");
-    int[] coords = c.getNearestObjectById(harvestObjectId);
-    if (coords != null) {
-      c.setStatus("@yel@Harvesting...");
-      c.atObject(coords[0], coords[1]);
-      c.sleep(2000);
-      while (c.isBatching()
-          && c.getInventoryItemCount() != 30
-          && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
-        c.sleep(GAME_TICK);
-      }
-      return true;
+  private void buryLoop() {
+    while (c.getInventoryItemCount(primaryItemId) > 0 && c.isRunning()) {
+      c.setStatus("@yel@Burying..");
+      c.itemCommand(primaryItemId);
+      c.sleep(100);
     }
-    return false;
+  }
+
+  private void inventoryProcessLoop() {
+    c.setStatus("@yel@Using Items..");
+    c.useItemOnItemBySlot(
+        c.getInventoryItemSlotIndex(primaryItemId), c.getInventoryItemSlotIndex(secondaryItemId));
+    c.sleep(GAME_TICK);
+    if (c.isInOptionMenu() && dialogOption != -1) {
+      c.optionAnswer(dialogOption);
+      c.sleep(2 * GAME_TICK);
+    }
+    while (c.isBatching() && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
+      c.sleep(GAME_TICK);
+    }
   }
 
   private void bank() { // works for all
@@ -144,32 +131,54 @@ public class AIOBankTrainer extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-      totalProcessedCount = totalProcessedCount + c.getInventoryItemCount(resultItemId);
+      if (scriptSelect == 2) { // bury bones
+        totalProcessedCount = totalProcessedCount + 30;
+      } else {
+        totalProcessedCount = totalProcessedCount + c.getInventoryItemCount(resultItemId);
+      }
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != harvestToolId) {
-          c.depositItem(itemId, c.getInventoryItemCount(itemId));
-        }
+        c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
-      for (int i = 0; i < accessItemId.length; i++) {
-        if (accessItemId[i] != 0
-            && c.getInventoryItemCount(accessItemId[i]) < accessItemAmount[i]) {
-          withdrawItem(accessItemId[i], accessItemAmount[i]);
-        }
-      }
-      if (c.getInventoryItemCount(harvestToolId) < 1) { // withdraw harvest tool
-        if (c.getBankItemCount(harvestToolId) > 0) {
-          c.withdrawItem(harvestToolId, 1);
+      if (c.getInventoryItemCount(primaryItemId) < primaryItemAmount) { // withdraw harvest tool
+        if (c.getBankItemCount(primaryItemId) > 0) {
+          c.withdrawItem(primaryItemId, primaryItemAmount - c.getInventoryItemCount(primaryItemId));
           c.sleep(GAME_TICK);
         } else {
-          c.displayMessage("@red@You need a harvesting tool for this!");
+          c.displayMessage("@red@You are out of something!");
+          c.stop();
         }
       }
-      if (bringFood) withdrawFood(foodId, foodWithdrawAmount);
+      if (c.getInventoryItemCount(secondaryItemId) < secondaryItemAmount) { // withdraw harvest tool
+        if (c.getBankItemCount(secondaryItemId) > 0) {
+          c.withdrawItem(
+              secondaryItemId, secondaryItemAmount - c.getInventoryItemCount(secondaryItemId));
+          c.sleep(GAME_TICK);
+        } else {
+          c.displayMessage("@red@You are out of something!");
+          c.stop();
+        }
+      }
+      // if (bringFood) withdrawFood(foodId, foodWithdrawAmount);
       processedItemInBank = c.getBankItemCount(resultItemId);
+      totalTrips++;
       c.closeBank();
       c.sleep(GAME_TICK);
       if (bringFood) eatFood();
     }
+  }
+
+  private void moveCharacter() {
+    int x = c.currentX();
+    int y = c.currentY();
+
+    if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
+    else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
+    else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
+    else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
+
+    c.sleep(1280);
+
+    c.walkTo(x, y, 0, false);
   }
 
   private void setupGUI() {
@@ -289,18 +298,18 @@ public class AIOBankTrainer extends K_kailaScript {
     //        c.log("setting");
     //        comboBoxLabel1[i].add(str);
     //    }
-    Choice[] comboBoxField1 = new Choice[] {new Choice(), new Choice(), new Choice()};
+    Choice[] comboBoxField1 = new Choice[comboField1.length];
     for (int i = 0; i < comboBoxField1.length; i++) {
+      comboBoxField1[i] = new Choice();
       for (String str : comboField1[i]) {
-        c.log("setting");
         comboBoxField1[i].add(str);
       }
     }
-    Choice[] comboBoxField2 = new Choice[] {new Choice()};
+    Choice[] comboBoxField2 = new Choice[comboField2.length];
     for (int i = 0; i < comboBoxField2.length; i++) {
+      comboBoxField2[i] = new Choice();
       for (String str : comboField2[i]) {
-        c.log("setting");
-        comboBoxField1[i].add(str);
+        comboBoxField2[i].add(str);
       }
     }
     // initialzite for fletching
@@ -482,6 +491,7 @@ public class AIOBankTrainer extends K_kailaScript {
               ItemId.YEW_LOGS.getId(),
               ItemId.MAGIC_LOGS.getId()
             };
+            processedItemName = comboField1[0][comboBoxField1[0].getSelectedIndex()];
             switch (comboBoxField2[0].getSelectedIndex()) {
               case 0: // fletch longbow
                 primaryItemId = ItemId.KNIFE.getId();
@@ -543,7 +553,17 @@ public class AIOBankTrainer extends K_kailaScript {
                 setFletchingType();
                 break;
               case "Gem Cutting":
-                final int[] gemIds = {
+                final int[] uncutGemIds = {
+                  ItemId.UNCUT_SAPPHIRE.getId(),
+                  ItemId.UNCUT_EMERALD.getId(),
+                  ItemId.UNCUT_RUBY.getId(),
+                  ItemId.UNCUT_DIAMOND.getId(),
+                  ItemId.UNCUT_DRAGONSTONE.getId(),
+                  ItemId.UNCUT_OPAL.getId(),
+                  ItemId.UNCUT_JADE.getId(),
+                  ItemId.UNCUT_RED_TOPAZ.getId()
+                };
+                final int[] cutGemIds = {
                   ItemId.SAPPHIRE.getId(),
                   ItemId.EMERALD.getId(),
                   ItemId.RUBY.getId(),
@@ -553,10 +573,12 @@ public class AIOBankTrainer extends K_kailaScript {
                   ItemId.JADE.getId(),
                   ItemId.RED_TOPAZ.getId()
                 };
+                processedItemName = comboField1[1][comboBoxField1[1].getSelectedIndex()];
+                resultItemId = cutGemIds[comboBoxField1[1].getSelectedIndex()];
                 scriptSelect = 1;
                 primaryItemId = ItemId.CHISEL.getId();
                 primaryItemAmount = 1;
-                secondaryItemId = gemIds[comboBoxField1[1].getSelectedIndex()];
+                secondaryItemId = uncutGemIds[comboBoxField1[1].getSelectedIndex()];
                 secondaryItemAmount = 29;
                 break;
               case "Bone Bury":
@@ -566,40 +588,29 @@ public class AIOBankTrainer extends K_kailaScript {
                   ItemId.BAT_BONES.getId(),
                   ItemId.DRAGON_BONES.getId()
                 };
+                processedItemName = comboField1[2][comboBoxField1[2].getSelectedIndex()];
                 scriptSelect = 2;
-                primaryItemId = boneIds[comboBoxField1[1].getSelectedIndex()];
+                primaryItemId = boneIds[comboBoxField1[2].getSelectedIndex()];
                 primaryItemAmount = 30;
                 break;
 
               case "Coconuts":
                 scriptSelect = 3;
-                harvestObjectId = SceneryId.COCONUT_PALM.getId();
-                harvestToolId = ItemId.FRUIT_PICKER.getId();
                 accessItemId = new int[] {ItemId.COINS.getId()};
                 accessItemAmount = new int[] {1000};
                 break;
               case "Dragonfruit":
                 scriptSelect = 4;
-                harvestToolId = ItemId.FRUIT_PICKER.getId();
                 accessItemAmount = new int[] {1}; // 1
-                accessItemId =
-                    new int[] {
-                      ItemId.SHANTAY_DESERT_PASS.getId()
-                    }; // , ItemId.FULL_WATER_SKIN.getId()
-                // }
-                harvestObjectId = SceneryId.DRAGONFRUIT_TREE.getId();
+                accessItemId = new int[] {ItemId.SHANTAY_DESERT_PASS.getId()};
                 break;
               case "Jangerberries":
                 scriptSelect = 5;
-                harvestObjectId = SceneryId.JANGERBERRY_BUSH.getId();
-                harvestToolId = ItemId.FRUIT_PICKER.getId();
                 // accessItemId = ItemId.COINS.getId();
                 // accessItemAmount = new int[] {1000};
                 break;
               case "Whiteberries":
                 scriptSelect = 6;
-                harvestObjectId = SceneryId.WHITEBERRY_BUSH.getId();
-                harvestToolId = ItemId.HERB_CLIPPERS.getId();
                 accessItemId = new int[] {ItemId.LOCKPICK.getId()};
                 teleportBanking = agilityCapeCheckBox.getState();
                 accessItemAmount = new int[] {1};
@@ -666,7 +677,7 @@ public class AIOBankTrainer extends K_kailaScript {
     containerInfobox.add(fletchInfobox);
 
     // Setup window
-    scriptFrame.setSize(370, 460); // was 415, 550?
+    scriptFrame.setSize(350, 420); // was 415, 550?
     scriptFrame.setMinimumSize(scriptFrame.getSize());
 
     scriptFrame.add(middle, BorderLayout.CENTER);
@@ -706,28 +717,24 @@ public class AIOBankTrainer extends K_kailaScript {
       }
       int x = 6;
       int y = 21;
-      c.drawString("@red@AIO Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@AIO Bank Trainer @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
-          "@whi@" + locations[scriptSelect] + " Bank Count: @gre@" + processedItemInBank,
-          x,
-          y + 14,
-          0xFFFFFF,
-          1);
-      c.drawString(
           "@whi@"
-              + locations[scriptSelect]
-              + " Harvest Count: @gre@"
+              + processedItemName
+              + "'s processed: @gre@"
               + totalProcessedCount
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",
           x,
-          y + (14 * 2),
+          y + 14,
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Total Trips: @gre@"
+          "@whi@Product Bank Count: @gre@" + processedItemInBank, x, y + (14 * 2), 0xFFFFFF, 1);
+      c.drawString(
+          "@whi@Inventories Processed: @gre@"
               + totalTrips
               + "@yel@ (@whi@"
               + String.format("%,d", TripSuccessPerHr)

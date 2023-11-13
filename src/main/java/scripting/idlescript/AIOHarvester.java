@@ -667,8 +667,8 @@ public class AIOHarvester extends K_kailaScript {
           checkboxes.remove(space_saver_c);
           checkboxes.remove(space_saver_d);
 
-          switch (list.getSelectedItem()) {
-            case "Grapes":
+          switch (list.getSelectedIndex()) {
+            case 0: // "Grapes"
               containerInfobox.add(grapeInfobox);
               checkboxes.add(bringFoodCheckBox);
               checkboxes.add(foodAmountsLabel);
@@ -676,19 +676,19 @@ public class AIOHarvester extends K_kailaScript {
               checkboxes.add(foodTypeLabel);
               checkboxes.add(foodType);
               break;
-            case "Pineapple":
+            case 1: // "Pineapple"
               containerInfobox.add(pineInfobox);
               checkboxes.add(ardyTeleCheckBox);
               break;
-            case "Papaya":
+            case 2: // "Papaya"
               containerInfobox.add(papayaInfobox);
               checkboxes.add(ardyTeleCheckBox);
               break;
-            case "Coconuts":
+            case 3: // "Coconuts"
               containerInfobox.add(cocoInfobox);
               checkboxes.add(ardyTeleCheckBox);
               break;
-            case "Dragonfruit":
+            case 4: // "Dragonfruit"
               containerInfobox.add(dfInfobox);
               // checkboxes.add(lumbTeleCheckBox);
               checkboxes.add(bringFoodCheckBox);
@@ -697,10 +697,10 @@ public class AIOHarvester extends K_kailaScript {
               checkboxes.add(foodTypeLabel);
               checkboxes.add(foodType);
               break;
-            case "Jangerberries":
+            case 5: // "Jangerberries"
               containerInfobox.add(jangerInfobox);
               break;
-            case "Whiteberries":
+            case 6: // "Whiteberries"
               containerInfobox.add(wBerriesInfobox);
               checkboxes.add(agilityCapeCheckBox);
               checkboxes.add(bringFoodCheckBox);

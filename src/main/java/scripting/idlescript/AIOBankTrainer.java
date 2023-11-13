@@ -22,6 +22,7 @@ import models.entities.SkillId;
  * @author Kaila
  */
 public class AIOBankTrainer extends K_kailaScript {
+  final String[] locations = {"Fletching", "Gems", "Bones"};
   private boolean teleportBanking = false;
   private boolean bringFood = false;
   private boolean ate = true;
@@ -48,14 +49,6 @@ public class AIOBankTrainer extends K_kailaScript {
   private int harvestToolId = -1;
   private int harvestObjectId = -1;
   private boolean autoWalk = false;
-  private final String[] locations = {"Fletching", "Gems", "Bones"};
-  private String comboLabel1 = "Log Type:";
-  private String[] comboField1 = new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"};
-  private String comboLabel2 = "Select Fletching Type:";
-  private String[] comboField2 =
-      new String[] {
-        "Fletch Longbows", "String Bows", "Make Arrow Shafts", "Fletch Shortbows(less xp)"
-      };
 
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -264,18 +257,58 @@ public class AIOBankTrainer extends K_kailaScript {
     final Checkbox bringFoodCheckBox = new Checkbox("Bring food?", false);
     final Checkbox doStuff = new Checkbox("doStuff?", false);
 
-    // Combo box options. Change string comboLabel1, string[] comboField1, etc
-    Label comboBoxLabel1 = new Label(comboLabel1);
-    Choice comboBoxField1 = new Choice();
-    for (String str : comboField1) {
-      comboBoxField1.add(str);
-    }
+    final Label[] comboBoxLabel1 = {
+      new Label("Log Type:"), new Label("Gem Type:"), new Label("Bone Type:")
+    };
+    final String[][] comboField1 = {
+      { // logs
+        "Log", "Oak", "Willow", "Maple", "Yew", "Magic"
+      },
+      { // gems
+        "Sapphire", "Emerald", "Ruby", "Diamond", "Dragonstone", "Opal", "Jade", "Topaz"
+      },
+      { // bones
+        "Normal Bones", "Big Bones", "Bat Bones", "Dragon Bones"
+      }
+    };
+    final Label[] comboBoxLabel2 = {new Label("Select Fletching Type:")};
+    final String[][] comboField2 = {
+      { // fletching
+        "Fletch Longbows",
+        "String Longbows",
+        "Make Arrow Shafts",
+        "Fletch Shortbows(less xp)",
+        "String Shortbows"
+      },
+    };
 
-    Label comboBoxLabel2 = new Label(comboLabel2);
-    Choice comboBoxField2 = new Choice();
-    for (String str : comboField2) {
-      comboBoxField2.add(str);
+    // Combo box options. Change string comboLabel1, string[] comboField1, etc
+    // Label comboBoxLabel1 = comboLabel1[0];
+    // Label[] comboBoxLabel1 = new Label[] {new Label(), new Label(), new Label()};
+    //    for (int i = 0; i < comboLabel1.length; i++) {
+    //        c.log("setting");
+    //        comboBoxLabel1[i].add(str);
+    //    }
+    Choice[] comboBoxField1 = new Choice[] {new Choice(), new Choice(), new Choice()};
+    for (int i = 0; i < comboBoxField1.length; i++) {
+      for (String str : comboField1[i]) {
+        c.log("setting");
+        comboBoxField1[i].add(str);
+      }
     }
+    Choice[] comboBoxField2 = new Choice[] {new Choice()};
+    for (int i = 0; i < comboBoxField2.length; i++) {
+      for (String str : comboField2[i]) {
+        c.log("setting");
+        comboBoxField1[i].add(str);
+      }
+    }
+    // initialzite for fletching
+    //    Label comboBoxLabel2 = new Label(comboLabel2[0]);
+    //    Choice comboBoxField2 = new Choice();
+    //    for (String str : comboField2[0]) {
+    //      comboBoxField2.add(str);
+    //    }
 
     //    final Label foodTypeLabel = new Label("Food Type:");
     //    Choice foodType = new Choice();
@@ -295,10 +328,10 @@ public class AIOBankTrainer extends K_kailaScript {
     // set up initial/default panel (fletching)
     checkboxes.add(scriptOptions_label);
     scriptOptions_label.setFont(bold_title);
-    checkboxes.add(comboBoxLabel1);
-    checkboxes.add(comboBoxField1);
-    checkboxes.add(comboBoxLabel2);
-    checkboxes.add(comboBoxField2);
+    checkboxes.add(comboBoxLabel1[0]);
+    checkboxes.add(comboBoxField1[0]);
+    checkboxes.add(comboBoxLabel2[0]);
+    checkboxes.add(comboBoxField2[0]);
     checkboxes.add(space_saver_a);
     checkboxes.add(space_saver_b);
     checkboxes.add(space_saver_c);
@@ -308,8 +341,8 @@ public class AIOBankTrainer extends K_kailaScript {
     // Action listeners to hide/show based on checkboxes
     bringFoodCheckBox.addItemListener(
         e -> {
-          comboBoxField2.setEnabled(bringFoodCheckBox.getState());
-          comboBoxField1.setEnabled(bringFoodCheckBox.getState());
+          // comboBoxField2.setEnabled(bringFoodCheckBox.getState());
+          // comboBoxField1[].setEnabled(bringFoodCheckBox.getState());
         });
     // Add left side script select options
     final java.awt.List list = new java.awt.List();
@@ -338,76 +371,62 @@ public class AIOBankTrainer extends K_kailaScript {
           for (Checkbox checkbox : checkboxList) {
             checkboxes.remove(checkbox);
           }
-          checkboxes.remove(comboBoxLabel1);
-          checkboxes.remove(comboBoxField1);
-          checkboxes.remove(comboBoxLabel2);
-          checkboxes.remove(comboBoxField2);
+          for (Label label : comboBoxLabel1) {
+            checkboxes.remove(label);
+          }
+          for (Choice comboSet : comboBoxField1) {
+            checkboxes.remove(comboSet);
+          }
+          for (Label label : comboBoxLabel2) {
+            checkboxes.remove(label);
+          }
+          for (Choice comboSet : comboBoxField2) {
+            checkboxes.remove(comboSet);
+          }
           checkboxes.remove(space_saver_a);
           checkboxes.remove(space_saver_b);
           checkboxes.remove(space_saver_c);
           checkboxes.remove(space_saver_d);
 
-          switch (list.getSelectedItem()) {
-            case "Fletching":
+          switch (list.getSelectedIndex()) {
+            case 0: // "Fletching"
               containerInfobox.add(fletchInfobox);
-              comboLabel1 = "Log Type:";
-              comboField1 = new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"};
-              comboLabel2 = "Select Fletching Type:";
-              comboField2 =
-                  new String[] {
-                    "Fletch Longbows",
-                    "String Bows",
-                    "Make Arrow Shafts",
-                    "Fletch Shortbows(less xp)",
-                    "String Shortbows(less xp)"
-                  };
-              checkboxes.add(comboBoxLabel1);
-              checkboxes.add(comboBoxField1);
-              checkboxes.add(comboBoxLabel2);
-              checkboxes.add(comboBoxField2);
+              checkboxes.add(comboBoxLabel1[0]);
+              checkboxes.add(comboBoxField1[0]);
+              checkboxes.add(comboBoxLabel2[0]);
+              checkboxes.add(comboBoxField2[0]);
               break;
-            case "Gem Cutting":
+            case 1: // "Gem Cutting"
               containerInfobox.add(gemInfobox);
-              comboLabel1 = "Gem Type:";
-              comboField1 =
-                  new String[] {
-                    "Sapphire", "Emerald", "Ruby", "Diamond", "Dragonstone", "Opal", "Jade", "Topaz"
-                  };
-              checkboxes.add(comboBoxLabel1);
-              checkboxes.add(comboBoxField1);
+
+              checkboxes.add(comboBoxLabel1[1]);
+              checkboxes.add(comboBoxField1[1]);
               break;
-            case "Bone Bury":
+            case 2: // "Bone Bury"
               containerInfobox.add(boneInfobox);
-              comboLabel1 = "Bone Type:";
-              comboField1 = new String[] {"Normal Bones", "Big Bones", "Bat Bones", "Dragon Bones"};
-              checkboxes.add(comboBoxLabel1);
-              checkboxes.add(comboBoxField1);
+
+              checkboxes.add(comboBoxLabel1[2]);
+              checkboxes.add(comboBoxField1[2]);
               break;
 
-            case "Coconuts":
+            case 3: // "Coconuts"
               containerInfobox.add(cocoInfobox);
               checkboxes.add(ardyTeleCheckBox);
               break;
-            case "Dragonfruit":
+            case 4: // "Dragonfruit"
               containerInfobox.add(dfInfobox);
               // checkboxes.add(lumbTeleCheckBox);
               checkboxes.add(bringFoodCheckBox);
-              checkboxes.add(comboBoxLabel1);
-              checkboxes.add(comboBoxField1);
-              checkboxes.add(comboBoxLabel2);
-              checkboxes.add(comboBoxField2);
+              checkboxes.add(comboBoxLabel1[1]);
+              checkboxes.add(comboBoxField1[1]);
               break;
-            case "Jangerberries":
+            case 5: // "Jangerberries"
               containerInfobox.add(jangerInfobox);
               break;
-            case "Whiteberries":
+            case 6: // "Whiteberries"
               containerInfobox.add(wBerriesInfobox);
               checkboxes.add(agilityCapeCheckBox);
               checkboxes.add(bringFoodCheckBox);
-              checkboxes.add(comboBoxLabel1);
-              checkboxes.add(comboBoxField1);
-              checkboxes.add(comboBoxLabel2);
-              checkboxes.add(comboBoxField2);
               break;
           }
           checkboxes.add(space_saver_a);
@@ -463,26 +482,26 @@ public class AIOBankTrainer extends K_kailaScript {
               ItemId.YEW_LOGS.getId(),
               ItemId.MAGIC_LOGS.getId()
             };
-            switch (comboBoxField2.getSelectedIndex()) {
+            switch (comboBoxField2[0].getSelectedIndex()) {
               case 0: // fletch longbow
                 primaryItemId = ItemId.KNIFE.getId();
                 primaryItemAmount = 1;
-                secondaryItemId = logIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemId = logIds[comboBoxField1[0].getSelectedIndex()];
                 secondaryItemAmount = 29;
-                resultItemId = unstrungLongIds[comboBoxField1.getSelectedIndex()];
+                resultItemId = unstrungLongIds[comboBoxField1[0].getSelectedIndex()];
                 dialogOption = 2;
                 break;
               case 1: // string longbow
-                primaryItemId = unstrungLongIds[comboBoxField1.getSelectedIndex()];
+                primaryItemId = unstrungLongIds[comboBoxField1[0].getSelectedIndex()];
                 primaryItemAmount = 14;
                 secondaryItemId = ItemId.BOW_STRING.getId();
                 secondaryItemAmount = 14;
-                resultItemId = strungLongIds[comboBoxField1.getSelectedIndex()];
+                resultItemId = strungLongIds[comboBoxField1[0].getSelectedIndex()];
                 break;
               case 2: // arrow shafts
                 primaryItemId = ItemId.KNIFE.getId();
                 primaryItemAmount = 1;
-                secondaryItemId = logIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemId = logIds[comboBoxField1[0].getSelectedIndex()];
                 secondaryItemAmount = 29;
                 resultItemId = ItemId.ARROW_SHAFTS.getId();
                 dialogOption = 0;
@@ -490,17 +509,17 @@ public class AIOBankTrainer extends K_kailaScript {
               case 3: // fletch shortbow
                 primaryItemId = ItemId.KNIFE.getId();
                 primaryItemAmount = 1;
-                secondaryItemId = logIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemId = logIds[comboBoxField1[0].getSelectedIndex()];
                 secondaryItemAmount = 29;
-                resultItemId = unstrungShortIds[comboBoxField1.getSelectedIndex()];
+                resultItemId = unstrungShortIds[comboBoxField1[0].getSelectedIndex()];
                 dialogOption = 1;
                 break;
               case 4: // string shortbow
-                primaryItemId = unstrungShortIds[comboBoxField1.getSelectedIndex()];
+                primaryItemId = unstrungShortIds[comboBoxField1[0].getSelectedIndex()];
                 primaryItemAmount = 14;
                 secondaryItemId = ItemId.BOW_STRING.getId();
                 secondaryItemAmount = 14;
-                resultItemId = strungShortIds[comboBoxField1.getSelectedIndex()];
+                resultItemId = strungShortIds[comboBoxField1[0].getSelectedIndex()];
                 break;
               default:
                 c.log("Error in script option");
@@ -537,7 +556,7 @@ public class AIOBankTrainer extends K_kailaScript {
                 scriptSelect = 1;
                 primaryItemId = ItemId.CHISEL.getId();
                 primaryItemAmount = 1;
-                secondaryItemId = gemIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemId = gemIds[comboBoxField1[1].getSelectedIndex()];
                 secondaryItemAmount = 29;
                 break;
               case "Bone Bury":
@@ -548,7 +567,7 @@ public class AIOBankTrainer extends K_kailaScript {
                   ItemId.DRAGON_BONES.getId()
                 };
                 scriptSelect = 2;
-                primaryItemId = boneIds[comboBoxField1.getSelectedIndex()];
+                primaryItemId = boneIds[comboBoxField1[1].getSelectedIndex()];
                 primaryItemAmount = 30;
                 break;
 

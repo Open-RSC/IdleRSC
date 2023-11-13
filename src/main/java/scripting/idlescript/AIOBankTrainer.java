@@ -200,45 +200,53 @@ public class AIOBankTrainer extends K_kailaScript {
     Label scriptOptions_label = new Label("Script Options:", Label.CENTER);
 
     // Add in the top infobox Stuff
-    Label fletchingTitle = new Label("Fletching Script ~ by Kaila");
-    Label gemTitle = new Label("Gem Cutting Script ~ by Kaila");
-    Label boneTitle = new Label("Fast Bone Bury ~ by Kaila");
-
-    Label batchBarLabel1 = new Label("Batch Bars MUST be On, Bot will attempt to enable it.");
-    Label batchBarLabel2 = new Label("This ensures 29 Items are made per Menu Cycle.");
-    Label bankLabel1 = new Label("Start in any bank with an empty inventory");
-
-    Label cocoTitle = new Label("Harvest Coconuts in Karamja");
-    Label cocoLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label cocoLabel2 = new Label("*Ardy teleport has not been implemented yet");
-
-    Label dfTitle = new Label("Harvest Dragonfruit in Bededin Camp");
-    Label dfLabel1 = new Label("*Start near Shantay w/ Fruit Picker, Shantay Pass");
-    Label dfLabel2 = new Label("*Wear desert robes, but won't need waterskins");
-    Label dfLabel3 = new Label("*Recommend 63+ cmb against aggressive wolfs");
-
-    Label jangerTitle = new Label("Harvest Jangerberries in Feldip Hills");
-    Label jangerLabel1 = new Label("*Start in Yanille Bank with Herb Clippers");
-    Label jangerLabel2 = new Label("*Recommend Armor against lvl 21 Scorpions");
-
-    Label wBerriesTitle = new Label("Harvest Whiteberries in Yanille dungeon");
-    Label wBerriesLabel1 = new Label("*Start in Yanille Bank with Herb Clippers and Lockpick");
-    Label wBerriesLabel2 = new Label("*Recommend level 109+ combat so Skellies are non aggressive");
-    Label wBerriesLabel3 = new Label("*Requires 77 agility to not fail rope swing");
-
     Panel[] infoBoxes = {
       fletchInfobox, gemInfobox, boneInfobox, cocoInfobox, dfInfobox, jangerInfobox, wBerriesInfobox
     };
     Label[][] allLabels = {
-      {fletchingTitle, batchBarLabel1, batchBarLabel2, bankLabel1},
-      {gemTitle, batchBarLabel1, batchBarLabel2, bankLabel1},
-      {boneTitle, batchBarLabel1, batchBarLabel2, bankLabel1},
-      {cocoTitle, cocoLabel1, cocoLabel2},
-      {dfTitle, dfLabel1, dfLabel2, dfLabel3},
-      {jangerTitle, jangerLabel1, jangerLabel2},
-      {wBerriesTitle, wBerriesLabel1, wBerriesLabel2, wBerriesLabel3},
+      { // fletching
+        new Label("Fletching Script ~ by Kaila"),
+        new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
+        new Label("This ensures 29 Items are made per Menu Cycle."),
+        new Label("Start in any bank with an empty inventory")
+      },
+      { // gem cutting
+        new Label("Gem Cutting Script ~ by Kaila"),
+        new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
+        new Label("This ensures 29 Items are made per Menu Cycle."),
+        new Label("Start in any bank with an empty inventory")
+      },
+      { // bone bury
+        new Label("Fast Bone Bury ~ by Kaila"),
+        new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
+        new Label("This ensures 29 Items are made per Menu Cycle."),
+        new Label("Start in any bank with an empty inventory")
+      },
+      { // coco
+        new Label("Gem Cutting Script ~ by Kaila"),
+        new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
+        new Label("This ensures 29 Items are made per Menu Cycle."),
+        new Label("Start in any bank with an empty inventory")
+      },
+      { // df
+        new Label("Gem Cutting Script ~ by Kaila"),
+        new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
+        new Label("This ensures 29 Items are made per Menu Cycle."),
+        new Label("Start in any bank with an empty inventory")
+      },
+      { // janger
+        new Label("Gem Cutting Script ~ by Kaila"),
+        new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
+        new Label("This ensures 29 Items are made per Menu Cycle."),
+        new Label("Start in any bank with an empty inventory")
+      },
+      { // wber
+        new Label("Gem Cutting Script ~ by Kaila"),
+        new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
+        new Label("This ensures 29 Items are made per Menu Cycle."),
+        new Label("Start in any bank with an empty inventory")
+      },
     };
-
     // Set up our infoboxes and format
     for (int i = 0; i < allLabels.length; i++) {
       for (int j = 0; j < allLabels[i].length; j++) {
@@ -258,9 +266,16 @@ public class AIOBankTrainer extends K_kailaScript {
 
     // Combo box options. Change string comboLabel1, string[] comboField1, etc
     Label comboBoxLabel1 = new Label(comboLabel1);
-    JComboBox<String> comboBoxField1 = new JComboBox<>(comboField1);
+    Choice comboBoxField1 = new Choice();
+    for (String str : comboField1) {
+      comboBoxField1.add(str);
+    }
+
     Label comboBoxLabel2 = new Label(comboLabel2);
-    JComboBox<String> comboBoxField2 = new JComboBox<>(comboField2);
+    Choice comboBoxField2 = new Choice();
+    for (String str : comboField2) {
+      comboBoxField2.add(str);
+    }
 
     //    final Label foodTypeLabel = new Label("Food Type:");
     //    Choice foodType = new Choice();

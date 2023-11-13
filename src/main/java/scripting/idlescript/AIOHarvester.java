@@ -520,36 +520,6 @@ public class AIOHarvester extends K_kailaScript {
     Label scriptOptions_label = new Label("Script Options:", Label.CENTER);
 
     // Add in the top infobox Stuff
-    Label grapeTitle = new Label("Harvest Grapes near Edge Monastery");
-    Label grapeLabel1 = new Label("*Start in Edge Bank with Herb Clippers");
-    Label grapeLabel2 = new Label("*Recommend Armor against lvl 21 Scorpions");
-
-    Label pineTitle = new Label("Harvest Pineapple in Karamja");
-    Label pineLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label pineLabel2 = new Label("*Ardy teleport has not been implemented yet");
-
-    Label papayaTitle = new Label("Harvest Papaya in Karamja");
-    Label papayaLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label papayaLabel2 = new Label("*Ardy teleport has not been implemented yet");
-
-    Label cocoTitle = new Label("Harvest Coconuts in Karamja");
-    Label cocoLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label cocoLabel2 = new Label("*Ardy teleport has not been implemented yet");
-
-    Label dfTitle = new Label("Harvest Dragonfruit in Bededin Camp");
-    Label dfLabel1 = new Label("*Start near Shantay w/ Fruit Picker, Shantay Pass");
-    Label dfLabel2 = new Label("*Wear desert robes, but won't need waterskins");
-    Label dfLabel3 = new Label("*Recommend 63+ cmb against aggressive wolfs");
-
-    Label jangerTitle = new Label("Harvest Jangerberries in Feldip Hills");
-    Label jangerLabel1 = new Label("*Start in Yanille Bank with Herb Clippers");
-    Label jangerLabel2 = new Label("*Recommend Armor against lvl 21 Scorpions");
-
-    Label wBerriesTitle = new Label("Harvest Whiteberries in Yanille dungeon");
-    Label wBerriesLabel1 = new Label("*Start in Yanille Bank with Herb Clippers and Lockpick");
-    Label wBerriesLabel2 = new Label("*Recommend level 109+ combat so Skellies are non aggressive");
-    Label wBerriesLabel3 = new Label("*Requires 77 agility to not fail rope swing");
-
     Panel[] infoBoxes = {
       grapeInfobox,
       pineInfobox,
@@ -560,13 +530,43 @@ public class AIOHarvester extends K_kailaScript {
       wBerriesInfobox
     };
     Label[][] allLabels = {
-      {grapeTitle, grapeLabel1, grapeLabel2},
-      {pineTitle, pineLabel1, pineLabel2},
-      {papayaTitle, papayaLabel1, papayaLabel2},
-      {cocoTitle, cocoLabel1, cocoLabel2},
-      {dfTitle, dfLabel1, dfLabel2, dfLabel3},
-      {jangerTitle, jangerLabel1, jangerLabel2},
-      {wBerriesTitle, wBerriesLabel1, wBerriesLabel2, wBerriesLabel3},
+      {
+        new Label("Harvest Grapes near Edge Monastery"),
+        new Label("*Start in Edge Bank with Herb Clippers"),
+        new Label("*Recommend Armor against lvl 21 Scorpions")
+      },
+      {
+        new Label("Harvest Pineapple in Karamja"),
+        new Label("*Start in Ardy south Bank with Fruit Picker and coins"),
+        new Label("*Ardy teleport has not been implemented yet")
+      },
+      {
+        new Label("Harvest Papaya in Karamja"),
+        new Label("*Start in Ardy south Bank with Fruit Picker and coins"),
+        new Label("*Ardy teleport has not been implemented yet")
+      },
+      {
+        new Label("Harvest Coconuts in Karamja"),
+        new Label("*Start in Ardy south Bank with Fruit Picker and coins"),
+        new Label("*Ardy teleport has not been implemented yet")
+      },
+      {
+        new Label("Harvest Dragonfruit in Bededin Camp"),
+        new Label("*Start near Shantay w/ Fruit Picker, Shantay Pass"),
+        new Label("*Wear desert robes, but won't need waterskins"),
+        new Label("*Recommend 63+ cmb against aggressive wolfs")
+      },
+      {
+        new Label("Harvest Jangerberries in Feldip Hills"),
+        new Label("*Start in Yanille Bank with Herb Clippers"),
+        new Label("*Recommend Armor against lvl 21 Scorpions")
+      },
+      {
+        new Label("Harvest Whiteberries in Yanille dungeon"),
+        new Label("*Start in Yanille Bank with Herb Clippers and Lockpick"),
+        new Label("*Recommend level 109+ combat so Skellies are non aggressive"),
+        new Label("*Requires 77 agility to not fail rope swing")
+      },
     };
 
     // Set up our infoboxes and format

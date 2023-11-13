@@ -8,7 +8,6 @@ import javax.swing.*;
 import models.entities.ItemId;
 import models.entities.SceneryId;
 import models.entities.SkillId;
-import orsc.ORSCharacter;
 
 /**
  * <b>Berry Harvester</b>
@@ -26,8 +25,8 @@ public class AIOBankTrainer extends K_kailaScript {
   private boolean teleportBanking = false;
   private boolean bringFood = false;
   private boolean ate = true;
-  private int harvestedItemInBank = 0;
-  private int totalHarvestedCount = 0;
+  private int processedItemInBank = 0;
+  private int totalProcessedCount = 0;
   /**
    *
    *
@@ -38,21 +37,25 @@ public class AIOBankTrainer extends K_kailaScript {
    */
   private int scriptSelect = 0;
 
-  private int harvestItemId = -1;
   private int[] accessItemId;
   private int[] accessItemAmount;
   private int primaryItemId = 0;
-  private int primaryItemAmount = 0;
-  private int secondaryItemId = 0;
-  private int secondaryItemAmount = 0;
+  private int primaryItemAmount = -1;
+  private int secondaryItemId = -1;
+  private int secondaryItemAmount = -1;
+  private int dialogOption = -1;
+  private int resultItemId = -1;
   private int harvestToolId = -1;
   private int harvestObjectId = -1;
   private boolean autoWalk = false;
-  private final String[] locations = {
-    "Fletching",
-    "Gems",
-    "Bones"
-  };
+  private final String[] locations = {"Fletching", "Gems", "Bones"};
+  private String comboLabel1 = "Log Type:";
+  private String[] comboField1 = new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"};
+  private String comboLabel2 = "Select Fletching Type:";
+  private String[] comboField2 =
+      new String[] {
+        "Fletch Longbows", "String Bows", "Make Arrow Shafts", "Fletch Shortbows(less xp)"
+      };
 
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -111,7 +114,7 @@ public class AIOBankTrainer extends K_kailaScript {
       if (c.getInventoryItemCount(1085) > 0) c.dropItem(c.getInventoryItemSlotIndex(1085));
       if (!harvestLoop()) { // if nothing to harvest
         c.setStatus("@yel@Waiting for spawn..");
-c.sleep(GAME_TICK);
+        c.sleep(GAME_TICK);
       }
       if (autoWalk && System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
@@ -148,7 +151,7 @@ c.sleep(GAME_TICK);
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-      totalHarvestedCount = totalHarvestedCount + c.getInventoryItemCount(harvestItemId);
+      totalProcessedCount = totalProcessedCount + c.getInventoryItemCount(resultItemId);
       for (int itemId : c.getInventoryItemIds()) {
         if (itemId != harvestToolId) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
@@ -169,20 +172,20 @@ c.sleep(GAME_TICK);
         }
       }
       if (bringFood) withdrawFood(foodId, foodWithdrawAmount);
-      harvestedItemInBank = c.getBankItemCount(harvestItemId);
+      processedItemInBank = c.getBankItemCount(resultItemId);
       c.closeBank();
       c.sleep(GAME_TICK);
       if (bringFood) eatFood();
     }
   }
 
-
   private void setupGUI() {
 
     final Panel checkboxes = new Panel(new GridLayout(0, 1));
-    final Panel grapeInfobox = new Panel(new GridLayout(0, 1));
-    final Panel pineInfobox = new Panel(new GridLayout(0, 1));
-    final Panel papayaInfobox = new Panel(new GridLayout(0, 1));
+    final Panel fletchInfobox = new Panel(new GridLayout(0, 1));
+    final Panel gemInfobox = new Panel(new GridLayout(0, 1));
+    final Panel boneInfobox = new Panel(new GridLayout(0, 1));
+
     final Panel cocoInfobox = new Panel(new GridLayout(0, 1));
     final Panel dfInfobox = new Panel(new GridLayout(0, 1));
     final Panel jangerInfobox = new Panel(new GridLayout(0, 1));
@@ -191,23 +194,19 @@ c.sleep(GAME_TICK);
     final Panel containerInfobox = new Panel(new GridLayout(0, 1));
     Font bold_title = new Font(Font.SANS_SERIF, Font.BOLD, 14);
     Font small_info = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
-    scriptFrame = new JFrame(c.getPlayerName() + " - AIO Harvester");
+    scriptFrame = new JFrame(c.getPlayerName() + " - AIO Bank Trainer");
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     Label scriptOptions_label = new Label("Script Options:", Label.CENTER);
 
     // Add in the top infobox Stuff
-    Label grapeTitle = new Label("Harvest Grapes near Edge Monastery");
-    Label grapeLabel1 = new Label("*Start in Edge Bank with Herb Clippers");
-    Label grapeLabel2 = new Label("*Recommend Armor against lvl 21 Scorpions");
+    Label fletchingTitle = new Label("Fletching Script ~ by Kaila");
+    Label gemTitle = new Label("Gem Cutting Script ~ by Kaila");
+    Label boneTitle = new Label("Fast Bone Bury ~ by Kaila");
 
-    Label pineTitle = new Label("Harvest Pineapple in Karamja");
-    Label pineLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label pineLabel2 = new Label("*Ardy teleport has not been implemented yet");
-
-    Label papayaTitle = new Label("Harvest Papaya in Karamja");
-    Label papayaLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
-    Label papayaLabel2 = new Label("*Ardy teleport has not been implemented yet");
+    Label batchBarLabel1 = new Label("Batch Bars MUST be On, Bot will attempt to enable it.");
+    Label batchBarLabel2 = new Label("This ensures 29 Items are made per Menu Cycle.");
+    Label bankLabel1 = new Label("Start in any bank with an empty inventory");
 
     Label cocoTitle = new Label("Harvest Coconuts in Karamja");
     Label cocoLabel1 = new Label("*Start in Ardy south Bank with Fruit Picker and coins");
@@ -228,18 +227,12 @@ c.sleep(GAME_TICK);
     Label wBerriesLabel3 = new Label("*Requires 77 agility to not fail rope swing");
 
     Panel[] infoBoxes = {
-      grapeInfobox,
-      pineInfobox,
-      papayaInfobox,
-      cocoInfobox,
-      dfInfobox,
-      jangerInfobox,
-      wBerriesInfobox
+      fletchInfobox, gemInfobox, boneInfobox, cocoInfobox, dfInfobox, jangerInfobox, wBerriesInfobox
     };
     Label[][] allLabels = {
-      {grapeTitle, grapeLabel1, grapeLabel2},
-      {pineTitle, pineLabel1, pineLabel2},
-      {papayaTitle, papayaLabel1, papayaLabel2},
+      {fletchingTitle, batchBarLabel1, batchBarLabel2, bankLabel1},
+      {gemTitle, batchBarLabel1, batchBarLabel2, bankLabel1},
+      {boneTitle, batchBarLabel1, batchBarLabel2, bankLabel1},
       {cocoTitle, cocoLabel1, cocoLabel2},
       {dfTitle, dfLabel1, dfLabel2, dfLabel3},
       {jangerTitle, jangerLabel1, jangerLabel2},
@@ -262,8 +255,18 @@ c.sleep(GAME_TICK);
     final Checkbox lumbTeleCheckBox = new Checkbox("Teleport to Lumbridge?", false);
     final Checkbox bringFoodCheckBox = new Checkbox("Bring food?", false);
     final Checkbox doStuff = new Checkbox("doStuff?", false);
-    final Label foodAmountsLabel = new Label("Food Amount:");
-    final Label foodTypeLabel = new Label("Food Type:");
+
+    // Combo box options. Change string comboLabel1, string[] comboField1, etc
+    Label comboBoxLabel1 = new Label(comboLabel1);
+    JComboBox<String> comboBoxField1 = new JComboBox<>(comboField1);
+    Label comboBoxLabel2 = new Label(comboLabel2);
+    JComboBox<String> comboBoxField2 = new JComboBox<>(comboField2);
+
+    //    final Label foodTypeLabel = new Label("Food Type:");
+    //    Choice foodType = new Choice();
+    //    for (String str : foodTypes) {
+    //      foodType.add(str);
+    //    }
     final Label space_saver_a = new Label();
     final Label space_saver_b = new Label();
     final Label space_saver_c = new Label();
@@ -274,26 +277,13 @@ c.sleep(GAME_TICK);
           agilityCapeCheckBox, ardyTeleCheckBox, lumbTeleCheckBox, bringFoodCheckBox, doStuff
         };
 
-    // Introduce right side options panel fields
-    Choice foodType = new Choice();
-    for (String str : foodTypes) {
-      foodType.add(str);
-    }
-    foodType.select(2);
-    TextField foodAmountsField = new TextField(String.valueOf(1));
-    ardyTeleCheckBox.setEnabled(false);
-    foodType.setEnabled(false);
-    foodAmountsField.setEnabled(false);
-
-    // set up initial panel
+    // set up initial/default panel (fletching)
     checkboxes.add(scriptOptions_label);
     scriptOptions_label.setFont(bold_title);
-    checkboxes.add(agilityCapeCheckBox);
-    checkboxes.add(bringFoodCheckBox);
-    checkboxes.add(foodAmountsLabel);
-    checkboxes.add(foodAmountsField);
-    checkboxes.add(foodTypeLabel);
-    checkboxes.add(foodType);
+    checkboxes.add(comboBoxLabel1);
+    checkboxes.add(comboBoxField1);
+    checkboxes.add(comboBoxLabel2);
+    checkboxes.add(comboBoxField2);
     checkboxes.add(space_saver_a);
     checkboxes.add(space_saver_b);
     checkboxes.add(space_saver_c);
@@ -303,18 +293,18 @@ c.sleep(GAME_TICK);
     // Action listeners to hide/show based on checkboxes
     bringFoodCheckBox.addItemListener(
         e -> {
-          foodType.setEnabled(bringFoodCheckBox.getState());
-          foodAmountsField.setEnabled(bringFoodCheckBox.getState());
+          comboBoxField2.setEnabled(bringFoodCheckBox.getState());
+          comboBoxField1.setEnabled(bringFoodCheckBox.getState());
         });
     // Add left side script select options
     final java.awt.List list = new java.awt.List();
     list.add("Fletching");
-    list.add("Gems");
-    list.add("Bones");
-    list.add("Coconuts");
-    list.add("Dragonfruit");
+    list.add("Gem Cutting");
+    list.add("Bone Bury");
+    // list.add("Coconuts");
+    // list.add("Dragonfruit");
     // list.add("Jangerberries");
-    list.add("Whiteberries");
+    // list.add("Whiteberries");
     // list.add("Tav Limps/Snapes");
     // list.add("Ardy Limps/Snapes");
     // list.add("Tav Herbs");
@@ -333,32 +323,52 @@ c.sleep(GAME_TICK);
           for (Checkbox checkbox : checkboxList) {
             checkboxes.remove(checkbox);
           }
-          checkboxes.remove(foodAmountsLabel);
-          checkboxes.remove(foodAmountsField);
-          checkboxes.remove(foodTypeLabel);
-          checkboxes.remove(foodType);
+          checkboxes.remove(comboBoxLabel1);
+          checkboxes.remove(comboBoxField1);
+          checkboxes.remove(comboBoxLabel2);
+          checkboxes.remove(comboBoxField2);
           checkboxes.remove(space_saver_a);
           checkboxes.remove(space_saver_b);
           checkboxes.remove(space_saver_c);
           checkboxes.remove(space_saver_d);
 
           switch (list.getSelectedItem()) {
-            case "Grapes":
-              containerInfobox.add(grapeInfobox);
-              checkboxes.add(bringFoodCheckBox);
-              checkboxes.add(foodAmountsLabel);
-              checkboxes.add(foodAmountsField);
-              checkboxes.add(foodTypeLabel);
-              checkboxes.add(foodType);
+            case "Fletching":
+              containerInfobox.add(fletchInfobox);
+              comboLabel1 = "Log Type:";
+              comboField1 = new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic"};
+              comboLabel2 = "Select Fletching Type:";
+              comboField2 =
+                  new String[] {
+                    "Fletch Longbows",
+                    "String Bows",
+                    "Make Arrow Shafts",
+                    "Fletch Shortbows(less xp)",
+                    "String Shortbows(less xp)"
+                  };
+              checkboxes.add(comboBoxLabel1);
+              checkboxes.add(comboBoxField1);
+              checkboxes.add(comboBoxLabel2);
+              checkboxes.add(comboBoxField2);
               break;
-            case "Pineapple":
-              containerInfobox.add(pineInfobox);
-              checkboxes.add(ardyTeleCheckBox);
+            case "Gem Cutting":
+              containerInfobox.add(gemInfobox);
+              comboLabel1 = "Gem Type:";
+              comboField1 =
+                  new String[] {
+                    "Sapphire", "Emerald", "Ruby", "Diamond", "Dragonstone", "Opal", "Jade", "Topaz"
+                  };
+              checkboxes.add(comboBoxLabel1);
+              checkboxes.add(comboBoxField1);
               break;
-            case "Papaya":
-              containerInfobox.add(papayaInfobox);
-              checkboxes.add(ardyTeleCheckBox);
+            case "Bone Bury":
+              containerInfobox.add(boneInfobox);
+              comboLabel1 = "Bone Type:";
+              comboField1 = new String[] {"Normal Bones", "Big Bones", "Bat Bones", "Dragon Bones"};
+              checkboxes.add(comboBoxLabel1);
+              checkboxes.add(comboBoxField1);
               break;
+
             case "Coconuts":
               containerInfobox.add(cocoInfobox);
               checkboxes.add(ardyTeleCheckBox);
@@ -367,10 +377,10 @@ c.sleep(GAME_TICK);
               containerInfobox.add(dfInfobox);
               // checkboxes.add(lumbTeleCheckBox);
               checkboxes.add(bringFoodCheckBox);
-              checkboxes.add(foodAmountsLabel);
-              checkboxes.add(foodAmountsField);
-              checkboxes.add(foodTypeLabel);
-              checkboxes.add(foodType);
+              checkboxes.add(comboBoxLabel1);
+              checkboxes.add(comboBoxField1);
+              checkboxes.add(comboBoxLabel2);
+              checkboxes.add(comboBoxField2);
               break;
             case "Jangerberries":
               containerInfobox.add(jangerInfobox);
@@ -379,10 +389,10 @@ c.sleep(GAME_TICK);
               containerInfobox.add(wBerriesInfobox);
               checkboxes.add(agilityCapeCheckBox);
               checkboxes.add(bringFoodCheckBox);
-              checkboxes.add(foodAmountsLabel);
-              checkboxes.add(foodAmountsField);
-              checkboxes.add(foodTypeLabel);
-              checkboxes.add(foodType);
+              checkboxes.add(comboBoxLabel1);
+              checkboxes.add(comboBoxField1);
+              checkboxes.add(comboBoxLabel2);
+              checkboxes.add(comboBoxField2);
               break;
           }
           checkboxes.add(space_saver_a);
@@ -397,53 +407,146 @@ c.sleep(GAME_TICK);
     Button startButton = new Button("Start Script");
     startButton.addActionListener( // parse results and run
         new ActionListener() {
-          private void set_ids() {
-            bringFood = bringFoodCheckBox.getState();
-            if (bringFood) {
-              c.log("bringing food");
-              if (!foodAmountsField.getText().isEmpty()) {
-                foodWithdrawAmount = Integer.parseInt(foodAmountsField.getText());
-              } else foodWithdrawAmount = 1;
-              foodId = foodIds[foodType.getSelectedIndex()];
-              foodName = foodTypes[foodType.getSelectedIndex()];
+          private void setFletchingType() {
+            final int[] unstrungLongIds = {
+              ItemId.UNSTRUNG_LONGBOW.getId(),
+              ItemId.UNSTRUNG_OAK_LONGBOW.getId(),
+              ItemId.UNSTRUNG_WILLOW_LONGBOW.getId(),
+              ItemId.UNSTRUNG_MAPLE_LONGBOW.getId(),
+              ItemId.UNSTRUNG_YEW_LONGBOW.getId(),
+              ItemId.UNSTRUNG_MAGIC_LONGBOW.getId()
+            };
+            final int[] unstrungShortIds = {
+              ItemId.UNSTRUNG_SHORTBOW.getId(),
+              ItemId.UNSTRUNG_OAK_SHORTBOW.getId(),
+              ItemId.UNSTRUNG_WILLOW_SHORTBOW.getId(),
+              ItemId.UNSTRUNG_MAPLE_SHORTBOW.getId(),
+              ItemId.UNSTRUNG_YEW_SHORTBOW.getId(),
+              ItemId.UNSTRUNG_MAGIC_SHORTBOW.getId()
+            };
+            final int[] strungLongIds = {
+              ItemId.LONGBOW.getId(),
+              ItemId.OAK_LONGBOW.getId(),
+              ItemId.WILLOW_LONGBOW.getId(),
+              ItemId.MAPLE_LONGBOW.getId(),
+              ItemId.YEW_LONGBOW.getId(),
+              ItemId.MAGIC_LONGBOW.getId()
+            };
+            final int[] strungShortIds = {
+              ItemId.SHORTBOW.getId(),
+              ItemId.OAK_SHORTBOW.getId(),
+              ItemId.WILLOW_SHORTBOW.getId(),
+              ItemId.MAPLE_SHORTBOW.getId(),
+              ItemId.YEW_SHORTBOW.getId(),
+              ItemId.MAGIC_SHORTBOW.getId()
+            };
+            final int[] logIds = {
+              ItemId.LOGS.getId(),
+              ItemId.OAK_LOGS.getId(),
+              ItemId.WILLOW_LOGS.getId(),
+              ItemId.MAPLE_LOGS.getId(),
+              ItemId.YEW_LOGS.getId(),
+              ItemId.MAGIC_LOGS.getId()
+            };
+            switch (comboBoxField2.getSelectedIndex()) {
+              case 0: // fletch longbow
+                primaryItemId = ItemId.KNIFE.getId();
+                primaryItemAmount = 1;
+                secondaryItemId = logIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemAmount = 29;
+                resultItemId = unstrungLongIds[comboBoxField1.getSelectedIndex()];
+                dialogOption = 2;
+                break;
+              case 1: // string longbow
+                primaryItemId = unstrungLongIds[comboBoxField1.getSelectedIndex()];
+                primaryItemAmount = 14;
+                secondaryItemId = ItemId.BOW_STRING.getId();
+                secondaryItemAmount = 14;
+                resultItemId = strungLongIds[comboBoxField1.getSelectedIndex()];
+                break;
+              case 2: // arrow shafts
+                primaryItemId = ItemId.KNIFE.getId();
+                primaryItemAmount = 1;
+                secondaryItemId = logIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemAmount = 29;
+                resultItemId = ItemId.ARROW_SHAFTS.getId();
+                dialogOption = 0;
+                break;
+              case 3: // fletch shortbow
+                primaryItemId = ItemId.KNIFE.getId();
+                primaryItemAmount = 1;
+                secondaryItemId = logIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemAmount = 29;
+                resultItemId = unstrungShortIds[comboBoxField1.getSelectedIndex()];
+                dialogOption = 1;
+                break;
+              case 4: // string shortbow
+                primaryItemId = unstrungShortIds[comboBoxField1.getSelectedIndex()];
+                primaryItemAmount = 14;
+                secondaryItemId = ItemId.BOW_STRING.getId();
+                secondaryItemAmount = 14;
+                resultItemId = strungShortIds[comboBoxField1.getSelectedIndex()];
+                break;
+              default:
+                c.log("Error in script option");
             }
+          }
+
+          private void set_ids() {
+            //           bringFood = bringFoodCheckBox.getState();
+            //            if (bringFood) {
+            //              c.log("bringing food");
+            //              if (!foodAmountsField.getText().isEmpty()) {
+            //                foodWithdrawAmount = Integer.parseInt(foodAmountsField.getText());
+            //              } else foodWithdrawAmount = 1;
+            //              foodId = foodIds[foodType.getSelectedIndex()];
+            //              foodName = foodTypes[foodType.getSelectedIndex()];
+            //            }
             // assign item ids to harvest, paths, etc
             switch (list.getSelectedItem()) {
-              case "Grapes":
+              case "Fletching":
                 scriptSelect = 0;
-                harvestItemId = ItemId.GRAPES.getId();
-                harvestToolId = ItemId.HERB_CLIPPERS.getId();
-                harvestObjectId = 1283;
+                setFletchingType();
                 break;
-              case "Pineapple":
+              case "Gem Cutting":
+                final int[] gemIds = {
+                  ItemId.SAPPHIRE.getId(),
+                  ItemId.EMERALD.getId(),
+                  ItemId.RUBY.getId(),
+                  ItemId.DIAMOND.getId(),
+                  ItemId.DRAGONSTONE.getId(),
+                  ItemId.OPAL.getId(),
+                  ItemId.JADE.getId(),
+                  ItemId.RED_TOPAZ.getId()
+                };
                 scriptSelect = 1;
-                harvestObjectId = SceneryId.PINEAPPLE_PLANT.getId();
-                harvestToolId = ItemId.FRUIT_PICKER.getId();
-                harvestItemId = ItemId.PINEAPPLE.getId();
-                accessItemId = new int[] {ItemId.COINS.getId()};
-                accessItemAmount = new int[] {1000};
+                primaryItemId = ItemId.CHISEL.getId();
+                primaryItemAmount = 1;
+                secondaryItemId = gemIds[comboBoxField1.getSelectedIndex()];
+                secondaryItemAmount = 29;
                 break;
-              case "Papaya":
+              case "Bone Bury":
+                final int[] boneIds = {
+                  ItemId.BONES.getId(),
+                  ItemId.BIG_BONES.getId(),
+                  ItemId.BAT_BONES.getId(),
+                  ItemId.DRAGON_BONES.getId()
+                };
                 scriptSelect = 2;
-                harvestObjectId = SceneryId.PAPAYA_PALM.getId();
-                harvestToolId = ItemId.FRUIT_PICKER.getId();
-                harvestItemId = ItemId.PAPAYA.getId();
-                accessItemId = new int[] {ItemId.COINS.getId()};
-                accessItemAmount = new int[] {1000};
-
+                primaryItemId = boneIds[comboBoxField1.getSelectedIndex()];
+                primaryItemAmount = 30;
                 break;
+
               case "Coconuts":
                 scriptSelect = 3;
                 harvestObjectId = SceneryId.COCONUT_PALM.getId();
                 harvestToolId = ItemId.FRUIT_PICKER.getId();
-                harvestItemId = ItemId.COCONUT.getId();
                 accessItemId = new int[] {ItemId.COINS.getId()};
                 accessItemAmount = new int[] {1000};
                 break;
               case "Dragonfruit":
                 scriptSelect = 4;
                 harvestToolId = ItemId.FRUIT_PICKER.getId();
-                harvestItemId = ItemId.DRAGONFRUIT.getId();
                 accessItemAmount = new int[] {1}; // 1
                 accessItemId =
                     new int[] {
@@ -456,7 +559,6 @@ c.sleep(GAME_TICK);
                 scriptSelect = 5;
                 harvestObjectId = SceneryId.JANGERBERRY_BUSH.getId();
                 harvestToolId = ItemId.FRUIT_PICKER.getId();
-                harvestItemId = ItemId.JANGERBERRIES.getId();
                 // accessItemId = ItemId.COINS.getId();
                 // accessItemAmount = new int[] {1000};
                 break;
@@ -464,7 +566,6 @@ c.sleep(GAME_TICK);
                 scriptSelect = 6;
                 harvestObjectId = SceneryId.WHITEBERRY_BUSH.getId();
                 harvestToolId = ItemId.HERB_CLIPPERS.getId();
-                harvestItemId = ItemId.WHITE_BERRIES.getId();
                 accessItemId = new int[] {ItemId.LOCKPICK.getId()};
                 teleportBanking = agilityCapeCheckBox.getState();
                 accessItemAmount = new int[] {1};
@@ -528,7 +629,7 @@ c.sleep(GAME_TICK);
     middle.add(checkboxes, constraints);
 
     // only add the first top infobox option (from list)
-    containerInfobox.add(grapeInfobox);
+    containerInfobox.add(fletchInfobox);
 
     // Setup window
     scriptFrame.setSize(370, 460); // was 415, 550?
@@ -564,7 +665,7 @@ c.sleep(GAME_TICK);
       try {
         float timeRan = timeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        successPerHr = (int) (totalHarvestedCount * scale);
+        successPerHr = (int) (totalProcessedCount * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
       } catch (Exception e) {
         // divide by zero
@@ -574,7 +675,7 @@ c.sleep(GAME_TICK);
       c.drawString("@red@AIO Harvester @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
-          "@whi@" + locations[scriptSelect] + " Bank Count: @gre@" + harvestedItemInBank,
+          "@whi@" + locations[scriptSelect] + " Bank Count: @gre@" + processedItemInBank,
           x,
           y + 14,
           0xFFFFFF,
@@ -583,7 +684,7 @@ c.sleep(GAME_TICK);
           "@whi@"
               + locations[scriptSelect]
               + " Harvest Count: @gre@"
-              + totalHarvestedCount
+              + totalProcessedCount
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",

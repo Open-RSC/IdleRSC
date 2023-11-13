@@ -84,6 +84,7 @@ public class AIOHarvester extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      c.quitIfAuthentic();
       startTime = System.currentTimeMillis();
       if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
       if (scriptSelect == 6 && c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
@@ -167,6 +168,8 @@ public class AIOHarvester extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
+      c.sleep(2 * GAME_TICK); // re-sync
+
       if (teleportBanking) {
         for (int i = 0; i < teleportItemIds.length; i++) {
           withdrawItem(teleportItemIds[i], teleportItemAmounts[i]);

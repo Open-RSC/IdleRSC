@@ -20,12 +20,6 @@ import models.entities.ItemId;
  * @author Kaila
  */
 public class AIOBankTrainer extends K_kailaScript {
-  final String[] locations = {"Fletching", "Gems", "Bones"};
-  private boolean teleportBanking = false;
-  private boolean bringFood = false;
-  private boolean ate = true;
-  private int processedItemInBank = 0;
-  private int totalProcessedCount = 0;
   /**
    *
    *
@@ -36,8 +30,6 @@ public class AIOBankTrainer extends K_kailaScript {
    */
   private int scriptSelect = 0;
 
-  private int[] accessItemId;
-  private int[] accessItemAmount;
   private int primaryItemId = 0;
   private String processedItemName = "";
   private int primaryItemAmount = 0;
@@ -46,6 +38,8 @@ public class AIOBankTrainer extends K_kailaScript {
   private int dialogOption = -1;
   private int resultItemId = -1;
   private int burnLocation = 0;
+  private int processedItemInBank = 0;
+  private int totalProcessedCount = 0;
   private boolean autoWalk = false;
 
   /**
@@ -63,17 +57,17 @@ public class AIOBankTrainer extends K_kailaScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      c.quitIfAuthentic();
       startTime = System.currentTimeMillis();
       if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@AIO Bank Trainer ~ By @mag@Kaila");
       if (c.isInBank()) c.closeBank();
-      //      for (int bankerId : c.bankerIds) {
-      //        if (c.getNearestNpcById(bankerId, false) != null || c.getNearestObjectById(942) !=
-      // null) {
-      //          bank();
-      //          break;
-      //        }
-      //      }
+      for (int bankerId : c.bankerIds) {
+        if (c.getNearestNpcById(bankerId, false) != null || c.getNearestObjectById(942) != null) {
+          bank();
+          break;
+        }
+      }
       c.toggleBatchBarsOn();
       scriptStart();
     }
@@ -95,6 +89,9 @@ public class AIOBankTrainer extends K_kailaScript {
         case 3: // firemaking
           burnLoop(burnLocation);
           break;
+        case 4: // smithing
+          if (c.getInventoryItemCount(secondaryItemId) > 4) smithingLoop();
+          break;
         default:
           inventoryProcessLoop();
       }
@@ -106,6 +103,25 @@ public class AIOBankTrainer extends K_kailaScript {
         c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
       }
     }
+  }
+
+  private void smithingLoop() {
+    c.setStatus("@gre@Smithing..");
+    c.walkTo(148, 512);
+    c.useItemIdOnObject(148, 513, secondaryItemId);
+    c.sleep(1280);
+    c.optionAnswer(1);
+    c.sleep(640);
+    c.optionAnswer(2);
+    c.sleep(640);
+    c.optionAnswer(2);
+    c.sleep(640);
+    if (!c.isAuthentic()) {
+      c.optionAnswer(3);
+      c.sleep(3000); // was 650
+    }
+    waitForBatching();
+    c.walkTo(150, 507);
   }
 
   private static final int[][][] burnStartLocations = {
@@ -129,10 +145,12 @@ public class AIOBankTrainer extends K_kailaScript {
    * @param index 0 = v west, 1 = v east, 2 = seers, 3 = ardy
    */
   private void burnLoop(int index) {
-    c.displayMessage("@gre@Burning logs..");
+    // c.displayMessage("@gre@Burning logs..");
     c.setStatus("@gre@Burning logs..");
     for (int i = 0; i < burnStartLocations[index].length; i++) {
-      if (c.getInventoryItemCount(primaryItemId) < 1) break;
+      if (!c.isRunning()
+          || c.getInventoryItemCount(primaryItemId) < 1
+          || c.getInventoryItemCount(secondaryItemId) < 1) break;
       if (burnStartLocations[index][i][1] < 140) {
         c.walkTo(138, 508);
       }
@@ -176,26 +194,30 @@ public class AIOBankTrainer extends K_kailaScript {
   }
 
   private void bank() { // works for all
-    if (scriptSelect == 2) { // walkback for firemaking script
+    c.setStatus("@yel@Banking..");
+    if (scriptSelect == 3) { // walkback for firemaking script
       switch (burnLocation) {
-        case 1:
+        case 0:
+          c.log("burn 0");
           if (c.currentX() > 165) {
             c.walkTo(165, 507);
             c.walkTo(151, 507);
           } else if (c.currentX() < 138) c.walkTo(148, 508);
           break;
-        case 2:
+        case 1:
+          c.log("burn 1");
           if (c.currentX() > 115) c.walkTo(103, 509);
           break;
-        case 3:
+        case 2:
+          c.log("burn 2");
           if (c.currentX() > 115) c.walkTo(504, 457);
           break;
-        case 4:
+        case 3:
+          c.log("burn 3");
           if (c.currentX() > 563) c.walkTo(549, 613);
           break;
       }
     }
-    c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(GAME_TICK);
     if (!c.isInBank()) {
@@ -203,12 +225,16 @@ public class AIOBankTrainer extends K_kailaScript {
     } else {
       if (scriptSelect == 2) { // bury bones
         totalProcessedCount = totalProcessedCount + 30;
+      } else if (scriptSelect == 3) {
+        totalProcessedCount = totalProcessedCount + 25;
       } else {
         totalProcessedCount = totalProcessedCount + c.getInventoryItemCount(resultItemId);
       }
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
+      c.sleep(2 * GAME_TICK); // re-sync
+
       if (c.getInventoryItemCount(primaryItemId) < primaryItemAmount) { // withdraw harvest tool
         if (c.getBankItemCount(primaryItemId) > 0) {
           c.withdrawItem(primaryItemId, primaryItemAmount - c.getInventoryItemCount(primaryItemId));
@@ -233,7 +259,6 @@ public class AIOBankTrainer extends K_kailaScript {
       totalTrips++;
       c.closeBank();
       c.sleep(GAME_TICK);
-      if (bringFood) eatFood();
     }
   }
 
@@ -257,9 +282,9 @@ public class AIOBankTrainer extends K_kailaScript {
     final Panel fletchInfobox = new Panel(new GridLayout(0, 1));
     final Panel gemInfobox = new Panel(new GridLayout(0, 1));
     final Panel boneInfobox = new Panel(new GridLayout(0, 1));
-
     final Panel firemakingInfobox = new Panel(new GridLayout(0, 1));
-    final Panel dfInfobox = new Panel(new GridLayout(0, 1));
+    final Panel smithingInfobox = new Panel(new GridLayout(0, 1));
+
     final Panel jangerInfobox = new Panel(new GridLayout(0, 1));
     final Panel wBerriesInfobox = new Panel(new GridLayout(0, 1));
 
@@ -277,7 +302,7 @@ public class AIOBankTrainer extends K_kailaScript {
       gemInfobox,
       boneInfobox,
       firemakingInfobox,
-      dfInfobox,
+      smithingInfobox,
       jangerInfobox,
       wBerriesInfobox
     };
@@ -306,11 +331,12 @@ public class AIOBankTrainer extends K_kailaScript {
         new Label("This ensures 29 Items are made per Menu Cycle."),
         new Label("Do NOT use a firemaking skill cape with this trainer")
       },
-      { // df
-        new Label("Gem Cutting Script ~ by Kaila"),
+      { // smithing
+        // todo : turn into aio smither
+        new Label("Platebody Smithing ~ by Kaila"),
+        new Label("Makes platebodies in Varrock West bank"),
         new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
-        new Label("This ensures 29 Items are made per Menu Cycle."),
-        new Label("Start in any bank with an empty inventory")
+        new Label("This ensures 5 Plates are made per Menu Cycle.")
       },
       { // janger
         new Label("Gem Cutting Script ~ by Kaila"),
@@ -343,7 +369,10 @@ public class AIOBankTrainer extends K_kailaScript {
     final Checkbox doStuff = new Checkbox("doStuff?", false);
 
     final Label[] comboBoxLabel1 = {
-      new Label("Log Type:"), new Label("Gem Type:"), new Label("Bone Type:")
+      new Label("Log Type:"),
+      new Label("Gem Type:"),
+      new Label("Bone Type:"),
+      new Label("Bar Type:")
     };
     final String[][] comboField1 = {
       { // logs
@@ -355,6 +384,9 @@ public class AIOBankTrainer extends K_kailaScript {
       { // bones
         "Normal Bones", "Big Bones", "Bat Bones", "Dragon Bones"
       },
+      { // bars
+        "Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite"
+      }
     };
     final Label[] comboBoxLabel2 = {
       new Label("Select Fletching Type:"), new Label("Burn Location:")
@@ -437,6 +469,7 @@ public class AIOBankTrainer extends K_kailaScript {
     list.add("Gem Cutting");
     list.add("Bone Bury");
     list.add("Firemaking");
+    list.add("Smithing");
     list.select(0);
     list.addItemListener(
         e -> {
@@ -490,6 +523,11 @@ public class AIOBankTrainer extends K_kailaScript {
               checkboxes.add(comboBoxField1[0]);
               checkboxes.add(comboBoxLabel2[1]);
               checkboxes.add(comboBoxField2[1]);
+              break;
+            case 4: // "smithing"
+              containerInfobox.add(smithingInfobox);
+              checkboxes.add(comboBoxLabel1[3]);
+              checkboxes.add(comboBoxField1[3]);
               break;
           }
           checkboxes.add(space_saver_a);
@@ -629,11 +667,11 @@ public class AIOBankTrainer extends K_kailaScript {
                 };
                 processedItemName = comboField1[1][comboBoxField1[1].getSelectedIndex()];
                 resultItemId = cutGemIds[comboBoxField1[1].getSelectedIndex()];
-                scriptSelect = 1;
                 primaryItemId = ItemId.CHISEL.getId();
-                primaryItemAmount = 1;
                 secondaryItemId = uncutGemIds[comboBoxField1[1].getSelectedIndex()];
+                primaryItemAmount = 1;
                 secondaryItemAmount = 29;
+                scriptSelect = 1;
                 break;
               case 2: // "Bone Bury"
                 final int[] boneIds = {
@@ -643,9 +681,9 @@ public class AIOBankTrainer extends K_kailaScript {
                   ItemId.DRAGON_BONES.getId()
                 };
                 processedItemName = comboField1[2][comboBoxField1[2].getSelectedIndex()];
-                scriptSelect = 2;
                 primaryItemId = boneIds[comboBoxField1[2].getSelectedIndex()];
                 primaryItemAmount = 30;
+                scriptSelect = 2;
                 break;
               case 3: // "Firemaking"
                 final int[] logIds = {
@@ -658,30 +696,37 @@ public class AIOBankTrainer extends K_kailaScript {
                 };
                 processedItemName = comboField1[0][comboBoxField1[0].getSelectedIndex()];
                 burnLocation = comboBoxField2[1].getSelectedIndex();
-                scriptSelect = 3;
                 primaryItemId = ItemId.TINDERBOX.getId();
-                primaryItemAmount = 1;
                 secondaryItemId = logIds[comboBoxField1[0].getSelectedIndex()];
+                primaryItemAmount = 1;
                 secondaryItemAmount = 30;
+                scriptSelect = 3;
                 break;
-
-              case 4: // "Dragonfruit"
+              case 4: // "Smithing"
+                final int[] barIds = {
+                  ItemId.BRONZE_BAR.getId(),
+                  ItemId.IRON_BAR.getId(),
+                  ItemId.STEEL_BAR.getId(),
+                  ItemId.MITHRIL_BAR.getId(),
+                  ItemId.ADAMANTITE_BAR.getId(),
+                  ItemId.RUNITE_BAR.getId()
+                };
+                processedItemName = comboField1[3][comboBoxField1[3].getSelectedIndex()];
+                resultItemId = barIds[comboBoxField1[3].getSelectedIndex()];
+                primaryItemId = ItemId.HAMMER.getId();
+                secondaryItemId = barIds[comboBoxField1[3].getSelectedIndex()];
+                primaryItemAmount = 1;
+                secondaryItemAmount = 25;
                 scriptSelect = 4;
-                accessItemAmount = new int[] {1}; // 1
-                accessItemId = new int[] {ItemId.SHANTAY_DESERT_PASS.getId()};
                 break;
               case 5: // "Jangerberries"
                 scriptSelect = 5;
-                // accessItemId = ItemId.COINS.getId();
-                // accessItemAmount = new int[] {1000};
+
                 break;
               case 6: // "Jangerberries"
                 scriptSelect = 6;
-                accessItemId = new int[] {ItemId.LOCKPICK.getId()};
-                teleportBanking = agilityCapeCheckBox.getState();
-                accessItemAmount = new int[] {1};
-                autoWalk = true;
 
+                autoWalk = true;
                 break;
               default:
                 throw new Error("unknown option");

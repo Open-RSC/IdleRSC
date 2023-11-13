@@ -45,6 +45,7 @@ public class AIOBankTrainer extends K_kailaScript {
   private int secondaryItemAmount = 0;
   private int dialogOption = -1;
   private int resultItemId = -1;
+  private int burnLocation = 0;
   private boolean autoWalk = false;
 
   /**
@@ -87,10 +88,15 @@ public class AIOBankTrainer extends K_kailaScript {
         c.setStatus("@red@Banking..");
         bank();
       }
-      if (scriptSelect == 2) { // bury bones
-        buryLoop();
-      } else {
-        inventoryProcessLoop();
+      switch (scriptSelect) {
+        case 2: // bury bones
+          buryLoop();
+          break;
+        case 3: // firemaking
+          burnLoop(burnLocation);
+          break;
+        default:
+          inventoryProcessLoop();
       }
       if (autoWalk && System.currentTimeMillis() > next_attempt) {
         c.log("@red@Walking to Avoid Logging!");
@@ -99,6 +105,51 @@ public class AIOBankTrainer extends K_kailaScript {
         long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
         c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
       }
+    }
+  }
+
+  private static final int[][][] burnStartLocations = {
+    { // v west
+      {152, 507}, {157, 506}, {157, 505}, {157, 504}, {134, 508}, {131, 509}
+    },
+    { // v east
+      {87, 508}, {87, 507}, {90, 506}, {77, 509}
+    },
+    { // seers
+      {493, 456}, {490, 458}, {483, 460}, {484, 463}
+    },
+    { // ardy
+      {538, 607}, {537, 606}, {550, 620}, {534, 605}
+    }
+  }; // x then y then x then y
+
+  /**
+   * burn loop
+   *
+   * @param index 0 = v west, 1 = v east, 2 = seers, 3 = ardy
+   */
+  private void burnLoop(int index) {
+    c.displayMessage("@gre@Burning logs..");
+    c.setStatus("@gre@Burning logs..");
+    for (int i = 0; i < burnStartLocations[index].length; i++) {
+      if (c.getInventoryItemCount(primaryItemId) < 1) break;
+      if (burnStartLocations[index][i][1] < 140) {
+        c.walkTo(138, 508);
+      }
+      if (c.isTileEmpty(burnStartLocations[index][i][0], burnStartLocations[index][i][1])) {
+        // can use c.isTileEmpty
+        c.walkTo(burnStartLocations[index][i][0], burnStartLocations[index][i][1]);
+        c.dropItem(c.getInventoryItemSlotIndex(secondaryItemId), 1);
+        c.sleep(GAME_TICK);
+        c.useItemOnGroundItem(
+            burnStartLocations[index][i][0],
+            burnStartLocations[index][i][1],
+            primaryItemId,
+            secondaryItemId);
+        c.sleep(6 * GAME_TICK);
+        while (c.isBatching()) c.sleep(GAME_TICK);
+      }
+      c.sleep(GAME_TICK);
     }
   }
 
@@ -125,6 +176,25 @@ public class AIOBankTrainer extends K_kailaScript {
   }
 
   private void bank() { // works for all
+    if (scriptSelect == 2) { // walkback for firemaking script
+      switch (burnLocation) {
+        case 1:
+          if (c.currentX() > 165) {
+            c.walkTo(165, 507);
+            c.walkTo(151, 507);
+          } else if (c.currentX() < 138) c.walkTo(148, 508);
+          break;
+        case 2:
+          if (c.currentX() > 115) c.walkTo(103, 509);
+          break;
+        case 3:
+          if (c.currentX() > 115) c.walkTo(504, 457);
+          break;
+        case 4:
+          if (c.currentX() > 563) c.walkTo(549, 613);
+          break;
+      }
+    }
     c.setStatus("@yel@Banking..");
     c.openBank();
     c.sleep(GAME_TICK);
@@ -188,7 +258,7 @@ public class AIOBankTrainer extends K_kailaScript {
     final Panel gemInfobox = new Panel(new GridLayout(0, 1));
     final Panel boneInfobox = new Panel(new GridLayout(0, 1));
 
-    final Panel cocoInfobox = new Panel(new GridLayout(0, 1));
+    final Panel firemakingInfobox = new Panel(new GridLayout(0, 1));
     final Panel dfInfobox = new Panel(new GridLayout(0, 1));
     final Panel jangerInfobox = new Panel(new GridLayout(0, 1));
     final Panel wBerriesInfobox = new Panel(new GridLayout(0, 1));
@@ -203,7 +273,13 @@ public class AIOBankTrainer extends K_kailaScript {
 
     // Add in the top infobox Stuff
     Panel[] infoBoxes = {
-      fletchInfobox, gemInfobox, boneInfobox, cocoInfobox, dfInfobox, jangerInfobox, wBerriesInfobox
+      fletchInfobox,
+      gemInfobox,
+      boneInfobox,
+      firemakingInfobox,
+      dfInfobox,
+      jangerInfobox,
+      wBerriesInfobox
     };
     Label[][] allLabels = {
       { // fletching
@@ -224,11 +300,11 @@ public class AIOBankTrainer extends K_kailaScript {
         new Label("This ensures 29 Items are made per Menu Cycle."),
         new Label("Start in any bank with an empty inventory")
       },
-      { // coco
-        new Label("Gem Cutting Script ~ by Kaila"),
+      { // firemaking
+        new Label("Bank Firemaking ~ by Kaila"),
         new Label("Batch Bars MUST be On, Bot will attempt to enable it."),
         new Label("This ensures 29 Items are made per Menu Cycle."),
-        new Label("Start in any bank with an empty inventory")
+        new Label("Do NOT use a firemaking skill cape with this trainer")
       },
       { // df
         new Label("Gem Cutting Script ~ by Kaila"),
@@ -278,9 +354,11 @@ public class AIOBankTrainer extends K_kailaScript {
       },
       { // bones
         "Normal Bones", "Big Bones", "Bat Bones", "Dragon Bones"
-      }
+      },
     };
-    final Label[] comboBoxLabel2 = {new Label("Select Fletching Type:")};
+    final Label[] comboBoxLabel2 = {
+      new Label("Select Fletching Type:"), new Label("Burn Location:")
+    };
     final String[][] comboField2 = {
       { // fletching
         "Fletch Longbows",
@@ -289,6 +367,7 @@ public class AIOBankTrainer extends K_kailaScript {
         "Fletch Shortbows(less xp)",
         "String Shortbows"
       },
+      {"Varrock West", "Varrock East", "Seers Village", "Ardougne South"}
     };
 
     // Combo box options. Change string comboLabel1, string[] comboField1, etc
@@ -345,29 +424,19 @@ public class AIOBankTrainer extends K_kailaScript {
     checkboxes.add(space_saver_b);
     checkboxes.add(space_saver_c);
     checkboxes.add(space_saver_d);
-    // checkboxes.add(optionsPanel); // add the options panel section of checkboxes last
 
     // Action listeners to hide/show based on checkboxes
-    bringFoodCheckBox.addItemListener(
-        e -> {
-          // comboBoxField2.setEnabled(bringFoodCheckBox.getState());
-          // comboBoxField1[].setEnabled(bringFoodCheckBox.getState());
-        });
+    //    bringFoodCheckBox.addItemListener(
+    //        e -> {
+    //          // comboBoxField2.setEnabled(bringFoodCheckBox.getState());
+    //          // comboBoxField1[].setEnabled(bringFoodCheckBox.getState());
+    //        });
     // Add left side script select options
     final java.awt.List list = new java.awt.List();
     list.add("Fletching");
     list.add("Gem Cutting");
     list.add("Bone Bury");
-    // list.add("Coconuts");
-    // list.add("Dragonfruit");
-    // list.add("Jangerberries");
-    // list.add("Whiteberries");
-    // list.add("Tav Limps/Snapes");
-    // list.add("Ardy Limps/Snapes");
-    // list.add("Tav Herbs");
-    // list.add("Corn");
-    // list.add("Red Cabbage");
-    // list.add("White Pumpkin");
+    list.add("Firemaking");
     list.select(0);
     list.addItemListener(
         e -> {
@@ -407,35 +476,20 @@ public class AIOBankTrainer extends K_kailaScript {
               break;
             case 1: // "Gem Cutting"
               containerInfobox.add(gemInfobox);
-
               checkboxes.add(comboBoxLabel1[1]);
               checkboxes.add(comboBoxField1[1]);
               break;
             case 2: // "Bone Bury"
               containerInfobox.add(boneInfobox);
-
               checkboxes.add(comboBoxLabel1[2]);
               checkboxes.add(comboBoxField1[2]);
               break;
-
-            case 3: // "Coconuts"
-              containerInfobox.add(cocoInfobox);
-              checkboxes.add(ardyTeleCheckBox);
-              break;
-            case 4: // "Dragonfruit"
-              containerInfobox.add(dfInfobox);
-              // checkboxes.add(lumbTeleCheckBox);
-              checkboxes.add(bringFoodCheckBox);
-              checkboxes.add(comboBoxLabel1[1]);
-              checkboxes.add(comboBoxField1[1]);
-              break;
-            case 5: // "Jangerberries"
-              containerInfobox.add(jangerInfobox);
-              break;
-            case 6: // "Whiteberries"
-              containerInfobox.add(wBerriesInfobox);
-              checkboxes.add(agilityCapeCheckBox);
-              checkboxes.add(bringFoodCheckBox);
+            case 3: // "firemaking"
+              containerInfobox.add(firemakingInfobox);
+              checkboxes.add(comboBoxLabel1[0]);
+              checkboxes.add(comboBoxField1[0]);
+              checkboxes.add(comboBoxLabel2[1]);
+              checkboxes.add(comboBoxField2[1]);
               break;
           }
           checkboxes.add(space_saver_a);
@@ -547,12 +601,12 @@ public class AIOBankTrainer extends K_kailaScript {
             //              foodName = foodTypes[foodType.getSelectedIndex()];
             //            }
             // assign item ids to harvest, paths, etc
-            switch (list.getSelectedItem()) {
-              case "Fletching":
+            switch (list.getSelectedIndex()) {
+              case 0: // "Fletching"
                 scriptSelect = 0;
                 setFletchingType();
                 break;
-              case "Gem Cutting":
+              case 1: // "Gem Cutting"
                 final int[] uncutGemIds = {
                   ItemId.UNCUT_SAPPHIRE.getId(),
                   ItemId.UNCUT_EMERALD.getId(),
@@ -581,7 +635,7 @@ public class AIOBankTrainer extends K_kailaScript {
                 secondaryItemId = uncutGemIds[comboBoxField1[1].getSelectedIndex()];
                 secondaryItemAmount = 29;
                 break;
-              case "Bone Bury":
+              case 2: // "Bone Bury"
                 final int[] boneIds = {
                   ItemId.BONES.getId(),
                   ItemId.BIG_BONES.getId(),
@@ -593,23 +647,35 @@ public class AIOBankTrainer extends K_kailaScript {
                 primaryItemId = boneIds[comboBoxField1[2].getSelectedIndex()];
                 primaryItemAmount = 30;
                 break;
-
-              case "Coconuts":
+              case 3: // "Firemaking"
+                final int[] logIds = {
+                  ItemId.LOGS.getId(),
+                  ItemId.OAK_LOGS.getId(),
+                  ItemId.WILLOW_LOGS.getId(),
+                  ItemId.MAPLE_LOGS.getId(),
+                  ItemId.YEW_LOGS.getId(),
+                  ItemId.MAGIC_LOGS.getId()
+                };
+                processedItemName = comboField1[0][comboBoxField1[0].getSelectedIndex()];
+                burnLocation = comboBoxField2[1].getSelectedIndex();
                 scriptSelect = 3;
-                accessItemId = new int[] {ItemId.COINS.getId()};
-                accessItemAmount = new int[] {1000};
+                primaryItemId = ItemId.TINDERBOX.getId();
+                primaryItemAmount = 1;
+                secondaryItemId = logIds[comboBoxField1[0].getSelectedIndex()];
+                secondaryItemAmount = 30;
                 break;
-              case "Dragonfruit":
+
+              case 4: // "Dragonfruit"
                 scriptSelect = 4;
                 accessItemAmount = new int[] {1}; // 1
                 accessItemId = new int[] {ItemId.SHANTAY_DESERT_PASS.getId()};
                 break;
-              case "Jangerberries":
+              case 5: // "Jangerberries"
                 scriptSelect = 5;
                 // accessItemId = ItemId.COINS.getId();
                 // accessItemAmount = new int[] {1000};
                 break;
-              case "Whiteberries":
+              case 6: // "Jangerberries"
                 scriptSelect = 6;
                 accessItemId = new int[] {ItemId.LOCKPICK.getId()};
                 teleportBanking = agilityCapeCheckBox.getState();

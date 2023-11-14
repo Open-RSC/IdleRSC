@@ -2,6 +2,9 @@ package scripting.idlescript;
 
 import java.awt.*;
 import javax.swing.*;
+
+import bot.Main;
+import controller.Controller;
 import models.entities.ItemId;
 
 /**
@@ -9,7 +12,15 @@ import models.entities.ItemId;
  *
  * @author Searos and Kaila
  */
-public class ColeslawGuildFisher extends K_kailaScript {
+public class ColeslawGuildFisher extends IdleScript {
+  private static final Controller c = Main.getController();
+  private static boolean guiSetup = false;
+  private static boolean scriptStarted = false;
+  private static long startTime;
+  private static JFrame scriptFrame = null;
+  private static final int GAME_TICK = 640;
+  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
+
   private static final int HARPOON_ID = ItemId.HARPOON.getId();
   private static final int LOBSTER_POT_ID = ItemId.LOBSTER_POT.getId();
   private static final int SHARK_FISH_SPOT = 261;
@@ -123,13 +134,12 @@ public class ColeslawGuildFisher extends K_kailaScript {
 
   private void dropJunk() {
     for (int itemId : c.getInventoryItemIds()) {
-      if (itemId == 622) dropItemAmount(622, 30, true); // seaweed
-      if (itemId == 793) dropItemAmount(793, 30, true); // oyster
-      if (itemId == 16) dropItemAmount(16, 30, true); // gloves
-      if (itemId == 17) dropItemAmount(17, 30, true); // boots
+      if (itemId == 622) K_kailaScript.dropItemAmount(622, 30, true); // seaweed
+      if (itemId == 793) K_kailaScript.dropItemAmount(793, 30, true); // oyster
+      if (itemId == 16) K_kailaScript.dropItemAmount(16, 30, true); // gloves
+      if (itemId == 17) K_kailaScript.dropItemAmount(17, 30, true); // boots
     }
   }
-
   private void handleFishing() {
     if (!c.isBatching()) {
       if (dropJunk && bigNetFishing) dropJunk();

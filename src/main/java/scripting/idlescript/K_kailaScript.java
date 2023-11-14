@@ -632,7 +632,7 @@ public class K_kailaScript extends IdleScript {
   }
   /**
    * attempt to leave combat once per tick for 6 ticks<br>
-   * walks to current tile (async non-blocking) radius 1. <br>
+   * walks to current tile (async non-blocking) radius 0. <br>
    */
   protected static void leaveCombat() {
     for (int i = 0; i <= 10; i++) {

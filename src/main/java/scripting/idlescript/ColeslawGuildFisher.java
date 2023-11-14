@@ -1,10 +1,9 @@
 package scripting.idlescript;
 
-import java.awt.*;
-import javax.swing.*;
-
 import bot.Main;
 import controller.Controller;
+import java.awt.*;
+import javax.swing.*;
 import models.entities.ItemId;
 
 /**
@@ -20,7 +19,6 @@ public class ColeslawGuildFisher extends IdleScript {
   private static JFrame scriptFrame = null;
   private static final int GAME_TICK = 640;
   private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-
   private static final int HARPOON_ID = ItemId.HARPOON.getId();
   private static final int LOBSTER_POT_ID = ItemId.LOBSTER_POT.getId();
   private static final int SHARK_FISH_SPOT = 261;
@@ -140,6 +138,7 @@ public class ColeslawGuildFisher extends IdleScript {
       if (itemId == 17) K_kailaScript.dropItemAmount(17, 30, true); // boots
     }
   }
+
   private void handleFishing() {
     if (!c.isBatching()) {
       if (dropJunk && bigNetFishing) dropJunk();

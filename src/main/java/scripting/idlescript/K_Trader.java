@@ -5,6 +5,7 @@ import controller.Controller;
 import java.awt.*;
 import javax.swing.*;
 
+// todo add option for trading presents?
 public class K_Trader extends K_kailaScript {
 
   private static final Controller c = Main.getController();

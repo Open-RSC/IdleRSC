@@ -19,6 +19,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
     ItemId.EARTH_RUNE.getId(),
     ItemId.WATER_RUNE.getId(),
     ItemId.FIRE_RUNE.getId(),
+    ItemId.MIND_RUNE.getId()
   };
   private int soulId = ItemId.SOUL_RUNE.getId();
   private int bStaff = ItemId.BATTLESTAFF.getId();
@@ -242,8 +243,8 @@ public class K_BuyMagicGuild extends K_kailaScript {
   private void goDownStairs() {
     for (int i = 1; i <= 200; i++) {
       if (c.currentY() > 1500) {
-        c.setStatus("@red@Going up Stairs..");
-        c.atObject(599, 757); // gate won't break if someone else opens it
+        c.setStatus("@red@Going down Stairs..");
+        c.atObject(602, 1700); // gate won't break if someone else opens it
         c.sleep(4 * GAME_TICK);
       } else {
         break;

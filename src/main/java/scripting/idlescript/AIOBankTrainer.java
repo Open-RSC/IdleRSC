@@ -24,10 +24,18 @@ public class AIOBankTrainer extends K_kailaScript {
    *
    *
    * <pre>
-   * 0 = grapes
-   * 1 = whiteberries
+   *   0  list.add("Fletching");
+   *   1  list.add("Gem Cutting");
+   *   2  list.add("Bone Bury");
+   *   3  list.add("Firemaking");
+   *   4  list.add("Smithing");
    * </pre>
    */
+
+  // todo elemental battlestaffs
+  // todo misc - crystal keys, dragon scales
+  // todo herb cleaner
+
   private int scriptSelect = 0;
 
   private int primaryItemId = 0;

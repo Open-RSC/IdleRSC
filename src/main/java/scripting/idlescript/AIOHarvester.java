@@ -176,9 +176,9 @@ public class AIOHarvester extends K_kailaScript {
         }
       }
       for (int i = 0; i < accessItemId.length; i++) {
-        if (accessItemId[i] != 0
-            && c.getInventoryItemCount(accessItemId[i]) < accessItemAmount[i]) {
-          withdrawItem(accessItemId[i], accessItemAmount[i]);
+        if (c.getInventoryItemCount(accessItemId[i]) < accessItemAmount[i]) {
+          c.withdrawItem(accessItemId[i], accessItemAmount[i]);
+          c.sleep(GAME_TICK);
         }
       }
       if (c.getInventoryItemCount(harvestToolId) < 1) { // withdraw harvest tool
@@ -766,12 +766,12 @@ public class AIOHarvester extends K_kailaScript {
                 harvestToolId = ItemId.FRUIT_PICKER.getId();
                 harvestItemId = ItemId.COCONUT.getId();
                 accessItemId = new int[] {ItemId.COINS.getId()};
+                accessItemAmount = new int[] {1000};
                 teleportItemIds =
                     new int[] {
                       ItemId.LAW_RUNE.getId(), ItemId.EARTH_RUNE.getId(), ItemId.AIR_RUNE.getId()
                     };
                 teleportItemAmounts = new int[] {1, 1, 3};
-                accessItemAmount = new int[] {1000};
                 break;
               case "Dragonfruit":
                 scriptSelect = 4;

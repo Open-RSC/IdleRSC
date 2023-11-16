@@ -1088,7 +1088,6 @@ public class K_kailaScript extends IdleScript {
   protected static void withdrawItem(int itemId, int withdrawAmount) {
     if (c.getInventoryItemCount(itemId) < withdrawAmount) {
       c.withdrawItem(itemId, withdrawAmount - c.getInventoryItemCount(itemId));
-      c.sleep(GAME_TICK);
     }
   }
 
@@ -1117,12 +1116,7 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void inventoryItemCheck(int itemId, int itemAmount) {
     if (c.getInventoryItemCount(itemId) < itemAmount) {
-      if (!c.isInBank()) {
-        c.openBank();
-        waitForBankOpen();
-      }
       c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
-      c.sleep(3 * GAME_TICK);
     }
   }
 
@@ -1136,7 +1130,6 @@ public class K_kailaScript extends IdleScript {
   protected static void depositExtra(int itemId, int keepAmount) {
     if (c.getInventoryItemCount(itemId) > keepAmount) {
       c.depositItem(itemId, c.getInventoryItemCount(itemId) - keepAmount);
-      c.sleep(GAME_TICK);
     }
   }
   /**
@@ -1148,12 +1141,11 @@ public class K_kailaScript extends IdleScript {
   protected static void withdrawFood(int foodId, int foodWithdrawAmount) {
     if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) {
       c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
-      c.sleep(2 * GAME_TICK);
+      c.sleep(GAME_TICK);
     }
     if (c.getInventoryItemCount(foodId) < (foodWithdrawAmount - 2)) {
       for (int foodId2 : c.getFoodIds()) {
         c.withdrawItem(foodId2, foodWithdrawAmount - c.getInventoryItemCount(foodId) - 2);
-        c.sleep(2 * GAME_TICK);
       }
     }
   }
@@ -1456,12 +1448,10 @@ public class K_kailaScript extends IdleScript {
   protected static void reBankForFullFoodCheck() {
     if (c.getInventoryItemCount() < 30) {
       c.openBank();
-      c.sleep(2 * GAME_TICK);
       if (!c.isInBank()) {
         waitForBankOpen();
       } else {
         c.withdrawItem(foodId, 30);
-        c.sleep(GAME_TICK);
       }
       c.closeBank();
     }
@@ -1478,7 +1468,7 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(420, 1);
         c.closeBank();
         c.equipItem(c.getInventoryItemSlotIndex(420));
-        c.sleep(2 * GAME_TICK);
+        c.sleep(GAME_TICK);
       } else {
         c.log("Warning: Cannot find anti dragon shield, logging OUT", "@red@");
         endSession();

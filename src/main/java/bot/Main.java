@@ -292,6 +292,14 @@ public class Main {
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(3000);
 
+    if (!config.isGraphicsEnabled()) {
+      if (controller != null) {
+        controller.setDrawing(config.isGraphicsEnabled());
+        if (config.isGraphicsEnabled()) DrawCallback.setNextRefresh(-1);
+        else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
+      }
+    }
+
     while (true) {
       if (isRunning()) {
         if (currentRunningScript != null) {

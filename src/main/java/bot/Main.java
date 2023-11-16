@@ -246,7 +246,9 @@ public class Main {
     if (config.isSidePanelVisible()) {
       botFrame.setVisible(true);
     }
-
+    if (config.getUsername() != null) {
+      log("Starting client for " + config.getUsername());
+    }
     log("IdleRSC initialized.");
 
     // don't do anything until RSC is loaded.
@@ -288,7 +290,6 @@ public class Main {
             new WindowListener(botFrame, consoleFrame, rscFrame, scroller, logArea, controller));
     windowListener.start();
     log("WindowListener started.");
-
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(3000);
 
@@ -299,7 +300,6 @@ public class Main {
         else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
       }
     }
-
     while (true) {
       if (isRunning()) {
         if (currentRunningScript != null) {

@@ -11,7 +11,7 @@ import models.entities.ItemId;
  *
  * @author Searos bugfixes by kaila
  */
-public class MineCraftingGuild extends IdleScript {
+public class CraftingGuildMining extends IdleScript {
   private static final Controller c = Main.getController();
   private final int[] gold = {112, 113};
   private final int[] clay = {114, 115};

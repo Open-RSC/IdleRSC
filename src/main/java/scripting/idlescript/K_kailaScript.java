@@ -2,7 +2,6 @@ package scripting.idlescript;
 
 import bot.Main;
 import controller.Controller;
-import java.util.Arrays;
 import javax.swing.*;
 import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
@@ -640,9 +639,7 @@ public class K_kailaScript extends IdleScript {
         c.setStatus("@red@Leaving combat..");
         c.walkToAsync(c.currentX(), c.currentY(), 0);
         c.sleep(GAME_TICK);
-      } else {
-        return;
-      }
+      } else return;
     }
   }
   /**
@@ -655,9 +652,7 @@ public class K_kailaScript extends IdleScript {
         c.setStatus("@red@Leaving combat..");
         c.walkToAsync(c.currentX(), c.currentY(), 1);
         c.sleep(GAME_TICK);
-      } else {
-        return;
-      }
+      } else return;
     }
   }
   /**
@@ -834,7 +829,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superAttackPot[1])
               + c.getInventoryItemCount(superAttackPot[2]);
       if (superAttackPotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombat();
+        if (leaveCombat && c.isInCombat()) leaveCombatForced();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
           c.itemCommand(superAttackPot[0]);
@@ -864,7 +859,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superStrengthPot[1])
               + c.getInventoryItemCount(superStrengthPot[2]);
       if (superStrengthPotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombat();
+        if (leaveCombat && c.isInCombat()) leaveCombatForced();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
           c.itemCommand(superStrengthPot[0]);
@@ -894,7 +889,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superDefensePot[1])
               + c.getInventoryItemCount(superDefensePot[2]);
       if (superDefensePotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombat();
+        if (leaveCombat && c.isInCombat()) leaveCombatForced();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
           c.itemCommand(superDefensePot[0]);
@@ -1665,10 +1660,12 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void openDoorObjects(int objectId, int gateX, int gateY) {
     int[] gateLocation = c.getNearestObjectById(objectId);
-    for (int i = 0; i < 100; i++) {
-      if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
-        c.atObject(gateLocation[0], gateLocation[1]);
-        c.sleep(2000);
+    if (gateLocation == null) return;
+    for (int i = 0; i < 200; i++) {
+      if (gateLocation[0] == gateX && gateLocation[1] == gateY) {
+        // Arrays.equals(gateLocation, new int[] {gateX, gateY})
+        if (c.getNearestObjectById(objectId) != null) c.atObject(gateX, gateY);
+        c.sleep(1280);
       } else {
         return;
       }
@@ -1684,9 +1681,11 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void openWallDoorObjects(int objectId, int gateX, int gateY) {
     int[] gateLocation = c.getNearestObjectById(objectId);
+    if (gateLocation == null) return;
     for (int i = 0; i < 100; i++) {
-      if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
-        c.atWallObject(gateLocation[0], gateLocation[1]);
+      if (gateLocation[0] == gateX && gateLocation[1] == gateY) {
+        if (c.getNearestObjectById(objectId) != null)
+          c.atWallObject(gateLocation[0], gateLocation[1]);
         c.sleep(2000);
       }
     }

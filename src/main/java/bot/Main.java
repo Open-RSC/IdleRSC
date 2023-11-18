@@ -11,8 +11,10 @@ import callbacks.DrawCallback;
 import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -68,6 +70,11 @@ public class Main {
   private static boolean isRunning =
       false; // this is tied to the start/stop button on the side panel.
   private static JComponent botFrame;
+  private static JMenuBar menuBar;
+  private static JMenu menu;
+  private static JMenu submenu;
+  private static JMenuItem menuItem;
+  private static JCheckBoxMenuItem cbMenuItem;
   private static JTabbedPane tabbed;
   private static JFrame consoleFrame, rscFrame, scriptFrame; // all the windows.
   private static JButton startStopButton,
@@ -80,7 +87,6 @@ public class Main {
       showIdButton; // all the buttons on the sidepanel.
   private static JCheckBox autoLoginCheckbox,
       logWindowCheckbox,
-      unstickCheckbox,
       debugCheckbox,
       graphicsCheckbox,
       botPaintCheckbox,
@@ -95,7 +101,6 @@ public class Main {
   private static Thread windowListener = null; // see WindowListener.java
   private static final Thread messageListener = null; // see MessageListener.java
   private static Thread debuggerThread = null;
-
   private static Controller controller =
       null; // this is the queen bee that controls the actual bot and is the native scripting
   // language.
@@ -113,16 +118,6 @@ public class Main {
   public static boolean isLogWindowOpen() {
     return logWindowCheckbox.isSelected();
   }
-
-  /**
-   * Returns whether or not the bot side pane is set to sticky mode.
-   *
-   * @return boolean with whether or not the sidepanel is sticky.
-   */
-  public static boolean isSticky() {
-    return !unstickCheckbox.isSelected();
-  }
-
   /**
    * Returns whether or not a script is running.
    *
@@ -234,6 +229,7 @@ public class Main {
     botFrame = new JPanel();
     consoleFrame = new JFrame("Bot Console"); // applet
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
+    // applet = (Applet) reflector.mudInvoker(mud, "startApplet"); // ("orsc.OpenRSC", "applet");
     if (config.getUsername() != null) {
       scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
     } else if (controller.getPlayerName() != null) {
@@ -246,12 +242,52 @@ public class Main {
     initializeConsoleFrame(consoleFrame);
     initializeScriptFrame(scriptFrame);
 
-    if (config.isSidePanelVisible()) {
-      botFrame.setVisible(true);
-    }
+    // Make the menu bar
+    menuBar = new JMenuBar();
+    menu = new JMenu("A Menu");
+    menu.setMnemonic(KeyEvent.VK_A);
+    menu.getAccessibleContext()
+        .setAccessibleDescription("The only menu in this program that has menu items");
+    menuBar.add(menu);
+
+    // a group of JMenuItems
+    menuItem = new JMenuItem("A text-only menu item", KeyEvent.VK_T);
+    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+    menuItem.getAccessibleContext().setAccessibleDescription("This doesn't really do anything");
+    menu.add(menuItem);
+
+    menuItem = new JMenuItem("Both text and icon", new ImageIcon("images/middle.gif"));
+    menuItem.setMnemonic(KeyEvent.VK_B);
+    menu.add(menuItem);
+
+    // a group of check box menu items
+    menu.addSeparator();
+    cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
+    cbMenuItem.setMnemonic(KeyEvent.VK_C);
+    menu.add(cbMenuItem);
+
+    cbMenuItem = new JCheckBoxMenuItem("Another one");
+    cbMenuItem.setMnemonic(KeyEvent.VK_H);
+    menu.add(cbMenuItem);
+
+    // a submenu
+    menu.addSeparator();
+    submenu = new JMenu("A submenu");
+    submenu.setMnemonic(KeyEvent.VK_S);
+
+    menuItem = new JMenuItem("An item in the submenu");
+    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
+    submenu.add(menuItem);
+
+    menuItem = new JMenuItem("Another item");
+    submenu.add(menuItem);
+    menu.add(submenu);
+
     // Set up our tabs
     tabbed.addTab("Main", botFrame);
     rscFrame.add(tabbed, BorderLayout.EAST);
+    rscFrame.add(menuBar, BorderLayout.NORTH);
+
     if (config.getUsername() != null) {
       log("Starting client for " + config.getUsername());
     }
@@ -263,7 +299,6 @@ public class Main {
     // Set checkboxes on side panel using "get" methods
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     logWindowCheckbox.setSelected(config.isLogWindowVisible());
-    unstickCheckbox.setSelected(!config.isSidePanelSticky());
     debugCheckbox.setSelected(config.isDebug());
     botPaintCheckbox.setSelected(config.isBotPaintVisible());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
@@ -387,7 +422,6 @@ public class Main {
       logArea.setCaretPosition(logArea.getDocument().getLength());
     }
   }
-
   /**
    * For logging function calls in an easy manner.
    *
@@ -416,8 +450,8 @@ public class Main {
    *
    * @param botFrame -- the sidepanel frame
    */
-  private static void initializeBotFrame(JFrame botFrame) {
-    botFrame.setLayout(new BoxLayout(botFrame.getContentPane(), BoxLayout.Y_AXIS));
+  private static void initializeBotFrame(JComponent botFrame) {
+    botFrame.setLayout(new BoxLayout(botFrame, BoxLayout.Y_AXIS));
 
     startStopButton = new JButton(isRunning ? "Stop" : "Start");
     loadScriptButton = new JButton("Load Script");
@@ -425,7 +459,6 @@ public class Main {
 
     autoLoginCheckbox = new JCheckBox("Auto-Login", true);
     logWindowCheckbox = new JCheckBox("Log Window");
-    unstickCheckbox = new JCheckBox("Unstick");
     debugCheckbox = new JCheckBox("Debug");
     graphicsCheckbox = new JCheckBox("Graphics", true);
     botPaintCheckbox = new JCheckBox("Bot Paint", true);
@@ -463,13 +496,6 @@ public class Main {
         });
 
     openDebuggerButton.addActionListener(e -> debugger.open());
-
-    /*hideButton.addActionListener(
-    e -> {
-      controller.displayMessage("@red@IdleRSC@yel@: Type '::show' to bring back the sidepane.");
-      botFrame.setVisible(false);
-    });*/
-
     resetXpButton.addActionListener(e -> DrawCallback.resetXpCounter());
     showIdButton.addActionListener(e -> controller.toggleViewId());
     takeScreenshotButton.addActionListener(e -> controller.takeScreenshot(""));
@@ -508,7 +534,6 @@ public class Main {
     pathwalkerButton.setPreferredSize(buttonSize);
     botFrame.add(autoLoginCheckbox);
     botFrame.add(logWindowCheckbox);
-    botFrame.add(unstickCheckbox);
     botFrame.add(debugCheckbox);
     botFrame.add(interlaceCheckbox);
     botFrame.add(botPaintCheckbox);
@@ -522,19 +547,12 @@ public class Main {
     botFrame.add(openDebuggerButton);
     openDebuggerButton.setMaximumSize(buttonSize);
     openDebuggerButton.setPreferredSize(buttonSize);
-    // hideButton.setPreferredSize(buttonSize);
-    // botFrame.add(hideButton);
-    // hideButton.setMaximumSize(buttonSize);
-    // hideButton.setPreferredSize(buttonSize);
 
     resetXpButton.setPreferredSize(buttonSize);
     resetXpButton.setMaximumSize(buttonSize);
     botFrame.add(resetXpButton);
 
-    // botFrame.pack();
     botFrame.setSize(buttonSize.width, botFrame.getHeight());
-
-    botFrame.setVisible(true);
   }
 
   /**
@@ -771,15 +789,6 @@ public class Main {
       }
     };
   }
-
-  /** un-hides the bot sidepanel. */
-  public static void showBot() {
-    botFrame.setVisible(true);
-  }
-  /** hides the bot sidepanel. */
-  public static void hideBot() {
-    botFrame.setVisible(false);
-  }
   /**
    * Returns the global Controller instance.
    *
@@ -942,16 +951,10 @@ public class Main {
       }
 
       scriptFrame.setLayout(new GridLayout(0, 1));
-      scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       scriptFrame.add(stopLabel);
       scriptFrame.add(stopLabel2);
       scriptFrame.add(cancelButton);
       scriptFrame.add(closeWindow);
-
-      scriptFrame.pack();
-      scriptFrame.setLocationRelativeTo(null);
-      scriptFrame.setVisible(true);
-      scriptFrame.requestFocusInWindow();
     }
   }
 }

@@ -23,11 +23,8 @@ public class CLIParser {
     // Boolean options
     parseResult.setAutoLogin(cmd.hasOption("auto-login"));
     parseResult.setLogWindowVisible(cmd.hasOption("log-window"));
-    parseResult.setSidePanelSticky(!cmd.hasOption("unstick")); // negative (sticky by default)
     parseResult.setDebug(cmd.hasOption("debug"));
     parseResult.setBotPaintVisible(!cmd.hasOption("botpaint")); // negative (enabled by default)
-    parseResult.setSidePanelVisible(
-        !cmd.hasOption("hide-side-panel")); // negative (enabled by default)
     parseResult.setGraphicsEnabled(!cmd.hasOption("disable-gfx")); // negative (enabled by default)
     parseResult.setGraphicsInterlacingEnabled(cmd.hasOption("interlace"));
     parseResult.setScriptSelectorWindowVisible(cmd.hasOption("script-selector"));
@@ -98,11 +95,7 @@ public class CLIParser {
     Option autoLogin =
         Option.builder().longOpt("auto-login").desc("Enable automatic log-in.").build();
     Option logWindow = Option.builder().longOpt("log-window").desc("Display log window.").build();
-    Option unstick =
-        Option.builder().longOpt("unstick").desc("Unstick side panel from main window.").build();
     Option debug = Option.builder().longOpt("debug").desc("Enable debug logging.").build();
-    Option hideSidePanel =
-        Option.builder().longOpt("hide-side-panel").desc("Hide side panel.").build();
     Option disableGraphics =
         Option.builder().longOpt("disable-gfx").desc("Disable graphics refresh.").build();
     Option enableInterlacing =
@@ -157,9 +150,7 @@ public class CLIParser {
     options.addOption(initCache);
     options.addOption(autoLogin);
     options.addOption(logWindow);
-    options.addOption(unstick);
     options.addOption(debug);
-    options.addOption(hideSidePanel);
     options.addOption(disableGraphics);
     options.addOption(enableInterlacing);
     options.addOption(scriptSelectorWindow);

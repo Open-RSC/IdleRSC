@@ -20,10 +20,8 @@ public class Config extends ParseResult {
     // Boolean options
     setAutoLogin(parseResult.isAutoLogin());
     setLogWindowVisible(parseResult.isLogWindowVisible());
-    setSidePanelSticky(parseResult.isSidePanelSticky());
     setDebug(parseResult.isDebug());
     setBotPaintVisible(parseResult.isBotPaintVisible());
-    setSidePanelVisible(parseResult.isSidePanelVisible());
     setGraphicsEnabled(parseResult.isGraphicsEnabled());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
     setScriptSelectorWindowVisible(parseResult.isScriptSelectorWindowVisible());

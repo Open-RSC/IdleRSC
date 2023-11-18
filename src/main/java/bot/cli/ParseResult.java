@@ -12,10 +12,8 @@ public class ParseResult {
   // Boolean options
   private boolean autoLogin;
   private boolean logWindowVisible;
-  private boolean sidePanelSticky;
   private boolean debug;
   private boolean botPaintVisible;
-  private boolean sidePanelVisible;
   private boolean graphicsEnabled;
   private boolean graphicsInterlacingEnabled;
   private boolean scriptSelectorWindowVisible;
@@ -93,14 +91,6 @@ public class ParseResult {
     return logWindowVisible;
   }
 
-  public void setSidePanelSticky(boolean sidePanelSticky) {
-    this.sidePanelSticky = sidePanelSticky;
-  }
-
-  public boolean isSidePanelSticky() {
-    return sidePanelSticky;
-  }
-
   public void setDebug(boolean debug) {
     this.debug = debug;
   }
@@ -111,14 +101,6 @@ public class ParseResult {
 
   public void setBotPaintVisible(boolean botPaintVisible) {
     this.botPaintVisible = botPaintVisible;
-  }
-
-  public void setSidePanelVisible(boolean sidePanelVisible) {
-    this.sidePanelVisible = sidePanelVisible;
-  }
-
-  public boolean isSidePanelVisible() {
-    return sidePanelVisible;
   }
 
   public boolean isBotPaintVisible() {

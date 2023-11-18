@@ -250,15 +250,15 @@ public class DrawCallback {
     startingXp = Long.MAX_VALUE;
 
     if (c != null) {
-      c.displayMessage("@red@IdleRSC@yel@: XP counter reset!");
-      if (!c
-          .isDrawEnabled()) { // if you reset xp, it will toggle on graphics briefly to reset, then
+      c.log("@red@IdleRSC@yel@: XP counter reset!");
+      if (!c.isDrawEnabled()) {
+        // if you reset xp, it will toggle on graphics briefly to reset, then
         // toggle off again. Otherwise, counter will not begin counting xp. It
         // has to reload counter into memory?  ~ Kaila ~
         c.setDrawing(true);
         temporaryToggledGFX = true;
-        c.sleep(
-            100); // sleep here will not affect scripts running, tested with 10s delay no effect on
+        c.sleep(100);
+        // sleep here will not affect scripts running, tested with 10s delay no effect on
         // scripts, it might delay drawcallback, but as graphics were toggled off before
         // reset xp, shouldn't be an issue.
       }

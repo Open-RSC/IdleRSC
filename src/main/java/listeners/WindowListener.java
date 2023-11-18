@@ -3,9 +3,7 @@ package listeners;
 import bot.Main;
 import controller.Controller;
 import java.awt.*;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 /**
  * WindowListener is a listener which updates other windows based on what has been clicked on the
@@ -18,14 +16,14 @@ import javax.swing.JTextArea;
 public class WindowListener implements Runnable {
 
   final JFrame rscFrame;
-  final JFrame botFrame;
+  final JComponent botFrame;
   final JFrame consoleFrame;
   JScrollPane scroller;
   final JTextArea logArea;
   final Controller controller;
 
   public WindowListener(
-      JFrame _botFrame,
+      JComponent _botFrame,
       JFrame _consoleFrame,
       JFrame _rscFrame,
       JScrollPane _scroller,
@@ -48,38 +46,19 @@ public class WindowListener implements Runnable {
         consoleFrame.setVisible(Main.isLogWindowOpen());
         consolePrevious = Main.isLogWindowOpen();
       }
-
-      if (Main.isSticky()) {
-        if (consoleFrame.isVisible()) {
-          if (!consoleFrame.getSize().equals(new Dimension(rscFrame.getWidth(), 225))) {
-            consoleFrame.setSize(rscFrame.getWidth(), 225);
-          }
-          if (!consoleFrame
-              .getLocation()
-              .equals(
-                  new Point(
-                      rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight()))) {
-            consoleFrame.setLocation(
-                rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight());
-          }
+      if (consoleFrame.isVisible()) {
+        if (!consoleFrame.getSize().equals(new Dimension(rscFrame.getWidth(), 225))) {
+          consoleFrame.setSize(rscFrame.getWidth(), 225);
         }
-        if (botFrame.isVisible()) {
-          if (!botFrame
-              .getSize()
-              .equals(new Dimension(botFrame.getWidth(), rscFrame.getHeight()))) {
-            botFrame.setSize(botFrame.getWidth(), rscFrame.getHeight());
-          }
-          if (!botFrame
-              .getLocation()
-              .equals(
-                  new Point(
-                      rscFrame.getLocation().x + rscFrame.getWidth(), rscFrame.getLocation().y))) {
-            botFrame.setLocation(
-                rscFrame.getLocation().x + rscFrame.getWidth(), rscFrame.getLocation().y);
-          }
+        if (!consoleFrame
+            .getLocation()
+            .equals(
+                new Point(
+                    rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight()))) {
+          consoleFrame.setLocation(
+              rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight());
         }
       }
-
       try {
         Thread.sleep(40);
       } catch (InterruptedException e) {

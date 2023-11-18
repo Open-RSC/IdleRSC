@@ -67,7 +67,9 @@ public class Main {
           .collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
   private static boolean isRunning =
       false; // this is tied to the start/stop button on the side panel.
-  private static JFrame botFrame, consoleFrame, rscFrame, scriptFrame; // all the windows.
+  private static JComponent botFrame;
+  private static JTabbedPane tabbed;
+  private static JFrame consoleFrame, rscFrame, scriptFrame; // all the windows.
   private static JButton startStopButton,
       loadScriptButton,
       pathwalkerButton,
@@ -228,8 +230,9 @@ public class Main {
     debuggerThread.start();
 
     // just building out the windows
-    botFrame = new JFrame("Bot Pane");
-    consoleFrame = new JFrame("Bot Console");
+    tabbed = new JTabbedPane();
+    botFrame = new JPanel();
+    consoleFrame = new JFrame("Bot Console"); // applet
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
     if (config.getUsername() != null) {
       scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
@@ -246,6 +249,9 @@ public class Main {
     if (config.isSidePanelVisible()) {
       botFrame.setVisible(true);
     }
+    // Set up our tabs
+    tabbed.addTab("Main", botFrame);
+    rscFrame.add(tabbed, BorderLayout.EAST);
     if (config.getUsername() != null) {
       log("Starting client for " + config.getUsername());
     }
@@ -525,7 +531,7 @@ public class Main {
     resetXpButton.setMaximumSize(buttonSize);
     botFrame.add(resetXpButton);
 
-    botFrame.pack();
+    // botFrame.pack();
     botFrame.setSize(buttonSize.width, botFrame.getHeight());
 
     botFrame.setVisible(true);

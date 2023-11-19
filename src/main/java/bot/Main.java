@@ -11,10 +11,7 @@ import callbacks.DrawCallback;
 import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -67,15 +64,15 @@ public class Main {
               new SimpleEntry<>("APOS", reflections.getSubTypesOf(compatibility.apos.Script.class)),
               new SimpleEntry<>("SBot", reflections.getSubTypesOf(compatibility.sbot.Script.class)))
           .collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
-  private static boolean isRunning =
-      false; // this is tied to the start/stop button on the side panel.
+  // this is tied to the start/stop button on the side panel.
+  private static boolean isRunning = false;
+  static EntryFrame entryFrame;
+  static ParseResult parseResult = new ParseResult();
   private static JComponent botFrame;
   private static JMenuBar menuBar;
-  private static JMenu menu;
-  private static JMenu submenu;
+  private static JMenu menu, submenu, themeMenu;
   private static JMenuItem menuItem;
   private static JCheckBoxMenuItem cbMenuItem;
-  private static JTabbedPane tabbed;
   private static JFrame consoleFrame, rscFrame, scriptFrame; // all the windows.
   private static JButton startStopButton,
       loadScriptButton,
@@ -184,20 +181,27 @@ public class Main {
           SecurityException, InstantiationException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, InterruptedException {
     CLIParser parser = new CLIParser();
-    ParseResult parseResult = null;
     Version version = new Version();
+
+    entryFrame = new EntryFrame();
 
     try {
       parseResult = parser.parse(args);
     } catch (ParseException e) {
       System.err.println(e.getMessage() + "\n");
       parser.printHelp();
+      System.out.println("Waiting for 5 minute...");
+      Thread.sleep(340000);
+      System.out.println("Closing Bot in 1 minute...");
+      Thread.sleep(60000);
       System.exit(1);
     }
 
     if (parseResult.isHelp()) {
       parser.printHelp();
-      System.exit(0);
+      System.out.println("Waiting for 1 minute...");
+      Thread.sleep(60000);
+      System.out.println("Launching Bot...");
     }
 
     if (parseResult.isVersion()) {
@@ -217,19 +221,18 @@ public class Main {
 
     Reflector reflector = new Reflector(); // start up our reflector helper
     OpenRSC client = reflector.createClient(); // start up our client jar
-
     mudclient mud = reflector.getMud(client); // grab the mud from the client
+
     controller = new Controller(reflector, client, mud); // start up our controller
     debugger = new Debugger(reflector, client, mud, controller);
     debuggerThread = new Thread(debugger);
     debuggerThread.start();
 
     // just building out the windows
-    tabbed = new JTabbedPane();
     botFrame = new JPanel();
-    consoleFrame = new JFrame("Bot Console"); // applet
+    themeMenu = new JMenu();
+    consoleFrame = new JFrame("Bot Console"); // log window
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
-    // applet = (Applet) reflector.mudInvoker(mud, "startApplet"); // ("orsc.OpenRSC", "applet");
     if (config.getUsername() != null) {
       scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
     } else if (controller.getPlayerName() != null) {
@@ -241,52 +244,17 @@ public class Main {
     initializeBotFrame(botFrame);
     initializeConsoleFrame(consoleFrame);
     initializeScriptFrame(scriptFrame);
+    initializeMenuBar();
 
-    // Make the menu bar
-    menuBar = new JMenuBar();
-    menu = new JMenu("A Menu");
-    menu.setMnemonic(KeyEvent.VK_A);
-    menu.getAccessibleContext()
-        .setAccessibleDescription("The only menu in this program that has menu items");
-    menuBar.add(menu);
+    // todo swap side bar by swapping container contents
+    botFrame.setBackground(entryFrame.getThemeBackColor());
+    rscFrame.getContentPane().setBackground(entryFrame.getThemeBackColor());
+    botFrame.setBorder(BorderFactory.createLineBorder(entryFrame.getThemeBackColor()));
 
-    // a group of JMenuItems
-    menuItem = new JMenuItem("A text-only menu item", KeyEvent.VK_T);
-    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
-    menuItem.getAccessibleContext().setAccessibleDescription("This doesn't really do anything");
-    menu.add(menuItem);
-
-    menuItem = new JMenuItem("Both text and icon", new ImageIcon("images/middle.gif"));
-    menuItem.setMnemonic(KeyEvent.VK_B);
-    menu.add(menuItem);
-
-    // a group of check box menu items
-    menu.addSeparator();
-    cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
-    cbMenuItem.setMnemonic(KeyEvent.VK_C);
-    menu.add(cbMenuItem);
-
-    cbMenuItem = new JCheckBoxMenuItem("Another one");
-    cbMenuItem.setMnemonic(KeyEvent.VK_H);
-    menu.add(cbMenuItem);
-
-    // a submenu
-    menu.addSeparator();
-    submenu = new JMenu("A submenu");
-    submenu.setMnemonic(KeyEvent.VK_S);
-
-    menuItem = new JMenuItem("An item in the submenu");
-    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
-    submenu.add(menuItem);
-
-    menuItem = new JMenuItem("Another item");
-    submenu.add(menuItem);
-    menu.add(submenu);
-
-    // Set up our tabs
-    tabbed.addTab("Main", botFrame);
-    rscFrame.add(tabbed, BorderLayout.EAST);
+    // combine everything into our client
+    rscFrame.add(botFrame, BorderLayout.EAST);
     rscFrame.add(menuBar, BorderLayout.NORTH);
+    rscFrame.setMinimumSize(new Dimension(655, 405));
 
     if (config.getUsername() != null) {
       log("Starting client for " + config.getUsername());
@@ -297,11 +265,13 @@ public class Main {
     while (!controller.isLoaded()) controller.sleep(1);
 
     // Set checkboxes on side panel using "get" methods
+
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     logWindowCheckbox.setSelected(config.isLogWindowVisible());
     debugCheckbox.setSelected(config.isDebug());
     botPaintCheckbox.setSelected(config.isBotPaintVisible());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
+    interlaceCheckbox.setSelected(config.isGraphicsInterlacingEnabled());
 
     if (config.isGraphicsInterlacingEnabled()) {
       controller.setInterlacer(config.isGraphicsInterlacingEnabled());
@@ -310,13 +280,16 @@ public class Main {
       showLoadScript();
     }
 
+    consoleFrame.setVisible(config.isLogWindowVisible());
+    if (config.isDebug()) debugger.open();
+
     if (!config.getScriptName().isEmpty()) {
       if (!loadAndRunScript(config.getScriptName())) {
         System.out.println("Could not find script: " + config.getScriptName());
-        System.exit(1);
+      } else {
+        isRunning = true;
+        startStopButton.setText("Stop");
       }
-      isRunning = true;
-      startStopButton.setText("Stop");
     }
 
     // start up our listener threads
@@ -334,13 +307,13 @@ public class Main {
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(3000);
 
-    if (!config.isGraphicsEnabled()) {
-      if (controller != null) {
-        controller.setDrawing(config.isGraphicsEnabled());
-        if (config.isGraphicsEnabled()) DrawCallback.setNextRefresh(-1);
-        else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
-      }
-    }
+    //    if (!config.isGraphicsEnabled()) {
+    //      if (controller != null) {
+    //        controller.setDrawing(config.isGraphicsEnabled());
+    //        if (config.isGraphicsEnabled()) DrawCallback.setNextRefresh(-1);
+    //        else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
+    //      }
+    //    }
     while (true) {
       if (isRunning()) {
         if (currentRunningScript != null) {
@@ -445,6 +418,82 @@ public class Main {
       log(current);
     }
   }
+
+  private static void initializeMenuBar() {
+    // Make the menu bar
+    menuBar = new JMenuBar();
+    menu = new JMenu("Options");
+    themeMenu = new JMenu("Theme Menu");
+    menuBar.add(menu);
+    menuBar.add(themeMenu);
+
+    // theme menu options
+    menuItem = new JMenuItem("Runelite (Default Theme)", KeyEvent.VK_1);
+    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_1));
+    themeMenu.add(menuItem);
+
+    //    menuItem.addActionListener(
+    //        e -> {
+    //          System.out.println("resting dark background");
+    //          backgroundColor = new java.awt.Color(40, 40, 40, 255);
+    //          // todo doesnt refresh yet
+    //        });
+    // 37, 150, 190
+
+    // theme menu options
+    menuItem = new JMenuItem("Purple Theme", KeyEvent.VK_2);
+    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_2));
+    themeMenu.add(menuItem);
+
+    //    menuItem.addActionListener(
+    //        e -> {
+    //          System.out.println("resting Purple background");
+    //          backgroundColor = new java.awt.Color(14, 9, 36);
+    //          // todo doesnt refresh yet
+    //        });
+
+    // 37, 150, 190
+    // a group of JMenuItems
+    menuItem = new JMenuItem("A text-only menu item", KeyEvent.VK_1);
+    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_1));
+    menu.add(menuItem);
+
+    // , new ImageIcon("images/middle.gif")
+    menuItem = new JMenuItem("Both text and icon", KeyEvent.VK_2);
+    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_2));
+    menu.add(menuItem);
+
+    // a group of check box menu items
+    menu.addSeparator();
+    cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
+    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_3));
+    menu.add(cbMenuItem);
+
+    cbMenuItem = new JCheckBoxMenuItem("Another one");
+    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_4));
+    menu.add(cbMenuItem);
+
+    // a submenu
+    menu.addSeparator();
+    submenu = new JMenu("A submenu");
+    submenu.setMnemonic(KeyEvent.VK_5);
+
+    menuItem = new JMenuItem("An item in the submenu");
+    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.ALT_MASK));
+    submenu.add(menuItem);
+
+    menuItem = new JMenuItem("Another item");
+    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.ALT_MASK));
+    submenu.add(menuItem);
+
+    menu.add(submenu);
+
+    // color our elements
+    themeMenu.setForeground(entryFrame.getThemeTextColor());
+    menu.setForeground(entryFrame.getThemeTextColor()); // text color
+    menuBar.setBackground(entryFrame.getThemeBackColor());
+    menuBar.setBorder(BorderFactory.createLineBorder(entryFrame.getThemeBackColor()));
+  }
   /**
    * Sets up the sidepanel
    *
@@ -467,8 +516,35 @@ public class Main {
     takeScreenshotButton = new JButton("Screenshot");
     showIdButton = new JButton("Show ID's");
     openDebuggerButton = new JButton("Open Debugg");
-    // hideButton = new JButton("Hide Sidepane");
     resetXpButton = new JButton("Reset XP");
+
+    JButton[] buttonArray = {
+      startStopButton,
+      loadScriptButton,
+      pathwalkerButton,
+      takeScreenshotButton,
+      showIdButton,
+      openDebuggerButton,
+      resetXpButton
+    };
+    JCheckBox[] checkBoxArray = {
+      autoLoginCheckbox,
+      logWindowCheckbox,
+      debugCheckbox,
+      graphicsCheckbox,
+      botPaintCheckbox,
+      interlaceCheckbox
+    };
+
+    for (JButton jButton : buttonArray) {
+      jButton.setBackground(entryFrame.getThemeBackColor());
+      jButton.setForeground(entryFrame.getThemeTextColor());
+    }
+
+    for (JCheckBox jCheckbox : checkBoxArray) {
+      jCheckbox.setBackground(entryFrame.getThemeBackColor());
+      jCheckbox.setForeground(entryFrame.getThemeTextColor());
+    }
 
     startStopButton.addActionListener(
         e -> {
@@ -495,7 +571,11 @@ public class Main {
           }
         });
 
-    openDebuggerButton.addActionListener(e -> debugger.open());
+    openDebuggerButton.addActionListener(
+        e -> {
+          controller.log("opening debug window");
+          debugger.open();
+        });
     resetXpButton.addActionListener(e -> DrawCallback.resetXpCounter());
     showIdButton.addActionListener(e -> controller.toggleViewId());
     takeScreenshotButton.addActionListener(e -> controller.takeScreenshot(""));
@@ -596,7 +676,7 @@ public class Main {
 
     buttonClear.addActionListener(evt -> clearLog());
 
-    consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    consoleFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     consoleFrame.setSize(480, 320);
   }
 
@@ -932,6 +1012,7 @@ public class Main {
       cancelButton.addActionListener(
           e -> {
             setRunning(false);
+
             scriptFrame.setVisible(false);
             scriptFrame.dispose();
           });

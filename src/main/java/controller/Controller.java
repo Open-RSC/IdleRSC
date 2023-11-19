@@ -2436,14 +2436,14 @@ public class Controller {
        * ~ Kaila ~
        * </pre>
        */
-      if (playerName != null && !playerName.equals("")) {
+      if (playerName != null && !playerName.isEmpty()) {
         directory = "Screenshots/" + playerName + "/";
         path = playerName + "_" + playerTime + ".png";
       } else {
         directory = "Screenshots/";
         path = playerTime + ".png";
       }
-      if (fileName != null && !fileName.equals("")) {
+      if (fileName != null && !fileName.isEmpty()) {
         savePath = directory + fileName + "_" + path;
       } else {
         savePath = directory + path;
@@ -3902,8 +3902,7 @@ public class Controller {
    * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
    */
   public void log(String text, String rsTextColor) {
-    System.out.println(text);
-    Main.log(text);
+    Main.log(text); // main log does sysout
     displayMessage("@" + rsTextColor + "@" + text);
   }
 

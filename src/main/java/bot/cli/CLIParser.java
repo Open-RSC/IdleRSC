@@ -1,48 +1,71 @@
 package bot.cli;
 
+import bot.EntryFrame;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Paths;
+import java.util.Properties;
 import org.apache.commons.cli.*;
 
 public class CLIParser {
   private static final Options options = new Options();
 
   public ParseResult parse(String[] args) throws ParseException {
+
     addOptions();
-    CommandLineParser parser = new DefaultParser(false);
-    CommandLine cmd = parser.parse(options, args);
 
     ParseResult parseResult = new ParseResult();
+    final Properties p = new Properties();
+    final File file = Paths.get("accounts").resolve(EntryFrame.username + ".properties").toFile();
+    try (final FileInputStream stream = new FileInputStream(file)) {
+      p.load(stream);
 
-    // Options with parameters/arguments.
-    parseResult.setUsername(cmd.getOptionValue("username", ""));
-    parseResult.setPassword(cmd.getOptionValue("password", ""));
-    parseResult.setScriptName(cmd.getOptionValue("script-name", ""));
-    parseResult.setScriptArguments(
-        cmd.hasOption("script-arguments") ? cmd.getOptionValues("script-arguments") : null);
-    parseResult.setInitCache(cmd.getOptionValue("init-cache", ""));
+      parseResult.setUsername(EntryFrame.username);
+      parseResult.setPassword(p.getProperty("password", ""));
+      parseResult.setScriptName(p.getProperty("script-name", " "));
 
-    // Boolean options
-    parseResult.setAutoLogin(cmd.hasOption("auto-login"));
-    parseResult.setLogWindowVisible(cmd.hasOption("log-window"));
-    parseResult.setDebug(cmd.hasOption("debug"));
-    parseResult.setBotPaintVisible(!cmd.hasOption("botpaint")); // negative (enabled by default)
-    parseResult.setGraphicsEnabled(!cmd.hasOption("disable-gfx")); // negative (enabled by default)
-    parseResult.setGraphicsInterlacingEnabled(cmd.hasOption("interlace"));
-    parseResult.setScriptSelectorWindowVisible(cmd.hasOption("script-selector"));
-    parseResult.setLocalOcr(cmd.hasOption("local-ocr"));
+      parseResult.setScriptArguments(
+          p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));
+      parseResult.setInitCache(p.getProperty("init-cache", ""));
 
-    // Switching options
-    parseResult.setSpellId(cmd.getOptionValue("spell-id", "-1"));
-    parseResult.setAttackItems(
-        cmd.hasOption("attack-items") ? cmd.getOptionValues("attack-items") : null);
-    parseResult.setDefenceItems(
-        cmd.hasOption("defence-items") ? cmd.getOptionValues("defence-items") : null);
-    parseResult.setStrengthItems(
-        cmd.hasOption("strength-items") ? cmd.getOptionValues("strength-items") : null);
+      // Boolean options
+      parseResult.setAutoLogin(
+          p.getProperty("auto-login", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setLogWindowVisible(
+          p.getProperty("log-window", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setDebug(
+          p.getProperty("debug", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setBotPaintVisible(
+          !p.getProperty("botpaint", "")
+              .replace(" ", "")
+              .toLowerCase()
+              .contains("true")); // negative (enabled by default)
+      parseResult.setGraphicsEnabled(
+          !p.getProperty("disable-gfx", "")
+              .replace(" ", "")
+              .toLowerCase()
+              .contains("true")); // negative (enabled by default)
+      parseResult.setGraphicsInterlacingEnabled(
+          p.getProperty("interlace", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setLocalOcr(
+          p.getProperty("local-ocr", "").replace(" ", "").toLowerCase().contains("true"));
+      // Switching options
+      parseResult.setSpellId(p.getProperty("spell-id", "-1"));
+      parseResult.setAttackItems(
+          p.getProperty("attack-items", "").replace(" ", "").toLowerCase().split(","));
+      parseResult.setDefenceItems(
+          p.getProperty("defence-items", "").replace(" ", "").toLowerCase().split(","));
+      parseResult.setStrengthItems(
+          p.getProperty("strength-items", "").replace(" ", "").toLowerCase().split(","));
 
-    // CLI options
-    parseResult.setHelp(cmd.hasOption("help"));
-    parseResult.setVersion(cmd.hasOption("version"));
-
+      // CLI options
+      parseResult.setHelp(
+          p.getProperty("help", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setVersion(
+          p.getProperty("version", "").replace(" ", "").toLowerCase().contains("true"));
+    } catch (final Throwable t) {
+      System.out.println("Error loading account " + parseResult.getUsername() + ": " + t);
+    }
     return parseResult;
   }
 

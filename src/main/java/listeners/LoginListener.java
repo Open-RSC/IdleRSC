@@ -96,10 +96,10 @@ public class LoginListener implements Runnable {
     int x = c.currentX();
     int y = c.currentY();
 
-    if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
-    else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
-    else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
-    else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
+    if (c.isReachable(x + 1, y, false)) c.walkToAsync(x + 1, y, 0);
+    else if (c.isReachable(x - 1, y, false)) c.walkToAsync(x - 1, y, 0);
+    else if (c.isReachable(x, y + 1, false)) c.walkToAsync(x, y + 1, 0);
+    else if (c.isReachable(x, y - 1, false)) c.walkToAsync(x, y - 1, 0);
 
     c.sleep(1280);
 

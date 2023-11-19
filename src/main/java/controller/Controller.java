@@ -1367,6 +1367,87 @@ public class Controller {
   }
 
   /**
+   * Returns an int[][] of closed door coordinates
+   *
+   * @param radius int -- Radius to check for doors
+   * @return int[][] -- Door coordinates
+   */
+  public int[][] getNearbyClosedDoors(int radius) {
+    List<int[]> doors = new ArrayList<int[]>();
+
+    for (int id : this.closedObjectDoorIds) {
+      int[] coords = this.getNearestObjectById(id);
+      if (coords != null) {
+        if (this.distance(currentX(), currentY(), coords[0], coords[1]) <= radius) {
+          doors.add(coords);
+        }
+      }
+    }
+
+    for (int id : this.closedWallDoorIds) {
+      int[] coords = this.getNearestWallObjectById(id);
+      if (coords != null) {
+        if (this.distance(currentX(), currentY(), coords[0], coords[1]) <= radius) {
+          doors.add(coords);
+        }
+      }
+    }
+
+    int[][] doorArray = new int[doors.size()][2];
+    doors.toArray(doorArray);
+    return doorArray;
+  }
+
+  /**
+   * Checks in the radius for a closed door
+   *
+   * @param radius int -- Radius to check
+   * @return boolean -- If a closed door was found
+   */
+  public boolean isNearbyDoorClosed(int radius) {
+    int x = this.currentX();
+    int y = this.currentY();
+
+    int objectId = -1;
+    int wallObjectId = -1;
+
+    for (int id : this.closedObjectDoorIds) {
+      int[] coords = this.getNearestObjectById(id);
+      if (coords != null) {
+        if (this.distance(x, y, coords[0], coords[1]) <= radius) {
+          objectId = id;
+          break;
+        }
+      }
+    }
+
+    if (objectId != -1) {
+      int[] coords = this.getNearestObjectById(objectId);
+      if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
+        return true;
+      }
+    }
+
+    for (int id : this.closedWallDoorIds) {
+      int[] coords = this.getNearestWallObjectById(id);
+      if (coords != null) {
+        if (this.distance(x, y, coords[0], coords[1]) <= radius) {
+          wallObjectId = id;
+          break;
+        }
+      }
+    }
+
+    if (wallObjectId != -1) {
+      int[] coords = this.getNearestWallObjectById(wallObjectId);
+      if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Retrieves the id of the wall object at the specified coordinates.
    *
    * @param x int
@@ -2956,7 +3037,27 @@ public class Controller {
   }
 
   /**
-   * Retrieves the price of the item in the shop.
+   * Retrieves the price of the stack of items in the shop.
+   *
+   * @param itemId int
+   * @return int -- price. -1 if item is not in the shop at all.
+   */
+  public int getShopItemStackPrice(int itemId) {
+    int[] count = (int[]) reflector.getObjectMember(mud, "shopItemCount");
+    int[] ids = (int[]) reflector.getObjectMember(mud, "shopCategoryID");
+    int[] prices = (int[]) reflector.getObjectMember(mud, "shopItemPrice");
+
+    for (int i = 0; i < ids.length; i++) {
+      if (ids[i] == itemId) {
+        return prices[i];
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Retrieves the price of a single item in the shop.
    *
    * @param itemId int
    * @return int -- price. -1 if item is not in the shop at all.
@@ -2968,7 +3069,9 @@ public class Controller {
 
     for (int i = 0; i < ids.length; i++) {
       if (ids[i] == itemId) {
-        return prices[i];
+        int shopStock = getShopItemCount(itemId);
+        int stackPrice = prices[i];
+        return stackPrice / shopStock;
       }
     }
 
@@ -3914,7 +4017,8 @@ public class Controller {
    * @param transparency -- must be between 0 and 255
    */
   public void drawBoxAlpha(int x, int y, int width, int height, int color, int transparency) {
-    mud.getSurface().drawBoxAlpha(x, y, width, height, color, transparency);
+    int clampedTransparency = Math.min(255, Math.max(0, transparency));
+    mud.getSurface().drawBoxAlpha(x, y, width, height, color, clampedTransparency);
   }
 
   /**
@@ -3942,7 +4046,8 @@ public class Controller {
    * @param dummy int
    */
   public void drawCircle(int x, int y, int radius, int color, int transparency, int dummy) {
-    mud.getSurface().drawCircle(x, y, radius, color, transparency, dummy);
+    int clampedTransparency = Math.min(255, Math.max(0, transparency));
+    mud.getSurface().drawCircle(x, y, radius, color, clampedTransparency, dummy);
   }
 
   /**
@@ -3977,10 +4082,10 @@ public class Controller {
    * @param x int
    * @param y int
    * @param color -- RGB "HTML" Color Example: 0x36E2D7
-   * @param font -- 1 or greater
+   * @param fontSize -- 1 or greater
    */
-  public void drawString(String str, int x, int y, int color, int font) {
-    mud.getSurface().drawString(str, x, y, color, font);
+  public void drawString(String str, int x, int y, int color, int fontSize) {
+    mud.getSurface().drawString(str, x, y, color, Math.max(1, fontSize));
   }
 
   /**
@@ -3995,7 +4100,7 @@ public class Controller {
    */
   public void drawShadowText(
       String text, int x, int y, int textColor, int fontSize, boolean center) {
-    mud.getSurface().drawShadowText(text, x, y, textColor, fontSize, center);
+    mud.getSurface().drawShadowText(text, x, y, textColor, Math.max(1, fontSize), center);
   }
 
   /**
@@ -4216,8 +4321,8 @@ public class Controller {
       if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
         this.atObject(coords[0], coords[1]);
         this.sleep(250);
+        return;
       }
-      return;
     }
 
     for (int id : this.closedWallDoorIds) {
@@ -4235,8 +4340,8 @@ public class Controller {
       if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
         this.openDoor(coords[0], coords[1]);
         this.sleep(250);
+        return;
       }
-      return;
     }
   }
 

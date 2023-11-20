@@ -2,6 +2,7 @@ package bot;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,94 +13,15 @@ import javax.swing.*;
 /** Presents the user with account and sleep solver selection. */
 public final class EntryFrame extends JFrame {
   private AuthFrame authFrame;
+  private EditFrame editFrame;
   private String[] accountNames;
-  public String account;
-  public static String username = "username";
+  private static String account;
+  public String themeName = "RuneDark Theme";
   private boolean okie = false;
-  private Color themeTextColor = new java.awt.Color(219, 219, 219, 255);
-  private Color themeBackColor = new java.awt.Color(40, 40, 40, 255);
+
   // todo add theme select to cli
-  private final String[] themeNames = {
-    "RuneDark Theme",
-    "2007scape Theme",
-    "Classic Theme",
-    "Purple Theme",
-    "Magenta Theme",
-    "Red Theme",
-    "Aquamarine Theme",
-    "Blue Theme",
-    "Green Theme",
-    "Brown Theme",
-    "Orange Theme",
-    "Gold Theme"
-  };
-  private final Color[][] colorCodes = { //   {background, text color}
-    {
-      new java.awt.Color(40, 40, 40, 255), // Runelite Dark Mode
-      new java.awt.Color(219, 219, 219, 255)
-    },
-    {
-      new java.awt.Color(194, 177, 144, 255), // 2007scape Theme
-      new java.awt.Color(10, 10, 8, 255)
-    },
-    {
-      new java.awt.Color(91, 100, 128, 255), // Classic Theme
-      new java.awt.Color(0, 0, 0, 255)
-    },
-    {
-      new java.awt.Color(41, 21, 72, 255), // Purple Theme
-      new java.awt.Color(209, 186, 255, 255)
-    },
-    {
-      new java.awt.Color(171, 0, 159, 255), // Magenta Theme
-      new java.awt.Color(47, 15, 47, 255)
-    },
-    {
-      new java.awt.Color(110, 0, 16, 255), // Red Theme
-      new java.awt.Color(255, 183, 195, 255)
-    },
-    {
-      new java.awt.Color(0, 176, 166, 255), // Aquamarine Theme
-      new java.awt.Color(173, 255, 255, 255)
-    },
-    {
-      new java.awt.Color(22, 65, 182, 255), // Blue Theme
-      new java.awt.Color(191, 208, 255, 255)
-    },
-    {
-      new java.awt.Color(9, 94, 0, 255), // Green Theme
-      new java.awt.Color(195, 255, 187, 255)
-    },
-    {
-      new java.awt.Color(73, 48, 48, 255), // Brown Theme
-      new java.awt.Color(234, 202, 202, 255)
-    },
-    {
-      new java.awt.Color(159, 58, 0, 255), // Orange Theme
-      new java.awt.Color(255, 202, 188, 255)
-    },
-    {
-      new java.awt.Color(178, 139, 0, 255), // Gold Theme
-      new java.awt.Color(255, 254, 173, 255)
-    }
-  };
-
-  private void setThemeElements(String theme) {
-    for (int i = 0; i < themeNames.length; i++) {
-      if (themeNames[i].equals(theme)) {
-        themeBackColor = colorCodes[i][0];
-        themeTextColor = colorCodes[i][1];
-        return;
-      }
-    }
-  }
-
-  public Color getThemeTextColor() {
-    return themeTextColor;
-  }
-
-  public Color getThemeBackColor() {
-    return themeBackColor;
+  public static String getAccount() {
+    return account;
   }
 
   public EntryFrame() {
@@ -108,6 +30,10 @@ public final class EntryFrame extends JFrame {
     setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+    // setIconImages(ImageIO.read(new File("buildSrc/idlersc_logo_hover.png")));
+    //     setContentPane(
+    //      new JLabel(new ImageIcon(ImageIO.read(new File( directory)))));
+
     loadAccounts();
 
     final Panel accountPanel = new Panel();
@@ -115,6 +41,7 @@ public final class EntryFrame extends JFrame {
     accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.Y_AXIS));
     accountSubPanel.setLayout(new FlowLayout());
 
+    // accountPanel.add(l);
     accountPanel.add(new Label("Setup Options:"));
     accountPanel.add(new Label("Autologin account:"));
 
@@ -146,7 +73,6 @@ public final class EntryFrame extends JFrame {
                   p.put("script-name", "");
                   p.put("script-arguments", "");
                   p.put("init-cache", "");
-                  p.put("theme-selector", "");
                   p.put("auto-login", "false");
                   p.put("log-window", "false");
                   p.put("debug", "false");
@@ -155,6 +81,7 @@ public final class EntryFrame extends JFrame {
                   p.put("interlace", "false");
                   p.put("help", "false");
                   p.put("version", "false");
+                  p.put("theme", EntryFrame.this.authFrame.getThemeName());
 
                   final File file = Paths.get("accounts").resolve(u + ".properties").toFile();
                   try (final FileOutputStream out = new FileOutputStream(file)) {
@@ -173,23 +100,73 @@ public final class EntryFrame extends JFrame {
         });
 
     accountSubPanel.add(addButton);
-
     accountPanel.add(accountSubPanel);
-    accountPanel.add(new Label("Theme Switcher:"));
 
-    final Choice themeChoice = new Choice();
-    themeChoice.setMaximumSize(new Dimension(140, 15));
-    for (final String themeName : themeNames) {
-      themeChoice.add(themeName);
-    }
-    themeChoice.addItemListener(
-        event -> {
-          setThemeElements(String.valueOf(event.getItem()));
+    accountPanel.add(new Label("Edit script Settings:"));
+    final Button editButton = new Button("Edit Account Settings");
+    editButton.addActionListener(
+        e -> {
+          if (editFrame == null) {
+            final EditFrame editFrame =
+                new EditFrame("Edit account settings", null, EntryFrame.this);
+            // authFrame.setFont(Constants.UI_FONT);
+            // authFrame.setIconImages(Constants.ICONS);
+
+            editFrame.addActionListener(
+                e1 -> {
+                  final Properties p = new Properties();
+                  final String u = EntryFrame.this.editFrame.getUsername();
+                  p.put("username", u);
+                  p.put("password", EntryFrame.this.editFrame.getPassword());
+                  p.put("script-name", "");
+                  p.put("script-arguments", "");
+                  p.put("init-cache", "");
+                  p.put("auto-login", "false");
+                  p.put("log-window", "false");
+                  p.put("debug", "false");
+                  p.put("botpaint", "false"); // true disables bot paint
+                  p.put("disable-gfx", "false");
+                  p.put("interlace", "false");
+                  p.put("help", "false");
+                  p.put("version", "false");
+                  p.put("theme", EntryFrame.this.editFrame.getThemeName());
+
+                  final File file = Paths.get("accounts").resolve(u + ".properties").toFile();
+                  try (final FileOutputStream out = new FileOutputStream(file)) {
+                    p.store(out, null);
+                  } catch (final Throwable t) {
+                    System.out.println("Error saving account details: " + t);
+                  }
+                  accountChoice.add(u);
+                  accountChoice.select(u);
+                  themeName = EntryFrame.this.editFrame.getThemeName();
+                  account = u;
+                  if (themeName == null) themeName = getStringProperty(account, themeName);
+                  EntryFrame.this.editFrame.setVisible(false);
+                });
+            EntryFrame.this.editFrame = editFrame;
+          }
+          editFrame.setVisible(true);
         });
 
-    accountPanel.add(themeChoice);
+    accountSubPanel.add(editButton);
 
-    // todo add option to change script options
+    accountPanel.add(new Label("Theme Switcher:"));
+
+    //  final Choice themeChoice = new Choice();
+    //    themeChoice.setMaximumSize(new Dimension(140, 15));
+    //    for (final String themeName : themeNames) {
+    //      themeChoice.add(themeName);
+    //    }
+    //    themeChoice.addItemListener(
+    //        event -> {
+    //          setThemeElements(String.valueOf(event.getItem()));
+    //   });
+
+    // accountPanel.add(themeChoice);
+
+    // todo move handleCache window to entryFrame w/ version selector.
+    // todo add option to change script options?
 
     final Panel buttonPanel = new Panel();
 
@@ -200,7 +177,10 @@ public final class EntryFrame extends JFrame {
             authFrame.dispose();
           }
           try {
-            username = account;
+            // System.out.println("entry theme name " + themeName);
+            themeName = getStringProperty(account, "theme");
+            Main.setThemeName(themeName);
+            Main.setUsername(account);
             setVisible(false);
             dispose();
             okie = true;
@@ -223,6 +203,10 @@ public final class EntryFrame extends JFrame {
     add(accountPanel, BorderLayout.NORTH);
     add(buttonPanel, BorderLayout.SOUTH);
 
+    //    String directory = "/idlersc_logo_hover.png"; // buildSrc/resources/
+    //    ImageIcon img = new ImageIcon(directory);
+    //    setIconImage(img.getImage());
+
     setMinimumSize(new Dimension(275, 275));
     pack();
 
@@ -241,6 +225,35 @@ public final class EntryFrame extends JFrame {
     dispose();
     okie = true;
   }
+
+  private String getStringProperty(final String name, String propertyName) {
+    if (name == null || propertyName == null) {
+      System.out.println("Error accessing string property");
+    }
+    final Properties p = new Properties();
+    final File file = Paths.get("accounts").resolve(name + ".properties").toFile();
+    try (final FileInputStream stream = new FileInputStream(file)) {
+      p.load(stream);
+      return p.getProperty(propertyName, " ");
+    } catch (final Throwable t) {
+      System.out.println("Error loading account " + name + ": " + t);
+    }
+    return "";
+  }
+  //  private Boolean getBooleanProperty(final String name, String propertyName) {
+  //    if (name == null || propertyName == null) {
+  //      System.out.println("Error accessing bool property");
+  //    }
+  //    final Properties p = new Properties();
+  //    final File file = Paths.get("accounts").resolve(name + ".properties").toFile();
+  //    try (final FileInputStream stream = new FileInputStream(file)) {
+  //      p.load(stream);
+  //      return p.getProperty(propertyName," ");
+  //    } catch (final Throwable t) {
+  //      System.out.println("Error loading account " + name + ": " + t);
+  //    }
+  //    return false;
+  //  }
 
   private void loadAccounts() {
     try {

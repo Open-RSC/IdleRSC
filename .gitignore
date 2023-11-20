@@ -40,3 +40,5 @@ Cache/
 Screenshots/
 
 accounts/
+
+*.properties

@@ -1,6 +1,5 @@
 package bot.cli;
 
-import bot.EntryFrame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
@@ -16,13 +15,15 @@ public class CLIParser {
 
     ParseResult parseResult = new ParseResult();
     final Properties p = new Properties();
-    final File file = Paths.get("accounts").resolve(EntryFrame.username + ".properties").toFile();
+    final File file =
+        Paths.get("accounts").resolve(bot.Main.getUsername() + ".properties").toFile();
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
 
-      parseResult.setUsername(EntryFrame.username);
+      parseResult.setUsername(bot.Main.getUsername());
       parseResult.setPassword(p.getProperty("password", ""));
       parseResult.setScriptName(p.getProperty("script-name", " "));
+      parseResult.setThemeName(p.getProperty("theme", " "));
 
       parseResult.setScriptArguments(
           p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));

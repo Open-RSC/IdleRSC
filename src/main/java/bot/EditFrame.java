@@ -4,9 +4,13 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Paths;
+import java.util.Properties;
 import javax.swing.*;
 
-final class AuthFrame extends Frame {
+final class EditFrame extends Frame {
   private static final Dimension fieldSize = new Dimension(120, 25);
   private final Window parent;
   private final TextField username;
@@ -15,7 +19,7 @@ final class AuthFrame extends Frame {
   private String account;
   private final Button okButton;
 
-  AuthFrame(final String title, final String message, final Window parent) {
+  EditFrame(final String title, final String message, final Window parent) {
     super(title);
 
     this.parent = parent;
@@ -120,9 +124,19 @@ final class AuthFrame extends Frame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
-      username.setText("");
-      password.setText("");
-      themeChoice.select(0);
+
+      final Properties p = new Properties();
+      final File file =
+          Paths.get("accounts").resolve(EntryFrame.getAccount() + ".properties").toFile();
+      try (final FileInputStream stream = new FileInputStream(file)) {
+        p.load(stream);
+
+        username.setText(p.getProperty("username", ""));
+        password.setText(p.getProperty("password", ""));
+        themeChoice.select(p.getProperty("theme", ""));
+      } catch (final Throwable t) {
+        System.out.println("Error loading account " + EntryFrame.getAccount() + ": " + t);
+      }
       setLocationRelativeTo(parent);
       toFront();
       requestFocus();

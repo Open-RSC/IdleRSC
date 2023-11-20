@@ -16,6 +16,7 @@ public class Config extends ParseResult {
     setScriptName(parseResult.getScriptName());
     setScriptArguments(parseResult.getScriptArguments());
     setInitCache(parseResult.getInitCache());
+    setThemeName(parseResult.getThemeName());
 
     // Boolean options
     setAutoLogin(parseResult.isAutoLogin());

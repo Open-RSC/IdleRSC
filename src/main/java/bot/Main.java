@@ -65,23 +65,15 @@ public class Main {
               new SimpleEntry<>("SBot", reflections.getSubTypesOf(compatibility.sbot.Script.class)))
           .collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
   // this is tied to the start/stop button on the side panel.
+  private static Color themeTextColor = new java.awt.Color(219, 219, 219, 255);
+  private static Color themeBackColor = new java.awt.Color(40, 40, 40, 255);
   private static boolean isRunning = false;
-  static EntryFrame entryFrame;
-  static ParseResult parseResult = new ParseResult();
-  private static JComponent botFrame;
+  private static String username = "username";
+  private static String themeName = "RuneDark Theme";
   private static JMenuBar menuBar;
-  private static JMenu menu, submenu, themeMenu;
-  private static JMenuItem menuItem;
-  private static JCheckBoxMenuItem cbMenuItem;
-  private static JFrame consoleFrame, rscFrame, scriptFrame; // all the windows.
-  private static JButton startStopButton,
-      loadScriptButton,
-      pathwalkerButton,
-      openDebuggerButton,
-      // hideButton,
-      resetXpButton,
-      takeScreenshotButton,
-      showIdButton; // all the buttons on the sidepanel.
+  private static JMenu themeMenu;
+  private static JFrame scriptFrame; // all the windows.
+  private static JButton startStopButton;
   private static JCheckBox autoLoginCheckbox,
       logWindowCheckbox,
       debugCheckbox,
@@ -107,6 +99,116 @@ public class Main {
   private static boolean shouldFilter = true;
   private static boolean aposInitCalled = false;
 
+  private static final String[] themeNames = {
+    "RuneDark Theme",
+    "2007scape Theme",
+    "Classic Theme",
+    "Purple Theme",
+    "Magenta Theme",
+    "Red Theme",
+    "Aquamarine Theme",
+    "Blue Theme",
+    "Green Theme",
+    "Brown Theme",
+    "Orange Theme",
+    "Gold Theme"
+  };
+  private static final Color[][] colorCodes = { //   {background, text color, log color}
+    {
+      new java.awt.Color(40, 40, 40, 255), // Runelite Dark Mode
+      new java.awt.Color(219, 219, 219, 255)
+    },
+    {
+      new java.awt.Color(194, 177, 144, 255), // 2007scape Theme
+      new java.awt.Color(10, 10, 8, 255)
+    },
+    {
+      new java.awt.Color(91, 100, 128, 255), // Classic Theme
+      new java.awt.Color(0, 0, 0, 255)
+    },
+    {
+      new java.awt.Color(41, 21, 72, 255), // Purple Theme
+      new java.awt.Color(209, 186, 255, 255)
+    },
+    {
+      new java.awt.Color(141, 22, 129, 255), // Magenta Theme
+      new java.awt.Color(255, 217, 255, 255)
+    },
+    {
+      new java.awt.Color(110, 0, 16, 255), // Red Theme
+      new java.awt.Color(255, 183, 195, 255)
+    },
+    {
+      new java.awt.Color(11, 143, 137, 255), // Aquamarine Theme
+      new java.awt.Color(210, 255, 255, 255)
+    },
+    {
+      new java.awt.Color(22, 65, 182, 255), // Blue Theme
+      new java.awt.Color(191, 208, 255, 255)
+    },
+    {
+      new java.awt.Color(9, 94, 0, 255), // Green Theme
+      new java.awt.Color(195, 255, 187, 255)
+    },
+    {
+      new java.awt.Color(73, 48, 48, 255), // Brown Theme
+      new java.awt.Color(234, 202, 202, 255)
+    },
+    {
+      new java.awt.Color(159, 58, 0, 255), // Orange Theme
+      new java.awt.Color(255, 202, 188, 255)
+    },
+    {
+      new java.awt.Color(141, 113, 22, 255), // Gold Theme
+      new java.awt.Color(255, 254, 200, 255)
+    }
+  };
+
+  public static void setThemeElements(String theme) {
+    for (int i = 0; i < themeNames.length; i++) {
+      if (themeNames[i].equals(theme)) {
+        setThemeBackColor(colorCodes[i][0]);
+        setThemeTextColor(colorCodes[i][1]);
+        return;
+      }
+    }
+  }
+
+  public static String[] getThemeNames() {
+    return themeNames;
+  }
+
+  public static Color getThemeTextColor() {
+    return themeTextColor;
+  }
+
+  public static void setThemeTextColor(Color textColor) {
+    themeTextColor = textColor;
+  }
+
+  public static Color getThemeBackColor() {
+    return themeBackColor;
+  }
+
+  public static void setThemeBackColor(Color backColor) {
+    themeBackColor = backColor;
+  }
+
+  public static void setUsername(String name) {
+    username = name;
+  }
+
+  public static String getUsername() {
+    return username;
+  }
+
+  public static void setThemeName(String name) {
+    themeName = name;
+  }
+
+  public static String getThemeName() {
+    return themeName;
+  }
   /**
    * Used by the WindowListener for tracking the log window.
    *
@@ -182,9 +284,10 @@ public class Main {
           IllegalArgumentException, InvocationTargetException, InterruptedException {
     CLIParser parser = new CLIParser();
     Version version = new Version();
-
-    entryFrame = new EntryFrame();
-
+    ParseResult parseResult = new ParseResult();
+    EntryFrame entryFrame = new EntryFrame();
+    //  controller.log("theme name " + themeName);
+    setThemeElements(themeName);
     try {
       parseResult = parser.parse(args);
     } catch (ParseException e) {
@@ -229,10 +332,10 @@ public class Main {
     debuggerThread.start();
 
     // just building out the windows
-    botFrame = new JPanel();
+    JComponent botFrame = new JPanel();
     themeMenu = new JMenu();
-    consoleFrame = new JFrame("Bot Console"); // log window
-    rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
+    JFrame consoleFrame = new JFrame("Bot Console"); // log window
+    JFrame rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
     if (config.getUsername() != null) {
       scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
     } else if (controller.getPlayerName() != null) {
@@ -247,9 +350,9 @@ public class Main {
     initializeMenuBar();
 
     // todo swap side bar by swapping container contents
-    botFrame.setBackground(entryFrame.getThemeBackColor());
-    rscFrame.getContentPane().setBackground(entryFrame.getThemeBackColor());
-    botFrame.setBorder(BorderFactory.createLineBorder(entryFrame.getThemeBackColor()));
+    botFrame.setBackground(themeBackColor);
+    rscFrame.getContentPane().setBackground(themeBackColor);
+    botFrame.setBorder(BorderFactory.createLineBorder(themeBackColor));
 
     // combine everything into our client
     rscFrame.add(botFrame, BorderLayout.EAST);
@@ -422,13 +525,13 @@ public class Main {
   private static void initializeMenuBar() {
     // Make the menu bar
     menuBar = new JMenuBar();
-    menu = new JMenu("Options");
+    JMenu menu = new JMenu("Options");
     themeMenu = new JMenu("Theme Menu");
     menuBar.add(menu);
     menuBar.add(themeMenu);
 
     // theme menu options
-    menuItem = new JMenuItem("Runelite (Default Theme)", KeyEvent.VK_1);
+    JMenuItem menuItem = new JMenuItem("Runelite (Default Theme)", KeyEvent.VK_1);
     menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_1));
     themeMenu.add(menuItem);
 
@@ -465,7 +568,7 @@ public class Main {
 
     // a group of check box menu items
     menu.addSeparator();
-    cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
+    JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
     cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_3));
     menu.add(cbMenuItem);
 
@@ -475,7 +578,7 @@ public class Main {
 
     // a submenu
     menu.addSeparator();
-    submenu = new JMenu("A submenu");
+    JMenu submenu = new JMenu("A submenu");
     submenu.setMnemonic(KeyEvent.VK_5);
 
     menuItem = new JMenuItem("An item in the submenu");
@@ -489,10 +592,10 @@ public class Main {
     menu.add(submenu);
 
     // color our elements
-    themeMenu.setForeground(entryFrame.getThemeTextColor());
-    menu.setForeground(entryFrame.getThemeTextColor()); // text color
-    menuBar.setBackground(entryFrame.getThemeBackColor());
-    menuBar.setBorder(BorderFactory.createLineBorder(entryFrame.getThemeBackColor()));
+    themeMenu.setForeground(themeTextColor);
+    menu.setForeground(themeTextColor); // text color
+    menuBar.setBackground(themeBackColor);
+    menuBar.setBorder(BorderFactory.createLineBorder(themeBackColor));
   }
   /**
    * Sets up the sidepanel
@@ -503,20 +606,21 @@ public class Main {
     botFrame.setLayout(new BoxLayout(botFrame, BoxLayout.Y_AXIS));
 
     startStopButton = new JButton(isRunning ? "Stop" : "Start");
-    loadScriptButton = new JButton("Load Script");
-    pathwalkerButton = new JButton("PathWalker");
+    JButton loadScriptButton = new JButton("Load Script");
+    JButton pathwalkerButton = new JButton("PathWalker");
 
     autoLoginCheckbox = new JCheckBox("Auto-Login", true);
-    logWindowCheckbox = new JCheckBox("Log Window");
-    debugCheckbox = new JCheckBox("Debug");
-    graphicsCheckbox = new JCheckBox("Graphics", true);
-    botPaintCheckbox = new JCheckBox("Bot Paint", true);
+    logWindowCheckbox = new JCheckBox("Show Console");
+    debugCheckbox = new JCheckBox("Debug Messages");
+    graphicsCheckbox = new JCheckBox("Show Graphics", true);
+    botPaintCheckbox = new JCheckBox("Show Bot Paint", true);
     interlaceCheckbox = new JCheckBox("Interlace", false);
 
-    takeScreenshotButton = new JButton("Screenshot");
-    showIdButton = new JButton("Show ID's");
-    openDebuggerButton = new JButton("Open Debugg");
-    resetXpButton = new JButton("Reset XP");
+    // all the buttons on the sidepanel.
+    JButton takeScreenshotButton = new JButton("Screenshot");
+    JButton showIdButton = new JButton("Show ID's");
+    JButton openDebuggerButton = new JButton("Debugger");
+    JButton resetXpButton = new JButton("Reset XP");
 
     JButton[] buttonArray = {
       startStopButton,
@@ -537,13 +641,13 @@ public class Main {
     };
 
     for (JButton jButton : buttonArray) {
-      jButton.setBackground(entryFrame.getThemeBackColor());
-      jButton.setForeground(entryFrame.getThemeTextColor());
+      jButton.setBackground(themeBackColor.darker());
+      jButton.setForeground(themeTextColor);
     }
 
     for (JCheckBox jCheckbox : checkBoxArray) {
-      jCheckbox.setBackground(entryFrame.getThemeBackColor());
-      jCheckbox.setForeground(entryFrame.getThemeTextColor());
+      jCheckbox.setBackground(themeBackColor);
+      jCheckbox.setForeground(themeTextColor);
     }
 
     startStopButton.addActionListener(
@@ -648,7 +752,20 @@ public class Main {
     logArea.setEditable(false);
     scroller = new JScrollPane(logArea);
 
+    buttonClear.setBackground(themeBackColor.darker());
+    buttonClear.setForeground(themeTextColor);
+    autoscrollLogsCheckbox.setBackground(themeBackColor);
+    autoscrollLogsCheckbox.setForeground(themeTextColor);
+    logArea.setBackground(themeBackColor.brighter());
+    logArea.setForeground(themeTextColor);
+    scroller.setBackground(themeBackColor);
+    scroller.setForeground(themeTextColor);
+
+    consoleFrame.getContentPane().setBackground(themeBackColor);
+    consoleFrame.getContentPane().setForeground(themeTextColor);
+
     consoleFrame.setLayout(new GridBagLayout());
+
     GridBagConstraints constraints = new GridBagConstraints();
 
     constraints.gridy = 1;

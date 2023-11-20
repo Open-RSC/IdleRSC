@@ -7,6 +7,7 @@ public class ParseResult {
   private String username;
   private String password;
   private String scriptName;
+  private String themeName;
   private String[] scriptArguments;
   private String initCache;
   // Boolean options
@@ -51,6 +52,14 @@ public class ParseResult {
 
   public String getScriptName() {
     return scriptName;
+  }
+
+  public void setThemeName(String themeName) {
+    this.themeName = themeName;
+  }
+
+  public String getThemeName() {
+    return themeName;
   }
 
   public void setScriptArguments(String[] scriptArguments) {

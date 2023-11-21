@@ -4,6 +4,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +15,7 @@ import javax.swing.*;
 
 /** Presents the user with account and sleep solver selection. */
 public final class EntryFrame extends JFrame {
-  private AuthFrame authFrame;
-  private EditFrame editFrame;
+  private AuthFrame authFrame, authFrame2;
   private String[] accountNames;
   private static String account;
   public String themeName = "RuneDark Theme";
@@ -67,23 +69,34 @@ public final class EntryFrame extends JFrame {
             authFrame.addActionListener(
                 e1 -> {
                   final Properties p = new Properties();
-                  final String u = EntryFrame.this.authFrame.getUsername();
+                  final String u = authFrame.getUsername();
                   p.put("username", u);
-                  p.put("password", EntryFrame.this.authFrame.getPassword());
-                  p.put("script-name", "");
-                  p.put("script-arguments", "");
-                  p.put("init-cache", "");
-                  p.put("auto-login", "false");
-                  p.put("log-window", "false");
-                  p.put("debug", "false");
-                  p.put("botpaint", "false"); // true disables bot paint
-                  p.put("disable-gfx", "false");
-                  p.put("interlace", "false");
-                  p.put("help", "false");
-                  p.put("version", "false");
-                  p.put("theme", EntryFrame.this.authFrame.getThemeName());
+                  p.put("password", authFrame.getPassword());
+                  p.put("script-name", authFrame.getScriptName());
+                  p.put("script-arguments", authFrame.getScriptArgs());
+                  p.put("init-cache", authFrame.getInitCache());
+                  p.put("auto-login", authFrame.getAutoLogin());
+                  p.put("log-window", authFrame.getLogWindow());
+                  p.put("debug", authFrame.getDebugger());
+                  p.put("botpaint", authFrame.getBotPaint()); // true disables bot paint
+                  p.put("disable-gfx", authFrame.getDisableGraphics());
+                  p.put("interlace", authFrame.getInterlace());
+                  p.put("help", authFrame.getHelpMenu());
+                  p.put("version", authFrame.getShowVersion());
+                  p.put("theme", authFrame.getThemeName());
 
-                  final File file = Paths.get("accounts").resolve(u + ".properties").toFile();
+                  //Make sure our accounts folder exists
+                  Path accountPath = Paths.get("accounts");
+                  try {
+                    Files.createDirectories(accountPath);
+                  } catch (IOException e2) {
+                    System.err.println("Failed to create directory: " + e2.getMessage());
+                    e2.printStackTrace();
+                    return;
+                  }
+                  
+                  //Now we can parse it
+                  final File file = accountPath.resolve(u + ".properties").toFile();
                   try (final FileOutputStream out = new FileOutputStream(file)) {
                     p.store(out, null);
                   } catch (final Throwable t) {
@@ -106,47 +119,61 @@ public final class EntryFrame extends JFrame {
     final Button editButton = new Button("Edit Account Settings");
     editButton.addActionListener(
         e -> {
-          if (editFrame == null) {
-            final EditFrame editFrame =
-                new EditFrame("Edit account settings", null, EntryFrame.this);
+          if (authFrame2 == null) {
+            final AuthFrame authFrame2 =
+                new AuthFrame("Edit account settings", null, EntryFrame.this);
+            authFrame2.loadAccountSettings = true;
             // authFrame.setFont(Constants.UI_FONT);
             // authFrame.setIconImages(Constants.ICONS);
 
-            editFrame.addActionListener(
+            authFrame2.addActionListener(
                 e1 -> {
                   final Properties p = new Properties();
-                  final String u = EntryFrame.this.editFrame.getUsername();
+                  final String u = authFrame2.getUsername();
                   p.put("username", u);
-                  p.put("password", EntryFrame.this.editFrame.getPassword());
-                  p.put("script-name", "");
-                  p.put("script-arguments", "");
-                  p.put("init-cache", "");
-                  p.put("auto-login", "false");
-                  p.put("log-window", "false");
-                  p.put("debug", "false");
-                  p.put("botpaint", "false"); // true disables bot paint
-                  p.put("disable-gfx", "false");
-                  p.put("interlace", "false");
-                  p.put("help", "false");
-                  p.put("version", "false");
-                  p.put("theme", EntryFrame.this.editFrame.getThemeName());
+                  p.put("password", authFrame2.getPassword());
+                  p.put("script-name", authFrame2.getScriptName());
+                  p.put("script-arguments", authFrame2.getScriptArgs());
+                  p.put("init-cache", authFrame2.getInitCache());
+                  p.put("auto-login", authFrame2.getAutoLogin());
+                  p.put("log-window", authFrame2.getLogWindow());
+                  p.put("debug", authFrame2.getDebugger());
+                  p.put("botpaint", authFrame2.getBotPaint()); // true disables bot paint
+                  p.put("disable-gfx", authFrame2.getDisableGraphics());
+                  p.put("interlace", authFrame2.getInterlace());
+                  p.put("help", authFrame2.getHelpMenu());
+                  p.put("version", authFrame2.getShowVersion());
+                  p.put("theme", authFrame2.getThemeName());
 
-                  final File file = Paths.get("accounts").resolve(u + ".properties").toFile();
+                  //Make sure our accounts folder exists
+                  Path accountPath = Paths.get("accounts");
+                  try {
+                    Files.createDirectories(accountPath);
+                  } catch (IOException e2) {
+                    System.err.println("Failed to create directory: " + e2.getMessage());
+                    e2.printStackTrace();
+                    return;
+                  }
+
+                  //Now we can parse it
+                  final File file = accountPath.resolve(u + ".properties").toFile();
                   try (final FileOutputStream out = new FileOutputStream(file)) {
+
                     p.store(out, null);
                   } catch (final Throwable t) {
                     System.out.println("Error saving account details: " + t);
                   }
+
                   accountChoice.add(u);
                   accountChoice.select(u);
-                  themeName = EntryFrame.this.editFrame.getThemeName();
+                  themeName = EntryFrame.this.authFrame2.getThemeName();
                   account = u;
                   if (themeName == null) themeName = getStringProperty(account, themeName);
-                  EntryFrame.this.editFrame.setVisible(false);
+                  EntryFrame.this.authFrame2.setVisible(false);
                 });
-            EntryFrame.this.editFrame = editFrame;
+            EntryFrame.this.authFrame2 = authFrame2;
           }
-          editFrame.setVisible(true);
+          authFrame2.setVisible(true);
         });
 
     accountSubPanel.add(editButton);
@@ -175,6 +202,9 @@ public final class EntryFrame extends JFrame {
         e -> {
           if (authFrame != null) {
             authFrame.dispose();
+          }
+          if (authFrame2 != null) {
+            authFrame2.dispose();
           }
           try {
             // System.out.println("entry theme name " + themeName);

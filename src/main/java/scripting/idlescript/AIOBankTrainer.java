@@ -48,6 +48,7 @@ public class AIOBankTrainer extends K_kailaScript {
   private int burnLocation = 0;
   private int processedItemInBank = 0;
   private int totalProcessedCount = 0;
+  private int[] startPos = {0, 0};
   private boolean autoWalk = false;
 
   /**
@@ -69,6 +70,8 @@ public class AIOBankTrainer extends K_kailaScript {
       startTime = System.currentTimeMillis();
       if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@AIO Bank Trainer ~ By @mag@Kaila");
+      startPos[0] = c.currentX();
+      startPos[1] = c.currentY();
       if (c.isInBank()) c.closeBank();
       for (int bankerId : c.bankerIds) {
         if (c.getNearestNpcById(bankerId, false) != null || c.getNearestObjectById(942) != null) {
@@ -225,6 +228,9 @@ public class AIOBankTrainer extends K_kailaScript {
           if (c.currentX() > 563) c.walkTo(549, 613);
           break;
       }
+    }
+    if (c.distance(c.currentX(), c.currentY(), startPos[0], startPos[1]) > 10) {
+      c.walkTo(startPos[0], startPos[1]);
     }
     c.openBank();
     c.sleep(GAME_TICK);

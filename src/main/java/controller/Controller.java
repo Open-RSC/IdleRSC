@@ -3892,7 +3892,7 @@ public class Controller {
    * @param text String
    */
   public void log(String text) {
-    log(text, "red");
+    log(text, "gre");
   }
 
   /**

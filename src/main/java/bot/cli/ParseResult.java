@@ -12,7 +12,8 @@ public class ParseResult {
       debug,
       botPaintVisible,
       graphicsEnabled,
-      graphicsInterlacing;
+      graphicsInterlacing,
+      showSideBar;
   private boolean scriptSelectorOpen;
   private boolean localOcr;
 
@@ -94,6 +95,14 @@ public class ParseResult {
 
   public boolean isLogWindowVisible() {
     return logWindowVisible;
+  }
+
+  public void setSidebarVisible(boolean sidebarVisible) {
+    this.showSideBar = sidebarVisible;
+  }
+
+  public boolean isSidebarVisible() {
+    return showSideBar;
   }
 
   public void setDebug(boolean debug) {

@@ -62,6 +62,9 @@ public final class EntryFrame extends JFrame {
     final Button addButton = new Button("Add");
     addButton.addActionListener(
         e -> {
+          if (authFrame2 != null) {
+            authFrame2.dispose();
+          }
           if (authFrame == null) {
             final AuthFrame authFrame = new AuthFrame("Add an account", null, EntryFrame.this);
             // authFrame.setFont(Constants.UI_FONT);
@@ -76,6 +79,7 @@ public final class EntryFrame extends JFrame {
                   p.put("script-arguments", authFrame.getScriptArgs());
                   p.put("init-cache", authFrame.getInitCache());
                   p.put("auto-login", authFrame.getAutoLogin());
+                  p.put("sidebar", authFrame.getSideBar());
                   p.put("log-window", authFrame.getLogWindow());
                   p.put("debug", authFrame.getDebugger());
                   p.put("botpaint", authFrame.getBotPaint()); // true disables bot paint
@@ -119,6 +123,9 @@ public final class EntryFrame extends JFrame {
     final Button editButton = new Button("Edit Account Settings");
     editButton.addActionListener(
         e -> {
+          if (authFrame != null) {
+            authFrame.dispose();
+          }
           if (authFrame2 == null) {
             final AuthFrame authFrame2 =
                 new AuthFrame("Edit account settings", null, EntryFrame.this);
@@ -136,6 +143,7 @@ public final class EntryFrame extends JFrame {
                   p.put("script-arguments", authFrame2.getScriptArgs());
                   p.put("init-cache", authFrame2.getInitCache());
                   p.put("auto-login", authFrame2.getAutoLogin());
+                  p.put("sidebar", authFrame2.getSideBar());
                   p.put("log-window", authFrame2.getLogWindow());
                   p.put("debug", authFrame2.getDebugger());
                   p.put("botpaint", authFrame2.getBotPaint()); // true disables bot paint
@@ -308,6 +316,8 @@ public final class EntryFrame extends JFrame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
+      setIconImage(new ImageIcon("buildSrc/res/idlersc.icon.png").getImage());
+      // setIconImage(Utils.getImage("idlersc.icon.png").getImage());
       setLocationRelativeTo(null);
       toFront();
       requestFocus();

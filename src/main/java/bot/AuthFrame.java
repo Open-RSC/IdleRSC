@@ -13,16 +13,23 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import javax.swing.*;
 
-final class AuthFrame extends Frame {
+final class AuthFrame extends JFrame {
+  private Color backgroundColor = Main.getColorCode(1, 0);
+  private Color textColor = Main.getColorCode(0, 0);
   public boolean loadAccountSettings = false;
-  private static final Dimension fieldSize = new Dimension(125, 25);
+  private static final Dimension fieldSize = new Dimension(100, 25);
   private final Window parent;
   private final TextField username,
       password,
       scriptName,
       scriptArgs,
-      initCache; // , spellId, attackItem, strengthItem, defenseItem;
+      initCache,
+      spellId,
+      attackItem,
+      strengthItem,
+      defenseItem;
   private Checkbox autoLogin,
+      sideBar,
       logWindow,
       debug,
       botPaint,
@@ -60,119 +67,186 @@ final class AuthFrame extends Frame {
     }
     final Panel optionsPanel = new Panel();
     optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
+    final Panel optionsPanel2 = new Panel();
+    optionsPanel2.setLayout(new BoxLayout(optionsPanel2, BoxLayout.Y_AXIS));
 
     // Build out all of our text field options
-    String[] optionLabels = {
+    String[] optionLabels = { // 12
       "Login Credentials:", // only show label
       "Username: ",
       "Password: ",
       "Startup Options: ", // only show label
       "Script Name: ",
       "Script Args: ",
-      "Cache Version"
+      "Cache Version:",
+      "Hotkeys: ", // only show label
+      "SpellIds: ",
+      "Attack Item: ",
+      "Strength Item: ",
+      "Defense Item:"
     };
     TextField[] textFields = {
       new TextField(),
       username = new TextField(),
       password = new TextField(),
-      new TextField(),
+      new TextField(), // only show label
       scriptName = new TextField(),
       scriptArgs = new TextField(),
-      initCache = new TextField()
+      initCache = new TextField(),
+      new TextField(), // only show label
+      spellId = new TextField(),
+      attackItem = new TextField(),
+      strengthItem = new TextField(),
+      defenseItem = new TextField()
     };
-    Panel[] subPanels = new Panel[20];
 
-    for (int i = 0; i < subPanels.length; i++) {
-      subPanels[i] = new Panel();
+    password.setEchoChar('*');
+    Panel[] textFieldPanels = new Panel[optionLabels.length];
+    for (int i = 0; i < textFieldPanels.length; i++) {
+      textFieldPanels[i] = new Panel();
     }
 
-    int index = 0;
-    password.setEchoChar('*');
-
     for (int i = 0; i < textFields.length; i++) {
-      subPanels[index].setLayout(new BoxLayout(subPanels[index], BoxLayout.X_AXIS));
+      textFieldPanels[i].setLayout(new BoxLayout(textFieldPanels[i], BoxLayout.X_AXIS));
       Label optionLabel = new Label(optionLabels[i], Label.LEFT);
       optionLabel.setMaximumSize(new Dimension(100, 30));
-      subPanels[index].add(optionLabel);
-      if (index == 0 || index == 3) {
-        index++;
+      textFieldPanels[i].add(optionLabel);
+      if (i == 0 || i == 3 || i == 7) {
         continue;
       }
       textFields[i].setMaximumSize(fieldSize);
-      subPanels[index].add(textFields[i]);
-      index++;
+      textFieldPanels[i].add(textFields[i]);
     }
 
-    subPanels[index].setLayout(new BoxLayout(subPanels[index], BoxLayout.X_AXIS));
-    Label optionLabel2 = new Label("Theme Selector", Label.LEFT);
-    optionLabel2.setMaximumSize(new Dimension(85, 30));
-    subPanels[index].add(optionLabel2);
-    String[] themeNames = Main.getThemeNames();
-    themeChoice.setMaximumSize(new Dimension(140, 25));
-    for (final String themeName : themeNames) {
-      themeChoice.add(themeName);
+    // Build out our choice selectors (comboboxes)
+    String[] choiceLabels = {"Theme Selector:"};
+    Choice[] choices = {themeChoice};
+
+    Panel[] choicePanels = new Panel[choiceLabels.length];
+    for (int i = 0; i < choicePanels.length; i++) {
+      choicePanels[i] = new Panel();
     }
-    subPanels[index].add(themeChoice);
-    index++;
+
+    for (int i = 0; i < choiceLabels.length; i++) {
+      choicePanels[i].setLayout(new BoxLayout(choicePanels[i], BoxLayout.Y_AXIS));
+      Label optionLabel2 = new Label(choiceLabels[i], Label.CENTER);
+      optionLabel2.setMaximumSize(new Dimension(120, 30));
+      choicePanels[i].add(optionLabel2);
+      String[] themeNames = Main.getThemeNames();
+      choices[i].setMaximumSize(new Dimension(140, 30));
+      for (final String themeName : themeNames) {
+        choices[i].add(themeName);
+      }
+      choicePanels[i].add(themeChoice);
+    }
+
+    //    HashMap<String, Integer> themeTypes = new HashMap<String, Integer>();
+    //    int keyValue = 49;
+    //    for (int i=0; i<themeNames.length; i++) {
+    //      if(keyValue+i > 57) keyValue = (65-i);
+    //      themeTypes.put(themeNames[i], keyValue+i);
+    //    }
 
     // Build out all of our checkbox options
-    String[] checkboxLabels = {
-      "Auto-login:",
-      "Log Window: ",
-      "Open Debugger: ",
-      "Show Bot Paint: ",
-      "Disable Graphics",
-      "Interlace Mode",
-      "Local-OCR",
-      "Help Menu",
-      "Show Version"
-    };
     Checkbox[] checkBoxes = {
-      autoLogin = new Checkbox("Toggle Autolog", false),
-      logWindow = new Checkbox("Show Log Window", false),
-      debug = new Checkbox("Show", false),
-      botPaint = new Checkbox("Show Bot Paint", true),
-      disableGraphics = new Checkbox("Disable Graphics", false),
-      interlace = new Checkbox("Use Interlace", false),
-      localOcr = new Checkbox("Use Local OCR", false),
-      helpMenu = new Checkbox("Show Help Menu", false),
-      showVersion = new Checkbox("Show Version", false)
+      autoLogin = new Checkbox(" Auto-login", false),
+      sideBar = new Checkbox(" Show Side Bar", true),
+      logWindow = new Checkbox(" Open Log Window", false),
+      debug = new Checkbox(" Open Debugger", false),
+      botPaint = new Checkbox(" Show Bot Paint", true),
+      disableGraphics = new Checkbox(" Disable Graphics", false),
+      interlace = new Checkbox(" Interlace Mode", false),
+      localOcr = new Checkbox(" Use Local-OCR", false),
+      helpMenu = new Checkbox(" Show Help Menu", false),
+      showVersion = new Checkbox(" Show Version", false)
     };
 
+    Panel[] checkBoxPanels = new Panel[checkBoxes.length];
+    for (int i = 0; i < checkBoxPanels.length; i++) {
+      checkBoxPanels[i] = new Panel();
+    }
+
+    Dimension checkBoxDim = new Dimension(120, 30);
     for (int i = 0; i < checkBoxes.length; i++) {
-      subPanels[index].setLayout(new BoxLayout(subPanels[index], BoxLayout.X_AXIS));
-      Label optionLabel = new Label(checkboxLabels[i], Label.LEFT);
-      optionLabel.setMaximumSize(new Dimension(100, 30));
-      subPanels[index].add(optionLabel);
-      checkBoxes[i].setMaximumSize(fieldSize);
-      subPanels[index].add(checkBoxes[i]);
-      index++;
+      checkBoxPanels[i].setLayout(new BoxLayout(checkBoxPanels[i], BoxLayout.X_AXIS));
+      checkBoxes[i].setMaximumSize(checkBoxDim);
+      checkBoxPanels[i].add(checkBoxes[i]);
     }
 
     // Build out the order of the layout now
-    for (Panel subPanel : subPanels) {
+    for (Panel subPanel : textFieldPanels) {
       optionsPanel.add(subPanel);
     }
+    for (Panel subPanel : choicePanels) {
+      optionsPanel2.add(subPanel);
+    }
+    for (Panel subPanel : checkBoxPanels) {
+      optionsPanel2.add(subPanel);
+    }
 
+    // Build out the 2 main panels
     final Panel inputPanel = new Panel();
     final Panel buttonPanel = new Panel();
+    okButton = new Button("Save");
     final Button cancelButton = new Button("Cancel");
-    okButton = new Button("OK");
-
-    inputPanel.setLayout(new BorderLayout());
-    inputPanel.add(optionsPanel, BorderLayout.CENTER);
     buttonPanel.add(okButton);
-
-    cancelButton.addActionListener(e -> close());
     buttonPanel.add(cancelButton);
 
+    // Generate gaps todo change to grid bag layout soon
+    Panel[] gapPanels = {
+      new Panel(), new Panel(), new Panel(), new Panel(), new Panel(),
+    };
+    Panel borderPanel = new Panel();
+    for (int i = 0; i < gapPanels.length; i++) {
+      gapPanels[i].setMaximumSize(new Dimension(5, 400));
+    }
+
+    // Set Sizing
+    gapPanels[0].setMaximumSize(new Dimension(5, 400));
+    gapPanels[1].setMaximumSize(new Dimension(10, 400));
+    gapPanels[2].setMaximumSize(new Dimension(20, 400));
+    gapPanels[3].setMaximumSize(new Dimension(10, 400));
+    gapPanels[4].setMaximumSize(new Dimension(5, 400));
+    inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
+    optionsPanel.setMinimumSize(new Dimension(250, 400));
+    optionsPanel2.setMinimumSize(new Dimension(200, 400));
+    borderPanel.setMaximumSize(new Dimension(360, 40));
+
+    // combine into our main interface
+    for (int i = 0; i < gapPanels.length; i++) {
+      if (i == 2) inputPanel.add(optionsPanel);
+      if (i == 3) inputPanel.add(optionsPanel2);
+      inputPanel.add(gapPanels[i]);
+    }
+
+    // colorize our elements
+    gapPanels[0].setBackground(backgroundColor.darker());
+    gapPanels[1].setBackground(backgroundColor);
+    gapPanels[2].setBackground(backgroundColor);
+    gapPanels[3].setBackground(backgroundColor);
+    gapPanels[4].setBackground(backgroundColor.darker());
+    optionsPanel.setBackground(backgroundColor);
+    optionsPanel.setForeground(textColor);
+    optionsPanel2.setBackground(backgroundColor);
+    optionsPanel2.setForeground(textColor);
+    inputPanel.setBackground(backgroundColor);
+    buttonPanel.setBackground(backgroundColor.darker());
+    buttonPanel.setForeground(textColor);
+    borderPanel.setBackground(backgroundColor.darker());
+    okButton.setForeground(Color.BLACK);
+    cancelButton.setForeground(Color.BLACK);
+
+    // Add the 3 main panels to the frame
     if (labelPanel != null) {
       add(labelPanel, BorderLayout.NORTH);
     }
-
+    add(borderPanel, BorderLayout.NORTH);
     add(inputPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
-    setMinimumSize(new Dimension(300, 300));
+    setMinimumSize(new Dimension(400, 420));
+
+    // Add action listeners
+    cancelButton.addActionListener(e -> close());
 
     pack();
     setResizable(false);
@@ -185,6 +259,7 @@ final class AuthFrame extends Frame {
     scriptArgs.setText("");
     initCache.setText("coleslaw");
     autoLogin.setState(false);
+    sideBar.setState(true);
     logWindow.setState(false);
     debug.setState(false);
     botPaint.setState(true);
@@ -228,6 +303,10 @@ final class AuthFrame extends Frame {
     return Boolean.toString(logWindow.getState());
   }
 
+  synchronized String getSideBar() {
+    return Boolean.toString(sideBar.getState());
+  }
+
   synchronized String getDebugger() {
     return Boolean.toString(debug.getState());
   }
@@ -263,6 +342,7 @@ final class AuthFrame extends Frame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
+      setIconImage(new ImageIcon("buildSrc/res/idlersc.icon.png").getImage());
       if (loadAccountSettings) {
         // Make sure our accounts folder exists
         final Properties p = new Properties();
@@ -286,6 +366,7 @@ final class AuthFrame extends Frame {
           scriptArgs.setText(p.getProperty("script-arguments", ""));
           initCache.setText(p.getProperty("init-cache", ""));
           autoLogin.setState(Boolean.parseBoolean(p.getProperty("auto-login", "false")));
+          sideBar.setState(Boolean.parseBoolean(p.getProperty("sidebar", "false")));
           logWindow.setState(Boolean.parseBoolean(p.getProperty("log-window", "false")));
           debug.setState(Boolean.parseBoolean(p.getProperty("debug", "false")));
           botPaint.setState(Boolean.parseBoolean(p.getProperty("botpaint", "true")));
@@ -306,6 +387,7 @@ final class AuthFrame extends Frame {
         scriptArgs.setText("");
         initCache.setText("coleslaw");
         autoLogin.setState(false);
+        sideBar.setState(false);
         logWindow.setState(false);
         debug.setState(false);
         botPaint.setState(true);

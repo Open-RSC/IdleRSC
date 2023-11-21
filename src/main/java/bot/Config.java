@@ -20,6 +20,7 @@ public class Config extends ParseResult {
 
     // Boolean options
     setAutoLogin(parseResult.isAutoLogin());
+    setSidebarVisible(parseResult.isSidebarVisible());
     setLogWindowVisible(parseResult.isLogWindowVisible());
     setDebug(parseResult.isDebug());
     setBotPaintVisible(parseResult.isBotPaintVisible());

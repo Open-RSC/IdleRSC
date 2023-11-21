@@ -32,6 +32,8 @@ public class CLIParser {
       // Boolean options
       parseResult.setAutoLogin(
           p.getProperty("auto-login", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setSidebarVisible(
+          p.getProperty("sidebar", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setLogWindowVisible(
           p.getProperty("log-window", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setDebug(
@@ -119,6 +121,7 @@ public class CLIParser {
     Option autoLogin =
         Option.builder().longOpt("auto-login").desc("Enable automatic log-in.").build();
     Option logWindow = Option.builder().longOpt("log-window").desc("Display log window.").build();
+    Option sideWindow = Option.builder().longOpt("sidebar").desc("Display side window.").build();
     Option debug = Option.builder().longOpt("debug").desc("Enable debug logging.").build();
     Option disableGraphics =
         Option.builder().longOpt("disable-gfx").desc("Disable graphics refresh.").build();
@@ -173,6 +176,7 @@ public class CLIParser {
     options.addOption(scriptArguments);
     options.addOption(initCache);
     options.addOption(autoLogin);
+    options.addOption(sideWindow);
     options.addOption(logWindow);
     options.addOption(debug);
     options.addOption(disableGraphics);

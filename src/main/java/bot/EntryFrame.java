@@ -85,7 +85,7 @@ public final class EntryFrame extends JFrame {
                   p.put("version", authFrame.getShowVersion());
                   p.put("theme", authFrame.getThemeName());
 
-                  //Make sure our accounts folder exists
+                  // Make sure our accounts folder exists
                   Path accountPath = Paths.get("accounts");
                   try {
                     Files.createDirectories(accountPath);
@@ -94,8 +94,8 @@ public final class EntryFrame extends JFrame {
                     e2.printStackTrace();
                     return;
                   }
-                  
-                  //Now we can parse it
+
+                  // Now we can parse it
                   final File file = accountPath.resolve(u + ".properties").toFile();
                   try (final FileOutputStream out = new FileOutputStream(file)) {
                     p.store(out, null);
@@ -145,7 +145,7 @@ public final class EntryFrame extends JFrame {
                   p.put("version", authFrame2.getShowVersion());
                   p.put("theme", authFrame2.getThemeName());
 
-                  //Make sure our accounts folder exists
+                  // Make sure our accounts folder exists
                   Path accountPath = Paths.get("accounts");
                   try {
                     Files.createDirectories(accountPath);
@@ -155,7 +155,7 @@ public final class EntryFrame extends JFrame {
                     return;
                   }
 
-                  //Now we can parse it
+                  // Now we can parse it
                   final File file = accountPath.resolve(u + ".properties").toFile();
                   try (final FileOutputStream out = new FileOutputStream(file)) {
 

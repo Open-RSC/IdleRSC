@@ -264,7 +264,7 @@ final class AuthFrame extends Frame {
   public void setVisible(final boolean visible) {
     if (visible) {
       if (loadAccountSettings) {
-        //Make sure our accounts folder exists
+        // Make sure our accounts folder exists
         final Properties p = new Properties();
         Path accountPath = Paths.get("accounts");
         try {
@@ -275,9 +275,8 @@ final class AuthFrame extends Frame {
           return;
         }
 
-        //Now we can parse it
-        final File file =
-          accountPath.resolve(EntryFrame.getAccount() + ".properties").toFile();
+        // Now we can parse it
+        final File file = accountPath.resolve(EntryFrame.getAccount() + ".properties").toFile();
         try (final FileInputStream stream = new FileInputStream(file)) {
           p.load(stream);
 

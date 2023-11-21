@@ -4,20 +4,16 @@ import java.util.ArrayList;
 
 public class ParseResult {
   // Options with parameters/arguments.
-  private String username;
-  private String password;
-  private String scriptName;
-  private String themeName;
+  private String username, password, scriptName, themeName, initCache;
   private String[] scriptArguments;
-  private String initCache;
   // Boolean options
-  private boolean autoLogin;
-  private boolean logWindowVisible;
-  private boolean debug;
-  private boolean botPaintVisible;
-  private boolean graphicsEnabled;
-  private boolean graphicsInterlacingEnabled;
-  private boolean scriptSelectorWindowVisible;
+  private boolean autoLogin,
+      logWindowVisible,
+      debug,
+      botPaintVisible,
+      graphicsEnabled,
+      graphicsInterlacing;
+  private boolean scriptSelectorOpen;
   private boolean localOcr;
 
   // Switching options
@@ -132,20 +128,20 @@ public class ParseResult {
     return localOcr;
   }
 
-  public void setGraphicsInterlacingEnabled(boolean graphicsInterlacingEnabled) {
-    this.graphicsInterlacingEnabled = graphicsInterlacingEnabled;
+  public void setGraphicsInterlacingEnabled(boolean graphicsInterlacing) {
+    this.graphicsInterlacing = graphicsInterlacing;
   }
 
   public boolean isGraphicsInterlacingEnabled() {
-    return graphicsInterlacingEnabled;
+    return graphicsInterlacing;
   }
 
-  public void setScriptSelectorWindowVisible(boolean scriptSelectorWindowVisible) {
-    this.scriptSelectorWindowVisible = scriptSelectorWindowVisible;
+  public void setScriptSelectorWindowVisible(boolean scriptSelectorOpen) {
+    this.scriptSelectorOpen = scriptSelectorOpen;
   }
 
-  public boolean isScriptSelectorWindowVisible() {
-    return scriptSelectorWindowVisible;
+  public boolean isScriptSelectorOpen() {
+    return scriptSelectorOpen;
   }
 
   public void setAttackItems(String[] attackItems) {

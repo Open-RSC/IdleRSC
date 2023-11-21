@@ -379,7 +379,7 @@ public class Main {
     if (config.isGraphicsInterlacingEnabled()) {
       controller.setInterlacer(config.isGraphicsInterlacingEnabled());
     }
-    if (config.isScriptSelectorWindowVisible()) {
+    if (config.isScriptSelectorOpen()) {
       showLoadScript();
     }
 

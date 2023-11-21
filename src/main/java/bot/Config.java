@@ -25,7 +25,7 @@ public class Config extends ParseResult {
     setBotPaintVisible(parseResult.isBotPaintVisible());
     setGraphicsEnabled(parseResult.isGraphicsEnabled());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
-    setScriptSelectorWindowVisible(parseResult.isScriptSelectorWindowVisible());
+    setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
     setLocalOcr(parseResult.isLocalOcr());
 
     // Switching options

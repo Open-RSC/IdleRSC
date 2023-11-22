@@ -25,9 +25,9 @@ final class AuthFrame extends JFrame {
       scriptArgs,
       initCache,
       spellId,
-      attackItem,
-      strengthItem,
-      defenseItem;
+      attackItems,
+      strengthItems,
+      defenseItems;
   private Checkbox autoLogin,
       sideBar,
       logWindow,
@@ -52,7 +52,8 @@ final class AuthFrame extends JFrame {
         new WindowAdapter() {
           @Override
           public void windowClosing(final WindowEvent e) {
-            close();
+            setDefaultValues();
+            dispose();
           }
         });
 
@@ -78,12 +79,12 @@ final class AuthFrame extends JFrame {
       "Startup Options: ", // only show label
       "Script Name: ",
       "Script Args: ",
-      "Cache Version:",
+      "Cache Version:", // todo change to choice menu soon
       "Hotkeys: ", // only show label
-      "SpellIds: ",
-      "Attack Item: ",
-      "Strength Item: ",
-      "Defense Item:"
+      "SpellId (F8): ",
+      "Attack Item (F5): ",
+      "Strength Item (F6): ",
+      "Defense Item (F7):"
     };
     TextField[] textFields = {
       new TextField(),
@@ -95,9 +96,9 @@ final class AuthFrame extends JFrame {
       initCache = new TextField(),
       new TextField(), // only show label
       spellId = new TextField(),
-      attackItem = new TextField(),
-      strengthItem = new TextField(),
-      defenseItem = new TextField()
+      attackItems = new TextField(),
+      strengthItems = new TextField(),
+      defenseItems = new TextField()
     };
 
     password.setEchoChar('*');
@@ -177,6 +178,8 @@ final class AuthFrame extends JFrame {
     for (Panel subPanel : textFieldPanels) {
       optionsPanel.add(subPanel);
     }
+    optionsPanel2.add(
+        new JLabel(new ImageIcon("res/logos/idlersc.icon.png", "Idlersc"), JLabel.LEFT));
     for (Panel subPanel : choicePanels) {
       optionsPanel2.add(subPanel);
     }
@@ -198,18 +201,18 @@ final class AuthFrame extends JFrame {
     };
     Panel borderPanel = new Panel();
     for (int i = 0; i < gapPanels.length; i++) {
-      gapPanels[i].setMaximumSize(new Dimension(5, 400));
+      gapPanels[i].setMaximumSize(new Dimension(5, 450));
     }
 
     // Set Sizing
-    gapPanels[0].setMaximumSize(new Dimension(5, 400));
-    gapPanels[1].setMaximumSize(new Dimension(10, 400));
-    gapPanels[2].setMaximumSize(new Dimension(20, 400));
-    gapPanels[3].setMaximumSize(new Dimension(10, 400));
-    gapPanels[4].setMaximumSize(new Dimension(5, 400));
+    gapPanels[0].setMaximumSize(new Dimension(5, 450));
+    gapPanels[1].setMaximumSize(new Dimension(10, 450));
+    gapPanels[2].setMaximumSize(new Dimension(25, 450));
+    gapPanels[3].setMaximumSize(new Dimension(10, 450));
+    gapPanels[4].setMaximumSize(new Dimension(5, 450));
     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-    optionsPanel.setMinimumSize(new Dimension(250, 400));
-    optionsPanel2.setMinimumSize(new Dimension(200, 400));
+    optionsPanel.setMinimumSize(new Dimension(250, 450));
+    optionsPanel2.setMinimumSize(new Dimension(200, 450));
     borderPanel.setMaximumSize(new Dimension(360, 40));
 
     // combine into our main interface
@@ -243,32 +246,40 @@ final class AuthFrame extends JFrame {
     add(borderPanel, BorderLayout.NORTH);
     add(inputPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
-    setMinimumSize(new Dimension(400, 420));
+    setMinimumSize(new Dimension(405, 450));
 
     // Add action listeners
-    cancelButton.addActionListener(e -> close());
+    cancelButton.addActionListener(
+        e -> {
+          setDefaultValues();
+          dispose();
+        });
 
     pack();
     setResizable(false);
   }
 
-  private void close() {
+  private void setDefaultValues() {
     username.setText("");
     password.setText("");
     scriptName.setText("");
     scriptArgs.setText("");
     initCache.setText("coleslaw");
+    spellId.setText("");
+    attackItems.setText("");
+    strengthItems.setText("");
+    defenseItems.setText("");
+    themeChoice.select(0);
     autoLogin.setState(false);
     sideBar.setState(true);
     logWindow.setState(false);
     debug.setState(false);
     botPaint.setState(true);
     disableGraphics.setState(false);
+    localOcr.setState(false);
     interlace.setState(false);
     helpMenu.setState(false);
     showVersion.setState(false);
-    themeChoice.select(0);
-    dispose();
   }
 
   synchronized String getUsername() {
@@ -293,6 +304,22 @@ final class AuthFrame extends JFrame {
 
   synchronized String getInitCache() {
     return initCache.getText();
+  }
+
+  synchronized String getSpellId() {
+    return spellId.getText();
+  }
+
+  synchronized String getAttackItems() {
+    return attackItems.getText();
+  }
+
+  synchronized String getStrengthItems() {
+    return strengthItems.getText();
+  }
+
+  synchronized String getDefenseItems() {
+    return defenseItems.getText();
   }
 
   synchronized String getAutoLogin() {
@@ -365,6 +392,10 @@ final class AuthFrame extends JFrame {
           scriptName.setText(p.getProperty("script-name", ""));
           scriptArgs.setText(p.getProperty("script-arguments", ""));
           initCache.setText(p.getProperty("init-cache", ""));
+          spellId.setText(p.getProperty("spell-id", "-1"));
+          attackItems.setText(p.getProperty("attack-items", ""));
+          strengthItems.setText(p.getProperty("defence-items", ""));
+          defenseItems.setText(p.getProperty("strength-items", ""));
           autoLogin.setState(Boolean.parseBoolean(p.getProperty("auto-login", "false")));
           sideBar.setState(Boolean.parseBoolean(p.getProperty("sidebar", "false")));
           logWindow.setState(Boolean.parseBoolean(p.getProperty("log-window", "false")));
@@ -380,22 +411,7 @@ final class AuthFrame extends JFrame {
           System.out.println("Error loading account " + EntryFrame.getAccount() + ": " + t);
         }
       } else {
-        themeChoice.select(0);
-        username.setText("");
-        password.setText("");
-        scriptName.setText("");
-        scriptArgs.setText("");
-        initCache.setText("coleslaw");
-        autoLogin.setState(false);
-        sideBar.setState(false);
-        logWindow.setState(false);
-        debug.setState(false);
-        botPaint.setState(true);
-        disableGraphics.setState(false);
-        interlace.setState(false);
-        helpMenu.setState(false);
-        showVersion.setState(false);
-        themeChoice.select("RuneDark Theme");
+        setDefaultValues();
       }
       setLocationRelativeTo(parent);
       toFront();

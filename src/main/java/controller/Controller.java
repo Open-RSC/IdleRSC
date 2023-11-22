@@ -889,7 +889,33 @@ public class Controller {
 
     return _list;
   }
+  /**
+   * Retrieves ORSCharacter[] array of NPCs nearby.
+   *
+   * @return guaranteed to not be null.
+   */
+  public ORSCharacter[] getNpcsAsArray() { // tested working
+    ORSCharacter[] npcs = (ORSCharacter[]) this.getMudClientValue("npcs");
+    int npcCount = this.getNpcCount();
 
+    ORSCharacter[] result = new ORSCharacter[npcCount];
+    System.arraycopy(npcs, 0, result, 0, npcCount);
+    return result;
+  }
+  /**
+   * Retrieves int[] array of NPCs nearby.
+   *
+   * @return guaranteed to not be null.
+   */
+  public int[] getNpcsAsIntArray() { // tested working
+    ORSCharacter[] orscNpcs = getNpcsAsArray();
+    int[] npcIds = new int[orscNpcs.length];
+
+    for (int i = 0; i < npcIds.length; i++) {
+      npcIds[i] = orscNpcs[i].npcId;
+    }
+    return npcIds;
+  }
   /**
    * Retrieves the count of NPCs nearby.
    *

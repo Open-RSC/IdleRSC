@@ -65,6 +65,8 @@ public class WindowListener implements Runnable {
     boolean sidePrevious = Main.isSideWindowOpen();
 
     while (true) {
+
+      // Update size of JFrame when log window is opened and closed
       if (consolePrevious != Main.isLogWindowOpen()) {
         if (Main.isLogWindowOpen()) {
           consoleFrame.setVisible(true);
@@ -77,22 +79,22 @@ public class WindowListener implements Runnable {
         }
         consolePrevious = Main.isLogWindowOpen();
       }
+
+      // Update size of JFrame when side window is opened and closed
       if (sidePrevious != Main.isSideWindowOpen()) {
         if (Main.isSideWindowOpen()) {
           botFrame.setVisible(true);
-          rscFrame.setSize(rscFrame.getWidth() + 122, rscFrame.getHeight()); // 320?
-          // rscFrame.setMinimumSize(new Dimension(655, 605));
+          rscFrame.setSize(rscFrame.getWidth() + 122, rscFrame.getHeight());
         } else {
           botFrame.setVisible(false);
           rscFrame.setSize(rscFrame.getWidth() - 122, rscFrame.getHeight());
-          // rscFrame.setMinimumSize(new Dimension(655, 405));
         }
         sidePrevious = Main.isSideWindowOpen();
       }
+
       // update our theme when themeName string is changed in Main
       if (!themeName.equals(Main.getThemeName())) {
         Color[] colors = Main.getThemeElements(Main.getThemeName()); // back, front
-
         botFrame.setBackground(colors[0]);
         rscFrame.getContentPane().setBackground(colors[0]);
         botFrame.setBorder(BorderFactory.createLineBorder(colors[0]));
@@ -100,15 +102,6 @@ public class WindowListener implements Runnable {
         menu.setForeground(colors[1]); // text color
         menuBar.setBackground(colors[0]);
         menuBar.setBorder(BorderFactory.createLineBorder(colors[0]));
-        for (JButton jButton : buttonArray) {
-          jButton.setBackground(colors[0].darker());
-          jButton.setForeground(colors[1]);
-        }
-
-        for (JCheckBox jCheckbox : checkBoxArray) {
-          jCheckbox.setBackground(colors[0]);
-          jCheckbox.setForeground(colors[1]);
-        }
         buttonClear.setBackground(colors[0].darker());
         buttonClear.setForeground(colors[1]);
         autoscrollLogsCheckbox.setBackground(colors[0]);
@@ -117,12 +110,20 @@ public class WindowListener implements Runnable {
         logArea.setForeground(colors[1]);
         scroller.setBackground(colors[0]);
         scroller.setForeground(colors[1]);
-
         consoleFrame.setBackground(colors[0]);
         consoleFrame.setForeground(colors[1]);
 
+        for (JButton jButton : buttonArray) {
+          jButton.setBackground(colors[0].darker());
+          jButton.setForeground(colors[1]);
+        }
+        for (JCheckBox jCheckbox : checkBoxArray) {
+          jCheckbox.setBackground(colors[0]);
+          jCheckbox.setForeground(colors[1]);
+        }
         themeName = Main.getThemeName();
       }
+
       //      if (consoleFrame.isVisible()) {
       //        if (!consoleFrame.getSize().equals(new Dimension(rscFrame.getWidth(), 225))) {
       //          consoleFrame.setSize(rscFrame.getWidth(), 225);

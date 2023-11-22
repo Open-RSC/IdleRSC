@@ -18,250 +18,13 @@ public final class EntryFrame extends JFrame {
   private AuthFrame authFrame, authFrame2;
   private String[] accountNames;
   private static String account;
+  final Choice accountChoice;
   public String themeName = "RuneDark Theme";
   private boolean okie = false;
 
   // todo add theme select to cli
   public static String getAccount() {
     return account;
-  }
-
-  public EntryFrame() {
-    super("IdleRSC Client");
-
-    setResizable(false);
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-    // setIconImages(ImageIO.read(new File("buildSrc/idlersc_logo_hover.png")));
-    //     setContentPane(
-    //      new JLabel(new ImageIcon(ImageIO.read(new File( directory)))));
-
-    loadAccounts();
-
-    final Panel accountPanel = new Panel();
-    final Panel accountSubPanel = new Panel();
-    accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.Y_AXIS));
-    accountSubPanel.setLayout(new FlowLayout());
-
-    // accountPanel.add(l);
-    accountPanel.add(new Label("Setup Options:"));
-    accountPanel.add(new Label("Autologin account:"));
-
-    final Choice accountChoice = new Choice();
-    accountChoice.setPreferredSize(new Dimension(140, 15));
-    for (final String accountName : accountNames) {
-      accountChoice.add(accountName);
-    }
-    if (accountNames.length > 0) {
-      account = accountNames[0];
-    }
-    accountChoice.addItemListener(event -> account = String.valueOf(event.getItem()));
-
-    accountSubPanel.add(accountChoice);
-
-    final Button addButton = new Button("Add");
-    addButton.addActionListener(
-        e -> {
-          if (authFrame2 != null) {
-            authFrame2.dispose();
-          }
-          if (authFrame == null) {
-            final AuthFrame authFrame = new AuthFrame("Add an account", null, EntryFrame.this);
-            // authFrame.setFont(Constants.UI_FONT);
-            // authFrame.setIconImages(Constants.ICONS);
-            authFrame.addActionListener(
-                e1 -> {
-                  final Properties p = new Properties();
-                  final String u = authFrame.getUsername();
-                  p.put("username", u);
-                  p.put("password", authFrame.getPassword());
-                  p.put("script-name", authFrame.getScriptName());
-                  p.put("script-arguments", authFrame.getScriptArgs());
-                  p.put("init-cache", authFrame.getInitCache());
-                  p.put("auto-login", authFrame.getAutoLogin());
-                  p.put("sidebar", authFrame.getSideBar());
-                  p.put("log-window", authFrame.getLogWindow());
-                  p.put("debug", authFrame.getDebugger());
-                  p.put("botpaint", authFrame.getBotPaint()); // true disables bot paint
-                  p.put("disable-gfx", authFrame.getDisableGraphics());
-                  p.put("interlace", authFrame.getInterlace());
-                  p.put("help", authFrame.getHelpMenu());
-                  p.put("version", authFrame.getShowVersion());
-                  p.put("theme", authFrame.getThemeName());
-
-                  // Make sure our accounts folder exists
-                  Path accountPath = Paths.get("accounts");
-                  try {
-                    Files.createDirectories(accountPath);
-                  } catch (IOException e2) {
-                    System.err.println("Failed to create directory: " + e2.getMessage());
-                    e2.printStackTrace();
-                    return;
-                  }
-
-                  // Now we can parse it
-                  final File file = accountPath.resolve(u + ".properties").toFile();
-                  try (final FileOutputStream out = new FileOutputStream(file)) {
-                    p.store(out, null);
-                  } catch (final Throwable t) {
-                    System.out.println("Error saving account details: " + t);
-                  }
-                  accountChoice.add(u);
-                  accountChoice.select(u);
-                  account = u;
-                  EntryFrame.this.authFrame.setVisible(false);
-                });
-            EntryFrame.this.authFrame = authFrame;
-          }
-          authFrame.setVisible(true);
-        });
-
-    accountSubPanel.add(addButton);
-    accountPanel.add(accountSubPanel);
-
-    accountPanel.add(new Label("Edit script Settings:"));
-    final Button editButton = new Button("Edit Account Settings");
-    editButton.addActionListener(
-        e -> {
-          if (authFrame != null) {
-            authFrame.dispose();
-          }
-          if (authFrame2 == null) {
-            final AuthFrame authFrame2 =
-                new AuthFrame("Edit account settings", null, EntryFrame.this);
-            authFrame2.loadAccountSettings = true;
-            // authFrame.setFont(Constants.UI_FONT);
-            // authFrame.setIconImages(Constants.ICONS);
-
-            authFrame2.addActionListener(
-                e1 -> {
-                  final Properties p = new Properties();
-                  final String u = authFrame2.getUsername();
-                  p.put("username", u);
-                  p.put("password", authFrame2.getPassword());
-                  p.put("script-name", authFrame2.getScriptName());
-                  p.put("script-arguments", authFrame2.getScriptArgs());
-                  p.put("init-cache", authFrame2.getInitCache());
-                  p.put("auto-login", authFrame2.getAutoLogin());
-                  p.put("sidebar", authFrame2.getSideBar());
-                  p.put("log-window", authFrame2.getLogWindow());
-                  p.put("debug", authFrame2.getDebugger());
-                  p.put("botpaint", authFrame2.getBotPaint()); // true disables bot paint
-                  p.put("disable-gfx", authFrame2.getDisableGraphics());
-                  p.put("interlace", authFrame2.getInterlace());
-                  p.put("help", authFrame2.getHelpMenu());
-                  p.put("version", authFrame2.getShowVersion());
-                  p.put("theme", authFrame2.getThemeName());
-
-                  // Make sure our accounts folder exists
-                  Path accountPath = Paths.get("accounts");
-                  try {
-                    Files.createDirectories(accountPath);
-                  } catch (IOException e2) {
-                    System.err.println("Failed to create directory: " + e2.getMessage());
-                    e2.printStackTrace();
-                    return;
-                  }
-
-                  // Now we can parse it
-                  final File file = accountPath.resolve(u + ".properties").toFile();
-                  try (final FileOutputStream out = new FileOutputStream(file)) {
-
-                    p.store(out, null);
-                  } catch (final Throwable t) {
-                    System.out.println("Error saving account details: " + t);
-                  }
-
-                  accountChoice.add(u);
-                  accountChoice.select(u);
-                  themeName = EntryFrame.this.authFrame2.getThemeName();
-                  account = u;
-                  if (themeName == null) themeName = getStringProperty(account, themeName);
-                  EntryFrame.this.authFrame2.setVisible(false);
-                });
-            EntryFrame.this.authFrame2 = authFrame2;
-          }
-          authFrame2.setVisible(true);
-        });
-
-    accountSubPanel.add(editButton);
-
-    accountPanel.add(new Label("Theme Switcher:"));
-
-    //  final Choice themeChoice = new Choice();
-    //    themeChoice.setMaximumSize(new Dimension(140, 15));
-    //    for (final String themeName : themeNames) {
-    //      themeChoice.add(themeName);
-    //    }
-    //    themeChoice.addItemListener(
-    //        event -> {
-    //          setThemeElements(String.valueOf(event.getItem()));
-    //   });
-
-    // accountPanel.add(themeChoice);
-
-    // todo move handleCache window to entryFrame w/ version selector.
-    // todo add option to change script options?
-
-    final Panel buttonPanel = new Panel();
-
-    final Button okButton = new Button("OK");
-    okButton.addActionListener(
-        e -> {
-          if (authFrame != null) {
-            authFrame.dispose();
-          }
-          if (authFrame2 != null) {
-            authFrame2.dispose();
-          }
-          try {
-            // System.out.println("entry theme name " + themeName);
-            themeName = getStringProperty(account, "theme");
-            Main.setThemeName(themeName);
-            Main.setUsername(account);
-            setVisible(false);
-            dispose();
-            okie = true;
-          } catch (final Throwable t) {
-            t.printStackTrace();
-          }
-        });
-
-    buttonPanel.add(okButton);
-
-    final Button cancelButton = new Button("Cancel");
-    cancelButton.addActionListener(
-        e -> {
-          dispose();
-          System.exit(0);
-        });
-
-    buttonPanel.add(cancelButton);
-
-    add(accountPanel, BorderLayout.NORTH);
-    add(buttonPanel, BorderLayout.SOUTH);
-
-    //    String directory = "/idlersc_logo_hover.png"; // buildSrc/resources/
-    //    ImageIcon img = new ImageIcon(directory);
-    //    setIconImage(img.getImage());
-
-    setMinimumSize(new Dimension(275, 275));
-    pack();
-
-    setLocationRelativeTo(null);
-    setVisible(true);
-    // setDefaultCloseOperation(Frame.EXIT_ON_CLOSE);
-
-    while (!okie) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-    setVisible(false);
-    dispose();
-    okie = true;
   }
 
   private String getStringProperty(final String name, String propertyName) {
@@ -278,20 +41,6 @@ public final class EntryFrame extends JFrame {
     }
     return "";
   }
-  //  private Boolean getBooleanProperty(final String name, String propertyName) {
-  //    if (name == null || propertyName == null) {
-  //      System.out.println("Error accessing bool property");
-  //    }
-  //    final Properties p = new Properties();
-  //    final File file = Paths.get("accounts").resolve(name + ".properties").toFile();
-  //    try (final FileInputStream stream = new FileInputStream(file)) {
-  //      p.load(stream);
-  //      return p.getProperty(propertyName," ");
-  //    } catch (final Throwable t) {
-  //      System.out.println("Error loading account " + name + ": " + t);
-  //    }
-  //    return false;
-  //  }
 
   private void loadAccounts() {
     try {
@@ -313,10 +62,246 @@ public final class EntryFrame extends JFrame {
     }
   }
 
+  public EntryFrame() {
+    super("IdleRSC Client"); // title bar
+    // setResizable(false);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    loadAccounts();
+    setIconImage(new ImageIcon("res/logos/idlersc.icon.png").getImage());
+    Image idleImage =
+        new ImageIcon("res/logos/idlersc.icon.png")
+            .getImage()
+            .getScaledInstance(96, 96, java.awt.Image.SCALE_SMOOTH);
+    Image welImage =
+        new ImageIcon("res/icons/welcome.icon.png")
+            .getImage()
+            .getScaledInstance(230, 30, java.awt.Image.SCALE_SMOOTH);
+    Image okImage =
+        new ImageIcon("res/icons/ok.icon.png")
+            .getImage()
+            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
+    Image cancelImg =
+        new ImageIcon("res/icons/cancel2.icon.png")
+            .getImage()
+            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
+
+    final Panel mainGridBag = new Panel();
+    final Panel subGridBag = new Panel();
+    final Panel optionsPanel = new Panel();
+    final Panel buttonPanel = new Panel();
+    final JButton okButton = new JButton();
+    final JButton cancelButton = new JButton();
+    final Button addButton = new Button("Add Account");
+    final Button editButton = new Button("Edit Settings");
+    final Label header = new Label("Account Selection:");
+
+    optionsPanel.setLayout(new BorderLayout());
+    mainGridBag.setLayout(new GridBagLayout());
+    subGridBag.setLayout(new GridBagLayout());
+    editButton.setMaximumSize(new Dimension(100, 50));
+    buttonPanel.setMaximumSize(new Dimension(getWidth(), 50));
+
+    accountChoice = new Choice();
+    accountChoice.setPreferredSize(new Dimension(140, 15));
+    for (final String accountName : accountNames) {
+      accountChoice.add(accountName);
+    }
+    if (accountNames.length > 0) {
+      account = accountNames[0];
+    }
+    accountChoice.addItemListener(event -> account = String.valueOf(event.getItem()));
+
+    GridBagConstraints c = new GridBagConstraints();
+
+    c.insets = new Insets(10, 10, 10, 10); // top padding
+    // c.fill = GridBagConstraints.HORIZONTAL;
+    c.gridwidth = 3;
+    c.weightx = 0.5;
+    c.gridx = 0;
+    c.gridy = 0;
+    c.ipadx = 50;
+    mainGridBag.add(header);
+    c.ipadx = 0;
+    c.gridx = 0;
+    c.gridy = 1;
+    mainGridBag.add(accountChoice, c);
+    c.gridwidth = 1;
+    c.gridx = 0;
+    c.gridy = 2;
+    c.ipady = 5;
+    c.ipadx = 10;
+    mainGridBag.add(addButton, c);
+    c.gridx = 1;
+    c.gridy = 2;
+    c.ipady = 5;
+    mainGridBag.add(editButton, c);
+    c.gridwidth = 2;
+    c.weightx = 1.0;
+    c.gridx = 0;
+    c.gridy = 0;
+    subGridBag.add(new JLabel(new ImageIcon(idleImage)), c);
+    c.gridx = 0;
+    c.gridy = 1;
+    subGridBag.add(new JLabel(new ImageIcon(welImage)), c);
+
+    JButton[] buttons = {okButton, cancelButton};
+    Image[] images = {okImage, cancelImg};
+
+    for (int i = 0; i < buttons.length; i++) {
+      if (images[i] != null && buttons[i] != null) {
+        buttons[i].setBackground(buttonPanel.getBackground());
+        buttons[i].setMargin(new Insets(0, 0, 0, 0));
+        buttons[i].setBorder(null);
+        buttons[i].setIcon(new ImageIcon(images[i]));
+        buttons[i].setSize(new Dimension(100, 26));
+        buttons[i].setMaximumSize(new Dimension(80, 26));
+      } else {
+        buttons[i].setBackground(Color.WHITE);
+      }
+      buttonPanel.add(buttons[i]);
+    }
+    Color backColor = new java.awt.Color(194, 177, 144, 255);
+
+    mainGridBag.setBackground(backColor);
+    subGridBag.setBackground(Color.BLACK);
+    buttonPanel.setBackground(backColor);
+
+    optionsPanel.add(mainGridBag, BorderLayout.NORTH);
+    optionsPanel.add(subGridBag, BorderLayout.CENTER);
+    add(optionsPanel, BorderLayout.CENTER);
+    add(buttonPanel, BorderLayout.SOUTH);
+    setSize(new Dimension(130, 250));
+    pack();
+
+    setLocationRelativeTo(null);
+    setVisible(true);
+
+    addButton.addActionListener(
+        e -> {
+          if (authFrame2 != null) {
+            authFrame2.dispose();
+          }
+          if (authFrame == null) {
+            final AuthFrame authFrame = new AuthFrame("Add an account", null, EntryFrame.this);
+            // authFrame.setFont(Constants.UI_FONT);
+            // authFrame.setIconImages(Constants.ICONS);
+            authFrame.addActionListener(
+                e1 -> {
+                  storeAuthData(authFrame);
+                  EntryFrame.this.authFrame.setVisible(false);
+                });
+            EntryFrame.this.authFrame = authFrame;
+          }
+          authFrame.setVisible(true);
+        });
+    editButton.addActionListener(
+        e -> {
+          if (authFrame != null) {
+            authFrame.dispose();
+          }
+          if (authFrame2 == null) {
+            final AuthFrame authFrame2 =
+                new AuthFrame("Edit account settings", null, EntryFrame.this);
+            authFrame2.loadAccountSettings = true;
+
+            authFrame2.addActionListener(
+                e1 -> {
+                  storeAuthData(authFrame2);
+                  if (themeName == null) themeName = getStringProperty(account, themeName);
+                  EntryFrame.this.authFrame2.setVisible(false);
+                });
+            EntryFrame.this.authFrame2 = authFrame2;
+          }
+          authFrame2.setVisible(true);
+        });
+    okButton.addActionListener(
+        e -> {
+          if (authFrame != null) {
+            authFrame.dispose();
+          }
+          if (authFrame2 != null) {
+            authFrame2.dispose();
+          }
+          try {
+            // System.out.println("entry theme name " + themeName);
+            themeName = getStringProperty(account, "theme");
+            Main.setThemeName(themeName);
+            Main.setUsername(account);
+            setVisible(false);
+            dispose();
+            okie = true;
+          } catch (final Throwable t) {
+            t.printStackTrace();
+          }
+        });
+    cancelButton.addActionListener(
+        e -> {
+          dispose();
+          System.exit(0);
+        });
+
+    while (!okie) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+    setVisible(false);
+    dispose();
+    okie = true;
+  }
+
+  private void storeAuthData(AuthFrame auth) {
+    final Properties p = new Properties();
+    final String u = auth.getUsername();
+    p.put("username", u);
+    p.put("password", auth.getPassword());
+    p.put("script-name", auth.getScriptName());
+    p.put("script-arguments", auth.getScriptArgs());
+    p.put("init-cache", auth.getInitCache());
+    p.put("spell-Id", auth.getSpellId());
+    p.put("attack-items", auth.getAttackItems());
+    p.put("strength-items", auth.getStrengthItems());
+    p.put("defence-items", auth.getDefenseItems());
+    p.put("auto-login", auth.getAutoLogin());
+    p.put("sidebar", auth.getSideBar());
+    p.put("log-window", auth.getLogWindow());
+    p.put("debug", auth.getDebugger());
+    p.put("botpaint", auth.getBotPaint()); // true disables bot paint
+    p.put("disable-gfx", auth.getDisableGraphics());
+    p.put("interlace", auth.getInterlace());
+    p.put("local-ocr", auth.getLocalOcr());
+    p.put("help", auth.getHelpMenu());
+    p.put("version", auth.getShowVersion());
+    p.put("theme", auth.getThemeName());
+
+    // Make sure our accounts folder exists
+    Path accountPath = Paths.get("accounts");
+    try {
+      Files.createDirectories(accountPath);
+    } catch (IOException e2) {
+      System.err.println("Failed to create directory: " + e2.getMessage());
+      e2.printStackTrace();
+      return;
+    }
+
+    // Now we can parse it
+    final File file = accountPath.resolve(u + ".properties").toFile();
+    try (final FileOutputStream out = new FileOutputStream(file)) {
+      p.store(out, null);
+    } catch (final Throwable t) {
+      System.out.println("Error saving account details: " + t);
+    }
+    accountChoice.add(u);
+    accountChoice.select(u);
+    account = u;
+  }
+
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
-      setIconImage(new ImageIcon("buildSrc/res/idlersc.icon.png").getImage());
+      setIconImage(new ImageIcon("res/logos/idlersc.icon.png").getImage());
       // setIconImage(Utils.getImage("idlersc.icon.png").getImage());
       setLocationRelativeTo(null);
       toFront();

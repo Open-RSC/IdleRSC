@@ -103,6 +103,9 @@ public class Main {
 
   private static boolean shouldFilter = true;
   private static boolean aposInitCalled = false;
+
+  // themeNames and colorCodes MUST have the same index values
+  // todo hash map
   private static final String[] themeNames = {
     "RuneDark Theme",
     "2007scape Theme",
@@ -117,11 +120,6 @@ public class Main {
     "Orange Theme",
     "Gold Theme"
   };
-
-  public static Color getColorCode(int x, int y) {
-    return colorCodes[x][y];
-  }
-
   private static final Color[][] colorCodes = { //   {background, text color, log color}
     {
       new java.awt.Color(40, 40, 40, 255), // Runelite Dark Mode
@@ -173,6 +171,30 @@ public class Main {
     }
   };
 
+  public static Color getThemeTextColor() {
+    return themeTextColor;
+  }
+
+  public static void setThemeTextColor(Color textColor) {
+    themeTextColor = textColor;
+  }
+
+  public static Color getThemeBackColor() {
+    return themeBackColor;
+  }
+
+  public static void setThemeBackColor(Color backColor) {
+    themeBackColor = backColor;
+  }
+
+  public static Color getColorCode(int x, int y) {
+    return colorCodes[x][y];
+  }
+  /**
+   * Set the Color elements for the Theme name entered Changes themeColorBack and themeTextColor
+   *
+   * @param theme String -- name of the "Theme"
+   */
   public static void setThemeElements(String theme) {
     for (int i = 0; i < themeNames.length; i++) {
       if (themeNames[i].equals(theme)) {
@@ -183,6 +205,12 @@ public class Main {
     }
   }
 
+  /**
+   * Get the Color[] for the Theme name entered
+   *
+   * @param theme String -- name of the "Theme"
+   * @return Color[] -- with values [back, front]
+   */
   public static Color[] getThemeElements(String theme) {
     for (int i = 0; i < themeNames.length; i++) {
       if (themeNames[i].equals(theme)) {
@@ -491,61 +519,6 @@ public class Main {
   }
 
   private static void initializeMenuBar() {
-    // Make the menu bar
-    menuBar = new JMenuBar();
-    menu = new JMenu("Graphics Options");
-    themeMenu = new JMenu("Theme Menu");
-    sidebarCheckbox = new JCheckBox("Show Sidebar");
-    logWindowCheckbox = new JCheckBox("Show Console");
-
-    // menuBar.add(menu);
-    menuBar.add(themeMenu);
-    menuBar.add(Box.createHorizontalGlue());
-    menuBar.add(logWindowCheckbox);
-    menuBar.add(sidebarCheckbox);
-
-    // theme menu options
-    JMenuItem menuItem;
-
-    // 37, 150, 190    JButton editSettings = new JButton("Launch Settings");
-    // a group of JMenuItems
-    menuItem = new JMenuItem("A text-only menu item", KeyEvent.VK_1);
-    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_1));
-    menu.add(menuItem);
-
-    // , new ImageIcon("images/middle.gif")
-    menuItem = new JMenuItem("Both text and icon", KeyEvent.VK_2);
-    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_2));
-    menu.add(menuItem);
-
-    // a group of check box menu items
-    menu.addSeparator();
-    JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
-    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_3));
-    menu.add(cbMenuItem);
-
-    cbMenuItem = new JCheckBoxMenuItem("Another one");
-    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_4));
-    menu.add(cbMenuItem);
-
-    // a submenu
-    menu.addSeparator();
-    JMenu submenu = new JMenu("A submenu");
-    submenu.setMnemonic(KeyEvent.VK_5);
-
-    menuItem = new JMenuItem("An item in the submenu");
-    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.ALT_MASK));
-    submenu.add(menuItem);
-
-    menuItem = new JMenuItem("Another item");
-    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.ALT_MASK));
-    submenu.add(menuItem);
-
-    menu.add(submenu);
-
-    // theme menu
-
-    //    //themeNames (string text)
     int[] keyEvents = {
       KeyEvent.VK_1,
       KeyEvent.VK_2,
@@ -563,23 +536,73 @@ public class Main {
       KeyEvent.VK_F4,
       KeyEvent.VK_F5,
     };
+    // Make the menu bar
+    menuBar = new JMenuBar();
+    menu = new JMenu("Graphics Options");
+    themeMenu = new JMenu("Theme Menu");
+    sidebarCheckbox = new JCheckBox("Show Sidebar");
+    logWindowCheckbox = new JCheckBox("Show Console");
 
+    // menuBar.add(menu);
+    menuBar.add(themeMenu);
+    menuBar.add(Box.createHorizontalGlue());
+    menuBar.add(logWindowCheckbox);
+    menuBar.add(sidebarCheckbox);
+
+    // Theme Menu
+    JMenuItem menuItem;
     for (int i = 0; i < themeNames.length; i++) {
       menuItem = new JMenuItem(themeNames[i], keyEvents[i]);
       menuItem.setAccelerator(KeyStroke.getKeyStroke((char) keyEvents[i]));
       int finalI = i;
       menuItem.addActionListener(
           e -> {
+            controller.getNpcsAsIntArray();
             themeName = themeNames[finalI];
           });
       themeMenu.add(menuItem);
     }
-
     // color our elements
     themeMenu.setForeground(themeTextColor);
     menu.setForeground(themeTextColor); // text color
     menuBar.setBackground(themeBackColor);
     menuBar.setBorder(BorderFactory.createLineBorder(themeBackColor));
+
+    //    // 37, 150, 190    JButton editSettings = new JButton("Launch Settings");
+    //    // a group of JMenuItems
+    //    menuItem = new JMenuItem("A text-only menu item", KeyEvent.VK_1);
+    //    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_1));
+    //    menu.add(menuItem);
+    //
+    //    // , new ImageIcon("images/middle.gif")
+    //    menuItem = new JMenuItem("Both text and icon", KeyEvent.VK_2);
+    //    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_2));
+    //    menu.add(menuItem);
+    //
+    //    // a group of check box menu items
+    //    menu.addSeparator();
+    //    JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
+    //    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_3));
+    //    menu.add(cbMenuItem);
+    //
+    //    cbMenuItem = new JCheckBoxMenuItem("Another one");
+    //    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_4));
+    //    menu.add(cbMenuItem);
+    //
+    //    // a submenu
+    //    menu.addSeparator();
+    //    JMenu submenu = new JMenu("A submenu");
+    //    submenu.setMnemonic(KeyEvent.VK_5);
+    //
+    //    menuItem = new JMenuItem("An item in the submenu");
+    //    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.ALT_MASK));
+    //    submenu.add(menuItem);
+    //
+    //    menuItem = new JMenuItem("Another item");
+    //    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.ALT_MASK));
+    //    submenu.add(menuItem);
+    //
+    //    menu.add(submenu);
   }
   /**
    * Sets up the sidepanel
@@ -1030,7 +1053,7 @@ public class Main {
     // Add port to client cache
     try {
       FileWriter portFile = new FileWriter("Cache/port.txt");
-      portFile.write(Integer.toString(ServerPort));
+      portFile.write(Integer.toString(43599));
       portFile.close();
     } catch (IOException ignored) {
       System.out.print(ignored);
@@ -1111,22 +1134,6 @@ public class Main {
 
   public static String[] getThemeNames() {
     return themeNames;
-  }
-
-  public static Color getThemeTextColor() {
-    return themeTextColor;
-  }
-
-  public static void setThemeTextColor(Color textColor) {
-    themeTextColor = textColor;
-  }
-
-  public static Color getThemeBackColor() {
-    return themeBackColor;
-  }
-
-  public static void setThemeBackColor(Color backColor) {
-    themeBackColor = backColor;
   }
 
   public static void setUsername(String name) {

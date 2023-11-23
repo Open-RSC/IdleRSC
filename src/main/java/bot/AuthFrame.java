@@ -360,6 +360,8 @@ final class AuthFrame extends JFrame {
   public void storeAuthData(AuthFrame auth) {
     final Properties p = new Properties();
     final String u = auth.getUsername();
+    Main.setUsername(u);
+
     p.put("username", u);
     p.put("password", auth.getPassword());
     p.put("script-name", auth.getScriptName());
@@ -385,6 +387,7 @@ final class AuthFrame extends JFrame {
     Path accountPath = Paths.get("accounts");
     try {
       Files.createDirectories(accountPath);
+      // Files.createFile(Paths.get("accounts", u + ".properties"));
     } catch (IOException e2) {
       System.err.println("Failed to create directory: " + e2.getMessage());
       e2.printStackTrace();
@@ -423,7 +426,7 @@ final class AuthFrame extends JFrame {
           p.load(stream);
           // ALWAYS make properties lowercase
           username.setText(p.getProperty("username", ""));
-          username.setEditable(false);
+          if (!username.getText().isEmpty()) username.setEditable(false);
           password.setText(p.getProperty("password", ""));
           scriptName.setText(p.getProperty("script-name", ""));
           scriptArgs.setText(p.getProperty("script-arguments", ""));

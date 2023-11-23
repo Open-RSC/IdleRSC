@@ -2,6 +2,9 @@ package bot.cli;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import org.apache.commons.cli.*;
@@ -15,15 +18,26 @@ public class CLIParser {
 
     ParseResult parseResult = new ParseResult();
     final Properties p = new Properties();
-    final File file =
-        Paths.get("accounts").resolve(bot.Main.getUsername() + ".properties").toFile();
+    Path accountPath = Paths.get("accounts");
+    final File file = accountPath.resolve(bot.Main.getUsername() + ".properties").toFile();
+
+    // Ensure our directory and file exist first
+    if (bot.Main.getUsername() == null) bot.Main.setUsername("");
+    try {
+      Files.createDirectories(accountPath);
+      // Files.createFile(Paths.get("accounts", bot.Main.getUsername() + ".properties"));
+    } catch (IOException e2) {
+      System.err.println("Failed to create directory or file: " + e2.getMessage());
+      e2.printStackTrace();
+    }
+
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
       // ALWAYS make properties lowercase
       parseResult.setUsername(bot.Main.getUsername());
       parseResult.setPassword(p.getProperty("password", ""));
-      parseResult.setScriptName(p.getProperty("script-name", " "));
-      parseResult.setThemeName(p.getProperty("theme", " "));
+      parseResult.setScriptName(p.getProperty("script-name", ""));
+      parseResult.setThemeName(p.getProperty("theme", ""));
 
       parseResult.setScriptArguments(
           p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));
@@ -111,6 +125,13 @@ public class CLIParser {
             .argName("arguments")
             .desc("Arguments to pass to script, e.g. dragonstone.")
             .build();
+    Option theme =
+        Option.builder()
+            .longOpt("theme")
+            .hasArg()
+            .argName("RuneDark Theme")
+            .desc("Set client theme.")
+            .build();
     Option initCache =
         Option.builder("i")
             .longOpt("init-cache")
@@ -176,6 +197,7 @@ public class CLIParser {
     options.addOption(password);
     options.addOption(scriptName);
     options.addOption(scriptArguments);
+    options.addOption(theme);
     options.addOption(initCache);
     options.addOption(autoLogin);
     options.addOption(sideWindow);

@@ -66,7 +66,7 @@ public class Main {
   private static Color themeTextColor = new java.awt.Color(219, 219, 219, 255);
   private static Color themeBackColor = new java.awt.Color(40, 40, 40, 255);
   private static boolean isRunning = false;
-  private static String username = "username";
+  private static String username = "";
   private static String themeName = "RuneDark Theme";
   private static JMenuBar menuBar;
   private static JMenu themeMenu, settingsMenu;
@@ -366,7 +366,7 @@ public class Main {
 
     if (config.isDebug()) debugger.open();
 
-    if (!config.getScriptName().isEmpty()) {
+    if (config.getScriptName() != null && !config.getScriptName().isEmpty()) {
       if (!loadAndRunScript(config.getScriptName())) {
         System.out.println("Could not find script: " + config.getScriptName());
       } else {
@@ -572,6 +572,8 @@ public class Main {
           authFrame.setLoadSettings(true);
           authFrame.addActionListener(
               e1 -> { // ALWAYS make properties lowercase
+                username = authFrame.getUsername();
+                System.out.println("username " + username);
                 authFrame.storeAuthData(authFrame);
                 authFrame.setVisible(false);
               });

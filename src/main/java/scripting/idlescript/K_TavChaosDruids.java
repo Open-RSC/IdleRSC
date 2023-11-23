@@ -331,12 +331,12 @@ public final class K_TavChaosDruids extends K_kailaScript {
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     fightModeField.setSelectedIndex(0); // sets default to controlled
-    foodField.setSelectedIndex(2); // sets default to sharks
+    foodField.setSelectedIndex(5); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
-          if (!foodWithdrawAmountField.getText().equals(""))
+          if (!foodWithdrawAmountField.getText().isEmpty())
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           craftCapeTeleport = craftCapeCheckbox.isSelected();
           lootLowLevel = lowLevelHerbCheckbox.isSelected();

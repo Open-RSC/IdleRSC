@@ -209,22 +209,18 @@ public class AIOBankTrainer extends K_kailaScript {
     if (scriptSelect == 3) { // walkback for firemaking script
       switch (burnLocation) {
         case 0:
-          c.log("burn 0");
           if (c.currentX() > 165) {
             c.walkTo(165, 507);
             c.walkTo(151, 507);
           } else if (c.currentX() < 138) c.walkTo(148, 508);
           break;
         case 1:
-          c.log("burn 1");
           if (c.currentX() > 115) c.walkTo(103, 509);
           break;
         case 2:
-          c.log("burn 2");
           if (c.currentX() > 115) c.walkTo(504, 457);
           break;
         case 3:
-          c.log("burn 3");
           if (c.currentX() > 563) c.walkTo(549, 613);
           break;
       }

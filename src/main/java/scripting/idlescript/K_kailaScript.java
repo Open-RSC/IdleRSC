@@ -17,9 +17,7 @@ import models.entities.SpellId;
 /*
  *       todo
  *           int trout = ItemId.RAW_TROUT.getId();
- *           fix teleport spot bounding
  *           replace eat food to loot with clearInventorySlot
- *          eat any 1 food script, return true/false to bank?
  *          make master list of all methods and variables,
  *              - full list near top,sub list each section!
  *          Javadoc for each method

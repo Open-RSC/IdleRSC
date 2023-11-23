@@ -15,7 +15,7 @@ import javax.swing.plaf.ColorUIResource;
 public final class EntryFrame extends JFrame {
   private AuthFrame authFrame, authFrame2;
   private String[] accountNames;
-  private static String account;
+  private static String account = "";
   final Choice accountChoice;
   public String themeName = "RuneDark Theme";
   private boolean okie = false;
@@ -249,8 +249,8 @@ public final class EntryFrame extends JFrame {
             authFrame2.dispose();
           }
           try {
-            System.out.println("entry theme name " + themeName);
             themeName = getStringProperty(account, "theme");
+            UIManager.getDefaults().remove("Button.gradient");
             Main.setThemeName(themeName);
             Main.setUsername(account);
             setVisible(false);
@@ -265,7 +265,10 @@ public final class EntryFrame extends JFrame {
           dispose();
           System.exit(0);
         });
+    waitForLaunch();
+  }
 
+  public void waitForLaunch() {
     while (!okie) {
       try {
         Thread.sleep(100);
@@ -275,7 +278,6 @@ public final class EntryFrame extends JFrame {
     }
     setVisible(false);
     dispose();
-    okie = true;
   }
 
   @Override

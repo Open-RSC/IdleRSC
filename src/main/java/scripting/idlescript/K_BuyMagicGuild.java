@@ -13,13 +13,14 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public class K_BuyMagicGuild extends K_kailaScript {
-  private final String[] options = new String[] {"Runes then Battlestaff", "Battlestaff", "Runes"};
+  private final String[] options = new String[] {"Runes and Battlestaff", "Battlestaff", "Runes"};
   private final int[] runeIds = {
     ItemId.AIR_RUNE.getId(),
     ItemId.EARTH_RUNE.getId(),
     ItemId.WATER_RUNE.getId(),
     ItemId.FIRE_RUNE.getId(),
-    ItemId.MIND_RUNE.getId()
+    ItemId.MIND_RUNE.getId(),
+    ItemId.BODY_RUNE.getId()
   };
   private int soulId = ItemId.SOUL_RUNE.getId();
   private int bStaff = ItemId.BATTLESTAFF.getId();
@@ -28,6 +29,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
   private boolean scriptStarted = false;
   private boolean guiSetup = false;
   private boolean agilityCapeTeleport = false;
+  private boolean buySouls = false;
   private int runesBought = 0;
   private int runesBanked = 0;
   private int staffsBought = 0;
@@ -100,20 +102,27 @@ public class K_BuyMagicGuild extends K_kailaScript {
 
           if (c.getInventoryItemCount() < 30) {
             if (option == 2) { // only runes
-              if (c.getShopItemCount(soulId) == 30) {
+              if (buySouls && c.getShopItemCount(soulId) == 30) {
                 c.shopBuy(soulId, 1); // only buy 1 at a time
                 c.sleep(100);
               }
-              if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 0
-                  || c.getShopItemCount(runeIds[1]) > 20
-                  || c.getShopItemCount(runeIds[2]) > 20
-                  || c.getShopItemCount(runeIds[3]) > 20) {
+              if (c.isInShop()
+                && (c.getShopItemCount(runeIds[0]) > 20
+                  || c.getShopItemCount(runeIds[1]) >20
+                  || c.getShopItemCount(runeIds[2]) >20
+                  || c.getShopItemCount(runeIds[3]) >20
+                  || c.getShopItemCount(runeIds[4]) >20
+                  || c.getShopItemCount(runeIds[5]) >20)) {
                 for (int runeId : runeIds) {
                   c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
                   c.sleep(100);
                 }
               } else c.sleep(200);
             } else if (option == 1) { // only staffs
+              if (buySouls && c.getShopItemCount(soulId) == 30) {
+                c.shopBuy(soulId, 1); // only buy 1 at a time
+                c.sleep(100);
+              }
               if (c.isInShop() && c.getShopItemCount(bStaff) == 5) {
                 c.shopBuy(bStaff, 1); // c.getShopItemCount(bStaff)
                 c.sleep(100);
@@ -121,14 +130,16 @@ public class K_BuyMagicGuild extends K_kailaScript {
                 c.sleep(200);
               }
             } else if (option == 0) { // runes then staffs
-              if (c.getShopItemCount(soulId) == 30) {
+              if (buySouls && c.getShopItemCount(soulId) == 30) {
                 c.shopBuy(soulId, 1); // only buy 1 at a time
                 c.sleep(100);
               }
-              if (c.isInShop() && c.getShopItemCount(runeIds[0]) > 20
-                  || c.getShopItemCount(runeIds[1]) > 20
-                  || c.getShopItemCount(runeIds[2]) > 20
-                  || c.getShopItemCount(runeIds[3]) > 20) {
+              if (c.isInShop() && (c.getShopItemCount(runeIds[0]) > 0
+                || c.getShopItemCount(runeIds[1]) > 20
+                || c.getShopItemCount(runeIds[2]) > 20
+                || c.getShopItemCount(runeIds[3]) > 20
+                || c.getShopItemCount(runeIds[4]) > 20
+                || c.getShopItemCount(runeIds[5]) > 20)) {
                 for (int runeId : runeIds) {
                   c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
                   c.sleep(100);
@@ -295,12 +306,14 @@ public class K_BuyMagicGuild extends K_kailaScript {
     JLabel Label1 = new JLabel("Start at magicGuild or yanille bank");
     JLabel Label2 = new JLabel("This bot supports the \"autostart\" Parameter");
     JLabel Label3 = new JLabel("autostart collects staffs");
+    JCheckBox soulCheckbox = new JCheckBox("Also Buy Soul Runes? (2500gp ea)", false);
     JComboBox<String> optionField = new JComboBox<>(options);
     JCheckBox agilityCapeCheckbox = new JCheckBox("99 agility Cape Teleport?", false);
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          buySouls = soulCheckbox.isSelected();
           option = optionField.getSelectedIndex();
           agilityCapeTeleport = agilityCapeCheckbox.isSelected();
           scriptFrame.setVisible(false);
@@ -317,6 +330,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
     scriptFrame.add(Label2);
     scriptFrame.add(Label3);
     scriptFrame.add(optionField);
+    scriptFrame.add(soulCheckbox);
     scriptFrame.add(agilityCapeCheckbox);
     scriptFrame.add(startScriptButton);
 

@@ -6,7 +6,6 @@ import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
 import com.openrsc.client.entityhandling.defs.GameObjectDef;
 import com.openrsc.client.entityhandling.defs.ItemDef;
-import com.openrsc.client.entityhandling.defs.NPCDef;
 import com.openrsc.client.entityhandling.defs.SpellDef;
 import com.openrsc.client.entityhandling.instances.Item;
 import com.openrsc.client.model.Sprite;
@@ -4165,8 +4164,8 @@ public class Controller {
     ItemDef def = EntityHandler.getItemDef(itemId);
     Sprite sprite = mud.spriteSelect(def);
     mud.getSurface()
-      .drawSpriteClipping(
-        sprite, x, y, width, height, def.getPictureMask(), 0, def.getBlueMask(), mirrorX, 0, 1);
+        .drawSpriteClipping(
+            sprite, x, y, width, height, def.getPictureMask(), 0, def.getBlueMask(), mirrorX, 0, 1);
   }
   /**
    * Sets the left-hand status indicator text value.

@@ -1,10 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * <b>Red Spider Eggs</b>
@@ -59,13 +56,14 @@ public final class K_RedSpiderEggz extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      boolean ate = eatFood();
-      if (!ate) {
-        escapeRoute();
-      }
       leaveCombat();
-      if (c.getInventoryItemCount() > 29 || c.getInventoryItemCount(546) == 0) {
+      boolean ate = eatFood();
+      if (!ate
+          || timeToBank
+          || c.getInventoryItemCount() > 29
+          || c.getInventoryItemCount(foodId) == 0) {
         c.setStatus("@red@Banking..");
+        timeToBank = false;
         EggToBank();
         bank();
         BankToEgg();
@@ -92,19 +90,19 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     } else {
       totalEggz = totalEggz + c.getInventoryItemCount(219);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 546) {
+        if (itemId != foodId) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
       c.sleep(1280);
       eggzInBank = c.getBankItemCount(219);
 
-      if (c.getInventoryItemCount(546) > 1) { // deposit extra shark
-        c.depositItem(546, c.getInventoryItemCount(546) - 1);
+      if (c.getInventoryItemCount(foodId) > foodWithdrawAmount) { // deposit extra shark
+        c.depositItem(foodId, c.getInventoryItemCount(foodId) - foodWithdrawAmount);
         c.sleep(340);
       }
-      if (c.getInventoryItemCount(546) < 1) { // withdraw 1 shark
-        c.withdrawItem(546, 1);
+      if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) { // withdraw 1 shark
+        c.withdrawItem(foodId, foodWithdrawAmount);
         c.sleep(340);
       }
       if (teleportOut) {
@@ -121,8 +119,8 @@ public final class K_RedSpiderEggz extends K_kailaScript {
           c.sleep(640);
         }
       }
-      if (c.getBankItemCount(546) == 0) {
-        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
+      if (c.getBankItemCount(foodId) == 0) {
+        c.setStatus("@red@NO " + foodName + " in the bank, Logging Out!.");
         c.setAutoLogin(false);
         c.logout();
         if (!c.isLoggedIn()) {
@@ -131,44 +129,18 @@ public final class K_RedSpiderEggz extends K_kailaScript {
       }
       c.closeBank();
     }
-  }
-
-  private void escapeRoute() {
-    c.setStatus("@red@We've ran out of Food! Running Away!.");
-    if (!teleportOut
-        || c.getInventoryItemCount(42) < 1
-        || c.getInventoryItemCount(33) < 3
-        || c.getInventoryItemCount(34) < 1) { // or no earths/airs/laws
-      EggToBank();
-      bank();
-    }
-    if (teleportOut) {
-      teleportLumbridge();
-      c.walkTo(120, 644);
-      c.atObject(119, 642);
-      c.walkTo(217, 447);
-    }
     if (!returnEscape) {
-      c.setAutoLogin(false);
-      c.logout();
-      c.sleep(1000);
-
-      if (!c.isLoggedIn()) {
-        c.stop();
-        c.logout();
-      }
-    }
-    if (returnEscape) {
-      bank();
-      BankToEgg();
-      c.sleep(618);
+      c.log("ReturnEscape was off, ending session");
+      endSession();
     }
   }
 
   private void EggToBank() {
     c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(203, 3238);
     c.walkTo(197, 3244);
-    c.walkTo(197, 3255);
+    c.walkTo(197, 3252);
+    c.walkTo(197, 3257);
     c.walkTo(196, 3265);
     c.setStatus("@gre@Opening Wildy Gate North to South(1)..");
     c.atObject(196, 3266);
@@ -205,11 +177,11 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     c.walkTo(221, 447);
     c.walkTo(217, 458);
     c.walkTo(215, 467);
-    c.atObject(215, 468);
+    c.atObject(215, 468); // ladder
     c.sleep(640);
     c.walkTo(217, 3283);
     c.walkTo(211, 3273);
-    if (c.getObjectAtCoord(211, 3272) == 57) {
+    if (c.getObjectAtCoord(211, 3272) == 57 && c.getDistanceFromLocalPlayer(211, 3272) < 10) {
       c.setStatus("@gre@Opening Edge Gate..");
       c.walkTo(211, 3273);
       c.atObject(211, 3272);
@@ -220,29 +192,36 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     c.walkTo(199, 3272);
     c.walkTo(197, 3266);
     c.setStatus("@gre@Opening Wildy Gate, South to North(1)..");
-    c.atObject(196, 3266);
-    c.sleep(640);
     openEdgeDungSouthToNorth();
+    c.walkTo(197, 3252);
     c.walkTo(197, 3244);
+    c.walkTo(203, 3238);
     c.walkTo(208, 3240);
     c.setStatus("@gre@Done Walking..");
   }
 
   private void setupGUI() {
-    JLabel header = new JLabel("Red Spider Egg Picker @whi@~ @mag@Kaila");
+    JLabel header = new JLabel("Red Spider Egg Picker ~ Kaila");
     JLabel label1 = new JLabel("Start in Edge bank with Armor");
-    JLabel label2 = new JLabel("Sharks in bank REQUIRED");
-    JCheckBox teleportCheckbox = new JCheckBox("Teleport if Pkers Attack?", false);
+    JLabel label2 = new JLabel("Selected food in bank REQUIRED");
     JLabel label3 = new JLabel("31 Magic, Laws, Airs, and Earths required for Escape Tele");
-    JLabel label4 = new JLabel("Unselected, bot WALKS to Edge when Attacked");
-    JLabel label5 = new JLabel("Selected, bot teleports, then walks to edge");
+    JCheckBox teleportCheckbox = new JCheckBox("Teleport Escape if Pkers Attack?", false);
     JCheckBox escapeCheckbox = new JCheckBox("Return to Eggz after Escaping?", true);
-    JLabel label6 = new JLabel("Unselected, bot will log out after escaping Pkers");
-    JLabel label7 = new JLabel("Selected, bot will grab more food and return");
+    JLabel label4 = new JLabel("Chat commands can be used to direct the bot");
+    JLabel label5 = new JLabel("::bank");
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    foodField.setSelectedIndex(5); // sets default to lobs
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          if (!foodWithdrawAmountField.getText().isEmpty())
+            foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
+          foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           teleportOut = teleportCheckbox.isSelected();
           returnEscape = escapeCheckbox.isSelected();
           scriptFrame.setVisible(false);
@@ -258,13 +237,15 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(label2);
-    scriptFrame.add(teleportCheckbox);
     scriptFrame.add(label3);
+    scriptFrame.add(teleportCheckbox);
+    scriptFrame.add(escapeCheckbox);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
-    scriptFrame.add(escapeCheckbox);
-    scriptFrame.add(label6);
-    scriptFrame.add(label7);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(foodWithdrawAmountLabel);
+    scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
@@ -274,12 +255,30 @@ public final class K_RedSpiderEggz extends K_kailaScript {
   }
 
   @Override
+  public void questMessageInterrupt(String message) {
+    if (message.contains("You eat the")) {
+      usedFood++;
+    }
+  }
+
+  @Override
+  public void chatCommandInterrupt(
+      String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
+    if (commandText.contains("bank")) {
+      c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
+      timeToBank = true;
+      c.sleep(100);
+    }
+  }
+
+  @Override
   public void paintInterrupt() {
     if (c != null) {
 
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
       int TripSuccessPerHr = 0;
+      int foodUsedPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
@@ -287,6 +286,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (totalEggz * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
+        foodUsedPerHr = (int) (usedFood * scale);
 
       } catch (Exception e) {
         // divide by zero
@@ -316,8 +316,38 @@ public final class K_RedSpiderEggz extends K_kailaScript {
           y + (14 * 3),
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
+      if (foodInBank == -1) {
+        c.drawString(
+            "@whi@"
+                + foodName
+                + "'s Used: @gre@"
+                + usedFood
+                + "@yel@ (@whi@"
+                + String.format("%,d", foodUsedPerHr)
+                + "@yel@/@whi@hr@yel@) ",
+            x,
+            y + (14 * 4),
+            0xFFFFFF,
+            1);
+        c.drawString("@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, (14 * 5), 0xFFFFFF, 1);
+      } else {
+        c.drawString(
+            "@whi@"
+                + foodName
+                + "'s Used: @gre@"
+                + usedFood
+                + "@yel@ (@whi@"
+                + String.format("%,d", foodUsedPerHr)
+                + "@yel@/@whi@hr@yel@) ",
+            x,
+            y + (14 * 4),
+            0xFFFFFF,
+            1);
+        c.drawString(
+            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, (14 * 5), 0xFFFFFF, 1);
+      }
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 6), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 6), 0xFFFFFF, 1);
     }
   }
 }

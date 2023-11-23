@@ -19,7 +19,7 @@ public class CLIParser {
         Paths.get("accounts").resolve(bot.Main.getUsername() + ".properties").toFile();
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
-
+      // ALWAYS make properties lowercase
       parseResult.setUsername(bot.Main.getUsername());
       parseResult.setPassword(p.getProperty("password", ""));
       parseResult.setScriptName(p.getProperty("script-name", " "));
@@ -39,7 +39,7 @@ public class CLIParser {
       parseResult.setDebug(
           p.getProperty("debug", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setBotPaintVisible(
-          !p.getProperty("botpaint", "")
+          !p.getProperty("bot-paint", "")
               .replace(" ", "")
               .toLowerCase()
               .contains("true")); // negative (enabled by default)

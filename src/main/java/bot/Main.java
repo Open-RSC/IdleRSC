@@ -69,7 +69,7 @@ public class Main {
   private static String username = "username";
   private static String themeName = "RuneDark Theme";
   private static JMenuBar menuBar;
-  private static JMenu themeMenu, menu;
+  private static JMenu themeMenu, settingsMenu;
   private static JFrame scriptFrame; // all the windows.
   private static JButton startStopButton, buttonClear;
   private static JCheckBox autoLoginCheckbox,
@@ -87,7 +87,6 @@ public class Main {
       openDebuggerButton,
       resetXpButton;
   private static JTextArea logArea; // self explanatory
-  private TextArea cTextArea;
   private static JScrollPane scroller; // this is the main window for the log.
   private static Debugger debugger = null;
   private static Thread loginListener = null; // see LoginListener.java
@@ -232,8 +231,7 @@ public class Main {
     CLIParser parser = new CLIParser();
     Version version = new Version();
     ParseResult parseResult = new ParseResult();
-    EntryFrame entryFrame = new EntryFrame();
-    //  controller.log("theme name " + themeName);
+    new EntryFrame();
     setThemeElements(themeName);
     try {
       parseResult = parser.parse(args);
@@ -351,7 +349,6 @@ public class Main {
     while (!controller.isLoaded()) controller.sleep(1);
 
     // Set checkboxes on side panel using "get" methods
-
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     logWindowCheckbox.setSelected(config.isLogWindowVisible());
     sidebarCheckbox.setSelected(config.isSidebarVisible());
@@ -391,7 +388,7 @@ public class Main {
                 botFrame,
                 consoleFrame,
                 rscFrame,
-                menu,
+                settingsMenu,
                 themeMenu,
                 menuBar,
                 scroller,
@@ -438,22 +435,19 @@ public class Main {
             Thread.sleep(618); // wait 1 tick before performing next action
           } else if (currentRunningScript instanceof compatibility.apos.Script) {
             if (!controller.isSleeping()) {
-              String params = "";
+              StringBuilder params = new StringBuilder();
 
               if (config.getScriptArguments() != null) {
                 for (int i = 0; i < config.getScriptArguments().length; i++) {
                   String arg = config.getScriptArguments()[i];
-                  if (i == 0) {
-                    params = arg;
-                  } else {
-                    params += " " + arg;
-                  }
+                  if (i == 0) params = new StringBuilder(arg);
+                  else params.append(" ").append(arg);
                 }
               }
 
               if (!aposInitCalled) {
                 Script.setController(controller);
-                ((compatibility.apos.Script) currentRunningScript).init(params);
+                ((compatibility.apos.Script) currentRunningScript).init(params.toString());
                 aposInitCalled = true;
               }
 
@@ -502,19 +496,19 @@ public class Main {
    */
   public static void logMethod(String method, Object... params) {
     if (isDebug()) {
-      String current = method + "(";
+      StringBuilder current = new StringBuilder(method + "(");
 
       if (params != null && params.length > 0) {
         for (Object o : params) {
-          current += o.toString() + ", ";
+          current.append(o.toString()).append(", ");
         }
 
-        current = current.substring(0, current.length() - 2);
+        current = new StringBuilder(current.substring(0, current.length() - 2));
       }
 
-      current += ")";
+      current.append(")");
 
-      log(current);
+      log(current.toString());
     }
   }
 
@@ -533,21 +527,28 @@ public class Main {
       KeyEvent.VK_F1,
       KeyEvent.VK_F2,
       KeyEvent.VK_F3,
-      KeyEvent.VK_F4,
       KeyEvent.VK_F5,
     };
     // Make the menu bar
     menuBar = new JMenuBar();
-    menu = new JMenu("Graphics Options");
+    settingsMenu = new JMenu("Settings");
     themeMenu = new JMenu("Theme Menu");
     sidebarCheckbox = new JCheckBox("Show Sidebar");
     logWindowCheckbox = new JCheckBox("Show Console");
 
-    // menuBar.add(menu);
+    menuBar.add(settingsMenu);
     menuBar.add(themeMenu);
     menuBar.add(Box.createHorizontalGlue());
     menuBar.add(logWindowCheckbox);
     menuBar.add(sidebarCheckbox);
+
+    // style our elements
+    settingsMenu.setBackground(themeBackColor);
+    settingsMenu.setBorder(BorderFactory.createLineBorder(themeBackColor));
+    settingsMenu.setForeground(themeTextColor);
+    themeMenu.setForeground(themeTextColor);
+    menuBar.setBackground(themeBackColor);
+    menuBar.setBorder(BorderFactory.createLineBorder(themeBackColor));
 
     // Theme Menu
     JMenuItem menuItem;
@@ -557,52 +558,26 @@ public class Main {
       int finalI = i;
       menuItem.addActionListener(
           e -> {
-            controller.getNpcsAsIntArray();
             themeName = themeNames[finalI];
           });
       themeMenu.add(menuItem);
     }
-    // color our elements
-    themeMenu.setForeground(themeTextColor);
-    menu.setForeground(themeTextColor); // text color
-    menuBar.setBackground(themeBackColor);
-    menuBar.setBorder(BorderFactory.createLineBorder(themeBackColor));
 
-    //    // 37, 150, 190    JButton editSettings = new JButton("Launch Settings");
-    //    // a group of JMenuItems
-    //    menuItem = new JMenuItem("A text-only menu item", KeyEvent.VK_1);
-    //    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_1));
-    //    menu.add(menuItem);
-    //
-    //    // , new ImageIcon("images/middle.gif")
-    //    menuItem = new JMenuItem("Both text and icon", KeyEvent.VK_2);
-    //    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_2));
-    //    menu.add(menuItem);
-    //
-    //    // a group of check box menu items
-    //    menu.addSeparator();
-    //    JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
-    //    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_3));
-    //    menu.add(cbMenuItem);
-    //
-    //    cbMenuItem = new JCheckBoxMenuItem("Another one");
-    //    cbMenuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_4));
-    //    menu.add(cbMenuItem);
-    //
-    //    // a submenu
-    //    menu.addSeparator();
-    //    JMenu submenu = new JMenu("A submenu");
-    //    submenu.setMnemonic(KeyEvent.VK_5);
-    //
-    //    menuItem = new JMenuItem("An item in the submenu");
-    //    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.ALT_MASK));
-    //    submenu.add(menuItem);
-    //
-    //    menuItem = new JMenuItem("Another item");
-    //    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.ALT_MASK));
-    //    submenu.add(menuItem);
-    //
-    //    menu.add(submenu);
+    menuItem = new JMenuItem("Account Startup Settings", KeyEvent.VK_F4); // s
+    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_F4));
+    menuItem.addActionListener(
+        e -> {
+          AuthFrame authFrame =
+              new AuthFrame("Editing the account - " + config.getUsername(), null, null);
+          authFrame.setLoadSettings(true);
+          authFrame.addActionListener(
+              e1 -> { // ALWAYS make properties lowercase
+                authFrame.storeAuthData(authFrame);
+                authFrame.setVisible(false);
+              });
+          authFrame.setVisible(true);
+        });
+    settingsMenu.add(menuItem);
   }
   /**
    * Sets up the sidepanel
@@ -630,7 +605,6 @@ public class Main {
     startStopButton.addActionListener(
         e -> {
           isRunning = !isRunning;
-
           if (isRunning) {
             startStopButton.setText("Stop");
           } else {
@@ -886,7 +860,6 @@ public class Main {
                 if (!shouldFilter) {
                   return;
                 }
-
                 String filterValue = scriptFilter.getText().toLowerCase().trim();
                 TableRowSorter sorter = ((TableRowSorter) scriptTable.getRowSorter());
                 sorter.setRowFilter(RowFilter.regexFilter("(?i)" + filterValue, 0));
@@ -962,14 +935,6 @@ public class Main {
       }
     };
   }
-  /**
-   * Returns the global Controller instance.
-   *
-   * @return Controller
-   */
-  public static Controller getController() {
-    return controller;
-  }
 
   /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
   private static void handleCache(Config config) {
@@ -1024,16 +989,13 @@ public class Main {
     cacheFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     while (!cacheDirectory.exists()) {
-
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-
       cacheDirectory = new File("Cache/");
     }
-
     cacheFrame.setVisible(false);
     cacheFrame.dispose();
   }
@@ -1130,6 +1092,14 @@ public class Main {
       scriptFrame.add(cancelButton);
       scriptFrame.add(closeWindow);
     }
+  }
+  /**
+   * Returns the global Controller instance.
+   *
+   * @return Controller
+   */
+  public static Controller getController() {
+    return controller;
   }
 
   public static String[] getThemeNames() {

@@ -247,7 +247,7 @@ public class AIOBankTrainer extends K_kailaScript {
       for (int itemId : c.getInventoryItemIds()) {
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
-      c.sleep(2 * GAME_TICK); // re-sync
+      c.sleep(3 * GAME_TICK); // re-sync
 
       if (c.getInventoryItemCount(primaryItemId) < primaryItemAmount) { // withdraw harvest tool
         if (c.getBankItemCount(primaryItemId) > 0) {
@@ -293,14 +293,13 @@ public class AIOBankTrainer extends K_kailaScript {
   private void setupGUI() {
 
     final Panel checkboxes = new Panel(new GridLayout(0, 1));
-    final Panel fletchInfobox = new Panel(new GridLayout(0, 1));
-    final Panel gemInfobox = new Panel(new GridLayout(0, 1));
-    final Panel boneInfobox = new Panel(new GridLayout(0, 1));
-    final Panel firemakingInfobox = new Panel(new GridLayout(0, 1));
-    final Panel smithingInfobox = new Panel(new GridLayout(0, 1));
-
-    final Panel jangerInfobox = new Panel(new GridLayout(0, 1));
-    final Panel wBerriesInfobox = new Panel(new GridLayout(0, 1));
+    final Panel fletchInfobox,
+        gemInfobox,
+        boneInfobox,
+        firemakingInfobox,
+        smithingInfobox,
+        jangerInfobox,
+        wBerriesInfobox;
 
     final Panel containerInfobox = new Panel(new GridLayout(0, 1));
     Font bold_title = new Font(Font.SANS_SERIF, Font.BOLD, 14);
@@ -312,13 +311,13 @@ public class AIOBankTrainer extends K_kailaScript {
 
     // Add in the top infobox Stuff
     Panel[] infoBoxes = {
-      fletchInfobox,
-      gemInfobox,
-      boneInfobox,
-      firemakingInfobox,
-      smithingInfobox,
-      jangerInfobox,
-      wBerriesInfobox
+      fletchInfobox = new Panel(new GridLayout(0, 1)),
+      gemInfobox = new Panel(new GridLayout(0, 1)),
+      boneInfobox = new Panel(new GridLayout(0, 1)),
+      firemakingInfobox = new Panel(new GridLayout(0, 1)),
+      smithingInfobox = new Panel(new GridLayout(0, 1)),
+      jangerInfobox = new Panel(new GridLayout(0, 1)),
+      wBerriesInfobox = new Panel(new GridLayout(0, 1))
     };
     Label[][] allLabels = {
       { // fletching
@@ -609,9 +608,9 @@ public class AIOBankTrainer extends K_kailaScript {
                 break;
               case 1: // string longbow
                 primaryItemId = unstrungLongIds[comboBoxField1[0].getSelectedIndex()];
-                primaryItemAmount = 14;
+                primaryItemAmount = 15;
                 secondaryItemId = ItemId.BOW_STRING.getId();
-                secondaryItemAmount = 14;
+                secondaryItemAmount = 15;
                 resultItemId = strungLongIds[comboBoxField1[0].getSelectedIndex()];
                 break;
               case 2: // arrow shafts
@@ -632,9 +631,9 @@ public class AIOBankTrainer extends K_kailaScript {
                 break;
               case 4: // string shortbow
                 primaryItemId = unstrungShortIds[comboBoxField1[0].getSelectedIndex()];
-                primaryItemAmount = 14;
+                primaryItemAmount = 15;
                 secondaryItemId = ItemId.BOW_STRING.getId();
-                secondaryItemAmount = 14;
+                secondaryItemAmount = 15;
                 resultItemId = strungShortIds[comboBoxField1[0].getSelectedIndex()];
                 break;
               default:

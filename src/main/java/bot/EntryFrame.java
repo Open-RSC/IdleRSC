@@ -3,15 +3,13 @@ package bot;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 
 /** Presents the user with account and sleep solver selection. */
 public final class EntryFrame extends JFrame {
@@ -63,8 +61,8 @@ public final class EntryFrame extends JFrame {
   }
 
   public EntryFrame() {
-    super("IdleRSC Client"); // title bar
-    // setResizable(false);
+    super("IdleRSC"); // title bar
+    setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     loadAccounts();
     setIconImage(new ImageIcon("res/logos/idlersc.icon.png").getImage());
@@ -84,24 +82,27 @@ public final class EntryFrame extends JFrame {
         new ImageIcon("res/icons/cancel2.icon.png")
             .getImage()
             .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
+    // ImageIcon icon = new ImageIcon("res/ui/present_edit.png"); // Christmas mode
+    // ImageIcon icon = new ImageIcon("res/ui/scales.png"); // Red
 
-    final Panel mainGridBag = new Panel();
-    final Panel subGridBag = new Panel();
-    final Panel optionsPanel = new Panel();
-    final Panel buttonPanel = new Panel();
-    final JButton okButton = new JButton();
-    final JButton cancelButton = new JButton();
-    final Button addButton = new Button("Add Account");
-    final Button editButton = new Button("Edit Settings");
-    final Label header = new Label("Account Selection:");
+    final JPanel mainGridBag = new JPanel();
+    final JPanel subGridBag = new JPanel();
+    final JPanel optionsPanel = new JPanel();
+    final JPanel buttonPanel = new JPanel();
+    final JButton okButton = new JButton("Launch");
+    final JButton cancelButton = new JButton("Cancel");
+    final JButton addButton = new JButton("Add Account");
+    final JButton editButton = new JButton("Edit Settings");
+    final JLabel header = new JLabel("Account Selection:", SwingConstants.CENTER);
 
     optionsPanel.setLayout(new BorderLayout());
     mainGridBag.setLayout(new GridBagLayout());
     subGridBag.setLayout(new GridBagLayout());
-    editButton.setMaximumSize(new Dimension(100, 50));
-    buttonPanel.setMaximumSize(new Dimension(getWidth(), 50));
+    buttonPanel.setLayout(new GridBagLayout());
+    // buttonPanel.setMaximumSize(new Dimension(getWidth(), 50));
 
     accountChoice = new Choice();
+    accountChoice.setFocusable(false);
     accountChoice.setPreferredSize(new Dimension(140, 15));
     for (final String accountName : accountNames) {
       accountChoice.add(accountName);
@@ -111,57 +112,79 @@ public final class EntryFrame extends JFrame {
     }
     accountChoice.addItemListener(event -> account = String.valueOf(event.getItem()));
 
+    Color buttonColor = new java.awt.Color(121, 131, 152, 255);
     GridBagConstraints c = new GridBagConstraints();
 
-    c.insets = new Insets(10, 10, 10, 10); // top padding
-    // c.fill = GridBagConstraints.HORIZONTAL;
-    c.gridwidth = 3;
+    // Set Up UI manager to set gradients on our buttons
+    LinkedList<Object> a = new LinkedList<Object>();
+    a.add(0.3);
+    a.add(0.3);
+    // 3 Colors of our button background gradient
+    a.add(new ColorUIResource(91, 102, 134));
+    a.add(new ColorUIResource(129, 139, 172)); // 107, 117, 147
+    a.add(new ColorUIResource(129, 139, 172));
+    // Apply UI resources to UIManager
+    UIManager.put("Button.gradient", a);
+
+    c.gridwidth = 2;
     c.weightx = 0.5;
     c.gridx = 0;
     c.gridy = 0;
     c.ipadx = 50;
-    mainGridBag.add(header);
+    Panel headerPanel = new Panel();
+    new BoxLayout(headerPanel, BoxLayout.Y_AXIS);
+    header.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+    header.setForeground(Color.BLACK);
+    headerPanel.add(header);
+    mainGridBag.add(headerPanel, c);
+
     c.ipadx = 0;
     c.gridx = 0;
     c.gridy = 1;
     mainGridBag.add(accountChoice, c);
+
     c.gridwidth = 1;
+    c.ipady = 8;
+    c.ipadx = 12;
+    c.weightx = 1.0;
+    JButton[] buttones = {addButton, editButton, okButton, cancelButton};
+    for (JButton buttone : buttones) {
+      buttone.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+      buttone.setFocusable(false);
+      buttone.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, buttonColor));
+      buttone.setForeground(new Color(0, 0, 0, 255));
+    }
+
+    // top buttons
     c.gridx = 0;
     c.gridy = 2;
-    c.ipady = 5;
-    c.ipadx = 10;
+    c.insets = new Insets(20, 0, 10, 0); // padding
     mainGridBag.add(addButton, c);
     c.gridx = 1;
-    c.gridy = 2;
-    c.ipady = 5;
     mainGridBag.add(editButton, c);
-    c.gridwidth = 2;
-    c.weightx = 1.0;
     c.gridx = 0;
-    c.gridy = 0;
+    c.gridy = 1;
+    c.ipadx = 24;
+    c.insets = new Insets(5, 25, 5, 8); // padding
+    // bottom bottons
+    buttonPanel.add(okButton, c);
+    c.gridx = 1;
+    c.gridy = 1;
+    c.insets = new Insets(5, 8, 5, 25); // padding
+    buttonPanel.add(cancelButton, c);
+    // Welcome and Idlersc icons
+    c = new GridBagConstraints();
+    c.gridwidth = 2;
+    c.insets = new Insets(0, 0, 0, 0); // padding
     subGridBag.add(new JLabel(new ImageIcon(idleImage)), c);
     c.gridx = 0;
     c.gridy = 1;
     subGridBag.add(new JLabel(new ImageIcon(welImage)), c);
 
-    JButton[] buttons = {okButton, cancelButton};
-    Image[] images = {okImage, cancelImg};
-
-    for (int i = 0; i < buttons.length; i++) {
-      if (images[i] != null && buttons[i] != null) {
-        buttons[i].setBackground(buttonPanel.getBackground());
-        buttons[i].setMargin(new Insets(0, 0, 0, 0));
-        buttons[i].setBorder(null);
-        buttons[i].setIcon(new ImageIcon(images[i]));
-        buttons[i].setSize(new Dimension(100, 26));
-        buttons[i].setMaximumSize(new Dimension(80, 26));
-      } else {
-        buttons[i].setBackground(Color.WHITE);
-      }
-      buttonPanel.add(buttons[i]);
-    }
+    // ImageIcon icon = new ImageIcon("res/ui/xmas_theme.png"); // X-mas theme
+    // optionsPanel.setBorder(BorderFactory.createMatteBorder(4, 4, 0, 4, backColor.darker()));
+    // buttonPanel.setBorder(BorderFactory.createMatteBorder(0, 4, 4, 4, backColor.darker()));
     Color backColor = new java.awt.Color(194, 177, 144, 255);
-
     mainGridBag.setBackground(backColor);
     subGridBag.setBackground(Color.BLACK);
     buttonPanel.setBackground(backColor);
@@ -170,9 +193,9 @@ public final class EntryFrame extends JFrame {
     optionsPanel.add(subGridBag, BorderLayout.CENTER);
     add(optionsPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
-    setSize(new Dimension(130, 250));
+    setMaximumSize(new Dimension(230, 220));
+    setSize(new Dimension(230, 220));
     pack();
-
     setLocationRelativeTo(null);
     setVisible(true);
 
@@ -183,11 +206,12 @@ public final class EntryFrame extends JFrame {
           }
           if (authFrame == null) {
             final AuthFrame authFrame = new AuthFrame("Add an account", null, EntryFrame.this);
-            // authFrame.setFont(Constants.UI_FONT);
-            // authFrame.setIconImages(Constants.ICONS);
             authFrame.addActionListener(
-                e1 -> {
-                  storeAuthData(authFrame);
+                e1 -> { // ALWAYS make properties lowercase
+                  authFrame.storeAuthData(authFrame);
+                  accountChoice.add(authFrame.getUsername());
+                  accountChoice.select(authFrame.getUsername());
+                  account = authFrame.getUsername();
                   EntryFrame.this.authFrame.setVisible(false);
                 });
             EntryFrame.this.authFrame = authFrame;
@@ -200,17 +224,19 @@ public final class EntryFrame extends JFrame {
             authFrame.dispose();
           }
           if (authFrame2 == null) {
-            final AuthFrame authFrame2 =
-                new AuthFrame("Edit account settings", null, EntryFrame.this);
-            authFrame2.loadAccountSettings = true;
+            final AuthFrame authFrame2 = new AuthFrame("Editing an account", null, EntryFrame.this);
+            authFrame2.setLoadSettings(true);
 
             authFrame2.addActionListener(
                 e1 -> {
-                  storeAuthData(authFrame2);
+                  authFrame2.storeAuthData(authFrame2);
+                  accountChoice.select(authFrame2.getUsername());
+                  themeName = authFrame2.getThemeName();
+                  account = authFrame2.getUsername();
                   if (themeName == null) themeName = getStringProperty(account, themeName);
-                  EntryFrame.this.authFrame2.setVisible(false);
+                  authFrame2.setVisible(false);
                 });
-            EntryFrame.this.authFrame2 = authFrame2;
+            this.authFrame2 = authFrame2;
           }
           authFrame2.setVisible(true);
         });
@@ -223,7 +249,7 @@ public final class EntryFrame extends JFrame {
             authFrame2.dispose();
           }
           try {
-            // System.out.println("entry theme name " + themeName);
+            System.out.println("entry theme name " + themeName);
             themeName = getStringProperty(account, "theme");
             Main.setThemeName(themeName);
             Main.setUsername(account);
@@ -236,6 +262,8 @@ public final class EntryFrame extends JFrame {
         });
     cancelButton.addActionListener(
         e -> {
+          authFrame.dispose();
+          authFrame2.dispose();
           dispose();
           System.exit(0);
         });
@@ -250,52 +278,6 @@ public final class EntryFrame extends JFrame {
     setVisible(false);
     dispose();
     okie = true;
-  }
-
-  private void storeAuthData(AuthFrame auth) {
-    final Properties p = new Properties();
-    final String u = auth.getUsername();
-    p.put("username", u);
-    p.put("password", auth.getPassword());
-    p.put("script-name", auth.getScriptName());
-    p.put("script-arguments", auth.getScriptArgs());
-    p.put("init-cache", auth.getInitCache());
-    p.put("spell-Id", auth.getSpellId());
-    p.put("attack-items", auth.getAttackItems());
-    p.put("strength-items", auth.getStrengthItems());
-    p.put("defence-items", auth.getDefenseItems());
-    p.put("auto-login", auth.getAutoLogin());
-    p.put("sidebar", auth.getSideBar());
-    p.put("log-window", auth.getLogWindow());
-    p.put("debug", auth.getDebugger());
-    p.put("botpaint", auth.getBotPaint()); // true disables bot paint
-    p.put("disable-gfx", auth.getDisableGraphics());
-    p.put("interlace", auth.getInterlace());
-    p.put("local-ocr", auth.getLocalOcr());
-    p.put("help", auth.getHelpMenu());
-    p.put("version", auth.getShowVersion());
-    p.put("theme", auth.getThemeName());
-
-    // Make sure our accounts folder exists
-    Path accountPath = Paths.get("accounts");
-    try {
-      Files.createDirectories(accountPath);
-    } catch (IOException e2) {
-      System.err.println("Failed to create directory: " + e2.getMessage());
-      e2.printStackTrace();
-      return;
-    }
-
-    // Now we can parse it
-    final File file = accountPath.resolve(u + ".properties").toFile();
-    try (final FileOutputStream out = new FileOutputStream(file)) {
-      p.store(out, null);
-    } catch (final Throwable t) {
-      System.out.println("Error saving account details: " + t);
-    }
-    accountChoice.add(u);
-    accountChoice.select(u);
-    account = u;
   }
 
   @Override

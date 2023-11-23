@@ -26,7 +26,7 @@ public class AIOThiever extends IdleScript {
 
   final int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
   int[] doorObjectIds = {60, 64};
-  int randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+  int randomSide = 0; // random number between 1 and 10
   final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
   int failure = 0;

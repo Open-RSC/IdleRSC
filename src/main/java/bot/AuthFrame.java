@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,11 +17,11 @@ import javax.swing.*;
 final class AuthFrame extends JFrame {
   private Color backgroundColor = Main.getColorCode(1, 0);
   private Color textColor = Main.getColorCode(0, 0);
-  public boolean loadAccountSettings = false;
+  private boolean loadSettings = false;
   private static final Dimension fieldSize = new Dimension(100, 25);
   private final Window parent;
-  private final TextField username,
-      password,
+  private JPasswordField password;
+  private final JTextField username,
       scriptName,
       scriptArgs,
       initCache,
@@ -86,19 +87,19 @@ final class AuthFrame extends JFrame {
       "Strength Item (F6): ",
       "Defense Item (F7):"
     };
-    TextField[] textFields = {
-      new TextField(),
-      username = new TextField(),
-      password = new TextField(),
-      new TextField(), // only show label
-      scriptName = new TextField(),
-      scriptArgs = new TextField(),
-      initCache = new TextField(),
-      new TextField(), // only show label
-      spellId = new TextField(),
-      attackItems = new TextField(),
-      strengthItems = new TextField(),
-      defenseItems = new TextField()
+    JTextField[] textFields = {
+      new JTextField(),
+      username = new JTextField(),
+      password = new JPasswordField(),
+      new JTextField(), // only show label
+      scriptName = new JTextField(),
+      scriptArgs = new JTextField(),
+      initCache = new JTextField(),
+      new JTextField(), // only show label
+      spellId = new JTextField(),
+      attackItems = new JTextField(),
+      strengthItems = new JTextField(),
+      defenseItems = new JTextField()
     };
 
     password.setEchoChar('*');
@@ -116,6 +117,8 @@ final class AuthFrame extends JFrame {
         continue;
       }
       textFields[i].setMaximumSize(fieldSize);
+      textFields[i].setBorder(
+          BorderFactory.createMatteBorder(0, 0, 2, 2, new java.awt.Color(0, 0, 0, 255)));
       textFieldPanels[i].add(textFields[i]);
     }
 
@@ -188,46 +191,27 @@ final class AuthFrame extends JFrame {
     }
 
     // Build out the 2 main panels
-    final Panel inputPanel = new Panel();
-    final Panel buttonPanel = new Panel();
+    final JPanel inputPanel = new JPanel();
+    final JPanel buttonPanel = new JPanel();
     okButton = new Button("Save");
     final Button cancelButton = new Button("Cancel");
     buttonPanel.add(okButton);
     buttonPanel.add(cancelButton);
 
     // Generate gaps todo change to grid bag layout soon
-    Panel[] gapPanels = {
-      new Panel(), new Panel(), new Panel(), new Panel(), new Panel(),
-    };
-    Panel borderPanel = new Panel();
-    for (int i = 0; i < gapPanels.length; i++) {
-      gapPanels[i].setMaximumSize(new Dimension(5, 450));
-    }
 
     // Set Sizing
-    gapPanels[0].setMaximumSize(new Dimension(5, 450));
-    gapPanels[1].setMaximumSize(new Dimension(10, 450));
-    gapPanels[2].setMaximumSize(new Dimension(25, 450));
-    gapPanels[3].setMaximumSize(new Dimension(10, 450));
-    gapPanels[4].setMaximumSize(new Dimension(5, 450));
+    Panel gapPanel = new Panel();
+    gapPanel.setMaximumSize(new Dimension(25, 450));
     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
     optionsPanel.setMinimumSize(new Dimension(250, 450));
     optionsPanel2.setMinimumSize(new Dimension(200, 450));
-    borderPanel.setMaximumSize(new Dimension(360, 40));
 
-    // combine into our main interface
-    for (int i = 0; i < gapPanels.length; i++) {
-      if (i == 2) inputPanel.add(optionsPanel);
-      if (i == 3) inputPanel.add(optionsPanel2);
-      inputPanel.add(gapPanels[i]);
-    }
+    inputPanel.add(optionsPanel);
+    inputPanel.add(gapPanel);
+    inputPanel.add(optionsPanel2);
 
     // colorize our elements
-    gapPanels[0].setBackground(backgroundColor.darker());
-    gapPanels[1].setBackground(backgroundColor);
-    gapPanels[2].setBackground(backgroundColor);
-    gapPanels[3].setBackground(backgroundColor);
-    gapPanels[4].setBackground(backgroundColor.darker());
     optionsPanel.setBackground(backgroundColor);
     optionsPanel.setForeground(textColor);
     optionsPanel2.setBackground(backgroundColor);
@@ -235,7 +219,6 @@ final class AuthFrame extends JFrame {
     inputPanel.setBackground(backgroundColor);
     buttonPanel.setBackground(backgroundColor.darker());
     buttonPanel.setForeground(textColor);
-    borderPanel.setBackground(backgroundColor.darker());
     okButton.setForeground(Color.BLACK);
     cancelButton.setForeground(Color.BLACK);
 
@@ -243,7 +226,7 @@ final class AuthFrame extends JFrame {
     if (labelPanel != null) {
       add(labelPanel, BorderLayout.NORTH);
     }
-    add(borderPanel, BorderLayout.NORTH);
+    inputPanel.setBorder(BorderFactory.createMatteBorder(4, 4, 0, 4, backgroundColor.darker()));
     add(inputPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
     setMinimumSize(new Dimension(405, 450));
@@ -280,6 +263,14 @@ final class AuthFrame extends JFrame {
     interlace.setState(false);
     helpMenu.setState(false);
     showVersion.setState(false);
+  }
+
+  public void setLoadSettings(boolean set) {
+    loadSettings = set;
+  }
+
+  public boolean getLoadSettings() {
+    return loadSettings;
   }
 
   synchronized String getUsername() {
@@ -366,11 +357,54 @@ final class AuthFrame extends JFrame {
     okButton.addActionListener(al);
   }
 
+  public void storeAuthData(AuthFrame auth) {
+    final Properties p = new Properties();
+    final String u = auth.getUsername();
+    p.put("username", u);
+    p.put("password", auth.getPassword());
+    p.put("script-name", auth.getScriptName());
+    p.put("script-arguments", auth.getScriptArgs());
+    p.put("init-cache", auth.getInitCache());
+    p.put("spell-id", auth.getSpellId());
+    p.put("attack-items", auth.getAttackItems());
+    p.put("strength-items", auth.getStrengthItems());
+    p.put("defence-items", auth.getDefenseItems());
+    p.put("auto-login", auth.getAutoLogin());
+    p.put("sidebar", auth.getSideBar());
+    p.put("log-window", auth.getLogWindow());
+    p.put("debug", auth.getDebugger());
+    p.put("botpaint", auth.getBotPaint()); // true disables bot paint
+    p.put("disable-gfx", auth.getDisableGraphics());
+    p.put("interlace", auth.getInterlace());
+    p.put("local-ocr", auth.getLocalOcr());
+    p.put("help", auth.getHelpMenu());
+    p.put("version", auth.getShowVersion());
+    p.put("theme", auth.getThemeName());
+
+    // Make sure our accounts folder exists
+    Path accountPath = Paths.get("accounts");
+    try {
+      Files.createDirectories(accountPath);
+    } catch (IOException e2) {
+      System.err.println("Failed to create directory: " + e2.getMessage());
+      e2.printStackTrace();
+      return;
+    }
+
+    // Now we can parse it
+    final File file = accountPath.resolve(u + ".properties").toFile();
+    try (final FileOutputStream out = new FileOutputStream(file)) {
+      p.store(out, null);
+    } catch (final Throwable t) {
+      System.out.println("Error saving account details: " + t);
+    }
+  }
+
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
       setIconImage(new ImageIcon("buildSrc/res/idlersc.icon.png").getImage());
-      if (loadAccountSettings) {
+      if (loadSettings) {
         // Make sure our accounts folder exists
         final Properties p = new Properties();
         Path accountPath = Paths.get("accounts");
@@ -381,13 +415,15 @@ final class AuthFrame extends JFrame {
           e2.printStackTrace();
           return;
         }
-
         // Now we can parse it
-        final File file = accountPath.resolve(EntryFrame.getAccount() + ".properties").toFile();
+        String account = EntryFrame.getAccount();
+        if (account == null) account = Main.config.getUsername();
+        final File file = accountPath.resolve(account + ".properties").toFile();
         try (final FileInputStream stream = new FileInputStream(file)) {
           p.load(stream);
-
+          // ALWAYS make properties lowercase
           username.setText(p.getProperty("username", ""));
+          username.setEditable(false);
           password.setText(p.getProperty("password", ""));
           scriptName.setText(p.getProperty("script-name", ""));
           scriptArgs.setText(p.getProperty("script-arguments", ""));
@@ -400,7 +436,7 @@ final class AuthFrame extends JFrame {
           sideBar.setState(Boolean.parseBoolean(p.getProperty("sidebar", "false")));
           logWindow.setState(Boolean.parseBoolean(p.getProperty("log-window", "false")));
           debug.setState(Boolean.parseBoolean(p.getProperty("debug", "false")));
-          botPaint.setState(Boolean.parseBoolean(p.getProperty("botpaint", "true")));
+          botPaint.setState(Boolean.parseBoolean(p.getProperty("bot-paint", "true")));
           disableGraphics.setState(Boolean.parseBoolean(p.getProperty("disable-gfx", "false")));
           interlace.setState(Boolean.parseBoolean(p.getProperty("interlace", "false")));
           helpMenu.setState(Boolean.parseBoolean(p.getProperty("help", "false")));
@@ -408,7 +444,7 @@ final class AuthFrame extends JFrame {
           themeChoice.select(p.getProperty("theme", "RuneDark Theme"));
 
         } catch (final Throwable t) {
-          System.out.println("Error loading account " + EntryFrame.getAccount() + ": " + t);
+          System.out.println("Error loading account " + account + ": " + t);
         }
       } else {
         setDefaultValues();

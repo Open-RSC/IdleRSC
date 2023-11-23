@@ -39,6 +39,7 @@ Cache/
 # User screenshots
 Screenshots/
 
+# User Account Data
 accounts/
 
 *.properties

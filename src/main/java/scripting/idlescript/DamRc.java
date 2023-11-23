@@ -371,7 +371,7 @@ public class DamRc extends IdleScript {
         c.sleep(640);
       }
       if (curse && c.getInventoryItemCount(cursedId) < 1) {
-        c.withdrawItem(cursedId, 1); 
+        c.withdrawItem(cursedId, 1);
       }
       if (c.getInventoryItemCount(runeId) > 0) {
         status = "Deposit runes";

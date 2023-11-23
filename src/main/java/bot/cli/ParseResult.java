@@ -68,9 +68,9 @@ public class ParseResult {
   }
 
   public void setInitCache(String initCache) {
-    if (initCache.equalsIgnoreCase("uranium")) {
+    if (initCache != null && initCache.equalsIgnoreCase("uranium")) {
       this.initCache = "uranium";
-    } else if (initCache.equalsIgnoreCase("coleslaw")) {
+    } else if (initCache != null && initCache.equalsIgnoreCase("coleslaw")) {
       this.initCache = "coleslaw";
     } else {
       this.initCache = "";

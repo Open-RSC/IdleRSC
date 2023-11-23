@@ -262,8 +262,6 @@ public final class EntryFrame extends JFrame {
         });
     cancelButton.addActionListener(
         e -> {
-          authFrame.dispose();
-          authFrame2.dispose();
           dispose();
           System.exit(0);
         });

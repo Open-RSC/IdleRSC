@@ -6,8 +6,10 @@ import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
 import com.openrsc.client.entityhandling.defs.GameObjectDef;
 import com.openrsc.client.entityhandling.defs.ItemDef;
+import com.openrsc.client.entityhandling.defs.NPCDef;
 import com.openrsc.client.entityhandling.defs.SpellDef;
 import com.openrsc.client.entityhandling.instances.Item;
+import com.openrsc.client.model.Sprite;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -4149,7 +4151,23 @@ public class Controller {
       String text, int x, int y, int textColor, int fontSize, boolean center) {
     mud.getSurface().drawShadowText(text, x, y, textColor, Math.max(1, fontSize), center);
   }
-
+  /**
+   * Draws the sprite of an item at specified coordinates. Must be used inside paintInterrupt().
+   *
+   * @param itemId int --
+   * @param x int -- X coordinate
+   * @param y int -- Y coordinate
+   * @param width int -- Width of the sprite
+   * @param height int -- Height of the sprite
+   * @param mirrorX boolean -- Mirror the sprite across it's X axis.
+   */
+  public void drawItemSprite(int itemId, int x, int y, int width, int height, boolean mirrorX) {
+    ItemDef def = EntityHandler.getItemDef(itemId);
+    Sprite sprite = mud.spriteSelect(def);
+    mud.getSurface()
+      .drawSpriteClipping(
+        sprite, x, y, width, height, def.getPictureMask(), 0, def.getBlueMask(), mirrorX, 0, 1);
+  }
   /**
    * Sets the left-hand status indicator text value.
    *

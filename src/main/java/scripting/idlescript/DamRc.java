@@ -24,31 +24,31 @@ import orsc.ORSCharacter;
  *     <p>1.2 - artisan crowns, cosmic runes, added parameter support, partial rewrite ~ Kaila
  */
 public class DamRc extends IdleScript {
-  final Controller c = Main.getController();
-  public boolean started = false;
-  public boolean debug;
+  private final Controller c = Main.getController();
+  private boolean started = false;
+  private boolean debug;
   private boolean mineEss = false;
   private boolean noteEss = false;
-  public String status, method;
-  int[] bankNW, bankSE, spotNW, spotSE, alterNW, alterSE, mineNW, mineSE;
-  final int auburyId = 54;
-  int taliId;
-  int runeId;
-  int alterId;
-  int alterZ;
-  final int essId = 1299;
-  int portalId;
-  int ruinsId;
-  final int essRockId = 1227;
-  int[] toBank;
-  int[] toSpot;
-  int runesMade, runesInBank, startExpRc, startExpMining;
-
-  long startTime;
-
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean crown = false;
+  private String status, method;
+  private int[] bankNW, bankSE, spotNW, spotSE, alterNW, alterSE, mineNW, mineSE;
+  private final int auburyId = 54;
+  private int taliId;
+  private int runeId;
+  private int alterId;
+  private int cursedId;
+  private int alterZ;
+  private final int essId = 1299;
+  private int portalId;
+  private int ruinsId;
+  private final int essRockId = 1227;
+  private int[] toBank;
+  private int[] toSpot;
+  private int runesMade, runesInBank, startExpRc, startExpMining;
+  private long startTime;
+  private JFrame scriptFrame = null;
+  private boolean guiSetup = false;
+  private boolean crown = false;
+  private boolean curse = false;
 
   public boolean inArea(int[] nwTile, int[] seTile) {
     return c.currentX() <= nwTile[0]
@@ -104,13 +104,6 @@ public class DamRc extends IdleScript {
     }
   }
 
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * script based on the values of the parameters. <br>
-   * Parameters in this context can be from CLI parsing or in the script options parameters text box
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("autostart")) {
@@ -120,6 +113,7 @@ public class DamRc extends IdleScript {
         essValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -130,6 +124,7 @@ public class DamRc extends IdleScript {
         essValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -140,6 +135,7 @@ public class DamRc extends IdleScript {
         essValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -150,6 +146,7 @@ public class DamRc extends IdleScript {
         airValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -160,6 +157,7 @@ public class DamRc extends IdleScript {
         mindValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -170,6 +168,7 @@ public class DamRc extends IdleScript {
         earthValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -180,6 +179,7 @@ public class DamRc extends IdleScript {
         waterValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -190,6 +190,7 @@ public class DamRc extends IdleScript {
         fireValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -200,6 +201,7 @@ public class DamRc extends IdleScript {
         bodyValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -210,6 +212,7 @@ public class DamRc extends IdleScript {
         cosmicValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -220,6 +223,7 @@ public class DamRc extends IdleScript {
         noteEssValues();
         debug = false;
         crown = false;
+        curse = false;
         started = true;
         guiSetup = true;
       }
@@ -276,7 +280,6 @@ public class DamRc extends IdleScript {
         }
       }
       if (!mineEss) {
-
         if (inArea(alterNW, alterSE)) {
           if (c.getInventoryItemCount(essId) > 0) {
             if (crown && !c.isItemIdEquipped(1511) && c.isItemInInventory(1511)) {
@@ -367,6 +370,9 @@ public class DamRc extends IdleScript {
         c.withdrawItem(1511, 1);
         c.sleep(640);
       }
+      if (curse && c.getInventoryItemCount(cursedId) < 1) {
+        c.withdrawItem(cursedId, 1); 
+      }
       if (c.getInventoryItemCount(runeId) > 0) {
         status = "Deposit runes";
         if (debug) {
@@ -446,11 +452,12 @@ public class DamRc extends IdleScript {
       };
 
   public void airValues() {
-    taliId = 1300;
+    taliId = ItemId.AIR_TALISMAN.getId();
+    cursedId = ItemId.CURSED_AIR_TALISMAN.getId();
     alterId = 1191;
     ruinsId = 1190;
     portalId = 1214;
-    runeId = 33;
+    runeId = ItemId.AIR_RUNE.getId();
     alterZ = 25;
     toBank = new int[] {303, 588, 296, 584, 290, 578, 284, 570};
     toSpot = new int[] {290, 578, 296, 584, 303, 588, 307, 592};
@@ -465,11 +472,12 @@ public class DamRc extends IdleScript {
   }
 
   public void mindValues() {
-    taliId = 1301;
+    taliId = ItemId.MIND_TALISMAN.getId();
+    cursedId = ItemId.CURSED_MIND_TALISMAN.getId();
     alterId = 1193;
     ruinsId = 1192;
     portalId = 1215;
-    runeId = 35;
+    runeId = ItemId.MIND_RUNE.getId();
     alterZ = 25;
     toBank =
         new int[] {
@@ -492,11 +500,12 @@ public class DamRc extends IdleScript {
   }
 
   public void earthValues() {
-    taliId = 1303;
+    taliId = ItemId.EARTH_TALISMAN.getId();
+    cursedId = ItemId.CURSED_EARTH_TALISMAN.getId();
     alterId = 1197;
     ruinsId = 1196;
     portalId = 1217;
-    runeId = 34;
+    runeId = ItemId.EARTH_RUNE.getId();
     alterZ = 75;
     toBank = new int[] {65, 472, 65, 481, 64, 493, 72, 502, 82, 506, 90, 508, 97, 509, 102, 511};
     toSpot = new int[] {97, 509, 90, 508, 82, 506, 72, 502, 64, 493, 65, 481, 65, 472, 63, 467};
@@ -511,11 +520,12 @@ public class DamRc extends IdleScript {
   }
 
   public void waterValues() {
-    taliId = 1302;
+    taliId = ItemId.WATER_TALISMAN.getId();
+    cursedId = ItemId.CURSED_WATER_TALISMAN.getId();
     alterId = 1195;
     ruinsId = 1194;
     portalId = 1216;
-    runeId = 32;
+    runeId = ItemId.WATER_RUNE.getId();
     alterZ = 70;
     toBank =
         new int[] {
@@ -536,11 +546,12 @@ public class DamRc extends IdleScript {
   }
 
   public void fireValues() {
-    taliId = 1304;
+    taliId = ItemId.FIRE_TALISMAN.getId();
+    cursedId = ItemId.CURSED_FIRE_TALISMAN.getId();
     alterId = 1199;
     ruinsId = 1198;
     portalId = 1218;
-    runeId = 31;
+    runeId = ItemId.FIRE_RUNE.getId();
     alterZ = 30;
     toBank = new int[] {58, 641, 67, 647, 74, 656, 83, 662, 81, 671, 80, 680, 90, 694}; //
     toSpot = new int[] {80, 680, 81, 671, 83, 662, 74, 656, 67, 647, 58, 641, 51, 636}; //
@@ -555,11 +566,12 @@ public class DamRc extends IdleScript {
   }
 
   public void bodyValues() {
-    taliId = 1305;
+    taliId = ItemId.BODY_TALISMAN.getId();
+    cursedId = ItemId.CURSED_BODY_TALISMAN.getId();
     alterId = 1201;
     ruinsId = 1200;
     portalId = 1219;
-    runeId = 36;
+    runeId = ItemId.BODY_RUNE.getId();
     alterZ = 77;
     toBank =
         new int[] {
@@ -580,11 +592,12 @@ public class DamRc extends IdleScript {
   }
 
   public void cosmicValues() {
-    taliId = 1306;
+    taliId = ItemId.COSMIC_TALISMAN.getId();
+    cursedId = ItemId.CURSED_COSMIC_TALISMAN.getId();
     alterId = 1203;
     ruinsId = 1202;
     portalId = 1220;
-    runeId = 46;
+    runeId = ItemId.COSMIC_RUNE.getId();
     alterZ = 19;
     toBank =
         new int[] {
@@ -673,6 +686,7 @@ public class DamRc extends IdleScript {
     JComboBox<String> guiField = new JComboBox<>();
     JCheckBox debugCheckbox = new JCheckBox("Debug", false);
     JCheckBox crownCheckbox = new JCheckBox("Artisan Crown?", false);
+    JCheckBox curseCheckbox = new JCheckBox("Cursed?", false);
     JButton startScriptButton = new JButton("Start");
 
     for (guiObject obj : objects) {
@@ -685,6 +699,7 @@ public class DamRc extends IdleScript {
           setValuesFromGUI(guiField.getSelectedIndex());
           debug = debugCheckbox.isSelected();
           crown = crownCheckbox.isSelected();
+          curse = curseCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           parseVariables();
@@ -700,6 +715,7 @@ public class DamRc extends IdleScript {
     scriptFrame.add(guiField);
     scriptFrame.add(debugCheckbox);
     scriptFrame.add(crownCheckbox);
+    scriptFrame.add(curseCheckbox);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();

@@ -117,7 +117,9 @@ public class K_BuyMagicGuild extends K_kailaScript {
                   c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
                   c.sleep(100);
                 }
-              } else c.sleep(200);
+              }
+              c.sleep(200);
+
             } else if (option == 1) { // only staffs
               if (buySouls && c.getShopItemCount(soulId) == 30) {
                 c.shopBuy(soulId, 1); // only buy 1 at a time
@@ -126,13 +128,13 @@ public class K_BuyMagicGuild extends K_kailaScript {
               if (c.isInShop() && c.getShopItemCount(bStaff) == 5) {
                 c.shopBuy(bStaff, 1); // c.getShopItemCount(bStaff)
                 c.sleep(100);
-              } else {
-                c.sleep(200);
               }
+              c.sleep(200);
+
             } else if (option == 0) { // runes then staffs
               if (buySouls && c.getShopItemCount(soulId) == 30) {
                 c.shopBuy(soulId, 1); // only buy 1 at a time
-                c.sleep(100);
+                c.sleep(200);
               }
               if (c.isInShop()
                   && (c.getShopItemCount(runeIds[0]) > 0
@@ -143,16 +145,16 @@ public class K_BuyMagicGuild extends K_kailaScript {
                       || c.getShopItemCount(runeIds[5]) > 20)) {
                 for (int runeId : runeIds) {
                   c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
-                  c.sleep(100);
+                  c.sleep(200);
                 }
               }
               if (c.isInShop() && c.getShopItemCount(bStaff) == 5) {
                 c.shopBuy(bStaff, 1);
-                c.sleep(100);
-              } else {
                 c.sleep(200);
               }
+              c.sleep(200);
             }
+
             checkAutowalk();
           }
         }

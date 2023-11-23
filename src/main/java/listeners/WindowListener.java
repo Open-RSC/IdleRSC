@@ -61,6 +61,8 @@ public class WindowListener implements Runnable {
   @Override
   public void run() {
     String themeName = Main.getThemeName();
+    int prevWidth = rscFrame.getWidth();
+    int prevHeight = rscFrame.getHeight();
     boolean consolePrevious = Main.isLogWindowOpen();
     boolean sidePrevious = Main.isSideWindowOpen();
 
@@ -70,12 +72,24 @@ public class WindowListener implements Runnable {
       if (consolePrevious != Main.isLogWindowOpen()) {
         if (Main.isLogWindowOpen()) {
           consoleFrame.setVisible(true);
-          rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() + 188); // 320?
-          // rscFrame.setMinimumSize(new Dimension(655, 605));
+          rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() + 188);
+          controller.log("IdleRSC: Showing Log Window!", "gre");
+          // refresh graphics to prevent white screen
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(100);
+            controller.setDrawing(false);
+          }
         } else {
           consoleFrame.setVisible(false);
           rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() - 188);
-          // rscFrame.setMinimumSize(new Dimension(655, 405));
+          controller.log("IdleRSC: Hiding Log Window!", "gre");
+          // refresh graphics to prevent white screen
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(100);
+            controller.setDrawing(false);
+          }
         }
         consolePrevious = Main.isLogWindowOpen();
       }
@@ -85,15 +99,39 @@ public class WindowListener implements Runnable {
         if (Main.isSideWindowOpen()) {
           botFrame.setVisible(true);
           rscFrame.setSize(rscFrame.getWidth() + 122, rscFrame.getHeight());
+          controller.log("IdleRSC: Showing Side Bar!", "gre");
+          // refresh graphics to prevent white screen
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(50);
+            controller.setDrawing(false);
+          }
         } else {
           botFrame.setVisible(false);
           rscFrame.setSize(rscFrame.getWidth() - 122, rscFrame.getHeight());
+          controller.log("IdleRSC: Hiding Side Bar!", "gre");
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(50);
+            controller.setDrawing(false);
+          }
         }
         sidePrevious = Main.isSideWindowOpen();
       }
 
+      // Refresh JFrame when resizing happens to prevent white screen
+      if (!controller.isDrawEnabled()
+          && (rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
+        controller.setDrawing(true);
+        controller.sleep(300);
+        controller.setDrawing(false);
+        prevWidth = rscFrame.getWidth();
+        prevHeight = rscFrame.getHeight();
+      }
+
       // update our theme when themeName string is changed in Main
       if (!themeName.equals(Main.getThemeName())) {
+        controller.log("Switching Theme to " + Main.getThemeName(), "gre");
         Color[] colors = Main.getThemeElements(Main.getThemeName()); // back, front
         botFrame.setBackground(colors[0]);
         rscFrame.getContentPane().setBackground(colors[0]);
@@ -123,21 +161,6 @@ public class WindowListener implements Runnable {
         }
         themeName = Main.getThemeName();
       }
-
-      //      if (consoleFrame.isVisible()) {
-      //        if (!consoleFrame.getSize().equals(new Dimension(rscFrame.getWidth(), 225))) {
-      //          consoleFrame.setSize(rscFrame.getWidth(), 225);
-      //        }
-      //        if (!consoleFrame
-      //            .getLocation()
-      //            .equals(
-      //                new Point(
-      //                    rscFrame.getLocation().x, rscFrame.getLocation().y +
-      // rscFrame.getHeight()))) {
-      //          consoleFrame.setLocation(
-      //              rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight());
-      //        }
-      //      }
       try {
         Thread.sleep(40);
       } catch (InterruptedException e) {

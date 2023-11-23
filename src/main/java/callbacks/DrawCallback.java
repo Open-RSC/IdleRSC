@@ -245,7 +245,6 @@ public class DrawCallback {
   /** Resets the XP counter and re-initializes the necessary variables. */
   public static void resetXpCounter() {
     Controller c = Main.getController();
-    boolean temporaryToggledGFX = false;
     startTimestamp = System.currentTimeMillis() / 1000L;
     startingXp = Long.MAX_VALUE;
 
@@ -256,13 +255,7 @@ public class DrawCallback {
         // toggle off again. Otherwise, counter will not begin counting xp. It
         // has to reload counter into memory?  ~ Kaila ~
         c.setDrawing(true);
-        temporaryToggledGFX = true;
         c.sleep(100);
-        // sleep here will not affect scripts running, tested with 10s delay no effect on
-        // scripts, it might delay drawcallback, but as graphics were toggled off before
-        // reset xp, shouldn't be an issue.
-      }
-      if (temporaryToggledGFX) {
         c.setDrawing(false);
       }
     }

@@ -77,7 +77,7 @@ public class AIOThiever extends IdleScript {
           add(new ThievingObject("Warrior", 86, true, false));
           add(new ThievingObject("Workman", 722, true, false));
           add(new ThievingObject("Rogue", 342, true, false));
-          add(new ThievingObject("Guard", 321, true, false));
+          add(new ThievingObject("Guard (Ardy)", 321, true, false));
           add(new ThievingObject("Guard (Varrock)", 65, true, false));
           add(new ThievingObject("Knight", 322, true, false));
           add(new ThievingObject("Watchman", 574, true, false));
@@ -530,6 +530,23 @@ public class AIOThiever extends IdleScript {
     for (ThievingObject obj : objects) {
       targetField.addItem(obj.name);
     }
+    targetField.addActionListener( // set suggested values for option
+        e -> {
+          int index = targetField.getSelectedIndex();
+          if (index == 13) doBankCombobox.setSelectedIndex(3); // set to var east
+          if (index > 19) doBankCombobox.setSelectedIndex(0); // no banking for chests
+          if (index == 5
+              || index == 7
+              || index == 9
+              || (index != 13 && index >= 11 && index <= 19)) {
+            doBankCombobox.setSelectedIndex(1); // set to ardy
+            foodWithdrawAmountField.setText(String.valueOf(1));
+          }
+          if (index == 6) {
+            doBankCombobox.setSelectedIndex(2); // set to var west
+            foodWithdrawAmountField.setText(String.valueOf(1));
+          }
+        });
 
     startScriptButton.addActionListener(
         e -> {

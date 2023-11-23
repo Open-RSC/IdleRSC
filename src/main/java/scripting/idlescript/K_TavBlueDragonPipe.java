@@ -351,7 +351,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
 
     startScriptButton.addActionListener(
         e -> {
-          if (!foodWithdrawAmountField.getText().equals("")) {
+          if (!foodWithdrawAmountField.getText().isEmpty()) {
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           } else {
             foodWithdrawAmount = 22;

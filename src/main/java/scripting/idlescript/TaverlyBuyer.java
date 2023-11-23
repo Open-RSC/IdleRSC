@@ -16,19 +16,21 @@ import orsc.ORSCharacter;
  * @author Dvorak, rewritten by Kaila
  */
 public class TaverlyBuyer extends IdleScript {
-  private final String[] options =
-      new String[] {"Newts then Vials", "Vials then newts", "Vials", "Newts"};
-  private final int[] loot = {465, 270};
   private int option = -1;
   private boolean scriptStarted = false;
   private boolean guiSetup = false;
   private int vialsBought = 0;
   private int vialsBanked = 0;
   private int newtsBought = 0;
+  private int pestalBought = 0;
+  private int pestalBanked = 0;
   private int newtsBanked = 0;
+  private final int VIAL_ID = ItemId.EMPTY_VIAL.getId();
+  private final int NEWT_ID = ItemId.EYE_OF_NEWT.getId();
+  private final int PESTAL_ID = ItemId.PESTLE_AND_MORTAR.getId();
+  private final String[] options =
+      new String[] {"Newts then Vials", "Vials then newts", "Vials", "Newts", "Pestle and mortar"};
   private final long startTimestamp = System.currentTimeMillis() / 1000L;
-
-  public void startSequence() {}
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -37,7 +39,7 @@ public class TaverlyBuyer extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    if (parameters.length > 0 && !parameters[0].equals("")) {
+    if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         controller.displayMessage("Auto-starting, Newts then Vials", 0);
         System.out.println("Auto-starting, Newts then Vials");
@@ -92,42 +94,57 @@ public class TaverlyBuyer extends IdleScript {
           }
 
           if (controller.getInventoryItemCount() < 30) {
-            if (option == 0) { // only vials
-              if (controller.isInShop() && controller.getShopItemCount(465) > 0) {
-                controller.shopBuy(465, controller.getShopItemCount(465));
-                controller.sleep(250);
-              } else {
-                controller.sleep(250);
-              }
-            } else if (option == 1) { // only newts
-              if (controller.isInShop() && controller.getShopItemCount(270) > 0) {
-                controller.shopBuy(270, controller.getShopItemCount(270));
-                controller.sleep(250);
-              } else {
-                controller.sleep(250);
-              }
-            } else if (option == 2) { // newts then  vials
-              if (controller.isInShop() && controller.getShopItemCount(270) > 0) {
-                controller.shopBuy(270, controller.getShopItemCount(270));
-                controller.sleep(100);
-              }
-              if (controller.isInShop() && controller.getShopItemCount(465) > 0) {
-                controller.shopBuy(465, controller.getShopItemCount(465));
-                controller.sleep(250);
-              } else {
-                controller.sleep(250);
-              }
-            } else { // vials then newts
-              if (controller.isInShop() && controller.getShopItemCount(465) > 0) {
-                controller.shopBuy(465, controller.getShopItemCount(465));
-                controller.sleep(250);
-              }
-              if (controller.isInShop() && controller.getShopItemCount(270) > 0) {
-                controller.shopBuy(270, controller.getShopItemCount(270));
-                controller.sleep(250);
-              } else {
-                controller.sleep(250);
-              }
+            switch (option) {
+              case 0: // newts then  vials
+                if (controller.isInShop() && controller.getShopItemCount(NEWT_ID) > 0) {
+                  controller.shopBuy(NEWT_ID, controller.getShopItemCount(NEWT_ID));
+                  controller.sleep(100);
+                }
+                if (controller.isInShop() && controller.getShopItemCount(VIAL_ID) > 0) {
+                  controller.shopBuy(VIAL_ID, controller.getShopItemCount(VIAL_ID));
+                  controller.sleep(250);
+                } else {
+                  controller.sleep(250);
+                }
+                break;
+              case 1: // vials then newts
+                if (controller.isInShop() && controller.getShopItemCount(VIAL_ID) > 0) {
+                  controller.shopBuy(VIAL_ID, controller.getShopItemCount(VIAL_ID));
+                  controller.sleep(250);
+                }
+                if (controller.isInShop() && controller.getShopItemCount(NEWT_ID) > 0) {
+                  controller.shopBuy(NEWT_ID, controller.getShopItemCount(NEWT_ID));
+                  controller.sleep(250);
+                } else {
+                  controller.sleep(250);
+                }
+                break;
+              case 2: // only vials
+                if (controller.isInShop() && controller.getShopItemCount(VIAL_ID) > 0) {
+                  controller.shopBuy(VIAL_ID, controller.getShopItemCount(VIAL_ID));
+                  controller.sleep(250);
+                } else {
+                  controller.sleep(250);
+                }
+                break;
+              case 3: // only newts
+                if (controller.isInShop() && controller.getShopItemCount(NEWT_ID) > 0) {
+                  controller.shopBuy(NEWT_ID, controller.getShopItemCount(NEWT_ID));
+                  controller.sleep(250);
+                } else {
+                  controller.sleep(250);
+                }
+                break;
+              case 4:
+                if (controller.isInShop() && controller.getShopItemCount(PESTAL_ID) > 0) {
+                  controller.shopBuy(PESTAL_ID, controller.getShopItemCount(PESTAL_ID));
+                  controller.sleep(250);
+                } else {
+                  controller.sleep(250);
+                }
+                break;
+              default:
+                controller.log("Unknown option");
             }
           }
         }
@@ -148,8 +165,9 @@ public class TaverlyBuyer extends IdleScript {
     controller.openBank();
     controller.sleep(640);
 
-    vialsBought += controller.getInventoryItemCount(465);
-    newtsBought += controller.getInventoryItemCount(270);
+    vialsBought += controller.getInventoryItemCount(VIAL_ID);
+    newtsBought += controller.getInventoryItemCount(NEWT_ID);
+    pestalBought += controller.getInventoryItemCount(PESTAL_ID);
 
     if (controller.isInBank()) {
 
@@ -158,8 +176,9 @@ public class TaverlyBuyer extends IdleScript {
           controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
         }
       }
-      vialsBanked = controller.getBankItemCount(465);
-      newtsBanked = controller.getBankItemCount(270);
+      vialsBanked = controller.getBankItemCount(VIAL_ID);
+      newtsBanked = controller.getBankItemCount(NEWT_ID);
+      pestalBanked = controller.getBankItemCount(PESTAL_ID);
       controller.sleep(100);
       controller.closeBank();
     }
@@ -294,12 +313,14 @@ public class TaverlyBuyer extends IdleScript {
 
       int vialsPerHr = 0;
       int newtsPerHr = 0;
+      int pestalPerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         vialsPerHr = (int) (vialsBought * scale);
         newtsPerHr = (int) (newtsBought * scale);
+        pestalPerHr = (int) (pestalBought * scale);
       } catch (Exception e) {
         // divide by zero
       }
@@ -311,8 +332,8 @@ public class TaverlyBuyer extends IdleScript {
 
       controller.drawBoxAlpha(7, 7, 180, height, 0xFFFFFF, 128);
       controller.drawString("@gre@TaverlyBuyer @whi@by @gre@Dvorak & Kaila", 10, 21, 0xFFFFFF, 1);
-
-      if (option == 0) {
+      // "Newts then Vials", "Vials then newts", "Vials", "Newts", "Pestle and mort
+      if (option == 0 || option == 1) { // newts and vials
         controller.drawString(
             "@gre@Vials bought: @whi@"
                 + String.format("%,d", vialsBought)
@@ -329,24 +350,7 @@ public class TaverlyBuyer extends IdleScript {
             21 + 14 + 14,
             0xFFFFFF,
             1);
-      } else if (option == 1) {
-        controller.drawString(
-            "@gre@Newts bought: @whi@"
-                + String.format("%,d", newtsBought)
-                + " @gre@(@whi@"
-                + String.format("%,d", newtsPerHr)
-                + "@gre@/@whi@hr@gre@)",
-            10,
-            21 + 14,
-            0xFFFFFF,
-            1);
-        controller.drawString(
-            "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
-            10,
-            21 + (14 * 2),
-            0xFFFFFF,
-            1);
-      } else {
+      } else if (option == 2) { // vials
         controller.drawString(
             "@gre@Vials bought: @whi@"
                 + String.format("%,d", vialsBought)
@@ -363,6 +367,7 @@ public class TaverlyBuyer extends IdleScript {
             21 + (14 * 2),
             0xFFFFFF,
             1);
+      } else if (option == 3) { // newts
         controller.drawString(
             "@gre@Newts bought: @whi@"
                 + String.format("%,d", newtsBought)
@@ -370,13 +375,30 @@ public class TaverlyBuyer extends IdleScript {
                 + String.format("%,d", newtsPerHr)
                 + "@gre@/@whi@hr@gre@)",
             10,
-            21 + (14 * 3),
+            21 + 14,
             0xFFFFFF,
             1);
         controller.drawString(
             "@gre@Newts in bank: @whi@" + String.format("%,d", newtsBanked),
             10,
-            21 + (14 * 4),
+            21 + (14 * 2),
+            0xFFFFFF,
+            1);
+      } else { // pestal
+        controller.drawString(
+            "@gre@Pestals bought: @whi@"
+                + String.format("%,d", pestalBought)
+                + " @gre@(@whi@"
+                + String.format("%,d", pestalPerHr)
+                + "@gre@/@whi@hr@gre@)",
+            10,
+            21 + 14,
+            0xFFFFFF,
+            1);
+        controller.drawString(
+            "@gre@Pestals in bank: @whi@" + String.format("%,d", pestalBanked),
+            10,
+            21 + (14 * 2),
             0xFFFFFF,
             1);
       }

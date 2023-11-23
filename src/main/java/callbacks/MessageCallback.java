@@ -48,7 +48,6 @@ public class MessageCallback {
     con.hideContactDetailsMenu();
     if (Main.isLogWindowOpen() && DrawCallback.getNextLogClear() == -1) {
       DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in ms
-      // cd.log(String.valueOf((timeNextLogClear - System.currentTimeMillis()) / 1000L) + " s");
     }
     if (Main.isLogWindowOpen() && (System.currentTimeMillis() > DrawCallback.getNextLogClear())) {
       Main.clearLog();
@@ -60,8 +59,9 @@ public class MessageCallback {
         con.setDrawing(true);
         DrawCallback.setNextDeRefresh(System.currentTimeMillis() + 20L); // toggle on gfx 1 frame
         DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L); // wait 1 min for refresh
-        /* System.out.println("Next screen refresh in: " + ((DrawCallback.nextRefresh -
-        System.currentTimeMillis()) / 1000L) + "s");*/
+        //        System.out.println("Next screen refresh in: "
+        //                + ((DrawCallback.getNextRefresh() - System.currentTimeMillis()) / 1000L) +
+        // "s");
       } else DrawCallback.setNextRefresh(-1);
     }
     if (type == MessageType.GAME) {
@@ -158,8 +158,8 @@ public class MessageCallback {
       if (statId == -1) {
         throw new IllegalArgumentException("Invalid skill name: " + skillName);
       }
-      if (skillName != null && skillName.length() > 0 && statId > 0) {
-        if (skillName.equalsIgnoreCase("woodcut")) skillName = "Woodcutting"; // fix woodcut
+      if (skillName != null && !skillName.isEmpty() && statId > 0) {
+        if (skillName.contains("woodcut")) skillName = "Woodcutting"; // fix woodcut
 
         skillName =
             Character.toUpperCase(skillName.charAt(0)) // capitalize skill name first letter

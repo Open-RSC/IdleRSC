@@ -24,10 +24,9 @@ public final class S_ZammyWine extends K_kailaScript {
   private static int logsInBank = 0;
   private static int totalBows = 0;
   private static boolean stringBows = false;
-  private static final int BOW_STRING = 141; // S Water Jug
+  private static final int WATER_JUG = 141; // S Water Jug
   private static final int KNIFE_ID = 13;
   private static final int zammyGrapeID = 1466; // S
-  private static final int[] unstrungIds = {276, 658, 660, 662, 664, 666, zammyGrapeID};
 
   public int start(String[] parameters) {
     con.quitIfAuthentic();
@@ -53,7 +52,7 @@ public final class S_ZammyWine extends K_kailaScript {
   private void scriptStart() {
     while (con.isRunning()) {
       if (con.getInventoryItemCount(logId) == 0
-          || (stringBows && con.getInventoryItemCount(BOW_STRING) == 0)
+          || (stringBows && con.getInventoryItemCount(WATER_JUG) == 0)
           || con.getInventoryItemCount(KNIFE_ID) == 0) {
         if (!con.isInBank()) {
           int[] bankerIds = {95, 224, 268, 540, 617, 792};
@@ -83,7 +82,7 @@ public final class S_ZammyWine extends K_kailaScript {
     con.displayMessage("@gre@Stringing..");
     con.setStatus("@gre@Stringing.");
     con.useItemOnItemBySlot(
-        con.getInventoryItemSlotIndex(BOW_STRING), con.getInventoryItemSlotIndex(logId));
+        con.getInventoryItemSlotIndex(WATER_JUG), con.getInventoryItemSlotIndex(logId));
     con.sleep(2 * GAME_TICK);
     while (con.isBatching()) con.sleep(GAME_TICK);
   }
@@ -109,7 +108,7 @@ public final class S_ZammyWine extends K_kailaScript {
       if (!stringBows) totalBows = totalBows + 29;
       else totalBows = totalBows + 15;
       if (con.getBankItemCount(logId) < 30 // out of logs or unstrung
-          || (stringBows && con.getBankItemCount(BOW_STRING) < 30) // out of strings
+          || (stringBows && con.getBankItemCount(WATER_JUG) < 30) // out of strings
           || (!stringBows
               && con.getBankItemCount(KNIFE_ID) == 0
               && con.getInventoryItemCount(KNIFE_ID) == 0)) {
@@ -133,7 +132,7 @@ public final class S_ZammyWine extends K_kailaScript {
         else {
           con.withdrawItem(logId, 15);
           con.sleep(GAME_TICK);
-          con.withdrawItem(BOW_STRING, 15);
+          con.withdrawItem(WATER_JUG, 15);
           con.sleep(GAME_TICK);
         }
       }
@@ -147,10 +146,6 @@ public final class S_ZammyWine extends K_kailaScript {
     JLabel knifeLabel = new JLabel("Start with Knife in Inv!");
     JLabel batchLabel = new JLabel("Batch Bars MUST be toggled ON in settings!!!");
     JLabel batchLabel2 = new JLabel("This ensures 29 Items are made per Menu Cycle.");
-    JLabel logLabel = new JLabel("Log Type:");
-    JComboBox<String> logField =
-        new JComboBox<>(
-            new String[] {"Log", "Oak", "Willow", "Maple", "Yew", "Magic", "ZammyWine"});
     JCheckBox stringBowsCheckbox = new JCheckBox("String Bows?", true);
     JButton startScriptButton = new JButton("Start");
 
@@ -170,8 +165,6 @@ public final class S_ZammyWine extends K_kailaScript {
     scriptFrame.add(knifeLabel);
     scriptFrame.add(batchLabel);
     scriptFrame.add(batchLabel2);
-    scriptFrame.add(logLabel);
-    scriptFrame.add(logField);
     scriptFrame.add(stringBowsCheckbox);
     scriptFrame.add(startScriptButton);
 

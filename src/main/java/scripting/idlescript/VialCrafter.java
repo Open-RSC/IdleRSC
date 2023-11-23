@@ -278,7 +278,8 @@ public class VialCrafter extends IdleScript {
   }
 
   public boolean evenBucketsAndSeaweed() {
-    return c.getInventoryItemCount(SEAWEED) + c.getInventoryItemCount(SODA_ASH) == getBucketCount();
+    return (c.getInventoryItemCount(SEAWEED) + c.getInventoryItemCount(SODA_ASH))
+        >= getBucketCount();
   }
 
   public int getBucketCount() {

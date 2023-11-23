@@ -16,17 +16,17 @@ public class Config extends ParseResult {
     setScriptName(parseResult.getScriptName());
     setScriptArguments(parseResult.getScriptArguments());
     setInitCache(parseResult.getInitCache());
+    setThemeName(parseResult.getThemeName());
 
     // Boolean options
     setAutoLogin(parseResult.isAutoLogin());
+    setSidebarVisible(parseResult.isSidebarVisible());
     setLogWindowVisible(parseResult.isLogWindowVisible());
-    setSidePanelSticky(parseResult.isSidePanelSticky());
     setDebug(parseResult.isDebug());
     setBotPaintVisible(parseResult.isBotPaintVisible());
-    setSidePanelVisible(parseResult.isSidePanelVisible());
     setGraphicsEnabled(parseResult.isGraphicsEnabled());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
-    setScriptSelectorWindowVisible(parseResult.isScriptSelectorWindowVisible());
+    setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
     setLocalOcr(parseResult.isLocalOcr());
 
     // Switching options

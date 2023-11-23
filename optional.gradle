@@ -13,9 +13,8 @@ tasks.register('release', Exec) {
     'HEAD',
     '--add-file',
     "${project.name}.jar",
-    'run_linux.sh',
-    'run_windows.bat',
     'README.md',
+    'res/',
     'doc/',
     '--output',
     "${releaseName}.zip"

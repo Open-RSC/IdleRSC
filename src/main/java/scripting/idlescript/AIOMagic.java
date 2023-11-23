@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -11,7 +13,7 @@ import models.entities.ItemId;
 /**
  * Performs all magic spells that require banking
  *
- * <p>High level alchemy Superheat Low level alchemy
+ * <p>High level alchemy Superheat Low level alchemy Curse
  *
  * <p>Enchant lvl-1 jewelry lvl2 lvl3 lvl4 lvl5
  *
@@ -22,7 +24,8 @@ import models.entities.ItemId;
  */
 public class AIOMagic extends IdleScript {
 
-  final String[] spells =
+  private static final Controller c = Main.getController();
+  private final String[] spells =
       new String[] {
         "High level alchemy",
         "Superheat item",
@@ -38,35 +41,34 @@ public class AIOMagic extends IdleScript {
         "Camelot teleport",
         "Ardougne teleport",
         "Watchtower teleport",
-        "Charge"
+        "Charge",
+        "Curse"
       };
 
-  final String[] bars =
+  private final String[] bars =
       new String[] {"Bronze", "Iron", "Silver", "Steel", "Gold", "Mithril", "Adamantite", "Runite"};
 
-  final String[] jewelry = new String[] {"Amulet", "Ring", "Crown"};
-  JFrame scriptFrame = null;
-  final int[] lootIds = {
+  private final String[] jewelry = new String[] {"Amulet", "Ring", "Crown"};
+  private JFrame scriptFrame = null;
+  private final int[] lootIds = {
     10, 169, 170, 171, 172, 173, 174, 384, 314, 315, 316, 317, 408, 522, 1314, 1315, 1316, 1317,
-    1318, 1509, 1510, 1511, 1512, 1513, 1514
+    1318, 1509, 1510, 1511, 1512, 1513, 1514, 1386
   }; // dragonstone items not supported. not like anyone will have thousands of those, right? xd
 
-  int spellId = -1;
-  int selectedSpellId = -1;
-  int selectedItemId = -1;
-  int selectedBarId = -1;
-  int selectedJewelryId = -1;
-
-  int primaryOre = -1;
-  int primaryOreAmount = -1;
-  int secondaryOre = -1;
-  int secondaryOreAmount = 0;
-
+  private int spellId = -1;
+  private int selectedSpellId = -1;
+  private int selectedItemId = -1;
+  private int selectedBarId = -1;
+  private int selectedJewelryId = -1;
+  private int selectedTaliId = -1;
+  private int primaryOre = -1;
+  private int primaryOreAmount = -1;
+  private int secondaryOre = -1;
+  private int secondaryOreAmount = 0;
   final long startTimestamp = System.currentTimeMillis() / 1000L;
-  int success = 0;
-
-  boolean scriptStarted = false;
-  boolean guiSetup = false;
+  private int success = 0;
+  private boolean scriptStarted = false;
+  private boolean guiSetup = false;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -78,7 +80,7 @@ public class AIOMagic extends IdleScript {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
-      controller.setStatus("@blu@Waiting for start..");
+      c.setStatus("@blu@Waiting for start..");
     }
     if (scriptStarted) {
       guiSetup = false;
@@ -89,69 +91,95 @@ public class AIOMagic extends IdleScript {
   }
 
   public void scriptStart() {
-    while (controller.isRunning()) {
+    while (c.isRunning()) {
 
-      if (selectedItemId == -1 && selectedBarId == -1 && selectedJewelryId == -1) {
+      if (selectedItemId == -1
+          && selectedBarId == -1
+          && selectedJewelryId == -1
+          && selectedTaliId == -1) {
         // we are just teleporting
-        controller.setStatus("Casting!");
-        controller.castSpellOnSelf(spellId);
-        controller.sleep(1300);
+        c.setStatus("Casting!");
+        c.castSpellOnSelf(spellId);
+        c.sleep(1300);
       } else {
-        if (selectedItemId != -1 || selectedJewelryId != -1) {
-          // we are just withdrawing 29 or 28 of a single item and casting a spell on it
-          int targetId = selectedItemId != -1 ? selectedItemId : determineJewelryId();
+        if (selectedTaliId != -1) {
+          // we are just withdrawing 27 talismans and casting curse on them
+          int targetId = selectedTaliId;
 
-          if (controller.getInventoryItemCount(targetId) < 1) {
-            controller.setStatus("@blu@Banking..");
-            controller.openBank();
+          if (c.getInventoryItemCount(targetId) < 1) {
+            c.setStatus("@blu@Banking.. ." + String.format("%,d", targetId));
+            c.log("targetId:" + targetId + "," + "selectedTaliId:" + selectedTaliId + ",");
+            c.openBank();
 
             for (int id : lootIds) {
-              int amount = controller.getInventoryItemCount(id);
+              int amount = c.getInventoryItemCount(id);
               if (amount > 0) {
-                controller.depositItem(id, amount);
-                controller.sleep(618);
+                c.depositItem(id, amount);
+                c.sleep(618);
               }
             }
 
-            controller.withdrawItem(targetId, 30 - controller.getInventoryItemCount());
-            controller.sleep(618);
+            c.withdrawItem(targetId, 30 - c.getInventoryItemCount());
+            c.sleep(618);
           } else {
-            controller.setStatus("@blu@Casting!");
-            if (targetId != ItemId.NATURE_RUNE.getId()) {
-              controller.castSpellOnInventoryItem(
-                  spellId, controller.getInventoryItemSlotIndex(targetId));
+            c.setStatus("@blu@Casting!");
+            c.castSpellOnInventoryItem(spellId, c.getInventoryItemSlotIndex(targetId));
+            c.sleep(1300);
+          }
+
+        } else if (selectedItemId != -1 || selectedJewelryId != -1) {
+          // we are just withdrawing 29 or 28 of a single item and casting a spell on it
+          int targetId = selectedItemId != -1 ? selectedItemId : determineJewelryId();
+
+          if (c.getInventoryItemCount(targetId) < 1) {
+            c.setStatus("@blu@Banking..");
+            c.openBank();
+
+            for (int id : lootIds) {
+              int amount = c.getInventoryItemCount(id);
+              if (amount > 0) {
+                c.depositItem(id, amount);
+                c.sleep(618);
+              }
             }
-            controller.sleep(1300);
+
+            c.withdrawItem(targetId, 30 - c.getInventoryItemCount());
+            c.sleep(618);
+          } else {
+            c.setStatus("@blu@Casting!");
+            if (targetId != ItemId.NATURE_RUNE.getId()) {
+              c.castSpellOnInventoryItem(spellId, c.getInventoryItemSlotIndex(targetId));
+            }
+            c.sleep(1300);
           }
 
         } else {
           // we are doing superheat, which is a lot more complicated
-          if (controller.getInventoryItemCount(primaryOre) < 1) {
-            controller.setStatus("@blu@Banking..");
-            controller.openBank();
+          if (c.getInventoryItemCount(primaryOre) < 1) {
+            c.setStatus("@blu@Banking..");
+            c.openBank();
 
             for (int id : lootIds) {
-              int amount = controller.getInventoryItemCount(id);
+              int amount = c.getInventoryItemCount(id);
               if (amount > 0) {
-                controller.depositItem(id, amount);
-                controller.sleep(618);
+                c.depositItem(id, amount);
+                c.sleep(618);
               }
             }
 
-            controller.withdrawItem(primaryOre, primaryOreAmount);
-            controller.sleep(618);
-            controller.withdrawItem(secondaryOre, secondaryOreAmount);
-            controller.sleep(618);
+            c.withdrawItem(primaryOre, primaryOreAmount);
+            c.sleep(618);
+            c.withdrawItem(secondaryOre, secondaryOreAmount);
+            c.sleep(618);
           } else {
-            controller.setStatus("@blu@Casting!");
-            controller.castSpellOnInventoryItem(
-                spellId, controller.getInventoryItemSlotIndex(primaryOre));
-            controller.sleep(1300);
+            c.setStatus("@blu@Casting!");
+            c.castSpellOnInventoryItem(spellId, c.getInventoryItemSlotIndex(primaryOre));
+            c.sleep(1300);
           }
         }
       }
 
-      controller.sleepHandler(98, true);
+      c.sleepHandler(98, true);
     }
   }
 
@@ -204,7 +232,7 @@ public class AIOMagic extends IdleScript {
   }
 
   public void determineOreIds() {
-    int sleepingBagModifier = controller.getInventoryItemCount(1263);
+    int sleepingBagModifier = c.getInventoryItemCount(1263);
 
     switch (selectedBarId) {
       case 0:
@@ -270,9 +298,9 @@ public class AIOMagic extends IdleScript {
         // divide by zero
       }
 
-      controller.drawBoxAlpha(7, 7, 160, 21 + 14, 0xFF, 48);
-      controller.drawString("@whi@AIOMagic @blu@by @whi@Dvorak", 10, 21, 0xFFFFFF, 1);
-      controller.drawString(
+      c.drawBoxAlpha(7, 7, 160, 21 + 14, 0xFF, 48);
+      c.drawString("@whi@AIOMagic @blu@by @whi@Dvorak", 10, 21, 0xFFFFFF, 1);
+      c.drawString(
           "@whi@Casts: @blu@"
               + String.format("%,d", success)
               + " @whi@(@blu@"
@@ -300,6 +328,9 @@ public class AIOMagic extends IdleScript {
     JLabel jewelryIdLabel = new JLabel("Jewelry type (enchanting)");
     JComboBox<String> jewelryIdField = new JComboBox<>(jewelry);
 
+    JLabel taliIdLabel = new JLabel("Item ID ( Talisman for Cursing)");
+    JTextField taliIdField = new JTextField("1300");
+
     JButton startScriptButton = new JButton("Start");
 
     //        spellField.addActionListener(new ActionListener() {
@@ -325,7 +356,7 @@ public class AIOMagic extends IdleScript {
         e -> {
           selectedSpellId = spellField.getSelectedIndex();
           String text = spells[spellField.getSelectedIndex()];
-          spellId = controller.getSpellIdFromName(text);
+          spellId = c.getSpellIdFromName(text);
 
           try {
             if (text.contains("alchemy")) {
@@ -334,9 +365,11 @@ public class AIOMagic extends IdleScript {
               selectedBarId = barIdField.getSelectedIndex();
             } else if (text.contains("jewelry")) {
               selectedJewelryId = jewelryIdField.getSelectedIndex();
+            } else if (text.contains("Curse")) {
+              selectedTaliId = Integer.parseInt(taliIdField.getText());
             }
           } catch (Exception exc) {
-            controller.displayMessage("Error parsing inputted values, please try again.");
+            c.displayMessage("Error parsing inputted values, please try again.");
             exc.printStackTrace();
             return;
           }
@@ -346,13 +379,13 @@ public class AIOMagic extends IdleScript {
           scriptStarted = true;
           determineOreIds();
 
-          controller.displayMessage("@red@AIOMagic by Dvorak. Let's party like it's 2004!");
+          c.displayMessage("@red@AIOMagic by Dvorak. Let's party like it's 2004!");
         });
 
     //		itemIdField.setEnabled(true);
     //		barIdField.setEnabled(false);
     //		jewelryIdField.setEnabled(false);
-    scriptFrame = new JFrame(controller.getPlayerName() + " - options");
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
 
     scriptFrame.setLayout(new GridLayout(0, 1));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -365,6 +398,8 @@ public class AIOMagic extends IdleScript {
     scriptFrame.add(barIdField);
     scriptFrame.add(jewelryIdLabel);
     scriptFrame.add(jewelryIdField);
+    scriptFrame.add(taliIdLabel);
+    scriptFrame.add(taliIdField);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();

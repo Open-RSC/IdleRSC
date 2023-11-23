@@ -36,12 +36,6 @@ public class CommandCallback {
     command = command.toLowerCase();
 
     switch (command) {
-      case "show":
-        Main.showBot();
-        break;
-      case "hide":
-        Main.hideBot();
-        break;
       case "hidepaint":
         if (c != null) {
           c.setBotPaint(false);

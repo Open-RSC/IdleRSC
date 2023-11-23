@@ -9,6 +9,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import models.entities.EquipSlotIndex;
 import orsc.ORSCharacter;
 
 /**
@@ -25,7 +26,7 @@ public class AIOThiever extends IdleScript {
 
   final int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
   int[] doorObjectIds = {60, 64};
-  int randomSide = (int) (Math.random() * 10 + 1); // random number between 1 and 10
+  int randomSide = 0; // random number between 1 and 10
   final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
   int failure = 0;
@@ -76,7 +77,7 @@ public class AIOThiever extends IdleScript {
           add(new ThievingObject("Warrior", 86, true, false));
           add(new ThievingObject("Workman", 722, true, false));
           add(new ThievingObject("Rogue", 342, true, false));
-          add(new ThievingObject("Guard", 321, true, false));
+          add(new ThievingObject("Guard (Ardy)", 321, true, false));
           add(new ThievingObject("Guard (Varrock)", 65, true, false));
           add(new ThievingObject("Knight", 322, true, false));
           add(new ThievingObject("Watchman", 574, true, false));
@@ -191,6 +192,14 @@ public class AIOThiever extends IdleScript {
           c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(target.id, false);
           if (npc != null && npc.serverIndex > 0) {
+            // add warning about weilding weapon
+            if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
+              c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
+              c.log(
+                  "weapons when thieving, it severely drops xp rates for everyone, including you!");
+              c.chatMessage("I did something bad and tried to wield a weapon while thieving");
+              if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
+            }
             c.setStatus("@red@Stealing..");
             c.npcCommand1(npc.serverIndex);
             c.sleep(5);
@@ -515,12 +524,29 @@ public class AIOThiever extends IdleScript {
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount: (banking only)");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(0));
     JLabel weaponWarningLabel =
-        new JLabel("Never wear weapon for pickpocketing, do wear for stalls");
+        new JLabel("NEVER WEAR WEAPONS for pickpocketing, only wear for stalls");
     JButton startScriptButton = new JButton("Start");
 
     for (ThievingObject obj : objects) {
       targetField.addItem(obj.name);
     }
+    targetField.addActionListener( // set suggested values for option
+        e -> {
+          int index = targetField.getSelectedIndex();
+          if (index == 13) doBankCombobox.setSelectedIndex(3); // set to var east
+          if (index > 19) doBankCombobox.setSelectedIndex(0); // no banking for chests
+          if (index == 5
+              || index == 7
+              || index == 9
+              || (index != 13 && index >= 11 && index <= 19)) {
+            doBankCombobox.setSelectedIndex(1); // set to ardy
+            foodWithdrawAmountField.setText(String.valueOf(1));
+          }
+          if (index == 6) {
+            doBankCombobox.setSelectedIndex(2); // set to var west
+            foodWithdrawAmountField.setText(String.valueOf(1));
+          }
+        });
 
     startScriptButton.addActionListener(
         e -> {

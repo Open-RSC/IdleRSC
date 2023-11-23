@@ -1,6 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
+import java.util.Calendar;
 import javax.swing.*;
 
 /**
@@ -15,10 +16,24 @@ import javax.swing.*;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
+/*
+input current minute on starting script. (for banking)
+bank between waves
+random offset to not focus on the SAME ones
+bots walk to the same ones
+bot gets stuck too far north in draynor (add exception)
+
+
+ */
+
 public final class K_GiftGrabber extends K_kailaScript {
-  private static int totalCrackers = 0;
-  private static int CrackersInBank = 0;
+  private final int[] pos = {
+    211, 611, 610, 653, 185, 502, 88, 549, 444, 477
+  }; // remove pos 0 and pos 1
+  private int totalCrackers = 0;
+  private int CrackersInBank = 0;
   private int location = 0; // 0 is draynor
+  private int waveTime = 0;
   private final int H_CRACKER = 1330;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -37,10 +52,14 @@ public final class K_GiftGrabber extends K_kailaScript {
       scriptStarted = false;
       c.displayMessage("@red@Cracker Picker - By Kaila");
       if (c.isInBank()) c.closeBank();
-      //      if (c.currentY() < 1000 && c.currentX() < 245) {
-      //        bank();
-      //        bankToDray();
-      //        c.sleep(1380);
+      //      Random rand = new Random();
+      //      int offsetX = rand.nextInt(9) - 4; // offset by +/- 4
+      //      int offsetY = rand.nextInt(9) - 4;
+      //      for (int i = 0; i < pos.length / 2; i = i + 2) {
+      //        if ((i + 1) < pos.length) { // null safer
+      //          pos[i] = pos[i] + offsetX;
+      //          pos[i + 1] = pos[i + 1] + offsetY;
+      //        }
       //      }
       scriptStart();
     }
@@ -49,49 +68,81 @@ public final class K_GiftGrabber extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getInventoryItemCount() == 30) {
-        if (location == 0) { // dray
-          c.setStatus("@red@Banking..");
-          drayToBank();
-          bank();
-          bankToDray();
-        } else if (location == 1) { // var west
-          c.setStatus("@red@Banking..");
-          varWestToBank();
-          bank();
-          bankToVarWest();
-        } else if (location == 2) { // var east
-          c.setStatus("@red@Banking..");
-          varEastToBank();
-          bank();
-          bankToVarEast();
-        } else if (location == 3) { // cath
-          c.setStatus("@red@Banking..");
-          cathToBank();
-          bank();
-          bankToCath();
-        }
-      }
+      if (c.getInventoryItemCount() == 30) goToBank();
       int[] coords = c.getNearestItemById(H_CRACKER); // always pick up tops
       if (coords != null) {
         c.setStatus("@yel@Looting..");
         c.pickupItem(coords[0], coords[1], H_CRACKER, true, true);
         c.sleep(2 * GAME_TICK);
-      } else if (location == 0 && c.currentX() != 210 && c.currentY() != 653) {
-        c.walkTo(210, 653);
-        c.sleep(GAME_TICK);
-      } else if (location == 1 && c.currentX() != 185 && c.currentY() != 502) {
-        c.walkTo(185, 502);
-        c.sleep(GAME_TICK);
-      } else if (location == 2 && c.currentX() != 88 && c.currentY() != 549) {
-        c.walkTo(88, 549);
-        c.sleep(GAME_TICK);
-      } else if (location == 3 && c.currentX() != 444 && c.currentY() != 477) {
-        c.walkTo(444, 477);
-        c.sleep(GAME_TICK);
-      } else {
-        c.sleep(5 * GAME_TICK);
+      } else { // change to a for:each loop or something.
+
+        int timeInMins = Calendar.getInstance().get(Calendar.MINUTE);
+        // c.log(String.valueOf(timeInMins));
+        if (c.getInventoryItemCount(H_CRACKER) > 0
+            && (timeInMins > waveTime + 10 || timeInMins < waveTime - 10)) {
+
+          goToBank();
+        }
+        // check if > 40 tiles away for all?
+        if (location == 0 && c.currentX() != pos[2] && c.currentY() != pos[3]) {
+          if (c.currentY() < 610) { // walk south if too far north
+            if (c.currentX() < 180) { // northeast near cow field
+              c.walkTo(179, 593);
+              c.walkTo(193, 593);
+            }
+            c.walkTo(211, 611); // if near mansion
+          } else if (c.currentX() < 177 && c.currentY() > 668) { // in dray swamp
+            c.walkTo(178, 667);
+            // north of swamp but far east
+          } else if (c.currentX() < 177 && c.currentY() < 668 && c.currentY() > 610) {
+            if (c.currentX() < 145) { // near castle, walk west
+              c.walkTo(157, 650);
+            }
+            c.walkTo(178, 647);
+          }
+          c.walkTo(pos[2], pos[3]);
+          c.sleep(GAME_TICK);
+        } else if (location == 1 && c.currentX() != pos[4] && c.currentY() != pos[5]) { // var west
+          if (c.currentX()
+              > 207) { // west of spot in barb village (seems to be the only stuck spot)
+            c.walkTo(207, 512);
+          }
+          c.walkTo(pos[4], pos[5]);
+          c.sleep(GAME_TICK);
+        } else if (location == 2 && c.currentX() != pos[6] && c.currentY() != pos[7]) {
+          c.walkTo(pos[6], pos[7]);
+          c.sleep(GAME_TICK);
+        } else if (location == 3 && c.currentX() != pos[8] && c.currentY() != pos[9]) {
+          c.walkTo(pos[8], pos[9]);
+          c.sleep(GAME_TICK);
+        } else {
+          c.sleep(5 * GAME_TICK);
+        }
       }
+    }
+  }
+
+  private void goToBank() {
+    if (location == 0) { // dray
+      c.setStatus("@red@Banking..");
+      drayToBank();
+      bank();
+      bankToDray();
+    } else if (location == 1) { // var west
+      c.setStatus("@red@Banking..");
+      varWestToBank();
+      bank();
+      bankToVarWest();
+    } else if (location == 2) { // var east
+      c.setStatus("@red@Banking..");
+      varEastToBank();
+      bank();
+      bankToVarEast();
+    } else if (location == 3) { // cath
+      c.setStatus("@red@Banking..");
+      cathToBank();
+      bank();
+      bankToCath();
     }
   }
 
@@ -204,10 +255,17 @@ public final class K_GiftGrabber extends K_kailaScript {
     JComboBox<String> locationField =
         new JComboBox<>(new String[] {"Draynor", "Varrock West", "Varrock East", "Catherby"});
     locationField.setSelectedIndex(0); // sets default to controlled
+    JLabel waveMinuteLabel = new JLabel("What minute of the hour are waves?");
+    JTextField waveMinuteField = new JTextField(String.valueOf(30));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
+          if (!waveMinuteField.getText().isEmpty()) {
+            waveTime = Integer.parseInt(waveMinuteField.getText());
+          } else {
+            waveTime = 30;
+          }
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           location = locationField.getSelectedIndex();
@@ -222,6 +280,8 @@ public final class K_GiftGrabber extends K_kailaScript {
     scriptFrame.add(header);
     scriptFrame.add(label1);
     scriptFrame.add(locationField);
+    scriptFrame.add(waveMinuteLabel);
+    scriptFrame.add(waveMinuteField);
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
@@ -258,7 +318,7 @@ public final class K_GiftGrabber extends K_kailaScript {
               + String.format("%,d", TopzSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
           x,
-          y + (14 * 3),
+          y + (14 * 2),
           0xFFFFFF,
           1);
       c.drawString(
@@ -268,11 +328,11 @@ public final class K_GiftGrabber extends K_kailaScript {
               + String.format("%,d", TripSuccessPerHr)
               + "@yel@/@whi@hr@yel@)",
           x,
-          y + (14 * 4),
+          y + (14 * 3),
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

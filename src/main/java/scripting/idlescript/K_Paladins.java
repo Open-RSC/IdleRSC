@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.EquipSlotIndex;
 import orsc.ORSCharacter;
 
 /**
@@ -21,6 +22,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Paladins extends K_kailaScript {
+  String foodName = "food";
   private int totalCoins = 0;
   private int totalShark = 0; // raw sharks that we pick up
   private int totalAda = 0;
@@ -134,7 +136,7 @@ public final class K_Paladins extends K_kailaScript {
       scriptFrame = null;
       guiSetup = true;
       scriptStarted = true;
-    } else if (!parameters[0].equals("")) {
+    } else if (!parameters[0].isEmpty()) {
       fightMode = 3;
       try {
         c.displayMessage("@cya@Got parameter: " + parameters[0]);
@@ -179,7 +181,7 @@ public final class K_Paladins extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
+        c.setStatus("@gre@Leaving combat..");
         c.walkTo(610, 1549, 0, true);
         c.sleep(640);
       }
@@ -187,6 +189,12 @@ public final class K_Paladins extends K_kailaScript {
         c.setStatus("@yel@Thieving Paladins");
         ORSCharacter npc = c.getNearestNpcById(323, false);
         if (npc != null) {
+          if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
+            c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
+            c.log("weapons when thieving, it severely drops xp rates for everyone, including you!");
+            c.chatMessage("I did something bad and tried to wield a weapon while thieving");
+            if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
+          }
           c.thieveNpc(npc.serverIndex);
           c.sleep(640); // this sleep time is important //was 300
         } else {
@@ -208,7 +216,7 @@ public final class K_Paladins extends K_kailaScript {
       }
       if (c.getInventoryItemCount() == 30) {
         leaveCombat();
-        c.setStatus("@red@Eating Food to Loot..");
+        c.setStatus("@gre@Eating Food to Loot..");
         if (c.getInventoryItemCount(foodId) > 0) {
           c.itemCommand(foodId);
           c.sleep(700);
@@ -224,11 +232,11 @@ public final class K_Paladins extends K_kailaScript {
   // Important private VOID's below
   private void eat() {
     if (c.isInCombat()) {
-      c.setStatus("@red@Leaving combat..");
+      c.setStatus("@gre@Leaving combat..");
       c.walkTo(610, 1549, 0, true);
       c.sleep(640);
     }
-    c.setStatus("@red@Eating..");
+    c.setStatus("@gre@Eating..");
     boolean ate = false;
     for (int id : c.getFoodIds()) {
       if (c.getInventoryItemCount(id) > 0) {
@@ -239,7 +247,7 @@ public final class K_Paladins extends K_kailaScript {
       }
     }
     if (!ate) {
-      c.setStatus("@red@We've ran out of Food! Banking!.");
+      c.setStatus("@gre@We've ran out of Food! Banking!.");
       c.sleep(308);
       paladinsToBank(true);
       bank();
@@ -249,6 +257,12 @@ public final class K_Paladins extends K_kailaScript {
 
   private void bank() {
     c.setStatus("@yel@Banking..");
+    if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
+      c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
+      c.log("weapons when thieving, it severely drops xp rates for everyone, including you!");
+      c.chatMessage("I did something bad and tried to wield a weapon while thieving");
+      if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
+    }
     c.openBank();
     c.sleep(640);
     if (!c.isInBank()) {
@@ -266,7 +280,6 @@ public final class K_Paladins extends K_kailaScript {
 
       for (int itemId : c.getInventoryItemIds()) { // change 546(shark) to desired food id
         c.depositItem(itemId, c.getInventoryItemCount(itemId));
-        c.sleep(100);
       }
       c.sleep(1280); // Important, leave in
       if (c.getInventoryItemCount(foodId)
@@ -289,12 +302,7 @@ public final class K_Paladins extends K_kailaScript {
     if (goUpLadder) {
       c.setStatus("@gre@Walking to Bank..");
       c.walkTo(611, 1550);
-      for (int i = 0; i < 10; i++) {
-        if (c.currentY() < 2000 && c.getNearestObjectById(5) != null) {
-          c.atObject(611, 1551); // ladder in paladin room
-          c.sleep(3 * GAME_TICK);
-        }
-      }
+      paladinLadderUp();
     }
     int[] scimCoords = c.getNearestItemById(427);
     if (scimCoords != null) { // Loot
@@ -303,82 +311,20 @@ public final class K_Paladins extends K_kailaScript {
       c.pickupItem(scimCoords[0], scimCoords[1], 427, true, true);
       c.sleep(640);
     }
+    c.walkTo(610, 2488); // needs to be next to chest
     int[] chestCoords = c.getNearestObjectById(338);
-    boolean walkToBank = false;
-    if (chestCoords != null) {
-      c.setStatus("@red@Stealing From Chest..");
-      c.walkTo(610, 2488);
+    c.setStatus("@gre@Checking for Chest..");
+    if (chestCoords == null) {
+      walkToBank();
+    } else if (c.currentY() > 2000 && chestCoords[0] == 610 && chestCoords[1] == 2487) {
       if (c.getInventoryItemCount() > 27 && c.getInventoryItemCount(foodId) > 0) {
-        dropItemAmount(foodId, c.getInventoryItemCount(foodId), true);
+        dropItemAmount(foodId, 3, true);
       }
-      c.atObject2(chestCoords[0], chestCoords[1]);
-      c.sleep(8 * GAME_TICK);
-      if (c.currentX() == 610 && c.currentY() == 2488) {
-        walkToBank = true;
-      } else witchhavenToBank();
-    } else walkToBank = true;
-    if (walkToBank) {
-      c.setStatus("@red@Chest Empty, Walking...");
-      c.walkTo(611, 2494);
-      for (int i = 0; i < 10; i++) {
-        if (c.currentY() > 2000 && c.getNearestObjectById(6) != null) {
-          c.atObject(611, 2495); // go down ladder
-          c.sleep(3 * GAME_TICK);
-        }
-      }
-      c.atObject(611, 2495); // go down ladder
-      c.sleep(10 * GAME_TICK);
-      c.walkTo(609, 1548); // walk to door
-      paladinDoorExiting(); // go through door
-      c.walkTo(611, 1544);
-      c.atObject(611, 1545); // go downstairs
-      c.walkTo(608, 603);
-      openDoorObjects(64, 607, 603); // open inner gate
-      c.walkTo(599, 603);
-      openDoorObjects(57, 598, 603); // open outer gate
-      c.walkTo(577, 603);
-      c.walkTo(574, 606);
-      c.walkTo(564, 606);
-      c.walkTo(552, 606);
-      c.walkTo(550, 608);
-      c.walkTo(550, 612);
-      c.setStatus("@gre@Done Walking..");
-      totalTrips = totalTrips + 1;
-      c.sleep(640);
+      paladinChest();
+      if (c.currentY() > 2000) walkToBank(); // walk back for some reaso
+      else witchhavenToBank();
+      if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
     }
-  }
-
-  private void paladinStair() {
-    for (int i = 1; i <= 50; i++) {
-      if (c.currentX() < 615 && c.currentX() > 609 && c.currentY() < 610 && c.currentY() > 600) {
-        c.walkTo(612, 604);
-        c.atObject(611, 601);
-        c.sleep(320);
-        c.atObject(611, 601);
-        c.sleep(640);
-      } else return;
-    }
-  }
-
-  private void paladinDoorExiting() { // gate upstairs in paladins
-    for (int i = 1; i <= 20; i++) {
-      if (c.currentX() == 609 && c.currentY() == 1548) {
-        c.atWallObject(609, 1548); // locked door
-        c.sleep(4 * GAME_TICK);
-      }
-    }
-  }
-
-  private void paladinDoorEntering() { // gate upstairs in paladins
-    c.toggleBatchBarsOn();
-    for (int i = 1; i <= 20; i++) {
-      if (c.currentX() == 609 && c.currentY() == 1547) {
-        c.atWallObject2(609, 1548); // locked door
-        c.sleep(4 * GAME_TICK);
-        while (c.isBatching()) c.sleep(GAME_TICK);
-      }
-    }
-    c.toggleBatchBarsOff();
   }
 
   private void BankToPaladins() {
@@ -393,31 +339,146 @@ public final class K_Paladins extends K_kailaScript {
     openDoorObjects(57, 598, 603); // open outer gate
     c.walkTo(607, 603);
     openDoorObjects(64, 607, 603); // open inner gate
-    c.walkTo(612, 604); // just below stair
-    paladinStair();
+    c.walkTo(613, 603); // just below stair
+    paladinStairUp();
+    if (c.currentY() < 1000) paladinStairUp();
     c.walkTo(609, 1547);
     paladinDoorEntering();
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void witchhavenToBank() {
-    if (c.currentX() > 500 && c.currentX() < 532) {
-      c.walkTo(528, 597);
-      c.walkTo(534, 597);
-      c.sleep(640);
-    }
-    c.walkTo(534, 597);
-    c.walkTo(543, 597);
-    c.walkTo(543, 605);
+  private void walkToBank() {
+    c.setStatus("@gre@Chest Empty, Walking...");
+    c.walkTo(611, 2494);
+    paladinLadderDown();
+    c.walkTo(609, 1548); // walk to door
+    paladinDoorExiting(); // go through door
+    c.walkTo(611, 1544);
+    paladinStairDown();
+    c.walkTo(608, 603);
+    openDoorObjects(64, 607, 603); // open inner gate
+    c.walkTo(599, 603);
+    openDoorObjects(57, 598, 603); // open outer gate
+    c.walkTo(577, 603);
+    c.walkTo(574, 606);
+    c.walkTo(564, 606);
+    c.walkTo(552, 606);
+    c.walkTo(550, 608);
     c.walkTo(550, 612);
-    c.sleep(320);
     c.setStatus("@gre@Done Walking..");
+    totalTrips = totalTrips + 1;
+    c.sleep(640);
+  }
+
+  private void witchhavenToBank() {
+    c.setStatus("@gre@Witchhaven to bank..");
+    c.walkTo(525, 605);
+    c.walkTo(528, 602);
+    c.walkTo(533, 598);
+    c.walkTo(535, 604);
+    c.walkTo(543, 610);
+    c.walkTo(549, 612);
+    c.setStatus("@gre@Done Walking..");
+  }
+
+  private void paladinChest() {
+    c.setStatus("@gre@Stealing From Chest..");
+    for (int i = 0; i < 400; i++) {
+      if (c.currentY() > 1700 && c.getNearestObjectById(338) != null) {
+        c.walkTo(610, 2488);
+        c.atObject2(610, 2487);
+        c.sleep(7 * GAME_TICK);
+      } else break;
+    }
+    c.sleep(10 * GAME_TICK);
+    c.setStatus("@gre@Done Stealing Chest..");
+  }
+
+  private void paladinLadderUp() {
+    c.setStatus("@gre@Going up ladder..");
+    for (int i = 0; i < 100; i++) {
+      if (c.currentY() < 2000 && c.getNearestObjectById(5) != null) {
+        c.walkTo(611, 1550);
+        c.atObject(611, 1551); // ladder in paladin room
+        c.sleep(4 * GAME_TICK);
+      } else break;
+    }
+    c.setStatus("@gre@Done going up ladder..");
+  }
+
+  private void paladinLadderDown() {
+    c.setStatus("@gre@Going down ladder..");
+    for (int i = 0; i < 100; i++) {
+      if (c.currentY() > 2000 && c.getNearestObjectById(6) != null) {
+        c.walkTo(611, 2494);
+        c.atObject(611, 2495); // go down ladder
+        c.sleep(4 * GAME_TICK);
+      } else break;
+    }
+    c.setStatus("@gre@Done Going down ladder..");
+  }
+
+  private void paladinStairDown() {
+    c.setStatus("@gre@Going down stairs..");
+    for (int i = 0; i < 100; i++) {
+      if (c.currentY() > 1000 && c.getNearestObjectById(44) != null) {
+        c.walkTo(611, 1544);
+        c.atObject(611, 1545); // go downstairs
+        c.sleep(4 * GAME_TICK);
+      } else break;
+    }
+    c.setStatus("@gre@Done Going down stairs..");
+  }
+
+  private void paladinStairUp() {
+    c.setStatus("@gre@Going up stairs..");
+    for (int i = 0; i <= 200; i++) {
+      int[] objectLoc = c.getNearestObjectById(342);
+      if (objectLoc == null) return;
+      if (c.currentY() < 610 && c.currentY() > 600 && c.getNearestObjectById(342) != null) {
+        c.walkTo(613, 603);
+        if (c.getNearestObjectById(342) != null) c.atObject(611, 601);
+        c.sleep(320);
+        if (c.getNearestObjectById(342) != null) c.atObject(611, 601);
+        c.sleep(320);
+        if (c.getNearestObjectById(342) != null) c.atObject(611, 601);
+        c.sleep(320);
+      } else break;
+      c.sleep(3 * GAME_TICK);
+    }
+    c.setStatus("@gre@done Going up stairs..");
+  }
+
+  private void paladinDoorExiting() { // gate upstairs in paladins
+    c.setStatus("@gre@Exiting paladin door..");
+    for (int i = 1; i <= 200; i++) {
+      if (c.currentY() > 1547) { // c.getNearestObjectById(97) returns null todo (bug)
+        c.walkTo(609, 1548); // unlocked door
+        c.atWallObject(609, 1548);
+        c.sleep(4 * GAME_TICK);
+        while (c.isBatching()) c.sleep(GAME_TICK);
+      } else break;
+    }
+    c.setStatus("@gre@Done exiting paladin door..");
+  }
+
+  private void paladinDoorEntering() { // gate upstairs in paladins
+    c.setStatus("@gre@Entering paladin door..");
+    for (int i = 0; i <= 200; i++) {
+      if (c.currentY() < 1548) { // c.getNearestObjectById(97) returns null todo (bug)
+        c.walkTo(609, 1547);
+        c.atWallObject2(609, 1548); // locked door
+        c.sleep(4 * GAME_TICK);
+        while (c.isBatching()) c.sleep(GAME_TICK);
+      } else break;
+    }
+    c.setStatus("@gre@Done Entering paladin door..");
   }
 
   private void setupGUI() {
     JLabel header = new JLabel("Paladin Thiever - By Kaila.");
     JLabel label1 = new JLabel("Start in Ardy South Bank OR in Paladin Tower.");
-    JLabel label2 = new JLabel("Please don't wield weapons while Thieving.");
+    JLabel label2 = new JLabel("Please do NOT wield weapons while Thieving.");
     JLabel label3 = new JLabel("Chat commands can be used to direct the bot");
     JLabel label4 = new JLabel("Example ::bank ");
     JLabel label5 = new JLabel("Combat Styles ::attack :strength ::defense ::controller");
@@ -435,6 +496,7 @@ public final class K_Paladins extends K_kailaScript {
         e -> {
           foodId = foodIds[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
+          foodName = foodTypes[foodField.getSelectedIndex()];
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           c.log(
@@ -471,28 +533,28 @@ public final class K_Paladins extends K_kailaScript {
   @Override
   public void chatCommandInterrupt(String commandText) {
     if (commandText.contains("bank")) {
-      c.displayMessage("@red@Got banking command! Going to the Bank!");
+      c.displayMessage("@gre@Got banking command! Going to the Bank!");
       timeToBank = true;
       c.sleep(100);
     } else if (commandText.contains(
         "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
-      c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
-      c.displayMessage("@red@Switching to \"Accurate\" combat style!");
+      c.displayMessage("@gre@Got Combat Style Command! - Attack Xp");
+      c.displayMessage("@gre@Switching to \"Accurate\" combat style!");
       fightMode = 2;
       c.sleep(100);
     } else if (commandText.contains("strength")) {
-      c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
-      c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
+      c.displayMessage("@gre@Got Combat Style Command! - Strength Xp");
+      c.displayMessage("@gre@Switching to \"Aggressive\" combat style!");
       fightMode = 1;
       c.sleep(100);
     } else if (commandText.contains("defense")) {
-      c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
-      c.displayMessage("@red@Switching to \"Defensive\" combat style!");
+      c.displayMessage("@gre@Got Combat Style Command! - Defense Xp");
+      c.displayMessage("@gre@Switching to \"Defensive\" combat style!");
       fightMode = 3;
       c.sleep(100);
     } else if (commandText.contains("controlled")) {
-      c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
-      c.displayMessage("@red@Switching to \"Controlled\" combat style!");
+      c.displayMessage("@gre@Got Combat Style Command! - Controlled Xp");
+      c.displayMessage("@gre@Switching to \"Controlled\" combat style!");
       fightMode = 0;
       c.sleep(100);
     }
@@ -550,7 +612,7 @@ public final class K_Paladins extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      c.drawString("@red@Paladins Thiever @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@gre@Paladins Thiever @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@________________________", x, y, 0xFFFFFF, 1);
       if (coinsInBank == -1) {
         c.drawString(
@@ -607,24 +669,32 @@ public final class K_Paladins extends K_kailaScript {
       }
       if (foodInBank == -1) {
         c.drawString(
-            "@whi@Food Used: @gre@"
+            "@whi@"
+                + foodName
+                + " Used: @gre@"
                 + usedFood // working off eat()
                 + "@yel@ (@whi@"
                 + String.format("%,d", foodUsedPerHr)
                 + "@yel@/@whi@hr@yel@)"
-                + "@whi@ Food in Bank: @gre@ Unknown",
+                + "@whi@ "
+                + foodName
+                + " +  in Bank: @gre@ Unknown",
             x,
             y + (14 * 3),
             0xFFFFFF,
             1);
       } else {
         c.drawString(
-            "@whi@Food Used: @gre@"
+            "@whi@"
+                + foodName
+                + " Used: @gre@"
                 + usedFood // working off eat()
                 + "@yel@ (@whi@"
                 + String.format("%,d", foodUsedPerHr)
                 + "@yel@/@whi@hr@yel@)"
-                + "@whi@ Food in Bank: @gre@"
+                + "@whi@ "
+                + foodName
+                + " in Bank: @gre@"
                 + foodInBank
                 + "@yel@)",
             x,
@@ -667,14 +737,17 @@ public final class K_Paladins extends K_kailaScript {
           1);
       if (usedFood == 0 || foodInBank == -1) {
         c.drawString(
-            "@whi@Time till out of Food: Unable to Parse, Please wait!",
+            "@whi@Time till out of " + foodName + ": Unable to Parse, Please wait!",
             x,
             y + (14 * 6),
             0xFFFFFF,
             1);
       } else {
         c.drawString(
-            "@whi@Time till out of Food: " + c.timeToCompletion(usedFood, foodInBank, startTime),
+            "@whi@Time till out of "
+                + foodName
+                + ": "
+                + c.timeToCompletion(usedFood, foodInBank, startTime),
             x,
             y + (14 * 6),
             0xFFFFFF,

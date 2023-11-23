@@ -3,9 +3,7 @@ package listeners;
 import bot.Main;
 import controller.Controller;
 import java.awt.*;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 /**
  * WindowListener is a listener which updates other windows based on what has been clicked on the
@@ -18,68 +16,151 @@ import javax.swing.JTextArea;
 public class WindowListener implements Runnable {
 
   final JFrame rscFrame;
-  final JFrame botFrame;
-  final JFrame consoleFrame;
-  JScrollPane scroller;
+  final JComponent botFrame;
+  final JPanel consoleFrame;
+  final JMenuBar menuBar;
+  final JMenu themeMenu, menu;
+  final JButton buttonClear;
+  final JCheckBox autoscrollLogsCheckbox;
+  final JScrollPane scroller;
   final JTextArea logArea;
   final Controller controller;
+  JButton[] buttonArray;
+  JCheckBox[] checkBoxArray;
 
   public WindowListener(
-      JFrame _botFrame,
-      JFrame _consoleFrame,
+      JComponent _botFrame,
+      JPanel _consoleFrame,
       JFrame _rscFrame,
+      JMenu _menu,
+      JMenu _themeMenu,
+      JMenuBar _menuBar,
       JScrollPane _scroller,
       JTextArea _logArea,
-      Controller _controller) {
-    rscFrame = _rscFrame;
+      Controller _controller,
+      JButton _buttonClear,
+      JCheckBox _autoscrollLogsCheckbox,
+      JButton[] _buttonArray,
+      JCheckBox[] _checkBoxArray) {
+
     botFrame = _botFrame;
     consoleFrame = _consoleFrame;
-    scroller = scroller;
+    rscFrame = _rscFrame;
+    menu = _menu;
+    themeMenu = _themeMenu;
+    menuBar = _menuBar;
+    scroller = _scroller;
     logArea = _logArea;
     controller = _controller;
+    buttonClear = _buttonClear;
+    autoscrollLogsCheckbox = _autoscrollLogsCheckbox;
+    buttonArray = _buttonArray;
+    checkBoxArray = _checkBoxArray;
   }
 
   @Override
   public void run() {
+    String themeName = Main.getThemeName();
+    int prevWidth = rscFrame.getWidth();
+    int prevHeight = rscFrame.getHeight();
     boolean consolePrevious = Main.isLogWindowOpen();
+    boolean sidePrevious = Main.isSideWindowOpen();
 
     while (true) {
+
+      // Update size of JFrame when log window is opened and closed
       if (consolePrevious != Main.isLogWindowOpen()) {
-        consoleFrame.setVisible(Main.isLogWindowOpen());
+        if (Main.isLogWindowOpen()) {
+          consoleFrame.setVisible(true);
+          rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() + 188);
+          controller.log("IdleRSC: Showing Log Window!", "gre");
+          // refresh graphics to prevent white screen
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(100);
+            controller.setDrawing(false);
+          }
+        } else {
+          consoleFrame.setVisible(false);
+          rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() - 188);
+          controller.log("IdleRSC: Hiding Log Window!", "gre");
+          // refresh graphics to prevent white screen
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(100);
+            controller.setDrawing(false);
+          }
+        }
         consolePrevious = Main.isLogWindowOpen();
       }
 
-      if (Main.isSticky()) {
-        if (consoleFrame.isVisible()) {
-          if (!consoleFrame.getSize().equals(new Dimension(rscFrame.getWidth(), 225))) {
-            consoleFrame.setSize(rscFrame.getWidth(), 225);
+      // Update size of JFrame when side window is opened and closed
+      if (sidePrevious != Main.isSideWindowOpen()) {
+        if (Main.isSideWindowOpen()) {
+          botFrame.setVisible(true);
+          rscFrame.setSize(rscFrame.getWidth() + 122, rscFrame.getHeight());
+          controller.log("IdleRSC: Showing Side Bar!", "gre");
+          // refresh graphics to prevent white screen
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(50);
+            controller.setDrawing(false);
           }
-          if (!consoleFrame
-              .getLocation()
-              .equals(
-                  new Point(
-                      rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight()))) {
-            consoleFrame.setLocation(
-                rscFrame.getLocation().x, rscFrame.getLocation().y + rscFrame.getHeight());
-          }
-        }
-        if (botFrame.isVisible()) {
-          if (!botFrame
-              .getSize()
-              .equals(new Dimension(botFrame.getWidth(), rscFrame.getHeight()))) {
-            botFrame.setSize(botFrame.getWidth(), rscFrame.getHeight());
-          }
-          if (!botFrame
-              .getLocation()
-              .equals(
-                  new Point(
-                      rscFrame.getLocation().x + rscFrame.getWidth(), rscFrame.getLocation().y))) {
-            botFrame.setLocation(
-                rscFrame.getLocation().x + rscFrame.getWidth(), rscFrame.getLocation().y);
+        } else {
+          botFrame.setVisible(false);
+          rscFrame.setSize(rscFrame.getWidth() - 122, rscFrame.getHeight());
+          controller.log("IdleRSC: Hiding Side Bar!", "gre");
+          if (!controller.isDrawEnabled()) {
+            controller.setDrawing(true);
+            controller.sleep(50);
+            controller.setDrawing(false);
           }
         }
+        sidePrevious = Main.isSideWindowOpen();
       }
 
+      // Refresh JFrame when resizing happens to prevent white screen
+      if (!controller.isDrawEnabled()
+          && (rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
+        controller.setDrawing(true);
+        controller.sleep(300);
+        controller.setDrawing(false);
+        prevWidth = rscFrame.getWidth();
+        prevHeight = rscFrame.getHeight();
+      }
+
+      // update our theme when themeName string is changed in Main
+      if (!themeName.equals(Main.getThemeName())) {
+        controller.log("Switching Theme to " + Main.getThemeName(), "gre");
+        Color[] colors = Main.getThemeElements(Main.getThemeName()); // back, front
+        botFrame.setBackground(colors[0]);
+        rscFrame.getContentPane().setBackground(colors[0]);
+        botFrame.setBorder(BorderFactory.createLineBorder(colors[0]));
+        themeMenu.setForeground(colors[1]);
+        menu.setForeground(colors[1]); // text color
+        menuBar.setBackground(colors[0]);
+        menuBar.setBorder(BorderFactory.createLineBorder(colors[0]));
+        buttonClear.setBackground(colors[0].darker());
+        buttonClear.setForeground(colors[1]);
+        autoscrollLogsCheckbox.setBackground(colors[0]);
+        autoscrollLogsCheckbox.setForeground(colors[1]);
+        logArea.setBackground(colors[0].brighter());
+        logArea.setForeground(colors[1]);
+        scroller.setBackground(colors[0]);
+        scroller.setForeground(colors[1]);
+        consoleFrame.setBackground(colors[0]);
+        consoleFrame.setForeground(colors[1]);
+
+        for (JButton jButton : buttonArray) {
+          jButton.setBackground(colors[0].darker());
+          jButton.setForeground(colors[1]);
+        }
+        for (JCheckBox jCheckbox : checkBoxArray) {
+          jCheckbox.setBackground(colors[0]);
+          jCheckbox.setForeground(colors[1]);
+        }
+        themeName = Main.getThemeName();
+      }
       try {
         Thread.sleep(40);
       } catch (InterruptedException e) {

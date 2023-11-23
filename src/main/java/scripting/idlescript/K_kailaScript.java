@@ -2,7 +2,6 @@ package scripting.idlescript;
 
 import bot.Main;
 import controller.Controller;
-import java.util.Arrays;
 import javax.swing.*;
 import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
@@ -18,9 +17,7 @@ import models.entities.SpellId;
 /*
  *       todo
  *           int trout = ItemId.RAW_TROUT.getId();
- *           fix teleport spot bounding
  *           replace eat food to loot with clearInventorySlot
- *          eat any 1 food script, return true/false to bank?
  *          make master list of all methods and variables,
  *              - full list near top,sub list each section!
  *          Javadoc for each method
@@ -632,7 +629,7 @@ public class K_kailaScript extends IdleScript {
   }
   /**
    * attempt to leave combat once per tick for 6 ticks<br>
-   * walks to current tile (async non-blocking) radius 1. <br>
+   * walks to current tile (async non-blocking) radius 0. <br>
    */
   protected static void leaveCombat() {
     for (int i = 0; i <= 10; i++) {
@@ -640,9 +637,7 @@ public class K_kailaScript extends IdleScript {
         c.setStatus("@red@Leaving combat..");
         c.walkToAsync(c.currentX(), c.currentY(), 0);
         c.sleep(GAME_TICK);
-      } else {
-        return;
-      }
+      } else return;
     }
   }
   /**
@@ -655,9 +650,7 @@ public class K_kailaScript extends IdleScript {
         c.setStatus("@red@Leaving combat..");
         c.walkToAsync(c.currentX(), c.currentY(), 1);
         c.sleep(GAME_TICK);
-      } else {
-        return;
-      }
+      } else return;
     }
   }
   /**
@@ -834,7 +827,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superAttackPot[1])
               + c.getInventoryItemCount(superAttackPot[2]);
       if (superAttackPotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombat();
+        if (leaveCombat && c.isInCombat()) leaveCombatForced();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
           c.itemCommand(superAttackPot[0]);
@@ -864,7 +857,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superStrengthPot[1])
               + c.getInventoryItemCount(superStrengthPot[2]);
       if (superStrengthPotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombat();
+        if (leaveCombat && c.isInCombat()) leaveCombatForced();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
           c.itemCommand(superStrengthPot[0]);
@@ -894,7 +887,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superDefensePot[1])
               + c.getInventoryItemCount(superDefensePot[2]);
       if (superDefensePotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombat();
+        if (leaveCombat && c.isInCombat()) leaveCombatForced();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
           c.itemCommand(superDefensePot[0]);
@@ -1023,18 +1016,65 @@ public class K_kailaScript extends IdleScript {
    *
    *
    */
-  /** if bank is not open, wait 2 ticks, repeat check. repeats 16 times. */
+  /** if bank is not open, wait 2 ticks, repeat check. repeats 20 times. */
   protected static void waitForBankOpen() {
-    for (int i = 0; i <= 15; i++) {
+    for (int i = 0; i <= 20; i++) {
+      if (!c.isRunning()) break;
       if (!c.isInBank()) {
-        // c.log("waiting for bank");
         c.sleep(2 * GAME_TICK);
       } else {
         break;
       }
     }
   }
+  /** if trade screen is not open, wait 3 ticks, trade again, repeat check. repeats 200 times. */
+  protected static void waitForTradeOpen(String playerName) {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (!c.isInTrade()) {
+        c.tradePlayer(c.getPlayerServerIndexByName(playerName));
+        c.sleep(3 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
 
+  /** if trade confirmation screen is not open, wait 2 ticks, repeat check. repeats 200 times. */
+  protected static void waitForTradeConfirmation() {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (!c.isInTradeConfirmation()) {
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+  /** if trade confirmation screen is not open, wait 2 ticks, repeat check. repeats 200 times. */
+  protected static void waitForTradeConfirmationToClose() {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (c.isInTradeConfirmation()) {
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
+  /**
+   * if trade is not confirmed by the other player, wait 2 ticks, repeat check. repeats 200 times.
+   */
+  protected static void waitForTradeRecipientAccepting() {
+    for (int i = 0; i <= 200; i++) {
+      if (!c.isRunning()) break;
+      if (!c.isTradeRecipientAccepting()) {
+        c.sleep(2 * GAME_TICK);
+      } else {
+        break;
+      }
+    }
+  }
   /**
    * Withdraw amount of item from the bank, accepts any itemId or withdraw Amount. For potions or
    * food use withdrawFood() or other methods below this. Withdraws none if inventory count is the
@@ -1046,7 +1086,6 @@ public class K_kailaScript extends IdleScript {
   protected static void withdrawItem(int itemId, int withdrawAmount) {
     if (c.getInventoryItemCount(itemId) < withdrawAmount) {
       c.withdrawItem(itemId, withdrawAmount - c.getInventoryItemCount(itemId));
-      c.sleep(GAME_TICK);
     }
   }
 
@@ -1075,12 +1114,7 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void inventoryItemCheck(int itemId, int itemAmount) {
     if (c.getInventoryItemCount(itemId) < itemAmount) {
-      if (!c.isInBank()) {
-        c.openBank();
-        waitForBankOpen();
-      }
       c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
-      c.sleep(3 * GAME_TICK);
     }
   }
 
@@ -1094,7 +1128,6 @@ public class K_kailaScript extends IdleScript {
   protected static void depositExtra(int itemId, int keepAmount) {
     if (c.getInventoryItemCount(itemId) > keepAmount) {
       c.depositItem(itemId, c.getInventoryItemCount(itemId) - keepAmount);
-      c.sleep(GAME_TICK);
     }
   }
   /**
@@ -1106,12 +1139,11 @@ public class K_kailaScript extends IdleScript {
   protected static void withdrawFood(int foodId, int foodWithdrawAmount) {
     if (c.getInventoryItemCount(foodId) < foodWithdrawAmount) {
       c.withdrawItem(foodId, foodWithdrawAmount - c.getInventoryItemCount(foodId));
-      c.sleep(2 * GAME_TICK);
+      c.sleep(GAME_TICK);
     }
     if (c.getInventoryItemCount(foodId) < (foodWithdrawAmount - 2)) {
       for (int foodId2 : c.getFoodIds()) {
         c.withdrawItem(foodId2, foodWithdrawAmount - c.getInventoryItemCount(foodId) - 2);
-        c.sleep(2 * GAME_TICK);
       }
     }
   }
@@ -1414,12 +1446,10 @@ public class K_kailaScript extends IdleScript {
   protected static void reBankForFullFoodCheck() {
     if (c.getInventoryItemCount() < 30) {
       c.openBank();
-      c.sleep(2 * GAME_TICK);
       if (!c.isInBank()) {
         waitForBankOpen();
       } else {
         c.withdrawItem(foodId, 30);
-        c.sleep(GAME_TICK);
       }
       c.closeBank();
     }
@@ -1436,7 +1466,7 @@ public class K_kailaScript extends IdleScript {
         c.withdrawItem(420, 1);
         c.closeBank();
         c.equipItem(c.getInventoryItemSlotIndex(420));
-        c.sleep(2 * GAME_TICK);
+        c.sleep(GAME_TICK);
       } else {
         c.log("Warning: Cannot find anti dragon shield, logging OUT", "@red@");
         endSession();
@@ -1618,10 +1648,12 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void openDoorObjects(int objectId, int gateX, int gateY) {
     int[] gateLocation = c.getNearestObjectById(objectId);
-    for (int i = 0; i < 100; i++) {
-      if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
-        c.atObject(gateLocation[0], gateLocation[1]);
-        c.sleep(2000);
+    if (gateLocation == null) return;
+    for (int i = 0; i < 200; i++) {
+      if (gateLocation[0] == gateX && gateLocation[1] == gateY) {
+        // Arrays.equals(gateLocation, new int[] {gateX, gateY})
+        if (c.getNearestObjectById(objectId) != null) c.atObject(gateX, gateY);
+        c.sleep(1280);
       } else {
         return;
       }
@@ -1637,9 +1669,11 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void openWallDoorObjects(int objectId, int gateX, int gateY) {
     int[] gateLocation = c.getNearestObjectById(objectId);
+    if (gateLocation == null) return;
     for (int i = 0; i < 100; i++) {
-      if (Arrays.equals(gateLocation, new int[] {gateX, gateY})) {
-        c.atWallObject(gateLocation[0], gateLocation[1]);
+      if (gateLocation[0] == gateX && gateLocation[1] == gateY) {
+        if (c.getNearestObjectById(objectId) != null)
+          c.atWallObject(gateLocation[0], gateLocation[1]);
         c.sleep(2000);
       }
     }

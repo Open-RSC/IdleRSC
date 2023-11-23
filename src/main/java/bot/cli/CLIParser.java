@@ -1,51 +1,90 @@
 package bot.cli;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
 import org.apache.commons.cli.*;
 
 public class CLIParser {
   private static final Options options = new Options();
 
   public ParseResult parse(String[] args) throws ParseException {
+
     addOptions();
-    CommandLineParser parser = new DefaultParser(false);
-    CommandLine cmd = parser.parse(options, args);
 
     ParseResult parseResult = new ParseResult();
+    final Properties p = new Properties();
+    Path accountPath = Paths.get("accounts");
+    final File file = accountPath.resolve(bot.Main.getUsername() + ".properties").toFile();
 
-    // Options with parameters/arguments.
-    parseResult.setUsername(cmd.getOptionValue("username", ""));
-    parseResult.setPassword(cmd.getOptionValue("password", ""));
-    parseResult.setScriptName(cmd.getOptionValue("script-name", ""));
-    parseResult.setScriptArguments(
-        cmd.hasOption("script-arguments") ? cmd.getOptionValues("script-arguments") : null);
-    parseResult.setInitCache(cmd.getOptionValue("init-cache", ""));
+    // Ensure our directory and file exist first
+    if (bot.Main.getUsername() == null) bot.Main.setUsername("");
+    try {
+      Files.createDirectories(accountPath);
+      // Files.createFile(Paths.get("accounts", bot.Main.getUsername() + ".properties"));
+    } catch (IOException e2) {
+      System.err.println("Failed to create directory or file: " + e2.getMessage());
+      e2.printStackTrace();
+    }
 
-    // Boolean options
-    parseResult.setAutoLogin(cmd.hasOption("auto-login"));
-    parseResult.setLogWindowVisible(cmd.hasOption("log-window"));
-    parseResult.setSidePanelSticky(!cmd.hasOption("unstick")); // negative (sticky by default)
-    parseResult.setDebug(cmd.hasOption("debug"));
-    parseResult.setBotPaintVisible(!cmd.hasOption("botpaint")); // negative (enabled by default)
-    parseResult.setSidePanelVisible(
-        !cmd.hasOption("hide-side-panel")); // negative (enabled by default)
-    parseResult.setGraphicsEnabled(!cmd.hasOption("disable-gfx")); // negative (enabled by default)
-    parseResult.setGraphicsInterlacingEnabled(cmd.hasOption("interlace"));
-    parseResult.setScriptSelectorWindowVisible(cmd.hasOption("script-selector"));
-    parseResult.setLocalOcr(cmd.hasOption("local-ocr"));
+    try (final FileInputStream stream = new FileInputStream(file)) {
+      p.load(stream);
+      // ALWAYS make properties lowercase
+      parseResult.setUsername(bot.Main.getUsername());
+      parseResult.setPassword(p.getProperty("password", ""));
+      parseResult.setScriptName(p.getProperty("script-name", ""));
+      parseResult.setThemeName(p.getProperty("theme", ""));
 
-    // Switching options
-    parseResult.setSpellId(cmd.getOptionValue("spell-id", "-1"));
-    parseResult.setAttackItems(
-        cmd.hasOption("attack-items") ? cmd.getOptionValues("attack-items") : null);
-    parseResult.setDefenceItems(
-        cmd.hasOption("defence-items") ? cmd.getOptionValues("defence-items") : null);
-    parseResult.setStrengthItems(
-        cmd.hasOption("strength-items") ? cmd.getOptionValues("strength-items") : null);
+      parseResult.setScriptArguments(
+          p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));
+      parseResult.setInitCache(p.getProperty("init-cache", ""));
 
-    // CLI options
-    parseResult.setHelp(cmd.hasOption("help"));
-    parseResult.setVersion(cmd.hasOption("version"));
+      // Boolean options
+      parseResult.setAutoLogin(
+          p.getProperty("auto-login", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setSidebarVisible(
+          p.getProperty("sidebar", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setLogWindowVisible(
+          p.getProperty("log-window", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setDebug(
+          p.getProperty("debug", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setBotPaintVisible(
+          !p.getProperty("bot-paint", "")
+              .replace(" ", "")
+              .toLowerCase()
+              .contains("true")); // negative (enabled by default)
+      parseResult.setGraphicsEnabled(
+          !p.getProperty("disable-gfx", "")
+              .replace(" ", "")
+              .toLowerCase()
+              .contains("true")); // negative (enabled by default)
+      parseResult.setGraphicsInterlacingEnabled(
+          p.getProperty("interlace", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setLocalOcr(
+          p.getProperty("local-ocr", "").replace(" ", "").toLowerCase().contains("true"));
+      // Switching options
+      parseResult.setSpellId(p.getProperty("spell-id", "-1"));
+      parseResult.setAttackItems(
+          p.getProperty("attack-items", "").replace(" ", "").toLowerCase().split(","));
+      parseResult.setDefenceItems(
+          p.getProperty("defence-items", "").replace(" ", "").toLowerCase().split(","));
+      parseResult.setStrengthItems(
+          p.getProperty("strength-items", "").replace(" ", "").toLowerCase().split(","));
 
+      // CLI options
+      parseResult.setLocalOcr(
+          p.getProperty("local-ocr", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setHelp(
+          p.getProperty("help", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setVersion(
+          p.getProperty("version", "").replace(" ", "").toLowerCase().contains("true"));
+    } catch (final Throwable t) {
+      System.out.println("Error loading account " + parseResult.getUsername() + ": " + t);
+    }
     return parseResult;
   }
 
@@ -86,6 +125,13 @@ public class CLIParser {
             .argName("arguments")
             .desc("Arguments to pass to script, e.g. dragonstone.")
             .build();
+    Option theme =
+        Option.builder()
+            .longOpt("theme")
+            .hasArg()
+            .argName("RuneDark Theme")
+            .desc("Set client theme.")
+            .build();
     Option initCache =
         Option.builder("i")
             .longOpt("init-cache")
@@ -98,11 +144,8 @@ public class CLIParser {
     Option autoLogin =
         Option.builder().longOpt("auto-login").desc("Enable automatic log-in.").build();
     Option logWindow = Option.builder().longOpt("log-window").desc("Display log window.").build();
-    Option unstick =
-        Option.builder().longOpt("unstick").desc("Unstick side panel from main window.").build();
+    Option sideWindow = Option.builder().longOpt("sidebar").desc("Display side window.").build();
     Option debug = Option.builder().longOpt("debug").desc("Enable debug logging.").build();
-    Option hideSidePanel =
-        Option.builder().longOpt("hide-side-panel").desc("Hide side panel.").build();
     Option disableGraphics =
         Option.builder().longOpt("disable-gfx").desc("Disable graphics refresh.").build();
     Option enableInterlacing =
@@ -154,12 +197,12 @@ public class CLIParser {
     options.addOption(password);
     options.addOption(scriptName);
     options.addOption(scriptArguments);
+    options.addOption(theme);
     options.addOption(initCache);
     options.addOption(autoLogin);
+    options.addOption(sideWindow);
     options.addOption(logWindow);
-    options.addOption(unstick);
     options.addOption(debug);
-    options.addOption(hideSidePanel);
     options.addOption(disableGraphics);
     options.addOption(enableInterlacing);
     options.addOption(scriptSelectorWindow);

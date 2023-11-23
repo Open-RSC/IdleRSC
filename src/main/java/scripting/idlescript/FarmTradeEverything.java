@@ -128,7 +128,7 @@ public class FarmTradeEverything extends IdleScript {
           finalTradeAmounts[i] = tradeAmounts.get(i);
         }
 
-        controller.setTradeItems(finalTradeIds, finalTradeAmounts);
+        controller.setTradeItems(finalTradeIds, finalTradeAmounts, false);
         controller.sleep(640);
 
         //				int itemId = controller.getInventorySlotItemId(0);

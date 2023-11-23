@@ -111,7 +111,9 @@ public class KeyCallback {
         c.displayMessage("@red@IdleRSC@yel@: @gre@Casting spell!");
         c.castSpellOnPlayer(Main.config.getSpellId(), playerIndex);
       } else {
-        c.displayMessage("@red@IdleRSC@yel@: @gre@Not in combat! Cannot cast spell!");
+        npc = c.getNearestNpcByIds(c.getNpcsAsIntArray(), true);
+        c.displayMessage("@red@IdleRSC@yel@: @gre@Casting spell on Nearest Npc");
+        c.castSpellOnNpc(npc.serverIndex, Main.config.getSpellId());
       }
     } else if (keycode == KeyEvent.VK_F9) { // take screenshot with name = current timestamp
       c.takeScreenshot("");

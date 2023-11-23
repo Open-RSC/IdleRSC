@@ -4,21 +4,17 @@ import java.util.ArrayList;
 
 public class ParseResult {
   // Options with parameters/arguments.
-  private String username;
-  private String password;
-  private String scriptName;
+  private String username, password, scriptName, themeName, initCache;
   private String[] scriptArguments;
-  private String initCache;
   // Boolean options
-  private boolean autoLogin;
-  private boolean logWindowVisible;
-  private boolean sidePanelSticky;
-  private boolean debug;
-  private boolean botPaintVisible;
-  private boolean sidePanelVisible;
-  private boolean graphicsEnabled;
-  private boolean graphicsInterlacingEnabled;
-  private boolean scriptSelectorWindowVisible;
+  private boolean autoLogin,
+      logWindowVisible,
+      debug,
+      botPaintVisible,
+      graphicsEnabled,
+      graphicsInterlacing,
+      showSideBar;
+  private boolean scriptSelectorOpen;
   private boolean localOcr;
 
   // Switching options
@@ -55,6 +51,14 @@ public class ParseResult {
     return scriptName;
   }
 
+  public void setThemeName(String themeName) {
+    this.themeName = themeName;
+  }
+
+  public String getThemeName() {
+    return themeName;
+  }
+
   public void setScriptArguments(String[] scriptArguments) {
     this.scriptArguments = scriptArguments;
   }
@@ -64,9 +68,9 @@ public class ParseResult {
   }
 
   public void setInitCache(String initCache) {
-    if (initCache.equalsIgnoreCase("uranium")) {
+    if (initCache != null && initCache.equalsIgnoreCase("uranium")) {
       this.initCache = "uranium";
-    } else if (initCache.equalsIgnoreCase("coleslaw")) {
+    } else if (initCache != null && initCache.equalsIgnoreCase("coleslaw")) {
       this.initCache = "coleslaw";
     } else {
       this.initCache = "";
@@ -93,12 +97,12 @@ public class ParseResult {
     return logWindowVisible;
   }
 
-  public void setSidePanelSticky(boolean sidePanelSticky) {
-    this.sidePanelSticky = sidePanelSticky;
+  public void setSidebarVisible(boolean sidebarVisible) {
+    this.showSideBar = sidebarVisible;
   }
 
-  public boolean isSidePanelSticky() {
-    return sidePanelSticky;
+  public boolean isSidebarVisible() {
+    return showSideBar;
   }
 
   public void setDebug(boolean debug) {
@@ -111,14 +115,6 @@ public class ParseResult {
 
   public void setBotPaintVisible(boolean botPaintVisible) {
     this.botPaintVisible = botPaintVisible;
-  }
-
-  public void setSidePanelVisible(boolean sidePanelVisible) {
-    this.sidePanelVisible = sidePanelVisible;
-  }
-
-  public boolean isSidePanelVisible() {
-    return sidePanelVisible;
   }
 
   public boolean isBotPaintVisible() {
@@ -141,20 +137,20 @@ public class ParseResult {
     return localOcr;
   }
 
-  public void setGraphicsInterlacingEnabled(boolean graphicsInterlacingEnabled) {
-    this.graphicsInterlacingEnabled = graphicsInterlacingEnabled;
+  public void setGraphicsInterlacingEnabled(boolean graphicsInterlacing) {
+    this.graphicsInterlacing = graphicsInterlacing;
   }
 
   public boolean isGraphicsInterlacingEnabled() {
-    return graphicsInterlacingEnabled;
+    return graphicsInterlacing;
   }
 
-  public void setScriptSelectorWindowVisible(boolean scriptSelectorWindowVisible) {
-    this.scriptSelectorWindowVisible = scriptSelectorWindowVisible;
+  public void setScriptSelectorWindowVisible(boolean scriptSelectorOpen) {
+    this.scriptSelectorOpen = scriptSelectorOpen;
   }
 
-  public boolean isScriptSelectorWindowVisible() {
-    return scriptSelectorWindowVisible;
+  public boolean isScriptSelectorOpen() {
+    return scriptSelectorOpen;
   }
 
   public void setAttackItems(String[] attackItems) {

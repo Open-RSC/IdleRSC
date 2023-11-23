@@ -8,6 +8,7 @@ import com.openrsc.client.entityhandling.defs.GameObjectDef;
 import com.openrsc.client.entityhandling.defs.ItemDef;
 import com.openrsc.client.entityhandling.defs.SpellDef;
 import com.openrsc.client.entityhandling.instances.Item;
+import com.openrsc.client.model.Sprite;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -61,7 +62,7 @@ public class Controller {
     1102, 346, 709, 18, 228, 1269, 320, 862, 749, 337, 132, 138, 142, 179, 1352, 1245, 1348, 1349,
     1350, 1353, 1354, 1359, 1360, 1459, 1460, 210, 1417, 1463
   };
-  final int[] bankerIds = {95, 224, 268, 540, 617, 792};
+  public final int[] bankerIds = {95, 224, 268, 540, 617, 792};
 
   final int[] closedObjectDoorIds = {
     57, 60, 64, 93, 94, 137, 138, 142, 180, 252, 253, 254, 256, 305, 311, 319, 346, 347, 356, 358,
@@ -889,7 +890,33 @@ public class Controller {
 
     return _list;
   }
+  /**
+   * Retrieves ORSCharacter[] array of NPCs nearby.
+   *
+   * @return guaranteed to not be null.
+   */
+  public ORSCharacter[] getNpcsAsArray() { // tested working
+    ORSCharacter[] npcs = (ORSCharacter[]) this.getMudClientValue("npcs");
+    int npcCount = this.getNpcCount();
 
+    ORSCharacter[] result = new ORSCharacter[npcCount];
+    System.arraycopy(npcs, 0, result, 0, npcCount);
+    return result;
+  }
+  /**
+   * Retrieves int[] array of NPCs nearby.
+   *
+   * @return guaranteed to not be null.
+   */
+  public int[] getNpcsAsIntArray() { // tested working
+    ORSCharacter[] orscNpcs = getNpcsAsArray();
+    int[] npcIds = new int[orscNpcs.length];
+
+    for (int i = 0; i < npcIds.length; i++) {
+      npcIds[i] = orscNpcs[i].npcId;
+    }
+    return npcIds;
+  }
   /**
    * Retrieves the count of NPCs nearby.
    *
@@ -2436,14 +2463,14 @@ public class Controller {
        * ~ Kaila ~
        * </pre>
        */
-      if (playerName != null && !playerName.equals("")) {
+      if (playerName != null && !playerName.isEmpty()) {
         directory = "Screenshots/" + playerName + "/";
         path = playerName + "_" + playerTime + ".png";
       } else {
         directory = "Screenshots/";
         path = playerTime + ".png";
       }
-      if (fileName != null && !fileName.equals("")) {
+      if (fileName != null && !fileName.isEmpty()) {
         savePath = directory + fileName + "_" + path;
       } else {
         savePath = directory + path;
@@ -2519,7 +2546,18 @@ public class Controller {
       return false;
     }
   }
-
+  /**
+   * Retrieves whether or not the item is notable.
+   *
+   * @param itemId int
+   */
+  public boolean isItemNotable(int itemId) {
+    try {
+      return EntityHandler.getItemDef(itemId).noteable;
+    } catch (Exception e) {
+      return false;
+    }
+  }
   /**
    * Retrieves the name of the specified item.
    *
@@ -3562,10 +3600,11 @@ public class Controller {
    *
    * @param itemIds -- int[]
    * @param amounts -- int[]
+   * @param notableItems -- boolean if trade will contain noted items
    * @return boolean -- returns true on success. false on mismatched array lengths or if you do not
    *     have enough of an item.
    */
-  public boolean setTradeItems(int[] itemIds, int[] amounts) {
+  public boolean setTradeItems(int[] itemIds, int[] amounts, boolean notableItems) {
     if (itemIds.length != amounts.length) return false;
 
     for (int i = 0; i < itemIds.length; i++)
@@ -3578,7 +3617,12 @@ public class Controller {
     for (int i = 0; i < itemIds.length; i++) {
       mud.packetHandler.getClientStream().bufferBits.putShort(itemIds[i]);
       mud.packetHandler.getClientStream().bufferBits.putInt(amounts[i]);
-      mud.packetHandler.getClientStream().bufferBits.putShort(0); // TODO: fix for noted, 1 = noted
+      if (isItemStackable(itemIds[i]) || !notableItems) {
+        mud.packetHandler.getClientStream().bufferBits.putShort(0);
+      } else {
+        // TODO: fix for noted,0 = unnoted 1 = noted
+        mud.packetHandler.getClientStream().bufferBits.putShort(1);
+      }
     }
 
     mud.packetHandler.getClientStream().finishPacket();
@@ -3587,10 +3631,9 @@ public class Controller {
 
     return true;
   }
-
   /** Removes all trade items from the current trade window. */
   public void removeAllTradeItems() {
-    setTradeItems(new int[] {}, new int[] {});
+    setTradeItems(new int[] {}, new int[] {}, true);
   }
 
   /**
@@ -3790,6 +3833,12 @@ public class Controller {
 
       boolean usedBankerNpc = false;
 
+      if (getObjectAtCoord(58, 731) == 942) { // handle shantay chest
+        atObject(58, 731);
+        sleep(5000);
+        return;
+      }
+
       for (int bankerId : bankerIds) {
         ORSCharacter bankerNpc = getNearestNpcById(bankerId, false);
 
@@ -3870,7 +3919,7 @@ public class Controller {
    * @param text String
    */
   public void log(String text) {
-    log(text, "red");
+    log(text, "gre");
   }
 
   /**
@@ -3880,8 +3929,7 @@ public class Controller {
    * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
    */
   public void log(String text, String rsTextColor) {
-    System.out.println(text);
-    Main.log(text);
+    Main.log(text); // main log does sysout
     displayMessage("@" + rsTextColor + "@" + text);
   }
 
@@ -3930,8 +3978,8 @@ public class Controller {
    * @return int[] -- [x, y] with the coordinates of the bank. Never returns null.
    */
   public int[] getNearestBank() {
-    int[] bankX = {220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440, 327};
-    int[] bankY = {635, 504, 511, 365, 450, 569, 452, 576, 600, 754, 3543, 495, 552};
+    int[] bankX = {220, 150, 103, 220, 216, 283, 503, 582, 566, 588, 129, 440, 327, 89};
+    int[] bankY = {635, 504, 511, 365, 450, 569, 452, 576, 600, 754, 3543, 495, 552, 694};
     int prevX = 10000;
     int prevY = 10000;
     int index = 0;
@@ -4102,7 +4150,23 @@ public class Controller {
       String text, int x, int y, int textColor, int fontSize, boolean center) {
     mud.getSurface().drawShadowText(text, x, y, textColor, Math.max(1, fontSize), center);
   }
-
+  /**
+   * Draws the sprite of an item at specified coordinates. Must be used inside paintInterrupt().
+   *
+   * @param itemId int --
+   * @param x int -- X coordinate
+   * @param y int -- Y coordinate
+   * @param width int -- Width of the sprite
+   * @param height int -- Height of the sprite
+   * @param mirrorX boolean -- Mirror the sprite across it's X axis.
+   */
+  public void drawItemSprite(int itemId, int x, int y, int width, int height, boolean mirrorX) {
+    ItemDef def = EntityHandler.getItemDef(itemId);
+    Sprite sprite = mud.spriteSelect(def);
+    mud.getSurface()
+        .drawSpriteClipping(
+            sprite, x, y, width, height, def.getPictureMask(), 0, def.getBlueMask(), mirrorX, 0, 1);
+  }
   /**
    * Sets the left-hand status indicator text value.
    *

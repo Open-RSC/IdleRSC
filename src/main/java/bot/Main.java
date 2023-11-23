@@ -79,7 +79,8 @@ public class Main {
       botPaintCheckbox,
       interlaceCheckbox,
       autoscrollLogsCheckbox,
-      sidebarCheckbox; // all the checkboxes on the sidepanel.
+      sidebarCheckbox,
+      gfxCheckbox; // all the checkboxes on the sidepanel.
   private static JButton loadScriptButton,
       pathwalkerButton,
       takeScreenshotButton,
@@ -311,6 +312,7 @@ public class Main {
       botPaintCheckbox,
       interlaceCheckbox,
       sidebarCheckbox,
+      gfxCheckbox
     };
     // todo swap side bar by swapping container contents
     for (JCheckBox jCheckbox : checkBoxArray) {
@@ -355,6 +357,7 @@ public class Main {
     debugCheckbox.setSelected(config.isDebug());
     botPaintCheckbox.setSelected(config.isBotPaintVisible());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
+    gfxCheckbox.setSelected(config.isGraphicsEnabled());
     interlaceCheckbox.setSelected(config.isGraphicsInterlacingEnabled());
 
     if (config.isGraphicsInterlacingEnabled()) {
@@ -533,14 +536,20 @@ public class Main {
     menuBar = new JMenuBar();
     settingsMenu = new JMenu("Settings");
     themeMenu = new JMenu("Theme Menu");
-    sidebarCheckbox = new JCheckBox("Show Sidebar");
-    logWindowCheckbox = new JCheckBox("Show Console");
+    gfxCheckbox = new JCheckBox("GFX");
+    logWindowCheckbox = new JCheckBox("Console");
+    sidebarCheckbox = new JCheckBox("Sidebar");
 
     menuBar.add(settingsMenu);
     menuBar.add(themeMenu);
     menuBar.add(Box.createHorizontalGlue());
+    menuBar.add(gfxCheckbox);
     menuBar.add(logWindowCheckbox);
     menuBar.add(sidebarCheckbox);
+    menuBar.setFocusable(false);
+    gfxCheckbox.setFocusable(false);
+    logWindowCheckbox.setFocusable(false);
+    sidebarCheckbox.setFocusable(false);
 
     // style our elements
     settingsMenu.setBackground(themeBackColor);
@@ -550,7 +559,17 @@ public class Main {
     menuBar.setBackground(themeBackColor);
     menuBar.setBorder(BorderFactory.createLineBorder(themeBackColor));
 
-    // Theme Menu
+    gfxCheckbox.addActionListener(
+        e -> {
+          if (controller != null) {
+            graphicsCheckbox.setSelected(gfxCheckbox.isSelected());
+            controller.setDrawing(gfxCheckbox.isSelected());
+            if (gfxCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
+            else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
+          }
+        });
+
+    // Build Theme Menu
     JMenuItem menuItem;
     for (int i = 0; i < themeNames.length; i++) {
       menuItem = new JMenuItem(themeNames[i], keyEvents[i]);
@@ -591,11 +610,11 @@ public class Main {
 
     startStopButton = new JButton(isRunning ? "Stop" : "Start");
 
-    autoLoginCheckbox = new JCheckBox("Auto-Login", true);
+    autoLoginCheckbox = new JCheckBox("Auto-Login");
     debugCheckbox = new JCheckBox("Debug Messages");
-    graphicsCheckbox = new JCheckBox("Show Graphics", true);
-    botPaintCheckbox = new JCheckBox("Show Bot Paint", true);
-    interlaceCheckbox = new JCheckBox("Interlace", false);
+    graphicsCheckbox = new JCheckBox("Show Graphics");
+    botPaintCheckbox = new JCheckBox("Show Bot Paint");
+    interlaceCheckbox = new JCheckBox("Interlace");
     loadScriptButton = new JButton("Load Script");
     pathwalkerButton = new JButton("PathWalker");
     // all the buttons on the sidepanel.
@@ -639,6 +658,7 @@ public class Main {
     graphicsCheckbox.addActionListener(
         e -> {
           if (controller != null) {
+            gfxCheckbox.setSelected(graphicsCheckbox.isSelected());
             controller.setDrawing(graphicsCheckbox.isSelected());
             if (graphicsCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
             else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);

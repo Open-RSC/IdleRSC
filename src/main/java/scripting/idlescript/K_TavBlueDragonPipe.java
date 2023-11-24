@@ -113,14 +113,11 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       checkFightMode(fightMode);
       lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (!c.isInCombat()) {
-        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
-          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        }
         ORSCharacter npc = c.getNearestNpcById(202, false);
         if (npc != null) {
           c.setStatus("@yel@Attacking Dragons");
           c.attackNpc(npc.serverIndex);
-          c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
         } else c.sleep(GAME_TICK);
       } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
@@ -296,15 +293,23 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
+  private void exitDragonPipe() {
+    for (int i = 0; i < 200; i++) {
+      if (c.currentX() < 374) {
+        c.walkTo(372, 3352);
+        c.atObject(373, 3352);
+        c.sleep(1000);
+      } else break;
+    }
+  }
+
   private void DragonsToBank() {
     c.setStatus("@gre@Walking to Bank.. going through pipe first");
     if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
       c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-      c.sleep(4 * GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
-    c.walkTo(372, 3352);
-    c.atObject(373, 3352);
-    c.sleep(1000);
+    exitDragonPipe();
     if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
@@ -315,8 +320,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       totalTrips = totalTrips + 1;
       c.sleep(GAME_TICK);
     } else {
+      exitDragonPipe();
       teleportFalador();
-
       c.sleep(308);
       c.walkTo(327, 552);
       c.sleep(308);

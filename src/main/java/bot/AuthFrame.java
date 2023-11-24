@@ -46,8 +46,8 @@ final class AuthFrame extends JFrame {
 
   AuthFrame(final String title, final String message, final Window parent) {
     super(title);
-
     this.parent = parent;
+    setIconImage(new ImageIcon("res/logos/idlersc.icon.png").getImage());
 
     addWindowListener(
         new WindowAdapter() {
@@ -265,98 +265,6 @@ final class AuthFrame extends JFrame {
     showVersion.setState(false);
   }
 
-  public void setLoadSettings(boolean set) {
-    loadSettings = set;
-  }
-
-  public boolean getLoadSettings() {
-    return loadSettings;
-  }
-
-  synchronized String getUsername() {
-    return username.getText();
-  }
-
-  synchronized String getPassword() {
-    return password.getText();
-  }
-
-  synchronized String getThemeName() {
-    return themeChoice.getSelectedItem();
-  }
-
-  synchronized String getScriptName() {
-    return scriptName.getText();
-  }
-
-  synchronized String getScriptArgs() {
-    return scriptArgs.getText();
-  }
-
-  synchronized String getInitCache() {
-    return initCache.getText();
-  }
-
-  synchronized String getSpellId() {
-    return spellId.getText();
-  }
-
-  synchronized String getAttackItems() {
-    return attackItems.getText();
-  }
-
-  synchronized String getStrengthItems() {
-    return strengthItems.getText();
-  }
-
-  synchronized String getDefenseItems() {
-    return defenseItems.getText();
-  }
-
-  synchronized String getAutoLogin() {
-    return Boolean.toString(autoLogin.getState());
-  }
-
-  synchronized String getLogWindow() {
-    return Boolean.toString(logWindow.getState());
-  }
-
-  synchronized String getSideBar() {
-    return Boolean.toString(sideBar.getState());
-  }
-
-  synchronized String getDebugger() {
-    return Boolean.toString(debug.getState());
-  }
-
-  synchronized String getBotPaint() {
-    return Boolean.toString(botPaint.getState());
-  }
-
-  synchronized String getDisableGraphics() {
-    return Boolean.toString(disableGraphics.getState());
-  }
-
-  synchronized String getInterlace() {
-    return Boolean.toString(interlace.getState());
-  }
-
-  synchronized String getLocalOcr() {
-    return Boolean.toString(localOcr.getState());
-  }
-
-  synchronized String getHelpMenu() {
-    return Boolean.toString(helpMenu.getState());
-  }
-
-  synchronized String getShowVersion() {
-    return Boolean.toString(showVersion.getState());
-  }
-
-  synchronized void addActionListener(final ActionListener al) {
-    okButton.addActionListener(al);
-  }
-
   public void storeAuthData(AuthFrame auth) {
     final Properties p = new Properties();
     final String u = auth.getUsername();
@@ -457,5 +365,97 @@ final class AuthFrame extends JFrame {
       requestFocus();
     }
     super.setVisible(visible);
+  }
+
+  public void setLoadSettings(boolean set) {
+    loadSettings = set;
+  }
+
+  public boolean getLoadSettings() {
+    return loadSettings;
+  }
+
+  synchronized String getUsername() {
+    return username.getText();
+  }
+
+  synchronized String getPassword() {
+    return password.getText();
+  }
+
+  synchronized String getThemeName() {
+    return themeChoice.getSelectedItem();
+  }
+
+  synchronized String getScriptName() {
+    return scriptName.getText();
+  }
+
+  synchronized String getScriptArgs() {
+    return scriptArgs.getText();
+  }
+
+  synchronized String getInitCache() {
+    return initCache.getText();
+  }
+
+  synchronized String getSpellId() {
+    return spellId.getText();
+  }
+
+  synchronized String getAttackItems() {
+    return attackItems.getText();
+  }
+
+  synchronized String getStrengthItems() {
+    return strengthItems.getText();
+  }
+
+  synchronized String getDefenseItems() {
+    return defenseItems.getText();
+  }
+
+  synchronized String getAutoLogin() {
+    return Boolean.toString(autoLogin.getState());
+  }
+
+  synchronized String getLogWindow() {
+    return Boolean.toString(logWindow.getState());
+  }
+
+  synchronized String getSideBar() {
+    return Boolean.toString(sideBar.getState());
+  }
+
+  synchronized String getDebugger() {
+    return Boolean.toString(debug.getState());
+  }
+
+  synchronized String getBotPaint() {
+    return Boolean.toString(botPaint.getState());
+  }
+
+  synchronized String getDisableGraphics() {
+    return Boolean.toString(disableGraphics.getState());
+  }
+
+  synchronized String getInterlace() {
+    return Boolean.toString(interlace.getState());
+  }
+
+  synchronized String getLocalOcr() {
+    return Boolean.toString(localOcr.getState());
+  }
+
+  synchronized String getHelpMenu() {
+    return Boolean.toString(helpMenu.getState());
+  }
+
+  synchronized String getShowVersion() {
+    return Boolean.toString(showVersion.getState());
+  }
+
+  synchronized void addActionListener(final ActionListener al) {
+    okButton.addActionListener(al);
   }
 }

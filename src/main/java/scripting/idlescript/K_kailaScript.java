@@ -1018,7 +1018,7 @@ public class K_kailaScript extends IdleScript {
    */
   /** if bank is not open, wait 2 ticks, repeat check. repeats 20 times. */
   protected static void waitForBankOpen() {
-    for (int i = 0; i <= 20; i++) {
+    for (int i = 0; i <= 200; i++) {
       if (!c.isRunning()) break;
       if (!c.isInBank()) {
         c.sleep(2 * GAME_TICK);

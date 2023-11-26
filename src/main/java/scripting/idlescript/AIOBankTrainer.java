@@ -149,11 +149,11 @@ public class AIOBankTrainer extends K_kailaScript {
     },
     { // "Falador East"
       {280, 568},
-      {278, 563},
-      {278, 561},
       {286, 573},
       {288, 566},
       {287, 569},
+      {278, 563},
+      {278, 561},
       {296, 566},
       {283, 575},
       {274, 574}
@@ -236,6 +236,7 @@ public class AIOBankTrainer extends K_kailaScript {
         break;
       case 2: // "Falador West"
         if (c.currentX() < 317) c.walkTo(317, 551);
+        break;
       case 3: // "Falador East"
         if (c.currentX() > 301) c.walkTo(301, 573);
         break;
@@ -299,7 +300,7 @@ public class AIOBankTrainer extends K_kailaScript {
       c.sleep(GAME_TICK);
     }
   }
-
+  /** Moves the character to an adjacent position if possible. */
   private void moveCharacter() {
     int x = c.currentX();
     int y = c.currentY();

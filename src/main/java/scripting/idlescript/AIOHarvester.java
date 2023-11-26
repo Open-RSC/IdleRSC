@@ -560,15 +560,15 @@ public class AIOHarvester extends K_kailaScript {
         new Label("*Recommend 63+ cmb against aggressive wolfs")
       },
       {
-        new Label("Harvest Jangerberries in Feldip Hills"),
-        new Label("*Start in Yanille Bank with Herb Clippers"),
-        new Label("*Recommend Armor against lvl 21 Scorpions")
-      },
-      {
         new Label("Harvest Whiteberries in Yanille dungeon"),
         new Label("*Start in Yanille Bank with Herb Clippers and Lockpick"),
         new Label("*Recommend level 109+ combat so Skellies are non aggressive"),
         new Label("*Requires 77 agility to not fail rope swing")
+      },
+      {
+        new Label("Harvest Jangerberries in Feldip Hills"),
+        new Label("*Start in Yanille Bank with Herb Clippers"),
+        new Label("*Recommend Armor against lvl 21 Scorpions")
       },
     };
 
@@ -641,8 +641,8 @@ public class AIOHarvester extends K_kailaScript {
     list.add("Papaya");
     list.add("Coconuts");
     list.add("Dragonfruit");
-    // list.add("Jangerberries");
     list.add("Whiteberries");
+    // list.add("Jangerberries");
     // list.add("Tav Limps/Snapes");
     // list.add("Ardy Limps/Snapes");
     // list.add("Tav Herbs");

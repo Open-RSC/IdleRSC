@@ -40,7 +40,7 @@ final class AuthFrame extends JFrame {
       helpMenu,
       showVersion;
 
-  final Choice themeChoice = new Choice();
+  private final Choice themeChoice = new Choice();
   private String account;
   private final Button okButton;
 

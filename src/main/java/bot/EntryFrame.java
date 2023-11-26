@@ -16,8 +16,8 @@ public final class EntryFrame extends JFrame {
   private AuthFrame authFrame, authFrame2;
   private String[] accountNames;
   private static String account = "";
-  final Choice accountChoice;
-  public String themeName = "RuneDark Theme";
+  private final Choice accountChoice;
+  private String themeName = "RuneDark Theme";
   private boolean okie = false;
 
   // todo add theme select to cli

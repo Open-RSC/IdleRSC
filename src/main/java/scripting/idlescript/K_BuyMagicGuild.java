@@ -116,7 +116,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
                       || c.getShopItemCount(runeIds[4]) > 20
                       || c.getShopItemCount(runeIds[5]) > 20)) {
                 for (int runeId : runeIds) {
-                  c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
+                  c.shopBuy(runeId, Math.max(c.getShopItemCount(runeId) - 20, 0));
                   c.sleep(100);
                 }
               }
@@ -139,20 +139,21 @@ public class K_BuyMagicGuild extends K_kailaScript {
                 c.sleep(200);
               }
               if (c.isInShop()
-                  && (c.getShopItemCount(runeIds[0]) > 0
+                  && (c.getShopItemCount(runeIds[0]) > 20
                       || c.getShopItemCount(runeIds[1]) > 20
                       || c.getShopItemCount(runeIds[2]) > 20
                       || c.getShopItemCount(runeIds[3]) > 20
                       || c.getShopItemCount(runeIds[4]) > 20
                       || c.getShopItemCount(runeIds[5]) > 20)) {
                 for (int runeId : runeIds) {
-                  c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
-                  c.sleep(200);
+                  c.shopBuy(runeId, Math.max(c.getShopItemCount(runeId) - 20, 0));
+                  c.sleep(100);
                 }
               }
+              c.sleep(100);
               if (c.isInShop() && c.getShopItemCount(B_STAFF) == 5) {
                 c.shopBuy(B_STAFF, 1);
-                c.sleep(200);
+                c.sleep(300);
               }
               c.sleep(200);
             }

@@ -337,21 +337,20 @@ public class Main {
     rscFrame.add(botFrame, BorderLayout.EAST);
     rscFrame.add(menuBar, BorderLayout.NORTH);
     rscFrame.add(consoleFrame, BorderLayout.SOUTH);
-    rscFrame.setMinimumSize(new Dimension(533, 405));
-    rscFrame.setSize(new Dimension(533, 405));
-
     consoleFrame.setVisible(config.isLogWindowVisible());
     botFrame.setVisible(config.isSidebarVisible());
-    if (config.isLogWindowVisible())
-      rscFrame.setSize(new Dimension(rscFrame.getWidth(), rscFrame.getHeight() + 188));
-    if (config.isSidebarVisible())
-      rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
 
     if (config.getUsername() != null) {
       log("Starting client for " + config.getUsername());
     }
     log("IdleRSC initialized.");
 
+    rscFrame.setMinimumSize(new Dimension(533, 405));
+    rscFrame.setSize(new Dimension(533, 405));
+    if (config.isLogWindowVisible())
+      rscFrame.setSize(new Dimension(rscFrame.getWidth(), rscFrame.getHeight() + 188));
+    if (config.isSidebarVisible())
+      rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
     // don't do anything until RSC is loaded.
     while (!controller.isLoaded()) controller.sleep(1);
 

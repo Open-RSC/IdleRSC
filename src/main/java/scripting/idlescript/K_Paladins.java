@@ -239,12 +239,12 @@ public final class K_Paladins extends K_kailaScript {
     c.setStatus("@gre@Eating..");
     boolean ate = false;
     for (int id : c.getFoodIds()) {
-      if (c.getInventoryItemCount(id) > 0) {
+      if (c.isRunning() && c.getInventoryItemCount(id) > 0) {
         c.itemCommand(id);
         c.sleep(640);
         ate = true;
         break;
-      }
+      } else break;
     }
     if (!ate) {
       c.setStatus("@gre@We've ran out of Food! Banking!.");
@@ -384,7 +384,7 @@ public final class K_Paladins extends K_kailaScript {
   private void paladinChest() {
     c.setStatus("@gre@Stealing From Chest..");
     for (int i = 0; i < 400; i++) {
-      if (c.currentY() > 1700 && c.getNearestObjectById(338) != null) {
+      if (c.isRunning() && c.currentY() > 1700 && c.getNearestObjectById(338) != null) {
         c.walkTo(610, 2488);
         c.atObject2(610, 2487);
         c.sleep(7 * GAME_TICK);
@@ -397,7 +397,7 @@ public final class K_Paladins extends K_kailaScript {
   private void paladinLadderUp() {
     c.setStatus("@gre@Going up ladder..");
     for (int i = 0; i < 100; i++) {
-      if (c.currentY() < 2000 && c.getNearestObjectById(5) != null) {
+      if (c.isRunning() && c.currentY() < 2000 && c.getNearestObjectById(5) != null) {
         c.walkTo(611, 1550);
         c.atObject(611, 1551); // ladder in paladin room
         c.sleep(4 * GAME_TICK);
@@ -409,7 +409,7 @@ public final class K_Paladins extends K_kailaScript {
   private void paladinLadderDown() {
     c.setStatus("@gre@Going down ladder..");
     for (int i = 0; i < 100; i++) {
-      if (c.currentY() > 2000 && c.getNearestObjectById(6) != null) {
+      if (c.isRunning() && c.currentY() > 2000 && c.getNearestObjectById(6) != null) {
         c.walkTo(611, 2494);
         c.atObject(611, 2495); // go down ladder
         c.sleep(4 * GAME_TICK);
@@ -421,7 +421,7 @@ public final class K_Paladins extends K_kailaScript {
   private void paladinStairDown() {
     c.setStatus("@gre@Going down stairs..");
     for (int i = 0; i < 100; i++) {
-      if (c.currentY() > 1000 && c.getNearestObjectById(44) != null) {
+      if (c.isRunning() && c.currentY() > 1000 && c.getNearestObjectById(44) != null) {
         c.walkTo(611, 1544);
         c.atObject(611, 1545); // go downstairs
         c.sleep(4 * GAME_TICK);
@@ -435,7 +435,10 @@ public final class K_Paladins extends K_kailaScript {
     for (int i = 0; i <= 200; i++) {
       int[] objectLoc = c.getNearestObjectById(342);
       if (objectLoc == null) return;
-      if (c.currentY() < 610 && c.currentY() > 600 && c.getNearestObjectById(342) != null) {
+      if (c.isRunning()
+          && c.currentY() < 610
+          && c.currentY() > 600
+          && c.getNearestObjectById(342) != null) {
         c.walkTo(613, 603);
         if (c.getNearestObjectById(342) != null) c.atObject(611, 601);
         c.sleep(320);
@@ -452,7 +455,8 @@ public final class K_Paladins extends K_kailaScript {
   private void paladinDoorExiting() { // gate upstairs in paladins
     c.setStatus("@gre@Exiting paladin door..");
     for (int i = 1; i <= 200; i++) {
-      if (c.currentY() > 1547) { // c.getNearestObjectById(97) returns null todo (bug)
+      if (c.isRunning()
+          && c.currentY() > 1547) { // c.getNearestObjectById(97) returns null todo (bug)
         c.walkTo(609, 1548); // unlocked door
         c.atWallObject(609, 1548);
         c.sleep(4 * GAME_TICK);
@@ -465,7 +469,8 @@ public final class K_Paladins extends K_kailaScript {
   private void paladinDoorEntering() { // gate upstairs in paladins
     c.setStatus("@gre@Entering paladin door..");
     for (int i = 0; i <= 200; i++) {
-      if (c.currentY() < 1548) { // c.getNearestObjectById(97) returns null todo (bug)
+      if (c.isRunning()
+          && c.currentY() < 1548) { // c.getNearestObjectById(97) returns null todo (bug)
         c.walkTo(609, 1547);
         c.atWallObject2(609, 1548); // locked door
         c.sleep(4 * GAME_TICK);

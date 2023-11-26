@@ -190,6 +190,12 @@ public class FoulRunecraft extends IdleScript {
     while (c.isRunning()) c.sleep(craftingLoop());
     return 1000;
   }
+  /** while batching, sleep 2 Game tick. */
+  private void waitForBatching() {
+    while (c.isBatching()) {
+      c.sleep(2 * 640);
+    }
+  }
 
   private int craftingLoop() {
     if (c.getInventoryItemCount() >= 30 && c.isItemInInventory(talismans[choice])) {
@@ -279,7 +285,7 @@ public class FoulRunecraft extends IdleScript {
           c.stop();
           return ticks(1);
         }
-        if (choice == 7 && c.isItemInInventory(runes[choice])) {
+        if (choice <= 7 && c.isItemInInventory(runes[choice])) {
           c.depositItem(runes[choice], c.getInventoryItemCount(runes[choice]));
           return ticks(1);
         }
@@ -296,6 +302,7 @@ public class FoulRunecraft extends IdleScript {
       int[] essence = c.getNearestObjectById(1227);
       if (essence != null) {
         c.atObject(essence[0], essence[1]);
+        waitForBatching();
         waitForMovement();
         while (c.isCurrentlyWalking()) c.sleep(ticks(1));
         return ticks(1);

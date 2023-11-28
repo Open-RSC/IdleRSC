@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import models.entities.ItemId;
 
 /**
  * This is AIOSmelter written for IdleRSC.
@@ -41,29 +42,60 @@ import javax.swing.JLabel;
  */
 public class AIOSmelter extends IdleScript {
   private static final Controller c = Main.getController();
-  JFrame scriptFrame = null;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-  int barId = -1;
-  int primaryOreId = 0;
-  int secondaryOreId = 0;
-  int primaryOreInBank = 0;
-  int secondaryOreInBank = 0;
-  int barsInBank = 0;
-  long startTime;
-  int destinationId = -1;
-  final int[] barIds = {
-    169, 170, 384, 171, 1041, 172, 173, 174, 408, 44, 1027, 283, 288, 296, 284, 289, 297, 285, 290,
-    298, 286, 291, 299, 287, 292, 300, 543, 544, 524
+  private JFrame scriptFrame = null;
+  private boolean guiSetup = false;
+  private boolean scriptStarted = false;
+  private int barId = -1;
+  private int primaryOreId = 0;
+  private int secondaryOreId = 0;
+  private int primaryOreInBank = 0;
+  private int secondaryOreInBank = 0;
+  private int barsInBank = 0;
+  private long startTime;
+  private int destinationId = -1;
+  private final int[] productIds = { // product smelting in same order as options
+    169,
+    170,
+    384,
+    171,
+    1041,
+    172,
+    173,
+    174,
+    408,
+    44,
+    1027,
+    283,
+    288,
+    296,
+    284,
+    289,
+    297,
+    285,
+    290,
+    298,
+    286,
+    291,
+    299,
+    287,
+    292,
+    300,
+    543,
+    544,
+    524,
+    ItemId.GOLD_CROWN.getId(),
+    ItemId.SAPPHIRE_CROWN.getId(),
+    ItemId.EMERALD_CROWN.getId(),
+    ItemId.RUBY_CROWN.getId(),
+    ItemId.DIAMOND_CROWN.getId(),
+    ItemId.DRAGONSTONE_CROWN.getId()
   };
-  String barName = "";
-  String primaryName = "";
-  String secondaryName = "";
-
-  final long startTimestamp = System.currentTimeMillis() / 1000L;
-  int success = 0;
-
-  final String[] options =
+  private String barName = "";
+  private String primaryName = "";
+  private String secondaryName = "";
+  private final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private int success = 0;
+  private final String[] options =
       new String[] {
         "Bronze Bar",
         "Iron Bar",
@@ -101,20 +133,12 @@ public class AIOSmelter extends IdleScript {
         "Diamond crown",
         "Dragonstone crown"
       };
+  private final String[] destinations = new String[] {"Falador", "Al-Kharid"};
+  private Map<Integer, Integer> ingredients = null;
 
-  final String[] destinations = new String[] {"Falador", "Al-Kharid"};
-
-  Map<Integer, Integer> ingredients = null;
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * script based on the values of the parameters. <br>
-   * Parameters in this context can be from CLI parsing or in the script options parameters text box
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
   public int start(String[] parameters) {
     // c.quitIfAuthentic();
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -161,7 +185,7 @@ public class AIOSmelter extends IdleScript {
     return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
+  private void scriptStart() {
     while (c.isRunning()) {
       if (isEnoughOre()) {
         if (c.getNearestObjectById(118) == null) {
@@ -281,7 +305,7 @@ public class AIOSmelter extends IdleScript {
     }
   }
 
-  public boolean isEnoughOre() {
+  private boolean isEnoughOre() {
     for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
       if (entry.getKey() == 699) continue;
 
@@ -303,7 +327,7 @@ public class AIOSmelter extends IdleScript {
     return true;
   }
 
-  public void parseValues() {
+  private void parseValues() {
     startTime = System.currentTimeMillis();
     whatIsOreId();
     c.displayMessage("@cya@AIOSmelter by Dvorak, Searos, and Kaila!");
@@ -312,7 +336,7 @@ public class AIOSmelter extends IdleScript {
     c.displayMessage("@cya@REQUIRES Batch bars be toggle on in settings to work correctly!");
   }
 
-  public void setupGUI() {
+  private void setupGUI() {
     JLabel header = new JLabel("AIOSmelter - Dvorak, Searos, and Kaila");
     JLabel header2 = new JLabel("Currently Does Not Support Uranium Smelting.");
     JLabel header3 = new JLabel("Start in Falador or Al-Kharid bank!");
@@ -329,7 +353,7 @@ public class AIOSmelter extends IdleScript {
 
     startScriptButton.addActionListener(
         e -> {
-          barId = barIds[barField.getSelectedIndex()];
+          barId = productIds[barField.getSelectedIndex()];
           destinationId = destination.getSelectedIndex();
           ingredients = ingredientsMapping.get(barId);
           parseValues();
@@ -360,7 +384,7 @@ public class AIOSmelter extends IdleScript {
     scriptFrame.requestFocusInWindow();
   }
 
-  public void whatIsOreId() {
+  private void whatIsOreId() {
     if (barId == 169) { // bronze Bars
       primaryOreId = 150;
       secondaryOreId = 202;
@@ -774,54 +798,54 @@ public class AIOSmelter extends IdleScript {
                 }
               });
           put(
-              1503,
+              ItemId.GOLD_CROWN.getId(),
               new HashMap<Integer, Integer>() { // Gold Crown
                 {
-                  put(1502, 1);
-                  put(172, 29);
+                  put(ItemId.CROWN_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 29);
                 }
               });
           put(
-              1504,
+              ItemId.SAPPHIRE_CROWN.getId(),
               new HashMap<Integer, Integer>() { // Sapp Crown
                 {
-                  put(1502, 1);
+                  put(ItemId.CROWN_MOULD.getId(), 1);
                   put(172, 14);
                   put(164, 14);
                 }
               });
           put(
-              1505,
+              ItemId.EMERALD_CROWN.getId(),
               new HashMap<Integer, Integer>() { // Emerald Crown
                 {
-                  put(1502, 1);
+                  put(ItemId.CROWN_MOULD.getId(), 1);
                   put(172, 14);
                   put(163, 14);
                 }
               });
           put(
-              1506,
+              ItemId.RUBY_CROWN.getId(),
               new HashMap<Integer, Integer>() { // ruby Crown
                 {
-                  put(1502, 1);
+                  put(ItemId.CROWN_MOULD.getId(), 1);
                   put(172, 14);
                   put(162, 14);
                 }
               });
           put(
-              1507,
+              ItemId.DIAMOND_CROWN.getId(),
               new HashMap<Integer, Integer>() { // Diamond Crown
                 {
-                  put(1502, 1);
+                  put(ItemId.CROWN_MOULD.getId(), 1);
                   put(172, 14);
                   put(161, 14);
                 }
               });
           put(
-              1508,
+              ItemId.DRAGONSTONE_CROWN.getId(),
               new HashMap<Integer, Integer>() { // Dragonstone Crown
                 {
-                  put(1502, 1);
+                  put(ItemId.CROWN_MOULD.getId(), 1);
                   put(172, 14);
                   put(523, 14);
                 }

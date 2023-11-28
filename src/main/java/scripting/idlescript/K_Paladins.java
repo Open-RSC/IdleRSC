@@ -171,7 +171,7 @@ public final class K_Paladins extends K_kailaScript {
       invCoins = c.getInventoryItemCount(10);
       invChaos = c.getInventoryItemCount(41);
       startTime = System.currentTimeMillis();
-      c.toggleBatchBarsOff();
+      c.setBatchBarsOff();
       startSequence();
       scriptStart();
     }
@@ -257,6 +257,7 @@ public final class K_Paladins extends K_kailaScript {
 
   private void bank() {
     c.setStatus("@yel@Banking..");
+    totalTrips = totalTrips + 1;
     if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
       c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
       c.log("weapons when thieving, it severely drops xp rates for everyone, including you!");
@@ -366,7 +367,6 @@ public final class K_Paladins extends K_kailaScript {
     c.walkTo(550, 608);
     c.walkTo(550, 612);
     c.setStatus("@gre@Done Walking..");
-    totalTrips = totalTrips + 1;
     c.sleep(640);
   }
 

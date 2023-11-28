@@ -30,7 +30,7 @@ public final class S_ZammyWine extends K_kailaScript {
 
   public int start(String[] parameters) {
     con.quitIfAuthentic();
-    con.toggleBatchBarsOn();
+    con.setBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;

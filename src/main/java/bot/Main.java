@@ -345,14 +345,16 @@ public class Main {
     }
     log("IdleRSC initialized.");
 
+    // don't do anything until RSC is loaded.
+    while (!controller.isLoaded()) controller.sleep(1);
+
+    // Set Sizes After initilizing for correct sizing
     rscFrame.setMinimumSize(new Dimension(533, 405));
     rscFrame.setSize(new Dimension(533, 405));
     if (config.isLogWindowVisible())
       rscFrame.setSize(new Dimension(rscFrame.getWidth(), rscFrame.getHeight() + 188));
     if (config.isSidebarVisible())
       rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
-    // don't do anything until RSC is loaded.
-    while (!controller.isLoaded()) controller.sleep(1);
 
     // Set checkboxes on side panel using "get" methods
     autoLoginCheckbox.setSelected(config.isAutoLogin());

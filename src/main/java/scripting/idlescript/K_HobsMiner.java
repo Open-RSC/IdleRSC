@@ -110,7 +110,7 @@ public final class K_HobsMiner extends K_kailaScript {
       eat();
       c.sleep(1380);
     }
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
   }
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes

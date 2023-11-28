@@ -419,7 +419,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport Method?", true);
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword?", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
-    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
+    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots? (Super or reg)", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});

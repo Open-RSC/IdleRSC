@@ -120,6 +120,7 @@ public class AIOThiever extends IdleScript {
           add(new ThievingObject("Spice Stall", 326, false, true));
           add(new ThievingObject("Gem Stall", 327, false, true));
 
+          // index 20
           // add(new ThievingObject("10 Coin Chest", 327, false, true)); //who's gonna bother?
           add(new ThievingObject("Nature Rune Chest", 335, false, true));
           add(new ThievingObject("50 Coin Chest", 336, false, true));
@@ -146,7 +147,7 @@ public class AIOThiever extends IdleScript {
   private final long startTimestamp = System.currentTimeMillis() / 1000L;
   private boolean guiSetup = false;
   private boolean scriptStarted = false;
-  private boolean goToOtherSide = false;
+  // private boolean goToOtherSide = false;
 
   public int start(String[] parameters) {
     if (scriptStarted) {
@@ -154,7 +155,7 @@ public class AIOThiever extends IdleScript {
       scriptStarted = false;
       scriptStart();
     } else {
-      if (parameters[0].equals("")) {
+      if (parameters[0].isEmpty()) {
         if (!guiSetup) {
           setupGUI();
           guiSetup = true;
@@ -181,14 +182,15 @@ public class AIOThiever extends IdleScript {
     return 1000; // start() must return a int value now.
   }
 
-  public void scriptStart() {
+  private void scriptStart() {
     while (c.isRunning()) {
       eat();
-      if (!target.isNpc && goToOtherSide) {
-        randomSide = (int) ((Math.random() * 8) + 1); // random number between 1 and 8 (inclusive)
-        goToOtherSide = false;
-        c.sleep(100);
-      }
+      //      if (!target.isNpc && goToOtherSide) {
+      //        randomSide = (int) ((Math.random() * 8) + 1); // random number between 1 and 8
+      // (inclusive)
+      //        goToOtherSide = false;
+      //        c.sleep(100);
+      //      }
       if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
       if (c.getInventoryItemCount(140) > 0) { // drop jugs from heroes
         c.setStatus("@red@Dropping empty jugs..");
@@ -197,9 +199,9 @@ public class AIOThiever extends IdleScript {
       }
       while (c.isBatching()) c.sleep(GAME_TICK);
       if (!c.isInCombat()) {
-        if (randomSide == 0) randomSide = 1;
+        eat();
+        if (randomSide == 0) c.log("random side error"); // randomSide = 1;
         if (target.isNpc) {
-          eat();
           // c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(target.id, false);
           if (npc != null && npc.serverIndex > 0) {
@@ -217,8 +219,11 @@ public class AIOThiever extends IdleScript {
             c.setStatus("@red@Waiting for NPC to become available..");
             c.sleep(100);
           }
-        } else if (locIndex >= 0 && locIndex < 8) {
-          if (target.name.contains("All")) {
+
+          // Stall Thieving
+          // todo investiagte searching npc positions and selecting opposite them
+        } else if (targetIndex > 11 && targetIndex < 20) {
+          if (targetIndex == 12 || target.name.contains("All")) {
             for (int i = 1; i < tiles.length; i++) {
               if (c.getObjectAtCoord(tiles[i][0][0], tiles[i][0][1]) == tiles[i][0][2]) {
                 locIndex = i;
@@ -235,8 +240,10 @@ public class AIOThiever extends IdleScript {
             }
             c.atObject(tiles[locIndex][0][0], tiles[locIndex][0][1]);
             randomSide = (int) ((Math.random() * 8) + 1); // random number between 1 and 8
-            c.sleep(2 * GAME_TICK);
+            c.sleep(3 * GAME_TICK);
           }
+
+          // Chest Thieving
         } else if (target.isObject) { // (if obj or chest thieving)
           int[] coords = c.getNearestObjectById(target.id);
           if (coords != null) {
@@ -252,43 +259,11 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK);
           }
         }
+
+        // Banking
         if (!bankSpot.equals(bankSpots[0]) // not the "None" option
             && (c.getInventoryItemCount() == 30 || countFood() == 0)) {
-          c.setStatus("@red@Banking...");
-          // walk near to bank
-          if (bankSpot.equals(bankSpots[1])) { // ardy
-            if (c.currentY() < 590) c.walkTo(548, 589);
-            c.walkTo(547, 607);
-          } else if (bankSpot.equals(bankSpots[2])) { // var west
-            c.walkTo(151, 507);
-          } else if (bankSpot.equals(bankSpots[3])) { // var east
-            c.walkTo(96, 509);
-            c.walkTo(102, 509);
-          }
-          c.openBank();
-          for (int itemId : c.getInventoryItemIds()) {
-            if (c.getInventoryItemCount() > 0) {
-              c.depositItem(itemId, c.getInventoryItemCount(itemId));
-              c.sleep(GAME_TICK);
-            }
-          }
-          c.sleep(2000); // Important, leave in
-          for (int id : c.getFoodIds()) {
-            if (c.getBankItemCount(id) > 0) {
-              c.withdrawItem(id, foodWithdrawAmount);
-              c.sleep(GAME_TICK);
-              break;
-            }
-          }
-          // walk back to thieve spots
-          if (bankSpot.equals(bankSpots[1])) { // ardy
-            c.walkTo(548, 605);
-          } else if (bankSpot.equals(bankSpots[2])) { // var west
-            c.walkTo(151, 507);
-          } else if (bankSpot.equals(bankSpots[3])) { // var east
-            c.walkTo(102, 509);
-            c.walkTo(93, 511);
-          }
+          bankingLoop();
         }
       } else {
         c.setStatus("@red@Leaving combat..");
@@ -298,10 +273,47 @@ public class AIOThiever extends IdleScript {
     }
   }
 
-  public void eat() {
+  private void bankingLoop() {
+    c.setStatus("@red@Banking...");
+    // walk near to bank
+    if (bankSpot.equals(bankSpots[1])) { // ardy
+      if (c.currentY() < 590) c.walkTo(548, 589);
+      c.walkTo(547, 607);
+    } else if (bankSpot.equals(bankSpots[2])) { // var west
+      c.walkTo(151, 507);
+    } else if (bankSpot.equals(bankSpots[3])) { // var east
+      c.walkTo(96, 509);
+      c.walkTo(102, 509);
+    }
+    c.openBank();
+    for (int itemId : c.getInventoryItemIds()) {
+      if (c.getInventoryItemCount() > 0) {
+        c.depositItem(itemId, c.getInventoryItemCount(itemId));
+      }
+    }
+    c.sleep(2000); // Important, leave in
+    for (int id : c.getFoodIds()) {
+      if (c.getBankItemCount(id) > 0) {
+        c.withdrawItem(id, foodWithdrawAmount);
+        c.sleep(GAME_TICK);
+        break;
+      }
+    }
+    // walk back to thieve spots
+    if (bankSpot.equals(bankSpots[1])) { // ardy
+      c.walkTo(548, 605);
+    } else if (bankSpot.equals(bankSpots[2])) { // var west
+      c.walkTo(151, 507);
+    } else if (bankSpot.equals(bankSpots[3])) { // var east
+      c.walkTo(102, 509);
+      c.walkTo(93, 511);
+    }
+  }
+
+  private void eat() {
     if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth
         || c.getCurrentStat(c.getStatId("Hits")) <= 20) {
-      leaveCombat();
+      if (c.isInCombat()) leaveCombat();
       c.setStatus("@red@Eating..");
       boolean ate = false;
 
@@ -327,7 +339,7 @@ public class AIOThiever extends IdleScript {
     }
   }
 
-  public static void leaveCombat() {
+  private static void leaveCombat() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.isInCombat()) {
@@ -343,7 +355,7 @@ public class AIOThiever extends IdleScript {
     }
   }
 
-  public int countFood() {
+  private int countFood() {
     int result = 0;
     for (int id : c.getFoodIds()) {
       result += c.getInventoryItemCount(id);
@@ -351,7 +363,7 @@ public class AIOThiever extends IdleScript {
     return result;
   }
 
-  public void setupGUI() {
+  private void setupGUI() {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
@@ -436,15 +448,15 @@ public class AIOThiever extends IdleScript {
     if (message.contains("You steal")) success++;
   }
 
-  @Override
-  public void questMessageInterrupt(String message) {
-    if (message.contains("You pick") || message.contains("You steal")) success++;
-    else if (message.contains("You fail")) failure++;
-    else if (message.contains("Hey thats mine") || (message.contains("hands off there"))) {
-      failure++;
-      goToOtherSide = true;
-    }
-  }
+  //  @Override
+  //  public void questMessageInterrupt(String message) {
+  //    if (message.contains("You pick") || message.contains("You steal")) success++;
+  //    else if (message.contains("You fail")) failure++;
+  //    else if (message.contains("Hey thats mine") || (message.contains("hands off there"))) {
+  //      failure++;
+  //      goToOtherSide = true;
+  //    }
+  //  }
 
   @Override
   public void paintInterrupt() {

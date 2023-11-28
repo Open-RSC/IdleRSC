@@ -632,7 +632,7 @@ public class K_kailaScript extends IdleScript {
    * walks to current tile (async non-blocking) radius 0. <br>
    */
   protected static void leaveCombat() {
-    for (int i = 0; i <= 10; i++) {
+    for (int i = 0; i <= 15; i++) {
       if (c.isInCombat()) {
         c.setStatus("@red@Leaving combat..");
         c.walkToAsync(c.currentX(), c.currentY(), 0);
@@ -839,6 +839,8 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superAttackPot[2]);
           c.sleep(GAME_TICK);
         }
+      } else {
+        attackBoost(boostAboveBase, leaveCombat);
       }
     }
   }
@@ -869,6 +871,8 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superStrengthPot[2]);
           c.sleep(GAME_TICK);
         }
+      } else {
+        strengthBoost(boostAboveBase, leaveCombat);
       }
     }
   }
@@ -899,6 +903,8 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superDefensePot[2]);
           c.sleep(GAME_TICK);
         }
+      } else {
+        defenseBoost(boostAboveBase, leaveCombat);
       }
     }
   }
@@ -1298,6 +1304,8 @@ public class K_kailaScript extends IdleScript {
           c.sleep(2 * GAME_TICK);
         }
       }
+    } else if (bankPotCount == 0) {
+      withdrawAttack(withdrawAmount);
     }
   }
   /**
@@ -1336,6 +1344,8 @@ public class K_kailaScript extends IdleScript {
           c.sleep(2 * GAME_TICK);
         }
       }
+    } else if (bankPotCount == 0) {
+      withdrawStrength(withdrawAmount);
     }
   }
   /**
@@ -1374,6 +1384,8 @@ public class K_kailaScript extends IdleScript {
           c.sleep(2 * GAME_TICK);
         }
       }
+    } else if (bankPotCount == 0) {
+      withdrawDefense(withdrawAmount);
     }
   }
   /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */

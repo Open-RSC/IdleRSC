@@ -56,7 +56,7 @@ public final class K_EdgeDungeonMine extends K_kailaScript {
       bankToDungeon();
       c.sleep(1380);
     }
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
   }
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes

@@ -118,7 +118,15 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
           c.setStatus("@yel@Attacking Dragons");
           c.attackNpc(npc.serverIndex);
           c.sleep(2 * GAME_TICK);
-        } else c.sleep(GAME_TICK);
+        } else {
+          c.sleep(3 * GAME_TICK);
+          if (!c.isInCombat() && (c.currentX() != 370 && c.currentY() != 3355)) {
+            c.setStatus("@gre@No npc going to center.");
+            lootItems(false, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
+            c.walkTo(370, 3355);
+            c.setStatus("@gre@at center.");
+          }
+        }
       } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
@@ -339,10 +347,10 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JLabel label5 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label6 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel blankLabel = new JLabel("     ");
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", true);
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
-    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
+    JCheckBox potUpCheckbox = new JCheckBox("Use Atk/Str Pots? (Super or reg)", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
@@ -351,7 +359,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     foodField.setSelectedIndex(2); // sets default to sharks
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(12));
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(10));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

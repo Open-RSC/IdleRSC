@@ -103,7 +103,7 @@ public class AIOHarvester extends K_kailaScript {
           break;
         }
       }
-      c.toggleBatchBarsOn();
+      c.setBatchBarsOn();
       scriptStart();
     }
     return 1000; // start() must return an int value now.

@@ -45,7 +45,7 @@ public class ColeslawGuildFisher extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;

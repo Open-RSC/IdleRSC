@@ -108,7 +108,6 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
       }
       if (buryBones) buryBones(false);
       if (potUp) {
-        c.setStatus("@gre@Potting up.");
         superAttackBoost(2, false);
         superStrengthBoost(2, false);
       }
@@ -125,8 +124,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
           c.sleep(2 * GAME_TICK);
         } else {
           c.sleep(2 * GAME_TICK);
-          ORSCharacter npc2 = c.getNearestNpcById(201, true);
-          if (npc2 == null && !c.isInCombat() && (c.currentX() != 644 && c.currentY() != 3611)) {
+          if (!c.isInCombat() && (c.currentX() != 644 && c.currentY() != 3611)) {
             c.setStatus("@gre@No npc going to center.");
             lootItems(false, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
             c.walkTo(644, 3611);
@@ -316,10 +314,18 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
   private void DragonsToBank() {
     c.setStatus("@gre@Walking to Bank..");
     if (agilityCapeTeleport && (c.getInventoryItemCount(AGILITY_CAPE) != 0)) {
-      c.setStatus("@gre@Going to safe zone..");
-      c.walkTo(645, 3615);
+      if (c.isInCombat()) leaveCombat();
       c.setStatus("@gre@teleporting away..");
-      teleportAway();
+      c.itemCommand(AGILITY_CAPE);
+      c.sleep(4 * GAME_TICK);
+      c.itemCommand(AGILITY_CAPE);
+      c.sleep(4 * GAME_TICK);
+      if (c.currentY() > 3000) {
+        c.setStatus("@gre@Going to safe zone..");
+        c.walkTo(645, 3615);
+        c.setStatus("@gre@teleporting away..");
+        teleportAway();
+      }
       c.setStatus("@gre@Done Teleporting..");
       c.walkTo(582, 767);
       c.walkTo(579, 763);
@@ -401,7 +407,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox buryBigBonesCheckbox = new JCheckBox("Bury Big Bones?", false);
-    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
+    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots? (Super or reg)", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});

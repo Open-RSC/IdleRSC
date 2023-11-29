@@ -93,7 +93,7 @@ public class AIOCooker extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
     String[] splitParams = null;
     if (parameters != null && parameters[0].contains(" ")) {
       splitParams = parameters[0].split(" ");

@@ -113,15 +113,20 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       checkFightMode(fightMode);
       lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (!c.isInCombat()) {
-        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
-          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        }
         ORSCharacter npc = c.getNearestNpcById(202, false);
         if (npc != null) {
           c.setStatus("@yel@Attacking Dragons");
           c.attackNpc(npc.serverIndex);
-          c.sleep(GAME_TICK);
-        } else c.sleep(GAME_TICK);
+          c.sleep(2 * GAME_TICK);
+        } else {
+          c.sleep(3 * GAME_TICK);
+          if (!c.isInCombat() && (c.currentX() != 370 && c.currentY() != 3355)) {
+            c.setStatus("@gre@No npc going to center.");
+            lootItems(false, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
+            c.walkTo(370, 3355);
+            c.setStatus("@gre@at center.");
+          }
+        }
       } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
@@ -296,15 +301,23 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
+  private void exitDragonPipe() {
+    for (int i = 0; i < 200; i++) {
+      if (c.currentX() < 374) {
+        c.walkTo(372, 3352);
+        c.atObject(373, 3352);
+        c.sleep(1000);
+      } else break;
+    }
+  }
+
   private void DragonsToBank() {
     c.setStatus("@gre@Walking to Bank.. going through pipe first");
     if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
       c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-      c.sleep(4 * GAME_TICK);
+      c.sleep(2 * GAME_TICK);
     }
-    c.walkTo(372, 3352);
-    c.atObject(373, 3352);
-    c.sleep(1000);
+    exitDragonPipe();
     if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
@@ -315,8 +328,8 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       totalTrips = totalTrips + 1;
       c.sleep(GAME_TICK);
     } else {
+      exitDragonPipe();
       teleportFalador();
-
       c.sleep(308);
       c.walkTo(327, 552);
       c.sleep(308);
@@ -334,10 +347,10 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JLabel label5 = new JLabel("::bank ::bankstay ::burybones");
     JLabel label6 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel blankLabel = new JLabel("     ");
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", false);
+    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", true);
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
-    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", true);
+    JCheckBox potUpCheckbox = new JCheckBox("Use Atk/Str Pots? (Super or reg)", true);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
@@ -346,7 +359,7 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     foodField.setSelectedIndex(2); // sets default to sharks
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(12));
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(10));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

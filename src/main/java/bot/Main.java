@@ -314,14 +314,19 @@ public class Main {
       sidebarCheckbox,
       gfxCheckbox
     };
+    Dimension buttonSize = new Dimension(125, 25);
     // todo swap side bar by swapping container contents
     for (JCheckBox jCheckbox : checkBoxArray) {
       jCheckbox.setBackground(themeBackColor);
       jCheckbox.setForeground(themeTextColor);
+      jCheckbox.setFocusable(false);
     }
     for (JButton jButton : buttonArray) {
       jButton.setBackground(themeBackColor.darker());
       jButton.setForeground(themeTextColor);
+      jButton.setFocusable(false);
+      jButton.setMaximumSize(buttonSize);
+      jButton.setPreferredSize(buttonSize);
     }
 
     botFrame.setBackground(themeBackColor);
@@ -332,15 +337,8 @@ public class Main {
     rscFrame.add(botFrame, BorderLayout.EAST);
     rscFrame.add(menuBar, BorderLayout.NORTH);
     rscFrame.add(consoleFrame, BorderLayout.SOUTH);
-    rscFrame.setMinimumSize(new Dimension(533, 405));
-    rscFrame.setSize(new Dimension(533, 405));
-
     consoleFrame.setVisible(config.isLogWindowVisible());
     botFrame.setVisible(config.isSidebarVisible());
-    if (config.isLogWindowVisible())
-      rscFrame.setSize(new Dimension(rscFrame.getWidth(), rscFrame.getHeight() + 188));
-    if (config.isSidebarVisible())
-      rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
 
     if (config.getUsername() != null) {
       log("Starting client for " + config.getUsername());
@@ -349,6 +347,14 @@ public class Main {
 
     // don't do anything until RSC is loaded.
     while (!controller.isLoaded()) controller.sleep(1);
+
+    // Set Sizes After initilizing for correct sizing
+    rscFrame.setMinimumSize(new Dimension(533, 405)); // this doesn't seem to be doing anything
+    rscFrame.setSize(new Dimension(533, 405));
+    if (config.isLogWindowVisible())
+      rscFrame.setSize(new Dimension(rscFrame.getWidth(), rscFrame.getHeight() + 188));
+    if (config.isSidebarVisible())
+      rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
 
     // Set checkboxes on side panel using "get" methods
     autoLoginCheckbox.setSelected(config.isAutoLogin());
@@ -678,34 +684,18 @@ public class Main {
         });
 
     Dimension buttonSize = new Dimension(125, 25);
-    Dimension buttonSizeBig = new Dimension(125, 26);
 
     botFrame.add(startStopButton);
-    startStopButton.setMaximumSize(buttonSizeBig);
-    startStopButton.setPreferredSize(buttonSizeBig);
     botFrame.add(loadScriptButton);
-    loadScriptButton.setMaximumSize(buttonSizeBig);
-    loadScriptButton.setPreferredSize(buttonSizeBig);
     botFrame.add(pathwalkerButton);
-    pathwalkerButton.setMaximumSize(buttonSize);
-    pathwalkerButton.setPreferredSize(buttonSize);
     botFrame.add(autoLoginCheckbox);
     botFrame.add(debugCheckbox);
     botFrame.add(interlaceCheckbox);
     botFrame.add(botPaintCheckbox);
     botFrame.add(graphicsCheckbox);
     botFrame.add(takeScreenshotButton);
-    takeScreenshotButton.setMaximumSize(buttonSize);
-    takeScreenshotButton.setPreferredSize(buttonSize);
     botFrame.add(showIdButton);
-    showIdButton.setMaximumSize(buttonSize);
-    showIdButton.setPreferredSize(buttonSize);
     botFrame.add(openDebuggerButton);
-    openDebuggerButton.setMaximumSize(buttonSize);
-    openDebuggerButton.setPreferredSize(buttonSize);
-
-    resetXpButton.setPreferredSize(buttonSize);
-    resetXpButton.setMaximumSize(buttonSize);
     botFrame.add(resetXpButton);
 
     botFrame.setSize(buttonSize.width, botFrame.getHeight());

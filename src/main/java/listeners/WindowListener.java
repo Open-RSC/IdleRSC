@@ -58,6 +58,18 @@ public class WindowListener implements Runnable {
     checkBoxArray = _checkBoxArray;
   }
 
+  /**
+   * turn on graphics for X number of ticks and then disable again <br>
+   * Useful to prevent applet white screen on rscFrame changes
+   *
+   * @param pauseTicks int number of ticks to wait while graphics on
+   */
+  private void refreshGraphics(int pauseTicks) {
+    controller.setDrawing(true);
+    controller.sleep(pauseTicks);
+    controller.setDrawing(false);
+  }
+
   @Override
   public void run() {
     String themeName = Main.getThemeName();
@@ -71,60 +83,45 @@ public class WindowListener implements Runnable {
       // Update size of JFrame when log window is opened and closed
       if (consolePrevious != Main.isLogWindowOpen()) {
         if (Main.isLogWindowOpen()) {
+          controller.log("IdleRSC: Showing Log Window!", "gre");
           consoleFrame.setVisible(true);
           rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() + 188);
-          controller.log("IdleRSC: Showing Log Window!", "gre");
-          // refresh graphics to prevent white screen
-          if (!controller.isDrawEnabled()) {
-            controller.setDrawing(true);
-            controller.sleep(100);
-            controller.setDrawing(false);
-          }
+          if (!controller.isDrawEnabled()) refreshGraphics(100);
         } else {
+          controller.log("IdleRSC: Hiding Log Window!", "gre");
           consoleFrame.setVisible(false);
           rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() - 188);
-          controller.log("IdleRSC: Hiding Log Window!", "gre");
-          // refresh graphics to prevent white screen
-          if (!controller.isDrawEnabled()) {
-            controller.setDrawing(true);
-            controller.sleep(100);
-            controller.setDrawing(false);
-          }
+          if (!controller.isDrawEnabled()) refreshGraphics(100);
         }
         consolePrevious = Main.isLogWindowOpen();
       }
-
       // Update size of JFrame when side window is opened and closed
       if (sidePrevious != Main.isSideWindowOpen()) {
         if (Main.isSideWindowOpen()) {
+          controller.log("IdleRSC: Showing Side Bar!", "gre");
           botFrame.setVisible(true);
           rscFrame.setSize(rscFrame.getWidth() + 122, rscFrame.getHeight());
-          controller.log("IdleRSC: Showing Side Bar!", "gre");
-          // refresh graphics to prevent white screen
-          if (!controller.isDrawEnabled()) {
-            controller.setDrawing(true);
-            controller.sleep(50);
-            controller.setDrawing(false);
-          }
+          if (!controller.isDrawEnabled()) refreshGraphics(50);
         } else {
+          controller.log("IdleRSC: Hiding Side Bar!", "gre");
           botFrame.setVisible(false);
           rscFrame.setSize(rscFrame.getWidth() - 122, rscFrame.getHeight());
-          controller.log("IdleRSC: Hiding Side Bar!", "gre");
-          if (!controller.isDrawEnabled()) {
-            controller.setDrawing(true);
-            controller.sleep(50);
-            controller.setDrawing(false);
-          }
+          if (!controller.isDrawEnabled()) refreshGraphics(50);
         }
         sidePrevious = Main.isSideWindowOpen();
       }
 
+      // Resize window if it goes below a certain size (crashes when small height and you teleport)
+      if (Main.isLogWindowOpen() && rscFrame.getHeight() < 593) {
+        rscFrame.setSize(rscFrame.getWidth(), 593);
+      } else if (rscFrame.getHeight() < 405) rscFrame.setSize(rscFrame.getWidth(), 405);
+      if (Main.isSideWindowOpen() && rscFrame.getWidth() < 655) {
+        rscFrame.setSize(655, rscFrame.getHeight());
+      } else if (rscFrame.getWidth() < 533) rscFrame.setSize(533, rscFrame.getHeight());
+
       // Refresh JFrame when resizing happens to prevent white screen
-      if (!controller.isDrawEnabled()
-          && (rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
-        controller.setDrawing(true);
-        controller.sleep(300);
-        controller.setDrawing(false);
+      if ((rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
+        if (!controller.isDrawEnabled()) refreshGraphics(300);
         prevWidth = rscFrame.getWidth();
         prevHeight = rscFrame.getHeight();
       }

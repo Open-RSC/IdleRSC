@@ -16,8 +16,8 @@ public final class EntryFrame extends JFrame {
   private AuthFrame authFrame, authFrame2;
   private String[] accountNames;
   private static String account = "";
-  final Choice accountChoice;
-  public String themeName = "RuneDark Theme";
+  private final Choice accountChoice;
+  private String themeName = "RuneDark Theme";
   private boolean okie = false;
 
   // todo add theme select to cli
@@ -147,10 +147,12 @@ public final class EntryFrame extends JFrame {
     c.ipady = 8;
     c.ipadx = 12;
     c.weightx = 1.0;
+    // SetFocusable(false) wrecks accessibility :(
+    // todo look into using keyhandler to trigger buttons
     JButton[] buttones = {addButton, editButton, okButton, cancelButton};
     for (JButton buttone : buttones) {
       buttone.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
-      buttone.setFocusable(false);
+      buttone.setFocusable(false); //
       buttone.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, buttonColor));
       buttone.setForeground(new Color(0, 0, 0, 255));
     }

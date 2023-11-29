@@ -42,7 +42,7 @@ public class GnomeFlaxx0r extends IdleScript {
     } else {
       spin = Boolean.parseBoolean(parameters[0]);
     }
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
 
     while (c.isRunning()) {
 

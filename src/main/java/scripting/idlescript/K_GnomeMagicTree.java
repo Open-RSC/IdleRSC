@@ -36,7 +36,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       c.walkTo(722, 507);
       c.sleep(1380);
     }
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
   }
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -46,7 +46,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
     if (parameters.length > 0 && !parameters[0].equals("")) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Magics", 0);

@@ -79,7 +79,7 @@ public class AIOBankTrainer extends K_kailaScript {
           break;
         }
       }
-      c.toggleBatchBarsOn();
+      c.setBatchBarsOn();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -136,18 +136,37 @@ public class AIOBankTrainer extends K_kailaScript {
   }
 
   private static final int[][][] burnStartLocations = {
-    { // v west
-      {152, 507}, {157, 506}, {157, 505}, {157, 504}, {134, 508}, {131, 509}
+    // Note: turning back half-way through trail and ending at bank is ideal
+    // Note 2: trails always lay west, turn-backs always turn north then east
+    { // "Varrock West"
+      {147, 506}, {143, 506}, {152, 507}, {134, 508}, {131, 509}, {157, 506}, {157, 505}, {157, 504}
     },
-    { // v east
-      {87, 508}, {87, 507}, {90, 506}, {77, 509}
+    { // "Varrock East"
+      {98, 515}, {89, 505}, {89, 514}, {87, 508}, {87, 507}, {90, 506} // {77, 509} too far
     },
-    { // seers
-      {493, 456}, {490, 458}, {483, 460}, {484, 463}
+    { // "Falador West" (The best location probably, due to walk-back)
+      {327, 554}, {324, 548}, {324, 544}, {321, 542}, {327, 551}, {334, 557}
     },
-    { // ardy
-      {538, 607}, {537, 606}, {550, 620}, {534, 605}
-    }
+    { // "Falador East"
+      {280, 568},
+      {286, 573},
+      {288, 566},
+      {287, 569},
+      {278, 563},
+      {278, 561},
+      {296, 566},
+      {283, 575},
+      {274, 574}
+    },
+    { // "Ardougne South"
+      {538, 607}, {549, 611}, {541, 608}, {537, 606}, {550, 620}, {534, 605}
+    },
+    { // "Seers Village"
+      {598, 453}, {493, 456}, {490, 458}, {502, 457}, {483, 460}, {484, 463}, {494, 451}
+    },
+    { // "Yanille"
+      {585, 750}, {578, 759}, {584, 751}, {583, 748}, {583, 747}, {583, 746}, {591, 750}
+    } // {585, 758}, ends with 4 left :/
   }; // x then y then x then y
 
   /**
@@ -182,14 +201,6 @@ public class AIOBankTrainer extends K_kailaScript {
     }
   }
 
-  private void buryLoop() {
-    while (c.getInventoryItemCount(primaryItemId) > 0 && c.isRunning()) {
-      c.setStatus("@yel@Burying..");
-      c.itemCommand(primaryItemId);
-      c.sleep(100);
-    }
-  }
-
   private void inventoryProcessLoop() {
     c.setStatus("@yel@Using Items..");
     c.useItemOnItemBySlot(
@@ -204,27 +215,45 @@ public class AIOBankTrainer extends K_kailaScript {
     }
   }
 
+  private void buryLoop() {
+    while (c.getInventoryItemCount(primaryItemId) > 0 && c.isRunning()) {
+      c.setStatus("@yel@Burying..");
+      c.itemCommand(primaryItemId);
+      c.sleep(100);
+    }
+  }
+
+  private void firemakingWalkback() {
+    switch (burnLocation) {
+      case 0: // "Varrock West"
+        if (c.currentX() > 165) {
+          c.walkTo(165, 507);
+          c.walkTo(151, 507);
+        } else if (c.currentX() < 138) c.walkTo(148, 508);
+        break;
+      case 1: // "Varrock East"
+        if (c.currentX() > 115) c.walkTo(103, 509);
+        break;
+      case 2: // "Falador West"
+        if (c.currentX() < 317) c.walkTo(317, 551);
+        break;
+      case 3: // "Falador East"
+        if (c.currentX() > 301) c.walkTo(301, 573);
+        break;
+      case 4: // "Ardougne South"
+        if (c.currentX() > 563) c.walkTo(549, 613);
+        break;
+      case 5: // "Seers Village"
+        // if (c.currentX() > FIX) c.walkTo(504, 457);
+        break;
+    }
+    // "Varrock West", "Varrock East", "Falador West", "Falador East", "Ardougne South", "Seers
+    // Village", "Yanille"
+  }
+
   private void bank() { // works for all
     c.setStatus("@yel@Banking..");
-    if (scriptSelect == 3) { // walkback for firemaking script
-      switch (burnLocation) {
-        case 0:
-          if (c.currentX() > 165) {
-            c.walkTo(165, 507);
-            c.walkTo(151, 507);
-          } else if (c.currentX() < 138) c.walkTo(148, 508);
-          break;
-        case 1:
-          if (c.currentX() > 115) c.walkTo(103, 509);
-          break;
-        case 2:
-          if (c.currentX() > 115) c.walkTo(504, 457);
-          break;
-        case 3:
-          if (c.currentX() > 563) c.walkTo(549, 613);
-          break;
-      }
-    }
+    if (scriptSelect == 3) firemakingWalkback(); // walkback for fm script
     if (c.distance(c.currentX(), c.currentY(), startPos[0], startPos[1]) > 10) {
       c.walkTo(startPos[0], startPos[1]);
     }
@@ -271,7 +300,7 @@ public class AIOBankTrainer extends K_kailaScript {
       c.sleep(GAME_TICK);
     }
   }
-
+  /** Moves the character to an adjacent position if possible. */
   private void moveCharacter() {
     int x = c.currentX();
     int y = c.currentY();
@@ -385,7 +414,7 @@ public class AIOBankTrainer extends K_kailaScript {
     };
     final String[][] comboField1 = {
       { // logs
-        "Log", "Oak", "Willow", "Maple", "Yew", "Magic"
+        "Normal log", "Oak log", "Willow log", "Maple log", "Yew log", "Magic log"
       },
       { // gems
         "Sapphire", "Emerald", "Ruby", "Diamond", "Dragonstone", "Opal", "Jade", "Topaz"
@@ -408,7 +437,15 @@ public class AIOBankTrainer extends K_kailaScript {
         "Fletch Shortbows(less xp)",
         "String Shortbows"
       },
-      {"Varrock West", "Varrock East", "Seers Village", "Ardougne South"}
+      { // firemaking
+        "Varrock West",
+        "Varrock East",
+        "Falador West",
+        "Falador East",
+        "Ardougne South",
+        "Seers Village",
+        "Yanille"
+      }
     };
 
     // Combo box options. Change string comboLabel1, string[] comboField1, etc
@@ -769,29 +806,29 @@ public class AIOBankTrainer extends K_kailaScript {
     // Arrange the Full Layout
     Panel middle = new Panel(new GridBagLayout());
 
-    GridBagConstraints constraints = new GridBagConstraints();
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.weightx = 1.0; // request any extra horizontal space
-    constraints.gridwidth = 2;
-    constraints.gridx = 0;
-    constraints.gridy = 0;
-    constraints.ipady = 20; // make this component tall
-    middle.add(containerInfobox, constraints);
+    GridBagConstraints cc = new GridBagConstraints();
+    cc.fill = GridBagConstraints.HORIZONTAL;
+    cc.weightx = 1.0; // request any extra horizontal space
+    cc.gridwidth = 2;
+    cc.gridx = 0;
+    cc.gridy = 0;
+    cc.ipady = 20; // make this component tall
+    middle.add(containerInfobox, cc);
 
-    constraints.fill = GridBagConstraints.VERTICAL;
-    constraints.weightx = 0.5; // request any extra horizontal space
-    constraints.gridwidth = 1;
-    constraints.gridx = 0;
-    constraints.gridy = 1;
-    constraints.ipady = 0; // make this component tall
-    middle.add(list, constraints);
+    cc.fill = GridBagConstraints.VERTICAL;
+    cc.weightx = 0.5; // request any extra horizontal space
+    cc.gridwidth = 1;
+    cc.gridx = 0;
+    cc.gridy = 1;
+    cc.ipady = 0; // make this component tall
+    middle.add(list, cc);
 
-    constraints.fill = GridBagConstraints.VERTICAL;
-    constraints.weightx = 0.5; // request any extra horizontal space
-    constraints.gridwidth = 1;
-    constraints.gridx = 1;
-    constraints.gridy = 1;
-    middle.add(checkboxes, constraints);
+    cc.fill = GridBagConstraints.VERTICAL;
+    cc.weightx = 0.5; // request any extra horizontal space
+    cc.gridwidth = 1;
+    cc.gridx = 1;
+    cc.gridy = 1;
+    middle.add(checkboxes, cc);
 
     // only add the first top infobox option (from list)
     containerInfobox.add(fletchInfobox);

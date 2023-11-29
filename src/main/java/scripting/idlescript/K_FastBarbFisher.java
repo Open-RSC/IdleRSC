@@ -46,7 +46,7 @@ public final class K_FastBarbFisher extends K_kailaScript {
       c.displayMessage("@red@Power fishes trout/salmon in barb village using Batching");
 
       c.quitIfAuthentic();
-      c.toggleBatchBarsOn();
+      c.setBatchBarsOn();
       if (c.isInBank()) c.closeBank();
       if (c.currentX() < 195) {
         bank();

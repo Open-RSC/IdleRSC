@@ -4869,21 +4869,27 @@ public class Controller {
     }
   }
   /**
-   * Method can be called to toggle ON Batch Bars in the openrsc client config. <br>
+   * (setBatchBars(boolean)) Method can be called to toggle ON Batch Bars in the openrsc client
+   * config. <br>
    * This is necessary for scripts utilizing batch bars.
    */
-  public void toggleBatchBarsOn() {
-    if (isLoggedIn() && !isAuthentic() && !orsc.Config.C_BATCH_PROGRESS_BAR) {
-      Config.C_BATCH_PROGRESS_BAR = true;
-    }
+  public void setBatchBarsOn() {
+    setBatchBars(true);
   }
   /**
-   * Method can be called to toggle OFF Batch Bars in the openrsc client config for native scripts
+   * (use setBatchBars(boolean)) Method can be called to toggle OFF Batch Bars in the openrsc client
+   * config for native scripts utilizing batch bars.
+   */
+  public void setBatchBarsOff() {
+    setBatchBars(false);
+  }
+  /**
+   * Method can be called to toggle Batch Bars in the openrsc client config for native scripts
    * utilizing batch bars.
    */
-  public void toggleBatchBarsOff() {
+  public void setBatchBars(boolean value) {
     if (isLoggedIn() && !isAuthentic() && orsc.Config.C_BATCH_PROGRESS_BAR) {
-      Config.C_BATCH_PROGRESS_BAR = false;
+      Config.C_BATCH_PROGRESS_BAR = value;
     }
   }
   /**

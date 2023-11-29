@@ -46,7 +46,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
       c.walkTo(516, 488);
       c.sleep(1380);
     }
-    c.toggleBatchBarsOn();
+    c.setBatchBarsOn();
   }
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes

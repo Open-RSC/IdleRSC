@@ -22,9 +22,11 @@ public class K_BuyMagicGuild extends K_kailaScript {
     ItemId.MIND_RUNE.getId(),
     ItemId.BODY_RUNE.getId()
   };
-  private int soulId = ItemId.SOUL_RUNE.getId();
-  private int bStaff = ItemId.BATTLESTAFF.getId();
-  private int shopkeeperId = 514;
+  private final int SHOPKEEPER_ID = 514;
+  private final int SOUL_RUNE = ItemId.SOUL_RUNE.getId();
+  private final int B_STAFF = ItemId.BATTLESTAFF.getId();
+  private final int WITHDRAW_AMOUNT = 250000;
+  private final int COINS = ItemId.COINS.getId();
   private int option = -1;
   private boolean scriptStarted = false;
   private boolean guiSetup = false;
@@ -84,7 +86,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
     while (c.isRunning()) {
       if (c.getInventoryItemCount() < 30) {
         c.setStatus("@gre@Buying stuff..");
-        ORSCharacter npc = c.getNearestNpcById(shopkeeperId, false);
+        ORSCharacter npc = c.getNearestNpcById(SHOPKEEPER_ID, false);
 
         if (npc != null) {
 
@@ -102,8 +104,8 @@ public class K_BuyMagicGuild extends K_kailaScript {
 
           if (c.getInventoryItemCount() < 30) {
             if (option == 2) { // only runes
-              if (buySouls && c.getShopItemCount(soulId) == 30) {
-                c.shopBuy(soulId, 1); // only buy 1 at a time
+              if (buySouls && c.getShopItemCount(SOUL_RUNE) == 30) {
+                c.shopBuy(SOUL_RUNE, 1); // only buy 1 at a time
                 c.sleep(100);
               }
               if (c.isInShop()
@@ -114,43 +116,44 @@ public class K_BuyMagicGuild extends K_kailaScript {
                       || c.getShopItemCount(runeIds[4]) > 20
                       || c.getShopItemCount(runeIds[5]) > 20)) {
                 for (int runeId : runeIds) {
-                  c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
+                  c.shopBuy(runeId, Math.max(c.getShopItemCount(runeId) - 20, 0));
                   c.sleep(100);
                 }
               }
               c.sleep(200);
 
             } else if (option == 1) { // only staffs
-              if (buySouls && c.getShopItemCount(soulId) == 30) {
-                c.shopBuy(soulId, 1); // only buy 1 at a time
+              if (buySouls && c.getShopItemCount(SOUL_RUNE) == 30) {
+                c.shopBuy(SOUL_RUNE, 1); // only buy 1 at a time
                 c.sleep(100);
               }
-              if (c.isInShop() && c.getShopItemCount(bStaff) == 5) {
-                c.shopBuy(bStaff, 1); // c.getShopItemCount(bStaff)
+              if (c.isInShop() && c.getShopItemCount(B_STAFF) == 5) {
+                c.shopBuy(B_STAFF, 1); // c.getShopItemCount(bStaff)
                 c.sleep(100);
               }
               c.sleep(200);
 
             } else if (option == 0) { // runes then staffs
-              if (buySouls && c.getShopItemCount(soulId) == 30) {
-                c.shopBuy(soulId, 1); // only buy 1 at a time
+              if (buySouls && c.getShopItemCount(SOUL_RUNE) == 30) {
+                c.shopBuy(SOUL_RUNE, 1); // only buy 1 at a time
                 c.sleep(200);
               }
               if (c.isInShop()
-                  && (c.getShopItemCount(runeIds[0]) > 0
+                  && (c.getShopItemCount(runeIds[0]) > 20
                       || c.getShopItemCount(runeIds[1]) > 20
                       || c.getShopItemCount(runeIds[2]) > 20
                       || c.getShopItemCount(runeIds[3]) > 20
                       || c.getShopItemCount(runeIds[4]) > 20
                       || c.getShopItemCount(runeIds[5]) > 20)) {
                 for (int runeId : runeIds) {
-                  c.shopBuy(runeId, c.getShopItemCount(runeId) - 20);
-                  c.sleep(200);
+                  c.shopBuy(runeId, Math.max(c.getShopItemCount(runeId) - 20, 0));
+                  c.sleep(100);
                 }
               }
-              if (c.isInShop() && c.getShopItemCount(bStaff) == 5) {
-                c.shopBuy(bStaff, 1);
-                c.sleep(200);
+              c.sleep(100);
+              if (c.isInShop() && c.getShopItemCount(B_STAFF) == 5) {
+                c.shopBuy(B_STAFF, 1);
+                c.sleep(300);
               }
               c.sleep(200);
             }
@@ -198,7 +201,7 @@ public class K_BuyMagicGuild extends K_kailaScript {
             + c.getInventoryItemCount(runeIds[1])
             + c.getInventoryItemCount(runeIds[2])
             + c.getInventoryItemCount(runeIds[3]);
-    staffsBought += c.getInventoryItemCount(bStaff);
+    staffsBought += c.getInventoryItemCount(B_STAFF);
 
     if (c.isInBank()) {
 
@@ -212,8 +215,17 @@ public class K_BuyMagicGuild extends K_kailaScript {
               + c.getBankItemCount(runeIds[1])
               + c.getBankItemCount(runeIds[2])
               + c.getBankItemCount(runeIds[3]);
-      staffsBanked = c.getBankItemCount(bStaff);
-      c.sleep(100);
+      staffsBanked = c.getBankItemCount(B_STAFF);
+      c.sleep(1240);
+      if (c.getInventoryItemCount(COINS) < WITHDRAW_AMOUNT) {
+        if (c.getBankItemCount(COINS) < 100000) {
+          c.log("You need some more coins to buy with...", "red");
+          c.setAutoLogin(false);
+          c.stop();
+        }
+        withdrawItem(COINS, WITHDRAW_AMOUNT);
+      }
+
       c.closeBank();
     }
   }

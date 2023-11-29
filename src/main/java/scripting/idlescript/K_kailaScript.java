@@ -435,7 +435,7 @@ public class K_kailaScript extends IdleScript {
     if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
       for (int id : c.getFoodIds()) {
         if (c.getInventoryItemCount(id) > 0) {
-          leaveCombatForced();
+          leaveCombat();
           c.setStatus("@red@Eating..");
           c.itemCommand(id);
           c.sleep(GAME_TICK);
@@ -459,7 +459,7 @@ public class K_kailaScript extends IdleScript {
     if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
       for (int id : c.getFoodIds()) {
         if (c.getInventoryItemCount(id) > 0) {
-          leaveCombatForced();
+          leaveCombat();
           if (swapState && !c.isItemIdEquipped(wearId)) {
             c.equipItem(c.getInventoryItemSlotIndex(wearId));
             c.sleep(GAME_TICK);
@@ -632,7 +632,7 @@ public class K_kailaScript extends IdleScript {
    * walks to current tile (async non-blocking) radius 0. <br>
    */
   protected static void leaveCombat() {
-    for (int i = 0; i <= 10; i++) {
+    for (int i = 0; i <= 15; i++) {
       if (c.isInCombat()) {
         c.setStatus("@red@Leaving combat..");
         c.walkToAsync(c.currentX(), c.currentY(), 0);
@@ -827,7 +827,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superAttackPot[1])
               + c.getInventoryItemCount(superAttackPot[2]);
       if (superAttackPotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombatForced();
+        if (leaveCombat && c.isInCombat()) leaveCombat();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superAttackPot[0]) > 0) {
           c.itemCommand(superAttackPot[0]);
@@ -839,6 +839,8 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superAttackPot[2]);
           c.sleep(GAME_TICK);
         }
+      } else {
+        attackBoost(boostAboveBase, leaveCombat);
       }
     }
   }
@@ -857,7 +859,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superStrengthPot[1])
               + c.getInventoryItemCount(superStrengthPot[2]);
       if (superStrengthPotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombatForced();
+        if (leaveCombat && c.isInCombat()) leaveCombat();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superStrengthPot[0]) > 0) {
           c.itemCommand(superStrengthPot[0]);
@@ -869,6 +871,8 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superStrengthPot[2]);
           c.sleep(GAME_TICK);
         }
+      } else {
+        strengthBoost(boostAboveBase, leaveCombat);
       }
     }
   }
@@ -887,7 +891,7 @@ public class K_kailaScript extends IdleScript {
               + c.getInventoryItemCount(superDefensePot[1])
               + c.getInventoryItemCount(superDefensePot[2]);
       if (superDefensePotCount > 0) {
-        if (leaveCombat && c.isInCombat()) leaveCombatForced();
+        if (leaveCombat && c.isInCombat()) leaveCombat();
         else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
         if (c.getInventoryItemCount(superDefensePot[0]) > 0) {
           c.itemCommand(superDefensePot[0]);
@@ -899,6 +903,8 @@ public class K_kailaScript extends IdleScript {
           c.itemCommand(superDefensePot[2]);
           c.sleep(GAME_TICK);
         }
+      } else {
+        defenseBoost(boostAboveBase, leaveCombat);
       }
     }
   }
@@ -1018,7 +1024,7 @@ public class K_kailaScript extends IdleScript {
    */
   /** if bank is not open, wait 2 ticks, repeat check. repeats 20 times. */
   protected static void waitForBankOpen() {
-    for (int i = 0; i <= 20; i++) {
+    for (int i = 0; i <= 200; i++) {
       if (!c.isRunning()) break;
       if (!c.isInBank()) {
         c.sleep(2 * GAME_TICK);
@@ -1298,6 +1304,8 @@ public class K_kailaScript extends IdleScript {
           c.sleep(2 * GAME_TICK);
         }
       }
+    } else if (bankPotCount == 0) {
+      withdrawAttack(withdrawAmount);
     }
   }
   /**
@@ -1336,6 +1344,8 @@ public class K_kailaScript extends IdleScript {
           c.sleep(2 * GAME_TICK);
         }
       }
+    } else if (bankPotCount == 0) {
+      withdrawStrength(withdrawAmount);
     }
   }
   /**
@@ -1374,6 +1384,8 @@ public class K_kailaScript extends IdleScript {
           c.sleep(2 * GAME_TICK);
         }
       }
+    } else if (bankPotCount == 0) {
+      withdrawDefense(withdrawAmount);
     }
   }
   /** Withdraw antidote potions (checks for and uses 1 and 2 dose potions first) */
@@ -1627,7 +1639,7 @@ public class K_kailaScript extends IdleScript {
   /** Loop teleport to Watchtower */
   protected static void teleportWatchtower() {
     for (int i = 1; i <= 200; i++) {
-      if (c.currentX() != 493 && c.currentY() != 3525) {
+      if (c.isRunning() && c.currentX() != 493 && c.currentY() != 3525) {
         c.setStatus("@gre@Teleporting..");
         c.castSpellOnSelf(SpellId.WATCHTOWER_TELEPORT.getId());
         c.sleep(4 * GAME_TICK);
@@ -1650,7 +1662,7 @@ public class K_kailaScript extends IdleScript {
     int[] gateLocation = c.getNearestObjectById(objectId);
     if (gateLocation == null) return;
     for (int i = 0; i < 200; i++) {
-      if (gateLocation[0] == gateX && gateLocation[1] == gateY) {
+      if (c.isRunning() && gateLocation[0] == gateX && gateLocation[1] == gateY) {
         // Arrays.equals(gateLocation, new int[] {gateX, gateY})
         if (c.getNearestObjectById(objectId) != null) c.atObject(gateX, gateY);
         c.sleep(1280);
@@ -1671,7 +1683,7 @@ public class K_kailaScript extends IdleScript {
     int[] gateLocation = c.getNearestObjectById(objectId);
     if (gateLocation == null) return;
     for (int i = 0; i < 100; i++) {
-      if (gateLocation[0] == gateX && gateLocation[1] == gateY) {
+      if (c.isRunning() && gateLocation[0] == gateX && gateLocation[1] == gateY) {
         if (c.getNearestObjectById(objectId) != null)
           c.atWallObject(gateLocation[0], gateLocation[1]);
         c.sleep(2000);

@@ -279,7 +279,7 @@ public class FoulRunecraft extends IdleScript {
           c.stop();
           return ticks(1);
         }
-        if (choice == 7 && c.isItemInInventory(runes[choice])) {
+        if (c.isItemInInventory(runes[choice])) {
           c.depositItem(runes[choice], c.getInventoryItemCount(runes[choice]));
           return ticks(1);
         }
@@ -293,6 +293,7 @@ public class FoulRunecraft extends IdleScript {
 
   private int miningLoop() {
     if (c.getInventoryItemCount() < 30) {
+      if (c.getPlayer().bubbleTimeout > 0) return ticks(1);
       int[] essence = c.getNearestObjectById(1227);
       if (essence != null) {
         c.atObject(essence[0], essence[1]);

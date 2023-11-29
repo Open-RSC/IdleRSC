@@ -24,15 +24,31 @@ public class MiningGuild extends IdleScript {
   private static final int[] COAL_ROCK = {110, 111};
   private static final int EMPTY_ROCK = 98;
 
-  private static final int RUNITE_ORE = ItemId.RUNITE_ORE.getId();
-  private static final int ADAMANTITE_ORE = ItemId.ADAMANTITE_ORE.getId();
-  private static final int MITHRIL_ORE = ItemId.MITHRIL_ORE.getId();
-  private static final int GOLD_ORE = ItemId.GOLD.getId();
-  private static final int COAL_ORE = ItemId.COAL.getId();
+  private static final int[] oreIds = {
+    ItemId.RUNITE_ORE.getId(),
+    ItemId.ADAMANTITE_ORE.getId(),
+    ItemId.MITHRIL_ORE.getId(),
+    ItemId.COAL.getId(),
+    ItemId.GOLD.getId()
+  };
+  private static final int[] gemIds = {
+    ItemId.UNCUT_DIAMOND.getId(),
+    ItemId.UNCUT_RUBY.getId(),
+    ItemId.UNCUT_EMERALD.getId(),
+    ItemId.UNCUT_SAPPHIRE.getId()
+  };
+  private static final int[] pickaxeIds = {
+    ItemId.BRONZE_PICKAXE.getId(),
+    ItemId.IRON_PICKAXE.getId(),
+    ItemId.STEEL_PICKAXE.getId(),
+    ItemId.MITHRIL_PICKAXE.getId(),
+    ItemId.ADAMANTITE_PICKAXE.getId(),
+    ItemId.RUNE_PICKAXE.getId()
+  };
 
-  private static final int[] gemIDs = {157, 158, 159, 160};
   private static final int[] banked = {0, 0, 0, 0, 0};
   private static int[] currentOre = {0, 0};
+
   private static final int[] ladderUp = {274, 3398};
   private static final int[] ladderDown = {274, 566};
   private static JFrame scriptFrame = null;
@@ -68,12 +84,27 @@ public class MiningGuild extends IdleScript {
   }
 
   public void run() {
+    if (controller.getBaseStat(SkillId.MINING.getId()) < 60) quit(4);
+
+    for (int id : pickaxeIds) {
+      if (controller.isItemIdEquipped(id) || controller.getInventoryItemCount(id) > 0) {
+        String pickaxe = String.valueOf(ItemId.getById(id)).replace("_", " ").toLowerCase();
+        pickaxe = pickaxe.substring(0, 1).toUpperCase() + pickaxe.substring(1);
+        controller.displayMessage("@gre@Using: " + pickaxe);
+        break;
+      }
+      if (id == pickaxeIds[pickaxeIds.length - 1]) {
+        quit(5);
+      }
+    }
+
     while (controller.isRunning()) {
       if (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5
           && controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223) {
         quit(2);
       } else {
-        while (controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) == 223) {
+        while (controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) == 223
+            && controller.isRunning()) {
           controller.atObject(ladderDown[0], ladderDown[1]);
           controller.sleep(640);
         }
@@ -135,39 +166,53 @@ public class MiningGuild extends IdleScript {
     switch (i) {
       case "runite":
         ore = controller.getNearestObjectById(RUNITE_ROCK);
-        if (ore != null) isMining = "runite";
+        if (ore != null) {
+          isMining = "runite";
+          controller.setStatus("@cya@Mining @cya@Runite");
+        }
         break;
       case "adamantite":
         ore = controller.getNearestObjectById(ADAMANTITE_ROCK);
-        if (ore != null && ore[1] > 3383) isMining = "adamantite";
+        if (ore != null) {
+          isMining = "adamantite";
+          controller.setStatus("@cya@Mining @gre@Adamantite");
+        }
         break;
       case "mithril":
         ore = controller.getNearestObjectById(MITHRIL_ROCK);
-        if (ore != null && ore[1] > 3383) isMining = "mithril";
+        if (ore != null) {
+          isMining = "mithril";
+          controller.setStatus("@cya@Mining @blu@Mithril");
+        }
         break;
       case "gold":
         ore = controller.getNearestObjectById(GOLD_ROCK);
-        if (ore != null && ore[1] > 3383) isMining = "gold";
+        if (ore != null) {
+          isMining = "gold";
+          controller.setStatus("@cya@Mining @yel@Gold");
+        }
         break;
       case "coal":
         ore = controller.getNearestObjectByIds(COAL_ROCK);
-        if (ore != null && ore[1] > 3383) {
+        if (ore != null) {
           isMining = "coal";
+          controller.setStatus("@cya@Mining @whi@Coal");
         }
         break;
       default:
         controller.sleep(640);
+        controller.setStatus("@cya@Waiting");
         isMining = "none";
-        break;
     }
     if (ore.length > 0) {
       controller.atObject(ore[0], ore[1]);
-      currentOre = new int[] {0, 0};
+      currentOre = new int[] {ore[0], ore[1]};
     }
     controller.sleep(1920);
   }
 
   public void bank() {
+    controller.setStatus("@cya@Banking");
     isMining = "none";
     currentOre = new int[] {0, 0};
     while (controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223
@@ -190,17 +235,17 @@ public class MiningGuild extends IdleScript {
       quit(1);
     }
     if (controller.isInBank() && controller.isRunning()) {
-      int[] oreIDs = {RUNITE_ORE, ADAMANTITE_ORE, MITHRIL_ORE, GOLD_ORE, COAL_ORE};
-      for (int i = 0; i < oreIDs.length; i++) { // deposits all ores
-        if (controller.getInventoryItemCount(oreIDs[i]) > 0) {
-          banked[i] += controller.getInventoryItemCount(oreIDs[i]); // adds ore to array for paint
-          while (controller.getInventoryItemCount(oreIDs[i]) > 0) {
-            controller.depositItem(oreIDs[i], controller.getInventoryItemCount(oreIDs[i]));
+      for (int i = 0; i < oreIds.length; i++) { // deposits all ores
+        if (controller.getInventoryItemCount(oreIds[i]) > 0) {
+          banked[i] +=
+              controller.getInventoryItemCount(oreIds[i]); // adds ore to banked array for paint
+          while (controller.getInventoryItemCount(oreIds[i]) > 0) {
+            controller.depositItem(oreIds[i], controller.getInventoryItemCount(oreIds[i]));
             controller.sleep(640);
           }
         }
       }
-      for (Integer gemID : gemIDs) { // deposits all gems
+      for (Integer gemID : gemIds) { // deposits all gems
         if (controller.getInventoryItemCount(gemID) > 0) {
           while (controller.getInventoryItemCount(gemID) > 0) {
             controller.depositItem(gemID, controller.getInventoryItemCount(gemID));
@@ -209,6 +254,7 @@ public class MiningGuild extends IdleScript {
         }
       }
       controller.closeBank();
+      controller.setStatus("@cya@Walking to Mining Guild");
       while (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5
           && controller.isRunning()
           && controller.isLoggedIn()) { // sleep until the mining guild has been entered
@@ -251,15 +297,32 @@ public class MiningGuild extends IdleScript {
   }
 
   public void quit(Integer i) {
-    if (i == 1) {
-      controller.displayMessage("@red@Script has been stopped!");
-    } else if (i == 2) {
-      controller.displayMessage(
-          "@red@Start the script inside the mining guild or the Falador east bank!");
-    } else if (i == 3) {
-      controller.displayMessage("@red@Are you planning to mine nothing?");
+    if (controller.isRunning()) {
+      switch (i) {
+        case 1:
+          controller.displayMessage("@red@Script has been stopped!");
+          break;
+        case 2:
+          controller.displayMessage(
+              "@red@Start the script inside the mining guild or the Falador east bank!");
+          break;
+        case 3:
+          controller.displayMessage("@red@Are you planning to mine nothing?");
+          break;
+        case 4:
+          controller.displayMessage(
+              "@red@You need a mining level of 60 to enter the mining guild!");
+          break;
+        case 5:
+          controller.displayMessage(
+              "@red@You do not have a pickaxe equipped or in your inventory!");
+          controller.displayMessage("@red@Get one and start the script again!");
+          break;
+        default:
+          controller.displayMessage("@red@Quit was called but wasn't given a correct arguement");
+      }
+      controller.stop();
     }
-    if (controller.isRunning()) controller.stop();
   }
 
   public boolean runiteAvailable() {
@@ -268,50 +331,96 @@ public class MiningGuild extends IdleScript {
 
   public boolean adamantiteAvailable() {
     int[] ore = controller.getNearestObjectById(ADAMANTITE_ROCK);
-    return ore != null && ore[1] > 3383;
+    return controller.getNearestObjectById(ADAMANTITE_ROCK) != null && ore[1] > 3383;
   }
 
   public boolean mithrilAvailable() {
     int[] ore = controller.getNearestObjectById(MITHRIL_ROCK);
-    return ore != null && ore[1] > 3383;
+    return controller.getNearestObjectById(MITHRIL_ROCK) != null && ore[1] > 3383;
   }
 
   public boolean goldAvailable() {
     int[] ore = controller.getNearestObjectById(GOLD_ROCK);
-    return ore != null && ore[1] > 3383;
+    return controller.getNearestObjectById(GOLD_ROCK) != null && ore[1] > 3383;
   }
 
   public boolean coalAvailable() {
     int[] ore = controller.getNearestObjectByIds(COAL_ROCK);
-    return ore != null && ore[1] > 3383;
+    return controller.getNearestObjectByIds(COAL_ROCK) != null && ore[1] > 3383;
   }
 
   public boolean rockEmpty() {
     return currentOre[0] != 0
         ? controller.getObjectAtCoord(currentOre[0], currentOre[1]) == EMPTY_ROCK
-        : false;
+        : true;
   }
 
   @Override
   public void paintInterrupt() {
     if (controller != null) {
-      controller.drawBoxAlpha(7, 7, 118, 21 + 90, 0xFFFFFF, 64);
-      controller.drawString("@whi@________________", 10, 7, 0xFFFFFF, 1);
-      controller.drawString("@gre@MiningGuild @whi@- @cya@Seatta", 10, 21, 0xFFFFFF, 1);
-      controller.drawString("@whi@________________", 10, 21 + 3, 0xFFFFFF, 1);
-      controller.drawString("@whi@      Ores Banked", 10, 21 + 19, 0xFFFFFF, 1);
-      controller.drawString("@whi@________________", 10, 21 + 23, 0xFFFFFF, 1);
-      controller.drawString("@cya@Runite ", 10, 21 + 38, 0xFFFFFF, 1);
-      controller.drawString("@gre@Adamantite ", 10, 21 + 52, 0xFFFFFF, 1);
-      controller.drawString("@blu@Mithril ", 10, 21 + 66, 0xFFFFFF, 1);
-      controller.drawString("@yel@Gold ", 10, 21 + 80, 0xFFFFFF, 1);
-      controller.drawString("@bla@Coal ", 10, 21 + 94, 0xFFFFFF, 1);
-      controller.drawLineVert(77, 21 + 24, 72, 0xFFFFFF);
-      controller.drawString("@whi@" + banked[0], 81, 21 + 38, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + banked[1], 81, 21 + 52, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + banked[2], 81, 21 + 66, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + banked[3], 81, 21 + 80, 0xFFFFFF, 1);
-      controller.drawString("@whi@" + banked[4], 81, 21 + 94, 0xFFFFFF, 1);
+      int colors[] = { // runite, adamantite, mithril, gold, coal,
+        0x008C8C, 0x718161, 0x617181, 0x6C6C6C, 0xBA9537
+      };
+      int boxColor = 0x282A36;
+      int borderColor = 0xBD93F9;
+
+      int numberOfItems = 5;
+      int paintPadding = 4;
+
+      int boxTransparency = 255;
+
+      int titleFontSize = 6;
+      int titleWidth = 101;
+      int titleYOffset = 15;
+      int titleXOffset = 32;
+
+      int itemWidth = 34;
+      int itemHeight = 20;
+      int itemXOffset = 14;
+      int itemYOffset = titleYOffset + paintPadding;
+      int itemSpacing = 24;
+
+      int paintWidth =
+          (itemWidth * numberOfItems) + (itemSpacing * numberOfItems) + (paintPadding * 2);
+      int paintHeight = itemHeight + (paintPadding * 2) + titleXOffset;
+
+      int paintX = controller.getGameWidth() - paintPadding - paintWidth;
+      int paintY = controller.getGameHeight() - paintPadding * 2 - paintHeight;
+      int titleX = paintX + ((paintWidth - titleWidth) / 2) - paintPadding;
+      int titleY = paintY + paintPadding + titleYOffset;
+      int itemX = paintX + paintPadding + itemXOffset;
+      int itemY = paintY + paintPadding + itemYOffset;
+      int itemAmountYOffset = itemY + itemHeight + 6;
+
+      controller.drawBoxAlpha(paintX, paintY, paintWidth, paintHeight, boxColor, boxTransparency);
+      controller.drawBoxBorder(paintX, paintY, paintWidth, paintHeight, borderColor);
+      controller.drawString("Mining", titleX, titleY, colors[0], titleFontSize);
+      controller.drawString("Guild", titleX + 62, titleY, colors[1], titleFontSize);
+
+      for (int i = 0; i < oreIds.length; i++) {
+        controller.drawItemSprite(
+            oreIds[i],
+            itemX + (itemWidth * i) + (itemSpacing * i),
+            itemY,
+            itemWidth,
+            itemHeight,
+            false);
+      }
+      for (int i = 0; i < banked.length; i++) {
+        String str =
+            banked[i] >= 1000000
+                ? String.format("%.2f", (double) banked[i] / 1000000) + "M"
+                : banked[i] > 1000
+                    ? String.format("%.2f", (double) banked[i] / 1000) + "K"
+                    : String.valueOf(banked[i]);
+
+        controller.drawString(
+            str,
+            paintX + (paintPadding * 2) + (itemWidth * (i)) + (itemSpacing * (i)),
+            itemAmountYOffset,
+            colors[i],
+            3);
+      }
     }
   }
 }

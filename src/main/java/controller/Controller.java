@@ -4150,6 +4150,7 @@ public class Controller {
       String text, int x, int y, int textColor, int fontSize, boolean center) {
     mud.getSurface().drawShadowText(text, x, y, textColor, Math.max(1, fontSize), center);
   }
+
   /**
    * Draws the sprite of an item at specified coordinates. Must be used inside paintInterrupt().
    *
@@ -4167,6 +4168,7 @@ public class Controller {
         .drawSpriteClipping(
             sprite, x, y, width, height, def.getPictureMask(), 0, def.getBlueMask(), mirrorX, 0, 1);
   }
+
   /**
    * Sets the left-hand status indicator text value.
    *

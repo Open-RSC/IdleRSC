@@ -349,7 +349,7 @@ public class Main {
     while (!controller.isLoaded()) controller.sleep(1);
 
     // Set Sizes After initilizing for correct sizing
-    rscFrame.setMinimumSize(new Dimension(533, 405));
+    rscFrame.setMinimumSize(new Dimension(533, 405)); // this doesn't seem to be doing anything
     rscFrame.setSize(new Dimension(533, 405));
     if (config.isLogWindowVisible())
       rscFrame.setSize(new Dimension(rscFrame.getWidth(), rscFrame.getHeight() + 188));

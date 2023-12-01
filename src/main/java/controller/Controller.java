@@ -4888,7 +4888,7 @@ public class Controller {
    * utilizing batch bars.
    */
   public void setBatchBars(boolean value) {
-    if (isLoggedIn() && !isAuthentic() && orsc.Config.C_BATCH_PROGRESS_BAR) {
+    if (isLoggedIn() && !isAuthentic()) {
       Config.C_BATCH_PROGRESS_BAR = value;
     }
   }
@@ -4968,7 +4968,10 @@ public class Controller {
   public void showRecoveryDetailsMenu() {
     mud.setShowRecoveryDialogue(true);
   }
-  /** Hide Recovery Question Menu */
+  /**
+   * Hide Recovery Question Menu (Run this every message hook callback to prevent corrupt packets
+   * showing this menu)
+   */
   public void hideRecoveryDetailsMenu() {
     mud.setShowRecoveryDialogue(false);
   }
@@ -4976,22 +4979,11 @@ public class Controller {
   public void showContactDetailsMenu() {
     mud.setShowContactDialogue(true);
   }
-  /** Hides Details Menu */
+  /**
+   * Hides Details Menu (Run this every message hook callback to prevent corrupt packets showing
+   * this menu)
+   */
   public void hideContactDetailsMenu() { // int opcode = 253;
     mud.setShowContactDialogue(false);
-    /* packet not required to close coleslaw, but may be needed for uranium
-            reflector.mudInvoker(mud, "hideDetails");
-            while(mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
-            mud.packetHandler.getClientStream().newPacket(opcode);
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().bufferBits.putByte(0);
-            mud.packetHandler.getClientStream().bufferBits.putString(" ");
-            mud.packetHandler.getClientStream().finishPacket();
-    */
   }
 }

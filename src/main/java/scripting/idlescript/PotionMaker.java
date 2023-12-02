@@ -174,7 +174,10 @@ public final class PotionMaker extends IdleScript {
       }
     }
     c.openBank();
-    c.sleep(2000);
+    c.sleep(640);
+    if (!c.isInBank()) {
+      K_kailaScript.waitForBankOpen();
+    }
     if (c.isInBank()) {
       // Ingredients: Full Vial[0], Clean Herb[1], Secondary[2], Empty Vial[3], Unid Herb[4],
       // Unfinished Potion[5]
@@ -187,7 +190,7 @@ public final class PotionMaker extends IdleScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
           // }
         }
-        c.sleep(1000);
+        c.sleep(3*640);
       }
       if (ingredients[5] != 0) {
         // now we count up unif potions + math.min((clean+ dirty herbs),(Empty + full vials)) =
@@ -214,19 +217,16 @@ public final class PotionMaker extends IdleScript {
             || c.getInventoryItemCount(ingredients[3]) > 0) {
           withdrawHerb();
         }
-        c.sleep(640);
+        // Next bot withdraws 15 secondaries (only if not full inv)
+        if (c.getInventoryItemCount() < 30) {
+          withdrawSecondary();
+        }
         //        if (stopWithSecondary) {
         //          if (c.getBankItemCount(ingredients[2]) < 15) {
         //           // c.log("error, unequal amount of secondaries. stopping. ");
         //            // endSession();
         //          } //todo re-enable this
         //        }
-        // Next bot withdraws 15 secondaries (only if not full inv)
-        if (c.getInventoryItemCount() < 30) {
-          withdrawSecondary();
-          c.sleep(640);
-        }
-        // }
       } else {
         // need [2] for primary and [4] for secondary when grinding
         primaryIngredientTotalInBank = c.getBankItemCount(ingredients[2]);
@@ -238,6 +238,7 @@ public final class PotionMaker extends IdleScript {
         withdrawPre();
       }
       c.closeBank(); // Next, close back
+      c.sleep(640);
     }
   }
 

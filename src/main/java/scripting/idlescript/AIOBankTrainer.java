@@ -261,7 +261,7 @@ public class AIOBankTrainer extends K_kailaScript {
     c.sleep(GAME_TICK);
     if (!c.isInBank()) {
       waitForBankOpen();
-    } else {
+    }
       if (scriptSelect == 2) { // bury bones
         totalProcessedCount = totalProcessedCount + 30;
       } else if (scriptSelect == 3) {
@@ -298,7 +298,7 @@ public class AIOBankTrainer extends K_kailaScript {
       totalTrips++;
       c.closeBank();
       c.sleep(GAME_TICK);
-    }
+
   }
   /** Moves the character to an adjacent position if possible. */
   private void moveCharacter() {

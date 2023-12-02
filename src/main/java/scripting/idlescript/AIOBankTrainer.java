@@ -35,6 +35,8 @@ public class AIOBankTrainer extends K_kailaScript {
   // todo elemental battlestaffs
   // todo misc - crystal keys, dragon scales
   // todo herb cleaner
+    // todo wine drinker
+
 
   private int scriptSelect = 0;
 

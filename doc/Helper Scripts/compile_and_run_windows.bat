@@ -1,2 +1,2 @@
 echo. | compile_windows.bat
-run_windows.bat
+start javaw -jar IdleRSC.jar 

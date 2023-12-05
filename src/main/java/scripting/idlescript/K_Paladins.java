@@ -21,6 +21,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
+// todo possible paladins bug loops banking, doesnt recognize food "out of food" status
 public final class K_Paladins extends K_kailaScript {
   String foodName = "food";
   private int totalCoins = 0;
@@ -180,11 +181,18 @@ public final class K_Paladins extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.isInCombat()) {
-        c.setStatus("@gre@Leaving combat..");
-        c.walkTo(610, 1549, 0, true);
-        c.sleep(640);
+      _leaveCombat();
+      boolean ate = _eatFood();
+      if (!ate) {
+        c.setStatus("@gre@We've ran out of Food! Banking!.");
+        c.sleep(1280);
+        paladinsToBank(true);
+        bank();
+        timeToBank = false;
+        BankToPaladins();
       }
+      checkFightMode(fightMode);
+      lootItems(true, loot);
       if (!c.isInCombat() && c.getInventoryItemCount(foodId) > 0) {
         c.setStatus("@yel@Thieving Paladins");
         ORSCharacter npc = c.getNearestNpcById(323, false);
@@ -201,12 +209,7 @@ public final class K_Paladins extends K_kailaScript {
           c.sleep(100); // this sleep time is important
         }
       }
-      int eatLvl = c.getBaseStat(c.getStatId("Hits")) - 20;
-      if (c.getCurrentStat(c.getStatId("Hits")) < eatLvl) {
-        eat();
-      }
-      checkFightMode(fightMode);
-      lootItems(true, loot);
+
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank) { // bank if no food-
         c.setStatus("@yel@Banking..");
         paladinsToBank(true);
@@ -215,7 +218,7 @@ public final class K_Paladins extends K_kailaScript {
         BankToPaladins();
       }
       if (c.getInventoryItemCount() == 30) {
-        leaveCombat();
+        _leaveCombat();
         c.setStatus("@gre@Eating Food to Loot..");
         if (c.getInventoryItemCount(foodId) > 0) {
           c.itemCommand(foodId);
@@ -224,35 +227,38 @@ public final class K_Paladins extends K_kailaScript {
           c.setStatus("@yel@Banking..");
           paladinsToBank(true);
           bank();
+          timeToBank = false;
           BankToPaladins();
         }
       }
     }
   }
   // Important private VOID's below
-  private void eat() {
-    if (c.isInCombat()) {
-      c.setStatus("@gre@Leaving combat..");
-      c.walkTo(610, 1549, 0, true);
-      c.sleep(640);
+  private void _leaveCombat() {
+    for (int i = 0; i <= 15; i++) {
+      if (c.isInCombat()) {
+        c.setStatus("@red@Leaving combat..");
+        c.walkTo(610, 1549, 0, true);
+        c.sleep(GAME_TICK);
+      } else return;
     }
-    c.setStatus("@gre@Eating..");
+  }
+
+  private boolean _eatFood() {
     boolean ate = false;
-    for (int id : c.getFoodIds()) {
-      if (c.isRunning() && c.getInventoryItemCount(id) > 0) {
-        c.itemCommand(id);
-        c.sleep(640);
-        ate = true;
-        break;
-      } else break;
-    }
-    if (!ate) {
-      c.setStatus("@gre@We've ran out of Food! Banking!.");
-      c.sleep(308);
-      paladinsToBank(true);
-      bank();
-      BankToPaladins();
-    }
+    if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
+      for (int id : c.getFoodIds()) {
+        if (c.getInventoryItemCount(id) > 0) {
+          _leaveCombat();
+          c.setStatus("@red@Eating..");
+          c.itemCommand(id);
+          c.sleep(GAME_TICK);
+          ate = true;
+          break;
+        }
+      }
+    } else return true; // not necessary to eat
+    return ate; // return false if not eaten, return true if has eaten.
   }
 
   private void bank() {

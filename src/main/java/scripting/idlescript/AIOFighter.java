@@ -139,7 +139,6 @@ public class AIOFighter extends IdleScript {
           c.setStatus("@red@Out of range! Walking back.");
           c.walkTo(startTile[0], startTile[1], 0, true);
         }
-
         if (openDoors) {
           for (int doorId : doorObjectIds) {
             int[] doorCoords = c.getNearestObjectById(doorId);
@@ -255,7 +254,6 @@ public class AIOFighter extends IdleScript {
                     if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
                       c.setStatus("@red@No NPCs, walking back to start...");
                       c.walkToAsync(startTile[0], startTile[1], 0);
-                      c.sleep(1000);
                     }
                   }
                 }
@@ -263,7 +261,6 @@ public class AIOFighter extends IdleScript {
                 if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
                   c.setStatus("@red@No NPCs found, walking back to start...");
                   c.walkToAsync(startTile[0], startTile[1], 0);
-                  c.sleep(1000);
                 }
               }
             }

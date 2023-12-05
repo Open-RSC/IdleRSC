@@ -39,6 +39,7 @@ public final class PotionMaker extends IdleScript {
   private int primaryIngredientTotalInBank = 0;
   private int primaryIngredientInBank = 0;
   private int secondaryIngredientTotalInBank = 0;
+  private int[] startPos = {0, 0};
   private int made = 0;
   // Ingredients: Full Vial, Clean Herb, Secondary, Empty Vial, Unid Herb, Unfinished Potion
   private final int[] ingredients = {464, 0, 0, 465, 0, 0};
@@ -50,17 +51,19 @@ public final class PotionMaker extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     if (!guiSetup) {
       c.setStatus("@cya@Setting up script");
       setupGUI();
       guiSetup = true;
     }
     if (scriptStarted) {
+      startPos[0] = c.currentX();
+      startPos[1] = c.currentY();
       guiSetup = false;
       scriptStarted = false;
       if (c.isInBank()) c.closeBank();
-      c.setBatchBarsOn();
+      c.setBatchBars(true);
       bank();
       scriptStart();
     }
@@ -90,17 +93,18 @@ public final class PotionMaker extends IdleScript {
       } else if (!onlyMakeUnifsCycle) {
         // mix pots
         mix();
+      } else {
+        bank();
       }
     }
   }
-
   // Processing methods
   private void makeUnf() {
     c.setStatus("@cya@Making Unfinished Potions");
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(ingredients[1]), c.getInventoryItemSlotIndex(ingredients[0]));
     c.sleep(3000);
-    K_kailaScript.waitForBatching();
+    waitWhileBatching();
     bank();
   }
 
@@ -160,6 +164,9 @@ public final class PotionMaker extends IdleScript {
   // Banking and withdraw methods
   private void bank() {
     c.setStatus("@gre@Banking..");
+    if (c.distance(c.currentX(), c.currentY(), startPos[0], startPos[1]) > 10) {
+      c.walkTo(startPos[0], startPos[1]);
+    }
     if (!c.isInBank()) {
       int[] bankerIds = {95, 224, 268, 540, 617, 792};
       ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
@@ -174,7 +181,7 @@ public final class PotionMaker extends IdleScript {
       }
     }
     c.openBank();
-    c.sleep(640);
+    c.sleep(2 * 640);
     if (!c.isInBank()) {
       K_kailaScript.waitForBankOpen();
     }
@@ -190,8 +197,8 @@ public final class PotionMaker extends IdleScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
           // }
         }
-        c.sleep(3*640);
       }
+      c.sleep(3 * 640);
       if (ingredients[5] != 0) {
         // now we count up unif potions + math.min((clean+ dirty herbs),(Empty + full vials)) =
         // number you can craft
@@ -246,43 +253,23 @@ public final class PotionMaker extends IdleScript {
     c.setStatus("@cya@Withdrawing Unifs");
     if (c.getBankItemCount(ingredients[5]) > 1) {
       if (ingredients[2] == 1410) { // fish oil potions
-        if (c.getBankItemCount(ingredients[5]) > 29) {
-          c.withdrawItem(ingredients[5], 29);
-          c.sleep(640);
-        } else {
-          c.withdrawItem(ingredients[5], c.getBankItemCount(ingredients[5]) - 1);
-          c.sleep(640);
-        }
+        c.withdrawItem(ingredients[5], Math.min(29, c.getBankItemCount(ingredients[5]) - 1));
+        c.sleep(640);
       } else {
-        if (c.getBankItemCount(ingredients[5]) > 15) {
-          c.withdrawItem(ingredients[5], 15);
-          c.sleep(640);
-        } else {
-          c.withdrawItem(ingredients[5], c.getBankItemCount(ingredients[5]) - 1);
-          c.sleep(640);
-        }
+        c.withdrawItem(ingredients[5], Math.min(15, c.getBankItemCount(ingredients[5]) - 1));
+        c.sleep(640);
       }
     }
   }
 
   private void withdrawVials() {
-    if (c.getBankItemCount(ingredients[0]) > 1) {
-      if (c.getBankItemCount(ingredients[0]) > 15) {
-        c.withdrawItem(ingredients[0], 15);
-        c.sleep(640);
-      } else {
-        c.withdrawItem(ingredients[0], c.getBankItemCount(ingredients[0]) - 1);
-        c.sleep(640);
-      }
+    if (c.getBankItemCount(ingredients[0]) > 0) {
+      c.withdrawItem(ingredients[0], Math.min(15, c.getBankItemCount(ingredients[0]) - 1));
+      c.sleep(640);
       // withdraw empty vials if no filled ones are available
-    } else if (c.getBankItemCount(ingredients[3]) > 1) {
-      if (c.getBankItemCount(ingredients[3]) > 15) {
-        c.withdrawItem(ingredients[3], 15);
-        c.sleep(640);
-      } else {
-        c.withdrawItem(ingredients[3], c.getBankItemCount(ingredients[3]) - 1);
-        c.sleep(640);
-      }
+    } else if (c.getBankItemCount(ingredients[3]) > 0) {
+      c.withdrawItem(ingredients[3], Math.min(15, c.getBankItemCount(ingredients[3]) - 1));
+      c.sleep(640);
     } else {
       c.log("withdraw Vials and Herbs issue");
       quit(5);
@@ -291,24 +278,14 @@ public final class PotionMaker extends IdleScript {
 
   private void withdrawHerb() {
     // withdraw clean herbs
-    if (c.getBankItemCount(ingredients[1]) > 1) {
-      if (c.getBankItemCount(ingredients[1]) > 15) {
-        c.withdrawItem(ingredients[1], 15);
-        c.sleep(300);
-      } else {
-        c.withdrawItem(ingredients[1], c.getBankItemCount(ingredients[1]) - 1);
-        c.sleep(300);
-      }
+    if (c.getBankItemCount(ingredients[1]) > 0) {
+      c.withdrawItem(ingredients[1], Math.min(15, c.getBankItemCount(ingredients[1]) - 1));
+      c.sleep(640);
     } else {
       // withdraw unid herbs (or
-      if (c.getBankItemCount(ingredients[4]) > 1) {
-        if (c.getBankItemCount(ingredients[4]) > 15) {
-          c.withdrawItem(ingredients[4], 15);
-          c.sleep(300);
-        } else {
-          c.withdrawItem(ingredients[4], c.getBankItemCount(ingredients[4]) - 1);
-          c.sleep(300);
-        }
+      if (c.getBankItemCount(ingredients[4]) > 0) {
+        c.withdrawItem(ingredients[4], Math.min(15, c.getBankItemCount(ingredients[4]) - 1));
+        c.sleep(640);
       } else if (!onlyMakeUnifsCycle) {
         // no clean or unid herbs
         c.log("withdraw herb issue");
@@ -319,27 +296,17 @@ public final class PotionMaker extends IdleScript {
 
   private void withdrawSecondary() {
     if (ingredients[2] == 1410) { // fish oil
-      if (c.getBankItemCount(ingredients[2]) > 1) { //
-        if (c.getBankItemCount(ingredients[2]) > 290) {
-          c.withdrawItem(ingredients[2], 290);
-          c.sleep(300);
-        } else {
-          c.withdrawItem(ingredients[2], c.getBankItemCount(ingredients[2]) - 1);
-          c.sleep(300);
-        }
+      if (c.getBankItemCount(ingredients[2]) > 0) { //
+        c.withdrawItem(ingredients[2], Math.min(290, c.getBankItemCount(ingredients[2]) - 1));
+        c.sleep(640);
       } else if (!onlyMakeUnifsCycle) {
         c.log("fish oil issue");
         quit(2);
       }
     } else {
-      if (c.getBankItemCount(ingredients[2]) > 1) {
-        if (c.getBankItemCount(ingredients[2]) > 15) {
-          c.withdrawItem(ingredients[2], 15);
-          c.sleep(300);
-        } else {
-          c.withdrawItem(ingredients[2], c.getBankItemCount(ingredients[2]) - 1);
-          c.sleep(300);
-        }
+      if (c.getBankItemCount(ingredients[2]) > 0) {
+        c.withdrawItem(ingredients[2], Math.min(15, c.getBankItemCount(ingredients[2]) - 1));
+        c.sleep(640);
       } else if (!onlyMakeUnifsCycle) {
         c.log("secondaries issue");
         quit(2);
@@ -407,8 +374,8 @@ public final class PotionMaker extends IdleScript {
         c.setStatus("@red@Out of vials");
       }
     }
-    stopped = true;
-    c.stop();
+    // stopped = true;
+    // c.stop();
   }
 
   @Override
@@ -827,6 +794,7 @@ public final class PotionMaker extends IdleScript {
           }
           if (!Objects.equals(potionField.getSelectedItem().toString(), "")
               && !Objects.equals(potionField.getSelectedItem().toString(), "0")) {
+            potion = potionField.getSelectedItem().toString();
             potion = potionField.getSelectedItem().toString();
             scriptStarted = true;
             stopped = false;

@@ -79,7 +79,7 @@ public class AIOThiever extends IdleScript {
       {551, 582}, // North
       {552, 582}, // North
       {553, 583}, // West
-      {553, 684}, // West
+      {553, 584}, // West
     },
     { // Silk
       {566, 594, 323},
@@ -185,12 +185,6 @@ public class AIOThiever extends IdleScript {
   private void scriptStart() {
     while (c.isRunning()) {
       eat();
-      //      if (!target.isNpc && goToOtherSide) {
-      //        randomSide = (int) ((Math.random() * 8) + 1); // random number between 1 and 8
-      // (inclusive)
-      //        goToOtherSide = false;
-      //        c.sleep(100);
-      //      }
       if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
       if (c.getInventoryItemCount(140) > 0) { // drop jugs from heroes
         c.setStatus("@red@Dropping empty jugs..");
@@ -200,7 +194,6 @@ public class AIOThiever extends IdleScript {
       while (c.isBatching()) c.sleep(GAME_TICK);
       if (!c.isInCombat()) {
         eat();
-        if (randomSide == 0) c.log("random side error"); // randomSide = 1;
         if (target.isNpc) {
           // c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(target.id, false);
@@ -219,7 +212,6 @@ public class AIOThiever extends IdleScript {
             c.setStatus("@red@Waiting for NPC to become available..");
             c.sleep(100);
           }
-
           // Stall Thieving
           // todo investiagte searching npc positions and selecting opposite them
         } else if (targetIndex > 11 && targetIndex < 20) {
@@ -237,10 +229,13 @@ public class AIOThiever extends IdleScript {
             if ((c.currentX() != tiles[locIndex][randomSide][0] // not standing on stall tile
                 && c.currentY() != tiles[locIndex][randomSide][1])) {
               c.walkTo(tiles[locIndex][randomSide][0], tiles[locIndex][randomSide][1]);
+              c.sleep(320);
             }
             c.atObject(tiles[locIndex][0][0], tiles[locIndex][0][1]);
+            int oldSide = randomSide;
             randomSide = (int) ((Math.random() * 8) + 1); // random number between 1 and 8
-            c.sleep(3 * GAME_TICK);
+            if (randomSide == oldSide) randomSide = (int) ((Math.random() * 8) + 1);
+            c.sleep(4 * GAME_TICK);
           }
 
           // Chest Thieving

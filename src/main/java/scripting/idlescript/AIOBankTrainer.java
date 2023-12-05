@@ -35,8 +35,7 @@ public class AIOBankTrainer extends K_kailaScript {
   // todo elemental battlestaffs
   // todo misc - crystal keys, dragon scales
   // todo herb cleaner
-    // todo wine drinker
-
+  // todo wine drinker
 
   private int scriptSelect = 0;
 
@@ -264,43 +263,42 @@ public class AIOBankTrainer extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     }
-      if (scriptSelect == 2) { // bury bones
-        totalProcessedCount = totalProcessedCount + 30;
-      } else if (scriptSelect == 3) {
-        totalProcessedCount = totalProcessedCount + 25;
+    if (scriptSelect == 2) { // bury bones
+      totalProcessedCount = totalProcessedCount + 30;
+    } else if (scriptSelect == 3) {
+      totalProcessedCount = totalProcessedCount + 25;
+    } else {
+      totalProcessedCount = totalProcessedCount + c.getInventoryItemCount(resultItemId);
+    }
+    for (int itemId : c.getInventoryItemIds()) {
+      c.depositItem(itemId, c.getInventoryItemCount(itemId));
+    }
+    c.sleep(3 * GAME_TICK); // re-sync
+
+    if (c.getInventoryItemCount(primaryItemId) < primaryItemAmount) { // withdraw harvest tool
+      if (c.getBankItemCount(primaryItemId) > 0) {
+        c.withdrawItem(primaryItemId, primaryItemAmount - c.getInventoryItemCount(primaryItemId));
+        c.sleep(GAME_TICK);
       } else {
-        totalProcessedCount = totalProcessedCount + c.getInventoryItemCount(resultItemId);
+        c.displayMessage("@red@You are out of something!");
+        c.stop();
       }
-      for (int itemId : c.getInventoryItemIds()) {
-        c.depositItem(itemId, c.getInventoryItemCount(itemId));
+    }
+    if (c.getInventoryItemCount(secondaryItemId) < secondaryItemAmount) { // withdraw harvest tool
+      if (c.getBankItemCount(secondaryItemId) > 0) {
+        c.withdrawItem(
+            secondaryItemId, secondaryItemAmount - c.getInventoryItemCount(secondaryItemId));
+        c.sleep(GAME_TICK);
+      } else {
+        c.displayMessage("@red@You are out of something!");
+        c.stop();
       }
-      c.sleep(3 * GAME_TICK); // re-sync
-
-      if (c.getInventoryItemCount(primaryItemId) < primaryItemAmount) { // withdraw harvest tool
-        if (c.getBankItemCount(primaryItemId) > 0) {
-          c.withdrawItem(primaryItemId, primaryItemAmount - c.getInventoryItemCount(primaryItemId));
-          c.sleep(GAME_TICK);
-        } else {
-          c.displayMessage("@red@You are out of something!");
-          c.stop();
-        }
-      }
-      if (c.getInventoryItemCount(secondaryItemId) < secondaryItemAmount) { // withdraw harvest tool
-        if (c.getBankItemCount(secondaryItemId) > 0) {
-          c.withdrawItem(
-              secondaryItemId, secondaryItemAmount - c.getInventoryItemCount(secondaryItemId));
-          c.sleep(GAME_TICK);
-        } else {
-          c.displayMessage("@red@You are out of something!");
-          c.stop();
-        }
-      }
-      // if (bringFood) withdrawFood(foodId, foodWithdrawAmount);
-      processedItemInBank = c.getBankItemCount(resultItemId);
-      totalTrips++;
-      c.closeBank();
-      c.sleep(GAME_TICK);
-
+    }
+    // if (bringFood) withdrawFood(foodId, foodWithdrawAmount);
+    processedItemInBank = c.getBankItemCount(resultItemId);
+    totalTrips++;
+    c.closeBank();
+    c.sleep(GAME_TICK);
   }
   /** Moves the character to an adjacent position if possible. */
   private void moveCharacter() {

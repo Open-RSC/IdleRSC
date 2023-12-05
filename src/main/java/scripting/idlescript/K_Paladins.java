@@ -21,6 +21,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
+// todo possible paladins bug loops banking, doesnt recognize food "out of food" status
 public final class K_Paladins extends K_kailaScript {
   String foodName = "food";
   private int totalCoins = 0;
@@ -224,6 +225,7 @@ public final class K_Paladins extends K_kailaScript {
           c.setStatus("@yel@Banking..");
           paladinsToBank(true);
           bank();
+          timeToBank = false;
           BankToPaladins();
         }
       }
@@ -239,18 +241,19 @@ public final class K_Paladins extends K_kailaScript {
     c.setStatus("@gre@Eating..");
     boolean ate = false;
     for (int id : c.getFoodIds()) {
-      if (c.isRunning() && c.getInventoryItemCount(id) > 0) {
+      if (c.getInventoryItemCount(id) > 0) {
         c.itemCommand(id);
         c.sleep(640);
         ate = true;
         break;
-      } else break;
+      }
     }
     if (!ate) {
       c.setStatus("@gre@We've ran out of Food! Banking!.");
       c.sleep(308);
       paladinsToBank(true);
       bank();
+      timeToBank = false;
       BankToPaladins();
     }
   }

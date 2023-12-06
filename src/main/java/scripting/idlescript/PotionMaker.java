@@ -103,7 +103,6 @@ public final class PotionMaker extends IdleScript {
     c.setStatus("@cya@Making Unfinished Potions");
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(ingredients[1]), c.getInventoryItemSlotIndex(ingredients[0]));
-    c.sleep(3000);
     waitWhileBatching();
     bank();
   }
@@ -113,7 +112,6 @@ public final class PotionMaker extends IdleScript {
     c.setStatus("@cya@Adding Secondary");
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(ingredients[2]), c.getInventoryItemSlotIndex(ingredients[5]));
-    c.sleep(2000);
     waitWhileBatching();
     made += (before - c.getInventoryItemCount(ingredients[5]));
     bank();
@@ -123,7 +121,6 @@ public final class PotionMaker extends IdleScript {
     c.setStatus("@cya@Grinding " + c.getItemName(ingredients[2]));
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(ingredients[1]), c.getInventoryItemSlotIndex(ingredients[2]));
-    c.sleep(2000);
     waitWhileBatching();
     bank();
     // add to total
@@ -148,6 +145,7 @@ public final class PotionMaker extends IdleScript {
   }
 
   private void waitWhileBatching() {
+    c.sleep(2000);
     while (c.isBatching()) {
       c.sleep(640);
     }
@@ -156,7 +154,6 @@ public final class PotionMaker extends IdleScript {
   private void cleanHerbs() {
     c.setStatus("@cya@Cleaning Herbs");
     c.itemCommand(ingredients[4]);
-    c.sleep(2000);
     waitWhileBatching();
     bank();
   }

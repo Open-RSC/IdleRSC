@@ -42,3 +42,37 @@ public class K_kailaCombatScript extends K_kailaScript {
   		}
   	}
   }*/
+
+// shitty autowalk
+//  public void startWalking(int x, int y) {
+//    // shitty autowalk
+//    int newX = x;
+//    int newY = y;
+//    while (controller.currentX() != x || controller.currentY() != y) {
+//      if (controller.currentX() - x > 23) {
+//        newX = controller.currentX() - 20;
+//      }
+//      if (controller.currentY() - y > 23) {
+//        newY = controller.currentY() - 20;
+//      }
+//      if (controller.currentX() - x < -23) {
+//        newX = controller.currentX() + 20;
+//      }
+//      if (controller.currentY() - y < -23) {
+//        newY = controller.currentY() + 20;
+//      }
+//      if (Math.abs(controller.currentX() - x) <= 23) {
+//        newX = x;
+//      }
+//      if (Math.abs(controller.currentY() - y) <= 23) {
+//        newY = y;
+//      }
+//      if (!controller.isTileEmpty(newX, newY)) {
+//        controller.walkToAsync(newX, newY, 2);
+//        controller.sleep(640);
+//      } else {
+//        controller.walkToAsync(newX, newY, 0);
+//        controller.sleep(640);
+//      }
+//    }
+//  }

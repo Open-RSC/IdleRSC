@@ -203,7 +203,7 @@ public final class K_EdgeDungeonThugs extends K_kailaScript {
       c.setStatus("@gre@Opening Edge Gate..");
       c.walkTo(210, 3273);
       c.atObject(211, 3272);
-      c.sleep(340);
+      c.sleep(640);
     }
     c.setStatus("@gre@Walking to Bank..");
     c.walkTo(217, 3283);

@@ -1,13 +1,12 @@
 package scripting.idlescript;
 
+import bot.Main;
+import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import bot.Main;
-import controller.Controller;
 import models.entities.ItemId;
 
 /**
@@ -62,11 +61,10 @@ public class SpinStrings extends IdleScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getNearestObjectById(121) != null
-          && c.getInventoryItemCount(input) > 0) {
+      if (c.getNearestObjectById(121) != null && c.getInventoryItemCount(input) > 0) {
         c.setStatus("@gre@Spinning Flax");
         int[] spinningWheel = c.getNearestObjectById(121);
-        if(destination.getSelectedIndex() == 0) {
+        if (destination.getSelectedIndex() == 0) {
           c.walkTo(spinningWheel[0] + 1, spinningWheel[1]);
         } else c.walkTo(spinningWheel[0], spinningWheel[1] - 1);
         c.useItemIdOnObject(spinningWheel[0], spinningWheel[1], input);
@@ -107,13 +105,13 @@ public class SpinStrings extends IdleScript {
 
   private void walkToSpot() {
     // Handle seers
-    if (c.getInventoryItemCount(input) > 0
-        && c.getNearestObjectById(121) == null) {
+    if (c.getInventoryItemCount(input) > 0) {
       c.setStatus("@gre@Walking to Spot");
       if (destination.getSelectedIndex() == 0) { // fally
-        c.walkTo(297,576);
+        c.walkTo(297, 576);
       }
-      if (destination.getSelectedIndex() > 0) { // seers or craft guild
+      if (destination.getSelectedIndex() > 0 // seers or craft guild
+          && c.getNearestObjectById(121) == null) {
         int[][] walkToCoords = {{524, 462}, {349, 611}};
         int[][] ladderCoords = {{525, 462}, {349, 612}};
         c.setStatus("@gre@Walking to Ladder");
@@ -133,17 +131,17 @@ public class SpinStrings extends IdleScript {
     if (c.getInventoryItemCount(input) == 0) {
       c.setStatus("@gre@Walking to Bank");
       if (destination.getSelectedIndex() > 0
-        && c.getNearestObjectById(121) != null) { //seers or craft
+          && c.getNearestObjectById(121) != null) { // seers or craft
         int[][] walkToCoords = {{524, 1406}, {349, 1555}};
-        int[][] ladderCoords = {{525, 1406},{349, 1556}};
+        int[][] ladderCoords = {{525, 1406}, {349, 1556}};
         c.setStatus("@gre@Walking to Ladder");
         c.walkTo(
-          walkToCoords[destination.getSelectedIndex() - 1][0],
-          walkToCoords[destination.getSelectedIndex() - 1][1]);
+            walkToCoords[destination.getSelectedIndex() - 1][0],
+            walkToCoords[destination.getSelectedIndex() - 1][1]);
         c.setStatus("@gre@Going downstairs");
         c.atObject(
-            ladderCoords[destination.getSelectedIndex()-1][0],
-            ladderCoords[destination.getSelectedIndex()-1][1]);
+            ladderCoords[destination.getSelectedIndex() - 1][0],
+            ladderCoords[destination.getSelectedIndex() - 1][1]);
         c.sleep(2 * 640);
       }
       c.walkTo(bankSelX, bankSelY);

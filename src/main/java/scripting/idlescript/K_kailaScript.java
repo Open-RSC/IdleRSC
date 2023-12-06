@@ -1027,7 +1027,7 @@ public class K_kailaScript extends IdleScript {
     for (int i = 0; i <= 200; i++) {
       if (!c.isRunning()) break;
       if (!c.isInBank()) {
-        c.sleep(2 * GAME_TICK);
+        c.sleep(GAME_TICK);
       } else {
         break;
       }

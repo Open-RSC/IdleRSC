@@ -566,6 +566,7 @@ public class QH__QuestHandler extends IdleScript {
     ORSCharacter npc = c.getNearestNpcByIds(npc_id, false);
     if (npc != null) {
       while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      c.sleep(6000);
       if (dialogChoices.length > 0) {
         for (int choiceIndex = 0; choiceIndex < dialogChoices.length; choiceIndex++) {
           // Sleep until a dialog menu appears

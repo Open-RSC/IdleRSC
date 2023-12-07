@@ -97,6 +97,60 @@ class IdleScriptPathWalker {
     return walkable;
   }
 
+  private String getWalkDirection(int nX, int nY) {
+    int cX = controller.currentX();
+    int cY = controller.currentY();
+
+    String xDir = nX > cX ? "west" : nX < cX ? "east" : "";
+    String yDir = nY > cY ? "south" : nY < cY ? "north" : "";
+    System.out.println(String.format("Walking: %s%s to: (%s,%s)", yDir, xDir, nX, nY));
+    return yDir + xDir;
+  }
+
+  private void checkForObstacles(int nX, int nY) {
+    int cX = controller.currentX();
+    int cY = controller.currentY();
+    if (controller.isReachable(nX, nY, true)) controller.walkTo(nX, nY);
+    String dir = getWalkDirection(nX, nY);
+    long c_time = System.currentTimeMillis();
+    int[][] doors = controller.getNearbyClosedDoors(5);
+    for (int[] door : doors) {
+      int dX = door[0];
+      int dY = door[1];
+
+      if (dir.contains("west") && cX < dX && nX > dX && !controller.isReachable(nX, nY, false)) {
+        controller.atObject(dX, dY);
+        controller.sleep(640);
+        wait_time = c_time + 8000;
+        break;
+      } else if (dir.contains("east")
+          && cX > dX
+          && nX < dX
+          && !controller.isReachable(nX, nY, false)) {
+        controller.atObject(dX, dY);
+        wait_time = c_time + 8000;
+        break;
+      } else if (dir.contains("south")
+          && cY < dY
+          && nY > dY
+          && !controller.isReachable(nX, nY, false)) {
+        controller.atObject(dX, dY);
+        wait_time = c_time + 8000;
+        break;
+      } else if (dir.contains("north")
+          && cY > dY
+          && nY < dY
+          && !controller.isReachable(nX, nY, false)) {
+        controller.atObject(dX, dY);
+        wait_time = c_time + 8000;
+        break;
+      } else {
+        controller.walkTo(nX, nY);
+      }
+    }
+    controller.sleep(640);
+  }
+
   public boolean walkPath() {
     if (path == null) return false;
     Node last = path[path.length - 1];
@@ -112,7 +166,7 @@ class IdleScriptPathWalker {
       }
       int x = n.x;
       int y = n.y;
-
+      // checkForObstacles((int) n.x, (int) n.y);
       // TODO: Those if statements can be turned into an abstraction, e.g PathWalkerObstacle
       if (isAtApproxCoords(329, 487, 12)
           && (n.x > 341)) { // moved 2 tiles east, increase radius by 2

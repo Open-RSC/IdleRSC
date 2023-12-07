@@ -200,7 +200,6 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
               CURRENT_QUEST_STEP = "Going up ladder, joining guild";
               pathWalker(MONESTARY_LADDER);
               c.atObject(MONESTARY_LADDER_UP[0], MONESTARY_LADDER_UP[1]);
-              c.sleep(6000);
               if (c.isInOptionMenu()) {
                 followNPCDialogPopUps(MONK_ID, MONK_DIALOG);
               } else {

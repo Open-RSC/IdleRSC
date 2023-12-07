@@ -643,11 +643,11 @@ public abstract class Script implements IScript {
    * @return true if the specified item is equipped.
    */
   public boolean isItemEquipped(int slot) {
-      return controller.isEquipped(slot);
+    return controller.isEquipped(slot);
   }
   /*
 
-   */
+  */
   public int[] getEquippedItemIds() {
     return controller.getEquippedItemIds();
   }

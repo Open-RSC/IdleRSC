@@ -122,7 +122,7 @@ public class SpinStrings extends IdleScript {
         c.atObject(
             ladderCoords[destination.getSelectedIndex() - 1][0],
             ladderCoords[destination.getSelectedIndex() - 1][1]);
-        c.sleep(2 * 640);
+        while (c.isRunning() && c.currentY() < 1000) c.sleep(640);
       }
     }
   }
@@ -142,7 +142,7 @@ public class SpinStrings extends IdleScript {
         c.atObject(
             ladderCoords[destination.getSelectedIndex() - 1][0],
             ladderCoords[destination.getSelectedIndex() - 1][1]);
-        c.sleep(2 * 640);
+        while (c.isRunning() && c.currentY() > 1000) c.sleep(640);
       }
       c.walkTo(bankSelX, bankSelY);
     }

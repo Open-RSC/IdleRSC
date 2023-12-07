@@ -210,7 +210,7 @@ public class AIOBankTrainer extends K_kailaScript {
       c.sleep(3 * GAME_TICK); // re-sync
 
       if (c.getInventoryItemCount(primaryItemId) < primaryItemAmount) { // withdraw harvest tool
-        if (c.getBankItemCount(primaryItemId) > 1) {
+        if (c.getBankItemCount(primaryItemId) > primaryItemAmount) {
           c.withdrawItem(primaryItemId, primaryItemAmount - c.getInventoryItemCount(primaryItemId));
           c.sleep(GAME_TICK);
         } else {
@@ -219,7 +219,7 @@ public class AIOBankTrainer extends K_kailaScript {
         }
       }
       if (c.getInventoryItemCount(secondaryItemId) < secondaryItemAmount) { // withdraw harvest tool
-        if (c.getBankItemCount(secondaryItemId) > 1) {
+        if (c.getBankItemCount(secondaryItemId) > secondaryItemAmount) {
           c.withdrawItem(
               secondaryItemId, secondaryItemAmount - c.getInventoryItemCount(secondaryItemId));
           c.sleep(GAME_TICK);
@@ -267,7 +267,7 @@ public class AIOBankTrainer extends K_kailaScript {
         c.walkTo(walkToCoords[destination - 1][0], walkToCoords[destination - 1][1]);
         c.setStatus("@gre@Going up the ladder");
         c.atObject(ladderCoords[destination - 1][0], ladderCoords[destination - 1][1]);
-        c.sleep(2 * 640);
+        while (c.isRunning() && c.currentY() < 1000) c.sleep(640);
       }
     }
   }
@@ -286,7 +286,7 @@ public class AIOBankTrainer extends K_kailaScript {
         c.walkTo(walkToCoords[destination - 1][0], walkToCoords[destination - 1][1]);
         c.setStatus("@gre@Going downstairs");
         c.atObject(ladderCoords[destination - 1][0], ladderCoords[destination - 1][1]);
-        c.sleep(2 * 640);
+        while (c.isRunning() && c.currentY() > 1000) c.sleep(640);
       }
       c.walkTo(bankSelX, bankSelY);
     }
@@ -763,7 +763,7 @@ public class AIOBankTrainer extends K_kailaScript {
                 scriptSelect = 5; // manual
                 break;
               case 3: // KBD scales
-                processedItemName = comboFields[1][comboBoxFields[8].getSelectedIndex()];
+                processedItemName = "KBD Scales";
                 resultItemId = ItemId.CHIPPED_DRAGON_SCALE.getId();
                 primaryItemId = ItemId.CHISEL.getId();
                 secondaryItemId = ItemId.KING_BLACK_DRAGON_SCALE.getId();
@@ -1001,9 +1001,10 @@ public class AIOBankTrainer extends K_kailaScript {
     scriptFrame.add(buttons, BorderLayout.SOUTH);
 
     scriptFrame.pack();
+    scriptFrame.toFront();
+    scriptFrame.requestFocusInWindow();
     scriptFrame.setLocationRelativeTo(null);
     scriptFrame.setVisible(true);
-    scriptFrame.requestFocusInWindow();
   }
 
   @Override

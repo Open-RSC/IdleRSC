@@ -1,17 +1,17 @@
 package scripting.apos;
 
 import compatibility.apos.Script;
-import models.entities.EquipSlotIndex;
-import models.entities.QuestId;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 import java.util.Objects;
+import javax.swing.*;
+import models.entities.QuestId;
 
 /**
+ *
+ *
  * <pre>
  * Many quests are broken
  *
@@ -53,7 +53,7 @@ import java.util.Objects;
  *
  * Fixes:
  *  - Added stage checker(server calls)
- *</pre>
+ * </pre>
  */
 public class Quester_F2P extends Script implements ActionListener {
 
@@ -78,41 +78,42 @@ public class Quester_F2P extends Script implements ActionListener {
       Panel instructPanel = new Panel(new GridLayout(0, 1, 0, 0));
       ch_quest = new Choice();
 
-      String[] guideLabels = {" Ernest the chicken - works to completion",
-        " * - Start near Veronica" ,
-        " * - resuming mid-quest is functional" ,
-        " Imp Catcher - works to completion" ,
-        " * - Start *near* to wizard tower (draynor okay)" ,
-        " * (doesnt walk to bead spot from boat (fixed?))" ,
-        " * - Start with coins and a weapon" ,
-        " * - Bead drops may take a while" ,
-        " * - Resuming mid-quest is functional" ,
-        " Prince Ali Rescue - works to completion" ,
-        " * - Requires 1 Pickaxe and 1 Axe of any type" ,
-        " * - Requires 1 Tinderbox and 500 coins" ,
-        " * - Requires 17 free inventory space" ,
-        " Pirates Treasure" ,
-        " * - Start in Port Sarim Bar" ,
-        " * - Requires Coins" ,
-        " * - Breaks before returning on boat" ,
-        " Shield of Arrav" ,
-        " * - Start near Reldo" ,
-        " * - Requires 20 of Coins" ,
-        " * - Requires 1 Broken shield (RIGHT HALF)" ,
-        " * - Starting with certificate will speed up" ,
-        " * - Requires 5 free inventory space" ,
-        " Dragon Slayer" ,
-        " * - Start in Champions Guild" ,
-        " * - Requires Coins, Sharks in bank" ,
-        " * - Requires chaos runes" ,
+      String[] guideLabels = {
+        " Ernest the chicken - works to completion",
+        " * - Start near Veronica",
+        " * - resuming mid-quest is functional",
+        " Imp Catcher - works to completion",
+        " * - Start *near* to wizard tower (draynor okay)",
+        " * (doesnt walk to bead spot from boat (fixed?))",
+        " * - Start with coins and a weapon",
+        " * - Bead drops may take a while",
+        " * - Resuming mid-quest is functional",
+        " Prince Ali Rescue - works to completion",
+        " * - Requires 1 Pickaxe and 1 Axe of any type",
+        " * - Requires 1 Tinderbox and 500 coins",
+        " * - Requires 17 free inventory space",
+        " Pirates Treasure",
+        " * - Start in Port Sarim Bar",
+        " * - Requires Coins",
+        " * - Breaks before returning on boat",
+        " Shield of Arrav",
+        " * - Start near Reldo",
+        " * - Requires 20 of Coins",
+        " * - Requires 1 Broken shield (RIGHT HALF)",
+        " * - Starting with certificate will speed up",
+        " * - Requires 5 free inventory space",
+        " Dragon Slayer",
+        " * - Start in Champions Guild",
+        " * - Requires Coins, Sharks in bank",
+        " * - Requires chaos runes",
         " * - Start with armor, weapons, etc"
       };
 
-        for (String guideLabel : guideLabels) {
-            JLabel glabel = new JLabel(guideLabel);
-            glabel.setFont(new Font(Font.SERIF,Font.ITALIC,  12));
-            instructPanel.add(glabel);
-        }
+      for (String guideLabel : guideLabels) {
+        JLabel glabel = new JLabel(guideLabel);
+        glabel.setFont(new Font(Font.SERIF, Font.ITALIC, 12));
+        instructPanel.add(glabel);
+      }
 
       for (int i = 0; i < Quests.values().length; i++) {
         ch_quest.add(getQuestName(Quests.values()[i].GetQuestId()));
@@ -130,14 +131,14 @@ public class Quester_F2P extends Script implements ActionListener {
       button.addActionListener(this);
       pButtons.add(button);
       frame = new JFrame(getClass().getSimpleName());
-      //frame.setLayout(new GridLayout(0, 1, 0, 5));
+      // frame.setLayout(new GridLayout(0, 1, 0, 5));
       //            frame.addWindowListener(
       //                    new StandardCloseHandler(frame, StandardCloseHandler.HIDE)
       //            );
       //            frame.setIconImages(Constants.ICONS);
       frame.add(pInput, BorderLayout.NORTH);
       frame.add(pButtons, BorderLayout.SOUTH);
-      //frame.setResizable(false);
+      // frame.setResizable(false);
       frame.setSize(200, 500);
       frame.pack();
     }
@@ -2234,7 +2235,7 @@ public class Quester_F2P extends Script implements ActionListener {
         walkTo(getX(), getY());
         return 600;
       }
-      //set stages based on server calls
+      // set stages based on server calls
       int QUEST_STAGE = getQuestStage(questId);
       switch (QUEST_STAGE) {
         case -1:
@@ -2244,19 +2245,21 @@ public class Quester_F2P extends Script implements ActionListener {
           CurrentStage = Stage.VERONICA;
           break;
         case 1:
-          if(CurrentStage == Stage.VERONICA) CurrentStage = Stage.PROFESSOR;
+          if (CurrentStage == Stage.VERONICA) CurrentStage = Stage.PROFESSOR;
           break;
         case 2:
           if (CurrentStage == Stage.VERONICA || CurrentStage == Stage.PROFESSOR) {
-            if (getInventoryCount(OIL_CAN) > 0) { //going backwards from last condition
+            if (getInventoryCount(OIL_CAN) > 0) { // going backwards from last condition
               CurrentStage = Stage.PROFESSOR;
             } else if (getInventoryCount(TUBE) > 0) {
               CurrentStage = Stage.OILCAN;
             } else if (getInventoryCount(PRESSURE_GUAGE) > 0) {
               CurrentStage = Stage.TUBE;
-            } if (getInventoryCount(POISONED_FOOD) > 0) {
+            }
+            if (getInventoryCount(POISONED_FOOD) > 0) {
               CurrentStage = Stage.GUAGE;
-            } if (getInventoryCount(FISH_FOOD) > 0) {
+            }
+            if (getInventoryCount(FISH_FOOD) > 0) {
               CurrentStage = Stage.POISON;
             }
           }
@@ -2311,7 +2314,7 @@ public class Quester_F2P extends Script implements ActionListener {
               atObject(215, 1492);
               return 1200;
             }
-            if (getY() > 3000) { //in oil lever rooms
+            if (getY() > 3000) { // in oil lever rooms
               atObject(223, 3385);
               return 1800;
             }
@@ -2453,11 +2456,11 @@ public class Quester_F2P extends Script implements ActionListener {
             if (isWalking()) return 4000;
             if (leverPtr >= 9) {
               if (getInventoryCount(OIL_CAN) > 0) {
-                if (isReachable(223, 3385)) { //225, 3383
+                if (isReachable(223, 3385)) { // 225, 3383
                   CurrentStage = Stage.PROFESSOR;
                   return 600;
                 } else {
-                  atWallObject(228, 3382); //exit oil room
+                  atWallObject(228, 3382); // exit oil room
                   return 2000;
                 }
               } else {
@@ -2493,7 +2496,7 @@ public class Quester_F2P extends Script implements ActionListener {
               return 3000;
             } else {
               if (leverPtr == 2) { // go to lever D
-                x = 223;//first door
+                x = 223; // first door
                 y = 3381;
               }
               if (leverPtr == 3) { // go to AB room
@@ -3989,11 +3992,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int COINS = 10,
-        CAPTAIN = 166,
-        CUSTOMS = 163,
-        MIZGOG = 117,
-        IMP = 114;
+    private static final int COINS = 10, CAPTAIN = 166, CUSTOMS = 163, MIZGOG = 117, IMP = 114;
     private static final int[] BEADS = new int[] {231, 232, 233, 234};
     private static final Point PORT_SARIM_DOCK_LOC = new Point(269, 650),
         IMP_LOC = new Point(404, 684),
@@ -4064,7 +4063,7 @@ public class Quester_F2P extends Script implements ActionListener {
         }
       }
 
-      //set stages based on server calls
+      // set stages based on server calls
       int QUEST_STAGE = getQuestStage(QuestId.IMP_CATCHER.getId());
       switch (QUEST_STAGE) {
         case -1:
@@ -4075,9 +4074,9 @@ public class Quester_F2P extends Script implements ActionListener {
           CurrentStage = Stage.MIZGOG;
           break;
         case 1:
-          if(!hasAllBeads()
-          && !(getX() < 435 && getX() > 385)) CurrentStage = Stage.TRAVELTOKARMJA;
-          if(getX() < 435 && getX() > 385) {
+          if (!hasAllBeads() && !(getX() < 435 && getX() > 385))
+            CurrentStage = Stage.TRAVELTOKARMJA;
+          if (getX() < 435 && getX() > 385) {
             if (hasAllBeads()) {
               CurrentStage = Stage.TRAVELTOPORT;
             } else CurrentStage = Stage.GETBEADS;
@@ -5545,7 +5544,7 @@ public class Quester_F2P extends Script implements ActionListener {
             if (getInventoryCount(ROPE) == 0) {
               questStatus = "Gathering rope";
               if (isQuestMenu()) {
-                if(getQuestStage(QuestId.DRAGON_SLAYER.getId()) > 0) { //double check
+                if (getQuestStage(QuestId.DRAGON_SLAYER.getId()) > 0) { // double check
                   answer(1);
                 } else answer(0);
                 return 3000;
@@ -5711,22 +5710,22 @@ public class Quester_F2P extends Script implements ActionListener {
               return 3000;
             }
             if (isQuestMenu()) {
-                if (getQuestMenuOption(1).contains("other things from wool")) {
-                  answer(1);
-                  questMenuTimer = System.currentTimeMillis();
-                  return 4000;
-                } else if (getQuestMenuOption(2).contains("other things from wool")) {
-                  answer(2);
-                  questMenuTimer = System.currentTimeMillis();
-                  return 4000;
-                } else if (getQuestMenuOption(1).contains("some sort of a wig")) {
-                  answer(1);
-                  questMenuTimer = System.currentTimeMillis();
-                  return 4000;
-                } else if (getQuestMenuOption(0).contains("have that now")) {
-                  answer(0);
-                  return 3000;
-                }
+              if (getQuestMenuOption(1).contains("other things from wool")) {
+                answer(1);
+                questMenuTimer = System.currentTimeMillis();
+                return 4000;
+              } else if (getQuestMenuOption(2).contains("other things from wool")) {
+                answer(2);
+                questMenuTimer = System.currentTimeMillis();
+                return 4000;
+              } else if (getQuestMenuOption(1).contains("some sort of a wig")) {
+                answer(1);
+                questMenuTimer = System.currentTimeMillis();
+                return 4000;
+              } else if (getQuestMenuOption(0).contains("have that now")) {
+                answer(0);
+                return 3000;
+              }
             }
             talkToNpcOrPath(NED, WITCH_LOC);
             return 2000;
@@ -6550,7 +6549,7 @@ public class Quester_F2P extends Script implements ActionListener {
         desiredWmb = 2;
       }
       int ptr = 0;
-      if(isAuthentic()) {
+      if (isAuthentic()) {
         for (int i = 0; i < MAX_INV_SIZE; i++) {
           if (getInventoryId(i) >= 0 && isItemEquipped(i)) {
             EQUIPMENT[ptr] = getInventoryId(i);
@@ -6558,7 +6557,7 @@ public class Quester_F2P extends Script implements ActionListener {
           }
         }
       } else {
-        for (int itemIds : getEquippedItemIds()){
+        for (int itemIds : getEquippedItemIds()) {
           EQUIPMENT[ptr] = itemIds;
         }
       }
@@ -7312,14 +7311,14 @@ public class Quester_F2P extends Script implements ActionListener {
                   }
                 }
               }
-//              if (getInventoryCount(EQUIPMENT) > 0) {
-//                for (int equip : EQUIPMENT) {
-//                  if (equip > 0 && getInventoryCount(equip) > 0) {
-//                    deposit(equip, getInventoryCount(equip));
-//                    return 2400;
-//                  }
-//                }
-//              }
+              //              if (getInventoryCount(EQUIPMENT) > 0) {
+              //                for (int equip : EQUIPMENT) {
+              //                  if (equip > 0 && getInventoryCount(equip) > 0) {
+              //                    deposit(equip, getInventoryCount(equip));
+              //                    return 2400;
+              //                  }
+              //                }
+              //              }
               if (getInventoryCount(COINS) < 2000) {
                 withdraw(COINS, 2000 - getInventoryCount(COINS));
                 return 2400;
@@ -7476,10 +7475,10 @@ public class Quester_F2P extends Script implements ActionListener {
               for (int equip : EQUIPMENT) {
                 if (equip <= 0) break;
                 int slot = getInventoryIndex(equip);
-//                if (slot > 0 && !isItemEquipped(slot)) {
-//                  wearItem(slot);
-//                  return 2400;
-//                }
+                //                if (slot > 0 && !isItemEquipped(slot)) {
+                //                  wearItem(slot);
+                //                  return 2400;
+                //                }
               }
             }
             if (isQuestMenu()) {

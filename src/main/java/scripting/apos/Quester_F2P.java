@@ -15,40 +15,39 @@ import models.entities.QuestId;
  * <pre>
  * Many quests are broken
  *
+ * Demon Slayer
+ * - Start in Varrock center with coins and 15-28 free slots.
+ * - Bot will turn in bones in multiple sets.
+ *
  * Ernest the chicken - works to completion
- *  - Start near Veronica
- *  - resuming mid-quest is functional
+ *  - Start near Veronica. Resuming mid-quest is functional
  *
  * Imp Catcher - works to completion
- *  - Start *near* to wizard tower (draynor okay)
- *  (doesnt walk to bead spot from boat (fixed?))
- *  - Start with coins and a weapon
- *  - Bead drops may take a while
- *  - Resuming mid-quest is functional
+ *  - Start near to Wizard Tower with Coins and Weapon
+ *  - Bead drops may take a while, resuming mid-quest is functional
+ *
+ * Knight's Sword - works to completion
+ * - Start in Fally castle with Coins and Pickaxe
+ * - Requires a second account to distract Sir Vyvin
  *
  * Prince Ali Rescue - works to completion
- *  - Requires 1 Pickaxe and 1 Axe of any type
- *  - Requires 1 Tinderbox and 500 coins
+ *  - Requires 1 Pickaxe, 1 Axe, 1 Tinderbox, and 500 Coins
  *  - Requires 17 free inventory space
  *
- *  Pirates Treasure
- *   - Start in Port Sarim Bar
- *   - Requires Coins
- *   - Breaks before returning on boat
+ *  Pirates Treasure - Breaks before buying Rum
+ *   - Start in Port Sarim Bar with Coins
  *
+ * Black Knights fortress - works to completion
+ * - Start in Faldor castle with Coins and Weapon
  *
  * Shield of Arrav
- * - Start near Reldo
- * - Requires 20 of Coins
- * - Requires 1 Broken shield (RIGHT HALF)
+ * - Start near Reldo with Coins and 5 free inventory slots
+ * - Requires 1 Broken shield (RIGHT HALF ONLY)
  * - Starting with certificate will speed up
- * - Requires 5 free inventory space
  *
- * Dragon Slayer
- * - Start in Champions Guild
- * - Requires Coins, Sharks in bank
- * - Requires chaos runes
- * - Start with armor, weapons, etc
+ * Dragon Slayer - Completes entire quest besides final fight
+ * - Start in Champions Guild wielding armor, weapons, etc
+ * - Required in bank - Coins, Chaos runes?, Silk?, and Food
  *
  *
  * Fixes:
@@ -78,35 +77,32 @@ public class Quester_F2P extends Script implements ActionListener {
       Panel instructPanel = new Panel(new GridLayout(0, 1, 0, 0));
       ch_quest = new Choice();
 
-      String[] guideLabels = {
-        " Ernest the chicken - works to completion",
-        " * - Start near Veronica",
-        " * - resuming mid-quest is functional",
-        " Imp Catcher - works to completion",
-        " * - Start *near* to wizard tower (draynor okay)",
-        " * (doesnt walk to bead spot from boat (fixed?))",
-        " * - Start with coins and a weapon",
-        " * - Bead drops may take a while",
-        " * - Resuming mid-quest is functional",
-        " Prince Ali Rescue - works to completion",
-        " * - Requires 1 Pickaxe and 1 Axe of any type",
-        " * - Requires 1 Tinderbox and 500 coins",
-        " * - Requires 17 free inventory space",
-        " Pirates Treasure",
-        " * - Start in Port Sarim Bar",
-        " * - Requires Coins",
-        " * - Breaks before returning on boat",
-        " Shield of Arrav",
-        " * - Start near Reldo",
-        " * - Requires 20 of Coins",
-        " * - Requires 1 Broken shield (RIGHT HALF)",
+      String[] guideLabels = { // todo split to 2 columns
+        " * Demon Slayer",
+        " * - Start in Varrock center with coins and 15-28 free slots.",
+        " * - Bot will turn in bones in multiple sets.",
+        " * Ernest the chicken - works to completion",
+        " *  - Start near Veronica. Resuming mid-quest is functional",
+        " * Imp Catcher - works to completion",
+        " *  - Start near to Wizard Tower with Coins and Weapon",
+        " *  - Bead drops may take a while, resuming mid-quest is functional",
+        " * Knight's Sword - works to completion",
+        " * - Start in Fally castle with Coins and Pickaxe",
+        " * - Requires a second account to distract Sir Vyvin",
+        " * Prince Ali Rescue - works to completion",
+        " *  - Requires 1 Pickaxe, 1 Axe, 1 Tinderbox, and 500 Coins",
+        " *  - Requires 17 free inventory space",
+        " * Pirates Treasure - Breaks before buying Rum",
+        " *   - Start in Port Sarim Bar with Coins",
+        " * Black Knights fortress - works to completion",
+        " * - Start in Faldor castle with Coins and Weapon",
+        " * Shield of Arrav - works to completion",
+        " * - Start near Reldo with Coins and 5 free inventory slots",
+        " * - Requires 1 Broken shield (RIGHT HALF ONLY)",
         " * - Starting with certificate will speed up",
-        " * - Requires 5 free inventory space",
-        " Dragon Slayer",
-        " * - Start in Champions Guild",
-        " * - Requires Coins, Sharks in bank",
-        " * - Requires chaos runes",
-        " * - Start with armor, weapons, etc"
+        " * Dragon Slayer - Completes entire quest besides final fight",
+        " * - Start in Champions Guild wielding armor, weapons, etc",
+        " * - Required in bank - Coins, Chaos runes, Silk, and Food"
       };
 
       for (String guideLabel : guideLabels) {

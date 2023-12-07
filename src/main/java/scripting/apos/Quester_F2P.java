@@ -1,12 +1,60 @@
 package scripting.apos;
 
 import compatibility.apos.Script;
+import models.entities.EquipSlotIndex;
+import models.entities.QuestId;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 import java.util.Objects;
 
+/**
+ * <pre>
+ * Many quests are broken
+ *
+ * Ernest the chicken - works to completion
+ *  - Start near Veronica
+ *  - resuming mid-quest is functional
+ *
+ * Imp Catcher - works to completion
+ *  - Start *near* to wizard tower (draynor okay)
+ *  (doesnt walk to bead spot from boat (fixed?))
+ *  - Start with coins and a weapon
+ *  - Bead drops may take a while
+ *  - Resuming mid-quest is functional
+ *
+ * Prince Ali Rescue - works to completion
+ *  - Requires 1 Pickaxe and 1 Axe of any type
+ *  - Requires 1 Tinderbox and 500 coins
+ *  - Requires 17 free inventory space
+ *
+ *  Pirates Treasure
+ *   - Start in Port Sarim Bar
+ *   - Requires Coins
+ *   - Breaks before returning on boat
+ *
+ *
+ * Shield of Arrav
+ * - Start near Reldo
+ * - Requires 20 of Coins
+ * - Requires 1 Broken shield (RIGHT HALF)
+ * - Starting with certificate will speed up
+ * - Requires 5 free inventory space
+ *
+ * Dragon Slayer
+ * - Start in Champions Guild
+ * - Requires Coins, Sharks in bank
+ * - Requires chaos runes
+ * - Start with armor, weapons, etc
+ *
+ *
+ * Fixes:
+ *  - Added stage checker(server calls)
+ *</pre>
+ */
 public class Quester_F2P extends Script implements ActionListener {
 
   private IQuest selectedQuest;
@@ -15,7 +63,7 @@ public class Quester_F2P extends Script implements ActionListener {
   private boolean didInit = false;
 
   // form fields
-  private Frame frame;
+  private JFrame frame;
   private Choice ch_quest;
 
   public Quester_F2P(String ex) {
@@ -26,14 +74,54 @@ public class Quester_F2P extends Script implements ActionListener {
   public void init(String params) {
     if (frame == null) {
       System.out.println("Creating frame");
-      Panel pInput = new Panel(new GridLayout(0, 2, 0, 2));
-      pInput.add(new Label("Quest: "));
+      Panel pInput = new Panel(new GridLayout(0, 1, 0, 0));
+      Panel instructPanel = new Panel(new GridLayout(0, 1, 0, 0));
       ch_quest = new Choice();
+
+      String[] guideLabels = {" Ernest the chicken - works to completion",
+        " * - Start near Veronica" ,
+        " * - resuming mid-quest is functional" ,
+        " Imp Catcher - works to completion" ,
+        " * - Start *near* to wizard tower (draynor okay)" ,
+        " * (doesnt walk to bead spot from boat (fixed?))" ,
+        " * - Start with coins and a weapon" ,
+        " * - Bead drops may take a while" ,
+        " * - Resuming mid-quest is functional" ,
+        " Prince Ali Rescue - works to completion" ,
+        " * - Requires 1 Pickaxe and 1 Axe of any type" ,
+        " * - Requires 1 Tinderbox and 500 coins" ,
+        " * - Requires 17 free inventory space" ,
+        " Pirates Treasure" ,
+        " * - Start in Port Sarim Bar" ,
+        " * - Requires Coins" ,
+        " * - Breaks before returning on boat" ,
+        " Shield of Arrav" ,
+        " * - Start near Reldo" ,
+        " * - Requires 20 of Coins" ,
+        " * - Requires 1 Broken shield (RIGHT HALF)" ,
+        " * - Starting with certificate will speed up" ,
+        " * - Requires 5 free inventory space" ,
+        " Dragon Slayer" ,
+        " * - Start in Champions Guild" ,
+        " * - Requires Coins, Sharks in bank" ,
+        " * - Requires chaos runes" ,
+        " * - Start with armor, weapons, etc"
+      };
+
+        for (String guideLabel : guideLabels) {
+            JLabel glabel = new JLabel(guideLabel);
+            glabel.setFont(new Font(Font.SERIF,Font.ITALIC,  12));
+            instructPanel.add(glabel);
+        }
 
       for (int i = 0; i < Quests.values().length; i++) {
         ch_quest.add(getQuestName(Quests.values()[i].GetQuestId()));
       }
-      pInput.add(ch_quest);
+
+      instructPanel.add(new Label("Quest Selector: "));
+      instructPanel.add(ch_quest);
+      pInput.add(instructPanel);
+
       Panel pButtons = new Panel();
       Button button = new Button("OK");
       button.addActionListener(this);
@@ -41,19 +129,22 @@ public class Quester_F2P extends Script implements ActionListener {
       button = new Button("Cancel");
       button.addActionListener(this);
       pButtons.add(button);
-      frame = new Frame(getClass().getSimpleName());
+      frame = new JFrame(getClass().getSimpleName());
+      //frame.setLayout(new GridLayout(0, 1, 0, 5));
       //            frame.addWindowListener(
       //                    new StandardCloseHandler(frame, StandardCloseHandler.HIDE)
       //            );
       //            frame.setIconImages(Constants.ICONS);
       frame.add(pInput, BorderLayout.NORTH);
       frame.add(pButtons, BorderLayout.SOUTH);
-      frame.setResizable(false);
+      //frame.setResizable(false);
+      frame.setSize(200, 500);
       frame.pack();
     }
     frame.setLocationRelativeTo(null);
     frame.toFront();
     frame.requestFocusInWindow();
+    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
   }
 
@@ -451,8 +542,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         BRONZE_MED = 104,
         IRON_CHAIN = 7,
         CABBAGE = 18,
@@ -530,11 +620,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (talkToNpcTimer > -1) {
@@ -627,11 +712,11 @@ public class Quester_F2P extends Script implements ActionListener {
           }
         case LISTEN:
           {
-            if (!isItemEquipped(getInventoryIndex(BRONZE_MED))) {
+            if (!isItemIdEquipped(BRONZE_MED)) {
               wearItem(getInventoryIndex(BRONZE_MED));
               return 1800;
             }
-            if (!isItemEquipped(getInventoryIndex(IRON_CHAIN))) {
+            if (!isItemIdEquipped(IRON_CHAIN)) {
               wearItem(getInventoryIndex(IRON_CHAIN));
               return 1800;
             }
@@ -1137,8 +1222,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COOK = 7,
+    private static final int COOK = 7,
         BUCKET = 21,
         MILK = 22,
         FLOUR = 136,
@@ -1184,11 +1268,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (talkToNpcTimer > -1) {
@@ -1701,11 +1780,6 @@ public class Quester_F2P extends Script implements ActionListener {
         return 200;
       }
 
-      if (getFatigue() >= 95 && hasInventoryItem(1263)) {
-        useSleepingBag();
-        return 1200;
-      }
-
       if (talkToNpcTimer > -1) {
         if (System.currentTimeMillis() - talkToNpcTimer >= 10000 || isQuestMenu()) {
           talkToNpcTimer = -1;
@@ -1831,8 +1905,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        SKULL = 27,
+    private static final int SKULL = 27,
         GHOST = 15,
         URHNEY = 10,
         PRIEST = 9,
@@ -1882,11 +1955,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (talkToNpcTimer > -1) {
@@ -1939,7 +2007,7 @@ public class Quester_F2P extends Script implements ActionListener {
           {
             questStatus = "Get amulet";
             if (getInventoryCount(AMULET) > 0) {
-              if (isItemEquipped(getInventoryIndex(AMULET))) {
+              if (isItemIdEquipped(AMULET)) {
                 CurrentStage = Stage.GHOST;
                 return 1200;
               } else {
@@ -2096,8 +2164,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private boolean questComplete = false;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        VERONICA = 36,
+    private static final int VERONICA = 36,
         PROFESSOR = 38,
         FISH_FOOD = 176,
         POISON = 177,
@@ -2114,7 +2181,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private static final int[] LEVER_ORDER =
         new int[] {124, 125, 127, 124, 125, 128, 129, 126, 128};
     private int leverPtr = 0;
-
+    private final int questId = QuestId.ERNEST_THE_CHICKEN.getId();
     public SkillRequirement[] SkillRequirements;
     public ItemRequirement[] ItemRequirements;
     public QuestRequirement[] QuestRequirements;
@@ -2155,11 +2222,6 @@ public class Quester_F2P extends Script implements ActionListener {
         return onQuestComplete();
       }
 
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
-      }
-
       if (talkToNpcTimer > -1) {
         if (System.currentTimeMillis() - talkToNpcTimer >= 10000 || isQuestMenu()) {
           talkToNpcTimer = -1;
@@ -2172,7 +2234,34 @@ public class Quester_F2P extends Script implements ActionListener {
         walkTo(getX(), getY());
         return 600;
       }
-
+      //set stages based on server calls
+      int QUEST_STAGE = getQuestStage(questId);
+      switch (QUEST_STAGE) {
+        case -1:
+          System.out.println(getQuestName(Quests.ERNEST_THE_CHICKEN.GetQuestId()) + " completed!");
+          return onQuestComplete();
+        case 0:
+          CurrentStage = Stage.VERONICA;
+          break;
+        case 1:
+          if(CurrentStage == Stage.VERONICA) CurrentStage = Stage.PROFESSOR;
+          break;
+        case 2:
+          if (CurrentStage == Stage.VERONICA || CurrentStage == Stage.PROFESSOR) {
+            if (getInventoryCount(OIL_CAN) > 0) { //going backwards from last condition
+              CurrentStage = Stage.PROFESSOR;
+            } else if (getInventoryCount(TUBE) > 0) {
+              CurrentStage = Stage.OILCAN;
+            } else if (getInventoryCount(PRESSURE_GUAGE) > 0) {
+              CurrentStage = Stage.TUBE;
+            } if (getInventoryCount(POISONED_FOOD) > 0) {
+              CurrentStage = Stage.GUAGE;
+            } if (getInventoryCount(FISH_FOOD) > 0) {
+              CurrentStage = Stage.POISON;
+            }
+          }
+          break;
+      }
       switch (CurrentStage) {
         case VERONICA:
           {
@@ -2222,7 +2311,7 @@ public class Quester_F2P extends Script implements ActionListener {
               atObject(215, 1492);
               return 1200;
             }
-            if (getY() > 3000) {
+            if (getY() > 3000) { //in oil lever rooms
               atObject(223, 3385);
               return 1800;
             }
@@ -2364,11 +2453,11 @@ public class Quester_F2P extends Script implements ActionListener {
             if (isWalking()) return 4000;
             if (leverPtr >= 9) {
               if (getInventoryCount(OIL_CAN) > 0) {
-                if (isReachable(225, 3383)) {
+                if (isReachable(223, 3385)) { //225, 3383
                   CurrentStage = Stage.PROFESSOR;
                   return 600;
                 } else {
-                  atWallObject(228, 3382);
+                  atWallObject(228, 3382); //exit oil room
                   return 2000;
                 }
               } else {
@@ -2401,10 +2490,10 @@ public class Quester_F2P extends Script implements ActionListener {
             int[] lever = getObjectById(nextLever);
             if (isReachable(lever[1], lever[2])) {
               atObject(lever[1], lever[2]);
-              return 2000;
+              return 3000;
             } else {
               if (leverPtr == 2) { // go to lever D
-                x = 223;
+                x = 223;//first door
                 y = 3381;
               }
               if (leverPtr == 3) { // go to AB room
@@ -2543,7 +2632,7 @@ public class Quester_F2P extends Script implements ActionListener {
     @Override
     public void onServerMessage(String str) {
       str = str.toLowerCase();
-      if (str.contains("you pull lever")) {
+      if (str.toLowerCase().contains("you pull lever")) {
         leverPtr++;
       }
     }
@@ -2560,8 +2649,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         RAT_TAIL = 271,
         ONION = 241,
         RAW_CHICKEN = 133,
@@ -2620,11 +2708,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (talkToNpcTimer > -1) {
@@ -2852,8 +2935,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private Point GOBLIN_LOC;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         WOAD_LEAVES = 281,
         REDBERRIES = 236,
         ONION = 241,
@@ -2921,11 +3003,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (talkToNpcTimer > -1) {
@@ -3178,8 +3255,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private boolean doStore = false;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         FRANK = 128,
         RUM = 318,
         CAPTAIN = 166,
@@ -3258,11 +3334,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (talkToNpcTimer > -1) {
@@ -3379,7 +3450,7 @@ public class Quester_F2P extends Script implements ActionListener {
               CurrentStage = Stage.FRANK;
               return 100;
             }
-            if (!isItemEquipped(getInventoryIndex(APRON))) {
+            if (!isItemIdEquipped(APRON)) {
               if (getX() != 334 || getY() != 713) {
                 walkTo(334, 713);
                 return 2000;
@@ -3593,8 +3664,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         GARLIC = 218,
         HAMMER = 168,
         STAKE = 217,
@@ -3672,14 +3742,9 @@ public class Quester_F2P extends Script implements ActionListener {
         return 200;
       }
 
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
-      }
-
       if (equipStakeTimer != -1
           && (System.currentTimeMillis() - equipStakeTimer > combatTimeToEquipStake)) {
-        if (!isItemEquipped(getInventoryIndex(STAKE))) {
+        if (!isItemIdEquipped(STAKE)) {
           wearItem(getInventoryIndex(STAKE));
           return 1800;
         }
@@ -3924,8 +3989,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         CAPTAIN = 166,
         CUSTOMS = 163,
         MIZGOG = 117,
@@ -3992,17 +4056,33 @@ public class Quester_F2P extends Script implements ActionListener {
         return 200;
       }
 
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
-      }
-
       if (talkToNpcTimer > -1) {
         if (System.currentTimeMillis() - talkToNpcTimer >= 10000 || isQuestMenu()) {
           talkToNpcTimer = -1;
         } else {
           return 50;
         }
+      }
+
+      //set stages based on server calls
+      int QUEST_STAGE = getQuestStage(QuestId.IMP_CATCHER.getId());
+      switch (QUEST_STAGE) {
+        case -1:
+          System.out.println(getQuestName(Quests.IMP_CATCHER.GetQuestId()) + " completed!");
+          stopScript();
+          return 0;
+        case 0:
+          CurrentStage = Stage.MIZGOG;
+          break;
+        case 1:
+          if(!hasAllBeads()
+          && !(getX() < 435 && getX() > 385)) CurrentStage = Stage.TRAVELTOKARMJA;
+          if(getX() < 435 && getX() > 385) {
+            if (hasAllBeads()) {
+              CurrentStage = Stage.TRAVELTOPORT;
+            } else CurrentStage = Stage.GETBEADS;
+          }
+          break;
       }
 
       switch (CurrentStage) {
@@ -4247,8 +4327,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private boolean isPhoenix = true;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         RELDO = 20,
         BOOK = 30,
         BARAEK = 26,
@@ -4341,11 +4420,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (talkToNpcTimer > -1) {
@@ -4744,8 +4818,7 @@ public class Quester_F2P extends Script implements ActionListener {
     private final PathWalker pw;
     private String questStatus;
 
-    private static final int SLEEPING_BAG = 1263,
-        COINS = 10,
+    private static final int COINS = 10,
         GYPSY = 14,
         SIR_PRYSIN = 16,
         BUCKET = 21,
@@ -4809,11 +4882,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(SLEEPING_BAG)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (questMenuTimer > -1) {
@@ -5078,7 +5146,7 @@ public class Quester_F2P extends Script implements ActionListener {
         case DERLITH:
           {
             questStatus = "Kill Derlith";
-            if (!isItemEquipped(getInventoryIndex(SILVERLIGHT))) {
+            if (!isItemIdEquipped(SILVERLIGHT)) {
               wearItem(getInventoryIndex(SILVERLIGHT));
               return 3000;
             }
@@ -5304,11 +5372,6 @@ public class Quester_F2P extends Script implements ActionListener {
         return 200;
       }
 
-      if (getFatigue() >= 95 && hasInventoryItem(1263)) {
-        useSleepingBag();
-        return 1200;
-      }
-
       if (fireTimer > -1) {
         int[] ashes = getGroundItemById(ASHES);
         if (System.currentTimeMillis() - fireTimer > 120000 || ashes[0] != -1) {
@@ -5482,7 +5545,9 @@ public class Quester_F2P extends Script implements ActionListener {
             if (getInventoryCount(ROPE) == 0) {
               questStatus = "Gathering rope";
               if (isQuestMenu()) {
-                answer(0);
+                if(getQuestStage(QuestId.DRAGON_SLAYER.getId()) > 0) { //double check
+                  answer(1);
+                } else answer(0);
                 return 3000;
               }
               talkToNpcOrPath(NED, WITCH_LOC);
@@ -5646,18 +5711,22 @@ public class Quester_F2P extends Script implements ActionListener {
               return 3000;
             }
             if (isQuestMenu()) {
-              if (getQuestMenuOption(1).contains("other things from wool")) {
-                answer(1);
-                questMenuTimer = System.currentTimeMillis();
-                return 3000;
-              } else if (getQuestMenuOption(1).contains("some sort of a wig")) {
-                answer(1);
-                questMenuTimer = System.currentTimeMillis();
-                return 3000;
-              } else if (getQuestMenuOption(0).contains("have that now")) {
-                answer(0);
-                return 3000;
-              }
+                if (getQuestMenuOption(1).contains("other things from wool")) {
+                  answer(1);
+                  questMenuTimer = System.currentTimeMillis();
+                  return 4000;
+                } else if (getQuestMenuOption(2).contains("other things from wool")) {
+                  answer(2);
+                  questMenuTimer = System.currentTimeMillis();
+                  return 4000;
+                } else if (getQuestMenuOption(1).contains("some sort of a wig")) {
+                  answer(1);
+                  questMenuTimer = System.currentTimeMillis();
+                  return 4000;
+                } else if (getQuestMenuOption(0).contains("have that now")) {
+                  answer(0);
+                  return 3000;
+                }
             }
             talkToNpcOrPath(NED, WITCH_LOC);
             return 2000;
@@ -5928,11 +5997,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(1263)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (questMenuTimer > -1) {
@@ -6486,10 +6550,16 @@ public class Quester_F2P extends Script implements ActionListener {
         desiredWmb = 2;
       }
       int ptr = 0;
-      for (int i = 0; i < MAX_INV_SIZE; i++) {
-        if (getInventoryId(i) >= 0 && isItemEquipped(i)) {
-          EQUIPMENT[ptr] = getInventoryId(i);
-          ptr++;
+      if(isAuthentic()) {
+        for (int i = 0; i < MAX_INV_SIZE; i++) {
+          if (getInventoryId(i) >= 0 && isItemEquipped(i)) {
+            EQUIPMENT[ptr] = getInventoryId(i);
+            ptr++;
+          }
+        }
+      } else {
+        for (int itemIds : getEquippedItemIds()){
+          EQUIPMENT[ptr] = itemIds;
         }
       }
       CurrentStage = Stage.GUILDMASTER;
@@ -6516,11 +6586,6 @@ public class Quester_F2P extends Script implements ActionListener {
           return 800;
         }
         return 200;
-      }
-
-      if (getFatigue() >= 95 && hasInventoryItem(1263)) {
-        useSleepingBag();
-        return 1200;
       }
 
       if (questMenuTimer > -1) {
@@ -7247,14 +7312,14 @@ public class Quester_F2P extends Script implements ActionListener {
                   }
                 }
               }
-              if (getInventoryCount(EQUIPMENT) > 0) {
-                for (int equip : EQUIPMENT) {
-                  if (equip > 0 && getInventoryCount(equip) > 0) {
-                    deposit(equip, getInventoryCount(equip));
-                    return 2400;
-                  }
-                }
-              }
+//              if (getInventoryCount(EQUIPMENT) > 0) {
+//                for (int equip : EQUIPMENT) {
+//                  if (equip > 0 && getInventoryCount(equip) > 0) {
+//                    deposit(equip, getInventoryCount(equip));
+//                    return 2400;
+//                  }
+//                }
+//              }
               if (getInventoryCount(COINS) < 2000) {
                 withdraw(COINS, 2000 - getInventoryCount(COINS));
                 return 2400;
@@ -7411,10 +7476,10 @@ public class Quester_F2P extends Script implements ActionListener {
               for (int equip : EQUIPMENT) {
                 if (equip <= 0) break;
                 int slot = getInventoryIndex(equip);
-                if (slot > 0 && !isItemEquipped(slot)) {
-                  wearItem(slot);
-                  return 2400;
-                }
+//                if (slot > 0 && !isItemEquipped(slot)) {
+//                  wearItem(slot);
+//                  return 2400;
+//                }
               }
             }
             if (isQuestMenu()) {
@@ -7521,7 +7586,7 @@ public class Quester_F2P extends Script implements ActionListener {
               }
             }
             if (getInventoryCount(SHIELD) > 0) {
-              if (!isItemEquipped(getInventoryIndex(SHIELD))) {
+              if (!isItemIdEquipped(SHIELD)) {
                 wearItem(getInventoryIndex(SHIELD));
                 return 2400;
               }

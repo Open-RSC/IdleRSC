@@ -1794,6 +1794,24 @@ public class Controller {
   }
 
   /**
+   * return a list of all item ids that are equipped
+   * @return int[] of Item Ids (trimmed)
+   */
+  public int[] getEquippedItemIds() {
+    int[] result = new int[10];
+    int index = 0;
+      ItemDef[] equippedItems = this.getMud().equippedItems;
+      for (ItemDef item : equippedItems) {
+        if (item != null) {
+          result[index] = item.id;
+          index++;
+        }
+      }
+      int[] cleanResult = new int[index];
+      System.arraycopy(result, 0, cleanResult, 0, index);
+      return cleanResult;
+  }
+  /**
    * Whether or not the specified item slot is equipped. Note that this does not use an item id, but
    * a slot index.
    *
@@ -1832,7 +1850,6 @@ public class Controller {
         if (Objects.equals(item.getName(), this.getItemName(itemId))) return true;
       }
     }
-
     return false;
   }
 

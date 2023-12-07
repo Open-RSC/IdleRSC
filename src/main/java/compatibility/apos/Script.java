@@ -627,16 +627,40 @@ public abstract class Script implements IScript {
   }
 
   /**
-   * Returns true if the specified item is equipped.
+   * Whether or not the server is configured to be authentic. This returns true for Uranium, false
+   * for Coleslaw.
+   *
+   * @return boolean
+   */
+  public boolean isAuthentic() {
+    return controller.isAuthentic();
+  }
+  /**
+   * Returns true if the specified SLOT is equipped.
    *
    * @see Script#getInventoryIndex(int...)
    * @param slot the position of the item in the client's inventory, starting at 0.
    * @return true if the specified item is equipped.
    */
   public boolean isItemEquipped(int slot) {
-    return controller.isEquipped(slot);
+      return controller.isEquipped(slot);
   }
+  /*
 
+   */
+  public int[] getEquippedItemIds() {
+    return controller.getEquippedItemIds();
+  }
+  /**
+   * Returns true if the specified itemId is equipped. (coleslaw)
+   *
+   * @see Script#getInventoryIndex(int...)
+   * @param itemId the position of the item in the client's inventory, starting at 0.
+   * @return true if the specified item is equipped.
+   */
+  public boolean isItemIdEquipped(int itemId) {
+    return controller.isItemIdEquipped(itemId);
+  }
   /**
    * Attempts to perform the primary action on an item in the client's inventory. This can be "eat",
    * "bury", etc.
@@ -973,7 +997,15 @@ public abstract class Script implements IScript {
   public void mageNpc(int local_index, int spell) {
     controller.castSpellOnNpc(this.getNpcServerIndex(local_index), spell);
   }
-
+  /**
+   * Retrieves the quest stage for the specified quest ID.
+   *
+   * @param questId the ID of the quest
+   * @return the quest stage for the specified quest ID
+   */
+  public int getQuestStage(int questId) {
+    return controller.getQuestStage(questId);
+  }
   /**
    * Attempts to use an item in the client's inventory with a NPC.
    *
@@ -1461,6 +1493,7 @@ public abstract class Script implements IScript {
   public void atWallObject(int x, int y) {
     // controller.openDoor(x, y);
     controller.atWallObject(x, y);
+    controller.sleep(2000);
   }
 
   /**

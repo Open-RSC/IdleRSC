@@ -4,7 +4,7 @@ import models.entities.ItemId;
 import models.entities.NpcId;
 
 public final class QH_MonksFriend extends QH__QuestHandler {
-private static final int[] OUTSIDE_WAYPOINT = {589, 647};
+  private static final int[] OUTSIDE_WAYPOINT = {589, 647};
   private static final int[] INSIDE_MONESTARY = {589, 664};
   private static final int BUCKET_OF_WATER = ItemId.BUCKET_OF_WATER.getId();
   private static final int BLANKET = ItemId.BLANKET.getId();
@@ -22,7 +22,6 @@ private static final int[] OUTSIDE_WAYPOINT = {589, 647};
     "Yes i'd be happy to",
   };
 
-
   public int start(String[] param) { // warning does not handle food conditions
     QUEST_NAME = "Monk's friend";
     START_RECTANGLE = ARDY_MONESTARY;
@@ -36,9 +35,8 @@ private static final int[] OUTSIDE_WAYPOINT = {589, 647};
 
     while (c.isRunning()) {
       QUEST_STAGE = c.getQuestStage(QUEST_ID);
-      switch (QUEST_STAGE) {
-        case 0: // not started   //6 stages in total
-          // get anti
+      switch (QUEST_STAGE) { // 6 stages in total
+        case 0: // not started
           if (c.isRunning() && c.getInventoryItemCount(LOGS) == 0) {
             CURRENT_QUEST_STEP = "Getting logs";
             while (c.isRunning() && c.getInventoryItemCount(LOGS) == 0) {
@@ -62,13 +60,14 @@ private static final int[] OUTSIDE_WAYPOINT = {589, 647};
             followNPCDialog(BROTHER_OMAD, BROTHER_OMAD_START_QUEST_DIALOG);
             sleepUntilQuestStageChanges();
             CURRENT_QUEST_STEP = "Walking Outside";
-            walkPath(new int[][]{OUTSIDE_WAYPOINT});
+            walkPath(new int[][] {OUTSIDE_WAYPOINT});
           }
           break;
         case 1: // get the blanket and return it
           if (c.isRunning() && c.getInventoryItemCount(BLANKET) == 0) {
             CURRENT_QUEST_STEP = "Walking to Kandarin Dungeon";
-            if(isInRectangle(START_RECTANGLE)) walkPath(new int[][]{OUTSIDE_WAYPOINT}); // walk outside
+            if (isInRectangle(START_RECTANGLE))
+              walkPath(new int[][] {OUTSIDE_WAYPOINT}); // walk outside
             pathWalker(618, 657); // walk to kandarin dungeon
           }
           // underground section
@@ -96,13 +95,14 @@ private static final int[] OUTSIDE_WAYPOINT = {589, 647};
           if (c.isRunning()) {
             followNPCDialog(BROTHER_OMAD, BROTHER_OMAD_PART_2);
             sleepUntilQuestStageChanges();
-            walkPath(new int[][]{OUTSIDE_WAYPOINT}); // walk outside
+            walkPath(new int[][] {OUTSIDE_WAYPOINT}); // walk outside
           }
           break;
         case 3: // Talk to cedric
           if (c.isRunning() && c.currentX() < 608) {
             CURRENT_QUEST_STEP = "Walking to Cedric";
-            if(isInRectangle(START_RECTANGLE)) walkPath(new int[][]{OUTSIDE_WAYPOINT}); // walk outside
+            if (isInRectangle(START_RECTANGLE))
+              walkPath(new int[][] {OUTSIDE_WAYPOINT}); // walk outside
             pathWalker(616, 640);
             // walkPath(new int[][]{{589,653},{602,645},{615,636}}); //walk outside
           }
@@ -131,7 +131,8 @@ private static final int[] OUTSIDE_WAYPOINT = {589, 647};
         case 4: // Sober them up
           if (c.isRunning() && c.currentX() < 608) {
             CURRENT_QUEST_STEP = "Walking to Cedric";
-            if(isInRectangle(START_RECTANGLE)) walkPath(new int[][]{OUTSIDE_WAYPOINT}); // walk outside
+            if (isInRectangle(START_RECTANGLE))
+              walkPath(new int[][] {OUTSIDE_WAYPOINT}); // walk outside
             pathWalker(616, 640);
           }
           if (c.isRunning()) {
@@ -140,27 +141,25 @@ private static final int[] OUTSIDE_WAYPOINT = {589, 647};
             sleepUntilQuestStageChanges();
           }
           break;
-        case 5: //talk to them
-          if(c.isRunning()
-            && c.getInventoryItemCount(LOGS) == 0) {
+        case 5: // talk to them
+          if (c.isRunning() && c.getInventoryItemCount(LOGS) == 0) {
             CURRENT_QUEST_STEP = "Getting logs";
             while (c.isRunning() && c.getInventoryItemCount(LOGS) == 0) {
               if (c.getObjectAtCoord(596, 655) == 1) { // chop tree
-                c.walkTo(611,638);
-                c.atObject(611,639);
+                c.walkTo(611, 638);
+                c.atObject(611, 639);
                 c.sleep(3000);
               }
             }
           }
-          if(c.isRunning()
-            && c.getInventoryItemCount(LOGS) > 0) {
+          if (c.isRunning() && c.getInventoryItemCount(LOGS) > 0) {
             CURRENT_QUEST_STEP = "Giving Cedric Logs";
             followNPCDialog(BROTHER_CEDRIC, BROTHER_CEDRIC_PART_2);
             sleepUntilQuestStageChanges();
-            c.walkTo(606,636);
+            c.walkTo(606, 636);
           }
           break;
-        case 6: //returning to omad
+        case 6: // returning to omad
           if (c.isRunning()) {
             CURRENT_QUEST_STEP = "Walking to Brother Omad";
             pathWalker(OUTSIDE_WAYPOINT);

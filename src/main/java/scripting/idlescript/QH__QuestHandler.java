@@ -28,6 +28,7 @@ public class QH__QuestHandler extends IdleScript {
   protected int[][] EDGE_MONESTARY = {{249, 456}, {265, 472}};
   protected int[][] TAV_DUNGEON_LADDER = {{371, 514}, {384, 525}};
   protected int[][] ARDY_MONESTARY = {{575, 651}, {603, 669}};
+  protected int[][] WEST_DWARF_TUNNEL = {{420, 450}, {432, 464}};
   // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align
   // to correctly set the START_DESCRIPTION in getStartDescriptions()
   private int[][][] QUEST_START_LOCATIONS = {
@@ -37,7 +38,8 @@ public class QH__QuestHandler extends IdleScript {
     SORCERORS_TOWER,
     EDGE_MONESTARY,
     TAV_DUNGEON_LADDER,
-    ARDY_MONESTARY
+    ARDY_MONESTARY,
+    WEST_DWARF_TUNNEL
   };
   private String[] QUEST_START_DESCRIPTIONS = {
     "Lumbridge Castle Courtyard",
@@ -46,7 +48,8 @@ public class QH__QuestHandler extends IdleScript {
     "Sorcerors' Tower",
     "Edgeville Monestary",
     "Near Taverly dungeon entrance ladder",
-    "Near Ardougne Monastery"
+    "Near Ardougne Monastery",
+    "Western Entrance of Dwarf Tunnel"
   };
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT
@@ -791,7 +794,7 @@ public class QH__QuestHandler extends IdleScript {
    */
   public void atObject(int[] coords, int interactionType) {
     c.log("Entered Object");
-    while (c.isCurrentlyWalking()) c.sleep(640);
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
     int startX = c.currentX();
     int startY = c.currentY();
     c.log(String.format("Attempting to interact with object at (%s,%s)", coords[0], coords[1]));
@@ -806,13 +809,15 @@ public class QH__QuestHandler extends IdleScript {
    * Opens a fixed(does not stay open) wall object and sleeps until you are moved to the destination
    * Supports both types of interactions just pass 1 or 2 as input (defaults to 1)
    *
+   * <p>*Requires the object moving your coordinates*
+   *
    * @param coords int[] -- Coordinates of wall object
    * @param interactionType int -- (1 or 2) type of wall object interaction (1st or 2nd right click
    *     option)
    */
   public void atWallObject(int[] coords, int interactionType) {
     c.log("Entered Wall Object");
-    while (c.isCurrentlyWalking()) c.sleep(640);
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
     int startX = c.currentX();
     int startY = c.currentY();
     c.log(
@@ -832,7 +837,7 @@ public class QH__QuestHandler extends IdleScript {
    */
   public void climb(int x, int y) {
     if (c.isRunning()) {
-      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
       int startX = c.currentX();
       int startY = c.currentY();
       c.log(String.format("Attempting to climb object at (%s,%s)", x, y));
@@ -862,7 +867,7 @@ public class QH__QuestHandler extends IdleScript {
       if (c.isRunning()) {
         if (!c.atObject(coord[0], coord[1])) quit("Object not found");
         c.sleep(2560);
-        while (c.isCurrentlyWalking()) c.sleep(640);
+        while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
         if (i + 1 < coords.length) {
           // If the player is not within maxDistance of the next object sleep for up to 20 ticks
           for (int j = 0; j < 5; j++) {

@@ -27,6 +27,7 @@ public class QH__QuestHandler extends IdleScript {
   protected int[][] SORCERORS_TOWER = {{507, 505}, {514, 511}};
   protected int[][] EDGE_MONESTARY = {{249, 456}, {265, 472}};
   protected int[][] TAV_DUNGEON_LADDER = {{371, 514}, {384, 525}};
+  protected int[][] ARDY_MONESTARY = {{575, 651}, {603, 669}};
   // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align
   // to correctly set the START_DESCRIPTION in getStartDescriptions()
   private int[][][] QUEST_START_LOCATIONS = {
@@ -35,7 +36,8 @@ public class QH__QuestHandler extends IdleScript {
     VARROCK_SQUARE,
     SORCERORS_TOWER,
     EDGE_MONESTARY,
-    TAV_DUNGEON_LADDER
+    TAV_DUNGEON_LADDER,
+    ARDY_MONESTARY
   };
   private String[] QUEST_START_DESCRIPTIONS = {
     "Lumbridge Castle Courtyard",
@@ -43,7 +45,8 @@ public class QH__QuestHandler extends IdleScript {
     "Varrock Square",
     "Sorcerors' Tower",
     "Edgeville Monestary",
-    "Near Taverly dungeon entrance ladder"
+    "Near Taverly dungeon entrance ladder",
+    "Near Ardougne Monastery"
   };
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT

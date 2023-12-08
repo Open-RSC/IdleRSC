@@ -225,7 +225,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
               CURRENT_QUEST_STEP = "Going through Pipe, walking to Scorpion";
               atObject(new int[] {374, 3352}, 1);
               c.walkTo(376, 3368);
-              pathWalker(new MapPoint(383, 3352));
+              pathWalker(383, 3352);
               atWallObject(new int[] {383, 3353}, 1);
               useItemOnNearestNpcId(302, SCORP_CAGE_STAGE_3);
             }

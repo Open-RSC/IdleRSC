@@ -219,7 +219,7 @@ public class MiningGuild extends IdleScript {
         && controller.isRunning()
         && controller.isLoggedIn()) { // sleep until the mining guild has been exited
 
-      controller.atObject(ladderUp[0], ladderUp[1]); // attempt to ascend ladder to falador
+      controller.atObject(ladderUp[0], ladderUp[1]); // attempt to ascend ladder to Falador
       controller.sleep(1280);
     }
     if (!controller.isRunning()) {
@@ -319,7 +319,7 @@ public class MiningGuild extends IdleScript {
           controller.displayMessage("@red@Get one and start the script again!");
           break;
         default:
-          controller.displayMessage("@red@Quit was called but wasn't given a correct arguement");
+          controller.displayMessage("@red@Quit was called but wasn't given a correct argument");
       }
       controller.stop();
     }
@@ -405,8 +405,6 @@ public class MiningGuild extends IdleScript {
             itemWidth,
             itemHeight,
             false);
-      }
-      for (int i = 0; i < banked.length; i++) {
         String str =
             banked[i] >= 1000000
                 ? String.format("%.2f", (double) banked[i] / 1000000) + "M"

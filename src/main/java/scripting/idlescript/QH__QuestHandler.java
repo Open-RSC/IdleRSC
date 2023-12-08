@@ -527,7 +527,7 @@ public class QH__QuestHandler extends IdleScript {
         for (int choiceIndex = 0; choiceIndex < dialogChoices.length; choiceIndex++) {
           // Sleep until a dialog menu appears
           while (!c.isInOptionMenu() && c.isRunning()) c.sleep(640);
-          // Select the menu option that cooresponds with choiceIndex
+          // Select the menu option that corresponds with choiceIndex
           for (int option = 0; option < c.getOptionMenuCount(); option++) {
             if (c.getOptionsMenuText(option).equals(dialogChoices[choiceIndex])) {
               c.optionAnswer(option);

@@ -573,8 +573,10 @@ public class K_kailaScript extends IdleScript {
   }
   /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
   protected static void waitForBatching() {
-    while (c.isBatching() && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
-      c.sleep(2 * GAME_TICK);
+    while (c.isRunning()
+        && c.isBatching()
+        && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
+      c.sleep(GAME_TICK);
     }
   }
   /**
@@ -987,26 +989,44 @@ public class K_kailaScript extends IdleScript {
    *
    * @param leaveCombat boolean - true will exit combat in order to boost. False will return; if in
    *     combat.
+   * @return boolean -- true if was able to drink, false if not
    */
-  protected static void drinkAntidote(boolean leaveCombat) {
-    int antiPotCount =
-        c.getInventoryItemCount(antiPot[0])
-            + c.getInventoryItemCount(antiPot[1])
-            + c.getInventoryItemCount(antiPot[2]);
-    if (antiPotCount > 0) {
-      if (leaveCombat && c.isInCombat()) leaveCombat();
-      else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-      if (c.getInventoryItemCount(antiPot[0]) > 0) {
-        c.itemCommand(antiPot[0]);
-        c.sleep(GAME_TICK);
-      } else if (c.getInventoryItemCount(antiPot[1]) > 0) {
-        c.itemCommand(antiPot[1]);
-        c.sleep(GAME_TICK);
-      } else if (c.getInventoryItemCount(antiPot[2]) > 0) {
-        c.itemCommand(antiPot[2]);
-        c.sleep(GAME_TICK);
-      }
+  protected static boolean drinkAnti(boolean leaveCombat) {
+    int[] curepoison = {
+      ItemId.CURE_POISON_POTION_1DOSE.getId(),
+      ItemId.CURE_POISON_POTION_2DOSE.getId(),
+      ItemId.CURE_POISON_POTION_3DOSE.getId()
+    };
+    int[] antidote = {
+      ItemId.POISON_ANTIDOTE_1DOSE.getId(),
+      ItemId.POISON_ANTIDOTE_2DOSE.getId(),
+      ItemId.POISON_ANTIDOTE_3DOSE.getId()
+    };
+    int curepoisonCount =
+        c.getInventoryItemCount(curepoison[0])
+            + c.getInventoryItemCount(curepoison[1])
+            + c.getInventoryItemCount(curepoison[2]);
+    int antidoteCount =
+        c.getInventoryItemCount(antidote[0])
+            + c.getInventoryItemCount(antidote[1])
+            + c.getInventoryItemCount(antidote[2]);
+    int[] pot;
+    if (curepoisonCount > 0) pot = curepoison;
+    else if (antidoteCount > 0) pot = antidote;
+    else return false;
+    if (leaveCombat && c.isInCombat()) leaveCombat();
+    else if (!leaveCombat && c.isInCombat()) return false; // blocked by combat
+    if (c.getInventoryItemCount(pot[0]) > 0) {
+      c.itemCommand(pot[0]);
+      c.sleep(GAME_TICK);
+    } else if (c.getInventoryItemCount(pot[1]) > 0) {
+      c.itemCommand(pot[1]);
+      c.sleep(GAME_TICK);
+    } else if (c.getInventoryItemCount(pot[2]) > 0) {
+      c.itemCommand(pot[2]);
+      c.sleep(GAME_TICK);
     }
+    return true;
   }
   /*
    * BANKING METHODS
@@ -1027,7 +1047,7 @@ public class K_kailaScript extends IdleScript {
     for (int i = 0; i <= 200; i++) {
       if (!c.isRunning()) break;
       if (!c.isInBank()) {
-        c.sleep(2 * GAME_TICK);
+        c.sleep(GAME_TICK);
       } else {
         break;
       }

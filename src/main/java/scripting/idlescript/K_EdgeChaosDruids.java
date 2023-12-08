@@ -359,11 +359,11 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
   @Override
   public void chatCommandInterrupt(
       String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
-    if (commandText.contains("bank")) {
+    if (commandText.replace(" ", "").toLowerCase().contains("bank")) {
       c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
       timeToBank = true;
       c.sleep(100);
-    } else if (commandText.contains("bones")) {
+    } else if (commandText.replace(" ", "").toLowerCase().contains("bones")) {
       if (!lootBones) {
         c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
         lootBones = true;
@@ -372,7 +372,7 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
         lootBones = false;
       }
       c.sleep(100);
-    } else if (commandText.contains("lowlevel")) {
+    } else if (commandText.replace(" ", "").toLowerCase().contains("lowlevel")) {
       if (!lootLowLevel) {
         c.displayMessage("@or1@Got toggle @red@lowlevel@or1@, turning on low level herb looting!");
         lootLowLevel = true;
@@ -381,7 +381,7 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
         lootLowLevel = false;
       }
       c.sleep(100);
-    } else if (commandText.contains("potup")) {
+    } else if (commandText.replace(" ", "").toLowerCase().contains("potup")) {
       if (!potUp) {
         c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
         potUp = true;
@@ -390,23 +390,25 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
         potUp = false;
       }
       c.sleep(100);
-    } else if (commandText.contains(
-        "attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+    } else if (commandText
+        .replace(" ", "")
+        .toLowerCase()
+        .contains("attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
       c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
       c.displayMessage("@red@Switching to \"Accurate\" combat style!");
       fightMode = 2;
       c.sleep(100);
-    } else if (commandText.contains("strength")) {
+    } else if (commandText.replace(" ", "").toLowerCase().contains("strength")) {
       c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
       c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
       fightMode = 1;
       c.sleep(100);
-    } else if (commandText.contains("defense")) {
+    } else if (commandText.replace(" ", "").toLowerCase().contains("defense")) {
       c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
       c.displayMessage("@red@Switching to \"Defensive\" combat style!");
       fightMode = 3;
       c.sleep(100);
-    } else if (commandText.contains("controlled")) {
+    } else if (commandText.replace(" ", "").toLowerCase().contains("controlled")) {
       c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
       c.displayMessage("@red@Switching to \"Controlled\" combat style!");
       fightMode = 0;

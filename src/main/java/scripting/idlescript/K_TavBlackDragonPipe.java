@@ -109,7 +109,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
           c.sleep(340);
         }
-        drinkAntidote(true);
+        drinkAnti(true);
         timeToBank = !eatFood(); // does the eating checks
       }
       timeToBank = !eatFood(); // does the eating checks

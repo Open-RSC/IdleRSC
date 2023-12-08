@@ -78,6 +78,7 @@ public final class QH_DoricsQuest extends QH__QuestHandler {
     QUEST_REQUIREMENTS = new String[] {};
     SKILL_REQUIREMENTS = new int[][] {{SkillId.MINING.getId(), 15}};
     ITEM_REQUIREMENTS = new int[][] {};
+    EQUIP_REQUIREMENTS = new int[][] {};
     INVENTORY_SPACES_NEEDED = 13;
     doQuestChecks();
 

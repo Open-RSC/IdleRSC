@@ -10,11 +10,11 @@ import controller.Controller;
  *     <p>Kaila - bugfixes and rewrite
  */
 public class GnomeFlaxx0r extends IdleScript {
-  final Controller c = Main.getController();
-  boolean spin = false;
-  long flaxPicked = 0;
-  long flaxBanked = 0;
-  final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private final Controller c = Main.getController();
+  private boolean spin = false;
+  private long flaxPicked = 0;
+  private long flaxBanked = 0;
+  private final long startTimestamp = System.currentTimeMillis() / 1000L;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -23,11 +23,9 @@ public class GnomeFlaxx0r extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-
     c.displayMessage(
-        "@red@Put true or false in Params. True to spin & bank flax, false to pick & bank flax.");
+        "@red@Put true or false in Params. True to pick/spin/bank flax, false to pick/bank flax.");
     c.displayMessage("@red@Bot will Pick & Bank by Default!");
-
     if (c.isInBank()) c.closeBank();
     if (c.currentY() > 1000) {
       bank();
@@ -40,49 +38,34 @@ public class GnomeFlaxx0r extends IdleScript {
       c.displayMessage("@red@Bot will Pick & Bank by Default!");
       c.stop();
     } else {
-      spin = Boolean.parseBoolean(parameters[0]);
+      spin = Boolean.parseBoolean(parameters[0].replace(" ", "").toLowerCase());
     }
     c.setBatchBarsOn();
+    startScript();
+    return 1000; // start() must return an int value now.
+  }
 
+  private void startScript() {
     while (c.isRunning()) {
-
       if (spin) {
         if (c.getInventoryItemCount() < 30) {
           c.setStatus("@cya@Walking to the flax...");
           goToWheelFlax();
-
-          // if (c.getInventoryItemCount() < 30) {
           c.setStatus("@cya@Picking flax!");
           c.atObject(693, 517);
           if (!c.isAuthentic()) {
-            c.sleep(2000);
-            while (c.isBatching() && c.getInventoryItemCount() < 30) {
-              c.sleep(640); // added batching - kaila
-            }
-          } else {
-            c.sleep(150);
-          }
-          // }
+            waitForBatching();
+          } else c.sleep(150);
         }
-
         if (c.getInventoryItemCount(675) > 0) {
-
           c.setStatus("@cya@Spinnin' flax!");
-          c.sleepHandler(98, true);
           goToWheel();
-
           c.useItemIdOnObject(693, 1459, 675);
           if (!c.isAuthentic()) {
-            c.sleep(2000);
-            while (c.isBatching()) {
-              c.sleep(640); // added batching - kaila
-            }
-          } else {
-            c.sleep(500);
-          }
+            waitForBatching();
+          } else c.sleep(500);
         }
         if (c.getInventoryItemCount(676) > 0 && c.currentY() > 1000) {
-
           c.atObject(691, 1459);
           c.sleep(1240);
           goToBankFlax();
@@ -90,19 +73,13 @@ public class GnomeFlaxx0r extends IdleScript {
           bank();
           goToFlax();
         }
-      } else { // else if !spin just pick
-
+      } else { // else if no spin, just pick
         if (c.getInventoryItemCount() < 30) {
           c.setStatus("@cya@Picking flax!");
           c.atObject(712, 517);
           if (!c.isAuthentic()) {
-            c.sleep(2000);
-            while (c.isBatching() && c.getInventoryItemCount() < 30) {
-              c.sleep(640); // added batching - kaila
-            }
-          } else {
-            c.sleep(150);
-          }
+            waitForBatching();
+          } else c.sleep(150);
         } else {
           goToBank();
           bank();
@@ -110,20 +87,24 @@ public class GnomeFlaxx0r extends IdleScript {
         }
       }
     }
-    return 1000; // start() must return an int value now.
+  }
+
+  private void waitForBatching() {
+    c.sleep(2000);
+    while (c.isRunning() && c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.sleep(640);
+    }
   }
 
   public void goToWheel() {
-
     c.setStatus("@cya@Going back to wheel..");
     c.walkTo(692, 515);
     c.atObject(691, 515);
-    c.sleep(1000);
+    while (c.isRunning() && c.currentY() < 1000) c.sleep(640);
     c.walkTo(692, 1459);
   }
 
   public void goToWheelFlax() {
-
     c.setStatus("@cya@Going back to flax..");
     c.walkTo(703, 516);
     c.walkTo(693, 516);
@@ -131,67 +112,42 @@ public class GnomeFlaxx0r extends IdleScript {
   }
 
   public void goToBankFlax() {
-
     c.setStatus("@cya@Walking to the bank.");
     c.walkTo(693, 516);
     c.walkTo(703, 516);
     c.walkTo(709, 518);
-    c.sleep(340);
   }
 
   public void goToBank() {
-
     c.setStatus("@cya@Walking to the bank.");
-    c.walkTo(713, 516);
-    c.sleep(100);
+    c.walkTo(714, 515);
     c.atObject(714, 516); // go up ladder
-    c.sleep(1000);
-    c.walkTo(714, 1458);
+    while (c.isRunning() && c.currentY() < 1000) c.sleep(640);
     c.walkTo(714, 1454);
     c.setStatus("@gre@Done Walking..");
   }
 
   public void goToFlax() {
-
     c.setStatus("@cya@Going back to flax..");
-    c.walkTo(714, 1454);
     c.walkTo(714, 1459);
-    c.sleep(100);
     c.atObject(714, 1460);
-    c.sleep(1000);
+    while (c.isRunning() && c.currentY() > 1000) c.sleep(640);
     c.walkTo(712, 516);
     c.setStatus("@gre@Done Walking..");
   }
 
   public void bank() {
-
     c.setStatus("@cya@Banking...");
     c.openBank();
-    c.sleep(640);
-
+    K_kailaScript.waitForBankOpen();
     if (c.isInBank()) {
-      if (c.getInventoryItemCount(675) > 0) { // changed to if
-        c.depositItem(675, 30);
-        c.sleep(340);
+      for (int itemId : c.getInventoryItemIds()) {
+        c.depositItem(itemId, c.getInventoryItemCount(itemId));
       }
-      if (c.getInventoryItemCount(676) > 0) { // changed to if
-        c.depositItem(676, 30);
-        c.sleep(340);
-      }
-      if (spin) {
-        flaxBanked = c.getBankItemCount(676);
-      } else {
-        flaxBanked = c.getBankItemCount(675);
-      }
+      if (spin) flaxBanked = c.getBankItemCount(676);
+      else flaxBanked = c.getBankItemCount(675);
       c.closeBank();
-    }
-  }
-
-  public void openDoor() {
-    while (c.getObjectAtCoord(500, 454) == 64) {
-      c.setStatus("@cya@Opening bank door...");
-      c.atObject(500, 454);
-      c.sleep(618);
+      c.sleep(1280);
     }
   }
 

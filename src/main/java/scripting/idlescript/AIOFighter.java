@@ -40,41 +40,38 @@ import orsc.ORSCharacter;
  * @author Dvorak
  */
 public class AIOFighter extends IdleScript {
-  final Controller c = Main.getController();
-  int fightMode = 2;
-  int maxWander = 3;
-  int eatingHealth = 5;
-  boolean openDoors = false;
-  boolean buryBones = true;
-  boolean prioritizeBones = false;
+  private final Controller c = Main.getController();
+  private int fightMode = 2;
+  private int maxWander = 3;
+  private int eatingHealth = 5;
+  private boolean openDoors = false;
+  private boolean buryBones = true;
+  private boolean prioritizeBones = false;
   private long next_attempt = -1;
   private final long nineMinutesInMillis = 540000L;
-  boolean maging = true;
-  int spellId = 0;
-
-  boolean ranging = true;
-  int arrowId = -1; // leave -1 to not pickup arrows.
-  int switchId = 81; // weapon to switch to when in combat if ranging.
-
-  int[] npcIds = {};
-  int[] loot = {}; // feathers
-  final int[] bones = {20, 413, 604, 814};
-  final int[] bowIds = {188, 189, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 59, 60};
-  final int[] arrowIds = {638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 11, 574, 190, 592, 786};
-  final int[] doorObjectIds = {60, 64};
-
+  private boolean maging = true;
+  private int spellId = 0;
+  private boolean ranging = true;
+  private int arrowId = -1; // leave -1 to not pickup arrows.
+  private int switchId = 81; // weapon to switch to when in combat if ranging.
+  private int[] npcIds = {};
+  private int[] loot = {}; // feathers
+  private final int[] bones = {20, 413, 604, 814};
+  private final int[] bowIds = {188, 189, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 59, 60};
+  private final int[] arrowIds = {
+    638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 11, 574, 190, 592, 786
+  };
+  private final int[] doorObjectIds = {60, 64};
   // do not modify these
-  int currentAttackingNpc = -1;
-  int[] lootTable = null;
-  final int[] startTile = {-1, -1};
-
+  private int currentAttackingNpc = -1;
+  private int[] lootTable = null;
+  private final int[] startTile = {-1, -1};
   private JFrame scriptFrame;
-  boolean guiSetup = false;
-  boolean scriptStarted = false;
-
-  final long startTimestamp = System.currentTimeMillis() / 1000L;
-  int bonesBuried = 0;
-  int spellsCasted = 0;
+  private boolean guiSetup = false;
+  private boolean scriptStarted = false;
+  private final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private int bonesBuried = 0;
+  private int spellsCasted = 0;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -98,7 +95,7 @@ public class AIOFighter extends IdleScript {
     return 1000; // start() must return an int value now.
   }
 
-  public void scriptStart() {
+  private void scriptStart() {
     while (c.isRunning()) {
       lootTable = Arrays.copyOf(loot, loot.length);
       if (prioritizeBones) {
@@ -330,13 +327,13 @@ public class AIOFighter extends IdleScript {
     c.walkTo(x, y, 0, false);
   }
 
-  public boolean isWithinWander(int x, int y) {
+  private boolean isWithinWander(int x, int y) {
     if (maxWander < 0) return true;
 
     return c.distance(startTile[0], startTile[1], x, y) <= maxWander;
   }
 
-  public void popup(String title, String text) {
+  private void popup(String title, String text) {
     JFrame parent = new JFrame(title);
     JLabel textLabel = new JLabel(text);
     JButton okButton = new JButton("OK");
@@ -355,7 +352,7 @@ public class AIOFighter extends IdleScript {
     parent.setVisible(true);
   }
 
-  public boolean validateFields(
+  private boolean validateFields(
       JTextField npcIds,
       JTextField maxWanderField,
       JTextField eatAtHpField,
@@ -438,7 +435,7 @@ public class AIOFighter extends IdleScript {
     return true;
   }
 
-  public void setValuesFromGUI(
+  private void setValuesFromGUI(
       JComboBox<String> fightModeField,
       JTextField npcIdsField,
       JTextField maxWanderField,
@@ -485,8 +482,11 @@ public class AIOFighter extends IdleScript {
     this.switchId = Integer.parseInt(switchIdField.getText());
   }
 
-  public void setupGUI() {
+  private void setupGUI() {
 
+    JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
+    JLabel label3 = new JLabel("Control ::bones ::prioritize :doors");
+    JLabel label4 = new JLabel("Combat Styles ::attack :strength ::defense ::controlled");
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
@@ -520,6 +520,9 @@ public class AIOFighter extends IdleScript {
 
     scriptFrame.setLayout(new GridLayout(0, 2));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    scriptFrame.add(label2);
+    scriptFrame.add(label3);
+    scriptFrame.add(label4);
     scriptFrame.add(fightModeLabel);
     scriptFrame.add(fightModeField);
     scriptFrame.add(npcIdsLabel);
@@ -603,6 +606,62 @@ public class AIOFighter extends IdleScript {
           arrowIdField.setEnabled(rangingCheckbox.isSelected());
           switchIdField.setEnabled(rangingCheckbox.isSelected());
         });
+  }
+
+  @Override
+  public void chatCommandInterrupt(
+      String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
+    if (commandText.replace(" ", "").toLowerCase().contains("bones")) {
+      if (!buryBones) {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
+        buryBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
+        buryBones = false;
+      }
+      c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("prioritize")) {
+      if (!prioritizeBones) {
+        c.displayMessage("@or1@Got toggle @red@lowlevel@or1@, turning on low level herb looting!");
+        prioritizeBones = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@lowlevel@or1@, turning off low level herb looting!");
+        prioritizeBones = false;
+      }
+      c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("doors")) {
+      if (!openDoors) {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
+        openDoors = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
+        openDoors = false;
+      }
+      c.sleep(100);
+    } else if (commandText
+        .replace(" ", "")
+        .toLowerCase()
+        .contains("attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+      c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
+      c.displayMessage("@red@Switching to \"Accurate\" combat style!");
+      fightMode = 2;
+      c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("strength")) {
+      c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
+      c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
+      fightMode = 1;
+      c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("defense")) {
+      c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
+      c.displayMessage("@red@Switching to \"Defensive\" combat style!");
+      fightMode = 3;
+      c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("controlled")) {
+      c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
+      c.displayMessage("@red@Switching to \"Controlled\" combat style!");
+      fightMode = 0;
+      c.sleep(100);
+    }
   }
 
   @Override

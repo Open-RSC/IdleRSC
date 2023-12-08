@@ -21,6 +21,7 @@ public class Flaxx0r extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
+    controller.log("This script picks flax in seers", "red");
     while (controller.isRunning()) {
       if (controller.getInventoryItemCount() < 30) {
         if (controller.currentY() < 454) {

@@ -112,7 +112,7 @@ class IdleScriptPathWalker {
       }
       int x = n.x;
       int y = n.y;
-
+      // checkForObstacles((int) n.x, (int) n.y);
       // TODO: Those if statements can be turned into an abstraction, e.g PathWalkerObstacle
       if (isAtApproxCoords(329, 487, 12)
           && (n.x > 341)) { // moved 2 tiles east, increase radius by 2

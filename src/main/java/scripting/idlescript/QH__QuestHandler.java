@@ -24,26 +24,49 @@ public class QH__QuestHandler extends IdleScript {
   protected int[][] LUMBRIDGE_CASTLE_COURTYARD = {{120, 650}, {128, 665}};
   protected int[][] FALADOR_WEST_BANK = {{328, 549}, {334, 557}};
   protected int[][] VARROCK_SQUARE = {{126, 505}, {137, 511}};
-
+  protected int[][] SORCERORS_TOWER = {{507, 505}, {514, 511}};
+  protected int[][] EDGE_MONESTARY = {{249, 456}, {265, 472}};
+  protected int[][] TAV_DUNGEON_LADDER = {{371, 514}, {384, 525}};
+  protected int[][] ARDY_MONESTARY = {{575, 651}, {603, 669}};
+  protected int[][] WEST_DWARF_TUNNEL = {{420, 450}, {432, 464}};
   // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align
   // to correctly set the START_DESCRIPTION in getStartDescriptions()
   private int[][][] QUEST_START_LOCATIONS = {
-    LUMBRIDGE_CASTLE_COURTYARD, FALADOR_WEST_BANK, VARROCK_SQUARE
+    LUMBRIDGE_CASTLE_COURTYARD,
+    FALADOR_WEST_BANK,
+    VARROCK_SQUARE,
+    SORCERORS_TOWER,
+    EDGE_MONESTARY,
+    TAV_DUNGEON_LADDER,
+    ARDY_MONESTARY,
+    WEST_DWARF_TUNNEL
   };
   private String[] QUEST_START_DESCRIPTIONS = {
-    "Lumbridge Castle Courtyard", "Falador West Bank", "Varrock Square"
+    "Lumbridge Castle Courtyard",
+    "Falador West Bank",
+    "Varrock Square",
+    "Sorcerors' Tower",
+    "Edgeville Monestary",
+    "Near Taverly dungeon entrance ladder",
+    "Near Ardougne Monastery",
+    "Western Entrance of Dwarf Tunnel"
   };
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT
   protected String QUEST_NAME, START_DESCRIPTION, CURRENT_QUEST_STEP = "";
   protected String[] QUEST_REQUIREMENTS = {};
   protected int QUEST_ID, QUEST_STAGE, INVENTORY_SPACES_NEEDED;
-  protected int[][] START_RECTANGLE, SKILL_REQUIREMENTS, ITEM_REQUIREMENTS, STEP_ITEMS = {};
-
+  protected int[][] START_RECTANGLE,
+      SKILL_REQUIREMENTS,
+      EQUIP_REQUIREMENTS,
+      ITEM_REQUIREMENTS,
+      STEP_ITEMS = {};
+  protected boolean timeToDrinkAntidote = false;
   // PRIVATE VARIABLES
   private List<String> MISSING_LEVELS = new ArrayList<String>();
   private List<String> MISSING_QUESTS = new ArrayList<String>();
   private List<String> MISSING_ITEMS = new ArrayList<String>();
+  private List<String> MISSING_EQUIP = new ArrayList<String>();
   protected boolean IS_TESTING = false;
 
   /** Used for testing only */
@@ -77,12 +100,15 @@ public class QH__QuestHandler extends IdleScript {
     QUEST_ID = QuestId.getByName(QUEST_NAME).getId();
     QUEST_STAGE = c.getQuestStage(QUEST_ID);
     START_DESCRIPTION = getStartDescription();
+    c.setBatchBars(true);
+
     if (QUEST_STAGE == -1 && !IS_TESTING) {
       quit("Quest already complete");
     } else {
       requiredQuestsCheck();
       requiredLevelsCheck();
       requiredStartItemsCheck();
+      requiredStartEquipCheck();
       if (INVENTORY_SPACES_NEEDED > 30 - c.getInventoryItemCount()) {
         quit("Not enough empty inventory spaces");
       }
@@ -118,10 +144,34 @@ public class QH__QuestHandler extends IdleScript {
     if (MISSING_ITEMS.size() > 0) {
       quit("Missing items");
     } else {
-      c.displayMessage("@gre@All item requirements met");
+      c.displayMessage("@gre@All inventory item requirements met");
     }
   }
+  /* Checks if the player has the required starting items EQUIPPED for the quest
+   * CURRENTLY ONLY CHECKS EQUIP ITEMS ARE THERE AND NOT HOW MANY
+   */
+  private void requiredStartEquipCheck() {
+    MISSING_EQUIP = new ArrayList<String>();
+    for (int[] item : EQUIP_REQUIREMENTS) {
+      int itemId = item[0];
+      int amount =
+          1; // item[1]; //unimplemented, always put 1. todo add support to check amounts to
+      // controller (arrows)
+      c.log(String.format("NEEDED: %s HELD: %s", amount, c.isItemIdEquipped(itemId)));
+      String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
+      itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
 
+      if (!c.isItemIdEquipped(itemId)) {
+        String missingString = String.format("@red@- %sx %s", amount, itemName);
+        MISSING_EQUIP.add(missingString);
+      }
+    }
+    if (MISSING_EQUIP.size() > 0) {
+      quit("Missing equip");
+    } else {
+      c.displayMessage("@gre@All equip item requirements met");
+    }
+  }
   /* Checks if the player has the required levels for the quest. */
   private void requiredLevelsCheck() {
     MISSING_LEVELS = new ArrayList<String>();
@@ -508,7 +558,47 @@ public class QH__QuestHandler extends IdleScript {
     }
     c.sleep(2560);
   }
-
+  /**
+   * Goes through a dialog with the nearest instance of an npc id with with dialogChoices[] being
+   * the responses from the character.
+   *
+   * <p>This method is for pop up quest dialog after interacting with an object
+   *
+   * @param npcId int -- Id of the npc to talk to
+   * @param dialogChoices String[] -- Responses to dialogs
+   */
+  public void followNPCDialogPopUps(int npcId, String[] dialogChoices) {
+    int[] npc_id = {npcId};
+    ORSCharacter npc = c.getNearestNpcByIds(npc_id, false);
+    if (npc != null) {
+      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      c.sleep(6000);
+      if (dialogChoices.length > 0) {
+        for (int choiceIndex = 0; choiceIndex < dialogChoices.length; choiceIndex++) {
+          // Sleep until a dialog menu appears
+          while (!c.isInOptionMenu() && c.isRunning()) c.sleep(640);
+          // Select the menu option that cooresponds with choiceIndex
+          for (int option = 0; option < c.getOptionMenuCount(); option++) {
+            if (c.getOptionsMenuText(option).equals(dialogChoices[choiceIndex])) {
+              c.optionAnswer(option);
+              c.sleep(640);
+              break;
+            }
+          }
+        }
+      }
+      // After dialogChoices has been depleted sleep until npc hasn't said a new dialog for 4 ticks
+      while (c.isRunning()) {
+        String oldMessage = npc.message;
+        c.sleep(2560);
+        if (oldMessage == npc.message) break;
+      }
+    } else {
+      c.log(String.format("Could not find NPC: %s", npcId));
+      quit("Npc not found");
+    }
+    c.sleep(2560);
+  }
   /**
    * Goes through a dialog with the nearest instance of an npc id with with dialogChoices[] being
    * the responses from the character.
@@ -674,7 +764,8 @@ public class QH__QuestHandler extends IdleScript {
   }
 
   /**
-   * Climbs a ladder or stairs and sleeps until you are moved to the destination
+   * Climbs a ladder or stairs and sleeps until you are moved to the destination Also Supports going
+   * through Opens a fixed(does not stay open) doors
    *
    * @param coords int[] -- Coordinates of climbable object
    */
@@ -690,7 +781,54 @@ public class QH__QuestHandler extends IdleScript {
     }
     c.log("Successfully climbed");
   }
-
+  /**
+   * Does atObject command and sleeps until you are moved to the destination Climbs a ladder or
+   * stairs and sleeps until you are moved to the destination Also Supports going through Opens a
+   * fixed(does not stay open) doors
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param coords int[] -- Coordinates of object
+   * @param interactionType int -- (1 or 2) type of object interaction (1st or 2nd right click
+   *     option)
+   */
+  public void atObject(int[] coords, int interactionType) {
+    c.log("Entered Object");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(String.format("Attempting to interact with object at (%s,%s)", coords[0], coords[1]));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      if (interactionType == 2) c.atObject2(coords[0], coords[1]);
+      else c.atObject(coords[0], coords[1]);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered Object");
+  }
+  /**
+   * Opens a fixed(does not stay open) wall object and sleeps until you are moved to the destination
+   * Supports both types of interactions just pass 1 or 2 as input (defaults to 1)
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param coords int[] -- Coordinates of wall object
+   * @param interactionType int -- (1 or 2) type of wall object interaction (1st or 2nd right click
+   *     option)
+   */
+  public void atWallObject(int[] coords, int interactionType) {
+    c.log("Entered Wall Object");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(
+        String.format("Attempting to interact with wall object at (%s,%s)", coords[0], coords[1]));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      if (interactionType == 2) c.atWallObject2(coords[0], coords[1]);
+      else c.atWallObject(coords[0], coords[1]);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered door");
+  }
   /**
    * Climbs a ladder or stairs and sleeps until you are moved to the destination
    *
@@ -699,7 +837,7 @@ public class QH__QuestHandler extends IdleScript {
    */
   public void climb(int x, int y) {
     if (c.isRunning()) {
-      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
       int startX = c.currentX();
       int startY = c.currentY();
       c.log(String.format("Attempting to climb object at (%s,%s)", x, y));
@@ -729,7 +867,7 @@ public class QH__QuestHandler extends IdleScript {
       if (c.isRunning()) {
         if (!c.atObject(coord[0], coord[1])) quit("Object not found");
         c.sleep(2560);
-        while (c.isCurrentlyWalking()) c.sleep(640);
+        while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
         if (i + 1 < coords.length) {
           // If the player is not within maxDistance of the next object sleep for up to 20 ticks
           for (int j = 0; j < 5; j++) {
@@ -770,6 +908,10 @@ public class QH__QuestHandler extends IdleScript {
       case "missing items":
         c.displayMessage("@red@You need the following items in your inventory:");
         for (String item : MISSING_ITEMS) c.displayMessage(item);
+        break;
+      case "missing equip":
+        c.displayMessage("@red@You need the following items equipped:");
+        for (String item : MISSING_EQUIP) c.displayMessage(item);
         break;
       case "not enough empty inventory spaces":
         quitMessage =
@@ -943,6 +1085,13 @@ public class QH__QuestHandler extends IdleScript {
     spacing += (text.length() / 2);
     int newSpacing = (width / 2) - (spacing / 2);
     return newSpacing;
+  }
+
+  @Override
+  public void serverMessageInterrupt(String message) {
+    if (message.contains("@gr3@You @gr2@are @gr1@poisioned")) { // dont change spelling
+      timeToDrinkAntidote = true;
+    }
   }
 
   @Override

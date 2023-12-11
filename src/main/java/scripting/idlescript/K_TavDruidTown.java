@@ -68,11 +68,11 @@ public final class K_TavDruidTown extends K_kailaScript {
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
-      lootBones = false;
+     // lootBones = false;
       potUp = false;
       c.displayMessage("Got Autostart Parameter");
       c.log(
-          "@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, Loot Bones, no pot up, yes prayer boosting",
+          "@cya@Auto-Starting using 1 Shark, controlled, Loot Low Level, no pot up, yes prayer boosting",
           "cya");
       scriptStarted = true;
       guiSetup = true;
@@ -85,9 +85,7 @@ public final class K_TavDruidTown extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Tav Druid Circle - By Kaila");
-      c.displayMessage("@red@Start in Fally west or druid Circle");
-      c.displayMessage("@red@Food in Bank required");
+      c.displayMessage("@gre@Tav Druid Town @mag@~ by Kaila");
 
       if (c.isInBank()) c.closeBank();
       if (c.currentY() > 515) {
@@ -108,8 +106,8 @@ public final class K_TavDruidTown extends K_kailaScript {
       }
       if (lootLowLevel) lootItems(false, lowLevelLoot);
       else lootItems(false, highLevelLoot);
-      if (lootBones) lootItem(false, ItemId.BONES.getId());
-      buryBones(false);
+      //if (lootBones) lootItem(false, ItemId.BONES.getId());
+      //buryBones(false);
       checkFightMode(fightMode);
       if (!c.isInCombat()) {
         ORSCharacter npc = c.getNearestNpcById(200, false);
@@ -121,7 +119,7 @@ public final class K_TavDruidTown extends K_kailaScript {
       } else c.sleep(GAME_TICK);
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
-        buryBonesToLoot(false);
+       // buryBonesToLoot(false);
       }
       timeToBank = !eatFood();
       if (c.getInventoryItemCount() == 30
@@ -251,10 +249,10 @@ public final class K_TavDruidTown extends K_kailaScript {
     JLabel label1 = new JLabel("Start in Fally west or druid Circle");
     JLabel label6 = new JLabel("Food in Bank required!");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup ::prayer");
+    JLabel label3 = new JLabel("::bank ::lowlevel :potup ::prayer");
     JLabel label4 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel label5 = new JLabel("Param Format: \"auto\"");
-    JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", false);
+   // JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", false);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
@@ -273,7 +271,7 @@ public final class K_TavDruidTown extends K_kailaScript {
           if (!foodWithdrawAmountField.getText().equals(""))
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
-          lootBones = lootBonesCheckbox.isSelected();
+         // lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
@@ -294,7 +292,7 @@ public final class K_TavDruidTown extends K_kailaScript {
     scriptFrame.add(label3);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
-    scriptFrame.add(lootBonesCheckbox);
+   // scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
@@ -321,15 +319,15 @@ public final class K_TavDruidTown extends K_kailaScript {
       c.displayMessage("@or1@Got @red@bankstay@or1@ command! Going to the Bank and Staying!");
       timeToBankStay = true;
       c.sleep(100);
-    } else if (commandText.contains("bones")) {
-      if (!lootBones) {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
-        lootBones = true;
-      } else {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
-        lootBones = false;
-      }
-      c.sleep(100);
+//    } else if (commandText.contains("bones")) {
+//      if (!lootBones) {
+//        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
+//        lootBones = true;
+//      } else {
+//        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
+//        lootBones = false;
+//      }
+//      c.sleep(100);
     } else if (commandText.contains("lowlevel")) {
       if (!lootLowLevel) {
         c.displayMessage("@or1@Got toggle @red@lowlevel@or1@, turning on low level herb looting!");

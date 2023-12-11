@@ -3,38 +3,12 @@ package scripting.idlescript;
 import models.entities.*;
 
 public final class QH_BarCrawl extends QH__QuestHandler {
-
-  // MAP POINTS377,520
-  private static final MapPoint TOWER_ENTRANCE = new MapPoint(511, 507);
-  private static final MapPoint SEER_HOUSE = new MapPoint(521, 465);
-  private static final MapPoint BARB_OUTPOST_POINT = new MapPoint(500, 547);
-  private static final MapPoint MONESTARY = new MapPoint(256, 469);
-  private static final MapPoint MONESTARY_LADDER = new MapPoint(251, 467);
-  private static final MapPoint PRAYER_ALTER = new MapPoint(262, 460);
-  private static final MapPoint TAV_LADDER_ABOVE = new MapPoint(377, 520);
-  private static final MapPoint TAV_LADDER_UNDER = new MapPoint(376, 3351);
-  private static final MapPoint TAV_DUSTY_WAYPOINT = new MapPoint(376, 3351);
-  // OBJECT COORDINATES
-  private static final int[] TOWER_LADDER_UP = {510, 507};
-  private static final int[] TOWER_LADDER_DOWN = {510, 1451};
   private static final int[] BARB_OUTPOST_DOOR = {494, 543};
-  private static final int[] PRAY_ALTER = {261, 459};
-  private static final int[] MONESTARY_LADDER_UP = {251, 468};
-  private static final int[] MONESTARY_LADDER_DOWN = {251, 1412};
-  private static final int[] TAV_LADDER_UP = {376, 3352};
-  private static final int[] TAV_LADDER_DOWN = {376, 520};
   // ITEM IDS
-  private static final int SCORP_CAGE_STAGE_1 = ItemId.SCORPION_CAGE_NONE.getId();
-  private static final int SCORP_CAGE_STAGE_2 = ItemId.SCORPION_CAGE_TWO.getId();
-  private static final int SCORP_CAGE_STAGE_3 = ItemId.SCORPION_CAGE_TWO_THREE.getId();
-  private static final int SCORP_CAGE_STAGE_4 = ItemId.SCORPION_CAGE_ONE_TWO_THREE.getId();
   private static final int BAR_CRAWL_CARD = ItemId.BARCRAWL_CARD.getId();
   // NPC IDS
   private static final int CPT_BARNABY = NpcId.CAPTAIN_BARNABY.getId();
   private static final int CST_OFFICIAL = NpcId.CUSTOMS_OFFICIAL.getId();
-  private static final int THORMAC_ID = NpcId.THORMAC_THE_SORCEROR.getId();
-  private static final int SEER_ID = NpcId.SEER.getId();
-  private static final int MONK_ID = NpcId.ABBOT_LANGLEY.getId();
   private static final int BRIM_TENDER = NpcId.BARTENDER_BRIMHAVEN.getId();
   private static final int SEERS_TENDER = NpcId.BARTENDER_SEERS.getId();
   private static final int FALADOR_TENDER = NpcId.BARMAID.getId();
@@ -44,34 +18,12 @@ public final class QH_BarCrawl extends QH__QuestHandler {
   // NPC DIALOGS
   private static final String[] BOAT_TO_BRIM_DIALOG = {"Yes please"};
   private static final String[] GENERIC_TENDER_DIALOG = {"I'm doing Alfred Grimhand's barcrawl"};
-  private static final String[] FALADOR_TENDER_DIALOG = {"I'm doing Alfred Grimhand's barcrawl"};
-  private static final String[] SARIM_TENDER_DIALOG = {"I'm doing Alfred Grimhand's barcrawl"};
-  private static final String[] VARROCK_TENDER_DIALOG = {"I'm doing Alfred Grimhand's barcrawl"};
-  private static final String[] BOAR_TENDER_DIALOG = {"I'm doing Alfred Grimhand's barcrawl"};
   private static final String[] BOAT_TO_ARDY_DIALOG = {
     "Can I board this ship?", "Search away I have nothing to hide", "Ok"
-  };
-  private static final String[] THORMAC_START_QUEST_DIALOG = {
-    "What do you need assistance with?",
-    "So how would I go about catching them then?",
-    "Ok I will do it then"
   };
   private static final String[] BARB_GUARD = {
     "I want to come through this gate", "Looks can be deceiving, I am in fact a barbarian"
   };
-  private static final String[] SEER_QUEST_DIALOG = {
-    "I need to locate some scorpions",
-  };
-  private static final String[] MONK_DIALOG = {"Well can i join your order?"};
-  private static final int[][] BARB_OUTPOST_REC = {{485, 541}, {493, 555}};
-
-  private void drinkAnti() {
-    timeToDrinkAntidote = false;
-    if (K_kailaScript.drinkAnti(true)) {
-      c.stop();
-      c.logout();
-    }
-  }
 
   public int start(String[] param) { // warning does not handle food conditions
     QUEST_NAME = "Miniquest";

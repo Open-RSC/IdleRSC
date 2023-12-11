@@ -139,7 +139,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
             if (c.isRunning()) {
               CURRENT_QUEST_STEP = "Walking to Barb Outpost Scorpion";
               pathWalker(BARB_OUTPOST_POINT);
-              c.walkTo(494, 543); // ?
+              //              c.walkTo(494, 543); //?
               c.walkTo(494, 544);
               CURRENT_QUEST_STEP = "Entering Barb Gate";
               c.atObject(BARB_OUTPOST_DOOR[0], BARB_OUTPOST_DOOR[1]);

@@ -2714,8 +2714,8 @@ public class Controller {
 
   /**
    * Buys an amount of items from a given auction id.
-   * 
-   * CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
+   *
+   * <p>CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
    *
    * @param auctionId int -- Auction id to buy from
    * @param itemAmount int -- Amount of items to buy
@@ -2765,9 +2765,9 @@ public class Controller {
 
   /**
    * Cancels an auction
-   * 
-   * CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
-   * 
+   *
+   * <p>CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
+   *
    * @param auctionId int -- Auction Id
    */
   public void auctionCancel(int auctionId) {

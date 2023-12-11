@@ -29,9 +29,13 @@ public class QH__QuestHandler extends IdleScript {
   protected int[][] TAV_DUNGEON_LADDER = {{371, 514}, {384, 525}};
   protected int[][] ARDY_MONESTARY = {{575, 651}, {603, 669}};
   protected int[][] WEST_DWARF_TUNNEL = {{420, 450}, {432, 464}};
+  protected int[][] ARDY_SOUTH_BANK = {{534, 605}, {557, 619}};
+  protected int[][] SHRIMP_AND_PARROT = {{443, 679}, {459, 692}};
+  protected int[][] BARB_OUTPOST = {{493, 538}, {506, 555}};
+  protected int[][] SORCERORS_TOWER_ABOVE = {{507, 1448}, {514, 1458}};
   // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align
   // to correctly set the START_DESCRIPTION in getStartDescriptions()
-  private int[][][] QUEST_START_LOCATIONS = {
+  private final int[][][] QUEST_START_LOCATIONS = {
     LUMBRIDGE_CASTLE_COURTYARD,
     FALADOR_WEST_BANK,
     VARROCK_SQUARE,
@@ -39,17 +43,25 @@ public class QH__QuestHandler extends IdleScript {
     EDGE_MONESTARY,
     TAV_DUNGEON_LADDER,
     ARDY_MONESTARY,
-    WEST_DWARF_TUNNEL
+    WEST_DWARF_TUNNEL,
+    ARDY_SOUTH_BANK,
+    SHRIMP_AND_PARROT,
+    BARB_OUTPOST,
+    SORCERORS_TOWER_ABOVE
   };
-  private String[] QUEST_START_DESCRIPTIONS = {
+  private final String[] QUEST_START_DESCRIPTIONS = {
     "Lumbridge Castle Courtyard",
     "Falador West Bank",
     "Varrock Square",
-    "Sorcerors' Tower",
+    "Ground Floor Sorcerors' Tower",
     "Edgeville Monestary",
     "Near Taverly dungeon entrance ladder",
     "Near Ardougne Monastery",
-    "Western Entrance of Dwarf Tunnel"
+    "Western Entrance of Dwarf Tunnel",
+    "Ardougne south bank",
+    "Shrimp and Parrot Pub (Brimhaven)",
+    "Barbarian Outpost",
+    "1st Floor Sorcerors' Tower"
   };
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT
@@ -96,30 +108,31 @@ public class QH__QuestHandler extends IdleScript {
    * requirement is missing otherwise.
    */
   public void doQuestChecks() {
-    CURRENT_QUEST_STEP = "Starting " + QUEST_NAME;
-    QUEST_ID = QuestId.getByName(QUEST_NAME).getId();
-    QUEST_STAGE = c.getQuestStage(QUEST_ID);
-    START_DESCRIPTION = getStartDescription();
-    c.setBatchBars(true);
-
-    if (QUEST_STAGE == -1 && !IS_TESTING) {
-      quit("Quest already complete");
-    } else {
-      requiredQuestsCheck();
-      requiredLevelsCheck();
-      requiredStartItemsCheck();
-      requiredStartEquipCheck();
-      if (INVENTORY_SPACES_NEEDED > 30 - c.getInventoryItemCount()) {
-        quit("Not enough empty inventory spaces");
+    if (!QUEST_NAME.equals("Miniquest")) {
+      QUEST_ID = QuestId.getByName(QUEST_NAME).getId();
+      QUEST_STAGE = c.getQuestStage(QUEST_ID);
+      if (QUEST_STAGE == -1 && !IS_TESTING) {
+        quit("Quest already complete");
+        return;
       }
-      if (START_RECTANGLE.length < 2) {
-        quit("no start area");
-      } else if (!isInRectangle(START_RECTANGLE)) {
-        quit("Not in start area");
-      } else {
-        if (c.isRunning()) {
-          c.displayMessage("@gre@Start location correct");
-        }
+    }
+    START_DESCRIPTION = getStartDescription();
+    CURRENT_QUEST_STEP = "Starting " + QUEST_NAME;
+    c.setBatchBars(true);
+    requiredQuestsCheck();
+    requiredLevelsCheck();
+    requiredStartItemsCheck();
+    requiredStartEquipCheck();
+    if (INVENTORY_SPACES_NEEDED > 30 - c.getInventoryItemCount()) {
+      quit("Not enough empty inventory spaces");
+    }
+    if (START_RECTANGLE.length < 2) {
+      quit("no start area");
+    } else if (!isInRectangle(START_RECTANGLE)) {
+      quit("Not in start area");
+    } else {
+      if (c.isRunning()) {
+        c.displayMessage("@gre@Start location correct");
       }
     }
   }
@@ -141,7 +154,7 @@ public class QH__QuestHandler extends IdleScript {
         MISSING_ITEMS.add(missingString);
       }
     }
-    if (MISSING_ITEMS.size() > 0) {
+    if (!MISSING_ITEMS.isEmpty()) {
       quit("Missing items");
     } else {
       c.displayMessage("@gre@All inventory item requirements met");
@@ -166,7 +179,7 @@ public class QH__QuestHandler extends IdleScript {
         MISSING_EQUIP.add(missingString);
       }
     }
-    if (MISSING_EQUIP.size() > 0) {
+    if (!MISSING_EQUIP.isEmpty()) {
       quit("Missing equip");
     } else {
       c.displayMessage("@gre@All equip item requirements met");
@@ -185,7 +198,7 @@ public class QH__QuestHandler extends IdleScript {
         MISSING_LEVELS.add(missingString);
       }
     }
-    if (MISSING_LEVELS.size() > 0) {
+    if (!MISSING_LEVELS.isEmpty()) {
       quit("Missing levels");
     } else {
       c.displayMessage("@gre@All level requirements met");
@@ -202,7 +215,7 @@ public class QH__QuestHandler extends IdleScript {
         MISSING_QUESTS.add(missingString);
       }
     }
-    if (MISSING_QUESTS.size() > 0) {
+    if (!MISSING_QUESTS.isEmpty()) {
       quit("Missing quests");
     } else {
       c.displayMessage("@gre@All quest requirements met");
@@ -549,7 +562,7 @@ public class QH__QuestHandler extends IdleScript {
         while (c.isRunning()) {
           String oldMessage = npc.message;
           c.sleep(2560);
-          if (oldMessage == npc.message) break;
+          if (oldMessage.equals(npc.message)) break;
         }
       } else {
         c.log(String.format("Could not find NPC: %s", npcId));
@@ -573,17 +586,15 @@ public class QH__QuestHandler extends IdleScript {
     if (npc != null) {
       while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
       c.sleep(6000);
-      if (dialogChoices.length > 0) {
-        for (int choiceIndex = 0; choiceIndex < dialogChoices.length; choiceIndex++) {
-          // Sleep until a dialog menu appears
-          while (!c.isInOptionMenu() && c.isRunning()) c.sleep(640);
-          // Select the menu option that cooresponds with choiceIndex
-          for (int option = 0; option < c.getOptionMenuCount(); option++) {
-            if (c.getOptionsMenuText(option).equals(dialogChoices[choiceIndex])) {
-              c.optionAnswer(option);
-              c.sleep(640);
-              break;
-            }
+      for (String dialogChoice : dialogChoices) {
+        // Sleep until a dialog menu appears
+        while (!c.isInOptionMenu() && c.isRunning()) c.sleep(640);
+        // Select the menu option that cooresponds with choiceIndex
+        for (int option = 0; option < c.getOptionMenuCount(); option++) {
+          if (c.getOptionsMenuText(option).equals(dialogChoice)) {
+            c.optionAnswer(option);
+            c.sleep(640);
+            break;
           }
         }
       }
@@ -591,7 +602,7 @@ public class QH__QuestHandler extends IdleScript {
       while (c.isRunning()) {
         String oldMessage = npc.message;
         c.sleep(2560);
-        if (oldMessage == npc.message) break;
+        if (oldMessage.equals(npc.message)) break;
       }
     } else {
       c.log(String.format("Could not find NPC: %s", npcId));
@@ -613,17 +624,15 @@ public class QH__QuestHandler extends IdleScript {
       c.talkToNpc(npc.serverIndex);
       c.sleep(640);
       while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
-      if (dialogChoices.length > 0) {
-        for (int choiceIndex = 0; choiceIndex < dialogChoices.length; choiceIndex++) {
-          // Sleep until a dialog menu appears
-          while (!c.isInOptionMenu() && c.isRunning()) c.sleep(640);
-          // Select the menu option that corresponds with choiceIndex
-          for (int option = 0; option < c.getOptionMenuCount(); option++) {
-            if (c.getOptionsMenuText(option).equals(dialogChoices[choiceIndex])) {
-              c.optionAnswer(option);
-              c.sleep(640);
-              break;
-            }
+      for (String dialogChoice : dialogChoices) {
+        // Sleep until a dialog menu appears
+        while (!c.isInOptionMenu() && c.isRunning()) c.sleep(640);
+        // Select the menu option that corresponds with choiceIndex
+        for (int option = 0; option < c.getOptionMenuCount(); option++) {
+          if (c.getOptionsMenuText(option).equals(dialogChoice)) {
+            c.optionAnswer(option);
+            c.sleep(640);
+            break;
           }
         }
       }
@@ -631,7 +640,7 @@ public class QH__QuestHandler extends IdleScript {
       while (c.isRunning()) {
         String oldMessage = npc.message;
         c.sleep(2560);
-        if (oldMessage == npc.message) break;
+        if (oldMessage.equals(npc.message)) break;
       }
     } else {
       c.log(String.format("Could not find NPC: %s", npcId));

@@ -492,7 +492,7 @@ public class Controller {
 
   /**
    * Retrieves the current X coordinates of the player. <br>
-   * This occassionally returns incorrect values while Underground
+   * This occasionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -505,7 +505,7 @@ public class Controller {
 
   /**
    * Retrieves the current Y coordinates of the player. <br>
-   * This occassionally returns incorrect values while Underground
+   * This occasionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -1242,7 +1242,7 @@ public class Controller {
    * Uses the specified item slot on the object at the specified coordinates. Note that this uses a
    * slot id, not an item id.
    *
-   * <p>This is primarially used to interact with an object, such as using an axe with a tree. For
+   * <p>This is primarily used to interact with an object, such as using an axe with a tree. For
    * tasks like opening locked doors try using "c.useItemOnWall(int x, int y, int slotIndex)"
    * instead
    *
@@ -1270,7 +1270,7 @@ public class Controller {
   /**
    * Uses the specified item id on the object at the specified coordinates.
    *
-   * <p>This is primarially used to interact with an object, such as using an axe with a tree. For
+   * <p>This is primarily used to interact with an object, such as using an axe with a tree. For
    * tasks like opening locked doors try using "c.useItemOnWall(int x, int y, int slotIndex)"
    * instead
    *
@@ -1347,7 +1347,7 @@ public class Controller {
    * Whether or not the specified npc is in combat.
    *
    * @param serverIndex int
-   * @return boolena -- returns true if in combat. Returns false if not in combat, or if server
+   * @return boolean -- returns true if in combat. Returns false if not in combat, or if server
    *     index not found.
    */
   public boolean isNpcInCombat(int serverIndex) {
@@ -2220,7 +2220,7 @@ public class Controller {
     return false;
   }
   /**
-   * Withdraws a specified amount of an item from the bank. (APOS compatability method)
+   * Withdraws a specified amount of an item from the bank. (APOS compatibility method)
    *
    * @param itemId the ID of the item to be withdrawn
    * @param amount the amount of the item to be withdrawn
@@ -2274,13 +2274,13 @@ public class Controller {
   }
 
   /**
-   * Dislays a message in the client chat window, of the specified MessageType.
+   * Displays a message in the client chat window, of the specified MessageType.
    *
    * <p>EXAMPLE(int type, "default @color code@")
    *
    * <p>GAME(0, "@whi@")
    *
-   * <p>PRIVATE_RECIEVE(1, "@cya@")
+   * <p>PRIVATE_RECEIVE(1, "@cya@")
    *
    * <p>PRIVATE_SEND(2, "@cya@")
    *
@@ -2305,7 +2305,7 @@ public class Controller {
   }
 
   /**
-   * Dislays a message in the client chat window.
+   * Displays a message in the client chat window.
    *
    * @param rstext -- you may use @col@ colors here.
    */
@@ -2469,7 +2469,7 @@ public class Controller {
 
     try {
       /*<pre>
-       * 1st, make a string of /sceenshots/playerName/ folder
+       * 1st, make a string of /screenshots/playerName/ folder
        * 2nd, use Path command to turn string into Path for /Screenshots/playerName/
        * 3rd, use Files.createDirectories to make  the folder structure for /Screenshots/playerName/
        * -this will regenerate the folder structure if user deleted at any point
@@ -2698,6 +2698,128 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
     mud.packetHandler.getClientStream().finishPacket();
+  }
+
+  /** Sends a packet to stop the server to batching and sleeps until it has stopped. */
+  public void stopBatching() {
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+    mud.packetHandler.getClientStream().newPacket(199);
+    mud.packetHandler.getClientStream().bufferBits.putByte(6);
+    mud.packetHandler.getClientStream().finishPacket();
+    while (isBatching()) sleep(640);
+  }
+
+  // TODO: Add more checks to the Auction House methods
+  // TODO: Some auction house methods require an auction ID. Implement some way to get a list of IDs
+
+  /**
+   * Buys an amount of items from a given auction id.
+   * 
+   * CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
+   *
+   * @param auctionId int -- Auction id to buy from
+   * @param itemAmount int -- Amount of items to buy
+   */
+  public void auctionBuy(int auctionId, int itemAmount) {
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(0);
+      mud.packetHandler.getClientStream().bufferBits.putInt(auctionId);
+      mud.packetHandler.getClientStream().bufferBits.putInt(itemAmount);
+      mud.packetHandler.getClientStream().finishPacket();
+      sleep(2560);
+      mud.setShowDialogServerMessage(false); // Close the dialog
+    } else {
+      log("You are not in an Auction House", "red");
+    }
+  }
+
+  /**
+   * Lists an amount of itemId for a specified price in the auction house.
+   *
+   * @param itemId int -- Item id
+   * @param itemAmount int -- Amount of item
+   * @param pricePerItem int -- Price to sell each item at
+   */
+  public void auctionCreate(int itemId, int itemAmount, int pricePerItem) {
+    if (isInAuctionHouse()) {
+      if (getInventoryItemCount(itemId) >= itemAmount) {
+        while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+        mud.packetHandler.getClientStream().newPacket(199);
+        mud.packetHandler.getClientStream().bufferBits.putByte(10);
+        mud.packetHandler.getClientStream().bufferBits.putByte(1);
+        mud.packetHandler.getClientStream().bufferBits.putInt(itemId);
+        mud.packetHandler.getClientStream().bufferBits.putInt(itemAmount);
+        mud.packetHandler.getClientStream().bufferBits.putInt(pricePerItem * itemAmount);
+        mud.packetHandler.getClientStream().finishPacket();
+        sleep(2560);
+        mud.setShowDialogServerMessage(false);
+        closeAuctionHouse();
+      }
+    } else {
+      log("You are not in an Auction House", "red");
+    }
+  }
+
+  /**
+   * Cancels an auction
+   * 
+   * CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
+   * 
+   * @param auctionId int -- Auction Id
+   */
+  public void auctionCancel(int auctionId) {
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(2);
+      mud.packetHandler.getClientStream().bufferBits.putInt(auctionId);
+      mud.packetHandler.getClientStream().finishPacket();
+      sleep(2560);
+      mud.setShowDialogServerMessage(false);
+    } else {
+      log("You are not in an Auction House", "red");
+    }
+  }
+
+  /** Refreshes the Auction House listings. */
+  public void auctionRefresh() {
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(3);
+      mud.packetHandler.getClientStream().finishPacket();
+    } else {
+      log("You are not in an Auction House", "red");
+    }
+  }
+
+  /** Closes the Auction House window */
+  public void closeAuctionHouse() {
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(4);
+      mud.packetHandler.getClientStream().finishPacket();
+      mud.auctionHouse.setVisible(false);
+    } else {
+      log("You are not in an an Auction House", "red");
+    }
+    sleep(640);
+  }
+
+  /**
+   * Whether or not an Auction House window is currently open.
+   *
+   * @return boolean
+   */
+  public boolean isInAuctionHouse() {
+    return mud.auctionHouse.isVisible();
   }
 
   /**
@@ -4138,7 +4260,7 @@ public class Controller {
    * @param color -- RGB "HTML" Color Example: 0x36E2D7
    */
   public void drawLineVert(int x, int y, int height, int color) {
-    mud.getSurface().drawLineVert(x, y, color, height); // rearrenged per source!
+    mud.getSurface().drawLineVert(x, y, color, height); // rearranged per source!
   }
 
   /**
@@ -4318,7 +4440,7 @@ public class Controller {
 
   /**
    * If running on an authentic server, this stops the script and outputs a message about
-   * compatability.
+   * compatibility.
    */
   public void quitIfAuthentic() {
     if (this.isAuthentic()) {
@@ -4497,7 +4619,7 @@ public class Controller {
   }
 
   /**
-   * Retuns the width, in pixels, of the game window.
+   * Returns the width, in pixels, of the game window.
    *
    * @return int
    */

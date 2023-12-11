@@ -163,7 +163,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
           } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_2) == 1) {
             if (c.isRunning()) {
               if (isInRectangle(BARB_OUTPOST_REC)) {
-                atObject(BARB_OUTPOST_DOOR, 1);
+                atObject(BARB_OUTPOST_DOOR);
               }
               CURRENT_QUEST_STEP = "Walking to Monestery Scorpion";
               pathWalker(MONESTARY);
@@ -204,19 +204,19 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
             if (c.isRunning() && c.currentY() > 1000) { // tav dungeon
               // c.walkTo(375,3352);
               CURRENT_QUEST_STEP = "Going through Pipe, walking to Scorpion";
-              atObject(new int[] {374, 3352}, 1);
+              atObject(374, 3352);
               c.walkTo(376, 3368);
               pathWalker(383, 3352);
-              atWallObject(new int[] {383, 3353}, 1);
+              atWallObject(383, 3353);
               useItemOnNearestNpcId(302, SCORP_CAGE_STAGE_3);
             }
             if (c.isRunning() && c.currentY() > 1000) { // tav dungeon
               CURRENT_QUEST_STEP = "Returning to Surface";
               c.walkTo(383, 3353);
-              atWallObject(new int[] {383, 3353}, 1);
+              atWallObject(383, 3353);
               c.walkTo(375, 3365);
               c.walkTo(372, 3352);
-              atObject(new int[] {373, 3352}, 1);
+              atObject(373, 3352);
               climb(TAV_LADDER_UP);
               c.walkTo(374, 513);
             }

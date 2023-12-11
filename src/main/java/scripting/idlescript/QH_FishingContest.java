@@ -7,11 +7,6 @@ import models.entities.SkillId;
 public final class QH_FishingContest extends QH__QuestHandler {
   private static final int[] OUTSIDE_HUT_WAYPOINT = {433, 460};
   private static final int[] CUPBOARD_COORDS = {216, 1562};
-  private static final int[][] GRUBBOR_PATH = { // walk to vines
-    {545, 451},
-    {557, 459},
-    {568, 453}
-  };
   private static final int GIANT_CARP = ItemId.RAW_GIANT_CARP.getId();
   private static final int FISHING_ROD = ItemId.FISHING_ROD.getId();
   private static final int BAIT = ItemId.FISHING_BAIT.getId();
@@ -29,9 +24,6 @@ public final class QH_FishingContest extends QH__QuestHandler {
     "Well lets be friends",
     "And how am I meant to do that?",
     "Fortunately I'm alright at fishing"
-  };
-  private static final String[] MOUNTAIN_DWARF_END_QUEST_DIALOG = {
-    "I was wondering what was down those stairs?",
   };
   private static final String[] BONZO_START_DIALOG = {"I'll give that a go then"};
   private static final String[] BONZO_END_DIALOG = {"I have this big fish,is it enough to win?"};
@@ -127,7 +119,7 @@ public final class QH_FishingContest extends QH__QuestHandler {
             }
             if (c.isRunning()) {
               CURRENT_QUEST_STEP = "Entering McGrubor";
-              atWallObject(new int[] {540, 445}, 1);
+              atWallObject(540, 445);
               CURRENT_QUEST_STEP = "Walking to Vines";
               c.walkTo(550, 453);
               c.walkTo(568, 453);
@@ -139,7 +131,7 @@ public final class QH_FishingContest extends QH__QuestHandler {
               CURRENT_QUEST_STEP = "Leaving McGrubor";
               c.walkTo(550, 453);
               c.walkTo(540, 445);
-              atWallObject(new int[] {540, 445}, 1);
+              atWallObject(540, 445);
               CURRENT_QUEST_STEP = "Walking Out";
               c.walkTo(533, 451);
             }
@@ -156,7 +148,7 @@ public final class QH_FishingContest extends QH__QuestHandler {
             }
             if (c.isRunning()) {
               CURRENT_QUEST_STEP = "Entering gate";
-              atObject(new int[] {564, 492}, 1);
+              atObject(564, 492);
             }
             if (c.isRunning() && c.getInventoryItemCount(GARLIC) > 0) {
               CURRENT_QUEST_STEP = "Hiding Garlic";
@@ -181,7 +173,7 @@ public final class QH_FishingContest extends QH__QuestHandler {
               sleepUntilQuestStageChanges();
               CURRENT_QUEST_STEP = "Leaving Contest Area";
               c.walkTo(565, 492);
-              atObject(new int[] {564, 492}, 1);
+              atObject(564, 492);
               c.walkTo(560, 494);
             }
           }

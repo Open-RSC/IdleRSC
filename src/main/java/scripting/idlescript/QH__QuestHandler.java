@@ -791,40 +791,101 @@ public class QH__QuestHandler extends IdleScript {
     c.log("Successfully climbed");
   }
   /**
-   * Does atObject command and sleeps until you are moved to the destination Climbs a ladder or
+   * Does c.atObject command and sleeps until you are moved to the destination Climbs a ladder or
    * stairs and sleeps until you are moved to the destination Also Supports going through Opens a
    * fixed(does not stay open) doors
    *
    * <p>*Requires the object moving your coordinates*
    *
    * @param coords int[] -- Coordinates of object
-   * @param interactionType int -- (1 or 2) type of object interaction (1st or 2nd right click
-   *     option)
    */
-  public void atObject(int[] coords, int interactionType) {
+  public void atObject(int[] coords) {
     c.log("Entered Object");
     while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
     int startX = c.currentX();
     int startY = c.currentY();
     c.log(String.format("Attempting to interact with object at (%s,%s)", coords[0], coords[1]));
     while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
-      if (interactionType == 2) c.atObject2(coords[0], coords[1]);
-      else c.atObject(coords[0], coords[1]);
+      c.atObject(coords[0], coords[1]);
       c.sleep(1280);
     }
     c.log("Successfully entered Object");
   }
   /**
-   * Opens a fixed(does not stay open) wall object and sleeps until you are moved to the destination
-   * Supports both types of interactions just pass 1 or 2 as input (defaults to 1)
+   * Does c.atObject2 command and sleeps until you are moved to the destination Climbs a ladder or
+   * stairs and sleeps until you are moved to the destination Also Supports going through Opens a
+   * fixed(does not stay open) doors
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param coords int[] -- Coordinates of object
+   */
+  public void atObject2(int[] coords) {
+    c.log("Entered Object2");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(String.format("Attempting to interact with object2 at (%s,%s)", coords[0], coords[1]));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      c.atObject2(coords[0], coords[1]);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered Object2");
+  }
+  /**
+   * Does c.atObject command and sleeps until you are moved to the destination Climbs a ladder or
+   * stairs and sleeps until you are moved to the destination Also Supports going through Opens a
+   * fixed(does not stay open) doors
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param x int x coordinate of the object
+   * @param y int y coordinate of the object
+   */
+  public void atObject(int x, int y) {
+    c.log("Entered Object");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(String.format("Attempting to interact with object at (%s,%s)", x, y));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      c.atObject(x, y);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered Object");
+  }
+
+  /**
+   * Does c.atObject2 command and sleeps until you are moved to the destination Climbs a ladder or
+   * stairs and sleeps until you are moved to the destination Also Supports going through Opens a
+   * fixed(does not stay open) doors
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param x int x coordinate of the object
+   * @param y int y coordinate of the object
+   */
+  public void atObject2(int x, int y) {
+    c.log("Entered Object2");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(String.format("Attempting to interact with object2 at (%s,%s)", x, y));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      c.atObject2(x, y);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered Object2");
+  }
+  /**
+   * Opens a fixed(does not stay open) wall object (c.atWallObject()) and sleeps until you are moved
+   * to the destination
    *
    * <p>*Requires the object moving your coordinates*
    *
    * @param coords int[] -- Coordinates of wall object
-   * @param interactionType int -- (1 or 2) type of wall object interaction (1st or 2nd right click
-   *     option)
    */
-  public void atWallObject(int[] coords, int interactionType) {
+  public void atWallObject(int[] coords) {
     c.log("Entered Wall Object");
     while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
     int startX = c.currentX();
@@ -832,11 +893,73 @@ public class QH__QuestHandler extends IdleScript {
     c.log(
         String.format("Attempting to interact with wall object at (%s,%s)", coords[0], coords[1]));
     while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
-      if (interactionType == 2) c.atWallObject2(coords[0], coords[1]);
-      else c.atWallObject(coords[0], coords[1]);
+      c.atWallObject(coords[0], coords[1]);
       c.sleep(1280);
     }
     c.log("Successfully entered door");
+  }
+  /**
+   * Opens a fixed(does not stay open) wall object (c.atWallObject2())and sleeps until you are moved
+   * to the destination
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param coords int[] -- Coordinates of wall object
+   */
+  public void atWallObject2(int[] coords) {
+    c.log("Entered Wall Object2");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(
+        String.format("Attempting to interact with wall object2 at (%s,%s)", coords[0], coords[1]));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      c.atWallObject2(coords[0], coords[1]);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered wallObject2");
+  }
+  /**
+   * Opens a fixed(does not stay open) wall object (c.atWallObject()) and sleeps until you are moved
+   * to the destination
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param x int x coordinate of the object
+   * @param y int y coordinate of the object
+   */
+  public void atWallObject(int x, int y) {
+    c.log("Entered Wall Object");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(String.format("Attempting to interact with wall object at (%s,%s)", x, y));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      c.atWallObject(x, y);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered door");
+  }
+  /**
+   * Opens a fixed(does not stay open) wall object (c.atWallObject2())and sleeps until you are moved
+   * to the destination
+   *
+   * <p>*Requires the object moving your coordinates*
+   *
+   * @param x int x coordinate of the object
+   * @param y int y coordinate of the object
+   */
+  public void atWallObject2(int x, int y) {
+    c.log("Entered Wall Object2");
+    while (c.isRunning() && c.isCurrentlyWalking()) c.sleep(640);
+    int startX = c.currentX();
+    int startY = c.currentY();
+    c.log(String.format("Attempting to interact with wall object2 at (%s,%s)", x, y));
+    while (c.currentX() == startX & c.currentY() == startY && c.isRunning()) {
+      c.atWallObject2(x, y);
+      c.sleep(1280);
+    }
+    c.log("Successfully entered wallObject2");
   }
   /**
    * Climbs a ladder or stairs and sleeps until you are moved to the destination

@@ -2067,7 +2067,7 @@ public class Controller {
     return (boolean) reflector.getObjectMember(mud, "showDialogBank");
   }
 
-  /** Closes the bank window. N o effect if window is not currently open. */
+  /** Closes the bank window. No effect if window is not currently open. */
   public void closeBank() {
     reflector.setObjectMember(mud, "showDialogBank", false);
     sleep(GAME_TICK);
@@ -2701,7 +2701,7 @@ public class Controller {
     mud.packetHandler.getClientStream().finishPacket();
   }
 
-  /** Sends a packet to stop the server to batching and sleeps until it has stopped. */
+  /** Sends a packet to the server to stop batching and sleeps until it has stopped. */
   public void stopBatching() {
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(199);

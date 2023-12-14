@@ -104,6 +104,7 @@ public class CasketFisher extends IdleScript {
     controller.openBank();
     while (!controller.isInBank() && controller.isRunning()) controller.sleep(640);
     // Deposit all items but net
+    bankedCaskets += controller.getInventoryItemCount(casketId);
     for (int i : controller.getInventoryItemIds()) {
       if (i != netId) {
         controller.depositItem(i, controller.getInventoryItemCount(i));

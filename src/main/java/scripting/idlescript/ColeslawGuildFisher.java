@@ -35,6 +35,7 @@ public class ColeslawGuildFisher extends IdleScript {
   private static int fishInBank = 0;
   private static int fishIdOne = 0;
   private static int fishIdTwo = 0;
+  private static int fishIdThree = 0;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -43,6 +44,7 @@ public class ColeslawGuildFisher extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
+    fishInBank = 0;
     c.setBatchBarsOn();
     if (!guiSetup) {
       setupGUI();
@@ -64,7 +66,7 @@ public class ColeslawGuildFisher extends IdleScript {
         c.displayMessage("Got param " + parameters[0] + ". Fishing Lobsters!", 0);
         equipId = ItemId.LOBSTER_POT.getId();
         spotId = LOBSTER_FISH_SPOT;
-        fishIdOne = 372;
+        fishIdOne = ItemId.RAW_LOBSTER.getId();
         guiSetup = true;
         scriptStarted = true;
       } else if (parameters[0].toLowerCase().startsWith("sword")) {
@@ -78,6 +80,9 @@ public class ColeslawGuildFisher extends IdleScript {
       } else if (parameters[0].toLowerCase().startsWith("big")) {
         c.displayMessage("Got param " + parameters[0] + ". Fishing Big Net!", 0);
         equipId = ItemId.BIG_NET.getId();
+        fishIdOne = ItemId.RAW_MACKEREL.getId();
+        fishIdTwo = ItemId.RAW_COD.getId();
+        fishIdThree = ItemId.RAW_BASS.getId();
         bigNetFishing = true;
         guiSetup = true;
         scriptStarted = true;
@@ -116,6 +121,7 @@ public class ColeslawGuildFisher extends IdleScript {
 
   public void scriptStart() {
     while (c.isRunning()) {
+      if (dropJunk && bigNetFishing) dropJunk();
       if (c.getInventoryItemCount() == 30) {
         handleFullInven();
       }
@@ -129,11 +135,12 @@ public class ColeslawGuildFisher extends IdleScript {
   }
 
   private void dropJunk() {
-    for (int itemId : c.getInventoryItemIds()) {
-      if (itemId == 622) K_kailaScript.dropItemAmount(622, 30, true); // seaweed
-      if (itemId == 793) K_kailaScript.dropItemAmount(793, 30, true); // oyster
-      if (itemId == 16) K_kailaScript.dropItemAmount(16, 30, true); // gloves
-      if (itemId == 17) K_kailaScript.dropItemAmount(17, 30, true); // boots
+    int[] junkIds = {16, 17, 622, 793}; // gloves, boots, seaweed, oyster
+    for (int id : junkIds) {
+      while (c.getInventoryItemCount(id) > 0 && c.isRunning()) {
+        c.dropItem(c.getInventoryItemSlotIndex(id), c.getInventoryItemCount(id));
+        c.sleep(640);
+      }
     }
   }
 
@@ -153,20 +160,33 @@ public class ColeslawGuildFisher extends IdleScript {
       } catch (NullPointerException ignored) {
         // Spot disappeared!
       }
+    } else {
+      if (c.getInventoryItemCount() == 30) c.stopBatching();
     }
   }
 
   private void handleFullInven() {
     if (c.isInBank()) {
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 0 && itemId != equipId && c.getInventoryItemCount(itemId) > 0) {
-          c.depositItem(itemId, c.getInventoryItemCount(itemId));
+        if (itemId != equipId && itemId != 0) {
+          while (c.getInventoryItemCount(itemId) > 0 && c.isRunning()) {
+            c.depositItem(itemId, c.getInventoryItemCount(itemId));
+            c.sleep(640);
+          }
         }
       }
+      c.sleep(640);
       if (fishIdOne != 0) {
         fishInBank = c.getBankItemCount(fishIdOne);
-        if (fishIdTwo != 0) fishInBank = fishInBank + c.getBankItemCount(fishIdTwo);
       }
+      if (fishIdTwo != 0) {
+        fishInBank += c.getBankItemCount(fishIdTwo);
+      }
+      if (fishIdThree != 0) {
+        fishInBank += c.getBankItemCount(fishIdThree);
+      }
+
+      c.sleep(640);
     } else {
       c.openBank();
     }
@@ -193,18 +213,25 @@ public class ColeslawGuildFisher extends IdleScript {
             equipId = ItemId.HARPOON.getId();
             spotId = SHARK_FISH_SPOT;
             bigNetFishing = false;
+            fishIdOne = ItemId.RAW_SHARK.getId();
           } else if (fishField.getSelectedIndex() == 1) {
             equipId = ItemId.HARPOON.getId();
             spotId = LOBSTER_FISH_SPOT;
             swordFish = true;
+            fishIdOne = ItemId.RAW_SWORDFISH.getId();
+            fishIdTwo = ItemId.RAW_TUNA.getId();
           } else if (fishField.getSelectedIndex() == 2) {
             equipId = ItemId.LOBSTER_POT.getId();
             spotId = LOBSTER_FISH_SPOT;
             swordFish = false;
+            fishIdOne = ItemId.RAW_LOBSTER.getId();
           } else if (fishField.getSelectedIndex() == 3) {
             equipId = ItemId.BIG_NET.getId();
             spotId = SHARK_FISH_SPOT;
             bigNetFishing = true;
+            fishIdOne = ItemId.RAW_MACKEREL.getId();
+            fishIdTwo = ItemId.RAW_COD.getId();
+            fishIdThree = ItemId.RAW_BASS.getId();
           }
           dropJunk = dropJunkCheckbox.isSelected();
           scriptFrame.setVisible(false);
@@ -360,8 +387,9 @@ public class ColeslawGuildFisher extends IdleScript {
               y + (14 * 2),
               0xFFFFFF,
               1);
-          c.drawString("@whi@Fishing: @gre@Big Net", x, y + (14 * 3), 0xFFFFFF, 1);
-          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Total fish in Bank: @gre@" + fishInBank, x, y + (14 * 3), 0xFFFFFF, 1);
+          c.drawString("@whi@Fishing: @gre@Big Net", x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
         } else {
           c.drawString(
               "@whi@Sharks Caught: @gre@"
@@ -383,8 +411,9 @@ public class ColeslawGuildFisher extends IdleScript {
               y + (14 * 2),
               0xFFFFFF,
               1);
-          c.drawString("@whi@Fishing: @gre@Sharks", x, y + (14 * 3), 0xFFFFFF, 1);
-          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Total fish in Bank: @gre@" + fishInBank, x, y + (14 * 3), 0xFFFFFF, 1);
+          c.drawString("@whi@Fishing: @gre@Sharks", x, y + (14 * 4), 0xFFFFFF, 1);
+          c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
         }
       }
     }

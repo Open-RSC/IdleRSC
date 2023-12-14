@@ -2713,10 +2713,9 @@ public class Controller {
   /*
    * TODO: Figure out how to add fetching of auction entries since they're needed for buying from/cancelling auctions.
    * com.openrsc.interfaces.misc/AuctionHouse has auctionItems ArrayList but it's private
-   * 
+   *
    * TODO: After fetching auction ids add more checks to auction methods
    */
-
 
   /** Uses npcCommand1 to open the auction house on the nearest clerk */
   public void openAuctionHouse() {
@@ -2767,14 +2766,18 @@ public class Controller {
     // lack of a bank in the area
     if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
       closeAuctionHouse();
-      log("This auction house clerk has been disallowed from creating auctions in scripts to prevent", "red");
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
       log("the potentially unintended noting of items in an area without a bank.", "red");
       return -1;
     }
     if (isInAuctionHouse()) {
-      if (getInventoryItemCount(itemId)>0) {
+      if (getInventoryItemCount(itemId) > 0) {
         sellAmount =
-            getInventoryItemCount(itemId) >= itemAmount ? itemAmount : getInventoryItemCount(itemId);
+            getInventoryItemCount(itemId) >= itemAmount
+                ? itemAmount
+                : getInventoryItemCount(itemId);
         while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
         mud.packetHandler.getClientStream().newPacket(199);
         mud.packetHandler.getClientStream().bufferBits.putByte(10);

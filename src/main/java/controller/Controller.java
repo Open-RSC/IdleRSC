@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import models.entities.GroundItemDef;
+import models.entities.NpcId;
 import models.entities.SkillDef;
 import orsc.Config;
 import orsc.ORSCharacter;
@@ -2709,8 +2710,25 @@ public class Controller {
     while (isBatching()) sleep(640);
   }
 
-  // TODO: Add more checks to the Auction House methods
-  // TODO: Some auction house methods require an auction ID. Implement some way to get a list of IDs
+  /*
+   * TODO: Figure out how to add fetching of auction entries since they're needed for buying from/cancelling auctions.
+   * com.openrsc.interfaces.misc/AuctionHouse has auctionItems ArrayList but it's private
+   * 
+   * TODO: After fetching auction ids add more checks to auction methods
+   */
+
+
+  /** Uses npcCommand1 to open the auction house on the nearest clerk */
+  public void openAuctionHouse() {
+    ORSCharacter npc = getNearestNpcById(NpcId.AUCTION_CLERK.getId(), false);
+    if (npc != null) {
+      npcCommand1(npc.serverIndex);
+      sleep(1280);
+      while (!isInAuctionHouse() && isRunning()) sleep(640);
+    } else {
+      log("Auction house clerk not found", "red");
+    }
+  }
 
   /**
    * Buys an amount of items from a given auction id.
@@ -2743,24 +2761,38 @@ public class Controller {
    * @param itemAmount int -- Amount of item
    * @param pricePerItem int -- Price to sell each item at
    */
-  public void auctionCreate(int itemId, int itemAmount, int pricePerItem) {
+  public int auctionCreate(int itemId, int itemAmount, int pricePerItem) {
+    int sellAmount;
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log("This auction house clerk has been disallowed from creating auctions in scripts to prevent", "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
     if (isInAuctionHouse()) {
-      if (getInventoryItemCount(itemId) >= itemAmount) {
+      if (getInventoryItemCount(itemId)>0) {
+        sellAmount =
+            getInventoryItemCount(itemId) >= itemAmount ? itemAmount : getInventoryItemCount(itemId);
         while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
         mud.packetHandler.getClientStream().newPacket(199);
         mud.packetHandler.getClientStream().bufferBits.putByte(10);
         mud.packetHandler.getClientStream().bufferBits.putByte(1);
         mud.packetHandler.getClientStream().bufferBits.putInt(itemId);
-        mud.packetHandler.getClientStream().bufferBits.putInt(itemAmount);
-        mud.packetHandler.getClientStream().bufferBits.putInt(pricePerItem * itemAmount);
+        mud.packetHandler.getClientStream().bufferBits.putInt(sellAmount);
+        mud.packetHandler.getClientStream().bufferBits.putInt(pricePerItem * sellAmount);
         mud.packetHandler.getClientStream().finishPacket();
         sleep(2560);
         mud.setShowDialogServerMessage(false);
         closeAuctionHouse();
       }
+
     } else {
       log("You are not in an Auction House", "red");
+      return -1;
     }
+    return 1;
   }
 
   /**
@@ -3131,6 +3163,25 @@ public class Controller {
    */
   public boolean isInShop() {
     return (boolean) reflector.getObjectMember(mud, "showDialogShop");
+  }
+
+  /** Uses npcCommand1 to open the shop on the nearest npc id given */
+  public void openShop(int[] npcIds) {
+    // I made this a String array just in case some npcs have a different command to open their
+    // shop.
+    String[] shopCommandStrings = {"Trade"};
+    ORSCharacter npc = getNearestNpcByIds(npcIds, false);
+    if (npc != null) {
+      for (int i = 0; i < shopCommandStrings.length; i++) {
+        if (getNpcCommand1(npc.npcId).equals(shopCommandStrings[i])) {
+          npcCommand1(npc.serverIndex);
+          sleep(1280);
+          while (!isInShop() && isRunning()) sleep(640);
+        } else if (i == shopCommandStrings.length - 1) log("NPC does not have a shop", "red");
+      }
+    } else {
+      log("Npc not found", "red");
+    }
   }
 
   /** Closes the currently open shop window. Does nothing if no shop window is open. */

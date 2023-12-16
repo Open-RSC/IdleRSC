@@ -47,13 +47,13 @@ public class CasketFisher extends IdleScript {
             && controller.currentY() != 504
             && controller.isRunning()
             && controller.isLoggedIn()) {
-          controller.setStatus("Walking to fishing spot");
+          controller.setStatus("@cya@Walking to fishing spot");
           controller.walkTo(406, 504);
           controller.sleep(640);
         }
 
         if (!controller.isBatching() && controller.getInventoryItemCount() < 26) {
-          controller.setStatus("Fishing");
+          controller.setStatus("@cya@Fishing");
           controller.atObject(406, 505);
           controller.sleep(640);
         }

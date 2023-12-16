@@ -43,11 +43,15 @@ public class CasketFisher extends IdleScript {
 
     while (controller.isRunning()) {
       if (controller.getInventoryItemCount(casketId) < 20) {
-        while (controller.currentX() != 406 && controller.currentY() != 504) {
+        while (controller.currentX() != 406
+            && controller.currentY() != 504
+            && controller.isRunning()
+            && controller.isLoggedIn()) {
           controller.setStatus("Walking to fishing spot");
           controller.walkTo(406, 504);
           controller.sleep(640);
         }
+
         if (!controller.isBatching() && controller.getInventoryItemCount() < 26) {
           controller.setStatus("Fishing");
           controller.atObject(406, 505);
@@ -56,14 +60,18 @@ public class CasketFisher extends IdleScript {
 
         int x = controller.currentX();
         int y = controller.currentY();
-        while (controller.isBatching() && controller.isRunning()) {
+        while (controller.isBatching() && controller.isRunning() && controller.isLoggedIn()) {
           if (controller.getInventoryItemCount() >= 26) {
             controller.stopBatching();
-            controller.walkTo(x, y - 1);
-            while (controller.currentY() != y - 1) controller.sleep(640);
+            while (controller.currentY() != y - 1
+                && controller.isRunning()
+                && controller.isLoggedIn()) {
+              controller.walkTo(x, y - 1);
+              controller.sleep(640);
+            }
           }
         }
-        dropJunk();
+        if (!controller.isBatching() && controller.getInventoryItemCount() >= 26) dropJunk();
       } else {
         dropJunk();
         bank();
@@ -81,7 +89,9 @@ public class CasketFisher extends IdleScript {
             controller.getInventoryItemSlotIndex(trashIds[i]),
             controller.getInventoryItemCount(trashIds[i]));
         controller.sleep(1280);
-        while (controller.getInventoryItemCount(trashIds[i]) > 0 && controller.isRunning()) {
+        while (controller.getInventoryItemCount(trashIds[i]) > 0
+            && controller.isRunning()
+            && controller.isLoggedIn()) {
           controller.sleep(640);
         }
       }
@@ -90,7 +100,9 @@ public class CasketFisher extends IdleScript {
   }
 
   public void openDoor() {
-    while (controller.getObjectAtCoord(439, 497) == 64) {
+    while (controller.getObjectAtCoord(439, 497) == 64
+        && controller.isRunning()
+        && controller.isLoggedIn()) {
       controller.atObject(439, 497);
       controller.sleep(100);
     }
@@ -98,18 +110,22 @@ public class CasketFisher extends IdleScript {
 
   public void bank() {
     controller.setStatus("@cya@Banking");
-    controller.walkTo(420, 497);
-    controller.walkTo(439, 497);
+    if (!isInRectangle(CATHERBY_BANK)) {
+      controller.walkTo(420, 497);
+      controller.walkTo(439, 497);
+    }
     openDoor();
     controller.openBank();
-    while (!controller.isInBank() && controller.isRunning()) controller.sleep(640);
+    while (!controller.isInBank() && controller.isRunning() && controller.isLoggedIn())
+      controller.sleep(640);
     // Deposit all items but net
     bankedCaskets += controller.getInventoryItemCount(casketId);
     for (int i : controller.getInventoryItemIds()) {
       if (i != netId) {
         controller.depositItem(i, controller.getInventoryItemCount(i));
-        while (controller.getInventoryItemCount(i) > 0 && controller.isRunning())
-          controller.sleep(640);
+        while (controller.getInventoryItemCount(i) > 0
+            && controller.isRunning()
+            && controller.isLoggedIn()) controller.sleep(640);
       }
     }
     // Withdraw a net if not already held or give an error if no net is found.

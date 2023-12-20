@@ -4351,16 +4351,92 @@ public class Controller {
    * @param itemId int --
    * @param x int -- X coordinate
    * @param y int -- Y coordinate
-   * @param width int -- Width of the sprite
-   * @param height int -- Height of the sprite
+   * @param scalePercent int -- Percent to scale the sprite. 100 for normal, less for smaller, and
+   *     greater for larger.
    * @param mirrorX boolean -- Mirror the sprite across it's X axis.
    */
-  public void drawItemSprite(int itemId, int x, int y, int width, int height, boolean mirrorX) {
+  public void drawItemSprite(int itemId, int x, int y, int scalePercent, boolean mirrorX) {
     ItemDef def = EntityHandler.getItemDef(itemId);
     Sprite sprite = mud.spriteSelect(def);
     mud.getSurface()
         .drawSpriteClipping(
-            sprite, x, y, width, height, def.getPictureMask(), 0, def.getBlueMask(), mirrorX, 0, 1);
+            sprite,
+            x,
+            y,
+            getItemSpriteScaledWidth(itemId, scalePercent),
+            getItemSpriteScaledHeight(itemId, scalePercent),
+            def.getPictureMask(),
+            0,
+            def.getBlueMask(),
+            mirrorX,
+            0,
+            1);
+  }
+
+  /**
+   * Returns the width of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @return int -- Width
+   */
+  public int getItemSpriteWidth(int itemId) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return sprite.getWidth();
+    }
+    return 0;
+  }
+  /**
+   * Returns the width of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @param scalePercent int -- Percent to scale the sprite up or down
+   * @return int -- Scaled width
+   */
+  public int getItemSpriteScaledWidth(int itemId, int scalePercent) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return (int)
+          ((sprite.getWidth() < 16 ? sprite.getWidth() * 22 : sprite.getWidth())
+              * (double) scalePercent
+              / 100.0);
+    }
+    return 0;
+  }
+
+  /**
+   * Returns the height of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @return int -- Height
+   */
+  public int getItemSpriteHeight(int itemId) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return sprite.getHeight();
+    }
+    return 0;
+  }
+  /**
+   * Returns the height of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @param scalePercent int -- Percent to scale the sprite up or down
+   * @return int -- Scaled height
+   */
+  public int getItemSpriteScaledHeight(int itemId, int scalePercent) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return (int)
+          ((sprite.getHeight() < 16 ? sprite.getHeight() * 22 : sprite.getHeight())
+              * (double) scalePercent
+              / 100.0);
+    }
+    return 0;
   }
 
   /**

@@ -1,12 +1,16 @@
 package scripting.idlescript;
 
+import controller.PaintBuilder.*;
 import java.util.Arrays;
 import models.entities.ItemId;
 import models.entities.SkillId;
 
-// TODO: Rework paint to support multiple rows
-
 public class CasketFisher extends IdleScript {
+  private PaintBuilder pb = new PaintBuilder(174, 72, 4, 18, 18, 14);
+  int paintColors[] = {
+    0xb74413, 0xcfdf1f, 0xffffff, 0xff0000
+  }; // wooden-ish, golden....-ish, casket amount, trash amounts
+
   private final int[][] CATHERBY_BANK = {{437, 491}, {443, 496}};
   private final int[][] CATHERBY_FISHING_AREA = {{398, 495}, {420, 506}};
   private final int[][] WATER_OBELISK_ISLAND_OVERLAP = {{410, 505}, {417, 505}};
@@ -32,7 +36,7 @@ public class CasketFisher extends IdleScript {
           "Start this script in either Catherby Bank or the Catherby fishing area.", "red");
       controller.stop();
     }
-    if (controller.getBaseStat(SkillId.FISHING.getId()) < 16) {
+    if (controller.getBaseStat(SkillId.FISHING.getId()) < 16 && controller.isRunning()) {
       controller.log("You need at least 16 fishing to use a big net!", "red");
       controller.stop();
     }
@@ -81,22 +85,26 @@ public class CasketFisher extends IdleScript {
   }
 
   public void dropJunk() {
-    for (int i = 0; i < trashIds.length; i++) {
-      if (controller.getInventoryItemCount(trashIds[i]) > 0 && controller.isRunning()) {
-        controller.setStatus("@cya@Dropping Junk");
-        amounts[i + 1] += controller.getInventoryItemCount(trashIds[i]);
-        controller.dropItem(
-            controller.getInventoryItemSlotIndex(trashIds[i]),
-            controller.getInventoryItemCount(trashIds[i]));
-        controller.sleep(1280);
-        while (controller.getInventoryItemCount(trashIds[i]) > 0
+    if (controller.isRunning()) {
+      for (int i = 0; i < trashIds.length; i++) {
+        if (controller.getInventoryItemCount(trashIds[i]) > 0
             && controller.isRunning()
             && controller.isLoggedIn()) {
-          controller.sleep(640);
+          controller.setStatus("@cya@Dropping Junk");
+          amounts[i + 1] += controller.getInventoryItemCount(trashIds[i]);
+          controller.dropItem(
+              controller.getInventoryItemSlotIndex(trashIds[i]),
+              controller.getInventoryItemCount(trashIds[i]));
+          controller.sleep(1280);
+          while (controller.getInventoryItemCount(trashIds[i]) > 0
+              && controller.isRunning()
+              && controller.isLoggedIn()) {
+            controller.sleep(640);
+          }
         }
       }
+      controller.sleep(640);
     }
-    controller.sleep(640);
   }
 
   public void openDoor() {
@@ -168,80 +176,32 @@ public class CasketFisher extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (controller != null) {
-      int colors[] = { // wooden-ish, golden....-ish, casket amount, trash amounts
-        0xb74413, 0xcfdf1f, 0xffffff, 0xff0000
-      };
-      int boxColor = 0x282A36;
-      int borderColor = 0xBD93F9;
-
-      int numberOfItems = 8;
-      int paintPadding = 4;
-
-      int boxTransparency = 255;
-
-      int titleFontSize = 6;
-      int titleWidth = 122;
-      int titleYOffset = 15;
-      int titleXOffset = 30;
-
-      int itemWidth = 34;
-      int itemHeight = 20;
-      int itemXOffset = 14;
-      int itemYOffset = titleYOffset + paintPadding;
-      int itemSpacing = 24;
-
-      int paintWidth =
-          (itemWidth * numberOfItems) + (itemSpacing * numberOfItems) + (paintPadding * 2);
-      int paintHeight = itemHeight + (paintPadding * 2) + titleXOffset;
-
-      int paintX = controller.getGameWidth() - paintPadding - paintWidth;
-      int paintY = controller.getGameHeight() - paintPadding * 5 - paintHeight;
-      int titleX = paintX + ((paintWidth - titleWidth) / 2) - paintPadding;
-      int titleY = paintY + paintPadding + titleYOffset;
-      int itemX = paintX + paintPadding + itemXOffset;
-      int itemY = paintY + paintPadding + itemYOffset;
-      int itemAmountYOffset = itemY + itemHeight + 6;
-
-      controller.drawBoxAlpha(paintX, paintY, paintWidth, paintHeight, boxColor, boxTransparency);
-      controller.drawBoxBorder(paintX, paintY, paintWidth, paintHeight, borderColor);
-      controller.drawString("Casket", titleX, titleY, colors[0], titleFontSize);
-      controller.drawString("Fisher", titleX + 64, titleY, colors[1], titleFontSize);
-
       amounts[0] = bankedCaskets + controller.getInventoryItemCount(casketId);
 
-      int itemIds[] = {
-        casketId,
-        trashIds[0],
-        trashIds[1],
-        trashIds[2],
-        trashIds[3],
-        trashIds[4],
-        trashIds[5],
-        trashIds[6]
-      };
-
-      for (int i = 0; i < itemIds.length; i++) {
-        controller.drawItemSprite(
-            itemIds[i],
-            itemX + (itemWidth * i) + (itemSpacing * i),
-            itemY,
-            itemWidth,
-            itemHeight,
-            false);
-        String str =
-            amounts[i] >= 1000000
-                ? String.format("%.2f", (double) amounts[i] / 1000000) + "M"
-                : amounts[i] > 1000
-                    ? String.format("%.2f", (double) amounts[i] / 1000) + "K"
-                    : String.valueOf(amounts[i]);
-
-        controller.drawString(
-            str,
-            paintX + (paintPadding * 2) + (itemWidth * (i)) + (itemSpacing * (i)),
-            itemAmountYOffset,
-            i <= 0 ? colors[2] : colors[3],
-            3);
-      }
+      pb.setBorderColor(0xBD93F9);
+      pb.setBackgroundColor(0x282A36, 255);
+      pb.setTitleMultiColor("Casket", "Fisher", paintColors[0], paintColors[1], 6, 24, 68, 20);
+      pb.addRow(RowBuilder.singleStringRow("Seatta", 0xBD93F9, 70));
+      pb.addEmptyRows(2);
+      pb.updateRow(
+          2,
+          RowBuilder.multipleStringRow(
+              new String[] {"Run Time:", pb.stringRunTime},
+              new int[] {0xffffff, 0xffffff},
+              30,
+              new int[] {20, 84}));
+      pb.updateRow(
+          3,
+          RowBuilder.singleSpriteMultipleStringRow(
+              casketId,
+              80,
+              20,
+              new String[] {pb.stringFormatInt(amounts[0]), pb.stringAmountPerHour(amounts[0])},
+              new int[] {paintColors[2], 0x00ff00},
+              new int[] {36, 52},
+              16,
+              20));
+      pb.draw();
     }
   }
 }

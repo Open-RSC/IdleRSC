@@ -9,15 +9,16 @@ import java.util.ArrayList;
 public class PaintBuilder {
   private static final Controller c = Main.getController();
 
+  public String stringRunTime;
+  public float runTimeSeconds, timeScale;
+
   private static final long startTime = System.currentTimeMillis();
   private int pWidth, pHeight, pX, pY;
   private int borderColor, bgColor, bgTransparency = 0;
   private int rowsY = 0;
-
-  public String stringRunTime;
-  public float runTimeSeconds, timeScale;
-  private String title, titleSecondary;
-  private int tColor, tColorSecondary, tSize, tXOffset, tXOffsetSecondary, tYOffset = 0;
+  private String[] title;
+  private int[] tColors, tXOffsets;
+  private int tSize, tYOffset = 0;
 
   private ArrayList<RowBuilder> rowData = new ArrayList<>();
 
@@ -68,7 +69,7 @@ public class PaintBuilder {
   /**
    * Set the paint's height to a new value
    *
-   * @param newWidth int -- New height value
+   * @param newHeight int -- New height value
    */
   public void setHeight(int newHeight) {
     this.pHeight = newHeight;
@@ -133,50 +134,46 @@ public class PaintBuilder {
   /**
    * Adds a title header with a single color
    *
-   * @param titleString String -- Title
-   * @param titleColor int -- Title color RGB "HTML" Color Example: 0x36E2D7
-   * @param titleSize int -- Size of the title. 1 to 6
-   * @param titleXOffset int -- X offset for the title from the paint's X
-   * @param titleYOffset int -- Y offset for the title from the paint's Y
+   * @param string String -- Title
+   * @param color int -- Title color RGB "HTML" Color Example: 0x36E2D7
+   * @param fontSize int -- Size of the title. 1 to 6
+   * @param xOffset int -- X offset for the title from the paint's X
+   * @param yOffset int -- Y offset for the title from the paint's Y
    */
   public void setTitleSingleColor(
-      String titleString, int titleColor, int titleSize, int titleXOffset, int titleYOffset) {
-    this.title = titleString;
-    this.tColor = titleColor;
-    this.tSize = titleSize;
-    this.tXOffset = titleXOffset;
-    this.tYOffset = titleYOffset;
+      String string, int color, int fontSize, int xOffset, int yOffset) {
+    this.title = new String[] {string};
+    this.tColors = new int[] {color};
+    this.tSize = fontSize;
+    this.tXOffsets = new int[] {xOffset};
+    this.tYOffset = yOffset;
   }
 
   /**
    * Adds a title header with a two colored strings
    *
-   * @param titleString1 String -- First title string
-   * @param titleString2 String -- Second title string
-   * @param titleColor1 int -- Color of the FIRST title string. RGB "HTML" Color Example: 0x36E2D7
-   * @param titleColor2 int -- Color of the SECOND title string. RGB "HTML" Color Example: 0x36E2D7
-   * @param titleSize int -- Size of the title. 1 to 6
-   * @param titleXOffset int -- X offset for the title's FIRST string from the paint's X
-   * @param titleXOffset2 int -- X offset for the title's SECOND string from the FIRST string's X
-   * @param titleYOffset int -- Y offset for the title's string from the paint's Y
+   * @param strings String[] -- Array of strings
+   * @param colors int[] -- Array of colors for the title strings. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param fontSize int -- Size of the title. 1 to 6
+   * @param xOffsets int[] -- Array of offsets for each string's X from the previous string's X. The
+   *     first index is the amount offset from the paint's border.
+   * @param yOffset int -- Y offset for the title's string from the paint's Y
    */
-  public void setTitleMultiColor(
-      String titleString1,
-      String titleString2,
-      int titleColor1,
-      int titleColor2,
-      int titleSize,
-      int titleXOffset,
-      int titleXOffset2,
-      int titleYOffset) {
-    this.title = titleString1;
-    this.titleSecondary = titleString2;
-    this.tColor = titleColor1;
-    this.tColorSecondary = titleColor2;
-    this.tSize = titleSize;
-    this.tXOffset = titleXOffset;
-    this.tXOffsetSecondary = titleXOffset2;
-    this.tYOffset = titleYOffset;
+  public void setTitleMultipleColor(
+      String[] strings, int[] colors, int fontSize, int[] xOffsets, int yOffset) {
+
+    this.tSize = fontSize;
+    this.tYOffset = yOffset;
+    if (strings.length > 0 && strings.length == colors.length && colors.length == xOffsets.length) {
+      this.title = strings;
+      this.tColors = colors;
+      this.tXOffsets = xOffsets;
+    } else {
+      this.title = new String[] {"Title arrays length mismatch"};
+      this.tColors = new int[] {0xff0000};
+      this.tXOffsets = new int[] {4};
+    }
   }
 
   /**
@@ -184,16 +181,18 @@ public class PaintBuilder {
    * row frame.
    *
    * @param rowNumber int -- Number of the row to update, starts at 1.
-   * @param newRowInfo RowBuilder -- New row information to update the row with.
+   * @param newRowInfo RowBuilder -- New row information to update the row from
+   *     controller.PaintBuilder.RowBuilder
    */
   public void updateRow(int rowNumber, RowBuilder newRowInfo) {
     if (rowData != null && rowData.size() >= rowNumber && c != null && newRowInfo != null)
       rowData.set(rowNumber - 1, newRowInfo);
   }
+
   /**
    * Adds a row.
    *
-   * @param rowInfo RowBuilder -- Row information
+   * @param rowInfo RowBuilder -- Row information from controller.PaintBuilder.RowBuilder
    */
   public void addRow(RowBuilder rowInfo) {
     if (rowInfo != null) {
@@ -210,6 +209,7 @@ public class PaintBuilder {
   public void addEmptyRow() {
     rowData.add(new RowBuilder());
   }
+
   /**
    * Adds X empty rows. Useful for initializing a row that will be modified by updateRow in the
    * paintInterrupt.
@@ -270,16 +270,13 @@ public class PaintBuilder {
 
       // Draws a title string
       if (title != null) {
-        int x1 = pX + tXOffset;
-        int y = pY + tYOffset;
-        int color1 = tColor;
-        if (titleSecondary != null) {
-          int x2 = x1 + tXOffsetSecondary;
-          int color2 = tColorSecondary;
-          c.drawString(title, x1, y, tColor, tSize);
-          c.drawString(titleSecondary, x2, y, color2, tSize);
-        } else {
-          c.drawString(title, x1, y, color1, tSize);
+        int x = pX;
+        for (int i = 0; i < title.length; i++) {
+          x += tXOffsets[i];
+          String text = title[i];
+          int y = pY + tYOffset;
+          int color = tColors[i];
+          c.drawString(text, x, y, color, tSize);
         }
       }
 

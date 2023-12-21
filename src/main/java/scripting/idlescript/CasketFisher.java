@@ -180,7 +180,12 @@ public class CasketFisher extends IdleScript {
 
       pb.setBorderColor(0xBD93F9);
       pb.setBackgroundColor(0x282A36, 255);
-      pb.setTitleMultiColor("Casket", "Fisher", paintColors[0], paintColors[1], 6, 24, 68, 20);
+      pb.setTitleMultipleColor(
+          new String[] {"Casket", "Fisher"},
+          new int[] {paintColors[0], paintColors[1]},
+          6,
+          new int[] {24, 68},
+          20);
       pb.addRow(RowBuilder.singleStringRow("Seatta", 0xBD93F9, 70));
       pb.addEmptyRows(2);
       pb.updateRow(

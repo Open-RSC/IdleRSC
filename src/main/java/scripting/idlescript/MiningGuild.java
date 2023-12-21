@@ -366,7 +366,12 @@ public class MiningGuild extends IdleScript {
 
       pb.setBorderColor(0xBD93F9);
       pb.setBackgroundColor(0x282A36, 255);
-      pb.setTitleMultiColor("Mining", "Guild", 0x008C8C, 0x718161, 6, 30, 62, 20);
+      pb.setTitleMultipleColor(
+          new String[] {"Mining", "Guild"},
+          new int[] {0x008C8C, 0x718161},
+          6,
+          new int[] {30, 62},
+          20);
       pb.addRow(RowBuilder.singleStringRow("Seatta", 0xBD93F9, 70));
       pb.addEmptyRows(6);
       pb.updateRow(

@@ -1,6 +1,5 @@
 package scripting.idlescript;
 
-import controller.PaintBuilder.*;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -11,7 +10,6 @@ import models.entities.SkillId;
 
 public class MiningGuild extends IdleScript {
   // Mining Guild Script by Seatta
-  private PaintBuilder pb = new PaintBuilder(174, 142, 4, 18, 20, 14);
 
   private static final JCheckBox runiteCheck = new JCheckBox("Mine Runite", true);
   private static final JCheckBox adamantiteCheck = new JCheckBox("Mine Adamantite", true);
@@ -48,7 +46,7 @@ public class MiningGuild extends IdleScript {
     ItemId.RUNE_PICKAXE.getId()
   };
 
-  private static final int[] banked = {0, 0, 0, 0, 0};
+  private static int[] banked = {0, 0, 0, 0, 0};
   private static int[] currentOre = {0, 0};
 
   private static final int[] ladderUp = {274, 3398};
@@ -61,6 +59,7 @@ public class MiningGuild extends IdleScript {
   private static int miningLevel;
 
   public int start(String[] param) {
+    paintBuilder.start(162, 142, 4, 18, 20);
     if (!guiSetup) {
       setup();
       guiSetup = true;
@@ -86,6 +85,7 @@ public class MiningGuild extends IdleScript {
   }
 
   public void run() {
+
     if (controller.getBaseStat(SkillId.MINING.getId()) < 60) quit(4);
 
     for (int id : pickaxeIds) {
@@ -323,6 +323,7 @@ public class MiningGuild extends IdleScript {
         default:
           controller.displayMessage("@red@Quit was called but wasn't given a correct argument");
       }
+      banked = new int[] {0, 0, 0, 0, 0};
       controller.stop();
     }
   }
@@ -360,41 +361,37 @@ public class MiningGuild extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (controller != null) {
-      int[] stringOffsets = {36, 52};
+      int[] stringOffsets = {28, 52};
       int[] scales = {80, 80, 80, 80, 100};
       int colors[] = {0x008C8C, 0x718161, 0x617181, 0x6C6C6C, 0xBA9537};
 
-      pb.setBorderColor(0xBD93F9);
-      pb.setBackgroundColor(0x282A36, 255);
-      pb.setTitleMultipleColor(
+      paintBuilder.setBorderColor(0xBD93F9);
+      paintBuilder.setBackgroundColor(0x282A36, 255);
+      paintBuilder.setTitleMultipleColor(
           new String[] {"Mining", "Guild"},
           new int[] {0x008C8C, 0x718161},
           6,
-          new int[] {30, 62},
+          new int[] {24, 62},
           20);
-      pb.addRow(RowBuilder.singleStringRow("Seatta", 0xBD93F9, 70));
-      pb.addEmptyRows(6);
-      pb.updateRow(
-          2,
-          RowBuilder.multipleStringRow(
-              new String[] {"Run Time:", pb.stringRunTime},
-              new int[] {0xffffff, 0xffffff},
-              30,
-              new int[] {20, 84}));
+      paintBuilder.addRow(rowBuilder.singleStringRow("Seatta", 0xBD93F9, 62));
+      paintBuilder.addRow(
+          rowBuilder.singleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff, 28));
       for (int i = 0; i < oreIds.length; i++) {
-        pb.updateRow(
-            i + 3,
-            RowBuilder.singleSpriteMultipleStringRow(
+        paintBuilder.addRow(
+            rowBuilder.singleSpriteMultipleStringRow(
                 oreIds[i],
                 scales[i],
-                i == 4 ? 24 : 20,
-                new String[] {pb.stringFormatInt(banked[i]), pb.stringAmountPerHour(banked[i])},
+                i == 4 ? 8 : 4,
+                new String[] {
+                  paintBuilder.stringFormatInt(banked[i]),
+                  paintBuilder.stringAmountPerHour(banked[i])
+                },
                 new int[] {colors[i], 0x00ff00},
-                i == 4 ? new int[] {32, 52} : stringOffsets,
+                i == 4 ? new int[] {24, 52} : stringOffsets,
                 14,
                 18));
       }
-      pb.draw();
+      paintBuilder.draw();
     }
   }
 }

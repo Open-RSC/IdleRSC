@@ -4318,6 +4318,42 @@ public class Controller {
   }
 
   /**
+   * Draws a progress bar. Must be used inside paintInterrupt()
+   *
+   * @param current int -- Current value to calculate the progress bar from.
+   * @param maximum int -- Maximum value to calculate the progress bar from.
+   * @param bgColor int -- Color of the progress bar's background. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param fgColor int -- Color of the progress bar's foreground. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param borderColor int -- Color of the progress bar's border. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param x int -- X coordinate of the top left of the progress bar.
+   * @param y int -- Y coordinate of the top left of the progress bar.
+   * @param width int -- Width of the progress bar.
+   * @param showPercentage boolean -- Show the percentage on the bar.
+   */
+  public void drawProgressBar(
+      int current,
+      int maximum,
+      int bgColor,
+      int fgColor,
+      int borderColor,
+      int x,
+      int y,
+      int width,
+      boolean showPercentage) {
+    int height = 20;
+    int currentPercent = (current * 100) / maximum;
+    int currentBarWidth = currentPercent >= 100 ? width : (width * currentPercent) / 100;
+    drawBoxAlpha(x, y, width, height, bgColor, 255);
+    drawBoxAlpha(x, y, currentBarWidth, height, fgColor, 255);
+    drawBoxBorder(x, y, width, height, borderColor);
+    if (showPercentage)
+      drawShadowText(
+          String.valueOf(currentPercent + "%"), x + 16, y + (height - 13), 0xffffff, 1, true);
+  }
+  /**
    * Draws text at the specified coordinates. Must be used inside paintInterrupt().
    *
    * @param str -- you may use @col@ colors here.

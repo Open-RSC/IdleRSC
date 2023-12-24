@@ -1,12 +1,10 @@
 package scripting.idlescript;
 
-import controller.PaintBuilder.*;
 import java.util.Arrays;
 import models.entities.ItemId;
 import models.entities.SkillId;
 
 public class CasketFisher extends IdleScript {
-  private PaintBuilder pb = new PaintBuilder(174, 72, 4, 18, 18, 14);
   int paintColors[] = {
     0xb74413, 0xcfdf1f, 0xffffff, 0xff0000
   }; // wooden-ish, golden....-ish, casket amount, trash amounts
@@ -26,10 +24,12 @@ public class CasketFisher extends IdleScript {
     ItemId.LEATHER_GLOVES.getId(),
     ItemId.BOOTS.getId()
   };
-  private int[] amounts = {0, 0, 0, 0, 0, 0, 0, 0}; // Caskets then trash items
+  private int casketAmount = 0; // Caskets then trash items
   private int bankedCaskets = 0;
 
   public int start(String[] param) {
+    paintBuilder.start(174, 72, 4, 18, 18);
+
     if (!isInRectangle(CATHERBY_BANK) && !isInRectangle(CATHERBY_FISHING_AREA)
         || isInRectangle(WATER_OBELISK_ISLAND_OVERLAP)) {
       controller.log(
@@ -81,6 +81,9 @@ public class CasketFisher extends IdleScript {
         bank();
       }
     }
+    controller.stop();
+    casketAmount = 0;
+    bankedCaskets = 0;
     return 1000; // start() must return a int value now.
   }
 
@@ -91,7 +94,6 @@ public class CasketFisher extends IdleScript {
             && controller.isRunning()
             && controller.isLoggedIn()) {
           controller.setStatus("@cya@Dropping Junk");
-          amounts[i + 1] += controller.getInventoryItemCount(trashIds[i]);
           controller.dropItem(
               controller.getInventoryItemSlotIndex(trashIds[i]),
               controller.getInventoryItemCount(trashIds[i]));
@@ -176,37 +178,34 @@ public class CasketFisher extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (controller != null) {
-      amounts[0] = bankedCaskets + controller.getInventoryItemCount(casketId);
 
-      pb.setBorderColor(0xBD93F9);
-      pb.setBackgroundColor(0x282A36, 255);
-      pb.setTitleMultipleColor(
+      casketAmount = bankedCaskets + controller.getInventoryItemCount(casketId);
+
+      paintBuilder.setBorderColor(0xBD93F9);
+      paintBuilder.setBackgroundColor(0x282A36, 255);
+      paintBuilder.setTitleMultipleColor(
           new String[] {"Casket", "Fisher"},
           new int[] {paintColors[0], paintColors[1]},
           6,
           new int[] {24, 68},
           20);
-      pb.addRow(RowBuilder.singleStringRow("Seatta", 0xBD93F9, 70));
-      pb.addEmptyRows(2);
-      pb.updateRow(
-          2,
-          RowBuilder.multipleStringRow(
-              new String[] {"Run Time:", pb.stringRunTime},
-              new int[] {0xffffff, 0xffffff},
-              30,
-              new int[] {20, 84}));
-      pb.updateRow(
-          3,
-          RowBuilder.singleSpriteMultipleStringRow(
+      paintBuilder.addRow(rowBuilder.singleStringRow("Seatta", 0xBD93F9, 70));
+      paintBuilder.addRow(
+          rowBuilder.singleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff, 36));
+      paintBuilder.addRow(
+          rowBuilder.singleSpriteMultipleStringRow(
               casketId,
               80,
               20,
-              new String[] {pb.stringFormatInt(amounts[0]), pb.stringAmountPerHour(amounts[0])},
+              new String[] {
+                paintBuilder.stringFormatInt(casketAmount),
+                paintBuilder.stringAmountPerHour(casketAmount)
+              },
               new int[] {paintColors[2], 0x00ff00},
               new int[] {36, 52},
               16,
               20));
-      pb.draw();
+      paintBuilder.draw();
     }
   }
 }

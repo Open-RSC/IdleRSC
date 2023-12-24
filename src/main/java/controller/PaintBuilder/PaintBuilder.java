@@ -2,23 +2,29 @@ package controller.PaintBuilder;
 
 import bot.Main;
 import controller.Controller;
+import java.awt.Color;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class PaintBuilder {
   private static final Controller c = Main.getController();
+  RowBuilder rowBuilder = new RowBuilder();
 
   public String stringRunTime;
   public float runTimeSeconds, timeScale;
+  public int colorRainbow;
 
-  private static final long startTime = System.currentTimeMillis();
+  private static long startTime = System.currentTimeMillis();
   private int pWidth, pHeight, pX, pY;
   private int borderColor, bgColor, bgTransparency = 0;
   private int rowsY = 0;
   private String[] title;
   private int[] tColors, tXOffsets;
   private int tSize, tYOffset = 0;
+  private float hue = 0f;
+  private int rainbowSpeed = 4;
+  private boolean isScriptPaint, isPlaceholderPaint = false;
 
   private ArrayList<RowBuilder> rowData = new ArrayList<>();
 
@@ -27,11 +33,10 @@ public class PaintBuilder {
    * @param height int -- Width of the paint
    * @param x int -- X coordinate for the top left corner of the paint
    * @param y int -- Y coordinate for the top left corner of the paint
-   * @param rowsY int -- Y coordinate where rows are drawn (X coordinate is passed to the rows when
-   *     making them)
-   * @param rowSpacing int -- Padding between rows in pixels
+   * @param rowsY int -- Y offset of where to start drawing rows relative to the paint's top border.
+   *     Negative is up while positive is down.
    */
-  public PaintBuilder(int width, int height, int x, int y, int rowsY, int rowSpacing) {
+  public PaintBuilder(int width, int height, int x, int y, int rowsY) {
     this.pWidth = width;
     this.pHeight = height;
     this.pX = x;
@@ -40,21 +45,60 @@ public class PaintBuilder {
   }
 
   /**
+   * Starts the PaintBuilder. PaintBuilder will not draw a custom paint if this is not called. Place
+   * this at the beginning of start() in scripts.
+   *
+   * @param width int -- Height of the paint
+   * @param height int -- Width of the paint
+   * @param x int -- X coordinate for the top left corner of the paint
+   * @param y int -- Y coordinate for the top left corner of the paint
+   * @param rowsY int -- Y offset of where to start drawing rows relative to the paint's top border.
+   *     Negative is up while positive is down.
+   */
+  public void start(int width, int height, int x, int y, int rowsY) {
+    this.pWidth = width;
+    this.pHeight = height;
+    this.pX = x;
+    this.pY = y;
+    this.rowsY = rowsY;
+    startTime = System.currentTimeMillis();
+    rowData.clear();
+    isScriptPaint = true;
+  }
+  /**
    * Set the paint's top left X coordinate to a new value
    *
-   * @param newX int -- New X value
+   * @param x int -- New X value
    */
-  public void setX(int newX) {
-    this.pX = newX;
+  public void setX(int x) {
+    this.pX = x;
   }
 
   /**
    * Set the paint's top left Y coordinate to a new value
    *
-   * @param newY int -- New Y value
+   * @param y int -- New Y value
    */
-  public void setY(int newY) {
-    this.pY = newY;
+  public void setY(int y) {
+    this.pY = y;
+  }
+
+  /**
+   * Set the speed of colorRainbow cycling.
+   *
+   * @param speed int -- The speed at which colorRainbow updates. The default is speed 4.
+   */
+  public void setRainbowSpeed(int speed) {
+    this.rainbowSpeed = speed;
+  }
+  /**
+   * Y offset of where to start drawing rows relative to the paint's top border. Negative is up
+   * while positive is down.
+   *
+   * @param rowsY int -- New Y value
+   */
+  public void setRowsY(int rowsY) {
+    this.rowsY = rowsY;
   }
 
   /**
@@ -91,6 +135,14 @@ public class PaintBuilder {
    */
   public int getY() {
     return this.pY;
+  }
+  /**
+   * Get the paint's rowsY offset
+   *
+   * @return int
+   */
+  public int getRowsY() {
+    return this.rowsY;
   }
 
   /**
@@ -177,19 +229,6 @@ public class PaintBuilder {
   }
 
   /**
-   * Updates a row. Add this in paintInterrupt() after a controller null check to update every the
-   * row frame.
-   *
-   * @param rowNumber int -- Number of the row to update, starts at 1.
-   * @param newRowInfo RowBuilder -- New row information to update the row from
-   *     controller.PaintBuilder.RowBuilder
-   */
-  public void updateRow(int rowNumber, RowBuilder newRowInfo) {
-    if (rowData != null && rowData.size() >= rowNumber && c != null && newRowInfo != null)
-      rowData.set(rowNumber - 1, newRowInfo);
-  }
-
-  /**
    * Adds a row.
    *
    * @param rowInfo RowBuilder -- Row information from controller.PaintBuilder.RowBuilder
@@ -251,119 +290,140 @@ public class PaintBuilder {
   }
 
   private void doUpdates() {
+    hue = hue <= 0 ? 1f : hue - (float) (rainbowSpeed * 0.0005);
+
+    colorRainbow = Color.HSBtoRGB(hue, 1f, 1f);
     stringRunTime = c.msToString(System.currentTimeMillis() - startTime);
     runTimeSeconds = ((System.currentTimeMillis() - startTime) / 1000);
     timeScale = (60 * 60) / runTimeSeconds;
   }
 
+  public void drawPlaceholderPaint() {
+    isPlaceholderPaint = true;
+    setBackgroundColor(0x282A36, 255);
+    setBorderColor(0xff0000);
+    addRow(rowBuilder.singleStringRow("This is a placeholder paint", colorRainbow, 32));
+    addRow(rowBuilder.singleStringRow("Override paintInterrupt to create one", 0xff0000, 4));
+    addRow(rowBuilder.singleStringRow("Run Time: " + stringRunTime, 0xff0000, 54));
+    draw();
+    isPlaceholderPaint = false;
+  }
   /** Draws the paint. */
   public void draw() {
     if (c != null) {
-      doUpdates();
-      int cumulativeRowHeight = 0;
+      if (isScriptPaint || isPlaceholderPaint) {
+        doUpdates();
+        int cumulativeRowHeight = 0;
 
-      // Draws a background for the paint
-      if (bgColor != 0) c.drawBoxAlpha(pX, pY, pWidth, pHeight, bgColor, bgTransparency);
+        // Draws a background for the paint
+        if (bgColor != 0) c.drawBoxAlpha(pX, pY, pWidth, pHeight, bgColor, bgTransparency);
 
-      // Draws a border for the paint
-      if (borderColor != 0) c.drawBoxBorder(pX, pY, pWidth, pHeight, borderColor);
+        // Draws a border for the paint
+        if (borderColor != 0) c.drawBoxBorder(pX, pY, pWidth, pHeight, borderColor);
 
-      // Draws a title string
-      if (title != null) {
-        int x = pX;
-        for (int i = 0; i < title.length; i++) {
-          x += tXOffsets[i];
-          String text = title[i];
-          int y = pY + tYOffset;
-          int color = tColors[i];
-          c.drawString(text, x, y, color, tSize);
+        // Draws a title string
+        if (title != null) {
+          int x = pX;
+          for (int i = 0; i < title.length; i++) {
+            x += tXOffsets[i];
+            String text = title[i];
+            int y = pY + tYOffset;
+            int color = tColors[i];
+            c.drawString(text, x, y, color, tSize);
+          }
         }
-      }
 
-      // Draw rows
-      if (rowData != null && rowData.size() > 0) {
-        for (int rowNum = 0; rowNum < rowData.size(); rowNum++) {
-          RowBuilder r = rowData.get(rowNum);
-          cumulativeRowHeight += r.rowHeight;
+        // Draw rows
+        if (rowData != null && rowData.size() > 0) {
+          for (int rowNum = 0; rowNum < rowData.size(); rowNum++) {
+            RowBuilder r = rowData.get(rowNum);
+            cumulativeRowHeight += r.rowHeight;
 
-          // Draws a row with three strings
-          if (r.type.equals("MultipleStrings")) {
-            int x = pX + r.rowXOffset;
-            int y = pY + rowsY + cumulativeRowHeight;
-            for (int i = 0; i < r.strings.length; i++) {
-              x += r.stringXOffsets[i];
-              String text = r.strings[i];
-              int color = r.colors[i];
+            // Draws a row with three strings
+            if (r.type.equals("MultipleStrings")) {
+              int x = pX + r.rowXOffset;
+              int y = pY + rowsY + cumulativeRowHeight;
+              for (int i = 0; i < r.strings.length; i++) {
+                x += r.stringXOffsets[i];
+                String text = r.strings[i];
+                int color = r.colors[i];
+                if (text != null && color != 0) c.drawString(text, x, y, color, 1);
+              }
+
+              // Draws a row with a single string
+            } else if (r.type.equals("SingleString")) {
+              String text = r.text;
+              int x = r.rowXOffset + pX;
+              int y = pY + rowsY + cumulativeRowHeight;
+              int color = r.color1;
+
               if (text != null && color != 0) c.drawString(text, x, y, color, 1);
-            }
 
-            // Draws a row with a single string
-          } else if (r.type.equals("SingleString")) {
-            String text1 = r.text;
-            int x = r.rowXOffset + pX;
-            int y = pY + rowsY + cumulativeRowHeight;
-            int color = r.color1;
+              // Draws a row with multiple item sprites and strings for each
+            } else if (r.type.equals("MultipleSprites")) {
+              if (r.colors == null) r.colors = new int[] {0xffffff};
+              int cumulativeSpacing = 0;
+              for (int i = 0; i < r.ids.length; i++) {
+                String str = r.strings[i];
+                int id = r.ids[i];
+                int scale = r.scales[i];
+                int stringXOffset = r.stringXOffset;
+                int color = r.colors.length == r.ids.length ? r.colors[i] : r.colors[0];
 
-            c.drawString(text1, x, y, color, 1);
+                cumulativeSpacing += c.getItemSpriteScaledWidth(id, scale) + r.spriteSpacing;
+                int spriteX = r.rowXOffset + cumulativeSpacing;
+                int spriteY =
+                    rowsY + cumulativeRowHeight + (int) (c.getItemSpriteScaledWidth(id, scale) / 2);
+                int stringX = pX + r.rowXOffset + stringXOffset + cumulativeSpacing;
+                int stringY = spriteY + r.stringYOffset;
 
-            // Draws a row with multiple item sprites and strings for each
-          } else if (r.type.equals("MultipleSprites")) {
-            if (r.colors == null) r.colors = new int[] {0xffffff};
-            int cumulativeSpacing = 0;
-            for (int i = 0; i < r.ids.length; i++) {
-              String str = r.strings[i];
-              int id = r.ids[i];
-              int scale = r.scales[i];
-              int stringXOffset = r.stringXOffset;
-              int color = r.colors.length == r.ids.length ? r.colors[i] : r.colors[0];
+                c.drawItemSprite(id, spriteX, spriteY, scale, false);
+                c.drawString(str, stringX, stringY, color, 1);
+              }
 
-              cumulativeSpacing += c.getItemSpriteScaledWidth(id, scale) + r.spriteSpacing;
-              int spriteX = r.rowXOffset + cumulativeSpacing;
-              int spriteY =
-                  rowsY + cumulativeRowHeight + (int) (c.getItemSpriteScaledWidth(id, scale) / 2);
-              int stringX = pX + r.rowXOffset + stringXOffset + cumulativeSpacing;
+              // Draws a row with an item sprite and multiple strings
+
+            } else if (r.type.equals("SingleSpriteMultipleStrings")) {
+              int id = r.itemId;
+              int rowX = pX + r.rowXOffset;
+              int spriteY = rowsY + cumulativeRowHeight;
+              int stringY = rowsY + cumulativeRowHeight + r.stringYOffset;
+              int scale = r.spriteScale;
+
+              c.drawItemSprite(id, rowX, spriteY, scale, false);
+
+              int stringX = rowX;
+              for (int i = 0; i < r.strings.length; i++) {
+                stringX += r.stringXOffsets[i];
+                int color = r.colors[i];
+                String text = r.strings[i];
+                if (text != null && color != 0) c.drawString(text, stringX, stringY, color, 1);
+              }
+
+              // Draws a row with an item sprite and one string
+            } else if (r.type.equals("SingleSpriteSingleString")) {
+              int id = r.itemId;
+              int scale = r.spriteScale;
+              String str1 = r.text;
+              int color1 = r.color1;
+              int spriteY = rowsY + cumulativeRowHeight;
+              int spriteX = pX + r.rowXOffset;
+              int stringX1 = spriteX + r.stringXOffset;
               int stringY = spriteY + r.stringYOffset;
 
               c.drawItemSprite(id, spriteX, spriteY, scale, false);
-              c.drawString(str, stringX, stringY, color, 1);
+              c.drawString(str1, stringX1, stringY, color1, 1);
             }
-
-            // Draws a row with an item sprite and multiple strings
-
-          } else if (r.type.equals("SingleSpriteMultipleStrings")) {
-            int id = r.itemId;
-            int rowX = pX + r.rowXOffset;
-            int spriteY = rowsY + cumulativeRowHeight;
-            int stringY = rowsY + cumulativeRowHeight + r.stringYOffset;
-            int scale = r.spriteScale;
-
-            c.drawItemSprite(id, rowX, spriteY, scale, false);
-
-            int stringX = rowX;
-            for (int i = 0; i < r.strings.length; i++) {
-              stringX += r.stringXOffsets[i];
-              int color = r.colors[i];
-              String text = r.strings[i];
-              if (text != null && color != 0) c.drawString(text, stringX, stringY, color, 1);
-            }
-
-            // Draws a row with an item sprite and one string
-          } else if (r.type.equals("SingleSpriteSingleString")) {
-            int id = r.itemId;
-            int scale = r.spriteScale;
-            String str1 = r.text;
-            int color1 = r.color1;
-            int spriteY = rowsY + cumulativeRowHeight;
-            int spriteX = pX + r.rowXOffset;
-            int stringX1 = spriteX + r.stringXOffset;
-            int stringY = spriteY + r.stringYOffset;
-
-            c.drawItemSprite(id, spriteX, spriteY, scale, false);
-            c.drawString(str1, stringX1, stringY, color1, 1);
           }
         }
+        if (rowData.size() > 0) rowData.clear();
+      }
+
+      if (!c.isRunning()) {
+        if (isScriptPaint) isScriptPaint = false;
+        if (rowData.size() > 0) rowData.clear();
+        startTime = System.currentTimeMillis();
       }
     }
-    rowData.clear();
   }
 }

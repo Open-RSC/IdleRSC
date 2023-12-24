@@ -19,7 +19,7 @@ public class RowBuilder {
    * @param rowXOffset int -- Amount to offset the string's X from the paint's border
    * @return RowBuilder Row
    */
-  public static RowBuilder singleStringRow(String text, int color, int rowXOffset) {
+  public RowBuilder singleStringRow(String text, int color, int rowXOffset) {
     RowBuilder row = new RowBuilder();
     row.type = "SingleString";
     row.text = text;
@@ -38,7 +38,7 @@ public class RowBuilder {
    *     X. The first index is the amount offset from paint's border.
    * @return
    */
-  public static RowBuilder multipleStringRow(
+  public RowBuilder multipleStringRow(
       String[] strings, int[] colors, int rowXOffset, int[] stringXOffsets) {
     RowBuilder row = new RowBuilder();
     if (strings.length > 0
@@ -73,7 +73,7 @@ public class RowBuilder {
    *     while positive is down.
    * @return RowBuilder Row
    */
-  public static RowBuilder multiItemSpriteRow(
+  public RowBuilder multiItemSpriteRow(
       int[] ids,
       int[] scales,
       String[] strings,
@@ -119,7 +119,7 @@ public class RowBuilder {
    *     while positive is down.
    * @return RowBuilder Row
    */
-  public static RowBuilder singleSpriteSingleStringRow(
+  public RowBuilder singleSpriteSingleStringRow(
       int itemId,
       String itemString,
       int stringColor,
@@ -158,7 +158,7 @@ public class RowBuilder {
    *     sprite scaling.
    * @return
    */
-  public static RowBuilder singleSpriteMultipleStringRow(
+  public RowBuilder singleSpriteMultipleStringRow(
       int itemId,
       int scale,
       int rowXOffset,
@@ -186,10 +186,10 @@ public class RowBuilder {
     return errorArrayLengthMismatch();
   }
 
-  private static RowBuilder errorArrayLengthMismatch() {
+  private RowBuilder errorArrayLengthMismatch() {
     RowBuilder row = new RowBuilder();
     row.type = "SingleString";
-    row.text = "Row Arrays have non-matching lengths";
+    row.text = "Row arrays have non-matching lengths";
     row.color1 = 0xff0000;
     row.rowXOffset = 4;
     row.rowHeight = 14;

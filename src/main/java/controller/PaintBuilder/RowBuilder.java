@@ -1,16 +1,19 @@
 package controller.PaintBuilder;
 
+// TODO: Use the largest number from (14 or spriteScaledHeight+2) to set row heights automatically
+
 public class RowBuilder {
   public int[] ids, colors, scales, stringXOffsets;
   public String[] strings;
   public String type = "";
   public String text;
   public int itemId = -1;
-  public int color1, color2, color3;
+  public int stringColor, fgColor, bgColor, borderColor;
   public int rowXOffset, rowHeight;
   public int spriteScale, spriteSpacing;
   public int stringXOffset, stringYOffset;
-
+  public int progressBarWidth, progressBarHeight, currentProgress, maximumProgress;
+  public boolean showGoal, showPercentage;
   /**
    * Builds a row with a single colored string
    *
@@ -23,7 +26,7 @@ public class RowBuilder {
     RowBuilder row = new RowBuilder();
     row.type = "SingleString";
     row.text = text;
-    row.color1 = color;
+    row.stringColor = color;
     row.rowXOffset = rowXOffset;
     row.rowHeight = 14;
     return row;
@@ -113,9 +116,9 @@ public class RowBuilder {
    * @param rowHeight int -- Height of the row (to prevent clipping)
    * @param spriteScale int -- Scale of the items sprite. 100 is normal, lesser is smaller, greater
    *     is larger.
-   * @param stringXOffset int -- X offset for the strings relative to the sprite's X. Negative is
+   * @param stringXOffset int -- X offset for the string relative to the sprite's X. Negative is
    *     left while positive is right.
-   * @param stringYOffset int -- Y offset for the strings relative to the sprite's Y. Negative is up
+   * @param stringYOffset int -- Y offset for the string relative to the sprite's Y. Negative is up
    *     while positive is down.
    * @return RowBuilder Row
    */
@@ -132,12 +135,64 @@ public class RowBuilder {
     row.type = "SingleSpriteSingleString";
     row.itemId = itemId;
     row.text = itemString;
-    row.color1 = stringColor;
+    row.stringColor = stringColor;
     row.rowXOffset = rowXOffset;
     row.rowHeight = rowHeight;
     row.spriteScale = spriteScale;
     row.stringXOffset = stringXOffset;
     row.stringYOffset = stringYOffset;
+    return row;
+  }
+
+  /**
+   * Builds a row with a progress bar and a colored string.
+   *
+   * @param current int -- Current value to calculate the progress bar from
+   * @param maximum int -- Maximum value to calculate the progress bar from
+   * @param bgColor int -- Color of the progress bar's background. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param fgColor int -- Color of the progress bar's foreground. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param borderColor int -- Color of the progress bar's border. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param barWidth int -- Width of the progress bar
+   * @param barHeight int -- Height of the progress bar
+   * @param showPercentage boolean -- Show the percentage on the bar
+   * @param showGoal boolean -- Show the start an goal on the bar
+   * @param string String -- Description of the progress bar
+   * @param stringColor int-- Color of the text. RGB "HTML" Color Example: 0x36E2D7
+   * @return
+   */
+  public RowBuilder progressBarRow(
+      int current,
+      int maximum,
+      int bgColor,
+      int fgColor,
+      int borderColor,
+      int rowXOffset,
+      int barWidth,
+      int barHeight,
+      boolean showPercentage,
+      boolean showGoal,
+      String string,
+      int stringColor,
+      int stringXOffset,
+      int stringYOffset) {
+    RowBuilder row = new RowBuilder();
+    row.type = "ProgressBar";
+    row.currentProgress = current;
+    row.maximumProgress = maximum;
+    row.bgColor = bgColor;
+    row.fgColor = fgColor;
+    row.borderColor = borderColor;
+    row.rowXOffset = rowXOffset;
+    row.progressBarWidth = barWidth;
+    row.progressBarHeight = barHeight;
+    row.showPercentage = showPercentage;
+    row.showGoal = showGoal;
+    row.text = string;
+    row.stringColor = stringColor;
+    row.rowHeight = barHeight + 18;
     return row;
   }
 
@@ -180,7 +235,6 @@ public class RowBuilder {
       row.stringYOffset = stringYOffset;
       row.rowXOffset = rowXOffset;
       row.rowHeight = rowHeight;
-
       return row;
     }
     return errorArrayLengthMismatch();
@@ -190,7 +244,7 @@ public class RowBuilder {
     RowBuilder row = new RowBuilder();
     row.type = "SingleString";
     row.text = "Row arrays have non-matching lengths";
-    row.color1 = 0xff0000;
+    row.stringColor = 0xff0000;
     row.rowXOffset = 4;
     row.rowHeight = 14;
     return row;

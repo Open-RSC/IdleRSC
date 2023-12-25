@@ -59,7 +59,7 @@ public class MiningGuild extends IdleScript {
   private static int miningLevel;
 
   public int start(String[] param) {
-    paintBuilder.start(162, 142, 4, 18, 20);
+    paintBuilder.start(162, 142, 4, 18, 22);
     if (!guiSetup) {
       setup();
       guiSetup = true;

@@ -7,6 +7,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+// TODO: Use the largest number from (14 or spriteScaledHeight+2) to set row heights automatically
+
 public class PaintBuilder {
   private static final Controller c = Main.getController();
   RowBuilder rowBuilder = new RowBuilder();
@@ -337,7 +339,11 @@ public class PaintBuilder {
         if (rowData != null && rowData.size() > 0) {
           for (int rowNum = 0; rowNum < rowData.size(); rowNum++) {
             RowBuilder r = rowData.get(rowNum);
-            cumulativeRowHeight += r.rowHeight;
+
+            // Highlight a rows background for testing r.rowHeight
+            // if (rowNum == 2)
+            c.drawBoxAlpha(
+                pX, pY + cumulativeRowHeight + rowsY, pWidth, r.rowHeight, 0xffffff, 100);
 
             // Draws a row with three strings
             if (r.type.equals("MultipleStrings")) {
@@ -354,8 +360,8 @@ public class PaintBuilder {
             } else if (r.type.equals("SingleString")) {
               String text = r.text;
               int x = r.rowXOffset + pX;
-              int y = pY + rowsY + cumulativeRowHeight;
-              int color = r.color1;
+              int y = pY + rowsY + cumulativeRowHeight + 11;
+              int color = r.stringColor;
 
               if (text != null && color != 0) c.drawString(text, x, y, color, 1);
 
@@ -373,9 +379,12 @@ public class PaintBuilder {
                 cumulativeSpacing += c.getItemSpriteScaledWidth(id, scale) + r.spriteSpacing;
                 int spriteX = r.rowXOffset + cumulativeSpacing;
                 int spriteY =
-                    rowsY + cumulativeRowHeight + (int) (c.getItemSpriteScaledWidth(id, scale) / 2);
+                    pY
+                        + rowsY
+                        + cumulativeRowHeight
+                        + (int) (c.getItemSpriteScaledWidth(id, scale) / 2);
                 int stringX = pX + r.rowXOffset + stringXOffset + cumulativeSpacing;
-                int stringY = spriteY + r.stringYOffset;
+                int stringY = pY + spriteY + r.stringYOffset + 11;
 
                 c.drawItemSprite(id, spriteX, spriteY, scale, false);
                 c.drawString(str, stringX, stringY, color, 1);
@@ -386,8 +395,8 @@ public class PaintBuilder {
             } else if (r.type.equals("SingleSpriteMultipleStrings")) {
               int id = r.itemId;
               int rowX = pX + r.rowXOffset;
-              int spriteY = rowsY + cumulativeRowHeight;
-              int stringY = rowsY + cumulativeRowHeight + r.stringYOffset;
+              int spriteY = pY + rowsY + cumulativeRowHeight;
+              int stringY = pY + rowsY + cumulativeRowHeight + r.stringYOffset;
               int scale = r.spriteScale;
 
               c.drawItemSprite(id, rowX, spriteY, scale, false);
@@ -405,15 +414,33 @@ public class PaintBuilder {
               int id = r.itemId;
               int scale = r.spriteScale;
               String str1 = r.text;
-              int color1 = r.color1;
-              int spriteY = rowsY + cumulativeRowHeight;
+              int color1 = r.stringColor;
+              int spriteY = pY + rowsY + cumulativeRowHeight;
               int spriteX = pX + r.rowXOffset;
               int stringX1 = spriteX + r.stringXOffset;
               int stringY = spriteY + r.stringYOffset;
 
               c.drawItemSprite(id, spriteX, spriteY, scale, false);
               c.drawString(str1, stringX1, stringY, color1, 1);
+            } else if (r.type.equals("ProgressBar")) {
+              int barX = pX + r.rowXOffset;
+              int barY = pY + rowsY + cumulativeRowHeight + 14;
+              c.drawShadowText(
+                  r.text, barX + (r.progressBarWidth / 2), barY - 10, r.stringColor, 1, true);
+              c.drawProgressBar(
+                  r.currentProgress,
+                  r.maximumProgress,
+                  r.bgColor,
+                  r.fgColor,
+                  r.borderColor,
+                  barX,
+                  barY,
+                  r.progressBarWidth,
+                  r.progressBarHeight,
+                  r.showPercentage,
+                  r.showGoal);
             }
+            cumulativeRowHeight += r.rowHeight;
           }
         }
         if (rowData.size() > 0) rowData.clear();

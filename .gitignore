@@ -42,3 +42,6 @@ Screenshots/
 # User Account Data
 accounts/
 *.properties
+
+# Test IdleScript
+src/main/java/scripting/idlescript/AATesting.java

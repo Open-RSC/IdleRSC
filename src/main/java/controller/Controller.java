@@ -109,6 +109,7 @@ public class Controller {
   /** Stops the currently running script. */
   public void stop() {
     Main.setRunning(false);
+    this.stopBatching();
   }
 
   /** @param ms Sleeps for the specified amount of milliseconds. */
@@ -2737,7 +2738,17 @@ public class Controller {
    * @param auctionId int -- Auction id to buy from
    * @param itemAmount int -- Amount of items to buy
    */
-  public void auctionBuy(int auctionId, int itemAmount) {
+  public int auctionBuy(int auctionId, int itemAmount) {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
     if (isInAuctionHouse()) {
       while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
       mud.packetHandler.getClientStream().newPacket(199);
@@ -2750,7 +2761,9 @@ public class Controller {
       mud.setShowDialogServerMessage(false); // Close the dialog
     } else {
       log("You are not in an Auction House", "red");
+      return -1;
     }
+    return 1;
   }
 
   /**
@@ -2805,7 +2818,17 @@ public class Controller {
    *
    * @param auctionId int -- Auction Id
    */
-  public void auctionCancel(int auctionId) {
+  public int auctionCancel(int auctionId) {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
     if (isInAuctionHouse()) {
       while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
       mud.packetHandler.getClientStream().newPacket(199);
@@ -2817,11 +2840,23 @@ public class Controller {
       mud.setShowDialogServerMessage(false);
     } else {
       log("You are not in an Auction House", "red");
+      return -1;
     }
+    return 1;
   }
 
   /** Refreshes the Auction House listings. */
-  public void auctionRefresh() {
+  public int auctionRefresh() {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
     if (isInAuctionHouse()) {
       while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
       mud.packetHandler.getClientStream().newPacket(199);
@@ -2830,11 +2865,23 @@ public class Controller {
       mud.packetHandler.getClientStream().finishPacket();
     } else {
       log("You are not in an Auction House", "red");
+      return -1;
     }
+    return 1;
   }
 
   /** Closes the Auction House window */
-  public void closeAuctionHouse() {
+  public int closeAuctionHouse() {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
     if (isInAuctionHouse()) {
       while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
       mud.packetHandler.getClientStream().newPacket(199);
@@ -2844,8 +2891,10 @@ public class Controller {
       mud.auctionHouse.setVisible(false);
     } else {
       log("You are not in an an Auction House", "red");
+      return -1;
     }
     sleep(640);
+    return 1;
   }
 
   /**

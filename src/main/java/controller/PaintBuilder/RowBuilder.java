@@ -32,6 +32,15 @@ public class RowBuilder {
     return row;
   }
 
+  public RowBuilder centeredSingleStringRow(String text, int color) {
+    RowBuilder row = new RowBuilder();
+    row.type = "CenteredString";
+    row.text = text;
+    row.stringColor = color;
+    row.rowHeight = 14;
+    return row;
+  }
+
   /**
    * Builds a row with multiple colored strings
    *

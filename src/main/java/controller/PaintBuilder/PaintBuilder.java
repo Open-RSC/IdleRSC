@@ -20,7 +20,7 @@ public class PaintBuilder {
   private static long startTime = System.currentTimeMillis();
   private int pWidth, pHeight, pX, pY;
   private int borderColor, bgColor, bgTransparency = 0;
-  private int rowsY = 0;
+  private int rowsY = 2;
   private String[] title;
   private int[] tColors, tXOffsets;
   private int tSize, tYOffset = 0;
@@ -31,38 +31,28 @@ public class PaintBuilder {
   private ArrayList<RowBuilder> rowData = new ArrayList<>();
 
   /**
-   * @param width int -- Height of the paint
-   * @param height int -- Width of the paint
+   * @param width int -- Width of the paint
    * @param x int -- X coordinate for the top left corner of the paint
    * @param y int -- Y coordinate for the top left corner of the paint
-   * @param rowsY int -- Y offset of where to start drawing rows relative to the paint's top border.
-   *     Negative is up while positive is down.
    */
-  public PaintBuilder(int width, int height, int x, int y, int rowsY) {
+  public PaintBuilder(int x, int y, int width) {
     this.pWidth = width;
-    this.pHeight = height;
     this.pX = x;
     this.pY = y;
-    this.rowsY = rowsY;
   }
 
   /**
    * Starts the PaintBuilder. PaintBuilder will not draw a custom paint if this is not called. Place
    * this at the beginning of start() in scripts.
    *
-   * @param width int -- Height of the paint
-   * @param height int -- Width of the paint
+   * @param width int -- Width of the paint
    * @param x int -- X coordinate for the top left corner of the paint
    * @param y int -- Y coordinate for the top left corner of the paint
-   * @param rowsY int -- Y offset of where to start drawing rows relative to the paint's top border.
-   *     Negative is up while positive is down.
    */
-  public void start(int width, int height, int x, int y, int rowsY) {
+  public void start(int x, int y, int width) {
     this.pWidth = width;
-    this.pHeight = height;
     this.pX = x;
     this.pY = y;
-    this.rowsY = rowsY;
     startTime = System.currentTimeMillis();
     rowData.clear();
     isScriptPaint = true;
@@ -332,6 +322,7 @@ public class PaintBuilder {
             int y = pY + tYOffset;
             int color = tColors[i];
             c.drawString(text, x, y, color, tSize);
+            setRowsY(c.getStringHeight(tSize));
           }
         }
 
@@ -341,9 +332,10 @@ public class PaintBuilder {
             RowBuilder r = rowData.get(rowNum);
 
             // Highlight a rows background for testing r.rowHeight
-            // if (rowNum == 2)
-            c.drawBoxAlpha(
-                pX, pY + cumulativeRowHeight + rowsY, pWidth, r.rowHeight, 0xffffff, 100);
+            /* if (rowNum == 0) {
+              c.drawBoxAlpha(
+                  pX, pY + cumulativeRowHeight + rowsY, pWidth, r.rowHeight, 0xffffff, 100);
+            } */
 
             // Draws a row with three strings
             if (r.type.equals("MultipleStrings")) {
@@ -364,6 +356,14 @@ public class PaintBuilder {
               int color = r.stringColor;
 
               if (text != null && color != 0) c.drawString(text, x, y, color, 1);
+
+            } else if (r.type.equals("CenteredString")) {
+              String text = r.text;
+              int x = (pWidth / 2) + pX;
+              int y = pY + rowsY + cumulativeRowHeight + 11 - (c.getStringHeight(1) / 2);
+              int color = r.stringColor;
+
+              if (text != null && color != 0) c.drawCenteredString(text, x, y, color, 1);
 
               // Draws a row with multiple item sprites and strings for each
             } else if (r.type.equals("MultipleSprites")) {
@@ -425,8 +425,8 @@ public class PaintBuilder {
             } else if (r.type.equals("ProgressBar")) {
               int barX = pX + r.rowXOffset;
               int barY = pY + rowsY + cumulativeRowHeight + 14;
-              c.drawShadowText(
-                  r.text, barX + (r.progressBarWidth / 2), barY - 10, r.stringColor, 1, true);
+              c.drawCenteredString(
+                  r.text, barX + (r.progressBarWidth / 2), barY - 10, r.stringColor, 1);
               c.drawProgressBar(
                   r.currentProgress,
                   r.maximumProgress,
@@ -441,6 +441,7 @@ public class PaintBuilder {
                   r.showGoal);
             }
             cumulativeRowHeight += r.rowHeight;
+            this.setHeight(cumulativeRowHeight + rowsY + 2);
           }
         }
         if (rowData.size() > 0) rowData.clear();

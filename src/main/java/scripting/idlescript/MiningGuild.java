@@ -59,7 +59,7 @@ public class MiningGuild extends IdleScript {
   private static int miningLevel;
 
   public int start(String[] param) {
-    paintBuilder.start(162, 142, 4, 18, 22);
+    paintBuilder.start(4, 18, 162);
     if (!guiSetup) {
       setup();
       guiSetup = true;
@@ -371,11 +371,11 @@ public class MiningGuild extends IdleScript {
           new String[] {"Mining", "Guild"},
           new int[] {0x008C8C, 0x718161},
           6,
-          new int[] {24, 62},
+          new int[] {25, 62},
           20);
-      paintBuilder.addRow(rowBuilder.singleStringRow("Seatta", 0xBD93F9, 62));
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", 0xBD93F9));
       paintBuilder.addRow(
-          rowBuilder.singleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff, 28));
+          rowBuilder.centeredSingleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff));
       for (int i = 0; i < oreIds.length; i++) {
         paintBuilder.addRow(
             rowBuilder.singleSpriteMultipleStringRow(

@@ -28,7 +28,7 @@ public class CasketFisher extends IdleScript {
   private int bankedCaskets = 0;
 
   public int start(String[] param) {
-    paintBuilder.start(174, 74, 4, 18, 22);
+    paintBuilder.start(4, 18, 174);
 
     if (!isInRectangle(CATHERBY_BANK) && !isInRectangle(CATHERBY_FISHING_AREA)
         || isInRectangle(WATER_OBELISK_ISLAND_OVERLAP)) {
@@ -189,9 +189,9 @@ public class CasketFisher extends IdleScript {
           6,
           new int[] {24, 68},
           20);
-      paintBuilder.addRow(rowBuilder.singleStringRow("Seatta", 0xBD93F9, 70));
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", 0xBD93F9));
       paintBuilder.addRow(
-          rowBuilder.singleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff, 36));
+          rowBuilder.centeredSingleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff));
       paintBuilder.addRow(
           rowBuilder.singleSpriteMultipleStringRow(
               casketId,

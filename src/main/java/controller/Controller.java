@@ -4356,17 +4356,23 @@ public class Controller {
       drawShadowText(
           String.valueOf(currentPercent + "%"),
           (width / 2) + x,
-          y + (height - 12),
+          y + (height / 2) - 3,
           0xffffff,
           1,
           true);
     }
     if (showValues) {
-      drawShadowText(String.valueOf(current), x + 4, y + (height - 5), 0xffffff, 1, false);
+      drawShadowText(
+          String.valueOf(current),
+          x + 4 + (this.getStringWidth(String.valueOf(current), 1) / 2),
+          y + (height / 2) - 3,
+          0xffffff,
+          1,
+          true);
       drawShadowText(
           String.valueOf(maximum),
           x + width - (5 * String.valueOf(maximum).length()),
-          y + (height - 12),
+          y + (height / 2) - 3,
           0xffffff,
           1,
           true);
@@ -4383,6 +4389,23 @@ public class Controller {
    */
   public void drawString(String str, int x, int y, int color, int fontSize) {
     mud.getSurface().drawString(str, x, y, color, Math.max(1, fontSize));
+  }
+
+  /**
+   * Draws text that is centered at the specified coordinates. Must be used inside paintInterrupt().
+   *
+   * @param str String -- String to draw
+   * @param x int -- X coordinate
+   * @param y int -- Y coordinate
+   * @param color int -- String color. RGB "HTML" Color Example: 0x36E2D7
+   * @param fontSize int -- 1 or greater
+   */
+  public void drawCenteredString(String str, int x, int y, int color, int fontSize) {
+    int textWidth = mud.getSurface().stringWidth(fontSize, str);
+    int textHeight = mud.getSurface().fontHeight(fontSize);
+    x = x - textWidth / 2;
+    y = y + textHeight / 2;
+    this.drawString(str, x, y, color, fontSize);
   }
 
   /**
@@ -4492,6 +4515,27 @@ public class Controller {
               / 100.0);
     }
     return 0;
+  }
+
+  /**
+   * Returns the width of a string of a specified font size.
+   *
+   * @param string String -- Text to get the width from
+   * @param fontSize int -- Font size
+   * @return int
+   */
+  public int getStringWidth(String string, int fontSize) {
+    return mud.getSurface().stringWidth(fontSize, string);
+  }
+
+  /**
+   * Returns the height of a specified font size.
+   *
+   * @param fontSize int -- Font size to get height from
+   * @return int
+   */
+  public int getStringHeight(int fontSize) {
+    return mud.getSurface().fontHeight(fontSize);
   }
 
   /**

@@ -12,7 +12,7 @@ import controller.PaintBuilder.RowBuilder;
  */
 public abstract class IdleScript {
   Controller controller = null;
-  PaintBuilder paintBuilder = new PaintBuilder(214, 46, 4, 24, 0);
+  PaintBuilder paintBuilder = new PaintBuilder(214, 4, 24);
   RowBuilder rowBuilder = new RowBuilder();
 
   /**

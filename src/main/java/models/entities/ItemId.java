@@ -1589,7 +1589,11 @@ public enum ItemId implements Id {
   LEAN_BEAR_MEAT(1540),
   LEAN_RAT_MEAT(1541),
   LEAN_BEEF(1542),
-  RUNE_STONE_CERTIFICATE(1543);
+  RUNE_STONE_CERTIFICATE(1543),
+
+  // Christmas 2023
+  BLACK_PARTY_HAT(1582),
+  PINK_SANTAS_HAT(1583);
 
   private final int id;
 

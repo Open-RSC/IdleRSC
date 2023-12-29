@@ -302,11 +302,11 @@ public class SmithingVarrock extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (controller != null) {
-      c.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+      c.drawBoxAlpha(7, 7, 142, 21 + 14 + 14 + 14, 0xFF0000, 64);
       c.drawString("@red@Smithing Varrock", 10, 21, 0xFFFFFF, 1);
       c.drawString("@gre@by Searos, fixed by Kaila", 10, 21 + 14, 0xFFFFFF, 1);
       c.drawString("@red@Bars Smithed: @yel@" + totalSmithed, 10, 21 + 14 + 14, 0xFFFFFF, 1);
-      c.drawString("@red@Bars left in Bank: @yel@" + barsLeft, 10, 21 + 14 + 14, 0xFFFFFF, 1);
+      c.drawString("@red@Bars left in Bank: @yel@" + barsLeft, 10, 21 + 14 + 14 + 14, 0xFFFFFF, 1);
     }
   }
 }

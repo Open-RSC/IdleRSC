@@ -42,3 +42,9 @@ Screenshots/
 # User Account Data
 accounts/
 *.properties
+
+# Local OCR Sleep BMP
+hc.bmp
+
+# Test IdleScript
+src/main/java/scripting/idlescript/AATesting.java

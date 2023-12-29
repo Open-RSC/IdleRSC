@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import controller.Controller;
+import controller.PaintBuilder.PaintBuilder;
+import controller.PaintBuilder.RowBuilder;
 
 /**
  * This is the base class from which all IdleScript scripts are derived; this class also contains
@@ -10,6 +12,8 @@ import controller.Controller;
  */
 public abstract class IdleScript {
   Controller controller = null;
+  PaintBuilder paintBuilder = new PaintBuilder(214, 4, 24);
+  RowBuilder rowBuilder = new RowBuilder();
 
   /**
    * Called by {@link callbacks.MessageCallback} every time a new server message is drawn on the
@@ -71,7 +75,12 @@ public abstract class IdleScript {
    * This will be called by {@link callbacks.DrawCallback} every game frame. <b>Override this in
    * your script to paint on the screen.</b>
    */
-  public void paintInterrupt() {}
+  public void paintInterrupt() {
+    // Draws a placeholder paint on scripts that haven't overridden paintInterrupt.
+    if (controller != null) {
+      paintBuilder.drawPlaceholderPaint();
+    }
+  }
 
   /**
    * This is called by {@link callbacks.DamageCallback} every time the NPC we are currently fighting

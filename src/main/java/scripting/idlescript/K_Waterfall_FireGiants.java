@@ -71,6 +71,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
+    foodId = ItemId.SHARK.getId();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;

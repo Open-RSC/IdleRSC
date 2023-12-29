@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import models.entities.GroundItemDef;
+import models.entities.NpcId;
 import models.entities.SkillDef;
 import orsc.Config;
 import orsc.ORSCharacter;
@@ -108,6 +109,7 @@ public class Controller {
   /** Stops the currently running script. */
   public void stop() {
     Main.setRunning(false);
+    this.stopBatching();
   }
 
   /** @param ms Sleeps for the specified amount of milliseconds. */
@@ -492,7 +494,7 @@ public class Controller {
 
   /**
    * Retrieves the current X coordinates of the player. <br>
-   * This occassionally returns incorrect values while Underground
+   * This occasionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -505,7 +507,7 @@ public class Controller {
 
   /**
    * Retrieves the current Y coordinates of the player. <br>
-   * This occassionally returns incorrect values while Underground
+   * This occasionally returns incorrect values while Underground
    *
    * @return int
    */
@@ -1242,7 +1244,7 @@ public class Controller {
    * Uses the specified item slot on the object at the specified coordinates. Note that this uses a
    * slot id, not an item id.
    *
-   * <p>This is primarially used to interact with an object, such as using an axe with a tree. For
+   * <p>This is primarily used to interact with an object, such as using an axe with a tree. For
    * tasks like opening locked doors try using "c.useItemOnWall(int x, int y, int slotIndex)"
    * instead
    *
@@ -1270,7 +1272,7 @@ public class Controller {
   /**
    * Uses the specified item id on the object at the specified coordinates.
    *
-   * <p>This is primarially used to interact with an object, such as using an axe with a tree. For
+   * <p>This is primarily used to interact with an object, such as using an axe with a tree. For
    * tasks like opening locked doors try using "c.useItemOnWall(int x, int y, int slotIndex)"
    * instead
    *
@@ -1347,7 +1349,7 @@ public class Controller {
    * Whether or not the specified npc is in combat.
    *
    * @param serverIndex int
-   * @return boolena -- returns true if in combat. Returns false if not in combat, or if server
+   * @return boolean -- returns true if in combat. Returns false if not in combat, or if server
    *     index not found.
    */
   public boolean isNpcInCombat(int serverIndex) {
@@ -2066,7 +2068,7 @@ public class Controller {
     return (boolean) reflector.getObjectMember(mud, "showDialogBank");
   }
 
-  /** Closes the bank window. N o effect if window is not currently open. */
+  /** Closes the bank window. No effect if window is not currently open. */
   public void closeBank() {
     reflector.setObjectMember(mud, "showDialogBank", false);
     sleep(GAME_TICK);
@@ -2220,7 +2222,7 @@ public class Controller {
     return false;
   }
   /**
-   * Withdraws a specified amount of an item from the bank. (APOS compatability method)
+   * Withdraws a specified amount of an item from the bank. (APOS compatibility method)
    *
    * @param itemId the ID of the item to be withdrawn
    * @param amount the amount of the item to be withdrawn
@@ -2274,13 +2276,13 @@ public class Controller {
   }
 
   /**
-   * Dislays a message in the client chat window, of the specified MessageType.
+   * Displays a message in the client chat window, of the specified MessageType.
    *
    * <p>EXAMPLE(int type, "default @color code@")
    *
    * <p>GAME(0, "@whi@")
    *
-   * <p>PRIVATE_RECIEVE(1, "@cya@")
+   * <p>PRIVATE_RECEIVE(1, "@cya@")
    *
    * <p>PRIVATE_SEND(2, "@cya@")
    *
@@ -2305,7 +2307,7 @@ public class Controller {
   }
 
   /**
-   * Dislays a message in the client chat window.
+   * Displays a message in the client chat window.
    *
    * @param rstext -- you may use @col@ colors here.
    */
@@ -2469,7 +2471,7 @@ public class Controller {
 
     try {
       /*<pre>
-       * 1st, make a string of /sceenshots/playerName/ folder
+       * 1st, make a string of /screenshots/playerName/ folder
        * 2nd, use Path command to turn string into Path for /Screenshots/playerName/
        * 3rd, use Files.createDirectories to make  the folder structure for /Screenshots/playerName/
        * -this will regenerate the folder structure if user deleted at any point
@@ -2698,6 +2700,210 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
     mud.packetHandler.getClientStream().finishPacket();
+  }
+
+  /** Sends a packet to the server to stop batching and sleeps until it has stopped. */
+  public void stopBatching() {
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+    mud.packetHandler.getClientStream().newPacket(199);
+    mud.packetHandler.getClientStream().bufferBits.putByte(6);
+    mud.packetHandler.getClientStream().finishPacket();
+    while (isBatching()) sleep(640);
+  }
+
+  /*
+   * TODO: Figure out how to add fetching of auction entries since they're needed for buying from/cancelling auctions.
+   * com.openrsc.interfaces.misc/AuctionHouse has auctionItems ArrayList but it's private
+   *
+   * TODO: After fetching auction ids add more checks to auction methods
+   */
+
+  /** Uses npcCommand1 to open the auction house on the nearest clerk */
+  public void openAuctionHouse() {
+    ORSCharacter npc = getNearestNpcById(NpcId.AUCTION_CLERK.getId(), false);
+    if (npc != null) {
+      npcCommand1(npc.serverIndex);
+      sleep(1280);
+      while (!isInAuctionHouse() && isRunning()) sleep(640);
+    } else {
+      log("Auction house clerk not found", "red");
+    }
+  }
+
+  /**
+   * Buys an amount of items from a given auction id.
+   *
+   * <p>CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
+   *
+   * @param auctionId int -- Auction id to buy from
+   * @param itemAmount int -- Amount of items to buy
+   */
+  public int auctionBuy(int auctionId, int itemAmount) {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(0);
+      mud.packetHandler.getClientStream().bufferBits.putInt(auctionId);
+      mud.packetHandler.getClientStream().bufferBits.putInt(itemAmount);
+      mud.packetHandler.getClientStream().finishPacket();
+      sleep(2560);
+      mud.setShowDialogServerMessage(false); // Close the dialog
+    } else {
+      log("You are not in an Auction House", "red");
+      return -1;
+    }
+    return 1;
+  }
+
+  /**
+   * Lists an amount of itemId for a specified price in the auction house.
+   *
+   * @param itemId int -- Item id
+   * @param itemAmount int -- Amount of item
+   * @param pricePerItem int -- Price to sell each item at
+   */
+  public int auctionCreate(int itemId, int itemAmount, int pricePerItem) {
+    int sellAmount;
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
+    if (isInAuctionHouse()) {
+      if (getInventoryItemCount(itemId) > 0) {
+        sellAmount =
+            getInventoryItemCount(itemId) >= itemAmount
+                ? itemAmount
+                : getInventoryItemCount(itemId);
+        while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+        mud.packetHandler.getClientStream().newPacket(199);
+        mud.packetHandler.getClientStream().bufferBits.putByte(10);
+        mud.packetHandler.getClientStream().bufferBits.putByte(1);
+        mud.packetHandler.getClientStream().bufferBits.putInt(itemId);
+        mud.packetHandler.getClientStream().bufferBits.putInt(sellAmount);
+        mud.packetHandler.getClientStream().bufferBits.putInt(pricePerItem * sellAmount);
+        mud.packetHandler.getClientStream().finishPacket();
+        sleep(2560);
+        mud.setShowDialogServerMessage(false);
+        closeAuctionHouse();
+      }
+
+    } else {
+      log("You are not in an Auction House", "red");
+      return -1;
+    }
+    return 1;
+  }
+
+  /**
+   * Cancels an auction
+   *
+   * <p>CURRENTLY NO WAY IMPLEMENTED TO FETCH AUCTION IDS!
+   *
+   * @param auctionId int -- Auction Id
+   */
+  public int auctionCancel(int auctionId) {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(2);
+      mud.packetHandler.getClientStream().bufferBits.putInt(auctionId);
+      mud.packetHandler.getClientStream().finishPacket();
+      sleep(2560);
+      mud.setShowDialogServerMessage(false);
+    } else {
+      log("You are not in an Auction House", "red");
+      return -1;
+    }
+    return 1;
+  }
+
+  /** Refreshes the Auction House listings. */
+  public int auctionRefresh() {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(3);
+      mud.packetHandler.getClientStream().finishPacket();
+    } else {
+      log("You are not in an Auction House", "red");
+      return -1;
+    }
+    return 1;
+  }
+
+  /** Closes the Auction House window */
+  public int closeAuctionHouse() {
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // lack of a bank in the area
+    if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
+      closeAuctionHouse();
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank.", "red");
+      return -1;
+    }
+    if (isInAuctionHouse()) {
+      while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+      mud.packetHandler.getClientStream().newPacket(199);
+      mud.packetHandler.getClientStream().bufferBits.putByte(10);
+      mud.packetHandler.getClientStream().bufferBits.putByte(4);
+      mud.packetHandler.getClientStream().finishPacket();
+      mud.auctionHouse.setVisible(false);
+    } else {
+      log("You are not in an an Auction House", "red");
+      return -1;
+    }
+    sleep(640);
+    return 1;
+  }
+
+  /**
+   * Whether or not an Auction House window is currently open.
+   *
+   * @return boolean
+   */
+  public boolean isInAuctionHouse() {
+    return mud.auctionHouse.isVisible();
   }
 
   /**
@@ -3009,6 +3215,25 @@ public class Controller {
    */
   public boolean isInShop() {
     return (boolean) reflector.getObjectMember(mud, "showDialogShop");
+  }
+
+  /** Uses npcCommand1 to open the shop on the nearest npc id given */
+  public void openShop(int[] npcIds) {
+    // I made this a String array just in case some npcs have a different command to open their
+    // shop.
+    String[] shopCommandStrings = {"Trade"};
+    ORSCharacter npc = getNearestNpcByIds(npcIds, false);
+    if (npc != null) {
+      for (int i = 0; i < shopCommandStrings.length; i++) {
+        if (getNpcCommand1(npc.npcId).equals(shopCommandStrings[i])) {
+          npcCommand1(npc.serverIndex);
+          sleep(1280);
+          while (!isInShop() && isRunning()) sleep(640);
+        } else if (i == shopCommandStrings.length - 1) log("NPC does not have a shop", "red");
+      }
+    } else {
+      log("Npc not found", "red");
+    }
   }
 
   /** Closes the currently open shop window. Does nothing if no shop window is open. */
@@ -4138,9 +4363,70 @@ public class Controller {
    * @param color -- RGB "HTML" Color Example: 0x36E2D7
    */
   public void drawLineVert(int x, int y, int height, int color) {
-    mud.getSurface().drawLineVert(x, y, color, height); // rearrenged per source!
+    mud.getSurface().drawLineVert(x, y, color, height); // rearranged per source!
   }
 
+  /**
+   * Draws a progress bar. Must be used inside paintInterrupt()
+   *
+   * @param current int -- Current value to calculate the progress bar from
+   * @param maximum int -- Maximum value to calculate the progress bar from
+   * @param bgColor int -- Color of the progress bar's background. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param fgColor int -- Color of the progress bar's foreground. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param borderColor int -- Color of the progress bar's border. RGB "HTML" Color Example:
+   *     0x36E2D7
+   * @param x int -- X coordinate of the top left of the progress bar
+   * @param y int -- Y coordinate of the top left of the progress bar
+   * @param width int -- Width of the progress bar
+   * @param height int -- Height of the progress bar
+   * @param showPercentage boolean -- Show the percentage on the bar
+   * @param showValues boolean -- Show the current and maximum values on the bar
+   */
+  public void drawProgressBar(
+      int current,
+      int maximum,
+      int bgColor,
+      int fgColor,
+      int borderColor,
+      int x,
+      int y,
+      int width,
+      int height,
+      boolean showPercentage,
+      boolean showValues) {
+    int currentPercent = (current * 100) / maximum > 100 ? 100 : (current * 100) / maximum;
+    int currentBarWidth = currentPercent >= 100 ? width : (width * currentPercent) / 100;
+    drawBoxAlpha(x, y, width, height, bgColor, 255);
+    drawBoxAlpha(x, y, currentBarWidth, height, fgColor, 255);
+    drawBoxBorder(x, y, width, height, borderColor);
+    if (showPercentage) {
+      drawShadowText(
+          String.valueOf(currentPercent + "%"),
+          (width / 2) + x,
+          y + (height / 2) - 3,
+          0xffffff,
+          1,
+          true);
+    }
+    if (showValues) {
+      drawShadowText(
+          String.valueOf(current),
+          x + 4 + (this.getStringWidth(String.valueOf(current), 1) / 2),
+          y + (height / 2) - 3,
+          0xffffff,
+          1,
+          true);
+      drawShadowText(
+          String.valueOf(maximum),
+          x + width - (5 * String.valueOf(maximum).length()),
+          y + (height / 2) - 3,
+          0xffffff,
+          1,
+          true);
+    }
+  }
   /**
    * Draws text at the specified coordinates. Must be used inside paintInterrupt().
    *
@@ -4152,6 +4438,23 @@ public class Controller {
    */
   public void drawString(String str, int x, int y, int color, int fontSize) {
     mud.getSurface().drawString(str, x, y, color, Math.max(1, fontSize));
+  }
+
+  /**
+   * Draws text that is centered at the specified coordinates. Must be used inside paintInterrupt().
+   *
+   * @param str String -- String to draw
+   * @param x int -- X coordinate
+   * @param y int -- Y coordinate
+   * @param color int -- String color. RGB "HTML" Color Example: 0x36E2D7
+   * @param fontSize int -- 1 or greater
+   */
+  public void drawCenteredString(String str, int x, int y, int color, int fontSize) {
+    int textWidth = mud.getSurface().stringWidth(fontSize, str);
+    int textHeight = mud.getSurface().fontHeight(fontSize);
+    x = x - textWidth / 2;
+    y = y + textHeight / 2;
+    this.drawString(str, x, y, color, fontSize);
   }
 
   /**
@@ -4175,16 +4478,113 @@ public class Controller {
    * @param itemId int --
    * @param x int -- X coordinate
    * @param y int -- Y coordinate
-   * @param width int -- Width of the sprite
-   * @param height int -- Height of the sprite
+   * @param scalePercent int -- Percent to scale the sprite. 100 for normal, less for smaller, and
+   *     greater for larger.
    * @param mirrorX boolean -- Mirror the sprite across it's X axis.
    */
-  public void drawItemSprite(int itemId, int x, int y, int width, int height, boolean mirrorX) {
+  public void drawItemSprite(int itemId, int x, int y, int scalePercent, boolean mirrorX) {
     ItemDef def = EntityHandler.getItemDef(itemId);
     Sprite sprite = mud.spriteSelect(def);
     mud.getSurface()
         .drawSpriteClipping(
-            sprite, x, y, width, height, def.getPictureMask(), 0, def.getBlueMask(), mirrorX, 0, 1);
+            sprite,
+            x,
+            y,
+            getItemSpriteScaledWidth(itemId, scalePercent),
+            getItemSpriteScaledHeight(itemId, scalePercent),
+            def.getPictureMask(),
+            0,
+            def.getBlueMask(),
+            mirrorX,
+            0,
+            1);
+  }
+
+  /**
+   * Returns the width of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @return int -- Width
+   */
+  public int getItemSpriteWidth(int itemId) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return sprite.getWidth();
+    }
+    return 0;
+  }
+  /**
+   * Returns the width of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @param scalePercent int -- Percent to scale the sprite up or down
+   * @return int -- Scaled width
+   */
+  public int getItemSpriteScaledWidth(int itemId, int scalePercent) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return (int)
+          ((sprite.getWidth() < 16 ? sprite.getWidth() * 22 : sprite.getWidth())
+              * (double) scalePercent
+              / 100.0);
+    }
+    return 0;
+  }
+
+  /**
+   * Returns the height of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @return int -- Height
+   */
+  public int getItemSpriteHeight(int itemId) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return sprite.getHeight();
+    }
+    return 0;
+  }
+  /**
+   * Returns the height of the sprite for an item id
+   *
+   * @param itemId int -- Item id
+   * @param scalePercent int -- Percent to scale the sprite up or down
+   * @return int -- Scaled height
+   */
+  public int getItemSpriteScaledHeight(int itemId, int scalePercent) {
+    if (itemId > -1) {
+      ItemDef def = EntityHandler.getItemDef(itemId);
+      Sprite sprite = mud.spriteSelect(def);
+      return (int)
+          ((sprite.getHeight() < 16 ? sprite.getHeight() * 22 : sprite.getHeight())
+              * (double) scalePercent
+              / 100.0);
+    }
+    return 0;
+  }
+
+  /**
+   * Returns the width of a string of a specified font size.
+   *
+   * @param string String -- Text to get the width from
+   * @param fontSize int -- Font size
+   * @return int
+   */
+  public int getStringWidth(String string, int fontSize) {
+    return mud.getSurface().stringWidth(fontSize, string);
+  }
+
+  /**
+   * Returns the height of a specified font size.
+   *
+   * @param fontSize int -- Font size to get height from
+   * @return int
+   */
+  public int getStringHeight(int fontSize) {
+    return mud.getSurface().fontHeight(fontSize);
   }
 
   /**
@@ -4318,7 +4718,7 @@ public class Controller {
 
   /**
    * If running on an authentic server, this stops the script and outputs a message about
-   * compatability.
+   * compatibility.
    */
   public void quitIfAuthentic() {
     if (this.isAuthentic()) {
@@ -4497,7 +4897,7 @@ public class Controller {
   }
 
   /**
-   * Retuns the width, in pixels, of the game window.
+   * Returns the width, in pixels, of the game window.
    *
    * @return int
    */

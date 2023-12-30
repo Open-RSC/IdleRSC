@@ -428,7 +428,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     foodField.setSelectedIndex(2); // sets default to sharks
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
-    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(3));
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(4));
     JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
     JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(5));
 

@@ -125,12 +125,10 @@ public class ColeslawGuildFisher extends IdleScript {
       if (c.getInventoryItemCount() == 30) {
         handleFullInven();
       }
-
       if (c.getInventoryItemCount() < 30) {
         handleFishing();
       }
-
-      c.sleep(600);
+      c.sleep(640);
     }
   }
 

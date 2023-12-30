@@ -5445,7 +5445,7 @@ public class Quester_F2P extends Script implements ActionListener {
               }
             }
             if (getInventoryCount(REDBERRIES) == 0) {
-              questStatus = "Gathering redberried";
+              questStatus = "Gathering redberries";
               pickupItemOrPath(REDBERRIES, REDBERRY_LOC);
               return 1200;
             }

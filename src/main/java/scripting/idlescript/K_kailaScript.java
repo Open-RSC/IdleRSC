@@ -1537,7 +1537,9 @@ public class K_kailaScript extends IdleScript {
   /** Loop to make sure to equip an item */
   protected static void forceEquipItem(int itemToEquip) {
     for (int i = 1; i <= 15; i++) {
-      if (c.isRunning() && !c.isItemIdEquipped(itemToEquip) && c.getInventoryItemCount(itemToEquip) > 0) {
+      if (c.isRunning()
+          && !c.isItemIdEquipped(itemToEquip)
+          && c.getInventoryItemCount(itemToEquip) > 0) {
         c.equipItem(c.getInventoryItemSlotIndex(itemToEquip));
         c.sleep(4 * GAME_TICK);
       } else {

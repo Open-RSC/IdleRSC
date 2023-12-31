@@ -1078,6 +1078,7 @@ public class QH__QuestHandler extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
+      // TODO Change Colors?
       int titleColor = paintBuilder.colorRainbow;
       int bgColor = 0x282A36; // 0x083E6B;
       int borderColor = paintBuilder.colorRainbow;

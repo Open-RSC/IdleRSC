@@ -178,7 +178,6 @@ public class PaintBuilder {
    *
    * @param string String -- Title
    * @param color int -- Title color RGB "HTML" Color Example: 0x36E2D7
-   * @param fontSize int -- Size of the title. 1 to 6
    * @param xOffset int -- X offset for the title from the paint's X
    * @param yOffset int -- Y offset for the title from the paint's Y
    */
@@ -196,7 +195,6 @@ public class PaintBuilder {
    * @param strings String[] -- Array of strings
    * @param colors int[] -- Array of colors for the title strings. RGB "HTML" Color Example:
    *     0x36E2D7
-   * @param fontSize int -- Size of the title. 1 to 6
    * @param xOffsets int[] -- Array of offsets for each string's X from the previous string's X. The
    *     first index is the amount offset from the paint's border.
    * @param yOffset int -- Y offset for the title's string from the paint's Y
@@ -221,7 +219,6 @@ public class PaintBuilder {
    *
    * @param string String -- Title
    * @param color int -- Title color RGB "HTML" Color Example: 0x36E2D7
-   * @param fontSize int -- Size of the title. 1 to 6
    * @param yOffset int -- Y offset for the title from the paint's Y
    */
   public void setTitleCenteredSingleColor(String string, int color, int yOffset) {

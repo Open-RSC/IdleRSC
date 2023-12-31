@@ -126,6 +126,22 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (!eatFood()
+          || c.getInventoryItemCount() == 30
+          || c.getInventoryItemCount(foodId) == 0
+          || timeToBank
+          || timeToBankStay) {
+        c.setStatus("@yel@Banking..");
+        timeToBank = false;
+        dungeonToBank();
+        bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
+          endSession();
+        }
+        bankToDungeon();
+      }
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
@@ -146,22 +162,6 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
-      }
-      timeToBank = !eatFood(); // does the eating checks
-      if (c.getInventoryItemCount() == 30
-          || c.getInventoryItemCount(foodId) == 0
-          || timeToBank
-          || timeToBankStay) {
-        c.setStatus("@yel@Banking..");
-        timeToBank = false;
-        dungeonToBank();
-        bank();
-        if (timeToBankStay) {
-          timeToBankStay = false;
-          c.displayMessage("@red@Click on Start Button Again@or1@, to resume");
-          endSession();
-        }
-        bankToDungeon();
       }
       if (c.currentX() < 186) { // down corridor too much
         c.displayMessage("@red@Error: Too far out of wander range, Walking back!");

@@ -106,26 +106,10 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
-      checkFightMode(fightMode);
       drinkPrayerPotion(31, true);
       prayParalyze();
-      eatFoodToLoot(true);
-      dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
-      if (potUp) {
-        superAttackBoost(0, true);
-        superStrengthBoost(0, true);
-      }
-      lootItems(true, loot);
-      if (!c.isInCombat()) {
-        ORSCharacter npc = c.getNearestNpcById(290, false);
-        if (npc != null) {
-          c.setStatus("@yel@Attacking Demons");
-          c.attackNpc(npc.serverIndex);
-          c.sleep(2 * GAME_TICK);
-        } else c.sleep(GAME_TICK);
-      } else c.sleep(GAME_TICK);
-      timeToBank = !eatFood(); // does the food eating
-      if (c.getInventoryItemCount(prayerPot[2]) == 0
+      if (!eatFood()
+          || c.getInventoryItemCount(prayerPot[2]) == 0
           || c.getInventoryItemCount(foodId) == 0
           || c.getInventoryItemCount() == 30
           || timeToBank
@@ -141,6 +125,22 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
         }
         BankToDemons();
       }
+      checkFightMode(fightMode);
+      eatFoodToLoot(true);
+      dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
+      if (potUp) {
+        superAttackBoost(0, true);
+        superStrengthBoost(0, true);
+      }
+      lootItems(true, loot);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(290, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Demons");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
     }
   }
 

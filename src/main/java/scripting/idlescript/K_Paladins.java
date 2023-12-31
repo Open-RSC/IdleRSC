@@ -181,9 +181,8 @@ public final class K_Paladins extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      _leaveCombat();
-      boolean ate = _eatFood();
-      if (!ate) {
+      leaveCombat();
+      if (!eatFood()) {
         c.setStatus("@gre@We've ran out of Food! Banking!.");
         c.sleep(1280);
         paladinsToBank(true);
@@ -218,7 +217,7 @@ public final class K_Paladins extends K_kailaScript {
         BankToPaladins();
       }
       if (c.getInventoryItemCount() == 30) {
-        _leaveCombat();
+        leaveCombat();
         c.setStatus("@gre@Eating Food to Loot..");
         if (c.getInventoryItemCount(foodId) > 0) {
           c.itemCommand(foodId);
@@ -234,32 +233,32 @@ public final class K_Paladins extends K_kailaScript {
     }
   }
   // Important private VOID's below
-  private void _leaveCombat() {
-    for (int i = 0; i <= 15; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkTo(610, 1549, 0, true);
-        c.sleep(GAME_TICK);
-      } else return;
-    }
-  }
-
-  private boolean _eatFood() {
-    boolean ate = false;
-    if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
-          _leaveCombat();
-          c.setStatus("@red@Eating..");
-          c.itemCommand(id);
-          c.sleep(GAME_TICK);
-          ate = true;
-          break;
-        }
-      }
-    } else return true; // not necessary to eat
-    return ate; // return false if not eaten, return true if has eaten.
-  }
+  //  private void _leaveCombat() {
+  //    for (int i = 0; i <= 15; i++) {
+  //      if (c.isInCombat()) {
+  //        c.setStatus("@red@Leaving combat..");
+  //        c.walkTo(610, 1549, 0, true);
+  //        c.sleep(GAME_TICK);
+  //      } else return;
+  //    }
+  //  }
+  //
+  //  private boolean _eatFood() {
+  //    boolean ate = false;
+  //    if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
+  //      for (int id : c.getFoodIds()) {
+  //        if (c.getInventoryItemCount(id) > 0) {
+  //          _leaveCombat();
+  //          c.setStatus("@red@Eating..");
+  //          c.itemCommand(id);
+  //          c.sleep(GAME_TICK);
+  //          ate = true;
+  //          break;
+  //        }
+  //      }
+  //    } else return true; // not necessary to eat
+  //    return ate; // return false if not eaten, return true if has eaten.
+  //  }
 
   private void bank() {
     c.setStatus("@yel@Banking..");

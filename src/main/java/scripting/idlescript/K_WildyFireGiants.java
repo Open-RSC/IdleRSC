@@ -100,6 +100,17 @@ public final class K_WildyFireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (!eatFood()
+          || timeToBank
+          || c.getInventoryItemCount(546) == 0
+          || c.getInventoryItemCount(795) > 0
+          || c.getInventoryItemCount(1277) > 0) { // bank if d med, or left half in inv
+        c.setStatus("@yel@Banking..");
+        GiantsToBank();
+        bank();
+        BankToStair();
+        stairToGiants();
+      }
       buryBones(true);
       lootItems(false, loot);
       superAttackBoost(0, true);
@@ -116,17 +127,6 @@ public final class K_WildyFireGiants extends K_kailaScript {
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
         eatFoodToLoot(true);
-      }
-      timeToBank = !eatFood(); // does the eating checks
-      if (timeToBank
-          || c.getInventoryItemCount(546) == 0
-          || c.getInventoryItemCount(795) > 0
-          || c.getInventoryItemCount(1277) > 0) { // bank if d med, or left half in inv
-        c.setStatus("@yel@Banking..");
-        GiantsToBank();
-        bank();
-        BankToStair();
-        stairToGiants();
       }
     }
   }

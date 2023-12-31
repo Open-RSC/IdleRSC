@@ -103,6 +103,13 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
+        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+        c.sleep(GAME_TICK);
+      } else if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
+        c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
+        c.sleep(GAME_TICK);
+      }
       if (timeToDrinkAntidote) {
         timeToDrinkAntidote = false;
         if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
@@ -110,16 +117,30 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           c.sleep(340);
         }
         drinkAnti(true);
-        timeToBank = !eatFood(); // does the eating checks
       }
-      timeToBank = !eatFood(); // does the eating checks
       drinkPrayerPotion(31, true, ANTI_DRAGON_SHIELD, useDragonTwoHand);
-      if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
-        c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        c.sleep(GAME_TICK);
-      } else if (useDragonTwoHand && c.isInCombat() && !c.isItemIdEquipped(DRAGON_TWO_HAND)) {
-        c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
-        c.sleep(GAME_TICK);
+      int prayerPotCount =
+          c.getInventoryItemCount(prayerPot[0])
+              + c.getInventoryItemCount(prayerPot[1])
+              + c.getInventoryItemCount(prayerPot[2]);
+      if (!eatFood()
+          || c.getInventoryItemCount(foodId) < 1
+          || prayerPotCount < 1
+          || timeToBank
+          || timeToBankStay) {
+        c.setStatus("@yel@No food, Banking..");
+        DragonsToBank();
+        timeToBank = false;
+        bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage(
+              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          c.setStatus("@red@Stopping Script.");
+          endSession();
+        }
+        BankToDragons();
+        c.sleep(618);
       }
       if (c.isPrayerOn(PARALYZE_MONSTER) && !c.isInCombat()) c.disablePrayer(PARALYZE_MONSTER);
       else if (!c.isPrayerOn(PARALYZE_MONSTER) && c.isInCombat()) c.enablePrayer(PARALYZE_MONSTER);
@@ -151,28 +172,6 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
           bank();
           BankToDragons();
         }
-      }
-      int prayerPotCount =
-          c.getInventoryItemCount(prayerPot[0])
-              + c.getInventoryItemCount(prayerPot[1])
-              + c.getInventoryItemCount(prayerPot[2]);
-      if (c.getInventoryItemCount(foodId) < 1
-          || prayerPotCount < 1
-          || timeToBank
-          || timeToBankStay) {
-        c.setStatus("@yel@No food, Banking..");
-        DragonsToBank();
-        timeToBank = false;
-        bank();
-        if (timeToBankStay) {
-          timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          endSession();
-        }
-        BankToDragons();
-        c.sleep(618);
       }
     }
   }

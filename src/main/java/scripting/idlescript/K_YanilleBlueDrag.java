@@ -100,6 +100,23 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
         c.equipItem(c.getInventoryItemSlotIndex(DRAGON_TWO_HAND));
         c.sleep(GAME_TICK);
       }
+      if (!eatFood() || c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
+        c.setStatus("@red@Out of food!");
+        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
+          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
+        c.setStatus("@yel@Heading to the Bank..");
+        timeToBank = false;
+        DragonsToBank();
+        bank();
+        if (timeToBankStay) {
+          timeToBankStay = false;
+          c.displayMessage(
+              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
+          c.setStatus("@red@Stopping Script.");
+          endSession();
+        }
+        BankToDragons();
+      }
       lootItems(true, loot, ANTI_DRAGON_SHIELD, useDragonTwoHand);
       if (buryBigBones) {
         c.setStatus("@gre@Looting/Burying Big Bones.");
@@ -137,24 +154,6 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         if (buryBones) buryBonesToLoot(false);
         eatFoodToLoot(false);
-      }
-      timeToBank = !eatFood(); // does the eating checks
-      if (timeToBank) c.setStatus("@red@Out of food!");
-      if (c.getInventoryItemCount(foodId) == 0 || timeToBank || timeToBankStay) {
-        if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD))
-          c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
-        c.setStatus("@yel@Heading to the Bank..");
-        timeToBank = false;
-        DragonsToBank();
-        bank();
-        if (timeToBankStay) {
-          timeToBankStay = false;
-          c.displayMessage(
-              "@red@Click on Start Button Again@or1@, to resume the script where it left off (preserving statistics)");
-          c.setStatus("@red@Stopping Script.");
-          endSession();
-        }
-        BankToDragons();
       }
     }
   }

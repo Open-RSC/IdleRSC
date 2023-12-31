@@ -120,6 +120,16 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
   /** Starts the script and executes the main logic in a loop. */
   private void scriptStart() {
     while (c.isRunning()) {
+      if (!eatFood()
+          || c.getInventoryItemCount() == 30
+          || c.getInventoryItemCount(foodId) == 0
+          || timeToBank) {
+        c.setStatus("@yel@Banking..");
+        timeToBank = false;
+        druidToBank();
+        bank();
+        bankToDruid();
+      }
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
@@ -147,14 +157,6 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
-      }
-      timeToBank = !eatFood();
-      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(foodId) == 0 || timeToBank) {
-        c.setStatus("@yel@Banking..");
-        timeToBank = false;
-        druidToBank();
-        bank();
-        bankToDruid();
       }
     }
   }

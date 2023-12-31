@@ -68,7 +68,6 @@ public final class K_TavDruidTown extends K_kailaScript {
       fightMode = 0;
       foodWithdrawAmount = 1;
       lootLowLevel = true;
-      // lootBones = false;
       potUp = false;
       c.displayMessage("Got Autostart Parameter");
       c.log(
@@ -100,29 +99,8 @@ public final class K_TavDruidTown extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (potUp) {
-        attackBoost(0, false);
-        strengthBoost(0, false);
-      }
-      if (lootLowLevel) lootItems(false, lowLevelLoot);
-      else lootItems(false, highLevelLoot);
-      // if (lootBones) lootItem(false, ItemId.BONES.getId());
-      // buryBones(false);
-      checkFightMode(fightMode);
-      if (!c.isInCombat()) {
-        ORSCharacter npc = c.getNearestNpcById(200, false);
-        if (npc != null) {
-          c.setStatus("@yel@Attacking Druids");
-          c.attackNpc(npc.serverIndex);
-          c.sleep(2 * GAME_TICK);
-        } else c.sleep(GAME_TICK);
-      } else c.sleep(GAME_TICK);
-      if (c.getInventoryItemCount() == 30) {
-        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
-        // buryBonesToLoot(false);
-      }
-      timeToBank = !eatFood();
-      if (c.getInventoryItemCount() == 30
+      if (!eatFood()
+          || c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
           || timeToBank
           || timeToBankStay) {
@@ -136,6 +114,24 @@ public final class K_TavDruidTown extends K_kailaScript {
           endSession();
         }
         BankToDruid();
+      }
+      if (potUp) {
+        attackBoost(0, false);
+        strengthBoost(0, false);
+      }
+      if (lootLowLevel) lootItems(false, lowLevelLoot);
+      else lootItems(false, highLevelLoot);
+      checkFightMode(fightMode);
+      if (!c.isInCombat()) {
+        ORSCharacter npc = c.getNearestNpcById(200, false);
+        if (npc != null) {
+          c.setStatus("@yel@Attacking Druids");
+          c.attackNpc(npc.serverIndex);
+          c.sleep(2 * GAME_TICK);
+        } else c.sleep(GAME_TICK);
+      } else c.sleep(GAME_TICK);
+      if (c.getInventoryItemCount() == 30) {
+        dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
       }
       if (c.currentY() < 480) {
         c.log("currentY: " + c.currentY() + " Wandered too far, Walking Back to center", "@red@");

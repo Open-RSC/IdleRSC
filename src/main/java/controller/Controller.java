@@ -1794,7 +1794,14 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putInt(amount);
     mud.packetHandler.getClientStream().finishPacket();
   }
-
+  /**
+   * return a int item id that is equipped in the provided slot index
+   *
+   * @return int of Item Id in provided slot Index
+   */
+  public int getEquippedItemId(int slotIndex) {
+    return this.getMud().equippedItems[slotIndex].id;
+  }
   /**
    * return a list of all item ids that are equipped
    *

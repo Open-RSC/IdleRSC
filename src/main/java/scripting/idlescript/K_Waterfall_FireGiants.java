@@ -71,7 +71,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    foodId = ItemId.SHARK.getId();
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -97,6 +96,14 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (!eatFood() || c.getInventoryItemCount(foodId) == 0 || timeToBank) {
+        c.setStatus("@yel@Banking, escaping south..");
+        timeToBank = false;
+        giantEscape();
+        GiantsToBank();
+        bank();
+        BankToGiants();
+      }
       lootItems(true, loot);
       buryBones(false);
       superAttackBoost(0, false);
@@ -112,15 +119,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(true, 1, ItemId.EMPTY_VIAL.getId());
         eatFoodToLoot(true);
-      }
-      timeToBank = !eatFood();
-      if (c.getInventoryItemCount(foodId) == 0 || timeToBank) {
-        c.setStatus("@yel@Banking, escaping south..");
-        timeToBank = false;
-        giantEscape();
-        GiantsToBank();
-        bank();
-        BankToGiants();
       }
     }
   }
@@ -369,6 +367,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
 
     startScriptButton.addActionListener(
         e -> {
+          foodId = ItemId.SHARK.getId();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           startTime = System.currentTimeMillis();

@@ -57,8 +57,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
   private void scriptStart() {
     while (c.isRunning()) {
       leaveCombat();
-      boolean ate = eatFood();
-      if (!ate
+      if (!eatFood()
           || timeToBank
           || c.getInventoryItemCount() > 29
           || c.getInventoryItemCount(foodId) == 0) {

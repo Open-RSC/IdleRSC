@@ -48,7 +48,7 @@ public final class K_IronGiftOpener extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (c.getInventoryItemCount(itemId) < 1 || c.getInventoryItemCount() >= 29) {
+      if (c.getInventoryItemCount(itemId) < 1 || c.getInventoryItemCount() > 29) {
         if (!c.isInBank()) {
           ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);
           if (npc != null) {
@@ -93,7 +93,7 @@ public final class K_IronGiftOpener extends K_kailaScript {
       if (option == 0 || option == 2) { // open crackers or tricks
         withdrawAmount = 15;
       } else if (option == 1) { // open presents
-        withdrawAmount = 29;
+        withdrawAmount = 28;
       }
       if (c.getInventoryItemCount(itemId) < withdrawAmount) {
         c.withdrawItem(itemId, withdrawAmount);

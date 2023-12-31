@@ -10,13 +10,6 @@ package scripting.idlescript;
  * @author Dvorak Heavily edited by Kailash
  */
 public class K_LumbPresentGrabber extends IdleScript {
-  int vialsFilled = 0;
-  int fullVials = 0;
-  int emptyVials = 0;
-  int objectx = 0;
-  int objecty = 0;
-
-  long startTimestamp = System.currentTimeMillis() / 1000L;
 
   public int start(String parameters[]) {
     controller.displayMessage("@red@present grabber! Let's party like it's 2004!");

@@ -357,13 +357,10 @@ public class Main {
       rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
 
     // Set checkboxes on side panel using "get" methods
-    autoLoginCheckbox.setSelected(config.isAutoLogin());
     logWindowCheckbox.setSelected(config.isLogWindowVisible());
     sidebarCheckbox.setSelected(config.isSidebarVisible());
     debugCheckbox.setSelected(config.isDebug());
     botPaintCheckbox.setSelected(config.isBotPaintVisible());
-    graphicsCheckbox.setSelected(config.isGraphicsEnabled());
-    gfxCheckbox.setSelected(config.isGraphicsEnabled());
     interlaceCheckbox.setSelected(config.isGraphicsInterlacingEnabled());
 
     if (config.isGraphicsInterlacingEnabled()) {
@@ -384,6 +381,9 @@ public class Main {
       }
     }
 
+    autoLoginCheckbox.setSelected(config.isAutoLogin());
+    graphicsCheckbox.setSelected(config.isGraphicsEnabled());
+    gfxCheckbox.setSelected(config.isGraphicsEnabled());
     // start up our listener threads
     log("Initializing LoginListener...");
     loginListener = new Thread(new LoginListener(controller));
@@ -409,6 +409,7 @@ public class Main {
                 checkBoxArray));
     windowListener.start();
     log("WindowListener started.");
+
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(3000);
 

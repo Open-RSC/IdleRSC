@@ -5,17 +5,14 @@ import java.util.Map;
 
 public enum EquipSlotIndex implements Id {
   NOTHING(-1),
-  Helmet(0),
-  CAPE(1),
-  NECKLACE(2),
-  ARROWS(3),
-  WEAPON(4),
-  BODY(5),
-  SHIELD(6),
-  LEGS(7),
-  GLOVES(8),
-  BOOTS(9),
-  RING(10);
+  Helmet(0), // helm
+  BODY(1), // body
+  LEGS(2), // legs
+  SHIELD(3), // shield
+  WEAPON(4), // weapon
+  GLOVES(5);// gloves
+
+  //any int above 5 returns null when checking if an item is equipped, can only check these slots
 
   private int equipSlot;
 

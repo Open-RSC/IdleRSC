@@ -73,6 +73,11 @@ public final class K_TavChaosDruids extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
+    for (int i = 0; i < 13; i++) {
+
+      c.log(i + "th " + c.getEquippedItemId(i));
+    }
+
     centerX = 344;
     centerY = 3318;
     centerDistance = 12;
@@ -114,6 +119,16 @@ public final class K_TavChaosDruids extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (!eatFood()
+          || c.getInventoryItemCount() == 30
+          || c.getInventoryItemCount(foodId) == 0
+          || timeToBank) {
+        c.setStatus("@yel@Banking..");
+        timeToBank = false;
+        DruidToBank();
+        bank();
+        BankToDruid();
+      }
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
@@ -135,14 +150,6 @@ public final class K_TavChaosDruids extends K_kailaScript {
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
-      }
-      timeToBank = !eatFood(); // does the eating checks
-      if (c.getInventoryItemCount() == 30 || c.getInventoryItemCount(foodId) == 0 || timeToBank) {
-        c.setStatus("@yel@Banking..");
-        timeToBank = false;
-        DruidToBank();
-        bank();
-        BankToDruid();
       }
     }
   }
@@ -295,7 +302,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
 
   private void DruidToBank() {
     c.walkTo(355, 3320); // walk to safe spot
-    if (craftCapeTeleport) {
+    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       c.walkTo(347, 600);

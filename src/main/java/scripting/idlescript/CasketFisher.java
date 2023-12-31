@@ -186,12 +186,12 @@ public class CasketFisher extends IdleScript {
       paintBuilder.setTitleMultipleColor(
           new String[] {"Casket", "Fisher"},
           new int[] {paintColors[0], paintColors[1]},
-          6,
           new int[] {24, 68},
-          20);
-      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", 0xBD93F9));
+          4);
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", 0xBD93F9, 1));
       paintBuilder.addRow(
-          rowBuilder.centeredSingleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff));
+          rowBuilder.centeredSingleStringRow(
+              "Run Time: " + paintBuilder.stringRunTime, 0xffffff, 1));
       paintBuilder.addRow(
           rowBuilder.singleSpriteMultipleStringRow(
               casketId,
@@ -203,8 +203,7 @@ public class CasketFisher extends IdleScript {
               },
               new int[] {paintColors[2], 0x00ff00},
               new int[] {36, 52},
-              16,
-              22));
+              16));
       paintBuilder.draw();
     }
   }

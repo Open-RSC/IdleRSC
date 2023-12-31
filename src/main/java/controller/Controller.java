@@ -4584,7 +4584,9 @@ public class Controller {
    * @return int
    */
   public int getStringHeight(int fontSize) {
-    return mud.getSurface().fontHeight(fontSize);
+    if (fontSize < 1 || fontSize > 7) return -1;
+    int[] fontHeights = {12, 12, 14, 14, 16, 20, 23};
+    return fontHeights[fontSize - 1];
   }
 
   /**

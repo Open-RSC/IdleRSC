@@ -24,7 +24,7 @@ public final class QH_MonksFriend extends QH__QuestHandler {
 
   public int start(String[] param) { // warning does not handle food conditions
     QUEST_NAME = "Monk's friend";
-    START_RECTANGLE = ARDY_MONESTARY;
+    START_RECTANGLE = ARDY_MONASTERY;
     QUEST_REQUIREMENTS = new String[] {};
     SKILL_REQUIREMENTS = new int[][] {};
     EQUIP_REQUIREMENTS = new int[][] {};

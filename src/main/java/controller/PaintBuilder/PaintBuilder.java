@@ -7,8 +7,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-// TODO: Use the largest number from (14 or spriteScaledHeight+2) to set row heights automatically
-
 public class PaintBuilder {
   private static final Controller c = Main.getController();
   RowBuilder rowBuilder = new RowBuilder();
@@ -23,10 +21,10 @@ public class PaintBuilder {
   private int rowsY = 2;
   private String[] title;
   private int[] tColors, tXOffsets;
-  private int tSize, tYOffset = 0;
+  private int tYOffset = 0;
   private float hue = 0f;
   private int rainbowSpeed = 4;
-  private boolean isScriptPaint, isPlaceholderPaint = false;
+  private boolean isScriptPaint, isPlaceholderPaint, tCentered = false;
 
   private ArrayList<RowBuilder> rowData = new ArrayList<>();
 
@@ -184,17 +182,16 @@ public class PaintBuilder {
    * @param xOffset int -- X offset for the title from the paint's X
    * @param yOffset int -- Y offset for the title from the paint's Y
    */
-  public void setTitleSingleColor(
-      String string, int color, int fontSize, int xOffset, int yOffset) {
+  public void setTitleSingleColor(String string, int color, int xOffset, int yOffset) {
     this.title = new String[] {string};
     this.tColors = new int[] {color};
-    this.tSize = fontSize;
     this.tXOffsets = new int[] {xOffset};
     this.tYOffset = yOffset;
+    this.tCentered = false;
   }
 
   /**
-   * Adds a title header with a two colored strings
+   * Adds a title header with a multiple colored strings
    *
    * @param strings String[] -- Array of strings
    * @param colors int[] -- Array of colors for the title strings. RGB "HTML" Color Example:
@@ -204,20 +201,34 @@ public class PaintBuilder {
    *     first index is the amount offset from the paint's border.
    * @param yOffset int -- Y offset for the title's string from the paint's Y
    */
-  public void setTitleMultipleColor(
-      String[] strings, int[] colors, int fontSize, int[] xOffsets, int yOffset) {
+  public void setTitleMultipleColor(String[] strings, int[] colors, int[] xOffsets, int yOffset) {
 
-    this.tSize = fontSize;
     this.tYOffset = yOffset;
     if (strings.length > 0 && strings.length == colors.length && colors.length == xOffsets.length) {
       this.title = strings;
       this.tColors = colors;
       this.tXOffsets = xOffsets;
+      this.tCentered = false;
     } else {
       this.title = new String[] {"Title arrays length mismatch"};
-      this.tColors = new int[] {0xff0000};
+      this.tColors = new int[] {0xff4545};
       this.tXOffsets = new int[] {4};
     }
+  }
+
+  /**
+   * Adds a centered title header with a single color
+   *
+   * @param string String -- Title
+   * @param color int -- Title color RGB "HTML" Color Example: 0x36E2D7
+   * @param fontSize int -- Size of the title. 1 to 6
+   * @param yOffset int -- Y offset for the title from the paint's Y
+   */
+  public void setTitleCenteredSingleColor(String string, int color, int yOffset) {
+    this.title = new String[] {string};
+    this.tColors = new int[] {color};
+    this.tYOffset = yOffset;
+    this.tCentered = true;
   }
 
   /**
@@ -233,20 +244,12 @@ public class PaintBuilder {
     }
   }
 
-  /**
-   * Adds an empty row. Useful for initializing a row that will be modified by updateRow in the
-   * paintInterrupt.
-   */
-  public void addEmptyRow() {
-    rowData.add(new RowBuilder());
-  }
-
-  /**
-   * Adds X empty rows. Useful for initializing a row that will be modified by updateRow in the
-   * paintInterrupt.
-   */
-  public void addEmptyRows(int amount) {
-    for (int i = 0; i < amount; i++) rowData.add(new RowBuilder());
+  /** Adds an empty row used to add a space between two rows. */
+  public void addSpacerRow(int rowHeight) {
+    rowHeight = rowHeight < 0 ? 0 : rowHeight;
+    RowBuilder row = new RowBuilder();
+    row.rowHeight = rowHeight;
+    rowData.add(row);
   }
 
   /**
@@ -281,6 +284,29 @@ public class PaintBuilder {
                 : String.valueOf(amount);
   }
 
+  public void drawPlaceholderPaint() {
+    isPlaceholderPaint = true;
+    setBackgroundColor(0x282A36, 255);
+    setBorderColor(0xff4545);
+    addRow(rowBuilder.singleStringRow("This is a placeholder paint", colorRainbow, 32, 1));
+    addRow(rowBuilder.singleStringRow("Override paintInterrupt to create one", 0xff4545, 4, 1));
+    addRow(rowBuilder.singleStringRow("Run Time: " + stringRunTime, 0xff4545, 54, 1));
+    draw();
+    isPlaceholderPaint = false;
+  }
+
+  /**
+   * Returns the amount the font needs to be offset to have correct placement in a row.
+   *
+   * @param fontSize 1-7
+   * @return int
+   */
+  private int fixFontAnchoring(int fontSize) {
+    int[] fontYOffsets = {11, 11, 12, 12, 14, 17, 19};
+    return fontSize > 0 && fontSize < 8 ? fontYOffsets[fontSize - 1] : 0;
+  }
+
+  /** This is ran once per draw cycle. Put variables that need updating here */
   private void doUpdates() {
     hue = hue <= 0 ? 1f : hue - (float) (rainbowSpeed * 0.0005);
 
@@ -290,16 +316,6 @@ public class PaintBuilder {
     timeScale = (60 * 60) / runTimeSeconds;
   }
 
-  public void drawPlaceholderPaint() {
-    isPlaceholderPaint = true;
-    setBackgroundColor(0x282A36, 255);
-    setBorderColor(0xff0000);
-    addRow(rowBuilder.singleStringRow("This is a placeholder paint", colorRainbow, 32));
-    addRow(rowBuilder.singleStringRow("Override paintInterrupt to create one", 0xff0000, 4));
-    addRow(rowBuilder.singleStringRow("Run Time: " + stringRunTime, 0xff0000, 54));
-    draw();
-    isPlaceholderPaint = false;
-  }
   /** Draws the paint. */
   public void draw() {
     if (c != null) {
@@ -313,17 +329,22 @@ public class PaintBuilder {
         // Draws a border for the paint
         if (borderColor != 0) c.drawBoxBorder(pX, pY, pWidth, pHeight, borderColor);
 
-        // Draws a title string
+        // Draws a title at the top of the paint
         if (title != null) {
           int x = pX;
+          int y = pY + tYOffset + fixFontAnchoring(6);
           for (int i = 0; i < title.length; i++) {
-            x += tXOffsets[i];
+            if (tXOffsets != null) x += tXOffsets[i];
             String text = title[i];
-            int y = pY + tYOffset;
             int color = tColors[i];
-            c.drawString(text, x, y, color, tSize);
-            setRowsY(c.getStringHeight(tSize));
+            if (tCentered) {
+              y = pY + tYOffset + 4;
+              c.drawCenteredString(text, pX + (pWidth / 2), y, color, 6);
+            } else {
+              c.drawString(text, x, y, color, 6);
+            }
           }
+          setRowsY((c.getStringHeight(6) + tYOffset + 2));
         }
 
         // Draw rows
@@ -331,39 +352,42 @@ public class PaintBuilder {
           for (int rowNum = 0; rowNum < rowData.size(); rowNum++) {
             RowBuilder r = rowData.get(rowNum);
 
-            // Highlight a rows background for testing r.rowHeight
-            /* if (rowNum == 0) {
+            // Highlight row backgrounds for testing r.rowHeight
+            /* if (rowNum % 2 == 1) {
               c.drawBoxAlpha(
-                  pX, pY + cumulativeRowHeight + rowsY, pWidth, r.rowHeight, 0xffffff, 100);
+                  pX, pY + cumulativeRowHeight + rowsY, pWidth, r.rowHeight, 0xffffff, 155);
+            } else {
+              c.drawBoxAlpha(
+                  pX, pY + cumulativeRowHeight + rowsY, pWidth, r.rowHeight, 0x454545, 155);
             } */
 
             // Draws a row with three strings
             if (r.type.equals("MultipleStrings")) {
-              int x = pX + r.rowXOffset;
-              int y = pY + rowsY + cumulativeRowHeight;
+              int x = pX;
+              int y = pY + rowsY + cumulativeRowHeight + fixFontAnchoring(r.fontSize);
               for (int i = 0; i < r.strings.length; i++) {
                 x += r.stringXOffsets[i];
                 String text = r.strings[i];
                 int color = r.colors[i];
-                if (text != null && color != 0) c.drawString(text, x, y, color, 1);
+                if (text != null && color != 0) c.drawString(text, x, y, color, r.fontSize);
               }
 
               // Draws a row with a single string
             } else if (r.type.equals("SingleString")) {
               String text = r.text;
-              int x = r.rowXOffset + pX;
-              int y = pY + rowsY + cumulativeRowHeight + 11;
+              int x = r.borderXOffset + pX;
+              int y = pY + rowsY + cumulativeRowHeight + fixFontAnchoring(r.fontSize);
               int color = r.stringColor;
 
-              if (text != null && color != 0) c.drawString(text, x, y, color, 1);
+              if (text != null && color != 0) c.drawString(text, x, y, color, r.fontSize);
 
             } else if (r.type.equals("CenteredString")) {
               String text = r.text;
               int x = (pWidth / 2) + pX;
-              int y = pY + rowsY + cumulativeRowHeight + 11 - (c.getStringHeight(1) / 2);
+              int y = pY + rowsY + cumulativeRowHeight + (r.fontSize < 3 ? 4 : 5);
               int color = r.stringColor;
 
-              if (text != null && color != 0) c.drawCenteredString(text, x, y, color, 1);
+              if (text != null && color != 0) c.drawCenteredString(text, x, y, color, r.fontSize);
 
               // Draws a row with multiple item sprites and strings for each
             } else if (r.type.equals("MultipleSprites")) {
@@ -377,13 +401,13 @@ public class PaintBuilder {
                 int color = r.colors.length == r.ids.length ? r.colors[i] : r.colors[0];
 
                 cumulativeSpacing += c.getItemSpriteScaledWidth(id, scale) + r.spriteSpacing;
-                int spriteX = r.rowXOffset + cumulativeSpacing;
+                int spriteX = r.borderXOffset + cumulativeSpacing;
                 int spriteY =
                     pY
                         + rowsY
                         + cumulativeRowHeight
                         + (int) (c.getItemSpriteScaledWidth(id, scale) / 2);
-                int stringX = pX + r.rowXOffset + stringXOffset + cumulativeSpacing;
+                int stringX = pX + r.borderXOffset + stringXOffset + cumulativeSpacing;
                 int stringY = pY + spriteY + r.stringYOffset + 11;
 
                 c.drawItemSprite(id, spriteX, spriteY, scale, false);
@@ -394,13 +418,11 @@ public class PaintBuilder {
 
             } else if (r.type.equals("SingleSpriteMultipleStrings")) {
               int id = r.itemId;
-              int rowX = pX + r.rowXOffset;
-              int spriteY = pY + rowsY + cumulativeRowHeight;
-              int stringY = pY + rowsY + cumulativeRowHeight + r.stringYOffset;
+              int rowX = pX + r.borderXOffset;
+              int spriteY = pY + rowsY + cumulativeRowHeight + 2;
+              int stringY = spriteY + r.stringYOffset + fixFontAnchoring(r.fontSize);
               int scale = r.spriteScale;
-
               c.drawItemSprite(id, rowX, spriteY, scale, false);
-
               int stringX = rowX;
               for (int i = 0; i < r.strings.length; i++) {
                 stringX += r.stringXOffsets[i];
@@ -413,17 +435,18 @@ public class PaintBuilder {
             } else if (r.type.equals("SingleSpriteSingleString")) {
               int id = r.itemId;
               int scale = r.spriteScale;
-              String str1 = r.text;
-              int color1 = r.stringColor;
-              int spriteY = pY + rowsY + cumulativeRowHeight;
-              int spriteX = pX + r.rowXOffset;
-              int stringX1 = spriteX + r.stringXOffset;
-              int stringY = spriteY + r.stringYOffset;
-
+              String str = r.text;
+              int color = r.stringColor;
+              int spriteY = pY + rowsY + cumulativeRowHeight + 2;
+              int spriteX = pX + r.borderXOffset;
+              int stringX = spriteX + r.stringXOffset;
+              int stringY = spriteY + r.stringYOffset + (c.getStringHeight(1) / 2);
               c.drawItemSprite(id, spriteX, spriteY, scale, false);
-              c.drawString(str1, stringX1, stringY, color1, 1);
+              c.drawString(str, stringX, stringY, color, 1);
+
+              // Draws a row with a progress bar and a description string
             } else if (r.type.equals("ProgressBar")) {
-              int barX = pX + r.rowXOffset;
+              int barX = pX + r.borderXOffset;
               int barY = pY + rowsY + cumulativeRowHeight + 14;
               c.drawCenteredString(
                   r.text, barX + (r.progressBarWidth / 2), barY - 10, r.stringColor, 1);
@@ -441,9 +464,9 @@ public class PaintBuilder {
                   r.showGoal);
             }
             cumulativeRowHeight += r.rowHeight;
-            this.setHeight(cumulativeRowHeight + rowsY + 2);
           }
         }
+        this.setHeight(cumulativeRowHeight + rowsY + 2);
         if (rowData.size() > 0) rowData.clear();
       }
 

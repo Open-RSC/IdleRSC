@@ -12,7 +12,7 @@ bot functionality!
 ---
 Releases are automatically generated upon every commit to the GitLab
 [repository][repository], the last successful build can be downloaded
-[here][download].
+[here][download]. Javadoc can be found [here][github-pages]
 
 1. Modify run.bat/sh.
 1. Select which server you want.
@@ -257,6 +257,7 @@ Damrau, Grawlinson, JonathanB31, Kaila Btw, Kkoemets, and Searos.
 The RSC botting scene WILL NEVER DIE! IdleRSC is the next iteration after
 APOS, STS, SBot, and AutoRune!
 
+[github-pages]: https://open-runescape-classic.gitlab.io/idlersc
 [open-rsc]: https://rsc.vet
 [repository]: https://gitlab.com/open-runescape-classic/idlersc
 [issue-tracker]: https://gitlab.com/open-runescape-classic/idlersc/-/issues

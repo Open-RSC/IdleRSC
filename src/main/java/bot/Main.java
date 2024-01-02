@@ -12,8 +12,6 @@ import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -40,7 +38,6 @@ import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
 import scripting.idlescript.IdleScript;
-import utils.Extractor;
 import utils.Version;
 
 /**
@@ -266,7 +263,7 @@ public class Main {
     }
 
     config.absorb(parseResult);
-    handleCache(config);
+    // handleCache(config);
 
     Reflector reflector = new Reflector(); // start up our reflector helper
     OpenRSC client = reflector.createClient(); // start up our client jar
@@ -949,91 +946,92 @@ public class Main {
     };
   }
 
-  /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
-  private static void handleCache(Config config) {
-    final int COLESLAW_PORT = 43599;
-    final int URANIUM_PORT = 43601;
-    // Does the directory exist?
-    File cacheDirectory = new File("Cache/");
+  //  /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder.
+  // */
+  //  private static void handleCache(Config config) {
+  //    final int COLESLAW_PORT = 43599;
+  //    final int URANIUM_PORT = 43601;
+  //    // Does the directory exist?
+  //    File cacheDirectory = new File("Cache/");
+  //
+  //    if (cacheDirectory.exists()) return;
+  //
+  //    // If --init-cache argument is used, bypass the GUI
+  //    if (!config.getInitCache().isEmpty()) {
+  //      if (config.getInitCache().equals("uranium")) {
+  //        // Create Uranium cache
+  //        createCache(URANIUM_PORT);
+  //        return;
+  //      } else if (config.getInitCache().equals("coleslaw")) {
+  //        // Create Coleslaw cache
+  //        createCache(COLESLAW_PORT);
+  //        return;
+  //      } else {
+  //        System.out.println("Server (" + config.getInitCache() + ") is not known.");
+  //      }
+  //    }
+  //
+  //    JFrame cacheFrame = new JFrame("Cache Setup");
+  //    JLabel cacheLabel = new JLabel("First setup: you must select either Uranium or Coleslaw.");
+  //    JButton uraniumButton = new JButton("Uranium (2018 RSC)");
+  //    JButton coleslawButton = new JButton("Coleslaw (modified RSC, new content)");
+  //
+  //    uraniumButton.addActionListener(
+  //        e -> {
+  //          // Create Uranium cache
+  //          createCache(URANIUM_PORT);
+  //        });
+  //
+  //    coleslawButton.addActionListener(
+  //        e -> {
+  //          // Create Coleslaw cache
+  //          createCache(COLESLAW_PORT);
+  //        });
+  //
+  //    cacheFrame.setLayout(new GridLayout(0, 1));
+  //    cacheFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+  //    cacheFrame.add(cacheLabel);
+  //    cacheFrame.add(uraniumButton);
+  //    cacheFrame.add(coleslawButton);
+  //
+  //    cacheFrame.pack();
+  //    cacheFrame.setLocationRelativeTo(null);
+  //    cacheFrame.setVisible(true);
+  //    cacheFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  //
+  //    while (!cacheDirectory.exists()) {
+  //      try {
+  //        Thread.sleep(100);
+  //      } catch (InterruptedException e) {
+  //        e.printStackTrace();
+  //      }
+  //      cacheDirectory = new File("Cache/");
+  //    }
+  //    cacheFrame.setVisible(false);
+  //    cacheFrame.dispose();
+  //  }
 
-    if (cacheDirectory.exists()) return;
-
-    // If --init-cache argument is used, bypass the GUI
-    if (!config.getInitCache().isEmpty()) {
-      if (config.getInitCache().equals("uranium")) {
-        // Create Uranium cache
-        createCache(URANIUM_PORT);
-        return;
-      } else if (config.getInitCache().equals("coleslaw")) {
-        // Create Coleslaw cache
-        createCache(COLESLAW_PORT);
-        return;
-      } else {
-        System.out.println("Server (" + config.getInitCache() + ") is not known.");
-      }
-    }
-
-    JFrame cacheFrame = new JFrame("Cache Setup");
-    JLabel cacheLabel = new JLabel("First setup: you must select either Uranium or Coleslaw.");
-    JButton uraniumButton = new JButton("Uranium (2018 RSC)");
-    JButton coleslawButton = new JButton("Coleslaw (modified RSC, new content)");
-
-    uraniumButton.addActionListener(
-        e -> {
-          // Create Uranium cache
-          createCache(URANIUM_PORT);
-        });
-
-    coleslawButton.addActionListener(
-        e -> {
-          // Create Coleslaw cache
-          createCache(COLESLAW_PORT);
-        });
-
-    cacheFrame.setLayout(new GridLayout(0, 1));
-    cacheFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    cacheFrame.add(cacheLabel);
-    cacheFrame.add(uraniumButton);
-    cacheFrame.add(coleslawButton);
-
-    cacheFrame.pack();
-    cacheFrame.setLocationRelativeTo(null);
-    cacheFrame.setVisible(true);
-    cacheFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    while (!cacheDirectory.exists()) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      cacheDirectory = new File("Cache/");
-    }
-    cacheFrame.setVisible(false);
-    cacheFrame.dispose();
-  }
-
-  private static void createCache(int ServerPort) {
-    // Create Cache directory
-    File dir = new File("." + File.separator + "Cache");
-    dir.mkdirs();
-
-    // Copy embedded cache to cache directory
-    try {
-      Extractor.extractZipResource("/cache/ZipCache.zip", dir.toPath());
-    } catch (IOException ignored) {
-      System.out.print(ignored);
-    }
-
-    // Add port to client cache
-    try {
-      FileWriter portFile = new FileWriter("Cache/port.txt");
-      portFile.write(Integer.toString(43599));
-      portFile.close();
-    } catch (IOException ignored) {
-      System.out.print(ignored);
-    }
-  }
+  //  private static void createCache(int ServerPort) {
+  //    // Create Cache directory
+  //    File dir = new File("." + File.separator + "Cache");
+  //    dir.mkdirs();
+  //
+  //    // Copy embedded cache to cache directory
+  //    try {
+  //      Extractor.extractZipResource("/cache/ZipCache.zip", dir.toPath());
+  //    } catch (IOException ignored) {
+  //      System.out.print(ignored);
+  //    }
+  //
+  //    // Add port to client cache
+  //    try {
+  //      FileWriter portFile = new FileWriter("Cache/port.txt");
+  //      portFile.write(Integer.toString(43599));
+  //      portFile.close();
+  //    } catch (IOException ignored) {
+  //      System.out.print(ignored);
+  //    }
+  //  }
 
   private static void copyDirectory(
       String sourceDirectoryLocation, String destinationDirectoryLocation) {

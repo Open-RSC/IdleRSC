@@ -37,7 +37,7 @@ src/main/resources/cache
 public/
 
 # User chosen cache
-Cache/
+#Cache/
 
 # User screenshots
 Screenshots/

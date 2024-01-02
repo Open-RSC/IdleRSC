@@ -18,6 +18,7 @@ public final class EntryFrame extends JFrame {
   private static String account = "";
   private final Choice accountChoice;
   private String themeName = "RuneDark Theme";
+  private final String resourceLocation = "src/main/resources/";
   private boolean okie = false;
 
   // todo add theme select to cli
@@ -65,21 +66,21 @@ public final class EntryFrame extends JFrame {
     setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     loadAccounts();
-    setIconImage(new ImageIcon("res/logos/idlersc.icon.png").getImage());
+    setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
     Image idleImage =
-        new ImageIcon("res/logos/idlersc.icon.png")
+        new ImageIcon(resourceLocation + "logos/idlersc.icon.png")
             .getImage()
             .getScaledInstance(96, 96, java.awt.Image.SCALE_SMOOTH);
     Image welImage =
-        new ImageIcon("res/icons/welcome.icon.png")
+        new ImageIcon(resourceLocation + "icons/welcome.icon.png")
             .getImage()
             .getScaledInstance(230, 30, java.awt.Image.SCALE_SMOOTH);
     Image okImage =
-        new ImageIcon("res/icons/ok.icon.png")
+        new ImageIcon(resourceLocation + "icons/ok.icon.png")
             .getImage()
             .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
     Image cancelImg =
-        new ImageIcon("res/icons/cancel2.icon.png")
+        new ImageIcon(resourceLocation + "icons/cancel2.icon.png")
             .getImage()
             .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
     // ImageIcon icon = new ImageIcon("res/ui/present_edit.png"); // Christmas mode
@@ -285,7 +286,7 @@ public final class EntryFrame extends JFrame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
-      setIconImage(new ImageIcon("res/logos/idlersc.icon.png").getImage());
+      setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
       // setIconImage(Utils.getImage("idlersc.icon.png").getImage());
       setLocationRelativeTo(null);
       toFront();

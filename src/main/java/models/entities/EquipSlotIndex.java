@@ -10,9 +10,9 @@ public enum EquipSlotIndex implements Id {
   LEGS(2), // legs
   SHIELD(3), // shield
   WEAPON(4), // weapon
-  GLOVES(5);// gloves
+  GLOVES(5); // gloves
 
-  //any int above 5 returns null when checking if an item is equipped, can only check these slots
+  // any int above 5 returns null when checking if an item is equipped, can only check these slots
 
   private int equipSlot;
 

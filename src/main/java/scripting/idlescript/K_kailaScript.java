@@ -3,7 +3,6 @@ package scripting.idlescript;
 import bot.Main;
 import controller.Controller;
 import javax.swing.*;
-import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
 import models.entities.SpellId;
 
@@ -1563,8 +1562,8 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void teleportAgilityCape() {
     int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();
-//    if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1)
-//      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
+    //    if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1)
+    //      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
     for (int i = 1; i <= 200; i++) {
       if (c.isRunning() && c.currentX() != 591 && c.currentY() != 765) {
@@ -1585,8 +1584,8 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void teleportCraftCape() {
     int CRAFTING_CAPE = ItemId.CRAFTING_CAPE.getId();
-//    if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1)
-//      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
+    //    if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1)
+    //      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
     if (c.isInCombat()) leaveCombat();
     for (int i = 1; i <= 200; i++) {
       if (c.isRunning() && c.currentX() != 347 && c.currentY() != 599) {
@@ -1783,10 +1782,10 @@ public class K_kailaScript extends IdleScript {
     } else if (c.getInventoryItemCount(BROWN_APRON) > 0) {
       c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
       c.sleep(6 * GAME_TICK);
-//    } else if (OLD_CAPE == CRAFT_CAPE
-//        || c.getEquippedItemId(EquipSlotIndex.NECKLACE.getId()) == BROWN_APRON) {
-//      c.sleep(6 * GAME_TICK);
-//    }
+      //    } else if (OLD_CAPE == CRAFT_CAPE
+      //        || c.getEquippedItemId(EquipSlotIndex.NECKLACE.getId()) == BROWN_APRON) {
+      //      c.sleep(6 * GAME_TICK);
+      //    }
     } else {
       c.log("No entrance item exits, you need a Crafting Cape or Brown Apron");
     }

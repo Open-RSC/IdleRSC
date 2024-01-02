@@ -18,6 +18,7 @@ final class AuthFrame extends JFrame {
   private Color backgroundColor = Main.getColorCode(1, 0);
   private Color textColor = Main.getColorCode(0, 0);
   private boolean loadSettings = false;
+  private final String resourceLocation = "src/main/resources/";
   private static final Dimension fieldSize = new Dimension(100, 25);
   private final Window parent;
   private JPasswordField password;
@@ -41,13 +42,12 @@ final class AuthFrame extends JFrame {
       showVersion;
 
   private final Choice themeChoice = new Choice();
-  private String account;
   private final Button okButton;
 
   AuthFrame(final String title, final String message, final Window parent) {
     super(title);
     this.parent = parent;
-    setIconImage(new ImageIcon("res/logos/idlersc.icon.png").getImage());
+    setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
 
     addWindowListener(
         new WindowAdapter() {
@@ -182,7 +182,8 @@ final class AuthFrame extends JFrame {
       optionsPanel.add(subPanel);
     }
     optionsPanel2.add(
-        new JLabel(new ImageIcon("res/logos/idlersc.icon.png", "Idlersc"), JLabel.LEFT));
+        new JLabel(
+            new ImageIcon(resourceLocation + "logos/idlersc.icon.png", "Idlersc"), JLabel.LEFT));
     for (Panel subPanel : choicePanels) {
       optionsPanel2.add(subPanel);
     }
@@ -314,7 +315,7 @@ final class AuthFrame extends JFrame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
-      setIconImage(new ImageIcon("buildSrc/res/idlersc.icon.png").getImage());
+      setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
       if (loadSettings) {
         // Make sure our accounts folder exists
         final Properties p = new Properties();

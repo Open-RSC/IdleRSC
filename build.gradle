@@ -22,8 +22,8 @@ repositories {
 }
 
 dependencies {
-  // Ensure gradle is aware of the icons resources
-  implementation files('res/')
+  // Ensure gradle is aware of the cache resources
+  implementation files('Cache/')
   // Ensure gradle is aware of the patched_client.jar dependency
   implementation files('patched_client.jar')
   // Used to find/populate scripts

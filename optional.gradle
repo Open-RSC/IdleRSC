@@ -14,7 +14,8 @@ tasks.register('release', Exec) {
     '--add-file',
     "${project.name}.jar",
     'README.md',
-    'res/',
+    'accounts/username.properties',
+    'Cache/',
     'doc/',
     '--output',
     "${releaseName}.zip"

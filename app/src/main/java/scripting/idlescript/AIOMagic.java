@@ -69,13 +69,7 @@ public class AIOMagic extends IdleScript {
   private int success = 0;
   private boolean scriptStarted = false;
   private boolean guiSetup = false;
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * script based on the values of the parameters. <br>
-   * Parameters in this context can be from CLI parsing or in the script options parameters text box
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
+
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -120,7 +114,8 @@ public class AIOMagic extends IdleScript {
             }
 
             c.withdrawItem(targetId, 30 - c.getInventoryItemCount());
-            c.sleep(618);
+            c.sleep(2000);
+            c.closeBank();
           } else {
             c.setStatus("@blu@Casting!");
             c.castSpellOnInventoryItem(spellId, c.getInventoryItemSlotIndex(targetId));
@@ -144,7 +139,8 @@ public class AIOMagic extends IdleScript {
             }
 
             c.withdrawItem(targetId, 30 - c.getInventoryItemCount());
-            c.sleep(618);
+            c.sleep(2000);
+            c.closeBank();
           } else {
             c.setStatus("@blu@Casting!");
             if (targetId != ItemId.NATURE_RUNE.getId()) {
@@ -168,9 +164,9 @@ public class AIOMagic extends IdleScript {
             }
 
             c.withdrawItem(primaryOre, primaryOreAmount);
-            c.sleep(618);
             c.withdrawItem(secondaryOre, secondaryOreAmount);
-            c.sleep(618);
+            c.sleep(2000);
+            c.closeBank();
           } else {
             c.setStatus("@blu@Casting!");
             c.castSpellOnInventoryItem(spellId, c.getInventoryItemSlotIndex(primaryOre));
@@ -178,7 +174,6 @@ public class AIOMagic extends IdleScript {
           }
         }
       }
-
       c.sleepHandler(98, true);
     }
   }

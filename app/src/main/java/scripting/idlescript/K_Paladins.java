@@ -184,7 +184,6 @@ public final class K_Paladins extends K_kailaScript {
       leaveCombat();
       if (!eatFood()) {
         c.setStatus("@gre@We've ran out of Food! Banking!.");
-        c.sleep(1280);
         paladinsToBank(true);
         bank();
         timeToBank = false;
@@ -192,23 +191,33 @@ public final class K_Paladins extends K_kailaScript {
       }
       checkFightMode(fightMode);
       lootItems(true, loot);
-      if (!c.isInCombat() && c.getInventoryItemCount(foodId) > 0) {
-        c.setStatus("@yel@Thieving Paladins");
-        ORSCharacter npc = c.getNearestNpcById(323, false);
-        if (npc != null) {
-          if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
-            c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
-            c.log("weapons when thieving, it severely drops xp rates for everyone, including you!");
-            c.chatMessage("I did something bad and tried to wield a weapon while thieving");
-            if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
+      if (c.getInventoryItemCount() == 30) {
+        c.setStatus("@gre@Eating Food to Loot..");
+        if (c.getInventoryItemCount(foodId) > 0) {
+          leaveCombat();
+          c.sleep(2 * GAME_TICK);
+          c.itemCommand(foodId);
+          c.sleep(GAME_TICK);
+        }
+      } else {
+        if (!c.isInCombat() && c.getInventoryItemCount(foodId) > 0) {
+          c.setStatus("@yel@Thieving Paladins");
+          ORSCharacter npc = c.getNearestNpcById(323, false);
+          if (npc != null && c.isRunning()) {
+            if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
+              c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
+              c.log(
+                  "weapons when thieving, it severely drops xp rates for everyone, including you!");
+              c.chatMessage("I did something bad and tried to wield a weapon while thieving");
+              if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
+            }
+            c.thieveNpc(npc.serverIndex);
+            c.sleep(640); // this sleep time is important //was 300
+          } else {
+            c.sleep(100); // this sleep time is important
           }
-          c.thieveNpc(npc.serverIndex);
-          c.sleep(640); // this sleep time is important //was 300
-        } else {
-          c.sleep(100); // this sleep time is important
         }
       }
-
       if (c.getInventoryItemCount(foodId) == 0 || timeToBank) { // bank if no food-
         c.setStatus("@yel@Banking..");
         paladinsToBank(true);
@@ -216,49 +225,8 @@ public final class K_Paladins extends K_kailaScript {
         timeToBank = false;
         BankToPaladins();
       }
-      if (c.getInventoryItemCount() == 30) {
-        leaveCombat();
-        c.setStatus("@gre@Eating Food to Loot..");
-        if (c.getInventoryItemCount(foodId) > 0) {
-          c.itemCommand(foodId);
-          c.sleep(700);
-        } else {
-          c.setStatus("@yel@Banking..");
-          paladinsToBank(true);
-          bank();
-          timeToBank = false;
-          BankToPaladins();
-        }
-      }
     }
   }
-  // Important private VOID's below
-  //  private void _leaveCombat() {
-  //    for (int i = 0; i <= 15; i++) {
-  //      if (c.isInCombat()) {
-  //        c.setStatus("@red@Leaving combat..");
-  //        c.walkTo(610, 1549, 0, true);
-  //        c.sleep(GAME_TICK);
-  //      } else return;
-  //    }
-  //  }
-  //
-  //  private boolean _eatFood() {
-  //    boolean ate = false;
-  //    if (c.getCurrentStat(c.getStatId("Hits")) < EAT_LEVEL) {
-  //      for (int id : c.getFoodIds()) {
-  //        if (c.getInventoryItemCount(id) > 0) {
-  //          _leaveCombat();
-  //          c.setStatus("@red@Eating..");
-  //          c.itemCommand(id);
-  //          c.sleep(GAME_TICK);
-  //          ate = true;
-  //          break;
-  //        }
-  //      }
-  //    } else return true; // not necessary to eat
-  //    return ate; // return false if not eaten, return true if has eaten.
-  //  }
 
   private void bank() {
     c.setStatus("@yel@Banking..");

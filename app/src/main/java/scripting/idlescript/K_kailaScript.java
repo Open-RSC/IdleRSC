@@ -565,7 +565,7 @@ public class K_kailaScript extends IdleScript {
       else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
       if (amount < 1) amount = 1;
       c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
-      c.sleep(GAME_TICK);
+      c.sleep(2 * GAME_TICK);
       waitForBatching();
     }
   }
@@ -573,6 +573,7 @@ public class K_kailaScript extends IdleScript {
   protected static void waitForBatching() {
     while (c.isRunning()
         && c.isBatching()
+        && c.getInventoryItemCount() < 30
         && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
       c.sleep(GAME_TICK);
     }
@@ -628,27 +629,14 @@ public class K_kailaScript extends IdleScript {
     }
   }
   /**
-   * attempt to leave combat once per tick for 6 ticks<br>
+   * attempt to leave combat once per tick for 15 ticks<br>
    * walks to current tile (async non-blocking) radius 0. <br>
    */
   protected static void leaveCombat() {
-    for (int i = 0; i <= 10; i++) {
+    for (int i = 0; i <= 15; i++) {
       if (c.isInCombat()) {
         c.setStatus("@red@Leaving combat..");
-        c.walkToAsync(c.currentX(), c.currentY(), 1);
-        c.sleep(GAME_TICK);
-      } else return;
-    }
-  }
-  /**
-   * attempt to leave combat once per tick for 30 ticks<br>
-   * walks to current tile (async non-blocking) radius 1. <br>
-   */
-  protected static void leaveCombatForced() {
-    for (int i = 0; i <= 30; i++) {
-      if (c.isInCombat()) {
-        c.setStatus("@red@Leaving combat..");
-        c.walkToAsync(c.currentX(), c.currentY(), 1);
+        c.walkTo(c.currentX(), c.currentY());
         c.sleep(GAME_TICK);
       } else return;
     }
@@ -1042,6 +1030,7 @@ public class K_kailaScript extends IdleScript {
    */
   /** if bank is not open, wait 2 ticks, repeat check. repeats 20 times. */
   protected static void waitForBankOpen() {
+    c.sleep(640);
     for (int i = 0; i <= 200; i++) {
       if (!c.isRunning()) break;
       if (!c.isInBank()) {
@@ -1507,7 +1496,10 @@ public class K_kailaScript extends IdleScript {
         c.equipItem(c.getInventoryItemSlotIndex(420));
         c.sleep(GAME_TICK);
       } else {
-        c.log("Warning: Cannot find anti dragon shield, logging OUT", "@red@");
+        if (c.isInBank()) c.closeBank();
+        c.setStatus("@red@ Warning: Cannot find anti dragon shield in bank, logging OUT");
+        c.log("Warning: Cannot find anti dragon shield in bank, logging OUT", "@red@");
+        c.sleep(30 * GAME_TICK);
         endSession();
       }
     }
@@ -1530,13 +1522,14 @@ public class K_kailaScript extends IdleScript {
   /** checks if brass key is in inventory, if not, sets warning message, and shuts down bot. */
   protected static void brassKeyCheck() {
     if (c.getInventoryItemCount(99) == 0) {
-      c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 30 Seconds");
+      if (c.isInBank()) c.closeBank();
+      c.log("ERROR - No brass Key, shutting down bot in 30 Seconds", "@red@");
       c.sleep(10000);
-      c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 20 Seconds");
+      c.log("ERROR - No brass Key, shutting down bot in 20 Seconds", "@red@");
       c.sleep(10000);
-      c.displayMessage("@red@ERROR - No brass Key, shutting down bot in 10 Seconds");
+      c.log("ERROR - No brass Key, shutting down bot in 10 Seconds", "@red@");
       c.sleep(5000);
-      c.displayMessage("@red@ERROR - No brass Key, shutting down bot");
+      c.log("ERROR - No brass Key, shutting down bot", "@red@");
       c.sleep(1000);
       endSession();
     }
@@ -1688,9 +1681,9 @@ public class K_kailaScript extends IdleScript {
    * @param gateY int y coordinate of the gate
    */
   protected static void openDoorObjects(int objectId, int gateX, int gateY) {
-    int[] gateLocation = c.getNearestObjectById(objectId);
-    if (gateLocation == null) return;
-    for (int i = 0; i < 200; i++) {
+    for (int i = 0; i < 100; i++) {
+      int[] gateLocation = c.getNearestObjectById(objectId);
+      if (gateLocation == null) return;
       if (c.isRunning() && gateLocation[0] == gateX && gateLocation[1] == gateY) {
         // Arrays.equals(gateLocation, new int[] {gateX, gateY})
         if (c.getNearestObjectById(objectId) != null) c.atObject(gateX, gateY);
@@ -1709,9 +1702,9 @@ public class K_kailaScript extends IdleScript {
    * @param gateY int y coordinate of the gate
    */
   protected static void openWallDoorObjects(int objectId, int gateX, int gateY) {
-    int[] gateLocation = c.getNearestObjectById(objectId);
-    if (gateLocation == null) return;
     for (int i = 0; i < 100; i++) {
+      int[] gateLocation = c.getNearestObjectById(objectId);
+      if (gateLocation == null) return;
       if (c.isRunning() && gateLocation[0] == gateX && gateLocation[1] == gateY) {
         if (c.getNearestObjectById(objectId) != null)
           c.atWallObject(gateLocation[0], gateLocation[1]);
@@ -1722,7 +1715,7 @@ public class K_kailaScript extends IdleScript {
   /*      FIXED Gate Methods - i.e. gates that don't "open" and you instead teleport to other side  */
   /** opens wall door in edgeville dungeon that goes to the wilderness tunnel shortcut */
   protected static void edgeWallGate() {
-    for (int i = 1; i <= 200; i++) {
+    for (int i = 1; i <= 100; i++) {
       if (c.isRunning() && c.currentX() == 218 && c.currentY() == 3282) {
         c.setStatus("@gre@Opening Edge Wall Gate..");
         c.atWallObject(219, 3282);

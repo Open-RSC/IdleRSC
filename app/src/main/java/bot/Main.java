@@ -384,6 +384,7 @@ public class Main {
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
     gfxCheckbox.setSelected(config.isGraphicsEnabled());
+    controller.setDrawing(config.isGraphicsEnabled());
     // start up our listener threads
     log("Initializing LoginListener...");
     loginListener = new Thread(new LoginListener(controller));
@@ -415,7 +416,6 @@ public class Main {
 
     if (!config.isGraphicsEnabled()) {
       if (controller != null) {
-        controller.setDrawing(config.isGraphicsEnabled());
         if (config.isGraphicsEnabled()) DrawCallback.setNextRefresh(-1);
         else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
       }

@@ -51,3 +51,5 @@ hc.bmp
 
 # Test IdleScript
 src/main/java/scripting/idlescript/AATesting.java
+
+assets/core

@@ -46,7 +46,7 @@ public final class EntryFrame extends JFrame {
     }
   }
 
-  public EntryFrame() {
+  public EntryFrame() { // todo grab resources from within the .jar file
     super("IdleRSC"); // title bar
     setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);

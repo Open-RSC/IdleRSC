@@ -1022,13 +1022,22 @@ public class Main {
     dir.mkdirs();
 
     // Copy embedded cache to cache directory
-    try {
+    try { // todo access the zip cache stored in the Idlersc.jar file
       Extractor.extractZipResource("/cache/ZipCache.zip", dir.toPath());
     } catch (IOException e) {
       e.printStackTrace();
       System.out.println(e.getMessage());
     }
 
+    // Add ip to client cache
+    try {
+      FileWriter portFile = new FileWriter("Cache/ip.txt");
+      portFile.write("game.openrsc.com");
+      portFile.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+    }
     // Add port to client cache
     try {
       FileWriter portFile = new FileWriter("Cache/port.txt");

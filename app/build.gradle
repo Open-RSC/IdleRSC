@@ -34,8 +34,7 @@ dependencies {
   implementation libs.slf4j.nop
   // Used to parse/validate CLI arguments
   implementation libs.commons.cli
-
-
+  //include client to solve issues with mudclient references
   implementation project(path: ':client')
 }
 
@@ -77,6 +76,7 @@ tasks.register('copyJar') {
       into '../'
     }
   }
+  printf("Copying Jar to main dir")
 }
 
 tasks.named('testClasses') {

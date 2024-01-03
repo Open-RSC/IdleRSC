@@ -43,7 +43,6 @@ tasks.register('createClientCache', Zip) {
   destinationDirectory = project(':app').file('src/main/resources/cache/')
   from('assets/cache/')
   include '**/*'
-  //Thread.sleep(300)
 }
 
 tasks.register('copyMapData', Copy) {
@@ -68,7 +67,6 @@ tasks.register('prepareRelease', Copy) {
     include 'doc/'
     include 'Cache/'
     include 'README.md', 'LICENSE'
-    include 'accounts/username.properties'
     include 'app/src/main/java/bot/res/'
   }
 

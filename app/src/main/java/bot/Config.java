@@ -15,10 +15,12 @@ public class Config extends ParseResult {
       setUsername(parseResult.getUsername());
       setGraphicsEnabled(parseResult.isGraphicsEnabled());
       setSidebarVisible(parseResult.isSidebarVisible());
-    } else {
+      setBotPaintVisible(parseResult.isBotPaintVisible());
+    } else { //default settings if no account.properties is provided
       setUsername("Username");
       setGraphicsEnabled(true);
       setSidebarVisible(true);
+      setBotPaintVisible(true);
     }
     if (parseResult.getPassword() != null) {
       setPassword(parseResult.getPassword());
@@ -32,7 +34,6 @@ public class Config extends ParseResult {
     setAutoLogin(parseResult.isAutoLogin());
     setLogWindowVisible(parseResult.isLogWindowVisible());
     setDebug(parseResult.isDebug());
-    setBotPaintVisible(parseResult.isBotPaintVisible());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
     setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
     setLocalOcr(parseResult.isLocalOcr());

@@ -6,20 +6,22 @@ import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
- * <b>Taverly Dungeon Chaos Druid Killer</b>
+ * <b>Ardy Chaos Druid Tower</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Food Type, and Food Withdraw
- * Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option, and
- * Autostart. <br>
+ * Amount Selection.
  *
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_TavChaosDruids extends K_kailaScript {
+public final class K_ArdyChaosDruids extends K_kailaCombatScript {
   private int fightMode = 0;
-  private boolean craftCapeTeleport = false;
-  private static final int STRENGTH_CAPE = ItemId.STRENGTH_CAPE.getId();
-  private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
+  private boolean bloodChest = true;
+  private boolean thieveChest1 = false;
+  private boolean thieveChest2 = false;
+  private int openChest = 0;
+  private long nextAttemptChest1 = -1;
+  private long nextAttemptChest2 = -1;
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
@@ -31,11 +33,20 @@ public final class K_TavChaosDruids extends K_kailaScript {
     ItemId.UNID_KWUARM.getId(),
     ItemId.UNID_CADANTINE.getId(),
     ItemId.UNID_DWARF_WEED.getId(),
-    ItemId.NATURE_RUNE.getId(),
-    ItemId.LAW_RUNE.getId(),
     ItemId.AIR_RUNE.getId(),
     ItemId.EARTH_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
+    ItemId.COSMIC_RUNE.getId(),
+    ItemId.BODY_RUNE.getId(),
     ItemId.MIND_RUNE.getId(),
+    ItemId.CHAOS_RUNE.getId(),
+    ItemId.DEATH_RUNE.getId(),
+    ItemId.BLOOD_RUNE.getId(),
+    ItemId.BRONZE_ARROWS.getId(),
+    ItemId.COINS.getId(),
     ItemId.UNCUT_SAPPHIRE.getId(),
     ItemId.UNCUT_EMERALD.getId(),
     ItemId.UNCUT_RUBY.getId(),
@@ -43,7 +54,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
     ItemId.TOOTH_HALF_KEY.getId(),
     ItemId.LOOP_HALF_KEY.getId(),
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
-    ItemId.RUNE_SPEAR.getId(),
+    ItemId.RUNE_SPEAR.getId()
   };
   private static final int[] highLevelLoot = {
     ItemId.UNID_RANARR_WEED.getId(),
@@ -73,9 +84,9 @@ public final class K_TavChaosDruids extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    centerX = 344;
-    centerY = 3318;
-    centerDistance = 12;
+    centerX = 618;
+    centerY = 553;
+    centerDistance = 7;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = ItemId.SHARK.getId();
       foodName = "Shark";
@@ -91,7 +102,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
       scriptStarted = true;
       guiSetup = true;
     }
-    if (!guiSetup) {
+    if (!guiSetup && !scriptStarted) {
       setupGUI();
       guiSetup = true;
     }
@@ -99,14 +110,26 @@ public final class K_TavChaosDruids extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Tav Druid Killer - By Kaila");
-      c.displayMessage("@red@Start in fally west bank with Armor");
+      c.displayMessage("@red@Edge Druid Killer - By Kaila");
+      c.displayMessage("@red@Start in Edge bank with Armor");
+      c.displayMessage("@red@Sharks/Laws/Airs/Earths IN BANK REQUIRED");
+      c.displayMessage("@red@31 Magic Required for escape tele");
       if (c.isInBank()) c.closeBank();
-      if (c.currentY() < 3000) {
+      if (c.currentX() < 600) {
         bank();
         BankToDruid();
         c.sleep(1380);
       }
+      if (c.currentY() > 3000) {
+        c.walkTo(618, 3391);
+        c.walkTo(618, 3384);
+        c.atObject(618, 3383);
+        c.sleep(1000);
+      }
+      nextAttemptChest1 =
+          System.currentTimeMillis() + 5000L; // staggered 50% start to reduce impact on druid KPH
+      nextAttemptChest2 = System.currentTimeMillis() + (twoHundredFiftySecondsInMillis / 2) + 5000L;
+      c.setBatchBarsOn();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -123,29 +146,172 @@ public final class K_TavChaosDruids extends K_kailaScript {
         DruidToBank();
         bank();
         BankToDruid();
+        c.sleep(618);
       }
+      checkFightMode(fightMode);
+      checkInventoryItemCounts();
+      buryBones(false);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);
       }
       if (lootLowLevel) lootItems(false, lowLevelLoot);
       else lootItems(false, highLevelLoot);
-      if (lootBones) lootItem(false, ItemId.BONES.getId());
-      buryBones(false);
-      checkFightMode(fightMode);
-      checkInventoryItemCounts();
-      if (!c.isInCombat()) {
-        ORSCharacter npc = c.getNearestNpcById(270, false);
-        if (npc != null) {
+      if (thieveChest1 || System.currentTimeMillis() > nextAttemptChest1 && c.currentY() < 556) {
+        c.displayMessage("@or1@Looting Blood Chest (1)!");
+        thieveChest1 = false;
+        lootBloodChest1();
+        c.setStatus("@or1@Killing Druids...");
+      }
+      if (thieveChest2 || System.currentTimeMillis() > nextAttemptChest2 && c.currentY() < 556) {
+        c.displayMessage("@or1@Looting Blood Chest (2)!");
+        thieveChest2 = false;
+        lootBloodChest2();
+        c.setStatus("@or1@Killing Druids...");
+      }
+
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
+        if (!c.isInCombat()) {
           c.setStatus("@yel@Attacking Druids");
-          c.attackNpc(npc.serverIndex);
-          c.sleep(3 * GAME_TICK);
-        } else c.sleep(GAME_TICK);
-      } else c.sleep(640);
+          ORSCharacter npc = c.getNearestNpcById(270, false);
+          if (npc != null) {
+            c.attackNpc(npc.serverIndex);
+            c.sleep(3 * GAME_TICK);
+          } else {
+            if (lootLowLevel) lootItems(false, lowLevelLoot);
+            else lootItems(false, highLevelLoot);
+            if (lootBones) lootItem(false, ItemId.BONES.getId());
+            c.sleep(300);
+          }
+        } else {
+          c.sleep(2 * GAME_TICK);
+        }
+      }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
       }
+    }
+  }
+
+  private void lootBloodChest1() {
+    if (lootLowLevel) lootItems(false, lowLevelLoot);
+    else lootItems(false, highLevelLoot);
+    c.walkTo(618, 552);
+    c.atObject(618, 551);
+    c.sleep(3000);
+    if (c.getObjectAtCoord(614, 3399) == 339) {
+      c.setStatus("@or1@Chest Empty, returning...");
+      nextAttemptChest1 = System.currentTimeMillis() + twoHundredFiftySecondsInMillis;
+      long nextAttemptInSeconds = (nextAttemptChest1 - System.currentTimeMillis()) / 1000L;
+      c.displayMessage(
+          "@or1@Done looting blood chest (1), Next attempt in "
+              + nextAttemptInSeconds
+              + " seconds!");
+      c.walkTo(618, 3384);
+      c.sleep(640);
+      c.atObject(618, 3383);
+      c.sleep(2000);
+    } else if (c.getObjectAtCoord(614, 3399) == 337) {
+      c.setStatus("@or1@Stealing From Blood Chest (1)..");
+      c.walkTo(618, 3396);
+      c.walkTo(615, 3399);
+      c.sleep(340);
+      c.atObject2(614, 3399);
+      nextAttemptChest1 = System.currentTimeMillis() + twoHundredFiftySecondsInMillis;
+      long nextAttemptInSeconds = (nextAttemptChest1 - System.currentTimeMillis()) / 1000L;
+      c.sleep(2000);
+      c.displayMessage(
+          "@or1@Done looting blood chest (1), Next attempt in "
+              + nextAttemptInSeconds
+              + " seconds!");
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.displayMessage("@or1@Something went wrong, walking back up Ladder!");
+        c.walkTo(615, 3399);
+        c.walkTo(618, 3396);
+        c.walkTo(618, 3384);
+        c.atObject(618, 3383);
+        c.sleep(1280);
+      } else {
+        townToTower();
+      }
+      c.setStatus("@or1@Done Thieving..");
+    }
+  }
+
+  private void lootBloodChest2() {
+    if (lootLowLevel) lootItems(false, lowLevelLoot);
+    else lootItems(false, highLevelLoot);
+    c.walkTo(618, 552);
+    c.atObject(618, 551);
+    c.sleep(3000);
+    if (c.getObjectAtCoord(614, 3401) == 339) {
+      c.setStatus("@or1@Chest Empty, returning...");
+      nextAttemptChest2 = System.currentTimeMillis() + twoHundredFiftySecondsInMillis;
+      long nextAttemptInSeconds = (nextAttemptChest2 - System.currentTimeMillis()) / 1000L;
+      c.displayMessage(
+          "@or1@Done looting blood chest (2), Next attempt in "
+              + nextAttemptInSeconds
+              + " seconds!");
+      c.walkTo(618, 3384);
+      c.sleep(640);
+      c.atObject(618, 3383);
+      c.sleep(2000);
+    } else if (c.getObjectAtCoord(614, 3401) == 337) {
+      c.setStatus("@or1@Stealing From Blood Chest (2)..");
+      c.walkTo(618, 3396);
+      c.walkTo(615, 3399);
+      c.walkTo(615, 3401);
+      c.sleep(340);
+      c.atObject2(614, 3401);
+      nextAttemptChest2 = System.currentTimeMillis() + twoHundredFiftySecondsInMillis;
+      long nextAttemptInSeconds = (nextAttemptChest2 - System.currentTimeMillis()) / 1000L;
+      c.sleep(2000);
+      c.displayMessage(
+          "@or1@Done looting blood chest (2), Next attempt in "
+              + nextAttemptInSeconds
+              + " seconds!");
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.sleep(3000);
+      }
+      if (c.currentY() > 1000) {
+        c.displayMessage("@or1@Something went wrong, walking back up Ladder!");
+        c.walkToAsync(615, 3399, 0);
+        c.walkToAsync(618, 3396, 0);
+        c.walkToAsync(618, 3384, 0);
+        c.atObject(618, 3383);
+        c.sleep(1280);
+      } else {
+        townToTower();
+      }
+      c.setStatus("@or1@Done Thieving..");
     }
   }
 
@@ -156,10 +322,12 @@ public final class K_TavChaosDruids extends K_kailaScript {
     if (!c.isInBank()) {
       waitForBankOpen();
     } else {
-      totalGuam = totalGuam + c.getInventoryItemCount(165);
-      totalMar = totalMar + c.getInventoryItemCount(435);
-      totalTar = totalTar + c.getInventoryItemCount(436);
-      totalHar = totalHar + c.getInventoryItemCount(437);
+      if (lootLowLevel) {
+        totalGuam = totalGuam + c.getInventoryItemCount(165);
+        totalMar = totalMar + c.getInventoryItemCount(435);
+        totalTar = totalTar + c.getInventoryItemCount(436);
+        totalHar = totalHar + c.getInventoryItemCount(437);
+      }
       totalRan = totalRan + c.getInventoryItemCount(438);
       totalIrit = totalIrit + c.getInventoryItemCount(439);
       totalAva = totalAva + c.getInventoryItemCount(440);
@@ -191,139 +359,91 @@ public final class K_TavChaosDruids extends K_kailaScript {
               + totalCada
               + totalDwarf;
 
-      for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 486
-            && itemId != 487
-            && itemId != 488
-            && itemId != 492
-            && itemId != 493
-            && itemId != 494
-            && itemId != 1346 // d2h
-            && itemId != STRENGTH_CAPE
-            && itemId != 1374 // attack cape
-            && itemId != 1384) { // craft cape
-          c.depositItem(itemId, c.getInventoryItemCount(itemId));
-        }
-      }
-      c.sleep(2000); // Important, leave in
-
-      if (craftCapeTeleport
-          && (c.getInventoryItemCount(CRAFT_CAPE) < 1)
-          && !c.isItemIdEquipped(CRAFT_CAPE)) {
-        withdrawItem(CRAFT_CAPE, 1);
-      }
-      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
-        c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
-      if (!craftCapeTeleport) {
-        withdrawItem(airId, 18);
-        withdrawItem(lawId, 6);
-        withdrawItem(waterId, 6);
-      }
+      depositAll();
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
       withdrawFood(foodId, foodWithdrawAmount);
-      bankItemCheck(foodId, 5);
-      if (!craftCapeTeleport) {
-        bankItemCheck(airId, 30);
-        bankItemCheck(waterId, 10); // Falador teleport
-        bankItemCheck(lawId, 10);
+      if (c.getBankItemCount(foodId) == 0) {
+        c.setStatus("@red@NO Sharks in the bank, Logging Out!.");
+        c.sleep(10000);
+        endSession();
       }
       c.closeBank();
+      checkInventoryItemCounts();
     }
-    if (!craftCapeTeleport) {
-      inventoryItemCheck(airId, 18);
-      inventoryItemCheck(waterId, 6);
-      inventoryItemCheck(lawId, 6);
-    }
-    checkInventoryItemCounts();
   }
 
-  private void BankToDruid() {
-    c.setStatus("@gre@Walking to Chaos Druids..");
-    if (craftCapeTeleport) {
-      teleportCraftCape();
-      c.setStatus("@gre@Walking to Tav Gate..");
-      c.walkTo(347, 588);
-      c.walkTo(347, 586);
-      c.walkTo(343, 581);
-      tavGateSouthToNorth();
-      c.walkTo(343, 570);
-      c.walkTo(343, 560);
-      c.walkTo(343, 550);
-      c.walkTo(350, 542);
-      c.walkTo(356, 536);
-      c.walkTo(363, 536);
-      c.walkTo(368, 531);
-      c.walkTo(375, 524);
-      c.walkTo(375, 521);
-      c.walkTo(376, 521);
-    } else {
-      c.setStatus("@gre@Walking to Tav Gate..");
-      c.walkTo(327, 552);
-      c.walkTo(324, 549);
-      c.walkTo(324, 539);
-      c.walkTo(324, 530);
-      c.walkTo(317, 523);
-      c.walkTo(317, 516);
-      c.walkTo(327, 506);
-      c.walkTo(337, 496);
-      c.walkTo(337, 492);
-      c.walkTo(341, 488);
-      tavGateEastToWest();
-      c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
-      c.walkTo(342, 493);
-      c.walkTo(350, 501);
-      c.walkTo(355, 506);
-      c.walkTo(360, 511);
-      c.walkTo(362, 513);
-      c.walkTo(367, 514);
-      c.walkTo(374, 521);
-      c.walkTo(376, 521);
-    }
-    c.atObject(376, 520);
-    c.sleep(640); // just below tav stairs
-    c.setStatus("@gre@Walking to Druids..");
-    c.walkTo(376, 3345);
-    c.walkTo(376, 3335);
-    c.walkTo(376, 3325);
-    c.walkTo(371, 3320);
-    c.walkTo(361, 3320);
-    c.walkTo(353, 3320);
-    c.walkTo(348, 3320);
+  private void townToTower() {
+    c.setStatus("@gre@Walking back..");
+    c.walkTo(609, 573);
+    c.walkTo(609, 568);
+    c.walkTo(609, 566);
+    c.walkTo(613, 562);
+    c.walkTo(617, 558);
+    c.walkTo(617, 556);
+    openDruidTowerSouthToNorth();
     c.setStatus("@gre@Done Walking..");
   }
 
   private void DruidToBank() {
-    c.walkTo(355, 3320); // walk to safe spot
-    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
-      c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportCraftCape();
-      c.walkTo(347, 600);
-      craftGuildDoorEntering(STRENGTH_CAPE);
-      c.walkTo(347, 607);
-      c.walkTo(346, 608);
-    } else {
-      teleportFalador();
-      c.walkTo(327, 552);
-    }
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(617, 555);
+    openDruidTowerNorthToSouth();
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(617, 558);
+    c.walkTo(613, 562);
+    c.walkTo(609, 566);
+    c.walkTo(609, 577);
+    c.walkTo(606, 577);
+    c.walkTo(601, 582);
+    c.walkTo(601, 596);
+    c.walkTo(597, 600);
+    c.walkTo(596, 603);
+    c.walkTo(591, 603);
+    c.walkTo(587, 599);
+    c.walkTo(587, 591);
+    c.walkTo(587, 581);
+    c.walkTo(587, 571);
+    c.walkTo(581, 571);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 
+  private void BankToDruid() {
+    c.setStatus("@gre@Walking to Druids..");
+    c.walkTo(581, 571);
+    c.walkTo(587, 571);
+    c.walkTo(587, 581);
+    c.walkTo(587, 591);
+    c.walkTo(587, 599);
+    c.walkTo(591, 603);
+    c.walkTo(596, 603);
+    c.walkTo(597, 600);
+    c.walkTo(601, 596);
+    c.walkTo(601, 582);
+    c.walkTo(606, 577);
+    c.walkTo(609, 577);
+    c.walkTo(609, 566);
+    c.walkTo(613, 562);
+    c.walkTo(617, 558);
+    c.walkTo(617, 556);
+    c.setStatus("@gre@Opening Druid Gate, South to North(1)..");
+    openDruidTowerSouthToNorth();
+    c.setStatus("@gre@Done Walking..");
+  }
+
   private void setupGUI() {
-    JLabel header = new JLabel("Tav Chaos Druids - By Kaila");
-    JLabel label1 = new JLabel("Start in fally west Bank or in tav chaos druids!");
-    JLabel label6 = new JLabel("Requires falador teleport runes!");
+    JLabel header = new JLabel("Ardy Chaos Druids - By Kaila");
+    JLabel label1 = new JLabel("Start in Ardy North Bank or in Chaos Tower!");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup");
+    JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup ::bloods ::chest1 ::chest2");
     JLabel label4 = new JLabel("Combat Styles ::attack :strength ::defense ::controlled");
-    JLabel label5 = new JLabel("Param Format: \"auto\"");
-    JLabel blankLabel = new JLabel("     ");
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", true);
+    JLabel label5 = new JLabel("Param Format: \"auto\" for ");
     JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
+    JCheckBox bloodChestCheckbox = new JCheckBox("Loot Blood Chest?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
@@ -333,20 +453,20 @@ public final class K_TavChaosDruids extends K_kailaScript {
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     fightModeField.setSelectedIndex(0); // sets default to controlled
-    foodField.setSelectedIndex(5); // sets default to sharks
+    foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
           if (!foodWithdrawAmountField.getText().isEmpty())
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-          craftCapeTeleport = craftCapeCheckbox.isSelected();
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
           lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
+          bloodChest = bloodChestCheckbox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
@@ -358,15 +478,13 @@ public final class K_TavChaosDruids extends K_kailaScript {
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     scriptFrame.add(header);
     scriptFrame.add(label1);
-    scriptFrame.add(label6);
     scriptFrame.add(label2);
     scriptFrame.add(label3);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
-    scriptFrame.add(blankLabel);
-    scriptFrame.add(craftCapeCheckbox);
     scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
+    scriptFrame.add(bloodChestCheckbox);
     scriptFrame.add(potUpCheckbox);
     scriptFrame.add(fightModeLabel);
     scriptFrame.add(fightModeField);
@@ -388,6 +506,14 @@ public final class K_TavChaosDruids extends K_kailaScript {
       c.displayMessage("@or1@Got @red@bank@or1@ command! Going to the Bank!");
       timeToBank = true;
       c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("chest1")) {
+      c.displayMessage("@or1@Got thieve @red@blood chest 1@or1@!");
+      thieveChest1 = true;
+      c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("chest2")) {
+      c.displayMessage("@or1@Got thieve @red@blood chest 2@or1@!");
+      thieveChest2 = true;
+      c.sleep(100);
     } else if (commandText.replace(" ", "").toLowerCase().contains("bones")) {
       if (!lootBones) {
         c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
@@ -404,6 +530,15 @@ public final class K_TavChaosDruids extends K_kailaScript {
       } else {
         c.displayMessage("@or1@Got toggle @red@lowlevel@or1@, turning off low level herb looting!");
         lootLowLevel = false;
+      }
+      c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("bloods")) {
+      if (!bloodChest) {
+        c.displayMessage("@or1@Got toggle @red@bloods@or1@, turning on blood thieving!");
+        bloodChest = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@bloods@or1@, turning off blood thieving!");
+        bloodChest = false;
       }
       c.sleep(100);
     } else if (commandText.replace(" ", "").toLowerCase().contains("potup")) {
@@ -445,13 +580,14 @@ public final class K_TavChaosDruids extends K_kailaScript {
   public void questMessageInterrupt(String message) {
     if (message.contains("You eat the")) {
       usedFood++;
+    } else if (message.contains("You open the chest")) {
+      openChest++;
     }
   }
 
   @Override
   public void paintInterrupt() {
     if (c != null) {
-
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int guamSuccessPerHr = 0;
       int marSuccessPerHr = 0;
@@ -469,6 +605,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
       int TripSuccessPerHr = 0;
       int herbSuccessPerHr = 0;
       int foodUsedPerHr = 0;
+      int chestSuccessPerHr = 0;
       long timeInSeconds = System.currentTimeMillis() / 1000L;
 
       try {
@@ -490,15 +627,14 @@ public final class K_TavChaosDruids extends K_kailaScript {
         herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
         TripSuccessPerHr = (int) (totalTrips * scale);
         foodUsedPerHr = (int) (usedFood * scale);
-
+        chestSuccessPerHr = (int) (openChest * scale);
       } catch (Exception e) {
         // divide by zero
       }
-
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Taverly Chaos Druids @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Ardy Chaos Druid Tower @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(
@@ -706,36 +842,121 @@ public final class K_TavChaosDruids extends K_kailaScript {
         c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
       }
       c.drawString("@whi@____________________", x, y2, 0xFFFFFF, 1);
-      if (foodInBank == -1) {
+      if (bloodChest) {
         c.drawString(
-            "@whi@"
-                + foodName
-                + "'s Used: @gre@"
-                + usedFood
+            "@whi@Chest's Opened: @gre@"
+                + openChest
                 + "@yel@ (@whi@"
-                + String.format("%,d", foodUsedPerHr)
-                + "@yel@/@whi@hr@yel@) ",
+                + String.format("%,d", chestSuccessPerHr)
+                + "@yel@/@whi@hr@yel@)",
             x,
             y2 + 14,
             0xFFFFFF,
             1);
-        c.drawString("@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, y2 + 28, 0xFFFFFF, 1);
+        c.drawString(
+            "@whi@Bloods: @gre@"
+                + (openChest * 2)
+                + "@yel@ (@whi@"
+                + String.format("%,d", (chestSuccessPerHr * 2))
+                + "@yel@/@whi@hr@yel@) "
+                + "@whi@Coins: @gre@"
+                + ((openChest * 500) / 1000)
+                + "@or1@k@yel@ (@whi@"
+                + String.format("%,d", ((chestSuccessPerHr * 500) / 1000))
+                + "@or1@k@yel@/@whi@hr@yel@) ",
+            x,
+            y2 + (14 * 2),
+            0xFFFFFF,
+            1);
+        long timeRemainingTillChest1 = nextAttemptChest1 - System.currentTimeMillis();
+        long timeRemainingTillChest2 = nextAttemptChest2 - System.currentTimeMillis();
+        c.drawString(
+            "@whi@Chest 1: "
+                + c.msToShortString(timeRemainingTillChest1)
+                + " @whi@Chest 2: "
+                + c.msToShortString(timeRemainingTillChest2),
+            x,
+            y2 + (14 * 3),
+            0xFFFFFF,
+            1);
+        if (foodInBank == -1) {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@ Unknown",
+              x,
+              y2 + (14 * 4),
+              0xFFFFFF,
+              1);
+        } else {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@"
+                  + foodInBank,
+              x,
+              y2 + (14 * 4),
+              0xFFFFFF,
+              1);
+        }
       } else {
-        c.drawString(
-            "@whi@"
-                + foodName
-                + "'s Used: @gre@"
-                + usedFood
-                + "@yel@ (@whi@"
-                + String.format("%,d", foodUsedPerHr)
-                + "@yel@/@whi@hr@yel@) ",
-            x,
-            y2 + 14,
-            0xFFFFFF,
-            1);
-        c.drawString(
-            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, y2 + 28, 0xFFFFFF, 1);
+        if (foodInBank == -1) {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@ Unknown",
+              x,
+              y2 + 14,
+              0xFFFFFF,
+              1);
+        } else {
+          c.drawString(
+              "@whi@"
+                  + foodName
+                  + "'s Used: @gre@"
+                  + usedFood
+                  + "@yel@ (@whi@"
+                  + String.format("%,d", foodUsedPerHr)
+                  + "@yel@/@whi@hr@yel@) "
+                  + "@whi@"
+                  + foodName
+                  + "'s in Bank: @gre@"
+                  + foodInBank,
+              x,
+              y2 + 14,
+              0xFFFFFF,
+              1);
+        }
       }
     }
   }
 }
+      /*if(timeRemainingTillChest1 == (timeRemainingTillChest2 + 30000L)) { //couldnt get this function working but looks unnecessary with starting timer offset! However, player commands could mess up timing again!
+          c.displayMessage("@or1@De-Syncing blood chests, adding 100s to chest 1");
+          nextAttemptChest1 = nextAttemptChest1 + 100000L;
+      }
+      if(timeRemainingTillChest2 == (timeRemainingTillChest1 + 30000L)) {
+          c.displayMessage("@or1@De-Syncing blood chests, adding 100s to chest 2");
+          nextAttemptChest2 = nextAttemptChest2 + 100000L;
+      }*/

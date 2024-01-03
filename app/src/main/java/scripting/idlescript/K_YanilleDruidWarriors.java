@@ -6,21 +6,24 @@ import models.entities.ItemId;
 import orsc.ORSCharacter;
 
 /**
- * <b>Taverly Dungeon Chaos Druid Killer</b>
+ * <b>Yanille Druid Warriors</b>
  *
  * <p>Options: Combat Style, Loot level Herbs, Loot Bones, Reg pots, Food Type, and Food Withdraw
  * Amount Selection, Chat Command Options, Full top-left GUI, regular atk/str pot option, and
- * Autostart. <br>
+ * Autostart.
  *
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_TavChaosDruids extends K_kailaScript {
+public final class K_YanilleDruidWarriors extends K_kailaScript {
   private int fightMode = 0;
-  private boolean craftCapeTeleport = false;
-  private static final int STRENGTH_CAPE = ItemId.STRENGTH_CAPE.getId();
-  private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
+  private boolean agilityCapeTeleport = false;
+  private final int LOCKPICK = ItemId.LOCKPICK.getId();
+  private final int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();
   private static final int[] lowLevelLoot = {
+    ItemId.WHITE_BERRIES.getId(),
+    ItemId.GROUND_UNICORN_HORN.getId(),
+    ItemId.SUPER_DEFENSE_POTION_1DOSE.getId(),
     ItemId.UNID_GUAM_LEAF.getId(),
     ItemId.UNID_MARRENTILL.getId(),
     ItemId.UNID_TARROMIN.getId(),
@@ -35,6 +38,8 @@ public final class K_TavChaosDruids extends K_kailaScript {
     ItemId.LAW_RUNE.getId(),
     ItemId.AIR_RUNE.getId(),
     ItemId.EARTH_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(),
+    ItemId.WATER_RUNE.getId(),
     ItemId.MIND_RUNE.getId(),
     ItemId.UNCUT_SAPPHIRE.getId(),
     ItemId.UNCUT_EMERALD.getId(),
@@ -46,16 +51,21 @@ public final class K_TavChaosDruids extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
   };
   private static final int[] highLevelLoot = {
+    ItemId.WHITE_BERRIES.getId(),
+    ItemId.GROUND_UNICORN_HORN.getId(),
+    ItemId.SUPER_DEFENSE_POTION_1DOSE.getId(),
     ItemId.UNID_RANARR_WEED.getId(),
     ItemId.UNID_IRIT.getId(),
     ItemId.UNID_AVANTOE.getId(),
     ItemId.UNID_KWUARM.getId(),
     ItemId.UNID_CADANTINE.getId(),
     ItemId.UNID_DWARF_WEED.getId(),
-    ItemId.NATURE_RUNE.getId(),
-    ItemId.LAW_RUNE.getId(),
     ItemId.AIR_RUNE.getId(),
     ItemId.EARTH_RUNE.getId(),
+    ItemId.FIRE_RUNE.getId(), //
+    ItemId.WATER_RUNE.getId(), //
+    ItemId.NATURE_RUNE.getId(),
+    ItemId.LAW_RUNE.getId(),
     ItemId.UNCUT_SAPPHIRE.getId(),
     ItemId.UNCUT_EMERALD.getId(),
     ItemId.UNCUT_RUBY.getId(),
@@ -63,7 +73,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
     ItemId.TOOTH_HALF_KEY.getId(),
     ItemId.LOOP_HALF_KEY.getId(),
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
-    ItemId.RUNE_SPEAR.getId()
+    ItemId.RUNE_SPEAR.getId(),
   };
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -73,9 +83,9 @@ public final class K_TavChaosDruids extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    centerX = 344;
-    centerY = 3318;
-    centerDistance = 12;
+    centerX = 600;
+    centerY = 3572;
+    centerDistance = 9;
     if (parameters[0].toLowerCase().startsWith("auto")) {
       foodId = ItemId.SHARK.getId();
       foodName = "Shark";
@@ -99,14 +109,14 @@ public final class K_TavChaosDruids extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      c.displayMessage("@red@Tav Druid Killer - By Kaila");
-      c.displayMessage("@red@Start in fally west bank with Armor");
+      c.displayMessage("@gre@Yanille Druid Warriors @mag@~ by Kaila");
       if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
         BankToDruid();
         c.sleep(1380);
       }
+      c.setBatchBarsOn();
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -123,6 +133,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
         DruidToBank();
         bank();
         BankToDruid();
+        c.sleep(618);
       }
       if (potUp) {
         attackBoost(0, false);
@@ -133,15 +144,20 @@ public final class K_TavChaosDruids extends K_kailaScript {
       if (lootBones) lootItem(false, ItemId.BONES.getId());
       buryBones(false);
       checkFightMode(fightMode);
-      checkInventoryItemCounts();
-      if (!c.isInCombat()) {
-        ORSCharacter npc = c.getNearestNpcById(270, false);
-        if (npc != null) {
-          c.setStatus("@yel@Attacking Druids");
-          c.attackNpc(npc.serverIndex);
-          c.sleep(3 * GAME_TICK);
+      if (c.getInventoryItemCount() < 30 && c.getInventoryItemCount(foodId) > 0) {
+        if (!c.isInCombat()) {
+          ORSCharacter npc = c.getNearestNpcById(555, false);
+          if (npc != null) {
+            int[] npcCoords = c.getNpcCoordsByServerIndex(npc.serverIndex);
+            if (isWithinLootzone(npcCoords[0], npcCoords[1])) {
+              c.setStatus("@yel@Attacking Druids");
+              c.attackNpc(npc.serverIndex);
+              checkInventoryItemCounts();
+              c.sleep(2 * GAME_TICK);
+            }
+          } else c.sleep(GAME_TICK);
         } else c.sleep(GAME_TICK);
-      } else c.sleep(640);
+      }
       if (c.getInventoryItemCount() == 30) {
         dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
         buryBonesToLoot(false);
@@ -192,136 +208,94 @@ public final class K_TavChaosDruids extends K_kailaScript {
               + totalDwarf;
 
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 486
-            && itemId != 487
-            && itemId != 488
-            && itemId != 492
-            && itemId != 493
-            && itemId != 494
-            && itemId != 1346 // d2h
-            && itemId != STRENGTH_CAPE
-            && itemId != 1374 // attack cape
-            && itemId != 1384) { // craft cape
+        if (itemId != AGILITY_CAPE && itemId != LOCKPICK) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-      c.sleep(2000); // Important, leave in
+      c.sleep(3000); // Important, leave in
 
-      if (craftCapeTeleport
-          && (c.getInventoryItemCount(CRAFT_CAPE) < 1)
-          && !c.isItemIdEquipped(CRAFT_CAPE)) {
-        withdrawItem(CRAFT_CAPE, 1);
+      if (agilityCapeTeleport) {
+        withdrawItem(AGILITY_CAPE, 1);
+        depositExtra(AGILITY_CAPE, 1);
       }
-      if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) > 1))
-        c.depositItem(CRAFT_CAPE, c.getInventoryItemCount(CRAFT_CAPE) - 1);
-      if (!craftCapeTeleport) {
-        withdrawItem(airId, 18);
-        withdrawItem(lawId, 6);
-        withdrawItem(waterId, 6);
-      }
+      withdrawItem(LOCKPICK, 1);
+      depositExtra(LOCKPICK, 1);
       if (potUp) {
         withdrawAttack(1);
         withdrawStrength(1);
       }
       withdrawFood(foodId, foodWithdrawAmount);
-      bankItemCheck(foodId, 5);
-      if (!craftCapeTeleport) {
-        bankItemCheck(airId, 30);
-        bankItemCheck(waterId, 10); // Falador teleport
-        bankItemCheck(lawId, 10);
-      }
+      bankItemCheck(foodId, 30);
+      inventoryItemCheck(LOCKPICK, 1);
+      if (agilityCapeTeleport) inventoryItemCheck(AGILITY_CAPE, 1);
       c.closeBank();
+      checkInventoryItemCounts();
     }
-    if (!craftCapeTeleport) {
-      inventoryItemCheck(airId, 18);
-      inventoryItemCheck(waterId, 6);
-      inventoryItemCheck(lawId, 6);
-    }
-    checkInventoryItemCounts();
   }
 
   private void BankToDruid() {
-    c.setStatus("@gre@Walking to Chaos Druids..");
-    if (craftCapeTeleport) {
-      teleportCraftCape();
-      c.setStatus("@gre@Walking to Tav Gate..");
-      c.walkTo(347, 588);
-      c.walkTo(347, 586);
-      c.walkTo(343, 581);
-      tavGateSouthToNorth();
-      c.walkTo(343, 570);
-      c.walkTo(343, 560);
-      c.walkTo(343, 550);
-      c.walkTo(350, 542);
-      c.walkTo(356, 536);
-      c.walkTo(363, 536);
-      c.walkTo(368, 531);
-      c.walkTo(375, 524);
-      c.walkTo(375, 521);
-      c.walkTo(376, 521);
-    } else {
-      c.setStatus("@gre@Walking to Tav Gate..");
-      c.walkTo(327, 552);
-      c.walkTo(324, 549);
-      c.walkTo(324, 539);
-      c.walkTo(324, 530);
-      c.walkTo(317, 523);
-      c.walkTo(317, 516);
-      c.walkTo(327, 506);
-      c.walkTo(337, 496);
-      c.walkTo(337, 492);
-      c.walkTo(341, 488);
-      tavGateEastToWest();
-      c.setStatus("@gre@Walking to Tav Dungeon Ladder..");
-      c.walkTo(342, 493);
-      c.walkTo(350, 501);
-      c.walkTo(355, 506);
-      c.walkTo(360, 511);
-      c.walkTo(362, 513);
-      c.walkTo(367, 514);
-      c.walkTo(374, 521);
-      c.walkTo(376, 521);
-    }
-    c.atObject(376, 520);
-    c.sleep(640); // just below tav stairs
     c.setStatus("@gre@Walking to Druids..");
-    c.walkTo(376, 3345);
-    c.walkTo(376, 3335);
-    c.walkTo(376, 3325);
-    c.walkTo(371, 3320);
-    c.walkTo(361, 3320);
-    c.walkTo(353, 3320);
-    c.walkTo(348, 3320);
+    if (agilityCapeTeleport && c.getInventoryItemCount(AGILITY_CAPE) != 0) {
+      teleportAgilityCape();
+    } else {
+      c.walkTo(584, 754);
+      c.walkTo(579, 763);
+      c.walkTo(582, 767);
+      c.walkTo(591, 765);
+    }
+    c.walkTo(590, 762);
+    c.atObject(591, 761);
+    c.sleep(2000);
+    c.walkTo(593, 3590);
+    c.setStatus("@gre@Picklocking Door..");
+    yanilleDungeonDoorEntering();
+    c.setStatus("@gre@Walking to Druids..");
+    c.walkTo(594, 3587);
+    c.walkTo(596, 3585);
+    c.atObject(596, 3584);
+    c.sleep(3000);
     c.setStatus("@gre@Done Walking..");
   }
 
   private void DruidToBank() {
-    c.walkTo(355, 3320); // walk to safe spot
-    if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
-      c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
-      teleportCraftCape();
-      c.walkTo(347, 600);
-      craftGuildDoorEntering(STRENGTH_CAPE);
-      c.walkTo(347, 607);
-      c.walkTo(346, 608);
+    c.setStatus("@gre@Walking to Bank..");
+    c.walkTo(599, 3578);
+    if (agilityCapeTeleport && c.getInventoryItemCount(AGILITY_CAPE) != 0) {
+      teleportAgilityCape();
     } else {
-      teleportFalador();
-      c.walkTo(327, 552);
+      c.walkTo(597, 3581);
+      c.sleep(300);
+      c.atObject(598, 3582); // rope swing  (make a loop)
+      c.sleep(3000);
+      c.walkTo(595, 3585);
+      c.walkTo(593, 3587);
+      c.walkTo(593, 3589);
+      c.setStatus("@gre@Picklocking Door..");
+      yanilleDungeonDoorExiting();
+      c.setStatus("@gre@Walking to Bank..");
+      c.walkTo(594, 3593);
+      c.atObject(591, 3593);
+      c.sleep(2000);
+      c.walkTo(591, 765);
     }
+    c.walkTo(582, 767);
+    c.walkTo(579, 763);
+    c.walkTo(584, 754);
+    c.walkTo(585, 752);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
 
   private void setupGUI() {
-    JLabel header = new JLabel("Tav Chaos Druids - By Kaila");
-    JLabel label1 = new JLabel("Start in fally west Bank or in tav chaos druids!");
-    JLabel label6 = new JLabel("Requires falador teleport runes!");
+    JLabel header = new JLabel("Yanille Druid Warriors - By Kaila");
+    JLabel label1 = new JLabel("Start in Yanille Bank or by Chaos Druid Warriors!");
+    JLabel label6 = new JLabel("Requires Lockpick, 82 Thieve, 77 agility!!!!!!");
     JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("::bank ::bones ::lowlevel :potup");
+    JLabel label3 = new JLabel("::bank ::bones ::lowlevel ::potup ::cape");
     JLabel label4 = new JLabel("Combat Styles ::attack :strength ::defense ::controlled");
-    JLabel label5 = new JLabel("Param Format: \"auto\"");
-    JLabel blankLabel = new JLabel("     ");
-    JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", true);
+    JLabel label5 = new JLabel("Param Format: \"auto\" for default no_gui start");
+    JLabel blankLabel = new JLabel("    ");
+    JCheckBox agilityCapeCheckBox = new JCheckBox("99 Agility Cape Teleport?", true);
     JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
@@ -333,20 +307,20 @@ public final class K_TavChaosDruids extends K_kailaScript {
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     fightModeField.setSelectedIndex(0); // sets default to controlled
-    foodField.setSelectedIndex(5); // sets default to sharks
+    foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
           if (!foodWithdrawAmountField.getText().isEmpty())
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
-          craftCapeTeleport = craftCapeCheckbox.isSelected();
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
           lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
           foodName = foodTypes[foodField.getSelectedIndex()];
           fightMode = fightModeField.getSelectedIndex();
           potUp = potUpCheckbox.isSelected();
+          agilityCapeTeleport = agilityCapeCheckBox.isSelected();
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           scriptStarted = true;
@@ -364,7 +338,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
     scriptFrame.add(label4);
     scriptFrame.add(label5);
     scriptFrame.add(blankLabel);
-    scriptFrame.add(craftCapeCheckbox);
+    scriptFrame.add(agilityCapeCheckBox);
     scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
     scriptFrame.add(potUpCheckbox);
@@ -438,6 +412,15 @@ public final class K_TavChaosDruids extends K_kailaScript {
       c.displayMessage("@red@Switching to \"Controlled\" combat style!");
       fightMode = 0;
       c.sleep(100);
+    } else if (commandText.replace(" ", "").toLowerCase().contains("cape")) {
+      if (!agilityCapeTeleport) {
+        c.displayMessage("@or1@Got toggle @red@Agility Cape@or1@, turning on cape teleport!");
+        agilityCapeTeleport = true;
+      } else {
+        c.displayMessage("@or1@Got toggle @red@Agility Cape@or1@, turning off cape teleport!");
+        agilityCapeTeleport = false;
+      }
+      c.sleep(100);
     }
   }
 
@@ -494,11 +477,10 @@ public final class K_TavChaosDruids extends K_kailaScript {
       } catch (Exception e) {
         // divide by zero
       }
-
       int x = 6;
       int y = 15;
       int y2 = 202;
-      c.drawString("@red@Taverly Chaos Druids @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@red@Yanille Druid Warriors @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {
         c.drawString(

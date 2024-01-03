@@ -22,7 +22,7 @@ tasks.register('run', JavaExec) {
 tasks.register('buildPatchedClient', JavaExec) {
   group 'build'
   description 'Create patched client jar archive.'
-  dependsOn ':client:build', ':patcher:build'
+  dependsOn ':client:build', ':patcher:build', ':patcher:spotlessApply'
 
   File patcherJar = new File(project(':patcher').getBuildDir(), "libs/${project(':patcher').getName()}.jar")
   File clientJar = new File(project(':client').getBuildDir(), "libs/${project(':client').getName()}.jar")
@@ -41,8 +41,9 @@ tasks.register('createClientCache', Zip) {
   description 'Create client cache for inclusion in the jar archive.'
   archiveFileName = 'ZipCache.zip'
   destinationDirectory = project(':app').file('src/main/resources/cache/')
-  from 'assets/cache/'
+  from('assets/cache/')
   include '**/*'
+  //Thread.sleep(300)
 }
 
 tasks.register('copyMapData', Copy) {
@@ -62,16 +63,12 @@ tasks.register('prepareRelease', Copy) {
     rename 'app.jar', "${rootProject.name}.jar"
   }
 
-  // documentation
+  // documentation and cache
   from ("${rootProject.projectDir}") {
-    include 'doc/*'
+    include 'doc/'
     include 'README.md', 'LICENSE'
-    exclude 'doc/run_*'
-  }
-
-  // run_* scripts
-  from ("${rootProject.projectDir}/doc") {
-    include 'run_*'
+    include 'accounts/username.properties'
+    include 'Cache/'
   }
 
   into "build/${releaseName()}"

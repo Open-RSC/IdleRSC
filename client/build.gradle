@@ -1,11 +1,17 @@
 plugins {
   // Facilitates Java compilation
   id 'java'
+  // For formatting source-code
+//  alias(libs.plugins.spotless)
   // Ensure jars are reproducible
   id 'reproducible-archives'
   // Bundle all dependencies (a.k.a. create a fat jar)
   id 'bundle-dependencies'
 }
+
+// Tasks not related to build are split out into their own gradle scripts
+// in order to keep build.gradle as compact as possible.
+//apply from: "$project.rootDir/spotless.gradle"
 
 // Required for patcher, as the asm dependency is unable to automatically
 // infer the bytecode version.
@@ -22,6 +28,10 @@ repositories {
 dependencies {
   implementation libs.discord.rpc
 }
+
+//tasks.named('build') {
+//  dependsOn(':client:spotlessApply')
+//}
 
 tasks.named('jar') {
   // Define entry point for application

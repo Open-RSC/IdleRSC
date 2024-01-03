@@ -51,7 +51,7 @@ public class EntityHandler {
 
 	public static NPCDef getNpcDef(int id) {
 		if (id < 0 || id >= npcs.size()) {
-			return null;
+			return npcs.get(825); //Default NPC is Ana (not in a barrel)
 		}
 		return npcs.get(id);
 	}
@@ -67,15 +67,16 @@ public class EntityHandler {
 			newId = (newId + 1) * -1;
 			noted = true;
 		}
-
+		if (id >= items.size()) {
+			return items.get(1544); //Default Item is Unobtanium
+		}
 		return findItem(newId, noted);
 	}
 
 	public static ItemDef getItemDef(int id, boolean isNote) {
-		if (id < 0) {
-			return null;
+		if (id < 0 || id >= items.size()) {
+			return items.get(1544); //Default Item is Unobtanium
 		}
-
 		return findItem(id, isNote);
 	}
 
@@ -174,7 +175,7 @@ public class EntityHandler {
 				if (objects.get(i).id == id)
 					return objects.get(i);
 			}
-			return null;
+			return objects.get(4); // Default Object is tree stump
 		}
 		return objects.get(id);
 	}
@@ -1288,7 +1289,11 @@ public class EntityHandler {
 		npcs.add(new NPCDef("Kortan", "He helps run the adventurers store", shopOption, 15, 22, 22, 6, false, sprites, 16761440, 2, 8409120, 15523536, 155, 230, 6, 6, 5, i++));
 		sprites = new int[]{0, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 		npcs.add(new NPCDef("zoo keeper", "He looks after Ardougne city zoo", "", 20, 20, 20, 20, true, sprites, 16752704, 187, 187, 15523536, 160, 220, 6, 6, 5, i++));
-		sprites = new int[]{6, 1, 2, -1, 122, -1, 84, -1, -1, -1, -1, 68};
+		if (Config.S_PRIDE_MONTH) {
+			sprites = new int[]{6, 1, 2, -1, 122, -1, 84, -1, -1, -1, -1, 509};
+		} else {
+			sprites = new int[]{6, 1, 2, -1, 122, -1, 84, -1, -1, -1, -1, 68};
+		}
 		npcs.add(new NPCDef("Make over mage", "He can change how I look", "", 0, 0, 3, 0, false, sprites, 3158064, 16763952, 15609986, 13415270, 145, 220, 6, 6, 5, i++));
 		sprites = new int[]{0, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 		npcs.add(new NPCDef("Bartender", "I could get a beer off him", "", 0, 0, 3, 0, false, sprites, 1, 8409120, 8409120, 15523536, 145, 220, 6, 6, 5, i++));
@@ -2250,12 +2255,12 @@ public class EntityHandler {
 		npcs.add(new NPCDef("Subscription Vendor", "Exchange your subscription token to subscription time", "", 0, 0, 3, 0, false, sprites, 16761440, 143190, 143190, 15523536, 145, 230, 6, 6, 5, i++));
 		sprites = new int[]{241, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 		npcs.add(new NPCDef("Gaia", "The earth queen with a rotten heart", "", 78, 79, 79, 80, true, sprites, 0, 0, 0, 0, 275, 262, 11, 11, 30, i++));
-		sprites = new int[]{0, 318, 319, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-		npcs.add(new NPCDef("Iron Man", "An Iron Man", "Armour", 0, 0, 0, 0, false, sprites, 6751590, 0, 14, 13415270, 145, 220, 6, 6, 5, i++));
-		sprites = new int[]{0, 321, 322, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-		npcs.add(new NPCDef("Ultimate Iron Man", "An Ultimate Iron Man", "Armour", 0, 0, 0, 0, false, sprites, 11167296, 8, 14, 13415270, 145, 220, 6, 6, 5, i++));
-		sprites = new int[]{323, 324, 325, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-		npcs.add(new NPCDef("Hardcore Iron Man", "A Hardcore Iron Man", "Armour", 0, 0, 0, 0, false, sprites, 11167296, 8, 14, 13415270, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{0, -1, -1, -1, -1, -1, 318, 319, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Ironman", "An Ironman", "Armour", 0, 0, 0, 0, false, sprites, 6751590, 0, 14, 13415270, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{3, -1, -1, -1, -1, -1, 535, 538, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Ultimate Ironman", "An Ultimate Ironman", "Armour", 0, 0, 0, 0, false, sprites, 11167296, 8, 14, 13415270, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{0, -1, -1, -1, -1, 323, 324, 325, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Hardcore Ironman", "A Hardcore Ironman", "Armour", 0, 0, 0, 0, false, sprites, 11167296, 8, 14, 13415270, 145, 220, 6, 6, 5, i++));
 		sprites = new int[]{309, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 		npcs.add(new NPCDef("Greatwood", "A scary hard slamming tree", "", 255, 245, 400, 300, true, sprites, 0, 0, 0, 0, 345, 410, 11, 11, 30, i++));
 		sprites = new int[]{6, 1, 2, -1, -1, 77, 76, 81, -1, -1, -1, -1};
@@ -2303,6 +2308,28 @@ public class EntityHandler {
 		npcs.add(new NPCDef("Kresh", "He's kind of like an onion", "", 123, 123, 123, 123, false, sprites, 0, 0xFFFFFF, 0x802415, 0xb5ff1d, 160, 220, 6, 6, 5, i++));
 		sprites = new int[]{3, 1, 2, -1, -1, -1, -1, -1, 46, -1, 10, 519};
 		npcs.add(new NPCDef("Lily", "She has a green thumb", "", 1, 1, 10, 1, false, sprites, 0xEEBB70, 0x006600, 0x663300, 15523536, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{5, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Peter Skippin", "Shut up, Meg", "", 20, 20, 20, 20, false, sprites, 11167296, 0xFFFFFF, 0x014E00, 15523536, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{0, -1, 2, -1, -1, -1, 531, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Mortimer", "A not-so-wealthy tradesman", "", 11, 8, 7, 11, false, sprites, 15921906, 2, 0x5C5C5C, 15523536, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{0, -1, 2, -1, -1, -1, 532, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Randolph", "A not-so-wealthy tradesman", "", 11, 8, 7, 11, false, sprites, 15921906, 2, 0x303030, 15523536, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{3, 1, 2, -1, -1, -1, 213, 214, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Ana (not in a barrel)", "I should update my client.", "", 17, 15, 16, 18, false, sprites, 16760880, 8409120, 8409120, 10056486, 120, 220, 6, 6, 5, i++));
+		sprites = new int[]{533, 139, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Biggum Flodrot", "Biggum Flodrot, goblin hero", "", 99, 99, 99, 99, false, sprites, 0, 0, 0, 0, 219, 206, 9, 8, 5, i++));
+		sprites = new int[]{133, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Spookie", "A spooky, scary skeleton!", "", 0, 0, 10, 1, false, sprites, 0, 0, 0, 0, 216, 234, 11, 11, 5, i++));
+		npcs.add(new NPCDef("Scarie", "A spooky, scary skeleton!", "", 0, 0, 10, 1, false, sprites, 0, 0, 0, 0, 216, 234, 11, 11, 5, i++));
+		// head, shirt, pants, shield, weapon, hat, body, legs, gloves, boots, amulet, cape
+		sprites = new int[]{0, 1, 2, -1, 109, -1, -1, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Todd Sandyman", "Some of the children call him \"The White Ogre\"", "", 0, 0, 3, 0, false, sprites, 16753488, 0xFFFFFF, 0x663300, 15523536, 145, 220, 6, 6, 5, i++));
+		sprites = new int[]{137, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Praeteritum", "The ghost of Christmas past", "", 15, 15, 5, 15, false, sprites, 0, 0, 0, 0, 201, 243, 9, 9, 5, i++));
+		sprites = new int[]{137, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Praesens", "The ghost of Christmas present", "", 15, 15, 5, 15, false, sprites, 0, 0, 0, 0, 201, 243, 9, 9, 5, i++));
+		sprites = new int[]{137, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+		npcs.add(new NPCDef("Futurum", "The ghost of Christmas future", "", 15, 15, 5, 15, false, sprites, 0, 0, 0, 0, 201, 243, 9, 9, 5, i++));
 
 		if (Config.S_WANT_CUSTOM_SPRITES) {
 			// Ranael
@@ -2601,11 +2628,11 @@ public class EntityHandler {
 		items.add(new ItemDef("arrow shafts", "I need to attach feathers to these", "", 1, 121, "items:121", true, false, 0, 0, true, false, false, 280));
 		items.add(new ItemDef("Woad Leaf", "slightly bluish leaves", "", 1, 122, "items:122", true, false, 0, 0, false, false, false, 281));
 		items.add(new ItemDef("Orangedye", "A little bottle of dye", "", 5, 104, "items:104", false, false, 0, 16755200, false, false, true, 282));
-		items.add(new ItemDef("Gold ring", "A valuable ring", "", 350, 123, "items:123", false, false, 0, 16763980, false, false, true, 283));
-		items.add(new ItemDef("Sapphire ring", "A valuable ring", "", 900, 123, "items:123", false, false, 0, 19711, false, false, true, 284));
-		items.add(new ItemDef("Emerald ring", "A valuable ring", "", 1275, 123, "items:123", false, false, 0, 3394611, false, false, true, 285));
-		items.add(new ItemDef("Ruby ring", "A valuable ring", "", 2025, 123, "items:123", false, false, 0, 16724736, false, false, true, 286));
-		items.add(new ItemDef("Diamond ring", "A valuable ring", "", 3525, 123, "items:123", false, false, 0, 0, false, false, true, 287));
+		items.add(new ItemDef("Gold ring", "A valuable ring", "", 350, 123, "items:123", false, Config.S_WANT_CUSTOM_SPRITES, Config.S_WANT_CUSTOM_SPRITES ? 1200 : 0, 16763980, false, false, true, 283));
+		items.add(new ItemDef("Sapphire ring", "A valuable ring", "", 900, 123, "items:123", false, Config.S_WANT_CUSTOM_SPRITES, Config.S_WANT_CUSTOM_SPRITES ? 1200 : 0, 19711, false, false, true, 284));
+		items.add(new ItemDef("Emerald ring", "A valuable ring", "", 1275, 123, "items:123", false, Config.S_WANT_CUSTOM_SPRITES, Config.S_WANT_CUSTOM_SPRITES ? 1200 : 0, 3394611, false, false, true, 285));
+		items.add(new ItemDef("Ruby ring", "A valuable ring", "", 2025, 123, "items:123", false, Config.S_WANT_CUSTOM_SPRITES, Config.S_WANT_CUSTOM_SPRITES ? 1200 : 0, 16724736, false, false, true, 286));
+		items.add(new ItemDef("Diamond ring", "A valuable ring", "", 3525, 123, "items:123", false, Config.S_WANT_CUSTOM_SPRITES, Config.S_WANT_CUSTOM_SPRITES ? 1200 : 0, 0, false, false, true, 287));
 		items.add(new ItemDef("Gold necklace", "I wonder if this is valuable", "", 450, 57, "items:57", false, true, 1024, 16763980, false, false, true, 288));
 		items.add(new ItemDef("Sapphire necklace", "I wonder if this is valuable", "", 1050, 57, "items:57", false, true, 1024, 19711, false, false, true, 289));
 		items.add(new ItemDef("Emerald necklace", "I wonder if this is valuable", "", 1425, 57, "items:57", false, true, 1024, 3394611, false, false, true, 290));
@@ -2861,7 +2888,7 @@ public class EntityHandler {
 		items.add(new ItemDef("magnet", "A very attractive magnet", "", 3, 184, "items:184", false, false, 0, 0, true, true, false, 540));
 		items.add(new ItemDef("Grey wolf fur", "This would make warm clothing", "", 50, 68, "items:68", false, false, 0, 15658734, true, false, true, 541));
 		items.add(new ItemDef("uncut dragonstone", "this would be worth more cut", "", 1000, 73, "items:73", false, false, 0, 12255487, true, false, true, 542));
-		items.add(new ItemDef("Dragonstone ring", "A valuable ring", "", 17625, 123, "items:123", false, false, 0, 12255487, true, false, true, 543));
+		items.add(new ItemDef("Dragonstone ring", "A valuable ring", "", 17625, 123, "items:123", false, Config.S_WANT_CUSTOM_SPRITES, Config.S_WANT_CUSTOM_SPRITES ? 1200 : 0, 12255487, true, false, true, 543));
 		items.add(new ItemDef("Dragonstone necklace", "I wonder if this is valuable", "", 18375, 57, "items:57", false, true, 1024, 12255487, true, false, true, 544));
 		items.add(new ItemDef("Raw Shark", "I should try cooking this", "", 300, 185, "items:185", false, false, 0, 5263488, true, false, true, 545));
 		items.add(new ItemDef("Shark", "I'd better be careful eating this!", "Eat", 300, 185, "items:185", false, false, 0, 11558912, true, false, true, 546));
@@ -3751,7 +3778,7 @@ public class EntityHandler {
 		items.add(new ItemDef("Ring of wealth", "An enchanted ring.", "", 17625, -1, "items:502", false, true, 1200, 12255487, true, false, true, 1318));
 		items.add(new ItemDef("Ring of avarice", "An enchanted ring.", "", 17625, -1, "items:503", false, true, 1200, 12255487, true, false, true, 1319));
 		items.add(new ItemDef("Dwarven ring", "An enchanted ring.", "Check,Break", 400, -1, "items:503", false, true, 1200, 16777124, true, false, true, 1320));
-		items.add(new ItemDef("Opal ring", "A valuable ring", "", 1050, -1, "items:123", false, false, 0, 16777124, false, false, true, 1321));
+		items.add(new ItemDef("Opal ring", "A valuable ring", "", 1050, -1, "items:123", false, Config.S_WANT_CUSTOM_SPRITES, Config.S_WANT_CUSTOM_SPRITES ? 1200 : 0, 16777124, false, false, true, 1321));
 
 		// Wolf masks
 		items.add(new ItemDef("White wolf mask", "Awoooo", "", 1, 86, "items:509", false, true, 32, 16777215, 16777215, false, false, true, 1322));
@@ -3892,7 +3919,7 @@ public class EntityHandler {
 		items.add(new ItemDef("Dragon Plate Mail Body", "Provides excellent protection", "", 5000000, -1, "items:498", false, true, 322, 0, false, false, true, 1427));
 		items.add(new ItemDef("Dragon Plate Mail Top", "Armour designed for females", "", 5000000, -1, "items:500", false, true, 322, 0, false, false, true, 1428));
 		items.add(new ItemDef("Dragon Plate Mail Legs", "These look pretty heavy", "", 5000000, -1, "items:499", false, true, 644, 0, false, false, true, 1429));
-		items.add(new ItemDef("Dragon Plated Skirt", "Designer leg protection", "", 5000000, -1, "items:88", false, true, 640, 16711748, false, false, true, 1430));
+		items.add(new ItemDef("Dragon Plated Skirt", "Designer leg protection", "", 5000000, -1, "items:88", false, true, 640, 0x960018, false, false, true, 1430));
 
 		items.add(new ItemDef("White CTF Flag", "White Capture the flag banner", "", 1, -1, "items:554", false, true, 16, 0, false, false, true, 1431));
 		items.add(new ItemDef("Guthix CTF Flag", "Guthix capture the flag banner", "", 1, -1, "items:554", false, true, 16, 4246592, false, false, true, 1432));
@@ -3997,7 +4024,7 @@ public class EntityHandler {
 
 		// Halloween 2022
 		items.add(new ItemDef("halloween mask", "aaaarrrghhh ... i'm a monster", "", 15, 284, "items:284", false, true, 32, 16711935, false, false, true, 1515));
-		items.add(new ItemDef("Cape of Inclusion", "A colourful cape made from many different pieces of cloth.", "", 3, -1, "items:pridecape", false, true, 2048, 0xFFFFFF, false, false, true, 1516));
+		items.add(new ItemDef("Cape of Inclusion", "A colourful cape made from many different pieces of cloth.", "", 3, -1, "items:pridecape", false, true, 2048, 0xFFFFFF, false, true, false, 1516));
 		items.add(new ItemDef("halloween mask", "aaaarrrghhh ... i'm a monster", "", 15, 284, "items:284", false, true, 32, 4, false, false, true, 1517));
 
 		// Rest of the skillcapes
@@ -4025,6 +4052,78 @@ public class EntityHandler {
 		items.add(new ItemDef("Rune Chain Mail Top", "A series of connected metal rings", "", 50000, -1, "items:595", false, true, 64, 65535, false, false, true, 1536));
 		items.add(new ItemDef("Dragon Scale Mail Top", "A dragon chain mail reinforced with dragon scales", "", 1500000, -1, "items:596", false, true, 64, 0x0000FF, true, false, true, 1537));
 
+		// Custom leather making
+		items.add(new ItemDef("Animal fat", "Thick and gelatinous", "", 0, -1, "items:animalfat", false, false, 0, 0, false, false, true, 1538));
+		items.add(new ItemDef("Treated hide", "I should use this on a fire to dry it", "", 1, -1, "items:treatedhide", false, false, 0, 0, false, false, true, 1539));
+		items.add(new ItemDef("lean bear meat", "I need to cook this first", "", 1, 60, "items:60", false, false, 0, 0xE57C2B, false, false, true, 1540));
+		items.add(new ItemDef("lean rat meat", "I need to cook this first", "", 1, 60, "items:60", false, false, 0, 0xE57C2B, false, false, true, 1541));
+		items.add(new ItemDef("lean beef", "I need to cook this first", "", 1, 60, "items:60", false, false, 0, 0xE57C2B, false, false, true, 1542));
+
+		items.add(new ItemDef("Rune stone certificate", "Each certificate exchangable at Varrock for 5 rune stone", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1543));
+
+		items.add(new ItemDef("Unobtanium", "I should update my client.", "", 17, 70, "items:70", false, false, 0, 0xCC4CFF, false, false, true, 1544));
+		items.add(new ItemDef("Unobtanium", "I should update my client.", "", 17, 70, "items:70", true, false, 0, 0xCC4CFF, false, false, false, 1545));
+
+		items.add(new ItemDef("stat restoration Potion certificate", "Each certificate exchangable at Varrock for 5 stat restore potions", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1546));
+		items.add(new ItemDef("giant carp certificate", "Each certificate exchangable at Varrock for 5 giant carp", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1547));
+		items.add(new ItemDef("Lava eel certificate", "Each certificate exchangable at Varrock for 5 lava eels", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1548));
+		items.add(new ItemDef("Poison antidote certificate", "Each certificate exchangable at Varrock for 5 poison antidote potions", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1549));
+		items.add(new ItemDef("Manta ray certificate", "Each certificate exchangable at Varrock for 5 manta rays", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1550));
+		items.add(new ItemDef("Sea turtle certificate", "Each certificate exchangable at Varrock for 5 sea turtles", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1551));
+		items.add(new ItemDef("Cure poison Potion certificate", "Each certificate exchangable at Varrock for 5 cure poison potions", "", 10, 180, "items:180", true, false, 0, 0, false, false, false, 1552));
+
+		items.add(new ItemDef("Biggum Flodrot", "Biggum Flodrot, goblin hero", "Talk", 0, -1, "items:597", false, false, 0, 0, true, true, false, 1553));
+
+		// Ironman plate tops
+		items.add(new ItemDef("Ironman plate top", "Take it off and what are you?", "", 560, -1, "items:130", false, true, 322, 11189164, false, true, true, 1554));
+		items.add(new ItemDef("Ultimate ironman plate top", "Take it off and what are you?", "", 560, -1, "items:130", false, true, 322, 16768685, false, true, true, 1555));
+		items.add(new ItemDef("Hardcore ironman plate top", "Take it off and what are you?", "", 560, -1, "items:130", false, true, 322, 10027084, false, true, true, 1556));
+
+		// Ironman plated skirts
+		items.add(new ItemDef("Ironman plated skirt", "Take it off and what are you?", "", 280, -1, "items:88", false, true, 644, 0x6F7A70, false, true, true, 1557));
+		items.add(new ItemDef("Ultimate ironman plated skirt", "Take it off and what are you?", "", 280, -1, "items:88", false, true, 644, 0xA69070, false, true, true, 1558));
+		items.add(new ItemDef("Hardcore ironman plated skirt", "Take it off and what are you?", "", 280, -1, "items:88", false, true, 644, 0x640031, false, true, true, 1559));
+
+		// Halloween 2023
+		items.add(new ItemDef("Bonecrusher", "A contraption that crushes bones to dust", "", 0, -1, "items:598", false, false, 0, 0, false, true, false, 1560));
+		items.add(new ItemDef("Chipped pestle and mortar", "The apothecary's old pestle & mortar", "", 4, 147, "items:147", false, false, 0, 0, false, true, false, 1561));
+		items.add(new ItemDef("aluminium bar", "this looks malleable", "", 150, 79, "items:79", false, false, 0, 0xFFFFFF, false, true, true, 1562));
+		items.add(new ItemDef("aluminium cog", "A piece of machinery", "", 150, -1, "items:599", false, false, 0, 0, false, true, true, 1563));
+		items.add(new ItemDef("Wooden box", "A box made of wood", "", 25, -1, "items:600", false, false, 0, 0xFFFFFF, false, true, true, 1564));
+		items.add(new ItemDef("Ring of Skull", "Imbued with the powers of a bonafide skeleton", "", 0, -1, "items:601", false, true, 1200, 0, false, true, false, 1565));
+		items.add(new ItemDef("halloween mask", "aaaarrrghhh ... i'm a monster", "", 15, 284, "items:602", false, true, 32, 65280, false, false, true, 1566));
+		items.add(new ItemDef("Spookie's Bones", "Better do something about these", "", 1, 20, "items:20", false, false, 0, 0, false, true, true, 1567));
+		items.add(new ItemDef("Scarie's Bones", "Better do something about these", "", 1, 20, "items:20", false, false, 0, 0, false, true, true, 1568));
+		items.add(new ItemDef("Lily's Pumpkin", "A pumpkin harvested from Lily's field", "eat", 30, 149, "items:149", false, false, 0, 0, false, false, true, 1569));
+		items.add(new ItemDef("Uncooked Lily's pumpkin pie", "I need to cook this first", "", 1, 112, "items:603", false, false, 0, 16633518, false, false, true, 1570));
+		items.add(new ItemDef("Lily's pumpkin pie", "Mmm a pie made with Lily's pumpkins", "eat", 30, 112, "items:604", false, false, 0, 16633518, false, false, true, 1571));
+		items.add(new ItemDef("Half a Lily's pumpkin pie", "Mmm a pie made with Lily's pumpkins", "eat", 5, 113, "items:605", false, false, 0, 16633518, false, false, true, 1572));
+
+		// Christmas 2023
+		items.add(new ItemDef("Duke Horacio's Journal", "This is a journal not a diary", "read", 1, 28, "items:28", false, false, 0, 0xFF0000, false, true, false, 1573));
+		items.add(new ItemDef("parchment", "I can write on this", "write", 1, 244, "items:244", false, false, 0, 14540253, false, true, false, 1574));
+		items.add(new ItemDef("Apology letter", "A heartfelt apology letter", "read", 1, 244, "items:244", false, false, 0, 14540253, false, true, false, 1575));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x820101, false, true, false, 1576));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0xc3c90e, false, true, false, 1577));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x012c82, false, true, false, 1578));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x6804b5, false, true, false, 1579));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0xcf7602, false, true, false, 1580));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x106105, false, true, false, 1581));
+		items.add(new ItemDef("Party Hat", "Party!!!", "", 2, 189, "items:189", false, true, 32, 1, false, false, true, 1582));
+		items.add(new ItemDef("Santa's hat", "It's a santa claus' hat", "", 160, -1, "items:pinksantahat", false, true, 32, 0, false, false, true, 1583));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x820101, false, true, false, 1584));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0xc3c90e, false, true, false, 1585));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x012c82, false, true, false, 1586));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x6804b5, false, true, false, 1587));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0xcf7602, false, true, false, 1588));
+		items.add(new ItemDef("Christmas sweater", "Knitted with love!", "", 5, 87, "items:christmassweater", false, true, 64, 0x106105, false, true, false, 1589));
+
+		// Custom certificate names
+		if (Config.S_WANT_BANK_NOTES && !Config.S_WANT_CERT_AS_NOTES) {
+			for (int i : new int[]{1543, 1546, 1547, 1548, 1549, 1550, 1551, 1552}) {
+				items.get(i).name = items.get(i).getName() + " (market)";
+			}
+		}
 
 		// Add muddy herb sprite
 		items.get(165).spriteLocation = "items:588";
@@ -4720,6 +4819,39 @@ public class EntityHandler {
 			animations.add(new AnimationDef("fchainmail", "equipment", 65535, 0, true, false, 0));//528 rune
 			animations.add(new AnimationDef("fchainmail", "equipment", 3158064, 0, true, false, 0));//529 black
 			animations.add(new AnimationDef("fdragonscalemail", "equipment", 0, 0, true, false, 0));//530
+			animations.add(new AnimationDef("mortimertorso", "equipment", 0, 0, true, false, 0));//531
+			animations.add(new AnimationDef("randolphtorso", "equipment", 0, 0, true, false, 0));//532
+			animations.add(new AnimationDef("biggum", "npc", 0xFFFFFF, 0, true, false, 0));//533
+
+			// Ironman plate tops
+			animations.add(new AnimationDef("fplatemailtop", "equipment", 11189164, 0, true, false, 0)); //534 - ironman plate top
+			animations.add(new AnimationDef("fplatemailtop", "equipment", 16768685, 0, true, false, 0)); //535 - ultimate ironman plate top
+			animations.add(new AnimationDef("fplatemailtop", "equipment", 10027084, 0, true, false, 0)); //536 - hc ironman plate top
+
+			// Ironman plated skirts
+			animations.add(new AnimationDef("armorskirt", "equipment", 11189164, 0, true, false, 0));//537 - ironman plated skirt
+			animations.add(new AnimationDef("armorskirt", "equipment", 16768685, 0, true, false, 0));//538 - ultimate ironman palted skirt
+			animations.add(new AnimationDef("armorskirt", "equipment", 10027084, 0, true, false, 0));//539 - hc ironman plated skirt
+
+			// Halloween 2023
+			animations.add(new AnimationDef("halloweenmask_pink", "equipment", 0, 0, true, false, 0));//540 - pink halloween mask
+			animations.add(new AnimationDef("skeletonmorph", "npc", 16777215, 0, true, false, 0));//541
+
+			// Christmas 2023
+			animations.add(new AnimationDef("christmassweater", "equipment", 0x820101, 0, true, false, 0));//542 - red
+			animations.add(new AnimationDef("christmassweater", "equipment", 0xc3c90e, 0, true, false, 0));//543 - yellow
+			animations.add(new AnimationDef("christmassweater", "equipment", 0x012c82, 0, true, false, 0));//544 - blue
+			animations.add(new AnimationDef("christmassweater", "equipment", 0x6804b5, 0, true, false, 0));//545 - purple
+			animations.add(new AnimationDef("christmassweater", "equipment", 0xcf7602, 0, true, false, 0));//546 - orange
+			animations.add(new AnimationDef("christmassweater", "equipment", 0x106105, 0, true, false, 0));//547 - green
+			animations.add(new AnimationDef("partyhat", "equipment", 0x1a1a1a, 0, true, false, 0));//548 - black party hat
+			animations.add(new AnimationDef("pinksantahat", "equipment", 0, 0, true, false, 0));//549 - pink santa hat
+			animations.add(new AnimationDef("fchristmassweater", "equipment", 0x820101, 0, true, false, 0));//550 - red
+			animations.add(new AnimationDef("fchristmassweater", "equipment", 0xc3c90e, 0, true, false, 0));//551 - yellow
+			animations.add(new AnimationDef("fchristmassweater", "equipment", 0x012c82, 0, true, false, 0));//552 - blue
+			animations.add(new AnimationDef("fchristmassweater", "equipment", 0x6804b5, 0, true, false, 0));//553 - purple
+			animations.add(new AnimationDef("fchristmassweater", "equipment", 0xcf7602, 0, true, false, 0));//554 - orange
+			animations.add(new AnimationDef("fchristmassweater", "equipment", 0x106105, 0, true, false, 0));//555 - green
 		}
 	}
 
@@ -6666,7 +6798,7 @@ public class EntityHandler {
 		objects.add(new GameObjectDef("Boulder", "A large boulder blocking the way", "WalkTo", "Smash to pieces", 1, 2, 2, 0, "cave bolder", i++));
 		objects.add(new GameObjectDef("Damaged Earth", "Disturbed earth - it will heal itself in time", "WalkTo", "Examine", 0, 1, 1, 0, "dugupsoil1", i++));
 		objects.add(new GameObjectDef("Ladder", "it's a ladder leading upwards", "Climb-Up", "Examine", 1, 1, 1, 0, "ladder", i++));
-		objects.add(new GameObjectDef("Ladder", "it's a ladder leading downwards", "Climb-Down", "Examine", 1, 1, 1, 0, "ladderdown", i++));
+		objects.add(new GameObjectDef("Ladder", "it's a ladder leading downwards", "Climb-Down", "Examine", 1, 1, 1, 0, "ladderdown", i++)); //1188
 		objects.add(new GameObjectDef("Vine", "A creepy creeper", "Grab", "Examine", 0, 1, 1, 0, "vinejunction", i++));
 
 		//Runecraft Objects
@@ -6761,7 +6893,7 @@ public class EntityHandler {
 		objects.add(new GameObjectDef("Depleted corn plant", "A plant that got its produce taken away", "WalkTo", "Examine", 0, 1, 1, 0, "depletedcorn", ++i));
 		objects.add(new GameObjectDef("Snape Grass", "Some interesting snape grass growing here", "Clip", "Examine", 1, 1, 1, 0, "snapegrass", ++i));
 		objects.add(new GameObjectDef("Herb", "I wonder what herb is around", "Clip", "Examine", 1, 1, 1, 0, "herb", ++i));
-		objects.add(new GameObjectDef("Pumpkin", "A pumpkin of autumn", "Collect", "Examine", 0, 1, 1, 0, "pumpkin", ++i));
+		objects.add(new GameObjectDef("Pumpkin", "A pumpkin of autumn", "Harvest", "Examine", 0, 1, 1, 0, "pumpkin", ++i));
 		objects.add(new GameObjectDef("Soil Mound", "A pile of very good soil", "WalkTo", "Examine", 1, 1, 1, 0, "soilmound", ++i));
 		objects.add(new GameObjectDef("Barrel of water", "A barrel filled with filtered water", "WalkTo", "Examine", 1, 1, 1, 0, "barrelwater", ++i));
 		objects.add(new GameObjectDef("Compost Bin", "A bin of compost", "Open", "Examine", 1, 1, 1, 0, "compostbin", ++i));

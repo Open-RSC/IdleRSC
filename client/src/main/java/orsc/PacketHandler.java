@@ -428,8 +428,11 @@ public class PacketHandler {
 			}
 
 				// Kills2
-			else if (opcode == 147)
-				mc.setStatKills2(packetsIncoming.getShort());
+			else if (opcode == 147) {
+				mc.setStatKills2(packetsIncoming.get32());
+				mc.setLastNpcKilledId(packetsIncoming.get32());
+				mc.setStatKills3(packetsIncoming.get32());
+			}
 
 			else if (opcode == 148) // Set OpenPK Points
 				mc.setPoints(packetsIncoming.getLong(0));
@@ -939,10 +942,10 @@ public class PacketHandler {
 		int wantDecanting, wantCertsToBank, wantCustomRankDisplay, wantRightClickBank, wantPlayerCommands;
 		int getFPS, wantEmail, wantRegistrationLimit, allowResize, lenientContactDetails, wantFatigue, wantCustomSprites;
 		int fishingSpotsDepletable, improvedItemObjectNames, wantRunecraft, wantCustomLandscape, wantEquipmentTab;
-		int wantBankPresets, wantParties, miningRocksExtended, movePerFrame, wantLeftclickWebs, npcKillMessages;
+		int wantBankPresets, wantParties, miningRocksExtended, movePerFrame, wantLeftclickWebs, npcKillCounters;
 		int wantCustomUI, wantGlobalFriend, characterCreationMode, skillingExpRate, wantHarvesting, hideLoginBox;
 		int globalFriendChat, wantRightClickTrade, featuresSleep, wantExtendedCatsBehavior, wantCertAsNotes, wantOpenPkPoints, openPkPointsToGpRatio, wantOpenPkPresets;
-		int disableMinimapRotation, allowBeardedLadies;
+		int disableMinimapRotation, allowBeardedLadies, prideMonth;
 
 		String logoSpriteID;
 
@@ -1014,7 +1017,7 @@ public class PacketHandler {
 			miningRocksExtended = this.getClientStream().getUnsignedByte(); //65
 			movePerFrame = this.getClientStream().getByte(); //66
 			wantLeftclickWebs = this.getClientStream().getByte(); //67
-			npcKillMessages = this.getClientStream().getByte(); //68
+			npcKillCounters = this.getClientStream().getByte(); //68
 			wantCustomUI = this.getClientStream().getUnsignedByte(); //69
 			wantGlobalFriend = this.getClientStream().getUnsignedByte(); //70
 			characterCreationMode = this.getClientStream().getUnsignedByte(); //71
@@ -1032,6 +1035,7 @@ public class PacketHandler {
 			showUndergroundFlickerToggle = this.getClientStream().getUnsignedByte(); // 83
 			disableMinimapRotation = this.getClientStream().getUnsignedByte(); // 84
 			allowBeardedLadies = this.getClientStream().getUnsignedByte(); // 85
+			prideMonth = this.getClientStream().getUnsignedByte(); // 86
 		} else {
 			serverName = packetsIncoming.readString(); // 1
 			serverNameWelcome = packetsIncoming.readString(); // 2
@@ -1100,7 +1104,7 @@ public class PacketHandler {
 			miningRocksExtended = packetsIncoming.getUnsignedByte(); //65
 			movePerFrame = packetsIncoming.getByte(); //66
 			wantLeftclickWebs = packetsIncoming.getByte(); //67
-			npcKillMessages = packetsIncoming.getByte(); //68
+			npcKillCounters = packetsIncoming.getByte(); //68
 			wantCustomUI = packetsIncoming.getUnsignedByte(); //69
 			wantGlobalFriend = packetsIncoming.getUnsignedByte(); //70
 			characterCreationMode = packetsIncoming.getUnsignedByte(); //71
@@ -1118,6 +1122,7 @@ public class PacketHandler {
 			showUndergroundFlickerToggle = packetsIncoming.getUnsignedByte(); // 83
 			disableMinimapRotation = packetsIncoming.getUnsignedByte(); // 84
 			allowBeardedLadies = packetsIncoming.getUnsignedByte(); // 85
+			prideMonth = packetsIncoming.getUnsignedByte(); // 86
 		}
 
 		if (Config.DEBUG) {
@@ -1189,7 +1194,7 @@ public class PacketHandler {
 					"\nS_MINING_ROCKS_EXTENDED " + miningRocksExtended + // 65
 					"\nC_MOVE_PER_FRAME " + movePerFrame + // 66
 					"\nS_WANT_LEFTCLICK_WEBS " + wantLeftclickWebs + // 67
-					"\nS_NPC_KILL_MESSAGES " + npcKillMessages + // 68
+					"\nS_NPC_KILL_COUNTERS " + npcKillCounters + // 68
 					"\nS_WANT_CUSTOM_UI " + wantCustomUI + // 69
 					"\nS_WANT_GLOBAL_FRIEND" + wantGlobalFriend + // 70
 					"\nS_CHARACTER_CREATION_MODE" + characterCreationMode + // 71
@@ -1206,7 +1211,8 @@ public class PacketHandler {
 					"\nS_WANT_OPENPK_PRESETS " + wantOpenPkPresets + // 82
 					"\nS_SHOW_UNDERGROUND_FLICKER_TOGGLE " + showUndergroundFlickerToggle + // 83
 					"\nS_DISABLE_MINIMAP_ROTATION " + disableMinimapRotation + // 84
-					"\nS_ALLOW_BEARDED_LADIES " + allowBeardedLadies // 85
+					"\nS_ALLOW_BEARDED_LADIES " + allowBeardedLadies + // 85
+					"\nS_PRIDE_MONTH " + prideMonth // 86
 			);
 		}
 
@@ -1281,7 +1287,7 @@ public class PacketHandler {
 		props.setProperty("S_MINING_ROCKS_EXTENDED", miningRocksExtended == 1 ? "true" : "false"); //65
 		props.setProperty("C_MOVE_PER_FRAME", String.valueOf(movePerFrame)); //66
 		props.setProperty("S_WANT_LEFTCLICK_WEBS", wantLeftclickWebs == 1 ? "true" : "false"); //67
-		props.setProperty("S_NPC_KILL_MESSAGES", npcKillMessages == 1 ? "true" : "false"); //68
+		props.setProperty("S_NPC_KILL_COUNTERS", npcKillCounters == 1 ? "true" : "false"); //68
 		props.setProperty("S_WANT_CUSTOM_UI", wantCustomUI == 1 ? "true" : "false"); //69
 		props.setProperty("S_WANT_GLOBAL_FRIEND", wantGlobalFriend == 1 ? "true" : "false"); //70
 		props.setProperty("S_CHARACTER_CREATION_MODE", Integer.toString(characterCreationMode)); //71
@@ -1299,6 +1305,7 @@ public class PacketHandler {
 		props.setProperty("S_SHOW_UNDERGROUND_FLICKER_TOGGLE", showUndergroundFlickerToggle == 1 ? "true" : "false"); // 83
 		props.setProperty("S_DISABLE_MINIMAP_ROTATION", disableMinimapRotation == 1 ? "true" : "false"); // 84
 		props.setProperty("S_ALLOW_BEARDED_LADIES", allowBeardedLadies == 1 ? "true" : "false"); // 85
+		props.setProperty("S_PRIDE_MONTH", prideMonth == 1 ? "true" : "false"); // 86
 		Config.updateServerConfiguration(props);
 
 		mc.authenticSettings = !(
@@ -2124,6 +2131,8 @@ public class PacketHandler {
 		mc.setHideLoginBox(packetsIncoming.getUnsignedByte() == 1); // 40
 		mc.setBlockGlobalFriend(packetsIncoming.getUnsignedByte() == 1); // 41
 		mc.setOptionHideUndergroundFlicker(packetsIncoming.getUnsignedByte() == 1); // 42
+		mc.setStatusBar(packetsIncoming.getUnsignedByte()); // 43
+		mc.setShowRecentNPCKC(packetsIncoming.getUnsignedByte() == 1); // 44
 	}
 
 	private void togglePrayer(int length) {
@@ -2171,6 +2180,10 @@ public class PacketHandler {
 		mc.getBank().resetBank();
 		for (int slot = 0; slot < mc.getNewBankItemCount(); ++slot) {
 			mc.getBank().addBank(slot, packetsIncoming.getShort(), packetsIncoming.get32());
+		}
+
+		if (Config.S_WANT_CUSTOM_BANKS) {
+			mc.getBank().calculateWealth();
 		}
 
 		// Discord update
@@ -2271,6 +2284,9 @@ public class PacketHandler {
 		int item = packetsIncoming.getShort();
 		int itemCount = packetsIncoming.get32();
 		mc.getBank().updateBank(slot, item, itemCount);
+		if (Config.S_WANT_CUSTOM_BANKS) {
+			mc.getBank().calculateWealth();
+		}
 	}
 
 	private void updateExperience() {
@@ -2699,6 +2715,10 @@ public class PacketHandler {
 					player.colourTop = packetsIncoming.getUnsignedByte();
 					player.colourBottom = packetsIncoming.getUnsignedByte();
 					player.colourSkin = packetsIncoming.getUnsignedByte();
+					if (Config.S_WANT_CUSTOM_SPRITES && player == mc.getLocalPlayer()) {
+						// Change mum's skin color to match the player's
+						EntityHandler.getNpcDef(812).skinColour = mc.getPlayerSkinColors()[player.colourSkin];
+					}
 					player.level = packetsIncoming.getUnsignedByte();
 					player.skullVisible = packetsIncoming.getUnsignedByte();
 					if (packetsIncoming.getByte() == 1) {

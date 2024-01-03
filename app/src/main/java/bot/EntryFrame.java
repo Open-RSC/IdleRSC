@@ -18,27 +18,12 @@ public final class EntryFrame extends JFrame {
   private static String account = "";
   private final Choice accountChoice;
   private String themeName = "RuneDark Theme";
-  private final String resourceLocation = "src/main/resources/";
+  private final String resourceLocation = "app/src/main/java/bot/res/";
   private boolean okie = false;
 
   // todo add theme select to cli
   public static String getAccount() {
     return account;
-  }
-
-  private String getStringProperty(final String name, String propertyName) {
-    if (name == null || propertyName == null) {
-      System.out.println("Error accessing string property");
-    }
-    final Properties p = new Properties();
-    final File file = Paths.get("accounts").resolve(name + ".properties").toFile();
-    try (final FileInputStream stream = new FileInputStream(file)) {
-      p.load(stream);
-      return p.getProperty(propertyName, " ");
-    } catch (final Throwable t) {
-      System.out.println("Error loading account " + name + ": " + t);
-    }
-    return "";
   }
 
   private void loadAccounts() {
@@ -75,14 +60,14 @@ public final class EntryFrame extends JFrame {
         new ImageIcon(resourceLocation + "icons/welcome.icon.png")
             .getImage()
             .getScaledInstance(230, 30, java.awt.Image.SCALE_SMOOTH);
-    Image okImage =
-        new ImageIcon(resourceLocation + "icons/ok.icon.png")
-            .getImage()
-            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
-    Image cancelImg =
-        new ImageIcon(resourceLocation + "icons/cancel2.icon.png")
-            .getImage()
-            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
+    //    Image okImage =
+    //        new ImageIcon(resourceLocation + "icons/ok.icon.png")
+    //            .getImage()
+    //            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
+    //    Image cancelImg =
+    //        new ImageIcon(resourceLocation + "icons/cancel2.icon.png")
+    //            .getImage()
+    //            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
     // ImageIcon icon = new ImageIcon("res/ui/present_edit.png"); // Christmas mode
     // ImageIcon icon = new ImageIcon("res/ui/scales.png"); // Red
 
@@ -281,6 +266,21 @@ public final class EntryFrame extends JFrame {
     }
     setVisible(false);
     dispose();
+  }
+
+  private String getStringProperty(final String name, String propertyName) {
+    if (name == null || propertyName == null) {
+      System.out.println("Error accessing string property");
+    }
+    final Properties p = new Properties();
+    final File file = Paths.get("accounts").resolve(name + ".properties").toFile();
+    try (final FileInputStream stream = new FileInputStream(file)) {
+      p.load(stream);
+      return p.getProperty(propertyName, " ");
+    } catch (final Throwable t) {
+      System.out.println("Error loading account " + name + ": " + t);
+    }
+    return "";
   }
 
   @Override

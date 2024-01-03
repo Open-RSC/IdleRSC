@@ -18,7 +18,7 @@ public class Config {
 	public static String WELCOME_TEXT = "You need a members account to use this server";
 	public static String SERVER_IP = null; // Modify this to override "Cache/ip.txt"
 	public static int SERVER_PORT; // Modify SERVER_IP above to override "Cache/port.txt" with this value
-	public static final int CLIENT_VERSION = 10009;
+	public static final int CLIENT_VERSION = 10069;
 	private static final int CACHE_VERSION = 4;
 	public static boolean MEMBER_WORLD = false;
 	public static boolean DISPLAY_LOGO_SPRITE = false;
@@ -35,7 +35,8 @@ public class Config {
 
 	/* Configurable: */
 	public static boolean C_EXPERIENCE_DROPS = false;
-	public static boolean C_NPC_KC = false;
+	public static boolean C_TOTAL_NPC_KC = false;
+	public static boolean C_RECENT_NPC_KC = false;
 	public static boolean C_BATCH_PROGRESS_BAR = false;
 	public static boolean C_HIDE_ROOFS = false;
 	public static boolean C_HIDE_FOG = false;
@@ -89,7 +90,7 @@ public class Config {
 	public static boolean S_WANT_EQUIPMENT_TAB = false;
 	public static boolean S_WANT_BANK_PRESETS = false;
 	public static boolean S_WANT_LEFTCLICK_WEBS = false;
-	public static boolean S_NPC_KILL_MESSAGES = false;
+	public static boolean S_NPC_KILL_COUNTERS = false;
 	// if you change these, and the config file,
 	// they will also change the options menu to
 	// 2-tabs (3 on android). (Not enough room for
@@ -146,6 +147,7 @@ public class Config {
 	public static boolean S_WANT_OPENPK_PRESETS = false;
 	public static boolean S_DISABLE_MINIMAP_ROTATION = true;
 	public static boolean S_ALLOW_BEARDED_LADIES = false;
+	public static boolean S_PRIDE_MONTH = false;
 
 	public static void set(String key, Object value) {
 		prop.setProperty(key, value.toString());

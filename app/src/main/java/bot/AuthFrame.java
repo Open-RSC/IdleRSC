@@ -18,7 +18,7 @@ final class AuthFrame extends JFrame {
   private Color backgroundColor = Main.getColorCode(1, 0);
   private Color textColor = Main.getColorCode(0, 0);
   private boolean loadSettings = false;
-  private final String resourceLocation = "src/main/resources/";
+  private final String resourceLocation = "app/src/main/java/bot/res/";
   private static final Dimension fieldSize = new Dimension(100, 25);
   private final Window parent;
   private JPasswordField password;

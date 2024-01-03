@@ -60,18 +60,14 @@ tasks.named('jar') {
       'Build-Jdk' : "${System.properties['java.version']}",
     )
   }
-
   // FTBFS: Set duplicate handling strategy for module-info.class.
   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 tasks.register('copyJar') {
-  // Final JAR
-  group 'build'
-  description 'copy app.jar to main dir'
 
-  inputs.file "${project(':app').getBuildDir()}/libs/app.jar"
-  outputs.file "Idlersc.jar"
+  description 'copy app.jar to main dir and rename to IdleRSC.jar'
+  dependsOn('build')
 
   doLast {
     copy {
@@ -81,19 +77,19 @@ tasks.register('copyJar') {
       into '../'
     }
   }
-
-  //File appJar = new File(project(':app').getBuildDir(), "libs/${project(':app').getName()}.jar")
-//  from("${project(':app').getBuildDir()}/libs/app.jar")
-//  into "."
 }
 
 tasks.named('testClasses') {
+  finalizedBy('copyJar')
+}
+tasks.named('build') {
   finalizedBy('copyJar')
 }
 
 // Add additional files to clean task
 tasks.named('clean') {
   delete 'src/main/resources'
+  delete '../IdleRSC.jar'
 }
 
 // Create resources before processResources runs

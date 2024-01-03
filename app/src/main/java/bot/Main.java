@@ -1029,6 +1029,7 @@ public class Main {
       System.out.println(e.getMessage());
     }
 
+    // todo check each file in cache independently, and regenerate if missing.
     // Add ip to client cache
     try {
       FileWriter portFile = new FileWriter("Cache/ip.txt");
@@ -1042,6 +1043,15 @@ public class Main {
     try {
       FileWriter portFile = new FileWriter("Cache/port.txt");
       portFile.write(Integer.toString(43599));
+      portFile.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+    }
+    // Add config.txt to client cache (1 gives new UI icons, 0 gives old Icons)
+    try {
+      FileWriter portFile = new FileWriter("Cache/config.txt");
+      portFile.write("Menus:0");
       portFile.close();
     } catch (IOException e) {
       e.printStackTrace();

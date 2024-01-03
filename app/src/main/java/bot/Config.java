@@ -11,8 +11,18 @@ public class Config extends ParseResult {
   public void absorb(ParseResult parseResult) {
 
     // Options with parameters/arguments.
-    setUsername(parseResult.getUsername());
-    setPassword(parseResult.getPassword());
+    if (parseResult.getUsername() != null) {
+      setUsername(parseResult.getUsername());
+      setGraphicsEnabled(parseResult.isGraphicsEnabled());
+      setSidebarVisible(parseResult.isSidebarVisible());
+    } else {
+      setUsername("Username");
+      setGraphicsEnabled(true);
+      setSidebarVisible(true);
+    }
+    if (parseResult.getPassword() != null) {
+      setPassword(parseResult.getPassword());
+    } else setPassword("Password");
     setScriptName(parseResult.getScriptName());
     setScriptArguments(parseResult.getScriptArguments());
     setInitCache(parseResult.getInitCache());
@@ -20,11 +30,9 @@ public class Config extends ParseResult {
 
     // Boolean options
     setAutoLogin(parseResult.isAutoLogin());
-    setSidebarVisible(parseResult.isSidebarVisible());
     setLogWindowVisible(parseResult.isLogWindowVisible());
     setDebug(parseResult.isDebug());
     setBotPaintVisible(parseResult.isBotPaintVisible());
-    setGraphicsEnabled(parseResult.isGraphicsEnabled());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
     setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
     setLocalOcr(parseResult.isLocalOcr());

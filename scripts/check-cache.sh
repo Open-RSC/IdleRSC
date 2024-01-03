@@ -27,7 +27,7 @@ popd &>/dev/null || exit 1
 
 # core hash
 pushd "${TMP_HASHDIR}" &>/dev/null || exit 1
-  cp -r "${CLIENT_BASE_DIR}"/Cache/{video,audio,config.txt} .
+  cp -r "${CLIENT_BASE_DIR}"/Cache/{video,audio} .
   CORE_HASH="$(hashdir)"
 popd &>/dev/null || exit 1
 

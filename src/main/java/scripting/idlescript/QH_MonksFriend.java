@@ -30,6 +30,7 @@ public final class QH_MonksFriend extends QH__QuestHandler {
     EQUIP_REQUIREMENTS = new int[][] {};
     ITEM_REQUIREMENTS = new int[][] {{ItemId.BRONZE_AXE.getId(), 1}};
     INVENTORY_SPACES_NEEDED = 5;
+    TOTAL_QUEST_STAGES = 6;
     doQuestChecks();
     c.log("~ by Kaila", "mag");
 

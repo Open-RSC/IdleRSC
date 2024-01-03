@@ -59,6 +59,7 @@ public final class QH_TribalTotem extends QH__QuestHandler {
     EQUIP_REQUIREMENTS = new int[][] {};
     ITEM_REQUIREMENTS = new int[][] {{ItemId.COINS.getId(), 1000}};
     INVENTORY_SPACES_NEEDED = 5;
+    TOTAL_QUEST_STAGES = 2;
     doQuestChecks();
     // c.log("WARNING: Entering dangerous areas, low combat not recommended", "red");
     c.log("~ by Kaila", "mag");

@@ -84,8 +84,9 @@ public class RowBuilder {
     return errorRow("Array lengths must match");
   }
 
+  // TODO: Make spriteSpacing an int[]
   /**
-   * Builds a row of item sprites.
+   * Builds a row of item sprites and strings.
    *
    * @param ids int[] -- Array of item ids to paint
    * @param scales int[] -- Array of int to scale each sprite to. 100 is normal, lower is smaller,
@@ -143,7 +144,7 @@ public class RowBuilder {
    * @param itemId int -- Item id to draw the sprite for
    * @param itemString String -- String to draw
    * @param stringColor int -- Color of the string. RGB "HTML" Color Example: 0x36E2D7
-   * @param borderXOffset int -- Amount to offset the row's X from the paint's border
+   * @param borderXOffset int -- Amount to offset the sprite's X from the paint's border
    * @param spriteScale int -- Scale of the items sprite. 100 is normal, lesser is smaller, greater
    *     is larger.
    * @param stringXOffset int -- X offset for the string relative to the sprite's X. Negative is
@@ -186,7 +187,7 @@ public class RowBuilder {
    *     0x36E2D7
    * @param borderColor int -- Color of the progress bar's border. RGB "HTML" Color Example:
    *     0x36E2D7
-   * @param borderXOffset int -- Amount to offset the row's X from the paint's border
+   * @param borderXOffset int -- Amount to offset the progress bar's X from the paint's border
    * @param barWidth int -- Width of the progress bar
    * @param barHeight int -- Height of the progress bar
    * @param showPercentage boolean -- Show the percentage on the bar
@@ -232,7 +233,7 @@ public class RowBuilder {
    * @param itemId int -- Id of item sprite to draw
    * @param scale int -- Scale of the items sprite. 100 is normal, lesser is smaller, greater is
    *     larger.
-   * @param borderXOffset int -- Amount the row is offset from the paint's border
+   * @param borderXOffset int -- Amount to offset the sprite's X from the paint's border
    * @param strings String[] -- Array of strings
    * @param colors int[] -- Array of colors for the strings
    * @param stringXOffsets int[] -- Array of offsets for each string's X from the previous string's

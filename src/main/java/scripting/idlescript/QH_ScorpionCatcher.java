@@ -87,6 +87,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
     EQUIP_REQUIREMENTS = new int[][] {{ItemId.ANTI_DRAGON_BREATH_SHIELD.getId(), 1}};
     ITEM_REQUIREMENTS = new int[][] {{ItemId.COINS.getId(), 1000}};
     INVENTORY_SPACES_NEEDED = 5;
+    TOTAL_QUEST_STAGES = 2;
     doQuestChecks();
     c.log("~ by Kaila", "mag");
 

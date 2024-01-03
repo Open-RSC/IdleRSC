@@ -13,13 +13,25 @@ import models.entities.QuestId;
 import models.entities.SkillId;
 import orsc.ORSCharacter;
 
-/* TODO: Add a method for atObjectUntilItemAmount(int[][] objectCoords, int itemId, int amount) for stuff like picking berries until getting amount
- * TODO: Add a method for atObjectUntilItemAmount(int objectX, int objectY, int itemId, int amount) for stuff like picking berries until getting amount
- */
+/*
+TODO: Add a method for atObjectUntilItemAmount(int[][] objectCoords, int itemId, int amount) for picking berries until getting amount
+TODO: Add a method for atObjectUntilItemAmount(int objectX, int objectY, int itemId, int amount) for picking berries until getting amount
+*/
+
+/*
+Authentic Quests:
+$ https://gitlab.com/open-runescape-classic/core/-/tree/develop/server/plugins/com/openrsc/server/plugins/authentic/quests
+
+Custom Quests:
+$ https://gitlab.com/open-runescape-classic/core/-/tree/develop/server/plugins/com/openrsc/server/plugins/custom/quests
+*/
 
 public class QH__QuestHandler extends IdleScript {
   protected static final Controller c = Main.getController();
   private static final BotController bc = new BotController(c);
+
+  // TODO: Don't forget to set this to false before committing */
+  protected boolean IS_TESTING = false;
 
   // QUEST START COORDINATES AND DESCRIPTIONS
   protected int[][] LUMBRIDGE_CASTLE_COURTYARD = {{120, 650}, {128, 665}};
@@ -35,9 +47,8 @@ public class QH__QuestHandler extends IdleScript {
   protected int[][] BARB_OUTPOST = {{493, 538}, {506, 555}};
   protected int[][] SORCERERS_TOWER_ABOVE = {{507, 1448}, {514, 1458}};
 
-  // QUEST LOCATION DESCRIPTIONS
-  private final HashMap<int[][], String> QUEST_START_DESCRIPTIONS =
-      new HashMap<int[][], String>() {
+  private final HashMap<int[][], String> START_DESCRIPTIONS =
+      new HashMap<>() {
         {
           put(LUMBRIDGE_CASTLE_COURTYARD, "Lumbridge Castle Courtyard");
           put(FALADOR_WEST_BANK, "Falador West Bank");
@@ -69,7 +80,6 @@ public class QH__QuestHandler extends IdleScript {
   private List<String> MISSING_QUESTS = new ArrayList<String>();
   private List<String> MISSING_ITEMS = new ArrayList<String>();
   private List<String> MISSING_EQUIP = new ArrayList<String>();
-  protected boolean IS_TESTING = true;
 
   /** Used for testing only */
   public void doTestLoop() {
@@ -111,9 +121,9 @@ public class QH__QuestHandler extends IdleScript {
         return;
       }
     }
-    if (QUEST_START_DESCRIPTIONS.get(START_RECTANGLE) == null)
+    if (START_DESCRIPTIONS.get(START_RECTANGLE) == null)
       quit("Start location not found in locations array");
-    START_DESCRIPTION = QUEST_START_DESCRIPTIONS.get(START_RECTANGLE);
+    START_DESCRIPTION = START_DESCRIPTIONS.get(START_RECTANGLE);
     CURRENT_QUEST_STEP = "Starting " + QUEST_NAME;
     c.setBatchBars(true);
     requiredQuestsCheck();
@@ -1078,54 +1088,49 @@ public class QH__QuestHandler extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      // TODO Change Colors?
-      int titleColor = paintBuilder.colorRainbow;
-      int bgColor = 0x282A36; // 0x083E6B;
-      int borderColor = paintBuilder.colorRainbow;
-      int qColor = 0xBD93F9;
-      int progressBarBackgroundColor = 0x000000;
-      int progressBarForegroundColor = 0x00ff00;
-      int progressBarBorderColor = 0x282A36;
-      int progressBarStringColor = 0xffffff;
 
-      QUEST_NAME = "Quest Name";
-      QUEST_STAGE = 1;
-      TOTAL_QUEST_STAGES = 12;
+      // Colors are based on https://spec.draculatheme.com/#sec-Standard
+      int purple = 0xBD93F9;
+      int darkGray = 0x282A36;
+      int darkerGray = 0x1d1f27;
+      int white = 0xF8F8F2;
+      int green = 0x50FA7B;
+      int yellow = 0xF1FA8C;
+      int red = 0xFF5555;
 
-      STEP_ITEMS = new int[][] {{1343, 1}, {11, 10011}};
+      paintBuilder.setBackgroundColor(darkGray, 255);
+      paintBuilder.setBorderColor(purple);
 
-      paintBuilder.setBackgroundColor(bgColor, 255);
-      paintBuilder.setBorderColor(borderColor);
-
-      paintBuilder.setTitleCenteredSingleColor("QuestHandler", titleColor, 4);
-      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(QUEST_NAME, qColor, 4));
-      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(CURRENT_QUEST_STEP, qColor, 3));
-      paintBuilder.addRow(
-          rowBuilder.centeredSingleStringRow(
-              "Run Time: " + paintBuilder.stringRunTime, 0xffffff, 1));
-
-      paintBuilder.addSpacerRow(4);
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(QUEST_NAME, purple, 4));
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(CURRENT_QUEST_STEP, purple, 3));
       if (TOTAL_QUEST_STAGES > 0) {
+        paintBuilder.addSpacerRow(4);
         paintBuilder.addRow(
             rowBuilder.progressBarRow(
-                QUEST_STAGE == -1 ? TOTAL_QUEST_STAGES : QUEST_STAGE,
-                TOTAL_QUEST_STAGES,
-                progressBarBackgroundColor,
-                progressBarForegroundColor,
-                progressBarBorderColor,
+                QUEST_STAGE == -1 ? TOTAL_QUEST_STAGES + 1 : QUEST_STAGE,
+                TOTAL_QUEST_STAGES + 1,
+                darkerGray,
+                green,
+                darkGray,
                 20,
                 paintBuilder.getWidth() - 40,
                 18,
                 true,
                 false,
-                "Current Progress",
-                progressBarStringColor));
-        paintBuilder.addSpacerRow(8);
+                "Run Time: " + paintBuilder.stringRunTime,
+                white));
+        if (STEP_ITEMS.length > 0) {
+          paintBuilder.addSpacerRow(8);
+        }
       } else {
         paintBuilder.addSpacerRow(4);
+        paintBuilder.addRow(
+            rowBuilder.centeredSingleStringRow(
+                "Run Time: " + paintBuilder.stringRunTime, white, 1));
       }
 
       if (STEP_ITEMS.length > 0) {
+        paintBuilder.addSpacerRow(4);
         for (int i = 0; i < STEP_ITEMS.length; i++) {
 
           String itemName = c.getItemName(STEP_ITEMS[i][0]);
@@ -1136,11 +1141,15 @@ public class QH__QuestHandler extends IdleScript {
           String[] strings = {itemName, amount};
           int stringColor =
               c.getInventoryItemCount(STEP_ITEMS[i][0]) >= STEP_ITEMS[i][1]
-                  ? 0x00ff00
-                  : c.getInventoryItemCount(STEP_ITEMS[i][0]) == 0 ? 0xff0000 : 0xffff00;
+                  ? green
+                  : c.getInventoryItemCount(STEP_ITEMS[i][0]) == 0 ? red : yellow;
           int[] colors = {stringColor, stringColor};
           int[] spacing = {
-            4, paintBuilder.getX() + paintBuilder.getWidth() - c.getStringWidth(amount, 1) - 12
+            5,
+            paintBuilder.getWidth()
+                - c.getStringWidth(amount, 1)
+                - (amount.charAt(amount.length() - 1) == '1' ? 4 : 5)
+                - 4
           };
           paintBuilder.addRow(rowBuilder.multipleStringRow(strings, colors, spacing, 1));
         }

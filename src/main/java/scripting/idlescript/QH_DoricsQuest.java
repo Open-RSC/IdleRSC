@@ -80,6 +80,7 @@ public final class QH_DoricsQuest extends QH__QuestHandler {
     ITEM_REQUIREMENTS = new int[][] {};
     EQUIP_REQUIREMENTS = new int[][] {};
     INVENTORY_SPACES_NEEDED = 13;
+    TOTAL_QUEST_STAGES = 1;
     doQuestChecks();
 
     while (c.isRunning()) {

@@ -48,7 +48,7 @@ public class QH__QuestHandler extends IdleScript {
   protected int[][] SORCERERS_TOWER_ABOVE = {{507, 1448}, {514, 1458}};
 
   private final HashMap<int[][], String> START_DESCRIPTIONS =
-      new HashMap<>() {
+      new HashMap<int[][], String>() {
         {
           put(LUMBRIDGE_CASTLE_COURTYARD, "Lumbridge Castle Courtyard");
           put(FALADOR_WEST_BANK, "Falador West Bank");

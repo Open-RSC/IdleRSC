@@ -16,7 +16,7 @@ public class Config extends ParseResult {
       setGraphicsEnabled(parseResult.isGraphicsEnabled());
       setSidebarVisible(parseResult.isSidebarVisible());
       setBotPaintVisible(parseResult.isBotPaintVisible());
-    } else { //default settings if no account.properties is provided
+    } else { // default settings if no account.properties is provided
       setUsername("Username");
       setGraphicsEnabled(true);
       setSidebarVisible(true);

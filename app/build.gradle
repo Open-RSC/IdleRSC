@@ -1,0 +1,107 @@
+plugins {
+  // Facilitates Java compilation
+  id 'java'
+  // For formatting source-code
+  alias(libs.plugins.spotless)
+  // Ensure jars are reproducible
+  id 'reproducible-archives'
+  // Bundle all dependencies (a.k.a. create a fat jar)
+  id 'bundle-dependencies'
+  // Use metadata from git
+  id 'git-metadata'
+  // Enable additional compiler warnings
+  id 'compiler-warnings'
+}
+
+// Tasks not related to build are split out into their own gradle scripts
+// in order to keep build.gradle as compact as possible.
+apply from: "$project.rootDir/spotless.gradle"
+
+// Where dependencies are fetched from
+repositories {
+  mavenCentral()
+  maven { url "https://maven.scijava.org/content/repositories/public/" }
+  maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+  // Ensure gradle is aware of the patched client dependency
+  implementation files(new File(project(':patcher').getBuildDir(), 'libs/patched_client.jar'))
+  // Used to find/populate scripts
+  implementation libs.reflections
+  // Dependency of reflections spits out an error when it is not included in the jar.
+  // https://www.slf4j.org/codes.html#StaticLoggerBinder
+  implementation libs.slf4j.nop
+  // Used to parse/validate CLI arguments
+  implementation libs.commons.cli
+
+
+  implementation project(path: ':client')
+}
+
+tasks.named('compileJava') {
+  // Create resources before compileJava runs
+  dependsOn ':createClientCache', ':copyMapData', ':buildPatchedClient'
+
+  // Run spotlessApply after successful compilation rather than before, so
+  // that any developer errors can be dealt with prior to formatting
+  finalizedBy spotlessApply
+}
+
+tasks.named('jar') {
+  manifest {
+    attributes(
+      // Define entry point for application
+      'Main-Class': 'bot.Main',
+      // Embed version/build information in application
+      'Build-Commit-Hash': "${gitCommitHash()}",
+      'Build-Commit-Date': "${gitCommitDate()}",
+      'Build-Commit-Count': "${gitCommitCount()}",
+      'Build-Jdk' : "${System.properties['java.version']}",
+    )
+  }
+
+  // FTBFS: Set duplicate handling strategy for module-info.class.
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+
+tasks.register('copyJar') {
+  // Final JAR
+  group 'build'
+  description 'copy app.jar to main dir'
+
+  inputs.file "${project(':app').getBuildDir()}/libs/app.jar"
+  outputs.file "Idlersc.jar"
+
+  doLast {
+    copy {
+      from("${project(':app').getBuildDir()}/libs") {
+        rename 'app.jar', "${rootProject.name}.jar"
+      }
+      into '../'
+    }
+  }
+
+  //File appJar = new File(project(':app').getBuildDir(), "libs/${project(':app').getName()}.jar")
+//  from("${project(':app').getBuildDir()}/libs/app.jar")
+//  into "."
+}
+
+tasks.named('testClasses') {
+  finalizedBy('copyJar')
+}
+
+// Add additional files to clean task
+tasks.named('clean') {
+  delete 'src/main/resources'
+}
+
+// Create resources before processResources runs
+tasks.named('processResources') {
+  dependsOn ':createClientCache', ':copyMapData', ':buildPatchedClient'
+}
+
+// FTBFS: spotlessMisc complains when there is no dependency on copyMapData
+tasks.named('spotlessMisc') {
+  dependsOn ':copyMapData'
+}

@@ -1,7 +1,7 @@
 // Enable additional compiler warnings
 tasks.named('compileJava') {
-  //options.compilerArgs += [ //hiding Xlint warnings for now
-  //  '-Xlint:deprecation',
-   // '-Xlint:unchecked',
- // ]
+//  options.compilerArgs += [
+//    '-Xlint:deprecation',
+//    '-Xlint:unchecked',
+//  ]
 }

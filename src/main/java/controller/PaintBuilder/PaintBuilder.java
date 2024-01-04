@@ -7,6 +7,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+  // TODO: FIGURE OUT THE WEIRD SPACING ISSUES!
+
 public class PaintBuilder {
   private static final Controller c = Main.getController();
   RowBuilder rowBuilder = new RowBuilder();
@@ -49,8 +51,8 @@ public class PaintBuilder {
    */
   public void start(int x, int y, int width) {
     this.pWidth = width;
-    this.pX = x;
-    this.pY = y;
+    this.pX = x - 1;
+    this.pY = y - 1;
     startTime = System.currentTimeMillis();
     rowData.clear();
     isScriptPaint = true;
@@ -61,7 +63,7 @@ public class PaintBuilder {
    * @param x int -- New X value
    */
   public void setX(int x) {
-    this.pX = x;
+    this.pX = x - 1;
   }
 
   /**
@@ -70,7 +72,7 @@ public class PaintBuilder {
    * @param y int -- New Y value
    */
   public void setY(int y) {
-    this.pY = y;
+    this.pY = y - 1;
   }
 
   /**
@@ -185,7 +187,7 @@ public class PaintBuilder {
     this.title = new String[] {string};
     this.tColors = new int[] {color};
     this.tXOffsets = new int[] {xOffset};
-    this.tYOffset = yOffset;
+    this.tYOffset = yOffset - 2;
     this.tCentered = false;
   }
 
@@ -201,7 +203,7 @@ public class PaintBuilder {
    */
   public void setTitleMultipleColor(String[] strings, int[] colors, int[] xOffsets, int yOffset) {
 
-    this.tYOffset = yOffset;
+    this.tYOffset = yOffset - 2;
     if (strings.length > 0 && strings.length == colors.length && colors.length == xOffsets.length) {
       this.title = strings;
       this.tColors = colors;

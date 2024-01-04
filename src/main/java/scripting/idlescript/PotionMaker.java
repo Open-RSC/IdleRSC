@@ -51,6 +51,7 @@ public final class PotionMaker extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
+    paintBuilder.start(4, 18, 220);
     c.setBatchBars(true);
     if (!guiSetup) {
       c.setStatus("@cya@Setting up script");
@@ -379,86 +380,84 @@ public final class PotionMaker extends IdleScript {
   public void paintInterrupt() {
     if (c != null) {
 
-      String runTime = c.msToString(System.currentTimeMillis() - startTime);
-      int successPerHr = 0;
-      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
-      try {
-        float timeRan = currentTimeInSeconds - startTimestamp;
-        float scale = (60 * 60) / timeRan;
-        successPerHr = (int) (made * scale);
-      } catch (Exception e) {
-        // divide by zero
+      // Colors are based on https://spec.draculatheme.com/#sec-Standard
+      int purple = 0xBD93F9;
+      int darkGray = 0x282A36;
+      int darkerGray = 0x1d1f27;
+      int white = 0xF8F8F2;
+      int green = 0x50FA7B;
+      int yellow = 0xF1FA8C;
+      int red = 0xFF5555;
+      int cyan = 0x8BE9FD;
+
+      paintBuilder.setBorderColor(purple);
+      paintBuilder.setBackgroundColor(darkGray, 255);
+
+      String[] titleStrings = {"Potion", "Maker"};
+      int[] titleColors = {green, cyan};
+      int[] titleXOffsets = {28, 64};
+
+      paintBuilder.setTitleMultipleColor(titleStrings, titleColors, titleXOffsets, 4);
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta & Kaila", purple, 1));
+      paintBuilder.addRow(
+          rowBuilder.centeredSingleStringRow("Run Time: " + paintBuilder.stringRunTime, white, 1));
+      paintBuilder.addSpacerRow(8);
+
+      paintBuilder.addRow(
+          rowBuilder.centeredSingleStringRow("Vials Remaining: " + combinedVialsInBank, cyan, 1));
+      if (primaryIngredientName.length() > 0) {
+        String remainingString = String.valueOf("Banked: " + primaryIngredientInBank);
+        paintBuilder.addRow(
+            rowBuilder.multipleStringRow(
+                new String[] {primaryIngredientName, remainingString},
+                new int[] {green, yellow},
+                new int[] {
+                  4,
+                  paintBuilder.getWidth()
+                      - c.getStringWidth(remainingString, 1)
+                      - (remainingString.charAt(remainingString.length() - 1) == '1' ? 3 : 4)
+                      - 3
+                },
+                1));
       }
-      int x = 6;
-      int y = 21;
-      // Ingredients: Full Vial[0], Clean Herb[1], Secondary[2], Empty Vial[3], Unid Herb[4],
-      // Unfinished Potion[5]
-      // c.drawBoxAlpha(7, 7, 160, 21+14, 0xFF0000, 128);
-      c.drawString("@red@Coleslaw Potion Maker @cya@by Seatta and Kaila", x, y - 3, 0xFFFFFF, 1);
-      c.drawString("@whi@__________________", x, y, 0xFFFFFF, 1);
-      c.drawString(
-          "@whi@" + primaryIngredientName + " Remaining: @gre@" + primaryIngredientInBank,
-          x,
-          y + 14,
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@" + secondaryIngredientName + " Remaining: @gre@" + secondaryIngredientTotalInBank,
-          x,
-          y + (14 * 2),
-          0xFFFFFF,
-          1);
-      c.drawString(
-          "@whi@Total Vials Remaining: @gre@" + combinedVialsInBank, x, y + (14 * 3), 0xFFFFFF, 1);
-      if (ingredients[1] != 468) {
-        c.drawString(
-            "@whi@"
-                + potion
-                + "'s Made: @gre@"
-                + String.format("%,d", made)
-                + " @yel@(@gre@"
-                + String.format("%,d", successPerHr)
-                + "@yel@/@whi@hr@yel@)",
-            x,
-            y + (14 * 4),
-            0xFFFFFF,
-            1);
-      } else {
-        c.drawString(
-            "@whi@"
-                + c.getItemName(ingredients[2])
-                + " Ground: @gre@"
-                + String.format("%,d", made)
-                + " @yel@(@gre@"
-                + String.format("%,d", successPerHr)
-                + "@yel@/@whi@hr@yel@)",
-            x,
-            y + (14 * 4),
-            0xFFFFFF,
-            1);
+      if (secondaryIngredientName.length() > 0) {
+        String remainingString = String.valueOf("Remaining: " + secondaryIngredientTotalInBank);
+        paintBuilder.addRow(
+            rowBuilder.multipleStringRow(
+                new String[] {secondaryIngredientName, remainingString},
+                new int[] {green, yellow},
+                new int[] {
+                  4,
+                  paintBuilder.getWidth()
+                      - c.getStringWidth(remainingString, 1)
+                      - (remainingString.charAt(remainingString.length() - 1) == '1' ? 3 : 4)
+                      - 3
+                },
+                1));
       }
-      if (onlyMakeUnifsCycle) {
-        c.drawString(
-            "@whi@Time Remaining: "
-                + c.timeToCompletion(made, primaryIngredientTotalInBank, startTime),
-            x,
-            y + (14 * 5),
-            0xFFFFFF,
-            1);
-      } else {
-        c.drawString(
-            "@whi@Time Remaining: "
-                + c.timeToCompletion(
-                    made,
-                    Math.min(secondaryIngredientTotalInBank, primaryIngredientTotalInBank),
-                    startTime),
-            x,
-            y + (14 * 5),
-            0xFFFFFF,
-            1);
-      }
-      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 6), 0xFFFFFF, 1);
-      c.drawString("@whi@________________", x, y + 3 + (14 * 6), 0xFFFFFF, 1);
+      paintBuilder.addRow(
+          rowBuilder.centeredSingleStringRow(
+              (ingredients[1] != 468
+                      ? "Potions Made: "
+                      : c.getItemName(ingredients[2]) + " Ground: ")
+                  + String.format("%,d ", made)
+                  + paintBuilder.stringAmountPerHour(made),
+              green,
+              1));
+      paintBuilder.addSpacerRow(8);
+      paintBuilder.addRow(
+          rowBuilder.centeredSingleStringRow(
+              "Time Remaining: "
+                  + (onlyMakeUnifsCycle
+                      ? c.timeToCompletion(made, primaryIngredientTotalInBank, startTime)
+                      : c.timeToCompletion(
+                          made,
+                          Math.min(secondaryIngredientTotalInBank, primaryIngredientTotalInBank),
+                          startTime)),
+              white,
+              1));
+
+      paintBuilder.draw();
     }
   }
 

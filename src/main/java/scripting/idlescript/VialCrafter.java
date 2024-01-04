@@ -46,7 +46,11 @@ public class VialCrafter extends IdleScript {
   private static final Integer CRAFTING_LEVEL = 33;
   private static final Integer AGILITY_LEVEL = 55; // OPTIONAL FOR SHORTCUT
 
+  // MADE
+  private static Integer VIALS_MADE = 0;
+
   public int start(String[] param) {
+    paintBuilder.start(4, 18, 160);
 
     // Quits if the required items are missing
     if (c.isRunning()
@@ -114,10 +118,7 @@ public class VialCrafter extends IdleScript {
       getSeaweed();
     } else {
       // Forcefully stop batching once getting enough seaweed
-      if (c.isBatching()) {
-        c.walkTo(c.currentX(), c.currentY());
-        c.sleep(640);
-      }
+      if (c.isBatching()) c.stopBatching();
     }
   }
 
@@ -219,6 +220,7 @@ public class VialCrafter extends IdleScript {
   }
 
   public void makeVials() {
+    int startVials = controller.getInventoryItemCount(EMPTY_VIAL);
     c.setStatus("@Cya@Making Vials");
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(GLASSBLOWING_PIPE), c.getInventoryItemSlotIndex(MOLTEN_GLASS));
@@ -227,6 +229,7 @@ public class VialCrafter extends IdleScript {
     while (c.isBatching()) {
       c.sleep(640);
     }
+    VIALS_MADE += (controller.getInventoryItemCount(EMPTY_VIAL) - startVials);
   }
 
   public void walkNorth() {
@@ -317,14 +320,34 @@ public class VialCrafter extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      c.drawBoxAlpha(7, 7, 124, 41, 16777215, 64);
-      c.drawString("@whi@_________________", 10, 7, 16777215, 1);
-      c.drawString("  @gre@VialCrafter @whi@- @cya@Seatta", 10, 21, 16777215, 1);
-      c.drawString("@whi@_________________", 10, 24, 16777215, 1);
-      c.drawString("@cya@Vials Held", 10, 40, 16777215, 1);
-      c.drawString("@whi@_________________", 10, 44, 16777215, 1);
-      c.drawString("@whi@|", 68, 40, 16777215, 1);
-      c.drawString("@whi@" + c.getInventoryItemCount(EMPTY_VIAL), 74, 40, 16777215, 1);
+      // Colors are based on https://spec.draculatheme.com/#sec-Standard
+      int purple = 0xBD93F9;
+      int darkGray = 0x282A36;
+      int darkerGray = 0x1d1f27;
+      int white = 0xF8F8F2;
+      int green = 0x50FA7B;
+      int yellow = 0xF1FA8C;
+      int red = 0xFF5555;
+
+      paintBuilder.setBorderColor(purple);
+      paintBuilder.setBackgroundColor(darkGray, 255);
+
+      paintBuilder.setTitleCenteredSingleColor("VialCrafter", purple, 4);
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", purple, 1));
+      String[] strings = {
+        "Made: " + String.valueOf(VIALS_MADE), paintBuilder.stringAmountPerHour(VIALS_MADE)
+      };
+      int[] colors = {white, yellow};
+      int[] xOffsets = {
+        4,
+        paintBuilder.getWidth()
+            - c.getStringWidth(strings[1], 1)
+            - (strings[1].charAt(strings[1].length() - 1) == '1' ? 3 : 4)
+            - 3
+      };
+      paintBuilder.addRow(rowBuilder.multipleStringRow(strings, colors, xOffsets, 1));
+
+      paintBuilder.draw();
     }
   }
 }

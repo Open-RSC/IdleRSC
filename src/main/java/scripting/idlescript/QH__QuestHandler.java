@@ -1145,10 +1145,10 @@ public class QH__QuestHandler extends IdleScript {
                   : c.getInventoryItemCount(STEP_ITEMS[i][0]) == 0 ? red : yellow;
           int[] colors = {stringColor, stringColor};
           int[] spacing = {
-            5,
+            4,
             paintBuilder.getWidth()
                 - c.getStringWidth(amount, 1)
-                - (amount.charAt(amount.length() - 1) == '1' ? 4 : 5)
+                - (amount.charAt(amount.length() - 1) == '1' ? 3 : 4)
                 - 4
           };
           paintBuilder.addRow(rowBuilder.multipleStringRow(strings, colors, spacing, 1));

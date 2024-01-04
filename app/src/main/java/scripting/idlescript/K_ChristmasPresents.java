@@ -224,6 +224,8 @@ public final class K_ChristmasPresents extends K_kailaScript {
       int x = 6;
       int y = 15;
 
+      c.drawString("@gre@Xmas Presents @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Total Presents: @gre@"
               + totalPresents
@@ -231,10 +233,10 @@ public final class K_ChristmasPresents extends K_kailaScript {
               + String.format("%,d", prezSuccessPerHr)
               + "@yel@/@whi@hr@yel@) ",
           x,
-          y,
+          y + 14,
           0xFFFFFF,
           1);
-      c.drawString("@whi@Presents in Bank: @gre@" + presentsInBank, x, y + 14, 0xFFFFFF, 1);
+      c.drawString("@whi@Presents in Bank: @gre@" + presentsInBank, x, y + (14 * 2), 0xFFFFFF, 1);
       c.drawString(
           "@whi@Total Trips: @gre@"
               + totalTrips

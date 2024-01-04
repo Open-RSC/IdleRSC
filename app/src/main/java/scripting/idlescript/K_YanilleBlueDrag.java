@@ -406,11 +406,11 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox buryBigBonesCheckbox = new JCheckBox("Bury Big Bones?", false);
-    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots? (Super or reg)", true);
+    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots? (Super or reg)", false);
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
-    fightModeField.setSelectedIndex(0); // sets default to controlled
+    fightModeField.setSelectedIndex(c.getFightMode());
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     foodField.setSelectedIndex(2); // sets default to sharks

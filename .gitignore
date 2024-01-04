@@ -31,13 +31,10 @@ IdleRSC.iml
 # output
 classes/
 build/
-*.jar
+IdleRSC.jar
 *.zip
 src/main/resources/cache
 public/
-
-# User chosen cache
-Cache/
 
 # User screenshots
 Screenshots/
@@ -51,3 +48,14 @@ hc.bmp
 
 # Test IdleScript
 src/main/java/scripting/idlescript/AATesting.java
+
+# Don't include core assets downloaded when updating client with scripts
+assets/core
+
+#Don't include UID (unique id) data in the repo. This will generate for each user
+Cache/uid.dat
+
+# Don't include any auto-generated discord_inuser files
+discord_inuse.txt
+
+#Put any custom git ignore attributes below

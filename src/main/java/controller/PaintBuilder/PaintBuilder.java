@@ -7,7 +7,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-  // TODO: FIGURE OUT THE WEIRD SPACING ISSUES!
+// TODO: FIGURE OUT THE WEIRD SPACING ISSUES!
 
 public class PaintBuilder {
   private static final Controller c = Main.getController();

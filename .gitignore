@@ -47,7 +47,7 @@ accounts/
 hc.bmp
 
 # Test IdleScript
-src/main/java/scripting/idlescript/AATesting.java
+app/src/main/java/scripting/idlescript/AATesting.java
 
 # Don't include core assets downloaded when updating client with scripts
 assets/core

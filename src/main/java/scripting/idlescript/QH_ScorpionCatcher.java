@@ -74,19 +74,20 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
     if (c.getInventoryItemCount(SCORP_CAGE_STAGE_1) == 1) {
       START_RECTANGLE = BARB_OUTPOST;
     } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_2) == 1) {
-      START_RECTANGLE = EDGE_MONESTARY;
+      START_RECTANGLE = EDGE_MONASTERY;
     } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_3) == 1) {
       START_RECTANGLE = TAV_DUNGEON_LADDER;
     } else if (c.currentY() > 1200) {
-      START_RECTANGLE = SORCERORS_TOWER_ABOVE;
+      START_RECTANGLE = SORCERERS_TOWER_ABOVE;
     } else {
-      START_RECTANGLE = SORCERORS_TOWER;
+      START_RECTANGLE = SORCERERS_TOWER;
     }
     QUEST_REQUIREMENTS = new String[] {};
     SKILL_REQUIREMENTS = new int[][] {{SkillId.PRAYER.getId(), 31}, {SkillId.AGILITY.getId(), 70}};
     EQUIP_REQUIREMENTS = new int[][] {{ItemId.ANTI_DRAGON_BREATH_SHIELD.getId(), 1}};
     ITEM_REQUIREMENTS = new int[][] {{ItemId.COINS.getId(), 1000}};
     INVENTORY_SPACES_NEEDED = 5;
+    TOTAL_QUEST_STAGES = 2;
     doQuestChecks();
     c.log("~ by Kaila", "mag");
 
@@ -98,7 +99,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
           if (c.isRunning()
               && c.getInventoryItemCount(ItemId.CURE_POISON_POTION_1DOSE.getId()) == 0) {
             CURRENT_QUEST_STEP = "Getting cure poison potion";
-            if (isInRectangle(SORCERORS_TOWER_ABOVE)) climb(510, 1451);
+            if (isInRectangle(SORCERERS_TOWER_ABOVE)) climb(510, 1451);
             c.walkTo(511, 513); // outside tower
             pathWalker(new MapPoint(631, 634)); // battlefield
             pathWalker(new MapPoint(691, 678)); // goblins
@@ -107,7 +108,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
             c.walkTo(691, 678); // outside gobs
             pathWalker(new MapPoint(631, 634)); // battlefield
           }
-          if (c.isRunning() && !isInRectangle(SORCERORS_TOWER_ABOVE)) {
+          if (c.isRunning() && !isInRectangle(SORCERERS_TOWER_ABOVE)) {
             CURRENT_QUEST_STEP = "Walking to Thormac";
             pathWalker(TOWER_ENTRANCE);
             climb(TOWER_LADDER_UP);
@@ -221,7 +222,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
               c.walkTo(374, 513);
             }
           } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_4) == 1) {
-            if (c.isRunning() && !isInRectangle(SORCERORS_TOWER_ABOVE)) {
+            if (c.isRunning() && !isInRectangle(SORCERERS_TOWER_ABOVE)) {
               CURRENT_QUEST_STEP = "Walking to Tower";
               if (timeToDrinkAntidote) drinkAnti();
               pathWalker(TOWER_ENTRANCE);

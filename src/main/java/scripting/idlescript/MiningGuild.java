@@ -367,15 +367,13 @@ public class MiningGuild extends IdleScript {
 
       paintBuilder.setBorderColor(0xBD93F9);
       paintBuilder.setBackgroundColor(0x282A36, 255);
+      // paintBuilder.setTitleCenteredSingleColor("MiningGuild", 0xffffff, 4);
       paintBuilder.setTitleMultipleColor(
-          new String[] {"Mining", "Guild"},
-          new int[] {0x008C8C, 0x718161},
-          6,
-          new int[] {25, 62},
-          20);
-      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", 0xBD93F9));
+          new String[] {"Mining", "Guild"}, new int[] {0x008C8C, 0x718161}, new int[] {25, 62}, 4);
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", 0xBD93F9, 1));
       paintBuilder.addRow(
-          rowBuilder.centeredSingleStringRow("Run Time: " + paintBuilder.stringRunTime, 0xffffff));
+          rowBuilder.centeredSingleStringRow(
+              "Run Time: " + paintBuilder.stringRunTime, 0xffffff, 1));
       for (int i = 0; i < oreIds.length; i++) {
         paintBuilder.addRow(
             rowBuilder.singleSpriteMultipleStringRow(
@@ -388,8 +386,7 @@ public class MiningGuild extends IdleScript {
                 },
                 new int[] {colors[i], 0x00ff00},
                 i == 4 ? new int[] {24, 52} : stringOffsets,
-                14,
-                18));
+                14));
       }
       paintBuilder.draw();
     }

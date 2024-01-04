@@ -68,6 +68,7 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
   public int start(String[] param) {
     QUEST_NAME = "Cook's Assistant";
     START_RECTANGLE = LUMBRIDGE_CASTLE_COURTYARD;
+    TOTAL_QUEST_STAGES = 1;
     QUEST_REQUIREMENTS = new String[] {};
     SKILL_REQUIREMENTS = new int[][] {};
     ITEM_REQUIREMENTS = new int[][] {};

@@ -5,6 +5,7 @@ import controller.BotController;
 import controller.Controller;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import models.entities.ItemId;
 import models.entities.MapPoint;
@@ -12,62 +13,62 @@ import models.entities.QuestId;
 import models.entities.SkillId;
 import orsc.ORSCharacter;
 
-/* TODO: Add a method for atObjectUntilItemAmount(int[][] objectCoords, int itemId, int amount) for stuff like picking berries until getting amount
- * TODO: Add a method for atObjectUntilItemAmount(int objectX, int objectY, int itemId, int amount) for stuff like picking berries until getting amount
- */
+/*
+TODO: Add a method for atObjectUntilItemAmount(int[][] objectCoords, int itemId, int amount) for picking berries until getting amount
+TODO: Add a method for atObjectUntilItemAmount(int objectX, int objectY, int itemId, int amount) for picking berries until getting amount
+*/
+
+/*
+Authentic Quests:
+$ https://gitlab.com/open-runescape-classic/core/-/tree/develop/server/plugins/com/openrsc/server/plugins/authentic/quests
+
+Custom Quests:
+$ https://gitlab.com/open-runescape-classic/core/-/tree/develop/server/plugins/com/openrsc/server/plugins/custom/quests
+*/
 
 public class QH__QuestHandler extends IdleScript {
   protected static final Controller c = Main.getController();
   private static final BotController bc = new BotController(c);
 
+  // TODO: Don't forget to set this to false before committing */
+  protected boolean IS_TESTING = false;
+
   // QUEST START COORDINATES AND DESCRIPTIONS
   protected int[][] LUMBRIDGE_CASTLE_COURTYARD = {{120, 650}, {128, 665}};
   protected int[][] FALADOR_WEST_BANK = {{328, 549}, {334, 557}};
   protected int[][] VARROCK_SQUARE = {{126, 505}, {137, 511}};
-  protected int[][] SORCERORS_TOWER = {{507, 505}, {514, 511}};
-  protected int[][] EDGE_MONESTARY = {{249, 456}, {265, 472}};
+  protected int[][] SORCERERS_TOWER = {{507, 505}, {514, 511}};
+  protected int[][] EDGE_MONASTERY = {{249, 456}, {265, 472}};
   protected int[][] TAV_DUNGEON_LADDER = {{371, 514}, {384, 525}};
-  protected int[][] ARDY_MONESTARY = {{575, 651}, {603, 669}};
+  protected int[][] ARDY_MONASTERY = {{575, 651}, {603, 669}};
   protected int[][] WEST_DWARF_TUNNEL = {{420, 450}, {432, 464}};
   protected int[][] ARDY_SOUTH_BANK = {{534, 605}, {557, 619}};
   protected int[][] SHRIMP_AND_PARROT = {{443, 679}, {459, 692}};
   protected int[][] BARB_OUTPOST = {{493, 538}, {506, 555}};
-  protected int[][] SORCERORS_TOWER_ABOVE = {{507, 1448}, {514, 1458}};
-  // The indexes for QUEST_START_LOCATIONS and QUEST_START_DESCRIPTIONS must align
-  // to correctly set the START_DESCRIPTION in getStartDescriptions()
-  private final int[][][] QUEST_START_LOCATIONS = {
-    LUMBRIDGE_CASTLE_COURTYARD,
-    FALADOR_WEST_BANK,
-    VARROCK_SQUARE,
-    SORCERORS_TOWER,
-    EDGE_MONESTARY,
-    TAV_DUNGEON_LADDER,
-    ARDY_MONESTARY,
-    WEST_DWARF_TUNNEL,
-    ARDY_SOUTH_BANK,
-    SHRIMP_AND_PARROT,
-    BARB_OUTPOST,
-    SORCERORS_TOWER_ABOVE
-  };
-  private final String[] QUEST_START_DESCRIPTIONS = {
-    "Lumbridge Castle Courtyard",
-    "Falador West Bank",
-    "Varrock Square",
-    "Ground Floor Sorcerors' Tower",
-    "Edgeville Monestary",
-    "Near Taverly dungeon entrance ladder",
-    "Near Ardougne Monastery",
-    "Western Entrance of Dwarf Tunnel",
-    "Ardougne south bank",
-    "Shrimp and Parrot Pub (Brimhaven)",
-    "Barbarian Outpost",
-    "1st Floor Sorcerors' Tower"
-  };
+  protected int[][] SORCERERS_TOWER_ABOVE = {{507, 1448}, {514, 1458}};
+
+  private final HashMap<int[][], String> START_DESCRIPTIONS =
+      new HashMap<int[][], String>() {
+        {
+          put(LUMBRIDGE_CASTLE_COURTYARD, "Lumbridge Castle Courtyard");
+          put(FALADOR_WEST_BANK, "Falador West Bank");
+          put(VARROCK_SQUARE, "Varrock Square");
+          put(SORCERERS_TOWER, "Ground Floor Sorcerers' Tower");
+          put(EDGE_MONASTERY, "Edgeville Monastery");
+          put(TAV_DUNGEON_LADDER, "Near Taverly dungeon entrance ladder");
+          put(ARDY_MONASTERY, "Near Ardougne Monastery");
+          put(WEST_DWARF_TUNNEL, "Western Entrance of Dwarf Tunnel");
+          put(ARDY_SOUTH_BANK, "Ardougne south bank");
+          put(SHRIMP_AND_PARROT, "Shrimp and Parrot Pub (Brimhaven)");
+          put(BARB_OUTPOST, "Barbarian Outpost");
+          put(SORCERERS_TOWER_ABOVE, "1st Floor Sorcerers' Tower");
+        }
+      };
 
   // PUBLIC VARIABLES SET BY SUBCLASS QUEST SCRIPT
   protected String QUEST_NAME, START_DESCRIPTION, CURRENT_QUEST_STEP = "";
   protected String[] QUEST_REQUIREMENTS = {};
-  protected int QUEST_ID, QUEST_STAGE, INVENTORY_SPACES_NEEDED;
+  protected int QUEST_ID, QUEST_STAGE, TOTAL_QUEST_STAGES, INVENTORY_SPACES_NEEDED;
   protected int[][] START_RECTANGLE,
       SKILL_REQUIREMENTS,
       EQUIP_REQUIREMENTS,
@@ -79,7 +80,6 @@ public class QH__QuestHandler extends IdleScript {
   private List<String> MISSING_QUESTS = new ArrayList<String>();
   private List<String> MISSING_ITEMS = new ArrayList<String>();
   private List<String> MISSING_EQUIP = new ArrayList<String>();
-  protected boolean IS_TESTING = false;
 
   /** Used for testing only */
   public void doTestLoop() {
@@ -88,8 +88,10 @@ public class QH__QuestHandler extends IdleScript {
   }
 
   public int start(String[] param) {
+    // Start needed here for handler testing
+    paintBuilder.start(4, 18, 182);
     QUEST_NAME = "Quest Handler";
-    CURRENT_QUEST_STEP = "This is only ran for testing.";
+    CURRENT_QUEST_STEP = "This is only ran for testing";
     int loops = 0;
 
     while (c.isRunning() && IS_TESTING) {
@@ -108,6 +110,9 @@ public class QH__QuestHandler extends IdleScript {
    * requirement is missing otherwise.
    */
   public void doQuestChecks() {
+    // Start needed here for quests
+    paintBuilder.start(4, 18, 182);
+
     if (!QUEST_NAME.equals("Miniquest")) {
       QUEST_ID = QuestId.getByName(QUEST_NAME).getId();
       QUEST_STAGE = c.getQuestStage(QUEST_ID);
@@ -116,7 +121,9 @@ public class QH__QuestHandler extends IdleScript {
         return;
       }
     }
-    START_DESCRIPTION = getStartDescription();
+    if (START_DESCRIPTIONS.get(START_RECTANGLE) == null)
+      quit("Start location not found in locations array");
+    START_DESCRIPTION = START_DESCRIPTIONS.get(START_RECTANGLE);
     CURRENT_QUEST_STEP = "Starting " + QUEST_NAME;
     c.setBatchBars(true);
     requiredQuestsCheck();
@@ -145,7 +152,6 @@ public class QH__QuestHandler extends IdleScript {
     for (int[] item : ITEM_REQUIREMENTS) {
       int itemId = item[0];
       int amount = item[1];
-      c.log(String.format("NEEDED: %s HELD: %s", amount, c.getInventoryItemCount(itemId)));
       String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
       itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
 
@@ -170,7 +176,6 @@ public class QH__QuestHandler extends IdleScript {
       int amount =
           1; // item[1]; //unimplemented, always put 1. todo add support to check amounts to
       // controller (arrows)
-      c.log(String.format("NEEDED: %s HELD: %s", amount, c.isItemIdEquipped(itemId)));
       String itemName = String.valueOf(ItemId.getById(itemId)).replaceAll("_", " ").toLowerCase();
       itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
 
@@ -266,25 +271,6 @@ public class QH__QuestHandler extends IdleScript {
       return true;
     }
     return false;
-  }
-
-  /**
-   * Returns a start description based on what index START_RECTANGLE is in START_LOCATIONS
-   *
-   * @return String -- Start description
-   */
-  private String getStartDescription() {
-    if (QUEST_START_LOCATIONS.length != QUEST_START_DESCRIPTIONS.length) {
-      quit("Start location description array mismatch");
-      return "Start description not found";
-    }
-    for (int i = 0; i < QUEST_START_LOCATIONS.length; i++) {
-      if (START_RECTANGLE == QUEST_START_LOCATIONS[i]) {
-        return QUEST_START_DESCRIPTIONS[i];
-      }
-    }
-    quit("Start location not found in locations array");
-    return "Start description not found";
   }
 
   /**
@@ -589,7 +575,7 @@ public class QH__QuestHandler extends IdleScript {
       for (String dialogChoice : dialogChoices) {
         // Sleep until a dialog menu appears
         while (!c.isInOptionMenu() && c.isRunning()) c.sleep(640);
-        // Select the menu option that cooresponds with choiceIndex
+        // Select the menu option that corresponds with choiceIndex
         for (int option = 0; option < c.getOptionMenuCount(); option++) {
           if (c.getOptionsMenuText(option).equals(dialogChoice)) {
             c.optionAnswer(option);
@@ -1087,141 +1073,14 @@ public class QH__QuestHandler extends IdleScript {
     }
     if ((quitMessage.length() > 0 && c.isRunning())
         || (quitMessage.length() > 0 && reason.toLowerCase() == "script stopped")) {
-      c.displayMessage("@red@" + quitMessage);
+      c.log(quitMessage, "red");
     }
     c.stop();
   }
 
-  /*
-   *  Every thing past this point is paint stuff.
-   */
-
-  /**
-   * Creates the text string for the items in STEP_ITEMS used in the paint.
-   *
-   * @param i int -- Index of the current item from STEP_ITEMS
-   * @param t int -- 1 for item name, 2 for amount needed
-   * @return String -- Text for drawString
-   */
-  public String getQuestStepItems(int i, int t) {
-    String color = "";
-    String text = "";
-    int held = 0;
-    if (c.getInventoryItemCount(STEP_ITEMS[i][0]) == 0) {
-      held = 0;
-      color = "@red@";
-    } else if (c.getInventoryItemCount(STEP_ITEMS[i][0]) > 0
-        && c.getInventoryItemCount(STEP_ITEMS[i][0]) < STEP_ITEMS[i][1]) {
-      held = c.getInventoryItemCount(STEP_ITEMS[i][0]);
-      color = "@yel@";
-    } else {
-      held = STEP_ITEMS[i][1];
-      color = "@gre@";
-    }
-    switch (t) {
-      case 1:
-        String itemName = c.getItemName(STEP_ITEMS[i][0]);
-        itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
-        text = String.format("%s %s", color, itemName);
-        break;
-      case 2:
-        text = String.format("%s %s/%s", color, held, STEP_ITEMS[i][1]);
-        break;
-    }
-    return text;
-  }
-
-  /**
-   * Draws a centered drawString.
-   *
-   * @param str String -- Text to be drawn
-   * @param widthOfPaintArea int -- The width of the area you want your string centered in.
-   * @param y int -- Distance from the top of the screen to draw the string
-   * @param leftPadding int -- The padding for the left side of the paint
-   * @param color int -- RGB "HTML" Color Example: 0x36E2D7
-   * @param fontSize int -- Font size. 1 or greater
-   */
-  private void drawCenteredString(
-      String str, int widthOfPaintArea, int y, int leftPadding, int color, int fontSize) {
-    int adjustedFontSize = Math.max(1, fontSize);
-    c.drawString(
-        str,
-        spacingFromLength(str, widthOfPaintArea) + (leftPadding * 2),
-        y,
-        color,
-        adjustedFontSize);
-  }
-
-  /**
-   * Gets the spacing for drawCenteredString based on the width of characters in the game font
-   *
-   * @param text String -- The text to calculate spacing from
-   * @param width int -- The width of the area paint area
-   * @return int -- x coordinate for drawCenteredString
-   */
-  private int spacingFromLength(String text, int width) {
-    if (text.length() < 1) return width / 2;
-    int spacing = 0;
-    String[] twelveWide = {"W"};
-    String[] tenWide = {
-      "m",
-    };
-    String[] nineWide = {
-      "M", "w",
-    };
-    String[] eightWide = {
-      "O", "Q",
-    };
-    String[] sevenWide = {
-      "A", "B", "C", "D", "G", "H", "K", "N", "P", "R", "S", "U", "V",
-    };
-    String[] sixWide = {
-      "E", "J", "L", "T", "X", "Y", "Z", "a", "b", "c", "d", "e", "g", "h", "k", "n", "o", "p", "q",
-      "s", "u", "x", "?"
-    };
-    String[] fiveWide = {
-      "F", "v", "y", "z",
-    };
-    String[] fourWide = {
-      "f", "r", " ",
-    };
-    String[] threeWide = {
-      "t",
-    };
-    String[] twoWide = {"I", "i", "j", "l", "'", "!"};
-
-    for (int i = 0; i < text.length(); i++) {
-      String currentChar = String.valueOf(text.charAt(i));
-      if (Arrays.asList(twelveWide).contains(currentChar)) {
-        spacing += 11; // One less because there isn't a pixel gap after them
-      } else if (Arrays.asList(tenWide).contains(currentChar)) {
-        spacing += 9; // One less because there isn't a pixel gap after them
-      } else if (Arrays.asList(nineWide).contains(currentChar)) {
-        spacing += 9;
-      } else if (Arrays.asList(eightWide).contains(currentChar)) {
-        spacing += 8;
-      } else if (Arrays.asList(sevenWide).contains(currentChar)) {
-        spacing += 7;
-      } else if (Arrays.asList(sixWide).contains(currentChar)) {
-        spacing += 6;
-      } else if (Arrays.asList(fiveWide).contains(currentChar)) {
-        spacing += 5;
-      } else if (Arrays.asList(fourWide).contains(currentChar)) {
-        spacing += 4;
-      } else if (Arrays.asList(threeWide).contains(currentChar)) {
-        spacing += 3;
-      } else if (Arrays.asList(twoWide).contains(currentChar)) {
-        spacing += 2;
-      }
-    }
-    spacing += (text.length() / 2);
-    int newSpacing = (width / 2) - (spacing / 2);
-    return newSpacing;
-  }
-
   @Override
   public void serverMessageInterrupt(String message) {
-    if (message.contains("@gr3@You @gr2@are @gr1@poisioned")) { // dont change spelling
+    if (message.contains("@gr3@You @gr2@are @gr1@poisioned")) { // don't change spelling
       timeToDrinkAntidote = true;
     }
   }
@@ -1229,56 +1088,73 @@ public class QH__QuestHandler extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      int top = 20;
-      int left = 6;
-      int paintWidth = 182;
-      int paintHeight = 32;
-      int alphaBoxHeight = 16;
-      int borderColor = 0x36E2D7;
-      int bgColorMain = 0x083E6B;
-      int bgColorItems = 0x020C3F;
-      int bgOpacity = 255;
 
-      int nextTop = 0;
+      // Colors are based on https://spec.draculatheme.com/#sec-Standard
+      int purple = 0xBD93F9;
+      int darkGray = 0x282A36;
+      int darkerGray = 0x1d1f27;
+      int white = 0xF8F8F2;
+      int green = 0x50FA7B;
+      int yellow = 0xF1FA8C;
+      int red = 0xFF5555;
 
-      c.drawBoxAlpha(left, top, paintWidth, alphaBoxHeight * 2, bgColorMain, bgOpacity);
-      drawCenteredString(
-          !IS_TESTING ? "@whi@" + QUEST_NAME : "@whi@" + QUEST_NAME + "   @gre@S:" + QUEST_STAGE,
-          paintWidth,
-          top + 13,
-          left,
-          bgColorMain,
-          1);
-      drawCenteredString(
-          "@yel@" + CURRENT_QUEST_STEP,
-          paintWidth,
-          top + alphaBoxHeight + 13,
-          left,
-          bgColorMain,
-          1);
-      // Paint Item Requirements
+      paintBuilder.setBackgroundColor(darkGray, 255);
+      paintBuilder.setBorderColor(purple);
+
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(QUEST_NAME, purple, 4));
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(CURRENT_QUEST_STEP, purple, 3));
+      if (TOTAL_QUEST_STAGES > 0) {
+        paintBuilder.addSpacerRow(4);
+        paintBuilder.addRow(
+            rowBuilder.progressBarRow(
+                QUEST_STAGE == -1 ? TOTAL_QUEST_STAGES + 1 : QUEST_STAGE,
+                TOTAL_QUEST_STAGES + 1,
+                darkerGray,
+                green,
+                darkGray,
+                20,
+                paintBuilder.getWidth() - 40,
+                18,
+                true,
+                false,
+                "Run Time: " + paintBuilder.stringRunTime,
+                white));
+        if (STEP_ITEMS.length > 0) {
+          paintBuilder.addSpacerRow(8);
+        }
+      } else {
+        paintBuilder.addSpacerRow(4);
+        paintBuilder.addRow(
+            rowBuilder.centeredSingleStringRow(
+                "Run Time: " + paintBuilder.stringRunTime, white, 1));
+      }
+
       if (STEP_ITEMS.length > 0) {
+        paintBuilder.addSpacerRow(4);
         for (int i = 0; i < STEP_ITEMS.length; i++) {
-          String itemCount = getQuestStepItems(i, 2);
 
-          // Is this terrible? Yes.... Does it work? YES!
-          // It was the only way I could get itemCountSpacing to scale with paintWidth while having
-          // the item amounts 6px from the right side.
-          int itemCountSpacing =
-              (paintWidth - (left * 2))
-                  - (int) (Math.round(7.34) * (itemCount.length() - 8))
-                  - (itemCount.length() == 9 ? 1 : 2);
+          String itemName = c.getItemName(STEP_ITEMS[i][0]);
+          itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
+          String amount =
+              String.valueOf(c.getInventoryItemCount(STEP_ITEMS[i][0]) + "/" + STEP_ITEMS[i][1]);
 
-          paintHeight += alphaBoxHeight;
-          nextTop = top + (alphaBoxHeight * 2) + (i * alphaBoxHeight);
-          c.drawBoxAlpha(left, nextTop, paintWidth, alphaBoxHeight, bgColorItems, bgOpacity);
-          c.drawString(getQuestStepItems(i, 1), (left * 2) - 2, nextTop + 12, bgColorMain, 1);
-          c.drawString(itemCount, itemCountSpacing, nextTop + 12, bgColorMain, 1);
+          String[] strings = {itemName, amount};
+          int stringColor =
+              c.getInventoryItemCount(STEP_ITEMS[i][0]) >= STEP_ITEMS[i][1]
+                  ? green
+                  : c.getInventoryItemCount(STEP_ITEMS[i][0]) == 0 ? red : yellow;
+          int[] colors = {stringColor, stringColor};
+          int[] spacing = {
+            4,
+            paintBuilder.getWidth()
+                - c.getStringWidth(amount, 1)
+                - (amount.charAt(amount.length() - 1) == '1' ? 3 : 4)
+                - 4
+          };
+          paintBuilder.addRow(rowBuilder.multipleStringRow(strings, colors, spacing, 1));
         }
       }
-      c.drawBoxBorder(left, top, paintWidth, paintHeight, borderColor);
-      // Used to check if the paint text is centered
-      if (IS_TESTING) c.drawLineVert((paintWidth / 2) + left, top, paintHeight, borderColor);
+      paintBuilder.draw();
     }
   }
 }

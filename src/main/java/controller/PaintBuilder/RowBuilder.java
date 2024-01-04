@@ -1,17 +1,20 @@
 package controller.PaintBuilder;
 
-// TODO: Use the largest number from (14 or spriteScaledHeight+2) to set row heights automatically
+import bot.Main;
+import controller.Controller;
 
 public class RowBuilder {
+  private static final Controller c = Main.getController();
+
   public int[] ids, colors, scales, stringXOffsets;
   public String[] strings;
   public String type = "";
   public String text;
   public int itemId = -1;
   public int stringColor, fgColor, bgColor, borderColor;
-  public int rowXOffset, rowHeight;
+  public int borderXOffset, rowHeight;
   public int spriteScale, spriteSpacing;
-  public int stringXOffset, stringYOffset;
+  public int stringXOffset, stringYOffset, fontSize;
   public int progressBarWidth, progressBarHeight, currentProgress, maximumProgress;
   public boolean showGoal, showPercentage;
   /**
@@ -19,25 +22,38 @@ public class RowBuilder {
    *
    * @param text String -- String to paint
    * @param color color -- Color of the string. RGB "HTML" Color Example: 0x36E2D7
-   * @param rowXOffset int -- Amount to offset the string's X from the paint's border
+   * @param xOffset int -- Amount to offset the string's X from the paint's border
+   * @param fontSize int -- Font Size
    * @return RowBuilder Row
    */
-  public RowBuilder singleStringRow(String text, int color, int rowXOffset) {
+  public RowBuilder singleStringRow(String text, int color, int xOffset, int fontSize) {
     RowBuilder row = new RowBuilder();
+    fontSize = Math.min(7, Math.max(1, fontSize));
     row.type = "SingleString";
     row.text = text;
     row.stringColor = color;
-    row.rowXOffset = rowXOffset;
-    row.rowHeight = 14;
+    row.borderXOffset = xOffset;
+    row.rowHeight = c.getStringHeight(fontSize) + 3;
+    row.fontSize = fontSize;
     return row;
   }
 
-  public RowBuilder centeredSingleStringRow(String text, int color) {
+  /**
+   * Builds a row with a single centered colored string
+   *
+   * @param text String -- String to paint
+   * @param color color -- Color of the string. RGB "HTML" Color Example: 0x36E2D7
+   * @param fontSize int -- Font Size
+   * @return RowBuilder Row
+   */
+  public RowBuilder centeredSingleStringRow(String text, int color, int fontSize) {
     RowBuilder row = new RowBuilder();
+    fontSize = Math.min(7, Math.max(1, fontSize));
     row.type = "CenteredString";
     row.text = text;
     row.stringColor = color;
-    row.rowHeight = 14;
+    row.rowHeight = c.getStringHeight(fontSize) + 3;
+    row.fontSize = fontSize;
     return row;
   }
 
@@ -46,29 +62,31 @@ public class RowBuilder {
    *
    * @param strings int[] -- Strings to draw
    * @param colors int[] -- Colors of the strings. RGB "HTML" Color Example: 0x36E2D7
-   * @param stringXOffsets int[] -- Array of offsets for each string's X from the previous string's
-   *     X. The first index is the amount offset from paint's border.
-   * @return
+   * @param xOffsets int[] -- Array of offsets for each string's X from the previous string's X. The
+   *     first index is the amount offset from paint's border.
+   * @param fontSize int -- Font Size
+   * @return RowBuilder Row
    */
   public RowBuilder multipleStringRow(
-      String[] strings, int[] colors, int rowXOffset, int[] stringXOffsets) {
+      String[] strings, int[] colors, int[] xOffsets, int fontSize) {
     RowBuilder row = new RowBuilder();
-    if (strings.length > 0
-        && strings.length == colors.length
-        && colors.length == stringXOffsets.length) {
+    if (strings.length > 0 && strings.length == colors.length && colors.length == xOffsets.length) {
+      fontSize = Math.min(7, Math.max(1, fontSize));
 
       row.type = "MultipleStrings";
       row.strings = strings;
       row.colors = colors;
-      row.stringXOffsets = stringXOffsets;
-      row.rowHeight = 14;
+      row.stringXOffsets = xOffsets;
+      row.rowHeight = c.getStringHeight(fontSize) + 3;
+      row.fontSize = fontSize;
       return row;
     }
-    return errorArrayLengthMismatch();
+    return errorRow("Array lengths must match");
   }
 
+  // TODO: Make spriteSpacing an int[]
   /**
-   * Builds a row of item sprites.
+   * Builds a row of item sprites and strings.
    *
    * @param ids int[] -- Array of item ids to paint
    * @param scales int[] -- Array of int to scale each sprite to. 100 is normal, lower is smaller,
@@ -76,8 +94,7 @@ public class RowBuilder {
    * @param strings String[] -- Array of strings to paint for each item sprite
    * @param colors int[] -- Array of colors for each string. If given an empty array, it will
    *     default to white. RGB "HTML" Color Example: 0x36E2D7
-   * @param rowXOffset int -- Amount to offset the row's X from the paint's border
-   * @param rowHeight int -- Height of the row (to prevent clipping)
+   * @param borderXOffset int -- Amount to offset the row's X from the paint's border
    * @param spriteSpacing int -- Spacing between each sprite
    * @param stringXOffset int -- X offset for the strings relative to the sprite's X. Negative is
    *     left while positive is right.
@@ -90,8 +107,7 @@ public class RowBuilder {
       int[] scales,
       String[] strings,
       int[] colors,
-      int rowXOffset,
-      int rowHeight,
+      int borderXOffset,
       int spriteSpacing,
       int stringXOffset,
       int stringYOffset) {
@@ -105,14 +121,21 @@ public class RowBuilder {
       row.scales = scales;
       row.strings = strings;
       row.colors = colors;
-      row.rowXOffset = rowXOffset;
+      row.borderXOffset = borderXOffset;
       row.spriteSpacing = spriteSpacing;
       row.stringXOffset = stringXOffset;
       row.stringYOffset = stringYOffset;
-      row.rowHeight = rowHeight;
+
+      int spriteHeight = 0;
+      for (int i = 0; i < ids.length; i++) {
+        if (c.getItemSpriteScaledHeight(ids[i], scales[i]) > spriteHeight)
+          spriteHeight = c.getItemSpriteScaledHeight(ids[i], scales[i]);
+      }
+
+      row.rowHeight = Math.max(spriteHeight, 14) + 4;
       return row;
     }
-    return errorArrayLengthMismatch();
+    return errorRow("Array lengths must match");
   }
 
   /**
@@ -121,8 +144,7 @@ public class RowBuilder {
    * @param itemId int -- Item id to draw the sprite for
    * @param itemString String -- String to draw
    * @param stringColor int -- Color of the string. RGB "HTML" Color Example: 0x36E2D7
-   * @param rowXOffset int -- Amount to offset the row's X from the paint's border
-   * @param rowHeight int -- Height of the row (to prevent clipping)
+   * @param borderXOffset int -- Amount to offset the sprite's X from the paint's border
    * @param spriteScale int -- Scale of the items sprite. 100 is normal, lesser is smaller, greater
    *     is larger.
    * @param stringXOffset int -- X offset for the string relative to the sprite's X. Negative is
@@ -135,8 +157,7 @@ public class RowBuilder {
       int itemId,
       String itemString,
       int stringColor,
-      int rowXOffset,
-      int rowHeight,
+      int borderXOffset,
       int spriteScale,
       int stringXOffset,
       int stringYOffset) {
@@ -145,11 +166,13 @@ public class RowBuilder {
     row.itemId = itemId;
     row.text = itemString;
     row.stringColor = stringColor;
-    row.rowXOffset = rowXOffset;
-    row.rowHeight = rowHeight;
+    row.borderXOffset = borderXOffset;
     row.spriteScale = spriteScale;
     row.stringXOffset = stringXOffset;
     row.stringYOffset = stringYOffset;
+    int spriteHeight = c.getItemSpriteScaledHeight(itemId, spriteScale);
+
+    row.rowHeight = Math.max(spriteHeight, 14) + 4;
     return row;
   }
 
@@ -164,6 +187,7 @@ public class RowBuilder {
    *     0x36E2D7
    * @param borderColor int -- Color of the progress bar's border. RGB "HTML" Color Example:
    *     0x36E2D7
+   * @param borderXOffset int -- Amount to offset the progress bar's X from the paint's border
    * @param barWidth int -- Width of the progress bar
    * @param barHeight int -- Height of the progress bar
    * @param showPercentage boolean -- Show the percentage on the bar
@@ -178,15 +202,13 @@ public class RowBuilder {
       int bgColor,
       int fgColor,
       int borderColor,
-      int rowXOffset,
+      int borderXOffset,
       int barWidth,
       int barHeight,
       boolean showPercentage,
       boolean showGoal,
       String string,
-      int stringColor,
-      int stringXOffset,
-      int stringYOffset) {
+      int stringColor) {
     RowBuilder row = new RowBuilder();
     row.type = "ProgressBar";
     row.currentProgress = current;
@@ -194,14 +216,14 @@ public class RowBuilder {
     row.bgColor = bgColor;
     row.fgColor = fgColor;
     row.borderColor = borderColor;
-    row.rowXOffset = rowXOffset;
+    row.borderXOffset = borderXOffset;
     row.progressBarWidth = barWidth;
     row.progressBarHeight = barHeight;
     row.showPercentage = showPercentage;
     row.showGoal = showGoal;
     row.text = string;
     row.stringColor = stringColor;
-    row.rowHeight = barHeight + 18;
+    row.rowHeight = barHeight + c.getStringHeight(1) + 6;
     return row;
   }
 
@@ -211,26 +233,23 @@ public class RowBuilder {
    * @param itemId int -- Id of item sprite to draw
    * @param scale int -- Scale of the items sprite. 100 is normal, lesser is smaller, greater is
    *     larger.
-   * @param rowXOffset int -- Amount the row is offset from the paint's border
+   * @param borderXOffset int -- Amount to offset the sprite's X from the paint's border
    * @param strings String[] -- Array of strings
    * @param colors int[] -- Array of colors for the strings
    * @param stringXOffsets int[] -- Array of offsets for each string's X from the previous string's
    *     X. The first index is the amount offset from the sprite's X.
    * @param stringYOffset int -- Amount up or down the strings are in the row. Negative is up while
    *     positive is down.
-   * @param rowHeight int -- Height of the row. This is to prevent rows clipping with higher item
-   *     sprite scaling.
    * @return
    */
   public RowBuilder singleSpriteMultipleStringRow(
       int itemId,
       int scale,
-      int rowXOffset,
+      int borderXOffset,
       String[] strings,
       int[] colors,
       int[] stringXOffsets,
-      int stringYOffset,
-      int rowHeight) {
+      int stringYOffset) {
     RowBuilder row = new RowBuilder();
     row.type = "SingleSpriteMultipleStrings";
     if (strings.length > 0
@@ -242,20 +261,22 @@ public class RowBuilder {
       row.colors = colors;
       row.stringXOffsets = stringXOffsets;
       row.stringYOffset = stringYOffset;
-      row.rowXOffset = rowXOffset;
-      row.rowHeight = rowHeight;
+      row.borderXOffset = borderXOffset;
+      int spriteHeight = c.getItemSpriteScaledHeight(itemId, scale);
+
+      row.rowHeight = Math.max(spriteHeight, 14) + 4;
       return row;
     }
-    return errorArrayLengthMismatch();
+    return errorRow("Array lengths must match");
   }
 
-  private RowBuilder errorArrayLengthMismatch() {
+  private RowBuilder errorRow(String error) {
     RowBuilder row = new RowBuilder();
-    row.type = "SingleString";
-    row.text = "Row arrays have non-matching lengths";
-    row.stringColor = 0xff0000;
-    row.rowXOffset = 4;
-    row.rowHeight = 14;
+    row.type = "CenteredString";
+    row.text = error;
+    row.stringColor = 0xff4545;
+    row.rowHeight = c.getStringHeight(1) + 3;
+    row.fontSize = 1;
     return row;
   }
 }

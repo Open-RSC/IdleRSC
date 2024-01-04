@@ -77,6 +77,7 @@ public final class QH_SheepShearer extends QH__QuestHandler {
     ITEM_REQUIREMENTS = new int[][] {};
     EQUIP_REQUIREMENTS = new int[][] {};
     INVENTORY_SPACES_NEEDED = 21;
+    TOTAL_QUEST_STAGES = 1;
     doQuestChecks();
 
     while (c.isRunning()) {

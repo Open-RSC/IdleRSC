@@ -306,7 +306,7 @@ public final class K_YanilleDruidWarriors extends K_kailaScript {
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
-    fightModeField.setSelectedIndex(0); // sets default to controlled
+    fightModeField.setSelectedIndex(c.getFightMode());
     foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
 

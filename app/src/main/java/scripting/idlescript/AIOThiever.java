@@ -362,6 +362,7 @@ public class AIOThiever extends IdleScript {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(c.getFightMode());
     JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
     JLabel thieveLabel = new JLabel("Select thieving option:");
     JTextField eatAtHpField =

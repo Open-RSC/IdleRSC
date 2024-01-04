@@ -464,10 +464,10 @@ public final class K_Paladins extends K_kailaScript {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(c.getFightMode());
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
-    fightModeField.setSelectedIndex(3); // sets default to defensive
-    foodField.setSelectedIndex(2); // sets default to sharks
+    foodField.setSelectedIndex(5); // sets default to lobs
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

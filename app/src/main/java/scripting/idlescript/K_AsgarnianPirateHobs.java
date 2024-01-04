@@ -267,7 +267,7 @@ public final class K_AsgarnianPirateHobs extends K_kailaScript {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
-    fightModeField.setSelectedIndex(0); // sets default to controlled
+    fightModeField.setSelectedIndex(c.getFightMode());
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     foodField.setSelectedIndex(5); // sets default to lobs

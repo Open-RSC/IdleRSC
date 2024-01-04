@@ -490,6 +490,7 @@ public class AIOFighter extends IdleScript {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(c.getFightMode());
     JLabel npcIdsLabel = new JLabel("NPC IDs:");
     JTextField npcIdsField = new JTextField("3");
     JLabel maxWanderLabel = new JLabel("Max Wander Distance: (-1 to disable)");

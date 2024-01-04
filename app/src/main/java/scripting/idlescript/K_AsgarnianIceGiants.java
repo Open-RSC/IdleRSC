@@ -285,6 +285,7 @@ public final class K_AsgarnianIceGiants extends K_kailaScript {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(c.getFightMode());
     JLabel blankLabel = new JLabel("          ");
     JButton startScriptButton = new JButton("Start");
 

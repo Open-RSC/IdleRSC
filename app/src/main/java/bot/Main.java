@@ -70,7 +70,8 @@ public class Main {
   private static String themeName = "RuneDark Theme";
   private static JMenuBar menuBar;
   private static JMenu themeMenu, settingsMenu;
-  private static JFrame scriptFrame; // all the windows.
+  private static JFrame scriptFrame;
+  private static JFrame rscFrame; // all the windows
   private static JButton startStopButton, buttonClear;
   private static JCheckBox autoLoginCheckbox,
       logWindowCheckbox,
@@ -281,7 +282,7 @@ public class Main {
     JComponent botFrame = new JPanel();
     themeMenu = new JMenu();
     JPanel consoleFrame = new JPanel(); // log window
-    JFrame rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
+    rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
     if (config.getUsername() != null) {
       scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
     } else if (controller.getPlayerName() != null) {
@@ -1094,21 +1095,22 @@ public class Main {
       scriptFrame.setVisible(true);
       scriptFrame.toFront();
       scriptFrame.requestFocusInWindow();
+      scriptFrame.setLocationRelativeTo(rscFrame);
     } else {
       // JOptionPane.showMessageDialog(null, "Stop the current script first.");
 
       JLabel stopLabel = new JLabel("A Script is already running for this account!");
       JLabel stopLabel2 = new JLabel("You must stop the script before loading a new one");
-      JButton cancelButton = new JButton("Force cancel script");
+      // JButton cancelButton = new JButton("Force cancel script");
       JButton closeWindow = new JButton("Close this warning");
 
-      cancelButton.addActionListener(
-          e -> {
-            setRunning(false);
-
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-          });
+      //      cancelButton.addActionListener(
+      //          e -> {
+      //            setRunning(false);
+      //
+      //            scriptFrame.setVisible(false);
+      //            scriptFrame.dispose();
+      //          });
 
       closeWindow.addActionListener(
           e -> {
@@ -1127,7 +1129,7 @@ public class Main {
       scriptFrame.setLayout(new GridLayout(0, 1));
       scriptFrame.add(stopLabel);
       scriptFrame.add(stopLabel2);
-      scriptFrame.add(cancelButton);
+      // scriptFrame.add(cancelButton);
       scriptFrame.add(closeWindow);
     }
   }

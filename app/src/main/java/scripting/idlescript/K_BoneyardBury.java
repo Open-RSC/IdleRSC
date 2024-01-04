@@ -179,12 +179,12 @@ public final class K_BoneyardBury extends K_kailaScript {
     JLabel fightModeLabel = new JLabel("Fight Mode:");
     JComboBox<String> fightModeField =
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+    fightModeField.setSelectedIndex(c.getFightMode());
     JLabel foodLabel = new JLabel("Type of Food:");
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(28));
-    fightModeField.setSelectedIndex(0); // sets default to controlled
-    foodField.setSelectedIndex(5); // sets default to sharks
+    foodField.setSelectedIndex(5); // sets default to lobs
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

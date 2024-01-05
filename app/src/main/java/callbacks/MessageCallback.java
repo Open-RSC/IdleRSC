@@ -58,7 +58,10 @@ public class MessageCallback {
       if (!con.isDrawEnabled()) {
         con.setDrawing(true);
         DrawCallback.setNextDeRefresh(System.currentTimeMillis() + 20L); // toggle on gfx 1 frame
-        DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L); // wait 1 min for refresh
+        DrawCallback.setNextRefresh(
+            System.currentTimeMillis()
+                + 25000L
+                + (long) (Math.random() * 10000)); // wait 1 min for refresh
         //        System.out.println("Next screen refresh in: "
         //                + ((DrawCallback.getNextRefresh() - System.currentTimeMillis()) / 1000L) +
         // "s");

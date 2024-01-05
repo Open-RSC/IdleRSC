@@ -418,7 +418,9 @@ public class Main {
     if (!config.isGraphicsEnabled()) {
       if (controller != null) {
         if (config.isGraphicsEnabled()) DrawCallback.setNextRefresh(-1);
-        else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
+        else
+          DrawCallback.setNextRefresh(
+              System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
       }
     }
     while (true) {
@@ -573,7 +575,9 @@ public class Main {
             graphicsCheckbox.setSelected(gfxCheckbox.isSelected());
             controller.setDrawing(gfxCheckbox.isSelected());
             if (gfxCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
-            else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
+            else
+              DrawCallback.setNextRefresh(
+                  (System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000)));
           }
         });
 
@@ -669,7 +673,9 @@ public class Main {
             gfxCheckbox.setSelected(graphicsCheckbox.isSelected());
             controller.setDrawing(graphicsCheckbox.isSelected());
             if (graphicsCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
-            else DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L);
+            else
+              DrawCallback.setNextRefresh(
+                  System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
           }
         });
     botPaintCheckbox.addActionListener(

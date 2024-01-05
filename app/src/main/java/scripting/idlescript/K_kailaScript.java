@@ -3,6 +3,7 @@ package scripting.idlescript;
 import bot.Main;
 import controller.Controller;
 import javax.swing.*;
+import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
 import models.entities.SpellId;
 
@@ -293,7 +294,6 @@ public class K_kailaScript extends IdleScript {
     "Shrimp",
     "Cooked Meat"
   };
-
   /**
    * Checks the amount of items in the inventory and stores the data in the inventItem static
    * variables. For use with GUI to display the total amount of items gathered between the bank and
@@ -1555,8 +1555,9 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void teleportAgilityCape() {
     int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();
-    //    if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1)
-    //      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
+    if (c.isItemIdEquipped(AGILITY_CAPE) && c.getInventoryItemCount(AGILITY_CAPE) < 1) {
+      c.unequipItem(EquipSlotIndex.CAPE.getId());
+    }
     if (c.isInCombat()) leaveCombat();
     for (int i = 1; i <= 200; i++) {
       if (c.isRunning() && c.currentX() != 591 && c.currentY() != 765) {
@@ -1577,8 +1578,9 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void teleportCraftCape() {
     int CRAFTING_CAPE = ItemId.CRAFTING_CAPE.getId();
-    //    if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1)
-    //      c.unequipItem(EquipSlotIndex.CAPE.getId()); // slot 1 is cape slot
+    if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1) {
+      c.unequipItem(EquipSlotIndex.CAPE.getId());
+    }
     if (c.isInCombat()) leaveCombat();
     for (int i = 1; i <= 200; i++) {
       if (c.isRunning() && c.currentX() != 347 && c.currentY() != 599) {
@@ -1769,32 +1771,36 @@ public class K_kailaScript extends IdleScript {
   protected static void craftGuildDoorEntering(int reEquipItemId) {
     final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
     final int BROWN_APRON = ItemId.BROWN_APRON.getId();
-    if (c.getInventoryItemCount(CRAFT_CAPE) > 0) {
-      c.equipItem(c.getInventoryItemSlotIndex(CRAFT_CAPE));
-      c.sleep(6 * GAME_TICK);
-    } else if (c.getInventoryItemCount(BROWN_APRON) > 0) {
-      c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
-      c.sleep(6 * GAME_TICK);
-      //    } else if (OLD_CAPE == CRAFT_CAPE
-      //        || c.getEquippedItemId(EquipSlotIndex.NECKLACE.getId()) == BROWN_APRON) {
-      //      c.sleep(6 * GAME_TICK);
-      //    }
+    if (c.getInventoryItemCount(CRAFT_CAPE) > 0 || c.isItemIdEquipped(CRAFT_CAPE)) {
+      if (!c.isItemIdEquipped(CRAFT_CAPE)) {
+        c.equipItem(c.getInventoryItemSlotIndex(CRAFT_CAPE));
+        c.sleep(6 * GAME_TICK);
+      }
+    } else if (c.getInventoryItemCount(BROWN_APRON) > 0 || c.isItemIdEquipped(BROWN_APRON)) {
+      if (!c.isItemIdEquipped(BROWN_APRON)) {
+        c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
+        c.sleep(6 * GAME_TICK);
+      }
     } else {
-      c.log("No entrance item exits, you need a Crafting Cape or Brown Apron");
+      c.log(
+          "No entrance item exits, you need a Crafting Cape or Brown Apron, EXITING BOT", "@red@");
+      c.sleep(10000);
+      endSession();
+      return;
     }
     for (int i = 1; i <= 30; i++) {
       if (c.isRunning() && c.currentX() == 347 && c.currentY() == 600) {
         c.setStatus("@red@Entering Crafting Guild..");
         c.atWallObject(347, 601);
-        c.sleep(8 * GAME_TICK);
+        c.sleep(10 * GAME_TICK);
       } else {
-        c.sleep(8 * GAME_TICK);
+        c.sleep(10 * GAME_TICK);
         break;
       }
     }
     if (reEquipItemId > 0) {
       c.equipItem(c.getInventoryItemSlotIndex(reEquipItemId));
-      c.sleep(6 * GAME_TICK);
+      c.sleep(3 * GAME_TICK);
     }
   }
   /**
@@ -1804,14 +1810,22 @@ public class K_kailaScript extends IdleScript {
   protected static void craftGuildDoorExiting(int reEquipItemId) {
     final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
     final int BROWN_APRON = ItemId.BROWN_APRON.getId();
-    if (c.getInventoryItemCount(CRAFT_CAPE) > 0) {
-      c.equipItem(c.getInventoryItemSlotIndex(CRAFT_CAPE));
-      c.sleep(6 * GAME_TICK);
-    } else if (c.getInventoryItemCount(BROWN_APRON) > 0) {
-      c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
-      c.sleep(6 * GAME_TICK);
+    if (c.getInventoryItemCount(CRAFT_CAPE) > 0 || c.isItemIdEquipped(CRAFT_CAPE)) {
+      if (!c.isItemIdEquipped(CRAFT_CAPE)) {
+        c.equipItem(c.getInventoryItemSlotIndex(CRAFT_CAPE));
+        c.sleep(6 * GAME_TICK);
+      }
+    } else if (c.getInventoryItemCount(BROWN_APRON) > 0 || c.isItemIdEquipped(BROWN_APRON)) {
+      if (!c.isItemIdEquipped(BROWN_APRON)) {
+        c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
+        c.sleep(6 * GAME_TICK);
+      }
     } else {
-      c.log("No entrance item exits, you need a Crafting Cape or Brown Apron");
+      c.log(
+          "No entrance item exits, you need a Crafting Cape or Brown Apron, EXITING BOT", "@red@");
+      c.sleep(10000);
+      endSession();
+      return;
     }
     for (int i = 1; i <= 30; i++) {
       if (c.isRunning() && c.currentX() == 347 && c.currentY() == 601) {

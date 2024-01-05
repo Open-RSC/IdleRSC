@@ -259,7 +259,7 @@ public final class K_TavDruidTown extends K_kailaScript {
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
-    foodField.setSelectedIndex(2); // sets default to sharks
+    foodField.setSelectedIndex(5); // sets default to lobs
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

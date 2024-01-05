@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import models.entities.EquipSlotIndex;
+import models.entities.SkillId;
 import orsc.ORSCharacter;
 
 /**
@@ -307,7 +308,8 @@ public class AIOThiever extends IdleScript {
 
   private void eat() {
     if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth
-        || c.getCurrentStat(c.getStatId("Hits")) <= 20) {
+        || c.getCurrentStat(c.getStatId("Hits"))
+            <= Math.min(c.getBaseStat(SkillId.HITS.getId()), 20)) {
       if (c.isInCombat()) leaveCombat();
       c.setStatus("@red@Eating..");
       boolean ate = false;
@@ -320,7 +322,7 @@ public class AIOThiever extends IdleScript {
           break;
         }
       }
-      while (bankSpot.equals(bankSpots[0]) && !ate) {
+      while (eatingHealth > 0 && bankSpot.equals(bankSpots[0]) && !ate) {
         c.setStatus("@red@Logging out..");
         leaveCombat();
         c.setAutoLogin(false);
@@ -364,6 +366,7 @@ public class AIOThiever extends IdleScript {
         new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
     fightModeField.setSelectedIndex(c.getFightMode());
     JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
+    JLabel eatAtHpLabel2 = new JLabel("Setting to 0 will do su***de thieving method.");
     JLabel thieveLabel = new JLabel("Select thieving option:");
     JTextField eatAtHpField =
         new JTextField(String.valueOf(Math.max(c.getBaseStat(c.getStatId("Hits")) - 20, 35)));
@@ -423,6 +426,7 @@ public class AIOThiever extends IdleScript {
     scriptFrame.add(fightModeLabel);
     scriptFrame.add(fightModeField);
     scriptFrame.add(eatAtHpLabel);
+    scriptFrame.add(eatAtHpLabel2);
     scriptFrame.add(eatAtHpField);
     scriptFrame.add(thieveLabel);
     scriptFrame.add(targetField);

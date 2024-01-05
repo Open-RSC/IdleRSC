@@ -23,13 +23,13 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
   private boolean useDragonTwoHand = false;
   private boolean craftCapeTeleport = false;
   private boolean timeToDrinkAntidote = false;
+  private int capeSwapId = 0;
   private int fightMode = 0;
   private int totalRlong = 0;
   private int totalMed = 0;
   private int totalDstone = 0;
   private static final int DRAGON_TWO_HAND = ItemId.DRAGON_2_HANDED_SWORD.getId();
   private static final int ANTI_DRAGON_SHIELD = ItemId.ANTI_DRAGON_BREATH_SHIELD.getId();
-  private static final int ATTACK_CAPE = ItemId.ATTACK_CAPE.getId();
   private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int PARALYZE_MONSTER = PrayerId.PARALYZE_MONSTER.getId();
   private static final int[] loot = {
@@ -233,7 +233,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
             && itemId != ItemId.RESTORE_PRAYER_POTION_2DOSE.getId()
             && itemId != ItemId.POISON_ANTIDOTE_1DOSE.getId()
             && itemId != ItemId.POISON_ANTIDOTE_2DOSE.getId()
-            && itemId != ATTACK_CAPE
+            && itemId != capeSwapId
             && itemId != CRAFT_CAPE
             && itemId != ANTI_DRAGON_SHIELD
             && itemId != DRAGON_TWO_HAND) {
@@ -274,7 +274,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       bankItemCheck(foodId, 30);
       bankCheckAntiDragonShield();
       c.closeBank();
-      if (!c.isItemIdEquipped(ATTACK_CAPE)) c.equipItem(c.getInventoryItemSlotIndex(ATTACK_CAPE));
+      if (!c.isItemIdEquipped(capeSwapId)) c.equipItem(c.getInventoryItemSlotIndex(capeSwapId));
     }
     if (!craftCapeTeleport) {
       inventoryItemCheck(airId, 18);
@@ -297,7 +297,7 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
       teleportCraftCape();
       c.walkTo(347, 600);
       if (c.isPrayerOn(PARALYZE_MONSTER)) c.disablePrayer(PARALYZE_MONSTER);
-      craftGuildDoorEntering(ATTACK_CAPE);
+      craftGuildDoorEntering(capeSwapId);
       if (useDragonTwoHand && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));
         c.sleep(4 * GAME_TICK);
@@ -416,6 +416,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JLabel label8 = new JLabel("Styles ::attack :strength ::defense ::controlled");
     JLabel blankLabel = new JLabel("     ");
     JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport Method?", true);
+    JLabel capeItemIdLabel = new JLabel("Cape ItemId to switch back too");
+    JTextField capeItemIdField = new JTextField(String.valueOf(ItemId.ATTACK_CAPE.getId()));
     JCheckBox dragonTwoHandCheckbox = new JCheckBox("Swap to Dragon 2h Sword?", true);
     JCheckBox buryBonesCheckbox = new JCheckBox("Bury Dragon Bones?", false);
     JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots? (Super or reg)", true);
@@ -430,9 +432,14 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(4));
     JLabel prayPotWithdrawAmountLabel = new JLabel("Prayer Pot Withdraw amount:");
     JTextField prayPotWithdrawAmountField = new JTextField(String.valueOf(5));
-
     foodField.setSelectedIndex(2); // sets default to sharks
     JButton startScriptButton = new JButton("Start");
+
+    craftCapeCheckbox.addActionListener(
+      e -> {
+        capeItemIdLabel.setEnabled(craftCapeCheckbox.isSelected());
+        capeItemIdField.setEnabled(craftCapeCheckbox.isSelected());
+      });
 
     startScriptButton.addActionListener(
         e -> {
@@ -445,6 +452,9 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
             prayPotWithdrawAmount = Integer.parseInt(prayPotWithdrawAmountField.getText());
           } else {
             prayPotWithdrawAmount = 6;
+          }
+          if (!capeItemIdField.getText().isEmpty()) {
+            capeSwapId = Integer.parseInt(capeItemIdField.getText());
           }
           buryBones = buryBonesCheckbox.isSelected();
           fightMode = fightModeField.getSelectedIndex();
@@ -473,6 +483,8 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     scriptFrame.add(label8);
     scriptFrame.add(blankLabel);
     scriptFrame.add(craftCapeCheckbox);
+    scriptFrame.add(capeItemIdLabel);
+    scriptFrame.add(capeItemIdField);
     scriptFrame.add(dragonTwoHandCheckbox);
     scriptFrame.add(buryBonesCheckbox);
     scriptFrame.add(potUpCheckbox);

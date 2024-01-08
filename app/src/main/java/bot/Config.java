@@ -29,6 +29,7 @@ public class Config extends ParseResult {
     setScriptArguments(parseResult.getScriptArguments());
     setInitCache(parseResult.getInitCache());
     setThemeName(parseResult.getThemeName());
+    // setServerId(parseResult.getServerId());
 
     // Boolean options
     setAutoLogin(parseResult.isAutoLogin());
@@ -36,7 +37,9 @@ public class Config extends ParseResult {
     setDebug(parseResult.isDebug());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
     setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
+    setScreenRefresh(parseResult.getScreenRefresh());
     setLocalOcr(parseResult.isLocalOcr());
+    setUiStyle(parseResult.getNewUi());
 
     // Switching options
     setAttackItems(parseResult.getAttackItems());

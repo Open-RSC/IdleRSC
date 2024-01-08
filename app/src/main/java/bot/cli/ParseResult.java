@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class ParseResult {
   // Options with parameters/arguments.
-  private String username, password, scriptName, themeName, initCache;
+  private String username, password, scriptName, themeName, initCache, serverIp;
   private String[] scriptArguments;
   // Boolean options
   private boolean autoLogin,
@@ -13,19 +13,17 @@ public class ParseResult {
       botPaintVisible,
       graphicsEnabled,
       graphicsInterlacing,
-      showSideBar;
-  private boolean scriptSelectorOpen;
-  private boolean localOcr;
+      showSideBar,
+      localOcr,
+      screenRefresh,
+      scriptSelectorOpen,
+      newUi,
+      help,
+      version;
 
   // Switching options
-  private ArrayList<Integer> attackItems;
-  private ArrayList<Integer> defenceItems;
-  private ArrayList<Integer> strengthItems;
+  private ArrayList<Integer> attackItems, defenceItems, strengthItems;
   private int spellId;
-
-  // CLI functions
-  private boolean help;
-  private boolean version;
 
   public void setUsername(String username) {
     this.username = username;
@@ -137,6 +135,14 @@ public class ParseResult {
     return localOcr;
   }
 
+  public void setScreenRefresh(boolean screenRefresh) {
+    this.screenRefresh = screenRefresh;
+  }
+
+  public boolean getScreenRefresh() {
+    return screenRefresh;
+  }
+
   public void setGraphicsInterlacingEnabled(boolean graphicsInterlacing) {
     this.graphicsInterlacing = graphicsInterlacing;
   }
@@ -205,6 +211,14 @@ public class ParseResult {
     return spellId;
   }
 
+  //  public void setServerId(String serverIp) {
+  //    this.serverIp = serverIp;
+  //  }
+  //
+  //  public String getServerId() {
+  //    return serverIp;
+  //  }
+
   public void setHelp(boolean help) {
     this.help = help;
   }
@@ -219,6 +233,14 @@ public class ParseResult {
 
   public boolean isVersion() {
     return version;
+  }
+
+  public void setUiStyle(boolean newUi) {
+    this.newUi = newUi;
+  }
+
+  public boolean getNewUi() {
+    return newUi;
   }
 
   private ArrayList<Integer> stringsToIntArray(String[] strings) {

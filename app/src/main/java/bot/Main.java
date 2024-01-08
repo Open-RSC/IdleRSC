@@ -415,13 +415,9 @@ public class Main {
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(3000);
 
-    if (!config.isGraphicsEnabled()) {
-      if (controller != null) {
-        if (config.isGraphicsEnabled()) DrawCallback.setNextRefresh(-1);
-        else
-          DrawCallback.setNextRefresh(
-              System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
-      }
+    if (!config.isGraphicsEnabled() && config.getScreenRefresh() && controller != null) {
+      DrawCallback.setNextRefresh(
+          System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
     }
     while (true) {
       if (isRunning()) {
@@ -574,7 +570,8 @@ public class Main {
           if (controller != null) {
             graphicsCheckbox.setSelected(gfxCheckbox.isSelected());
             controller.setDrawing(gfxCheckbox.isSelected());
-            if (gfxCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
+            if (gfxCheckbox.isSelected() || !config.getScreenRefresh())
+              DrawCallback.setNextRefresh(-1);
             else
               DrawCallback.setNextRefresh(
                   (System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000)));
@@ -672,7 +669,8 @@ public class Main {
           if (controller != null) {
             gfxCheckbox.setSelected(graphicsCheckbox.isSelected());
             controller.setDrawing(graphicsCheckbox.isSelected());
-            if (graphicsCheckbox.isSelected()) DrawCallback.setNextRefresh(-1);
+            if (graphicsCheckbox.isSelected() || !config.getScreenRefresh())
+              DrawCallback.setNextRefresh(-1);
             else
               DrawCallback.setNextRefresh(
                   System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
@@ -960,70 +958,90 @@ public class Main {
   private static void handleCache(Config config) {
     final int COLESLAW_PORT = 43599;
     final int URANIUM_PORT = 43601;
-    // Does the directory exist?
-    File cacheDirectory = new File("Cache/");
 
-    if (cacheDirectory.exists()) return;
+    setUiStyle(config.getNewUi());
 
-    // If --init-cache argument is used, bypass the GUI
+    // Generate our ip file
+    setIp("game.openrsc.com");
+
+    // check our cache files and generate if we don't have all of them
+    if (!checkCacheFiles()) {
+      createCache();
+    }
+
+    // Generate our port file
     if (!config.getInitCache().isEmpty()) {
-      if (config.getInitCache().equals("uranium")) {
+      if (config.getInitCache().equalsIgnoreCase("uranium")) {
         // Create Uranium cache
-        createCache(URANIUM_PORT);
-        return;
-      } else if (config.getInitCache().equals("coleslaw")) {
+        setPort(URANIUM_PORT);
+      } else if (config.getInitCache().equalsIgnoreCase("coleslaw")) {
         // Create Coleslaw cache
-        createCache(COLESLAW_PORT);
-        return;
+        setPort(COLESLAW_PORT);
+      } else if (config.getInitCache().equalsIgnoreCase("custom")) {
+        System.out.println("Not generating Cache");
       } else {
         System.out.println("Server (" + config.getInitCache() + ") is not known.");
       }
     } else {
-      createCache(COLESLAW_PORT);
-      return;
+      setPort(COLESLAW_PORT);
     }
-
-    JFrame cacheFrame = new JFrame("Cache Setup");
-    JLabel cacheLabel = new JLabel("First setup: you must select either Uranium or Coleslaw.");
-    JButton uraniumButton = new JButton("Uranium (2018 RSC)");
-    JButton coleslawButton = new JButton("Coleslaw (modified RSC, new content)");
-
-    uraniumButton.addActionListener(
-        e -> {
-          // Create Uranium cache
-          createCache(URANIUM_PORT);
-        });
-
-    coleslawButton.addActionListener(
-        e -> {
-          // Create Coleslaw cache
-          createCache(COLESLAW_PORT);
-        });
-
-    cacheFrame.setLayout(new GridLayout(0, 1));
-    cacheFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    cacheFrame.add(cacheLabel);
-    cacheFrame.add(uraniumButton);
-    cacheFrame.add(coleslawButton);
-
-    cacheFrame.pack();
-    cacheFrame.setLocationRelativeTo(null);
-    cacheFrame.setVisible(true);
-    cacheFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    while (!cacheDirectory.exists()) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      cacheDirectory = new File("Cache/");
-    }
-    cacheFrame.setVisible(false);
-    cacheFrame.dispose();
   }
 
-  private static void createCache(int ServerPort) {
+  private static boolean checkCacheFiles() {
+    File spriteDirectory = new File("cache/video/spritepacks");
+    File videoDirectory = new File("cache/video/");
+    File[] spriteFilelist = spriteDirectory.listFiles();
+    File[] videoFilelist = videoDirectory.listFiles();
+    String[] fileNames = {
+      "authentic_landscape.orsc",
+      "authentic_sprites.orsc",
+      "custom_landscape.orsc",
+      "custom_sprites.osar",
+      "library.orsc",
+      "models.orsc"
+    };
+
+    if (spriteFilelist != null) {
+      String spriteName = spriteFilelist[0].getName();
+      System.out.println(spriteName);
+      if (!spriteName.equalsIgnoreCase("Menus.osar")) return false;
+    } else return false;
+    if (videoFilelist != null) {
+      if (videoFilelist.length < 6) return false;
+      String[] videoNames = new String[videoFilelist.length];
+      for (int i = 0; i < videoFilelist.length; i++) {
+        videoNames[i] = videoFilelist[i].getName();
+        System.out.println(videoNames[i]);
+      }
+      // compare the file names we read to the names we need
+      for (String videoName : videoNames) {
+        boolean callReturn = true;
+        for (String fileName : fileNames) {
+          if (videoName.equalsIgnoreCase(fileName)) {
+            callReturn = false;
+            break;
+          }
+        }
+        // we are missing a file so regen cache
+        if (callReturn) return false;
+      }
+    } else return false;
+    return true;
+  }
+
+  private static void setUiStyle(boolean newStyle) {
+    // Add config.txt to client cache (1 gives new UI icons, 0 gives old Icons)
+    try {
+      FileWriter portFile = new FileWriter("Cache/config.txt");
+      portFile.write("Menus:" + (newStyle ? 1 : 0));
+      portFile.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+    }
+  }
+
+  private static void createCache() {
     // Create Cache directory
     File dir = new File("." + File.separator + "Cache");
     dir.mkdirs();
@@ -1035,30 +1053,33 @@ public class Main {
       e.printStackTrace();
       System.out.println(e.getMessage());
     }
+  }
 
-    // todo check each file in cache independently, and regenerate if missing.
+  private static void setIp(String serverId) {
+    // Create Cache directory
+    File dir = new File("." + File.separator + "Cache");
+    dir.mkdirs();
+
     // Add ip to client cache
     try {
       FileWriter portFile = new FileWriter("Cache/ip.txt");
-      portFile.write("game.openrsc.com");
+      portFile.write(serverId);
       portFile.close();
     } catch (IOException e) {
       e.printStackTrace();
       System.out.println(e.getMessage());
     }
+  }
+
+  private static void setPort(int serverPort) {
+    // Create Cache directory
+    File dir = new File("." + File.separator + "Cache");
+    dir.mkdirs();
+
     // Add port to client cache
     try {
       FileWriter portFile = new FileWriter("Cache/port.txt");
-      portFile.write(Integer.toString(43599));
-      portFile.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
-    }
-    // Add config.txt to client cache (1 gives new UI icons, 0 gives old Icons)
-    try {
-      FileWriter portFile = new FileWriter("Cache/config.txt");
-      portFile.write("Menus:0");
+      portFile.write(Integer.toString(serverPort));
       portFile.close();
     } catch (IOException e) {
       e.printStackTrace();

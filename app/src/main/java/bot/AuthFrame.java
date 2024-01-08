@@ -25,7 +25,7 @@ final class AuthFrame extends JFrame {
   private final JTextField username,
       scriptName,
       scriptArgs,
-      initCache,
+      // serverIp,
       spellId,
       attackItems,
       strengthItems,
@@ -37,11 +37,14 @@ final class AuthFrame extends JFrame {
       botPaint,
       disableGraphics,
       interlace,
+      screenRefresh,
       localOcr,
       helpMenu,
-      showVersion;
+      showVersion,
+      newUi;
 
   private final Choice themeChoice = new Choice();
+  private final Choice initChoice = new Choice();
   private final Button okButton;
 
   AuthFrame(final String title, final String message, final Window parent) {
@@ -80,7 +83,7 @@ final class AuthFrame extends JFrame {
       "Startup Options: ", // only show label
       "Script Name: ",
       "Script Args: ",
-      "Cache Version:", // todo change to choice menu soon
+      // "Server Address",
       "Hotkeys: ", // only show label
       "SpellId (F8): ",
       "Attack Item (F5): ",
@@ -94,7 +97,7 @@ final class AuthFrame extends JFrame {
       new JTextField(), // only show label
       scriptName = new JTextField(),
       scriptArgs = new JTextField(),
-      initCache = new JTextField(),
+      // serverIp = new JTextField(),
       new JTextField(), // only show label
       spellId = new JTextField(),
       attackItems = new JTextField(),
@@ -123,8 +126,10 @@ final class AuthFrame extends JFrame {
     }
 
     // Build out our choice selectors (comboboxes)
-    String[] choiceLabels = {"Theme Selector:"};
-    Choice[] choices = {themeChoice};
+    String[] choiceLabels = {"Theme Selector:", "Server Version"};
+    Choice[] choices = {themeChoice, initChoice};
+    // the strings representing our choices go here
+    String[][] choiceNames = {Main.getThemeNames(), {"Coleslaw", "Uranium", "Custom"}};
 
     Panel[] choicePanels = new Panel[choiceLabels.length];
     for (int i = 0; i < choicePanels.length; i++) {
@@ -136,12 +141,12 @@ final class AuthFrame extends JFrame {
       Label optionLabel2 = new Label(choiceLabels[i], Label.CENTER);
       optionLabel2.setMaximumSize(new Dimension(120, 30));
       choicePanels[i].add(optionLabel2);
-      String[] themeNames = Main.getThemeNames();
+
       choices[i].setMaximumSize(new Dimension(140, 30));
-      for (final String themeName : themeNames) {
-        choices[i].add(themeName);
+      for (final String choiceName : choiceNames[i]) {
+        choices[i].add(choiceName);
       }
-      choicePanels[i].add(themeChoice);
+      choicePanels[i].add(choices[i]);
     }
 
     //    HashMap<String, Integer> themeTypes = new HashMap<String, Integer>();
@@ -159,8 +164,10 @@ final class AuthFrame extends JFrame {
       debug = new Checkbox(" Open Debugger", false),
       botPaint = new Checkbox(" Show Bot Paint", true),
       disableGraphics = new Checkbox(" Disable Graphics", false),
+      newUi = new Checkbox(" New UI style", false),
       interlace = new Checkbox(" Interlace Mode", false),
       localOcr = new Checkbox(" Use Local-OCR", false),
+      screenRefresh = new Checkbox(" 60s Screen Refresh", true),
       helpMenu = new Checkbox(" Show Help Menu", false),
       showVersion = new Checkbox(" Show Version", false)
     };
@@ -248,22 +255,25 @@ final class AuthFrame extends JFrame {
     password.setText("");
     scriptName.setText("");
     scriptArgs.setText("");
-    initCache.setText("coleslaw");
+    // serverIp.setText("game.openrsc.com");
     spellId.setText("");
     attackItems.setText("");
     strengthItems.setText("");
     defenseItems.setText("");
     themeChoice.select(0);
+    initChoice.select(0);
     autoLogin.setState(false);
     sideBar.setState(true);
     logWindow.setState(false);
     debug.setState(false);
     botPaint.setState(true);
     disableGraphics.setState(false);
+    screenRefresh.setState(true);
     localOcr.setState(false);
     interlace.setState(false);
     helpMenu.setState(false);
     showVersion.setState(false);
+    newUi.setState(false);
   }
 
   public void storeAuthData(AuthFrame auth) {
@@ -276,6 +286,7 @@ final class AuthFrame extends JFrame {
     p.put("script-name", auth.getScriptName());
     p.put("script-arguments", auth.getScriptArgs());
     p.put("init-cache", auth.getInitCache());
+    // p.put("server-ip", auth.getServerIp());
     p.put("spell-id", auth.getSpellId());
     p.put("attack-items", auth.getAttackItems());
     p.put("strength-items", auth.getStrengthItems());
@@ -287,9 +298,11 @@ final class AuthFrame extends JFrame {
     p.put("botpaint", auth.getBotPaint()); // true disables bot paint
     p.put("disable-gfx", auth.getDisableGraphics());
     p.put("interlace", auth.getInterlace());
+    p.put("screen-refresh", auth.getScreenRefresh());
     p.put("local-ocr", auth.getLocalOcr());
     p.put("help", auth.getHelpMenu());
     p.put("version", auth.getShowVersion());
+    p.put("new-ui", auth.getNewUi());
     p.put("theme", auth.getThemeName());
 
     // Make sure our accounts folder exists
@@ -339,7 +352,8 @@ final class AuthFrame extends JFrame {
           password.setText(p.getProperty("password", ""));
           scriptName.setText(p.getProperty("script-name", ""));
           scriptArgs.setText(p.getProperty("script-arguments", ""));
-          initCache.setText(p.getProperty("init-cache", ""));
+          initChoice.select(p.getProperty("init-cache", "Coleslaw"));
+          // serverIp.setText(p.getProperty("server-ip", "game.openrsc.com"));
           spellId.setText(p.getProperty("spell-id", "-1"));
           attackItems.setText(p.getProperty("attack-items", ""));
           strengthItems.setText(p.getProperty("defence-items", ""));
@@ -354,6 +368,7 @@ final class AuthFrame extends JFrame {
           helpMenu.setState(Boolean.parseBoolean(p.getProperty("help", "false")));
           showVersion.setState(Boolean.parseBoolean(p.getProperty("version", "false")));
           themeChoice.select(p.getProperty("theme", "RuneDark Theme"));
+          newUi.setState(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
 
         } catch (final Throwable t) {
           System.out.println("Error loading account " + account + ": " + t);
@@ -397,12 +412,16 @@ final class AuthFrame extends JFrame {
   }
 
   synchronized String getInitCache() {
-    return initCache.getText();
+    return initChoice.getSelectedItem();
   }
 
   synchronized String getSpellId() {
     return spellId.getText();
   }
+
+  // synchronized String getServerIp() {
+  //  return serverIp.getText();
+  // }
 
   synchronized String getAttackItems() {
     return attackItems.getText();
@@ -444,6 +463,10 @@ final class AuthFrame extends JFrame {
     return Boolean.toString(interlace.getState());
   }
 
+  synchronized String getScreenRefresh() {
+    return Boolean.toString(screenRefresh.getState());
+  }
+
   synchronized String getLocalOcr() {
     return Boolean.toString(localOcr.getState());
   }
@@ -454,6 +477,10 @@ final class AuthFrame extends JFrame {
 
   synchronized String getShowVersion() {
     return Boolean.toString(showVersion.getState());
+  }
+
+  synchronized String getNewUi() {
+    return Boolean.toString(newUi.getState());
   }
 
   synchronized void addActionListener(final ActionListener al) {

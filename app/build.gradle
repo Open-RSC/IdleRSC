@@ -74,9 +74,9 @@ tasks.register('copyJar') {
         rename 'app.jar', "${rootProject.name}.jar"
       }
       into '../'
+      printf("Done copying Jar to main directory\n")
     }
   }
-  printf("Done copying Jar to main directory\n")
 }
 
 tasks.named('testClasses') {
@@ -88,6 +88,7 @@ tasks.named('build') {
 
 // Add additional files to clean task
 tasks.named('clean') {
+  delete '../assets/core'
   delete 'src/main/resources'
   delete '../IdleRSC.jar'
 }

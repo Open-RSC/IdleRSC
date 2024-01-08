@@ -103,6 +103,6 @@ public class LoginListener implements Runnable {
 
     c.sleep(1280);
 
-    c.walkTo(x, y, 0, false);
+    c.walkTo(x, y);
   }
 }

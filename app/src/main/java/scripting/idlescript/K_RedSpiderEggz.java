@@ -328,7 +328,8 @@ public final class K_RedSpiderEggz extends K_kailaScript {
             y + (14 * 4),
             0xFFFFFF,
             1);
-        c.drawString("@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, (14 * 5), 0xFFFFFF, 1);
+        c.drawString(
+            "@whi@" + foodName + "'s in Bank: @gre@ Unknown", x, y + (14 * 5), 0xFFFFFF, 1);
       } else {
         c.drawString(
             "@whi@"
@@ -343,7 +344,7 @@ public final class K_RedSpiderEggz extends K_kailaScript {
             0xFFFFFF,
             1);
         c.drawString(
-            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, (14 * 5), 0xFFFFFF, 1);
+            "@whi@" + foodName + "'s in Bank: @gre@" + foodInBank, x, y + (14 * 5), 0xFFFFFF, 1);
       }
       c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 6), 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y + 3 + (14 * 6), 0xFFFFFF, 1);

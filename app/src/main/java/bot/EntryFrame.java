@@ -19,7 +19,7 @@ public final class EntryFrame extends JFrame {
   private final Choice accountChoice;
   private String themeName = "RuneDark Theme";
   private final String resourceLocation = "app/src/main/java/bot/res/";
-  private boolean okie = false;
+  private boolean waitForOk = true;
 
   // todo add theme select to cli
   public static String getAccount() {
@@ -243,7 +243,7 @@ public final class EntryFrame extends JFrame {
             Main.setUsername(account);
             setVisible(false);
             dispose();
-            okie = true;
+            waitForOk = false;
           } catch (final Throwable t) {
             t.printStackTrace();
           }
@@ -257,7 +257,7 @@ public final class EntryFrame extends JFrame {
   }
 
   public void waitForLaunch() {
-    while (!okie) {
+    while (waitForOk) {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
@@ -269,8 +269,9 @@ public final class EntryFrame extends JFrame {
   }
 
   private String getStringProperty(final String name, String propertyName) {
-    if (name == null || propertyName == null) {
-      System.out.println("Error accessing string property");
+    if (name == null || propertyName == null || name.isEmpty() || propertyName.isEmpty()) {
+      // System.out.println("Error accessing string property");
+      return "";
     }
     final Properties p = new Properties();
     final File file = Paths.get("accounts").resolve(name + ".properties").toFile();

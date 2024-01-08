@@ -18,7 +18,7 @@ import orsc.ORSCharacter;
 public final class K_TavChaosDruids extends K_kailaScript {
   private int fightMode = 0;
   private boolean craftCapeTeleport = false;
-  private static final int STRENGTH_CAPE = ItemId.STRENGTH_CAPE.getId();
+  private int capeSwapId = 0;
   private static final int CRAFT_CAPE = ItemId.CRAFTING_CAPE.getId();
   private static final int[] lowLevelLoot = {
     ItemId.UNID_GUAM_LEAF.getId(),
@@ -199,7 +199,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
             && itemId != 493
             && itemId != 494
             && itemId != 1346 // d2h
-            && itemId != STRENGTH_CAPE
+            && itemId != capeSwapId
             && itemId != 1374 // attack cape
             && itemId != 1384) { // craft cape
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
@@ -301,7 +301,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();
       c.walkTo(347, 600);
-      craftGuildDoorEntering(STRENGTH_CAPE);
+      craftGuildDoorEntering(capeSwapId);
       c.walkTo(347, 607);
       c.walkTo(346, 608);
     } else {
@@ -322,6 +322,8 @@ public final class K_TavChaosDruids extends K_kailaScript {
     JLabel label5 = new JLabel("Param Format: \"auto\"");
     JLabel blankLabel = new JLabel("     ");
     JCheckBox craftCapeCheckbox = new JCheckBox("99 Crafting Cape Teleport?", true);
+    JLabel capeItemIdLabel = new JLabel("Cape ItemId to switch back too");
+    JTextField capeItemIdField = new JTextField(String.valueOf(ItemId.STRENGTH_CAPE.getId()));
     JCheckBox lootBonesCheckbox = new JCheckBox("Bury Bones? only while Npc's Null", true);
     JCheckBox lowLevelHerbCheckbox = new JCheckBox("Loot Low Level Herbs?", true);
     JCheckBox potUpCheckbox = new JCheckBox("Use regular Atk/Str Pots?", false);
@@ -333,14 +335,23 @@ public final class K_TavChaosDruids extends K_kailaScript {
     JComboBox<String> foodField = new JComboBox<>(foodTypes);
     JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
     JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
-    foodField.setSelectedIndex(2); // sets default to sharks
+    foodField.setSelectedIndex(5); // sets default to lobs
     JButton startScriptButton = new JButton("Start");
+
+    craftCapeCheckbox.addActionListener(
+        e -> {
+          capeItemIdLabel.setEnabled(craftCapeCheckbox.isSelected());
+          capeItemIdField.setEnabled(craftCapeCheckbox.isSelected());
+        });
 
     startScriptButton.addActionListener(
         e -> {
           if (!foodWithdrawAmountField.getText().isEmpty())
             foodWithdrawAmount = Integer.parseInt(foodWithdrawAmountField.getText());
           craftCapeTeleport = craftCapeCheckbox.isSelected();
+          if (!capeItemIdField.getText().isEmpty()) {
+            capeSwapId = Integer.parseInt(capeItemIdField.getText());
+          }
           lootLowLevel = lowLevelHerbCheckbox.isSelected();
           lootBones = lootBonesCheckbox.isSelected();
           foodId = foodIds[foodField.getSelectedIndex()];
@@ -365,6 +376,8 @@ public final class K_TavChaosDruids extends K_kailaScript {
     scriptFrame.add(label5);
     scriptFrame.add(blankLabel);
     scriptFrame.add(craftCapeCheckbox);
+    scriptFrame.add(capeItemIdLabel);
+    scriptFrame.add(capeItemIdField);
     scriptFrame.add(lootBonesCheckbox);
     scriptFrame.add(lowLevelHerbCheckbox);
     scriptFrame.add(potUpCheckbox);

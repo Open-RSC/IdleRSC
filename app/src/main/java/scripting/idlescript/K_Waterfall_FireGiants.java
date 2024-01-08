@@ -1,9 +1,7 @@
 package scripting.idlescript;
 
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 import models.entities.ItemId;
 import orsc.ORSCharacter;
 
@@ -18,6 +16,7 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Waterfall_FireGiants extends K_kailaScript {
+  private int amuletId = 0;
   private static int totalBstaff = 0;
   private static int totalRscim = 0;
   private static int totalRunestuff = 0;
@@ -63,13 +62,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     ItemId.RUNE_SPEAR.getId(),
     ItemId.DRAGON_MEDIUM_HELMET.getId()
   };
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * script based on the values of the parameters. <br>
-   * Parameters in this context can be from CLI parsing or in the script options parameters text box
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
+
   public int start(String[] parameters) {
     if (!guiSetup) {
       setupGUI();
@@ -106,8 +99,10 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       }
       lootItems(true, loot);
       buryBones(false);
-      superAttackBoost(0, false);
-      superStrengthBoost(0, false);
+      if (potUp) {
+        superAttackBoost(0, false);
+        superStrengthBoost(0, false);
+      }
       if (!c.isInCombat()) {
         ORSCharacter npc = c.getNearestNpcById(344, false);
         if (npc != null) {
@@ -166,25 +161,27 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       totalSpear = totalSpear + c.getInventoryItemCount(1092);
       totalMed = totalMed + c.getInventoryItemCount(795);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 782
+        if (itemId != ItemId.GLARIALS_AMULET.getId()
             && itemId != 237
             && itemId != 486
             && itemId != 487
             && itemId != 488
             && itemId != 492
             && itemId != 493
-            && itemId != 494
-            && itemId != foodId) {
+            && itemId != 494) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
       c.sleep(1280); // increased sleep here to prevent double banking
-      withdrawItem(782, 1); // glariels amulet
+      withdrawItem(ItemId.GLARIALS_AMULET.getId(), 1); // glariels amulet
       withdrawItem(237, 1); // rope
       withdrawItem(airId, 30);
       withdrawItem(lawId, 6);
-      withdrawSuperAttack(1);
-      withdrawSuperStrength(1);
+      if (potUp) {
+        withdrawSuperAttack(1);
+        withdrawSuperStrength(1);
+      }
+      withdrawItem(foodId, foodWithdrawAmount);
       bankItemCheck(foodId, 30);
       bankItemCheck(airId, 50);
       bankItemCheck(lawId, 10);
@@ -215,11 +212,13 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
       c.atObject(467, 463);
       c.sleep(1000);
     }
+    if (c.getInventoryItemCount(amuletId) > 0) c.equipItem(c.getInventoryItemSlotIndex(amuletId));
     c.walkTo(468, 464);
     c.walkTo(478, 464);
     c.walkTo(488, 464);
     c.walkTo(496, 455);
     c.walkTo(501, 454);
+    if (c.getInventoryItemCount(amuletId) > 0) c.equipItem(c.getInventoryItemSlotIndex(amuletId));
     c.setStatus("@gre@Done Walking..");
   }
 
@@ -259,6 +258,7 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     c.walkTo(659, 449);
     c.sleep(1000);
     entranceScript();
+    c.equipItem(c.getInventoryItemSlotIndex(amuletId));
   }
 
   private void entranceScript() {
@@ -266,7 +266,10 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     firstTree();
     secondTree();
     thirdTree();
-    if (!c.isItemIdEquipped(782)) {
+    c.sleep(3000); // nice long sleep before wielding amulet
+    c.equipItem(c.getInventoryItemSlotIndex(ItemId.GLARIALS_AMULET.getId()));
+    c.sleep(1280);
+    if (!c.isItemIdEquipped(ItemId.GLARIALS_AMULET.getId())) {
       c.setAutoLogin(false);
       c.logout();
       if (!c.isLoggedIn()) {
@@ -276,8 +279,8 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     c.walkTo(659, 3303);
     waterfallGateScript();
     c.walkTo(659, 3289);
-    c.equipItem(c.getInventoryItemSlotIndex(522));
-    c.sleep(640);
+    c.sleep(1280);
+    c.equipItem(c.getInventoryItemSlotIndex(amuletId));
     c.setStatus("@gre@Done Walking..");
   }
 
@@ -296,7 +299,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     for (int i = 1; i <= 5; i++) {
       if (c.isCloseToCoord(662, 463)) {
         c.setStatus("@red@Using rope on 1st Tree..");
-        c.equipItem(c.getInventoryItemSlotIndex(782));
         c.useItemIdOnObject(662, 463, 237); // 1st tree
         c.sleep(5000);
         c.sleep(5000);
@@ -308,7 +310,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     for (int i = 1; i <= 5; i++) {
       if (c.isCloseToCoord(662, 467)) {
         c.setStatus("@red@Using rope on 2nd Tree..");
-        c.equipItem(c.getInventoryItemSlotIndex(782));
         c.useItemIdOnObject(662, 467, 237); // 2nd tree
         c.sleep(5000);
         c.sleep(5000);
@@ -320,7 +321,6 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     for (int i = 1; i <= 5; i++) {
       if (c.isCloseToCoord(659, 471)) {
         c.setStatus("@red@Using rope on 3rd Tree..");
-        c.equipItem(c.getInventoryItemSlotIndex(782));
         c.useItemIdOnObject(659, 471, 237); // 3rd tree
         c.sleep(5000);
         c.sleep(5000);
@@ -359,15 +359,30 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
   private void setupGUI() {
     JLabel header = new JLabel("Waterfall Fire Giant Killer - By Kaila");
     JLabel label1 = new JLabel("Start in Seers bank OR in Giants room");
-    JLabel label2 = new JLabel("Sharks, Law, Air required");
-    JLabel label3 = new JLabel("Must have glariels amulet and rope");
-    JLabel label4 = new JLabel("Bot will attempt to wield dragonstone amulet");
-    JLabel label5 = new JLabel("can be changed");
+    JLabel label2 = new JLabel("Bank: Sharks, Law, Air");
+    JLabel label3 = new JLabel("Inventory: glariels amulet and rope");
+    JLabel label3b = new JLabel("Equipped: your chosen AmuletId");
+    JLabel label4 = new JLabel("Bot will attempt to wield swap amulets");
+    JLabel label5 = new JLabel("Amulet ItemId to switch back too");
+    JTextField amuletIdField = new JTextField("");
+    JCheckBox potUpCheckbox = new JCheckBox("Use super Atk/Str Pots?", false);
+    JLabel foodLabel = new JLabel("Type of Food:");
+    JComboBox<String> foodField = new JComboBox<>(foodTypes);
+    JLabel foodWithdrawAmountLabel = new JLabel("Food Withdraw amount:");
+    JTextField foodWithdrawAmountField = new JTextField(String.valueOf(1));
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(
         e -> {
-          foodId = ItemId.SHARK.getId();
+          if (!amuletIdField.getText().toLowerCase().replace(" ", "").isEmpty()) {
+            amuletId = Integer.parseInt(amuletIdField.getText().toLowerCase().replace(" ", ""));
+          }
+          if (!foodWithdrawAmountField.getText().toLowerCase().replace(" ", "").isEmpty())
+            foodWithdrawAmount =
+                Integer.parseInt(foodWithdrawAmountField.getText().toLowerCase().replace(" ", ""));
+          potUp = potUpCheckbox.isSelected();
+          foodId = foodIds[foodField.getSelectedIndex()];
+          foodName = foodTypes[foodField.getSelectedIndex()];
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
           startTime = System.currentTimeMillis();
@@ -381,8 +396,15 @@ public final class K_Waterfall_FireGiants extends K_kailaScript {
     scriptFrame.add(label1);
     scriptFrame.add(label2);
     scriptFrame.add(label3);
+    scriptFrame.add(label3b);
     scriptFrame.add(label4);
     scriptFrame.add(label5);
+    scriptFrame.add(amuletIdField);
+    scriptFrame.add(potUpCheckbox);
+    scriptFrame.add(foodLabel);
+    scriptFrame.add(foodField);
+    scriptFrame.add(foodWithdrawAmountLabel);
+    scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(null);

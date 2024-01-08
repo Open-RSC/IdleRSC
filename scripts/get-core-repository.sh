@@ -20,3 +20,4 @@ else
   git pull
   popd &>/dev/null || exit 1
 fi
+

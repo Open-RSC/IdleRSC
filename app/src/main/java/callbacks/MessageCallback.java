@@ -54,22 +54,22 @@ public class MessageCallback {
       DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in ms
     }
     if ((System.currentTimeMillis() > DrawCallback.getNextRefresh())
-        && DrawCallback.getNextRefresh() != -1) {
-      if (!con.isDrawEnabled()) {
-        con.setDrawing(true);
-        DrawCallback.setNextDeRefresh(System.currentTimeMillis() + 20L); // toggle on gfx 1 frame
-        DrawCallback.setNextRefresh(System.currentTimeMillis() + 30000L); // wait 1 min for refresh
-        //        System.out.println("Next screen refresh in: "
-        //                + ((DrawCallback.getNextRefresh() - System.currentTimeMillis()) / 1000L) +
-        // "s");
-      } else DrawCallback.setNextRefresh(-1);
+        && DrawCallback.getNextRefresh() != -1
+        && !con.isDrawEnabled()) {
+      con.setDrawing(true);
+      DrawCallback.setNextDeRefresh(System.currentTimeMillis() + 20L); // toggle on gfx 1 frame
+      DrawCallback.setNextRefresh(
+          System.currentTimeMillis()
+              + 25000L
+              + (long) (Math.random() * 10000)); // wait 1 min for refresh
+      // System.out.println("Next screen refresh at: " + DrawCallback.getNextRefresh() + "s");
     }
     if (type == MessageType.GAME) {
       if (message.contains("You just advanced")) {
         // handleLevelUp(message);
       } else if (message.contains("You have been standing here for")) {
         Controller c = Main.getController();
-        System.out.println("got standing message!");
+        System.out.println("got standing message! Walking character");
 
         if (c != null) c.moveCharacter(); // this is responsible for auto-walk!
       }

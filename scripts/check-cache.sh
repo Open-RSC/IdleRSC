@@ -45,3 +45,4 @@ fi
 
 # remove temporary directory on exit
 trap 'rm -rf -- "${TMP_HASHDIR}"' EXIT
+

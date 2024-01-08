@@ -3,29 +3,33 @@ package bot.cli;
 import java.util.ArrayList;
 
 public class ParseResult {
-  // Options with parameters/arguments.
-  private String username, password, scriptName, themeName, initCache;
+  // some settings need default options here to prevent bugs
+  private String username = "Username";
+  private String password = "Password";
+  private String initCache = "Coleslaw";
+  private String serverIp = "game.openrsc.com";
+  private String themeName = "Rune Dark Theme";
+  private String scriptName = "";
+  private boolean graphicsEnabled = true;
+  private boolean botPaintVisible = true;
+  private boolean showSideBar = true;
   private String[] scriptArguments;
+
   // Boolean options
   private boolean autoLogin,
       logWindowVisible,
       debug,
-      botPaintVisible,
-      graphicsEnabled,
       graphicsInterlacing,
-      showSideBar;
-  private boolean scriptSelectorOpen;
-  private boolean localOcr;
+      localOcr,
+      screenRefresh,
+      scriptSelectorOpen,
+      newUi,
+      help,
+      version;
 
   // Switching options
-  private ArrayList<Integer> attackItems;
-  private ArrayList<Integer> defenceItems;
-  private ArrayList<Integer> strengthItems;
+  private ArrayList<Integer> attackItems, defenceItems, strengthItems;
   private int spellId;
-
-  // CLI functions
-  private boolean help;
-  private boolean version;
 
   public void setUsername(String username) {
     this.username = username;
@@ -72,6 +76,8 @@ public class ParseResult {
       this.initCache = "uranium";
     } else if (initCache != null && initCache.equalsIgnoreCase("coleslaw")) {
       this.initCache = "coleslaw";
+    } else if (initCache != null && initCache.equalsIgnoreCase("custom")) {
+      this.initCache = "custom";
     } else {
       this.initCache = "";
     }
@@ -79,6 +85,14 @@ public class ParseResult {
 
   public String getInitCache() {
     return initCache;
+  }
+
+  public void setServerIp(String serverIp) {
+    this.serverIp = serverIp;
+  }
+
+  public String getServerIp() {
+    return serverIp;
   }
 
   public void setAutoLogin(boolean autoLogin) {
@@ -135,6 +149,14 @@ public class ParseResult {
 
   public boolean isLocalOcr() {
     return localOcr;
+  }
+
+  public void setScreenRefresh(boolean screenRefresh) {
+    this.screenRefresh = screenRefresh;
+  }
+
+  public boolean getScreenRefresh() {
+    return screenRefresh;
   }
 
   public void setGraphicsInterlacingEnabled(boolean graphicsInterlacing) {
@@ -219,6 +241,14 @@ public class ParseResult {
 
   public boolean isVersion() {
     return version;
+  }
+
+  public void setUiStyle(boolean newUi) {
+    this.newUi = newUi;
+  }
+
+  public boolean getNewUi() {
+    return newUi;
   }
 
   private ArrayList<Integer> stringsToIntArray(String[] strings) {

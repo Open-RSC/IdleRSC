@@ -1800,7 +1800,16 @@ public class Controller {
    * @return int of Item Id in provided slot Index
    */
   public int getEquippedItemId(int slotIndex) {
-    return this.getMud().equippedItems[slotIndex].id;
+    int[] result = new int[10];
+    int index = 0;
+    ItemDef[] equippedItems = this.getMud().equippedItems;
+    for (ItemDef item : equippedItems) {
+      if (item != null) {
+        result[index] = item.id;
+        index++;
+      }
+    }
+    return result[slotIndex];
   }
   /**
    * return a list of all item ids that are equipped
@@ -1857,7 +1866,7 @@ public class Controller {
     ItemDef[] equippedItems = this.getMud().equippedItems;
     for (ItemDef item : equippedItems) {
       if (item != null) {
-        if (Objects.equals(item.getName(), this.getItemName(itemId))) return true;
+        if (item.getName().equalsIgnoreCase(this.getItemName(itemId))) return true;
       }
     }
     return false;

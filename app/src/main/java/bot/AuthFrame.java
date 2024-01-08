@@ -369,6 +369,7 @@ final class AuthFrame extends JFrame {
           showVersion.setState(Boolean.parseBoolean(p.getProperty("version", "false")));
           themeChoice.select(p.getProperty("theme", "RuneDark Theme"));
           newUi.setState(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
+          screenRefresh.setState(Boolean.parseBoolean(p.getProperty("screen-refresh", "false")));
 
         } catch (final Throwable t) {
           System.out.println("Error loading account " + account + ": " + t);

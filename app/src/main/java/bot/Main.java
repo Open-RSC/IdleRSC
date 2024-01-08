@@ -263,6 +263,8 @@ public class Main {
               + "-"
               + version.getCommitHash());
       System.out.println("Built with JDK " + version.getBuildJDK());
+      System.out.println("Closing Bot in 1 minute...");
+      Thread.sleep(60000);
       System.exit(0);
     }
 
@@ -415,10 +417,11 @@ public class Main {
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(3000);
 
-    if (!config.isGraphicsEnabled() && config.getScreenRefresh() && controller != null) {
-      DrawCallback.setNextRefresh(
+    if (config.getScreenRefresh()) {
+      DrawCallback.setNextRefresh( // was 25k
           System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
     }
+    // System.out.println("Next screen refresh at: " + DrawCallback.getNextRefresh());
     while (true) {
       if (isRunning()) {
         if (currentRunningScript != null) {
@@ -570,11 +573,12 @@ public class Main {
           if (controller != null) {
             graphicsCheckbox.setSelected(gfxCheckbox.isSelected());
             controller.setDrawing(gfxCheckbox.isSelected());
-            if (gfxCheckbox.isSelected() || !config.getScreenRefresh())
+            if (gfxCheckbox.isSelected()) {
               DrawCallback.setNextRefresh(-1);
-            else
+            } else if (gfxCheckbox.isSelected() && config.getScreenRefresh()) {
               DrawCallback.setNextRefresh(
                   (System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000)));
+            }
           }
         });
 
@@ -601,7 +605,7 @@ public class Main {
           authFrame.addActionListener(
               e1 -> { // ALWAYS make properties lowercase
                 username = authFrame.getUsername();
-                System.out.println("username " + username);
+                System.out.println("username " + username + " settings saved");
                 authFrame.storeAuthData(authFrame);
                 authFrame.setVisible(false);
               });
@@ -669,11 +673,12 @@ public class Main {
           if (controller != null) {
             gfxCheckbox.setSelected(graphicsCheckbox.isSelected());
             controller.setDrawing(graphicsCheckbox.isSelected());
-            if (graphicsCheckbox.isSelected() || !config.getScreenRefresh())
+            if (graphicsCheckbox.isSelected()) {
               DrawCallback.setNextRefresh(-1);
-            else
+            } else if (graphicsCheckbox.isSelected() && config.getScreenRefresh()) {
               DrawCallback.setNextRefresh(
-                  System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
+                  (System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000)));
+            }
           }
         });
     botPaintCheckbox.addActionListener(
@@ -959,8 +964,6 @@ public class Main {
     final int COLESLAW_PORT = 43599;
     final int URANIUM_PORT = 43601;
 
-    setUiStyle(config.getNewUi());
-
     // Generate our ip file
     setIp("game.openrsc.com");
 
@@ -968,6 +971,9 @@ public class Main {
     if (!checkCacheFiles()) {
       createCache();
     }
+
+    // set new or old UI bar design
+    setUiStyle(config.getNewUi());
 
     // Generate our port file
     if (!config.getInitCache().isEmpty()) {
@@ -983,6 +989,7 @@ public class Main {
         System.out.println("Server (" + config.getInitCache() + ") is not known.");
       }
     } else {
+      System.out.println("Server selection empty - Generating Coleslaw");
       setPort(COLESLAW_PORT);
     }
   }
@@ -1003,7 +1010,6 @@ public class Main {
 
     if (spriteFilelist != null) {
       String spriteName = spriteFilelist[0].getName();
-      System.out.println(spriteName);
       if (!spriteName.equalsIgnoreCase("Menus.osar")) return false;
     } else return false;
     if (videoFilelist != null) {
@@ -1011,7 +1017,6 @@ public class Main {
       String[] videoNames = new String[videoFilelist.length];
       for (int i = 0; i < videoFilelist.length; i++) {
         videoNames[i] = videoFilelist[i].getName();
-        System.out.println(videoNames[i]);
       }
       // compare the file names we read to the names we need
       for (String videoName : videoNames) {

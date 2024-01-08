@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
 import orsc.ORSCharacter;
 
@@ -317,6 +318,12 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
       c.sleep(2 * GAME_TICK);
     }
     exitDragonPipe();
+    int CRAFTING_CAPE = ItemId.CRAFTING_CAPE.getId();
+    if (craftCapeTeleport
+        && c.isItemIdEquipped(CRAFTING_CAPE)
+        && c.getInventoryItemCount(CRAFTING_CAPE) < 1) {
+      c.unequipItem(EquipSlotIndex.CAPE.getId());
+    }
     if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
       teleportCraftCape();

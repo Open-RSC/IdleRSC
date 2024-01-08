@@ -64,6 +64,10 @@ public class CLIParser {
               .contains("true")); // negative (enabled by default)
       parseResult.setGraphicsInterlacingEnabled(
           p.getProperty("interlace", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setScreenRefresh(
+          p.getProperty("screen-refresh", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setUiStyle(
+          p.getProperty("new-ui", "").replace(" ", "").toLowerCase().contains("true"));
 
       // Switching options
       parseResult.setSpellId(p.getProperty("spell-id", "-1"));

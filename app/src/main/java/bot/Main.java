@@ -964,8 +964,10 @@ public class Main {
     final int COLESLAW_PORT = 43599;
     final int URANIUM_PORT = 43601;
 
-    // Generate our ip file
-    setIp("game.openrsc.com");
+    // Generate our ip file if custom IP mode is not selected
+    if (!config.getCustomIp()) {
+      setIp("game.openrsc.com");
+    }
 
     // check our cache files and generate if we don't have all of them
     if (!checkCacheFiles()) {
@@ -976,20 +978,19 @@ public class Main {
     setUiStyle(config.getNewUi());
 
     // Generate our port file
-    if (!config.getInitCache().isEmpty()) {
-      if (config.getInitCache().equalsIgnoreCase("uranium")) {
-        // Create Uranium cache
-        setPort(URANIUM_PORT);
-      } else if (config.getInitCache().equalsIgnoreCase("coleslaw")) {
-        // Create Coleslaw cache
-        setPort(COLESLAW_PORT);
-      } else if (config.getInitCache().equalsIgnoreCase("custom")) {
-        System.out.println("Not generating Cache");
-      } else {
-        System.out.println("Server (" + config.getInitCache() + ") is not known.");
-      }
+    if (config.getInitCache().equalsIgnoreCase("custom")) {
+      System.out.println("Not generating port, custom port selected in account settings");
+    } else if (config.getInitCache().equalsIgnoreCase("uranium")) {
+      // Create Uranium cache
+      System.out.println("Generating Uranium port");
+      setPort(URANIUM_PORT);
+    } else if (config.getInitCache().equalsIgnoreCase("coleslaw")) {
+      // Create Coleslaw cache
+      System.out.println("Generating Coleslaw port");
+      setPort(COLESLAW_PORT);
     } else {
-      System.out.println("Server selection empty - Generating Coleslaw");
+      System.out.println("Server (" + config.getInitCache() + ") is not known.");
+      System.out.println("Default: Generating Coleslaw port");
       setPort(COLESLAW_PORT);
     }
   }

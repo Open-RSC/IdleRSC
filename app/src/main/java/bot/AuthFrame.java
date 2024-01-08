@@ -25,7 +25,6 @@ final class AuthFrame extends JFrame {
   private final JTextField username,
       scriptName,
       scriptArgs,
-      // serverIp,
       spellId,
       attackItems,
       strengthItems,
@@ -41,7 +40,8 @@ final class AuthFrame extends JFrame {
       localOcr,
       helpMenu,
       showVersion,
-      newUi;
+      newUi,
+      customIp;
 
   private final Choice themeChoice = new Choice();
   private final Choice initChoice = new Choice();
@@ -97,7 +97,6 @@ final class AuthFrame extends JFrame {
       new JTextField(), // only show label
       scriptName = new JTextField(),
       scriptArgs = new JTextField(),
-      // serverIp = new JTextField(),
       new JTextField(), // only show label
       spellId = new JTextField(),
       attackItems = new JTextField(),
@@ -168,6 +167,7 @@ final class AuthFrame extends JFrame {
       interlace = new Checkbox(" Interlace Mode", false),
       localOcr = new Checkbox(" Use Local-OCR", false),
       screenRefresh = new Checkbox(" 60s Screen Refresh", true),
+      customIp = new Checkbox(" Use Custom ip.txt", false),
       helpMenu = new Checkbox(" Show Help Menu", false),
       showVersion = new Checkbox(" Show Version", false)
     };
@@ -255,7 +255,6 @@ final class AuthFrame extends JFrame {
     password.setText("");
     scriptName.setText("");
     scriptArgs.setText("");
-    // serverIp.setText("game.openrsc.com");
     spellId.setText("");
     attackItems.setText("");
     strengthItems.setText("");
@@ -274,6 +273,7 @@ final class AuthFrame extends JFrame {
     helpMenu.setState(false);
     showVersion.setState(false);
     newUi.setState(false);
+    customIp.setState(false);
   }
 
   public void storeAuthData(AuthFrame auth) {
@@ -286,7 +286,6 @@ final class AuthFrame extends JFrame {
     p.put("script-name", auth.getScriptName());
     p.put("script-arguments", auth.getScriptArgs());
     p.put("init-cache", auth.getInitCache());
-    // p.put("server-ip", auth.getServerIp());
     p.put("spell-id", auth.getSpellId());
     p.put("attack-items", auth.getAttackItems());
     p.put("strength-items", auth.getStrengthItems());
@@ -303,6 +302,7 @@ final class AuthFrame extends JFrame {
     p.put("help", auth.getHelpMenu());
     p.put("version", auth.getShowVersion());
     p.put("new-ui", auth.getNewUi());
+    p.put("custom-ip", auth.getCustomIp());
     p.put("theme", auth.getThemeName());
 
     // Make sure our accounts folder exists
@@ -353,7 +353,6 @@ final class AuthFrame extends JFrame {
           scriptName.setText(p.getProperty("script-name", ""));
           scriptArgs.setText(p.getProperty("script-arguments", ""));
           initChoice.select(p.getProperty("init-cache", "Coleslaw"));
-          // serverIp.setText(p.getProperty("server-ip", "game.openrsc.com"));
           spellId.setText(p.getProperty("spell-id", "-1"));
           attackItems.setText(p.getProperty("attack-items", ""));
           strengthItems.setText(p.getProperty("defence-items", ""));
@@ -369,7 +368,8 @@ final class AuthFrame extends JFrame {
           showVersion.setState(Boolean.parseBoolean(p.getProperty("version", "false")));
           themeChoice.select(p.getProperty("theme", "RuneDark Theme"));
           newUi.setState(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
-          screenRefresh.setState(Boolean.parseBoolean(p.getProperty("screen-refresh", "false")));
+          customIp.setState(Boolean.parseBoolean(p.getProperty("custom-ip", "false")));
+          screenRefresh.setState(Boolean.parseBoolean(p.getProperty("screen-refresh", "true")));
 
         } catch (final Throwable t) {
           System.out.println("Error loading account " + account + ": " + t);
@@ -419,10 +419,6 @@ final class AuthFrame extends JFrame {
   synchronized String getSpellId() {
     return spellId.getText();
   }
-
-  // synchronized String getServerIp() {
-  //  return serverIp.getText();
-  // }
 
   synchronized String getAttackItems() {
     return attackItems.getText();
@@ -482,6 +478,10 @@ final class AuthFrame extends JFrame {
 
   synchronized String getNewUi() {
     return Boolean.toString(newUi.getState());
+  }
+
+  synchronized String getCustomIp() {
+    return Boolean.toString(customIp.getState());
   }
 
   synchronized void addActionListener(final ActionListener al) {

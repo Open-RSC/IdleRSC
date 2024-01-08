@@ -68,6 +68,8 @@ public class CLIParser {
           p.getProperty("screen-refresh", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setUiStyle(
           p.getProperty("new-ui", "").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setCustomIp(
+          p.getProperty("custom-ip", "").replace(" ", "").toLowerCase().contains("true"));
 
       // Switching options
       parseResult.setSpellId(p.getProperty("spell-id", "-1"));

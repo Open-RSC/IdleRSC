@@ -40,6 +40,7 @@ public class Config extends ParseResult {
     setScreenRefresh(parseResult.getScreenRefresh());
     setLocalOcr(parseResult.isLocalOcr());
     setUiStyle(parseResult.getNewUi());
+    setCustomIp(parseResult.getCustomIp());
 
     // Switching options
     setAttackItems(parseResult.getAttackItems());

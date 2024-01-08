@@ -1036,6 +1036,10 @@ public class Main {
   }
 
   private static void setUiStyle(boolean newStyle) {
+    // Create Cache directory
+    File dir = new File("." + File.separator + "Cache");
+    dir.mkdirs();
+
     // Add config.txt to client cache (1 gives new UI icons, 0 gives old Icons)
     try {
       FileWriter portFile = new FileWriter("Cache/config.txt");

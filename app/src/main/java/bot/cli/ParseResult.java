@@ -3,17 +3,23 @@ package bot.cli;
 import java.util.ArrayList;
 
 public class ParseResult {
-  // Options with parameters/arguments.
-  private String username, password, scriptName, themeName, initCache, serverIp;
+  // some settings need default options here to prevent bugs
+  private String username = "Username";
+  private String password = "Password";
+  private String initCache = "Coleslaw";
+  private String serverIp = "game.openrsc.com";
+  private String themeName = "Rune Dark Theme";
+  private String scriptName = "";
+  private boolean graphicsEnabled = true;
+  private boolean botPaintVisible = true;
+  private boolean showSideBar = true;
   private String[] scriptArguments;
+
   // Boolean options
   private boolean autoLogin,
       logWindowVisible,
       debug,
-      botPaintVisible,
-      graphicsEnabled,
       graphicsInterlacing,
-      showSideBar,
       localOcr,
       screenRefresh,
       scriptSelectorOpen,

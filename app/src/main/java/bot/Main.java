@@ -285,10 +285,10 @@ public class Main {
     themeMenu = new JMenu();
     JPanel consoleFrame = new JPanel(); // log window
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
-    if (config.getUsername() != null) {
-      scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
-    } else if (controller.getPlayerName() != null) {
+    if (controller.getPlayerName() != null) {
       scriptFrame = new JFrame(controller.getPlayerName() + "'s Script Selector");
+    } else if (config.getUsername() != null && !config.getUsername().equalsIgnoreCase("username")) {
+      scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
     } else {
       scriptFrame = new JFrame("Script Selector");
     }
@@ -605,7 +605,7 @@ public class Main {
           authFrame.addActionListener(
               e1 -> { // ALWAYS make properties lowercase
                 username = authFrame.getUsername();
-                System.out.println("username " + username + " settings saved");
+                controller.log(username + " account settings saved");
                 authFrame.storeAuthData(authFrame);
                 authFrame.setVisible(false);
               });
@@ -1151,10 +1151,11 @@ public class Main {
             scriptFrame.dispose();
           });
 
-      if (config.getUsername() != null) {
-        scriptFrame = new JFrame(config.getUsername() + "'s Script already running");
-      } else if (controller.getPlayerName() != null) {
+      if (controller.getPlayerName() != null) {
         scriptFrame = new JFrame(controller.getPlayerName() + "'s Script already running");
+      } else if (config.getUsername() != null
+          && !config.getUsername().equalsIgnoreCase("username")) {
+        scriptFrame = new JFrame(config.getUsername() + "'s Script already running");
       } else {
         scriptFrame = new JFrame("Script already running");
       }

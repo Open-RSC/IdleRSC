@@ -279,6 +279,11 @@ final class AuthFrame extends JFrame {
   public void storeAuthData(AuthFrame auth) {
     final Properties p = new Properties();
     final String u = auth.getUsername();
+    if (u == null || u.isEmpty()) {
+      System.out.println("Username field blank, not saving account information");
+      Main.setUsername("username");
+      return;
+    }
     Main.setUsername(u);
 
     p.put("username", u);

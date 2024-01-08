@@ -35,9 +35,9 @@ public class CLIParser {
       p.load(stream);
       // ALWAYS make properties lowercase
       parseResult.setUsername(bot.Main.getUsername());
-      parseResult.setPassword(p.getProperty("password", ""));
+      parseResult.setPassword(p.getProperty("password", "password"));
       parseResult.setScriptName(p.getProperty("script-name", ""));
-      parseResult.setThemeName(p.getProperty("theme", ""));
+      parseResult.setThemeName(p.getProperty("theme", "Rune Dark Theme"));
 
       parseResult.setScriptArguments(
           p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));
@@ -46,29 +46,29 @@ public class CLIParser {
 
       // Boolean options
       parseResult.setAutoLogin(
-          p.getProperty("auto-login", "").replace(" ", "").toLowerCase().contains("true"));
+          p.getProperty("auto-login", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setSidebarVisible(
-          p.getProperty("sidebar", "").replace(" ", "").toLowerCase().contains("true"));
+          p.getProperty("sidebar", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setLogWindowVisible(
-          p.getProperty("log-window", "").replace(" ", "").toLowerCase().contains("true"));
+          p.getProperty("log-window", "false").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setDebug(
-          p.getProperty("debug", "").replace(" ", "").toLowerCase().contains("true"));
+          p.getProperty("debug", "false").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setBotPaintVisible(
-          !p.getProperty("bot-paint", "")
+          !p.getProperty("bot-paint", "true")
               .replace(" ", "")
               .toLowerCase()
               .contains("true")); // negative (enabled by default)
       parseResult.setGraphicsEnabled(
-          !p.getProperty("disable-gfx", "")
+          !p.getProperty("disable-gfx", "false")
               .replace(" ", "")
               .toLowerCase()
               .contains("true")); // negative (enabled by default)
       parseResult.setGraphicsInterlacingEnabled(
-          p.getProperty("interlace", "").replace(" ", "").toLowerCase().contains("true"));
+          p.getProperty("interlace", "false").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setScreenRefresh(
-          p.getProperty("screen-refresh", "").replace(" ", "").toLowerCase().contains("true"));
+          p.getProperty("screen-refresh", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setUiStyle(
-          p.getProperty("new-ui", "").replace(" ", "").toLowerCase().contains("true"));
+          p.getProperty("new-ui", "false").replace(" ", "").toLowerCase().contains("true"));
 
       // Switching options
       parseResult.setSpellId(p.getProperty("spell-id", "-1"));
@@ -94,13 +94,12 @@ public class CLIParser {
   }
 
   public void printHelp() {
-    String footer =
-        "\nPlease report any and all bugs to https://gitlab.com/open-runescape-classic/idlersc!\n";
+    String footer = "\nPlease report bugs to https://gitlab.com/open-runescape-classic/idlersc!\n";
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("IdleRSC", null, options, footer);
   }
 
-  private static void addOptions() {
+  private static void addOptions() { // todo add new settings to addOptions menu
     // Options with parameters/arguments.
     Option username =
         Option.builder("u")

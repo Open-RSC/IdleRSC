@@ -105,7 +105,7 @@ public class DrawCallback {
   }
   /** Draws the status menu of the bot (the onscreen GUI showing hp/prayer/position/etc) */
   private static void drawBotStatus(Controller c) {
-    int y = 130;
+    int y = 116;
     String localStatusText = statusText;
 
     if (toggleOnViewId) {
@@ -123,9 +123,17 @@ public class DrawCallback {
       int maxPrayer = c.getBaseStat(c.getStatId("Prayer"));
       int fatigue = c.getFatigue();
 
-      c.drawString("Hits: " + currentHits + "@red@/@whi@" + maxHits, 7, y, 0xFFFFFF, 1);
-      y += 14;
-      c.drawString("Prayer: " + currentPrayer + "@red@/@whi@" + maxPrayer, 7, y, 0xFFFFFF, 1);
+      int hitsPercentage =
+          (currentHits * 100) / maxHits > 100 ? 100 : (currentHits * 100) / maxHits;
+      int hitsColor = hitsPercentage <= 25 ? 0xff0000 : hitsPercentage <= 50 ? 0xffff00 : 0x00ff00;
+
+      c.drawProgressBar(
+          currentHits, maxHits, 0x000000, hitsColor, 0xffffff, 7, y + 2, 80, 14, false, true);
+      // c.drawString("Hits: " + currentHits + "@red@/@whi@" + maxHits, 7, y, 0xFFFFFF, 1);
+      y += 16;
+      c.drawProgressBar(
+          currentPrayer, maxPrayer, 0x000000, 0x8BE9FD, 0xffffff, 7, y + 2, 80, 14, false, true);
+      // c.drawString("Prayer: " + currentPrayer + "@red@/@whi@" + maxPrayer, 7, y, 0xFFFFFF, 1);
       y += 14;
       if (c.isAuthentic()) { // hidden on coleslaw so that submenu ON, Npc Kill counts ON can show
         // Kill counter at that screen location! Uranium will still get fatigue.

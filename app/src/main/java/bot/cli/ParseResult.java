@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class ParseResult {
   // Options with parameters/arguments.
-  private String username, password, scriptName, themeName, initCache;
+  private String username, password, scriptName, themeName, initCache, serverIp;
   private String[] scriptArguments;
   // Boolean options
   private boolean autoLogin,
@@ -18,7 +18,6 @@ public class ParseResult {
       screenRefresh,
       scriptSelectorOpen,
       newUi,
-      customIp,
       help,
       version;
 
@@ -80,6 +79,14 @@ public class ParseResult {
 
   public String getInitCache() {
     return initCache;
+  }
+
+  public void setServerIp(String serverIp) {
+    this.serverIp = serverIp;
+  }
+
+  public String getServerIp() {
+    return serverIp;
   }
 
   public void setAutoLogin(boolean autoLogin) {
@@ -236,14 +243,6 @@ public class ParseResult {
 
   public boolean getNewUi() {
     return newUi;
-  }
-
-  public void setCustomIp(boolean customIp) {
-    this.customIp = customIp;
-  }
-
-  public boolean getCustomIp() {
-    return customIp;
   }
 
   private ArrayList<Integer> stringsToIntArray(String[] strings) {

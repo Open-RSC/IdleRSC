@@ -41,7 +41,8 @@ public class CLIParser {
 
       parseResult.setScriptArguments(
           p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));
-      parseResult.setInitCache(p.getProperty("init-cache", ""));
+      parseResult.setInitCache(p.getProperty("init-cache", "Coleslaw"));
+      parseResult.setServerIp(p.getProperty("server-ip", "game.openrsc.com"));
 
       // Boolean options
       parseResult.setAutoLogin(
@@ -68,8 +69,6 @@ public class CLIParser {
           p.getProperty("screen-refresh", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setUiStyle(
           p.getProperty("new-ui", "").replace(" ", "").toLowerCase().contains("true"));
-      parseResult.setCustomIp(
-          p.getProperty("custom-ip", "").replace(" ", "").toLowerCase().contains("true"));
 
       // Switching options
       parseResult.setSpellId(p.getProperty("spell-id", "-1"));

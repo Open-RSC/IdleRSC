@@ -965,7 +965,7 @@ public class Main {
     final int URANIUM_PORT = 43601;
 
     // Generate our ip file if custom IP mode is not selected
-    if (!config.getCustomIp()) {
+    if (!config.getServerIp().equalsIgnoreCase("custom")) {
       setIp("game.openrsc.com");
     }
 

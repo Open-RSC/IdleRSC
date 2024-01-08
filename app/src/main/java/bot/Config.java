@@ -28,6 +28,7 @@ public class Config extends ParseResult {
     setScriptName(parseResult.getScriptName());
     setScriptArguments(parseResult.getScriptArguments());
     setInitCache(parseResult.getInitCache());
+    setServerIp(parseResult.getServerIp());
     setThemeName(parseResult.getThemeName());
     // setServerId(parseResult.getServerId());
 
@@ -40,7 +41,6 @@ public class Config extends ParseResult {
     setScreenRefresh(parseResult.getScreenRefresh());
     setLocalOcr(parseResult.isLocalOcr());
     setUiStyle(parseResult.getNewUi());
-    setCustomIp(parseResult.getCustomIp());
 
     // Switching options
     setAttackItems(parseResult.getAttackItems());

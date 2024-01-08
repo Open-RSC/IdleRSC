@@ -40,11 +40,11 @@ final class AuthFrame extends JFrame {
       localOcr,
       helpMenu,
       showVersion,
-      newUi,
-      customIp;
+      newUi;
 
   private final Choice themeChoice = new Choice();
   private final Choice initChoice = new Choice();
+  private final Choice serverIpChoice = new Choice();
   private final Button okButton;
 
   AuthFrame(final String title, final String message, final Window parent) {
@@ -83,7 +83,6 @@ final class AuthFrame extends JFrame {
       "Startup Options: ", // only show label
       "Script Name: ",
       "Script Args: ",
-      // "Server Address",
       "Hotkeys: ", // only show label
       "SpellId (F8): ",
       "Attack Item (F5): ",
@@ -115,7 +114,7 @@ final class AuthFrame extends JFrame {
       Label optionLabel = new Label(optionLabels[i], Label.LEFT);
       optionLabel.setMaximumSize(new Dimension(100, 30));
       textFieldPanels[i].add(optionLabel);
-      if (i == 0 || i == 3 || i == 7) {
+      if (i == 0 || i == 3 || i == 6) {
         continue;
       }
       textFields[i].setMaximumSize(fieldSize);
@@ -125,10 +124,12 @@ final class AuthFrame extends JFrame {
     }
 
     // Build out our choice selectors (comboboxes)
-    String[] choiceLabels = {"Theme Selector:", "Server Version"};
-    Choice[] choices = {themeChoice, initChoice};
+    String[] choiceLabels = {"Theme Selector: ", "Server Port: ", "Server Ip: "};
+    Choice[] choices = {themeChoice, initChoice, serverIpChoice};
     // the strings representing our choices go here
-    String[][] choiceNames = {Main.getThemeNames(), {"Coleslaw", "Uranium", "Custom"}};
+    String[][] choiceNames = {
+      Main.getThemeNames(), {"Coleslaw", "Uranium", "Custom"}, {"game.openrsc.com", "Custom"}
+    };
 
     Panel[] choicePanels = new Panel[choiceLabels.length];
     for (int i = 0; i < choicePanels.length; i++) {
@@ -167,7 +168,6 @@ final class AuthFrame extends JFrame {
       interlace = new Checkbox(" Interlace Mode", false),
       localOcr = new Checkbox(" Use Local-OCR", false),
       screenRefresh = new Checkbox(" 60s Screen Refresh", true),
-      customIp = new Checkbox(" Use Custom ip.txt", false),
       helpMenu = new Checkbox(" Show Help Menu", false),
       showVersion = new Checkbox(" Show Version", false)
     };
@@ -185,15 +185,15 @@ final class AuthFrame extends JFrame {
     }
 
     // Build out the order of the layout now
+    for (Panel subPanel : choicePanels) {
+      optionsPanel.add(subPanel);
+    }
     for (Panel subPanel : textFieldPanels) {
       optionsPanel.add(subPanel);
     }
     optionsPanel2.add(
         new JLabel(
             new ImageIcon(resourceLocation + "logos/idlersc.icon.png", "Idlersc"), JLabel.LEFT));
-    for (Panel subPanel : choicePanels) {
-      optionsPanel2.add(subPanel);
-    }
     for (Panel subPanel : checkBoxPanels) {
       optionsPanel2.add(subPanel);
     }
@@ -261,6 +261,7 @@ final class AuthFrame extends JFrame {
     defenseItems.setText("");
     themeChoice.select(0);
     initChoice.select(0);
+    serverIpChoice.select(0);
     autoLogin.setState(false);
     sideBar.setState(true);
     logWindow.setState(false);
@@ -273,7 +274,6 @@ final class AuthFrame extends JFrame {
     helpMenu.setState(false);
     showVersion.setState(false);
     newUi.setState(false);
-    customIp.setState(false);
   }
 
   public void storeAuthData(AuthFrame auth) {
@@ -302,7 +302,7 @@ final class AuthFrame extends JFrame {
     p.put("help", auth.getHelpMenu());
     p.put("version", auth.getShowVersion());
     p.put("new-ui", auth.getNewUi());
-    p.put("custom-ip", auth.getCustomIp());
+    p.put("server-ip", auth.getServerIpChoice());
     p.put("theme", auth.getThemeName());
 
     // Make sure our accounts folder exists
@@ -353,6 +353,7 @@ final class AuthFrame extends JFrame {
           scriptName.setText(p.getProperty("script-name", ""));
           scriptArgs.setText(p.getProperty("script-arguments", ""));
           initChoice.select(p.getProperty("init-cache", "Coleslaw"));
+          serverIpChoice.select(p.getProperty("server-ip", "game.openrsc.com"));
           spellId.setText(p.getProperty("spell-id", "-1"));
           attackItems.setText(p.getProperty("attack-items", ""));
           strengthItems.setText(p.getProperty("defence-items", ""));
@@ -368,7 +369,6 @@ final class AuthFrame extends JFrame {
           showVersion.setState(Boolean.parseBoolean(p.getProperty("version", "false")));
           themeChoice.select(p.getProperty("theme", "RuneDark Theme"));
           newUi.setState(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
-          customIp.setState(Boolean.parseBoolean(p.getProperty("custom-ip", "false")));
           screenRefresh.setState(Boolean.parseBoolean(p.getProperty("screen-refresh", "true")));
 
         } catch (final Throwable t) {
@@ -414,6 +414,10 @@ final class AuthFrame extends JFrame {
 
   synchronized String getInitCache() {
     return initChoice.getSelectedItem();
+  }
+
+  synchronized String getServerIpChoice() {
+    return serverIpChoice.getSelectedItem();
   }
 
   synchronized String getSpellId() {
@@ -478,10 +482,6 @@ final class AuthFrame extends JFrame {
 
   synchronized String getNewUi() {
     return Boolean.toString(newUi.getState());
-  }
-
-  synchronized String getCustomIp() {
-    return Boolean.toString(customIp.getState());
   }
 
   synchronized void addActionListener(final ActionListener al) {

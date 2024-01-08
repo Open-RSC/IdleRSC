@@ -33,3 +33,4 @@ core_repository_exists() {
     return 0
   fi
 }
+

@@ -76,7 +76,7 @@ tasks.register('copyJar') {
       into '../'
     }
   }
-  printf("Copying Jar to main dir")
+  printf("Done copying Jar to main directory\n")
 }
 
 tasks.named('testClasses') {

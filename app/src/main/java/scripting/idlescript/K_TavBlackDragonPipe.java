@@ -436,10 +436,10 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     JButton startScriptButton = new JButton("Start");
 
     craftCapeCheckbox.addActionListener(
-      e -> {
-        capeItemIdLabel.setEnabled(craftCapeCheckbox.isSelected());
-        capeItemIdField.setEnabled(craftCapeCheckbox.isSelected());
-      });
+        e -> {
+          capeItemIdLabel.setEnabled(craftCapeCheckbox.isSelected());
+          capeItemIdField.setEnabled(craftCapeCheckbox.isSelected());
+        });
 
     startScriptButton.addActionListener(
         e -> {

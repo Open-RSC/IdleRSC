@@ -64,5 +64,13 @@ discord_inuse.txt
 # Cache generates on Idlersc launch
 Cache/
 
+# Ignore helper scripts that are moved into root directory
+run_show_Console.bat
+compile_and_run_windows.bat
+Free Cloud Botting Tutorial.txt
+run_linux.sh
+run_multiple_clients.bat
+run_no_console.bat
+
 #Put any custom git ignore attributes below
 

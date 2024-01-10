@@ -8,11 +8,11 @@ package scripting.apos;
 // 2021-07-14 V1.3 Fixed walking bug which would happen when map is loaded from reloggin at fishing
 // spot
 public class Abyte0_CatherbyFisher extends Abyte0_Script {
-  int sleepAt = 80;
-  int FishType = 372;
-  final int FishType2 = 369;
-  boolean isDoingShark = false;
-  int cptTry = 0;
+  private int sleepAt = 80;
+  private int FishType = 372;
+  private int FishType2 = 369;
+  private boolean isDoingShark = false;
+  private int cptTry = 0;
 
   public Abyte0_CatherbyFisher(String e) {
     super(e);

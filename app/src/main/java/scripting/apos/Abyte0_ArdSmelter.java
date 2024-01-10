@@ -35,33 +35,17 @@ public final class Abyte0_ArdSmelter extends Abyte0_Script {
     // print("No param = Steel Bars...");
     print("Version 2.1 - Added Bronze and Gold");
 
-    switch (params) {
-      case "b":
-        mix = new int[] {169, 14, oreTin, 14, oreCopper, 14};
-        break;
-      case "i":
-        mix = new int[] {170, -1, oreIron, 29, oreCoal, 0};
-        break;
-      case "s":
-        mix = new int[] {171, 9, oreIron, 9, oreCoal, 18};
-        break;
-      case "g":
-        mix = new int[] {172, -1, oreGold, 29, oreCoal, 0};
-        break;
-      case "m":
-        mix = new int[] {173, 5, oreMith, 5, oreCoal, 20};
-        break;
-      case "a":
-        mix = new int[] {174, 4, oreAddy, 4, oreCoal, 24};
-        break;
-      case "r":
-        mix = new int[] {408, 3, oreRune, 3, oreCoal, 24};
-        break;
-      default:
-        print(
-            "Sorry Param B = bronze, I = Iron, S = steel, G = Gold, M = mith , A = addy, R = runite");
-        stopScript();
-        break;
+    if (params.equals("b")) mix = new int[] {169, 14, oreTin, 14, oreCopper, 14};
+    else if (params.equals("i")) mix = new int[] {170, -1, oreIron, 29, oreCoal, 0};
+    else if (params.equals("s")) mix = new int[] {171, 9, oreIron, 9, oreCoal, 18};
+    else if (params.equals("g")) mix = new int[] {172, -1, oreGold, 29, oreCoal, 0};
+    else if (params.equals("m")) mix = new int[] {173, 5, oreMith, 5, oreCoal, 20};
+    else if (params.equals("a")) mix = new int[] {174, 4, oreAddy, 4, oreCoal, 24};
+    else if (params.equals("r")) mix = new int[] {408, 3, oreRune, 3, oreCoal, 24};
+    else {
+      print(
+          "Sorry Param B = bronze, I = Iron, S = steel, G = Gold, M = mith , A = addy, R = runite");
+      stopScript();
     }
 
     barType = params;
@@ -108,7 +92,7 @@ public final class Abyte0_ArdSmelter extends Abyte0_Script {
           && getInventoryCount(mix[4]) == mix[5]
           && getInventoryCount(mix[0]) == 0) closeBank();
       else {
-        // Si les quantit� sont buguer on depose tout et on recommence
+        // Si les quantit sont buguer on depose tout et on recommence
         deposit(mix[2], getInventoryCount(mix[2])); // ore 1
         deposit(mix[4], getInventoryCount(mix[4])); // ore 2
         deposit(mix[0], getInventoryCount(mix[0])); // bars

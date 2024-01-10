@@ -2,38 +2,43 @@ package scripting.apos;
 
 import compatibility.apos.Script;
 import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 
-/**
- * By: Abyte0 Date: 2012-03-30 Private Release: 2012-04-03 Public Release: 2012-04-10 Use: Go to
- * Wizard Tower north from Make Over Mage
- */
+/*
+	By: 			Abyte0
+	Date:			2012-03-30
+	Private Release: 	2012-04-03
+	Public Release: 	2012-04-10
+	Use:			Go to Wizard Tower north from Make Over Mage
+	2022-01-12		2.0		[Require Abyte_Script 1.6 ]		Talk and only open door sometime to get stuck + stats added on #' keypress
+*/
 public final class Abyte0_DarkWizard extends Script {
+  public String SCRIPT_VERSION = "2.0";
   int fMode = 2; // default attack
-  final int[] Darkwizard = {60, 57}; // 60 = lvl25; 57 = lvl13
-
-  final int[] room0 = {362, 570};
-  final int[] room1 = {362, 1514};
-  final int[] room2 = {362, 2458};
-
-  // ------------- ITEMS
-  final int halfKey1 = 526;
-  final int halfKey2 = 527;
-
-  final int FireRune = 31;
-  final int WaterRune = 32;
-  final int AirRune = 33;
-  final int EarthRune = 34;
-  final int mindRunes = 35;
-  final int deathRunes = 38;
-  final int blood = 619;
-  final int nature = 40;
-  final int chaosRunes = 41;
-  final int law = 42;
-  final int CosmicRune = 46;
+  private final int Darkwizard[] = {60, 57}; // 60 = lvl25; 57 = lvl13
+  private final int[] room0 = {362, 570};
+  private final int[] room1 = {362, 1514};
+  private final int[] room2 = {362, 2458};
+  private int initialXp = 0;
+  private long initialTime = 0;
+  private final int halfKey1 = 526;
+  private final int halfKey2 = 527;
+  private final int FireRune = 31;
+  private final int WaterRune = 32;
+  private final int AirRune = 33;
+  private final int EarthRune = 34;
+  private final int mindRunes = 35;
+  private final int deathRunes = 38;
+  private final int blood = 619;
+  private final int nature = 40;
+  private final int chaosRunes = 41;
+  private final int law = 42;
+  private final int CosmicRune = 46;
   // -------------------------
 
-  final int[] items = {
+  private final int[] items = {
     halfKey1,
     halfKey2,
     law,
@@ -86,8 +91,11 @@ public final class Abyte0_DarkWizard extends Script {
     print("--");
 
     print("DarkWizard killer by: Abyte0");
-    print("Version 1");
+    print("Version " + SCRIPT_VERSION);
     print("--");
+
+    initialXp = getFmodeXp();
+    initialTime = System.currentTimeMillis();
   }
 
   public int main() {
@@ -113,10 +121,12 @@ public final class Abyte0_DarkWizard extends Script {
       // If we see closed door we must open
       int[] door = getWallObjectById(2);
       if (door[0] != -1) {
-        if (isAtApproxCoords(door[1], door[2], 5)) {
+        boolean ignoreOrNotDice = random(0, 5) > 2;
+
+        if (isAtApproxCoords(door[1], door[2], 4) && ignoreOrNotDice) {
           // print("Open Door");
           atWallObject(door[1], door[2]);
-          return random(500, 600);
+          return 1000;
         }
       }
       // We need to Pick Up the Item if any on floor
@@ -226,5 +236,55 @@ public final class Abyte0_DarkWizard extends Script {
 
   public void RunFromCombat() {
     walkTo(getX(), getY());
+  }
+
+  public void onKeyPress(int keyCode) {
+    if (keyCode == 192 || keyCode == 128) { // # or '
+      reportXpChange();
+    }
+    // if (keyCode == 107) { //+
+    //	increaseDelay();
+    // }
+    // if (keyCode == 109) { //-
+    //	decreaseDelay();
+    // }
+    if (keyCode == 113) { // F2
+      resetCounters();
+    }
+
+    // print(""+keyCode);
+  }
+
+  private void resetCounters() {
+    initialXp = getFmodeXp();
+    initialTime = System.currentTimeMillis();
+  }
+
+  protected void reportXpChange() {
+
+    int xpDifference = getFmodeXp() - initialXp;
+    long timeSpan = System.currentTimeMillis() - initialTime;
+    long secondSpan = timeSpan / 1000;
+    long xpRatio =
+        xpDifference
+            * 3600L
+            / secondSpan; // The L set 3600 as long variable Forcing to calculate as long to avoid
+    // overflow
+
+    print("=================================");
+    print("initialXp: " + initialXp);
+    print("initialTime: " + initialTime);
+    print("total fMode xp gained: " + xpDifference);
+    print("time running: " + secondSpan + " s");
+    print("xpRatio: " + xpRatio + "/h");
+    print("=================================");
+  }
+
+  private int getFmodeXp() {
+    if (fMode == 1) return getXpForLevel(2);
+    if (fMode == 2) return getXpForLevel(0);
+    if (fMode == 3) return getXpForLevel(1);
+
+    return getXpForLevel(0) + getXpForLevel(1) + getXpForLevel(2);
   }
 }

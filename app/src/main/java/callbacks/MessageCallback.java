@@ -46,13 +46,16 @@ public class MessageCallback {
     Controller con = Main.getController();
     con.hideRecoveryDetailsMenu();
     con.hideContactDetailsMenu();
-    if (Main.isLogWindowOpen() && DrawCallback.getNextLogClear() == -1) {
-      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in ms
-    }
-    if (Main.isLogWindowOpen() && (System.currentTimeMillis() > DrawCallback.getNextLogClear())) {
-      Main.clearLog();
-      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in ms
-    }
+    //    if (Main.isLogWindowOpen() && DrawCallback.getNextLogClear() == -1) {
+    //      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in
+    // ms
+    //    }
+    //    if (Main.isLogWindowOpen() && (System.currentTimeMillis() >
+    // DrawCallback.getNextLogClear())) {
+    //      Main.clearLog();
+    //      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in
+    // ms
+    //    }
     if ((System.currentTimeMillis() > DrawCallback.getNextRefresh())
         && DrawCallback.getNextRefresh() != -1
         && !con.isDrawEnabled()) {

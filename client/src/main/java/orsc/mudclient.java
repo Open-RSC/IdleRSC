@@ -5339,16 +5339,16 @@ public final class mudclient implements Runnable {
 						i += 14;
 						if (C_TOTAL_NPC_KC) {
 							this.getSurface().drawString(
-								"Kills: " + getStatKills2() + "@whi@", 7, i, 0xffffff, 1);
+								"Kills: " + getStatKills2() + "@whi@", 7, 202, 0xffffff, 1);
 							i += 14;
 						}
 						if (C_RECENT_NPC_KC) {
 							if (getLastNpcKilledId() != -1) {
 								this.getSurface().drawString(
-									"Last NPC Kills: " + getStatKills3() + "@whi@", 7, i, 0xffffff, 1);
+									"Last NPC Kills: " + getStatKills3() + "@whi@", 7, 216, 0xffffff, 1);
 							} else {
 								this.getSurface().drawString(
-									"Last NPC Kills: None@whi@", 7, i, 0xffffff, 1);
+									"Last NPC Kills: None@whi@", 7, 216, 0xffffff, 1);
 							}
 							i += 14;
 						}

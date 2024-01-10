@@ -128,7 +128,7 @@ public class WindowListener implements Runnable {
 
       // update our theme when themeName string is changed in Main
       if (!themeName.equals(Main.getThemeName())) {
-        controller.log("Switching Theme to " + Main.getThemeName(), "gre");
+        controller.log("IdleRSC: Switching Theme to " + Main.getThemeName(), "gre");
         Color[] colors = Main.getThemeElements(Main.getThemeName()); // back, front
         botFrame.setBackground(colors[0]);
         rscFrame.getContentPane().setBackground(colors[0]);

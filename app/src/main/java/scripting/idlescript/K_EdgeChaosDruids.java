@@ -72,12 +72,7 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
     ItemId.RUNE_SPEAR.getId(),
   };
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * the corresponding logic based on the values of the parameters.
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
+
   public int start(String[] parameters) {
     centerX = 215;
     centerY = 3249;
@@ -475,7 +470,7 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      int y2 = 202;
+      int y2 = 220;
       c.drawString("@red@Edge Chaos Druids @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {

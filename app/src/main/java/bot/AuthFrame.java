@@ -28,7 +28,9 @@ final class AuthFrame extends JFrame {
       spellId,
       attackItems,
       strengthItems,
-      defenseItems;
+      defenseItems,
+      positionX,
+      positionY;
   private Checkbox autoLogin,
       sideBar,
       logWindow,
@@ -83,11 +85,14 @@ final class AuthFrame extends JFrame {
       "Startup Options:", // only show label
       "Script Name:",
       "Script Args:",
+      "Position (-1 to center):",
+      "X Coordinate",
+      "Y Coordinate",
       "Hotkeys:", // only show label
       "SpellId (F8):",
       "Swap Item (F5):",
       "Swap Item (F6):",
-      "Swap Item (F7):"
+      "Swap Item (F7):",
     };
     JTextField[] textFields = {
       new JTextField(),
@@ -96,6 +101,9 @@ final class AuthFrame extends JFrame {
       new JTextField(), // only show label
       scriptName = new JTextField(),
       scriptArgs = new JTextField(),
+      new JTextField(), // only show label
+      positionX = new JTextField(),
+      positionY = new JTextField(),
       new JTextField(), // only show label
       spellId = new JTextField(),
       attackItems = new JTextField(),
@@ -114,7 +122,8 @@ final class AuthFrame extends JFrame {
       Label optionLabel = new Label(optionLabels[i], Label.LEFT);
       optionLabel.setMaximumSize(new Dimension(100, 30));
       textFieldPanels[i].add(optionLabel);
-      if (i == 0 || i == 3 || i == 6) {
+      if (i == 0 || i == 3 || i == 6 || i == 9) {
+        optionLabel.setMaximumSize(new Dimension(140, 30));
         continue;
       }
       textFields[i].setMaximumSize(textFieldSize);
@@ -213,10 +222,10 @@ final class AuthFrame extends JFrame {
 
     // Set Sizing
     Panel gapPanel = new Panel();
-    gapPanel.setMaximumSize(new Dimension(25, 450));
+    gapPanel.setMaximumSize(new Dimension(20, 550));
     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-    optionsPanel.setMinimumSize(new Dimension(250, 450));
-    optionsPanel2.setMinimumSize(new Dimension(200, 450));
+    optionsPanel.setMinimumSize(new Dimension(270, 550));
+    optionsPanel2.setMinimumSize(new Dimension(180, 550));
 
     inputPanel.add(optionsPanel);
     inputPanel.add(gapPanel);
@@ -258,6 +267,8 @@ final class AuthFrame extends JFrame {
     password.setText("");
     scriptName.setText("");
     scriptArgs.setText("");
+    positionX.setText("-1");
+    positionY.setText("-1");
     spellId.setText("");
     attackItems.setText("");
     strengthItems.setText("");
@@ -294,6 +305,8 @@ final class AuthFrame extends JFrame {
     p.put("script-name", auth.getScriptName());
     p.put("script-arguments", auth.getScriptArgs());
     p.put("init-cache", auth.getInitCache());
+    p.put("x-position", auth.getPositionX());
+    p.put("y-position", auth.getPositionY());
     p.put("spell-id", auth.getSpellId());
     p.put("attack-items", auth.getAttackItems());
     p.put("strength-items", auth.getStrengthItems());
@@ -362,6 +375,8 @@ final class AuthFrame extends JFrame {
           scriptArgs.setText(p.getProperty("script-arguments", ""));
           initChoice.select(p.getProperty("init-cache", "Coleslaw"));
           serverIpChoice.select(p.getProperty("server-ip", "game.openrsc.com"));
+          positionX.setText(p.getProperty("x-position", "-1"));
+          positionY.setText(p.getProperty("y-position", "-1"));
           spellId.setText(p.getProperty("spell-id", "-1"));
           attackItems.setText(p.getProperty("attack-items", ""));
           strengthItems.setText(p.getProperty("defence-items", ""));
@@ -442,6 +457,14 @@ final class AuthFrame extends JFrame {
 
   synchronized String getDefenseItems() {
     return defenseItems.getText();
+  }
+
+  synchronized String getPositionX() {
+    return positionX.getText();
+  }
+
+  synchronized String getPositionY() {
+    return positionY.getText();
   }
 
   synchronized String getAutoLogin() {

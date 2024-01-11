@@ -1,2 +1,2 @@
 echo. | compile_windows.bat
-start javaw -jar IdleRSC.jar 
+start javaw -jar -Djava.net.preferIPv4Stack=true IdleRSC.jar 

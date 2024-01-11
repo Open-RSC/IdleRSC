@@ -57,6 +57,8 @@ public class CLIParser {
     parseResult.setScreenRefresh(!cmd.hasOption("no-screen-refresh"));
     parseResult.setUiStyle(cmd.hasOption("new-ui"));
     parseResult.setSpellId(cmd.getOptionValue("spell-id", "-1"));
+    parseResult.setPositionX(Integer.parseInt(cmd.getOptionValue("x-position", "-1")));
+    parseResult.setPositionX(Integer.parseInt(cmd.getOptionValue("y-position", "-1")));
     if (cmd.getOptionValues("attack-items") != null) {
       parseResult.setAttackItems(cmd.getOptionValues("attack-items"));
     } else {
@@ -130,6 +132,11 @@ public class CLIParser {
       parseResult.setUiStyle(
           p.getProperty("new-ui", "false").replace(" ", "").toLowerCase().contains("true"));
 
+      parseResult.setPositionX(
+          Integer.parseInt(p.getProperty("x-position", "-1").replace(" ", "")));
+      parseResult.setPositionY(
+          Integer.parseInt(p.getProperty("y-position", "-1").replace(" ", "")));
+
       // Switching options
       parseResult.setSpellId(p.getProperty("spell-id", "-1"));
       parseResult.setAttackItems(
@@ -158,7 +165,7 @@ public class CLIParser {
     formatter.printHelp("IdleRSC", null, options, footer);
   }
 
-  private static void addOptions() { // todo add new settings to addOptions menu
+  private static void addOptions() { // todo add new settings (recent additions) to addOptions menu
     // Options with parameters/arguments.
     Option username =
         Option.builder()

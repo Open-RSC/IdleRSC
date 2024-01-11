@@ -65,13 +65,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
     ItemId.LEFT_HALF_DRAGON_SQUARE_SHIELD.getId(),
     ItemId.RUNE_SPEAR.getId()
   };
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * script based on the values of the parameters. <br>
-   * Parameters in this context can be from CLI parsing or in the script options parameters text box
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
+
   public int start(String[] parameters) {
     centerX = 344;
     centerY = 3318;
@@ -104,7 +98,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
       if (c.isInBank()) c.closeBank();
       if (c.currentY() < 3000) {
         bank();
-        BankToDruid();
+        bankToDruid();
         c.sleep(1380);
       }
       scriptStart();
@@ -120,9 +114,9 @@ public final class K_TavChaosDruids extends K_kailaScript {
           || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
-        DruidToBank();
+        druidToBank();
         bank();
-        BankToDruid();
+        bankToDruid();
       }
       if (potUp) {
         attackBoost(0, false);
@@ -240,7 +234,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
     checkInventoryItemCounts();
   }
 
-  private void BankToDruid() {
+  private void bankToDruid() {
     c.setStatus("@gre@Walking to Chaos Druids..");
     if (craftCapeTeleport) {
       teleportCraftCape();
@@ -295,7 +289,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
     c.setStatus("@gre@Done Walking..");
   }
 
-  private void DruidToBank() {
+  private void druidToBank() {
     c.walkTo(355, 3320); // walk to safe spot
     if (craftCapeTeleport && (c.getInventoryItemCount(CRAFT_CAPE) != 0)) {
       c.setStatus("@gre@Going to Bank. Casting craft cape teleport.");
@@ -510,7 +504,7 @@ public final class K_TavChaosDruids extends K_kailaScript {
 
       int x = 6;
       int y = 15;
-      int y2 = 202;
+      int y2 = 220;
       c.drawString("@red@Taverly Chaos Druids @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {

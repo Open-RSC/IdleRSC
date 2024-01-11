@@ -21,7 +21,7 @@ public class DrawCallback {
   private static boolean toggleOnViewId = false;
   private static long nextRefresh = -1;
   private static long nextDeRefresh = -1;
-  private static long timeNextLogClear = -1;
+  //  private static long timeNextLogClear = -1;
 
   /**
    * Returns the value of the next refresh.
@@ -39,14 +39,14 @@ public class DrawCallback {
   public static long getNextDeRefresh() {
     return nextDeRefresh;
   }
-  /**
-   * Retrieves the next time the log will be cleared.
-   *
-   * @return the next time the log will be cleared
-   */
-  public static long getNextLogClear() {
-    return timeNextLogClear;
-  }
+  //  /**
+  //   * Retrieves the next time the log will be cleared.
+  //   *
+  //   * @return the next time the log will be cleared
+  //   */
+  //  public static long getNextLogClear() {
+  //    return timeNextLogClear;
+  //  }
   /**
    * Retrieves the value of the toggleOnViewId variable.
    *
@@ -71,14 +71,14 @@ public class DrawCallback {
   public static void setNextDeRefresh(long nextDeRefreshValue) {
     nextDeRefresh = nextDeRefreshValue;
   }
-  /**
-   * Sets the value of the next log clear time.
-   *
-   * @param nextLogClear the next log clear time to be set
-   */
-  public static void setNextLogClear(long nextLogClear) {
-    timeNextLogClear = nextLogClear;
-  }
+  //  /**
+  //   * Sets the value of the next log clear time.
+  //   *
+  //   * @param nextLogClear the next log clear time to be set
+  //   */
+  //  public static void setNextLogClear(long nextLogClear) {
+  //    timeNextLogClear = nextLogClear;
+  //  }
   /**
    * Sets the value of the toggleOnViewId variable.
    *

@@ -1715,6 +1715,9 @@ public abstract class Script implements IScript {
     return -1;
   }
 
+  public void print(String toPrint) {
+    System.out.println(toPrint);
+  }
   /**
    * Returns the ID of the item at the given shop position, starting at 0.
    *

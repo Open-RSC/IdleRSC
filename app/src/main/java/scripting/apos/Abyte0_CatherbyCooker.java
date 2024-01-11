@@ -1,7 +1,6 @@
 package scripting.apos;
 
 import java.awt.*;
-import java.util.Objects;
 import javax.swing.*;
 
 /**
@@ -74,10 +73,10 @@ public class Abyte0_CatherbyCooker extends Abyte0_Script {
                   fishes,
                   null);
 
-      if (Objects.equals(S_FightMode, "Tunas")) params = tunasParam;
-      if (Objects.equals(S_FightMode, "Lobsters")) params = lobstersParam;
-      if (Objects.equals(S_FightMode, "Swordfishs")) params = swordfishsParam;
-      if (Objects.equals(S_FightMode, "Sharks")) params = sharksParam;
+      if (S_FightMode.equals("Tunas")) params = tunasParam;
+      if (S_FightMode.equals("Lobsters")) params = lobstersParam;
+      if (S_FightMode.equals("Swordfishs")) params = swordfishsParam;
+      if (S_FightMode.equals("Sharks")) params = sharksParam;
     }
 
     if (params.equals(tunasParam)) {

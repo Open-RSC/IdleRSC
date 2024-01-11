@@ -553,7 +553,7 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      int y2 = 202;
+      int y2 = 220;
       c.drawString("@red@Ogre Enclave Blue Dragons @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@______________________", x, y, 0xFFFFFF, 1);
       c.drawString(

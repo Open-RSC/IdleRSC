@@ -105,7 +105,6 @@ public class Main {
   // language.
   private static Object currentRunningScript =
       null; // the object instance of the current running script.
-
   private static boolean shouldFilter = true;
   private static boolean aposInitCalled = false;
 
@@ -248,9 +247,6 @@ public class Main {
 
     if (parseResult.isHelp()) {
       parser.printHelp();
-      System.out.println("Waiting for 1 minute...");
-      Thread.sleep(60000);
-      System.out.println("Launching Bot...");
     }
 
     if (parseResult.isVersion()) {
@@ -262,9 +258,6 @@ public class Main {
               + "-"
               + version.getCommitHash());
       System.out.println("Built with JDK " + version.getBuildJDK());
-      System.out.println("Closing Bot in 1 minute...");
-      Thread.sleep(60000);
-      System.exit(0);
     }
 
     config.absorb(parseResult);
@@ -280,7 +273,7 @@ public class Main {
     debuggerThread.start();
 
     // just building out the windows
-    JComponent botFrame = new JPanel();
+    JPanel botFrame = new JPanel();
     themeMenu = new JMenu();
     JPanel consoleFrame = new JPanel(); // log window
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
@@ -484,10 +477,8 @@ public class Main {
     } catch (ParseException e) {
       System.err.println(e.getMessage() + "\n");
       parser.printHelp();
-      System.out.println("Waiting for 5 minute...");
+      System.out.println("Closing Bot in 5 minute...");
       Thread.sleep(340000);
-      System.out.println("Closing Bot in 1 minute...");
-      Thread.sleep(60000);
       System.exit(1);
     }
     return parseResult;
@@ -621,7 +612,7 @@ public class Main {
           authFrame.addActionListener(
               e1 -> { // ALWAYS make properties lowercase
                 username = authFrame.getUsername();
-                controller.log(username + " account settings saved");
+                controller.log("IdleRSC: " + username + " account settings saved");
                 authFrame.storeAuthData(authFrame);
                 authFrame.setVisible(false);
               });
@@ -1152,15 +1143,16 @@ public class Main {
     } else {
       // JOptionPane.showMessageDialog(null, "Stop the current script first.");
 
-      JLabel stopLabel = new JLabel("A Script is already running for this account!");
-      JLabel stopLabel2 = new JLabel("You must stop the script before loading a new one");
+      JLabel stopLabel = new JLabel("Script already running for Account!");
+      JLabel stopLabel2 = new JLabel("You must stop the script first");
+      JLabel stopLabel3 = new JLabel("May require client restart to fix");
       // JButton cancelButton = new JButton("Force cancel script");
       JButton closeWindow = new JButton("Close this warning");
 
       //      cancelButton.addActionListener(
       //          e -> {
       //            setRunning(false);
-      //
+      //            currentRunningScript = null; //did not work
       //            scriptFrame.setVisible(false);
       //            scriptFrame.dispose();
       //          });
@@ -1183,8 +1175,11 @@ public class Main {
       scriptFrame.setLayout(new GridLayout(0, 1));
       scriptFrame.add(stopLabel);
       scriptFrame.add(stopLabel2);
+      scriptFrame.add(stopLabel3);
       // scriptFrame.add(cancelButton);
       scriptFrame.add(closeWindow);
+      scriptFrame.setMinimumSize(new Dimension(225, 125)); // test this)); //test this
+      scriptFrame.setSize(225, 125); // test this
     }
   }
   /**
@@ -1261,11 +1256,9 @@ public class Main {
   /**
    * A function for controlling whether or not scripts are running.
    *
-   * @param b
+   * @param isRunning
    */
-  public static void setRunning(boolean b) {
-    isRunning = b;
-
+  public static void setRunning(boolean isRunning) {
     if (isRunning) {
       startStopButton.setText("Stop");
     } else {

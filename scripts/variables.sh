@@ -3,6 +3,7 @@
 # project-specific variables
 export ASSET_DIR="$(pwd)/assets"
 export CLIENT_DIR="$(pwd)/client"
+export PATCHER_DIR="$(pwd)/patcher"
 
 # repository-related variables
 export CORE_REPOSITORY="https://gitlab.com/open-runescape-classic/core.git"

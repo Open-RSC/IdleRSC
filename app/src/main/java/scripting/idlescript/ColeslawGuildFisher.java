@@ -61,7 +61,7 @@ public class ColeslawGuildFisher extends IdleScript {
       startTime = System.currentTimeMillis();
       scriptStart();
     }
-    if (parameters.length > 0 && !parameters[0].equals("")) {
+    if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("lobster")) {
         c.displayMessage("Got param " + parameters[0] + ". Fishing Lobsters!", 0);
         equipId = ItemId.LOBSTER_POT.getId();
@@ -207,29 +207,35 @@ public class ColeslawGuildFisher extends IdleScript {
         });
     startScriptButton.addActionListener(
         e -> {
-          if (fishField.getSelectedIndex() == 0) {
-            equipId = ItemId.HARPOON.getId();
-            spotId = SHARK_FISH_SPOT;
-            bigNetFishing = false;
-            fishIdOne = ItemId.RAW_SHARK.getId();
-          } else if (fishField.getSelectedIndex() == 1) {
-            equipId = ItemId.HARPOON.getId();
-            spotId = LOBSTER_FISH_SPOT;
-            swordFish = true;
-            fishIdOne = ItemId.RAW_SWORDFISH.getId();
-            fishIdTwo = ItemId.RAW_TUNA.getId();
-          } else if (fishField.getSelectedIndex() == 2) {
-            equipId = ItemId.LOBSTER_POT.getId();
-            spotId = LOBSTER_FISH_SPOT;
-            swordFish = false;
-            fishIdOne = ItemId.RAW_LOBSTER.getId();
-          } else if (fishField.getSelectedIndex() == 3) {
-            equipId = ItemId.BIG_NET.getId();
-            spotId = SHARK_FISH_SPOT;
-            bigNetFishing = true;
-            fishIdOne = ItemId.RAW_MACKEREL.getId();
-            fishIdTwo = ItemId.RAW_COD.getId();
-            fishIdThree = ItemId.RAW_BASS.getId();
+          switch (fishField.getSelectedIndex()) {
+            case 1:
+              equipId = ItemId.HARPOON.getId();
+              spotId = LOBSTER_FISH_SPOT;
+              swordFish = true;
+              fishIdOne = ItemId.RAW_SWORDFISH.getId();
+              fishIdTwo = ItemId.RAW_TUNA.getId();
+              break;
+            case 2:
+              equipId = ItemId.LOBSTER_POT.getId();
+              spotId = LOBSTER_FISH_SPOT;
+              swordFish = false;
+              fishIdOne = ItemId.RAW_LOBSTER.getId();
+              break;
+            case 3:
+              equipId = ItemId.BIG_NET.getId();
+              spotId = SHARK_FISH_SPOT;
+              bigNetFishing = true;
+              fishIdOne = ItemId.RAW_MACKEREL.getId();
+              fishIdTwo = ItemId.RAW_COD.getId();
+              fishIdThree = ItemId.RAW_BASS.getId();
+              break;
+            case 0:
+            default:
+              equipId = ItemId.HARPOON.getId();
+              spotId = SHARK_FISH_SPOT;
+              bigNetFishing = false;
+              fishIdOne = ItemId.RAW_SHARK.getId();
+              break;
           }
           dropJunk = dropJunkCheckbox.isSelected();
           scriptFrame.setVisible(false);

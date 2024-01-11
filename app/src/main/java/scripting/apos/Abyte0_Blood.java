@@ -153,7 +153,7 @@ public final class Abyte0_Blood extends Abyte0_Script {
         withdraw(bloodId, 1);
       }
       if (getInventoryCount() < 28) {
-        withdraw(foodId, 30 - getInventoryCount());
+        withdraw(foodId, 29 - getInventoryCount());
         return random(1000, 1500);
       }
       if (getInventoryCount() > 28
@@ -287,7 +287,7 @@ public final class Abyte0_Blood extends Abyte0_Script {
     return 1000;
   }
 
-  public void BuryBigBone() {
+  public final void BuryBigBone() {
     int boneIndex = getInventoryIndex(413);
     print("Bury Bones at position : " + boneIndex);
     useItem(boneIndex);

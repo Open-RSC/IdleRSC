@@ -16,7 +16,6 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_YanilleDruidWarriors extends K_kailaScript {
-  private int fightMode = 0;
   private boolean agilityCapeTeleport = false;
   private final int LOCKPICK = ItemId.LOCKPICK.getId();
   private final int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();
@@ -479,7 +478,7 @@ public final class K_YanilleDruidWarriors extends K_kailaScript {
       }
       int x = 6;
       int y = 15;
-      int y2 = 202;
+      int y2 = 220;
       c.drawString("@red@Yanille Druid Warriors @whi@~ @mag@Kaila", x, y - 3, 0xFFFFFF, 1);
       c.drawString("@whi@____________________", x, y, 0xFFFFFF, 1);
       if (lootLowLevel) {

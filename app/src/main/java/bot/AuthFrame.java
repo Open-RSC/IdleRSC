@@ -19,7 +19,7 @@ final class AuthFrame extends JFrame {
   private Color textColor = Main.getColorCode(0, 0);
   private boolean loadSettings = false;
   private final String resourceLocation = "app/src/main/java/bot/res/";
-  private static final Dimension fieldSize = new Dimension(100, 25);
+  private static final Dimension textFieldSize = new Dimension(80, 25);
   private final Window parent;
   private JPasswordField password;
   private final JTextField username,
@@ -78,16 +78,16 @@ final class AuthFrame extends JFrame {
     // Build out all of our text field options
     String[] optionLabels = { // 12
       "Login Credentials:", // only show label
-      "Username: ",
-      "Password: ",
-      "Startup Options: ", // only show label
-      "Script Name: ",
-      "Script Args: ",
-      "Hotkeys: ", // only show label
-      "SpellId (F8): ",
-      "Attack Item (F5): ",
-      "Strength Item (F6): ",
-      "Defense Item (F7):"
+      "Username:",
+      "Password:",
+      "Startup Options:", // only show label
+      "Script Name:",
+      "Script Args:",
+      "Hotkeys:", // only show label
+      "SpellId (F8):",
+      "Swap Item (F5):",
+      "Swap Item (F6):",
+      "Swap Item (F7):"
     };
     JTextField[] textFields = {
       new JTextField(),
@@ -117,7 +117,10 @@ final class AuthFrame extends JFrame {
       if (i == 0 || i == 3 || i == 6) {
         continue;
       }
-      textFields[i].setMaximumSize(fieldSize);
+      textFields[i].setMaximumSize(textFieldSize);
+      textFields[i].setMinimumSize(textFieldSize);
+      textFields[i].setPreferredSize(textFieldSize);
+      textFields[i].setSize(textFieldSize);
       textFields[i].setBorder(
           BorderFactory.createMatteBorder(0, 0, 2, 2, new java.awt.Color(0, 0, 0, 255)));
       textFieldPanels[i].add(textFields[i]);

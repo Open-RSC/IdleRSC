@@ -682,7 +682,7 @@ public class J_Quester extends Script implements ActionListener {
                       pw.setPath(cur_path);
                     }
                   } else {
-                    talk_to_npc(kaqe);
+                    talk_to_npc(kaqe); // start quest here
                   }
                 } else {
                   DR_get_meat(chicken_spawn.x, chicken_spawn.y, CHICKEN_ID, CHICKEN_MEAT_ID);

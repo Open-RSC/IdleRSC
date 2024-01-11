@@ -5,7 +5,9 @@ import controller.Controller;
 import javax.swing.*;
 import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
+import models.entities.NpcId;
 import models.entities.SpellId;
+import orsc.ORSCharacter;
 
 /**
  * WIP master file for common commands used in Kaila_Scripts
@@ -61,6 +63,7 @@ public class K_kailaScript extends IdleScript {
   protected static int centerX = -1;
   protected static int centerY = -1;
   protected static int centerDistance = -1;
+  protected static int fightMode = 0;
   // Inventory Item Counts
   // Herbs
   protected static int inventGuam = 0;
@@ -406,6 +409,25 @@ public class K_kailaScript extends IdleScript {
    *          Main (useful) methods
    */
 
+  protected static void combatLoop(int npcId, int[] lootId) {
+    lootItems(false, lootId);
+    if (lootBones) lootItem(false, ItemId.BONES.getId());
+    buryBones(false);
+    checkFightMode(fightMode);
+    checkInventoryItemCounts();
+    if (!c.isInCombat()) {
+      ORSCharacter npc = c.getNearestNpcById(npcId, false);
+      if (npc != null) {
+        c.setStatus("@yel@Attacking " + NpcId.getById(npcId).name());
+        c.attackNpc(npc.serverIndex);
+        c.sleep(3 * GAME_TICK);
+      } else c.sleep(GAME_TICK);
+    } else c.sleep(640);
+    if (c.getInventoryItemCount() == 30) {
+      dropItemToLoot(false, 1, ItemId.EMPTY_VIAL.getId());
+      buryBonesToLoot(false);
+    }
+  }
   /**
    * Checks distance from provided x, y coords to the predefined center position and radius with int
    * values centerX, centerY, and centerDistance (set values in main method) If not predefined, then
@@ -561,12 +583,10 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
     if (c.getInventoryItemCount(itemId) > 0) {
-      if (leaveCombat && c.isInCombat()) leaveCombat();
+      if (leaveCombat && c.isInCombat()) leaveCombat(); // this may be breaking things ?
       else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
-      if (amount < 1) amount = 1;
       c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
-      c.sleep(2 * GAME_TICK);
-      waitForBatching();
+      // c.sleep(GAME_TICK);
     }
   }
   /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
@@ -690,13 +710,17 @@ public class K_kailaScript extends IdleScript {
    */
   protected static void dropItemToLoot(boolean leaveCombat, int amount, int itemId) {
     if (c.getInventoryItemCount() != 30) return;
-    if (c.getInventoryItemCount(itemId) > 0) {
+    int startCount = c.getInventoryItemCount(itemId);
+    if (startCount > 0) {
       if (amount < 1) amount = 1;
       if (leaveCombat && c.isInCombat()) leaveCombat();
       else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
       c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
       c.sleep(GAME_TICK);
-      waitForBatching();
+      for (int i = 0; i < 8; i++) {
+        if (c.getInventoryItemCount(itemId) <= (startCount - amount)) break;
+        c.sleep(GAME_TICK);
+      }
     }
   }
   // TODO check for item (if equipped, else if in invent return true, else withdraw?)
@@ -1580,6 +1604,7 @@ public class K_kailaScript extends IdleScript {
     int CRAFTING_CAPE = ItemId.CRAFTING_CAPE.getId();
     if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1) {
       c.unequipItem(EquipSlotIndex.CAPE.getId());
+      c.sleep(640);
     }
     if (c.isInCombat()) leaveCombat();
     for (int i = 1; i <= 200; i++) {
@@ -1774,12 +1799,12 @@ public class K_kailaScript extends IdleScript {
     if (c.getInventoryItemCount(CRAFT_CAPE) > 0 || c.isItemIdEquipped(CRAFT_CAPE)) {
       if (!c.isItemIdEquipped(CRAFT_CAPE)) {
         c.equipItem(c.getInventoryItemSlotIndex(CRAFT_CAPE));
-        c.sleep(6 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       }
     } else if (c.getInventoryItemCount(BROWN_APRON) > 0 || c.isItemIdEquipped(BROWN_APRON)) {
       if (!c.isItemIdEquipped(BROWN_APRON)) {
         c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
-        c.sleep(6 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       }
     } else {
       c.log(
@@ -1792,15 +1817,15 @@ public class K_kailaScript extends IdleScript {
       if (c.isRunning() && c.currentX() == 347 && c.currentY() == 600) {
         c.setStatus("@red@Entering Crafting Guild..");
         c.atWallObject(347, 601);
-        c.sleep(10 * GAME_TICK);
+        c.sleep(6 * GAME_TICK);
       } else {
-        c.sleep(10 * GAME_TICK);
+        c.sleep(6 * GAME_TICK);
         break;
       }
     }
     if (reEquipItemId > 0) {
       c.equipItem(c.getInventoryItemSlotIndex(reEquipItemId));
-      c.sleep(3 * GAME_TICK);
+      c.sleep(GAME_TICK);
     }
   }
   /**
@@ -1813,12 +1838,12 @@ public class K_kailaScript extends IdleScript {
     if (c.getInventoryItemCount(CRAFT_CAPE) > 0 || c.isItemIdEquipped(CRAFT_CAPE)) {
       if (!c.isItemIdEquipped(CRAFT_CAPE)) {
         c.equipItem(c.getInventoryItemSlotIndex(CRAFT_CAPE));
-        c.sleep(6 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       }
     } else if (c.getInventoryItemCount(BROWN_APRON) > 0 || c.isItemIdEquipped(BROWN_APRON)) {
       if (!c.isItemIdEquipped(BROWN_APRON)) {
         c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
-        c.sleep(6 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       }
     } else {
       c.log(
@@ -1839,7 +1864,7 @@ public class K_kailaScript extends IdleScript {
     }
     if (reEquipItemId > 0) {
       c.equipItem(c.getInventoryItemSlotIndex(reEquipItemId));
-      c.sleep(6 * GAME_TICK);
+      c.sleep(GAME_TICK);
     }
   }
   /** Goes through the fixed gate leading to Tav. (going from east to west) */

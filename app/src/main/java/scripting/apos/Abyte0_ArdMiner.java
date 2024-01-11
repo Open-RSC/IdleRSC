@@ -123,7 +123,7 @@ public final class Abyte0_ArdMiner extends Abyte0_Script {
       //	return random(100, 1500);
       // }
       if (getX() >= 577 && getX() <= 585 && getY() >= 572 && getY() <= 576) {
-        // Si dans la banque Lign�
+        // Si dans la banque Lign
         print("Talking to Banker");
         if (!isBanking()) {
           int[] banker = getNpcByIdNotTalk(95);
@@ -147,7 +147,7 @@ public final class Abyte0_ArdMiner extends Abyte0_Script {
       //	return random(121, 3500);
       // }
       if (getX() >= 577 && getX() <= 585 && getY() >= 572 && getY() <= 576) {
-        // Si dans la banque Lign�
+        // Si dans la banque Lign
         walkTo(586, 581);
         return random(240, 2500);
       }

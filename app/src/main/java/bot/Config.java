@@ -33,6 +33,8 @@ public class Config extends ParseResult {
     // setServerId(parseResult.getServerId());
 
     // Boolean options
+    setUsingAccount(parseResult.isUsingAccount());
+    setAutoStart(parseResult.isAutoStart());
     setAutoLogin(parseResult.isAutoLogin());
     setLogWindowVisible(parseResult.isLogWindowVisible());
     setDebug(parseResult.isDebug());

@@ -1,5 +1,6 @@
 package bot;
 
+import bot.cli.ParseResult;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +47,7 @@ public final class EntryFrame extends JFrame {
     }
   }
 
-  public EntryFrame() { // todo grab resources from within the .jar file
+  public EntryFrame(ParseResult parseResult) { // todo grab resources from within the .jar file
     super("IdleRSC"); // title bar
     setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -90,11 +91,19 @@ public final class EntryFrame extends JFrame {
     accountChoice = new Choice();
     accountChoice.setFocusable(false);
     accountChoice.setPreferredSize(new Dimension(140, 15));
-    for (final String accountName : accountNames) {
+    int selectedAccount = -1;
+    for (int i = 0; i < accountNames.length; i++) {
+      final String accountName = accountNames[i];
+      //    for (final String accountName : accountNames) {
       accountChoice.add(accountName);
+      if (parseResult.getUsername().equals(accountName)) selectedAccount = i;
     }
     if (accountNames.length > 0) {
       account = accountNames[0];
+    }
+    if (selectedAccount > -1) {
+      accountChoice.select(selectedAccount);
+      account = parseResult.getUsername();
     }
     accountChoice.addItemListener(event -> account = String.valueOf(event.getItem()));
 
@@ -185,7 +194,11 @@ public final class EntryFrame extends JFrame {
     setSize(new Dimension(230, 220));
     pack();
     setLocationRelativeTo(null);
-    setVisible(true);
+    if (!parseResult.isAutoStart()) {
+      setVisible(true);
+    } else {
+      launch();
+    }
 
     addButton.addActionListener(
         e -> {
@@ -228,32 +241,33 @@ public final class EntryFrame extends JFrame {
           }
           authFrame2.setVisible(true);
         });
-    okButton.addActionListener(
-        e -> {
-          if (authFrame != null) {
-            authFrame.dispose();
-          }
-          if (authFrame2 != null) {
-            authFrame2.dispose();
-          }
-          try {
-            themeName = getStringProperty(account, "theme");
-            UIManager.getDefaults().remove("Button.gradient");
-            Main.setThemeName(themeName);
-            Main.setUsername(account);
-            setVisible(false);
-            dispose();
-            waitForOk = false;
-          } catch (final Throwable t) {
-            t.printStackTrace();
-          }
-        });
+    okButton.addActionListener(e -> launch());
     cancelButton.addActionListener(
         e -> {
           dispose();
           System.exit(0);
         });
     waitForLaunch();
+  }
+
+  public void launch() {
+    if (authFrame != null) {
+      authFrame.dispose();
+    }
+    if (authFrame2 != null) {
+      authFrame2.dispose();
+    }
+    try {
+      themeName = getStringProperty(account, "theme");
+      UIManager.getDefaults().remove("Button.gradient");
+      Main.setThemeName(themeName);
+      Main.setUsername(account);
+      setVisible(false);
+      dispose();
+      waitForOk = false;
+    } catch (final Throwable t) {
+      t.printStackTrace();
+    }
   }
 
   public void waitForLaunch() {

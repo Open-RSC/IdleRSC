@@ -11,7 +11,9 @@ import callbacks.DrawCallback;
 import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,9 +22,11 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.*;
@@ -232,20 +236,15 @@ public class Main {
           IllegalArgumentException, InvocationTargetException, InterruptedException {
     CLIParser parser = new CLIParser();
     Version version = new Version();
-    ParseResult parseResult = new ParseResult();
-    new EntryFrame();
-    setThemeElements(themeName);
-    try {
-      parseResult = parser.parse(args);
-    } catch (ParseException e) {
-      System.err.println(e.getMessage() + "\n");
-      parser.printHelp();
-      System.out.println("Waiting for 5 minute...");
-      Thread.sleep(340000);
-      System.out.println("Closing Bot in 1 minute...");
-      Thread.sleep(60000);
-      System.exit(1);
+    ParseResult parseResult;
+    parseResult = parseArgs(parser, args);
+    if (parseResult.getUsername().equals("Username") || parseResult.isUsingAccount())
+      new EntryFrame(parseResult);
+    if (!parseResult.isAutoStart()) {
+      parseResult = parseArgs(parser, args);
     }
+
+    setThemeElements(themeName);
 
     if (parseResult.isHelp()) {
       parser.printHelp();
@@ -478,6 +477,22 @@ public class Main {
     }
   }
 
+  public static ParseResult parseArgs(CLIParser parser, String[] args) throws InterruptedException {
+    ParseResult parseResult = new ParseResult();
+    try {
+      parseResult = parser.parse(args);
+    } catch (ParseException e) {
+      System.err.println(e.getMessage() + "\n");
+      parser.printHelp();
+      System.out.println("Waiting for 5 minute...");
+      Thread.sleep(340000);
+      System.out.println("Closing Bot in 1 minute...");
+      Thread.sleep(60000);
+      System.exit(1);
+    }
+    return parseResult;
+  }
+
   /** Clears the log window. */
   public static void clearLog() {
     logArea.setText("");
@@ -544,6 +559,7 @@ public class Main {
     // Make the menu bar
     menuBar = new JMenuBar();
     settingsMenu = new JMenu("Settings");
+    settingsMenu.setEnabled(config.isUsingAccount());
     themeMenu = new JMenu("Theme Menu");
     gfxCheckbox = new JCheckBox("GFX");
     logWindowCheckbox = new JCheckBox("Console");

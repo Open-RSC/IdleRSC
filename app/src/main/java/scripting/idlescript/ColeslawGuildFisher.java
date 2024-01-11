@@ -259,8 +259,9 @@ public class ColeslawGuildFisher extends IdleScript {
     dropJunkCheckbox.setEnabled(false);
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

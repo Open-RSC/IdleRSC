@@ -2,6 +2,8 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+
+import bot.Main;
 import models.entities.EquipSlotIndex;
 import models.entities.ItemId;
 import orsc.ORSCharacter;
@@ -423,9 +425,11 @@ public final class K_TavBlueDragonPipe extends K_kailaScript {
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

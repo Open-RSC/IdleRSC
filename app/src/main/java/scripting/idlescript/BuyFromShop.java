@@ -1,5 +1,6 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import javax.swing.JButton;
@@ -209,9 +210,11 @@ public class BuyFromShop extends K_kailaScript {
     scriptFrame.add(shopCountLabel);
     scriptFrame.add(shopCount);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

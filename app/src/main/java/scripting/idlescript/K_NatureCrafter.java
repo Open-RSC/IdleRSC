@@ -1,5 +1,6 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -288,9 +289,11 @@ public final class K_NatureCrafter extends K_kailaScript {
     scriptFrame.add(label6);
     scriptFrame.add(lowLevelCheckbox);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

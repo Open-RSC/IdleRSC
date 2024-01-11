@@ -2,6 +2,8 @@ package scripting.idlescript;
 
 import java.awt.GridLayout;
 import javax.swing.*;
+
+import bot.Main;
 import models.entities.ItemId;
 import models.entities.PrayerId;
 import orsc.ORSCharacter;
@@ -497,9 +499,11 @@ public final class K_TavBlackDragonPipe extends K_kailaScript {
     scriptFrame.add(prayPotWithdrawAmountLabel);
     scriptFrame.add(prayPotWithdrawAmountField);
     scriptFrame.add(startScriptButton);
+    
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocus();
   }
 

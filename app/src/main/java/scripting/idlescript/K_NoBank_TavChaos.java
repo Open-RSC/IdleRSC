@@ -1,5 +1,6 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import javax.swing.*;
@@ -659,9 +660,11 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     //    scriptFrame.add(foodWithdrawAmountLabel);
     //    scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

@@ -5,6 +5,8 @@ import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+
+import bot.Main;
 import models.entities.ItemId;
 import models.entities.SkillId;
 
@@ -293,8 +295,9 @@ public class MiningGuild extends IdleScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

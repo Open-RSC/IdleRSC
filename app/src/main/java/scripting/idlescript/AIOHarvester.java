@@ -890,8 +890,9 @@ public class AIOHarvester extends K_kailaScript {
     scriptFrame.add(buttons, BorderLayout.SOUTH);
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.Main;
+
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import javax.swing.*;
@@ -322,8 +324,9 @@ public class Wildberries extends IdleScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

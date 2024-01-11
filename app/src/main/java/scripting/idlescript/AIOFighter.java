@@ -558,8 +558,9 @@ public class AIOFighter extends IdleScript {
     prioritizeBonesCheckbox.setEnabled(false);
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
 
     c.setStatus("@red@Waiting for start...");

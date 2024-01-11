@@ -1,5 +1,6 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import javax.swing.*;
 
@@ -248,8 +249,9 @@ public final class K_RedSpiderEggz extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

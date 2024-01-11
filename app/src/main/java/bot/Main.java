@@ -75,7 +75,7 @@ public class Main {
   private static JMenuBar menuBar;
   private static JMenu themeMenu, settingsMenu;
   private static JFrame scriptFrame;
-  private static JFrame rscFrame; // all the windows
+  private static JFrame rscFrame; // main window frame
   private static JButton startStopButton, buttonClear;
   private static JCheckBox autoLoginCheckbox,
       logWindowCheckbox,
@@ -248,7 +248,6 @@ public class Main {
   public static Object getCurrentRunningScript() {
     return currentRunningScript;
   }
-
   /** The initial program entrypoint for IdleRSC. */
   public static void main(String[] args)
       throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
@@ -256,12 +255,12 @@ public class Main {
           IllegalArgumentException, InvocationTargetException, InterruptedException {
     CLIParser parser = new CLIParser();
     Version version = new Version();
-    ParseResult parseResult;
-    parseResult = parseArgs(parser, args);
-    if (parseResult.getUsername().equals("Username") || parseResult.isUsingAccount())
+    ParseResult parseResult = new ParseResult();
+
+    parseResult = parseArgs(parseResult, parser, args);
+    if (parseResult.getUsername().equals("Username") || !parseResult.isUsingAccount()) {
       new EntryFrame(parseResult);
-    if (!parseResult.isAutoStart()) {
-      parseResult = parseArgs(parser, args);
+      parseResult = parseArgs(parseResult, parser, args);
     }
 
     setThemeElements(themeName);
@@ -499,8 +498,8 @@ public class Main {
     }
   }
 
-  public static ParseResult parseArgs(CLIParser parser, String[] args) throws InterruptedException {
-    ParseResult parseResult = new ParseResult();
+  public static ParseResult parseArgs(ParseResult parseResult, CLIParser parser, String[] args)
+      throws InterruptedException {
     try {
       parseResult = parser.parse(args);
     } catch (ParseException e) {
@@ -576,22 +575,27 @@ public class Main {
       KeyEvent.VK_F3,
       KeyEvent.VK_F5,
     };
+
     // Make the menu bar
     menuBar = new JMenuBar();
     settingsMenu = new JMenu("Settings");
-    settingsMenu.setEnabled(config.isUsingAccount());
     themeMenu = new JMenu("Theme Menu");
     gfxCheckbox = new JCheckBox("GFX");
     logWindowCheckbox = new JCheckBox("Console");
     sidebarCheckbox = new JCheckBox("Sidebar");
 
+    // add our elements to the main bar
     menuBar.add(settingsMenu);
     menuBar.add(themeMenu);
-    menuBar.add(Box.createHorizontalGlue());
+    menuBar.add(Box.createHorizontalGlue()); // from right
     menuBar.add(gfxCheckbox);
     menuBar.add(logWindowCheckbox);
     menuBar.add(sidebarCheckbox);
+
+    // prevent tab/etc "focusing" an element
     menuBar.setFocusable(false);
+    settingsMenu.setFocusable(false);
+    themeMenu.setFocusable(false);
     gfxCheckbox.setFocusable(false);
     logWindowCheckbox.setFocusable(false);
     sidebarCheckbox.setFocusable(false);

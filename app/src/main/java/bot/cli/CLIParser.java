@@ -1,5 +1,6 @@
 package bot.cli;
 
+import bot.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,35 +9,39 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
+import javax.swing.*;
 import org.apache.commons.cli.*;
 
 public class CLIParser {
   private static final Options options = new Options();
 
   public ParseResult parse(String[] args) throws ParseException {
+    addOptions();
     ParseResult parseResult = new ParseResult();
     CommandLineParser parser = new DefaultParser(false);
-    addOptions();
     CommandLine cmd = parser.parse(options, args);
     if (cmd.hasOption("auto-start")) {
       parseResult.setAutoStart(true);
       if (cmd.hasOption("account")) {
-        bot.Main.setUsername(cmd.getOptionValue("account"));
-        parseAccountProperties(parseResult, cmd.getOptionValue("account"));
+        Main.setUsername(cmd.getOptionValue("account").toLowerCase());
+        parseAccountProperties(parseResult, Main.getUsername());
+        Main.setThemeName(parseResult.getThemeName());
       } else {
         parseCommandArgumentOptions(parseResult, cmd);
       }
     } else {
       if (cmd.hasOption("account")) {
+        parseResult.setUsingAccount(true);
         bot.Main.setUsername(cmd.getOptionValue("account"));
       }
-      parseAccountProperties(parseResult, bot.Main.getUsername());
+      parseAccountProperties(parseResult, Main.getUsername());
+      Main.setThemeName(parseResult.getThemeName());
     }
     return parseResult;
   }
 
   private static void parseCommandArgumentOptions(ParseResult parseResult, CommandLine cmd) {
-    parseResult.setUsername(cmd.getOptionValue("username", ""));
+    parseResult.setUsername(cmd.getOptionValue("username", "").toLowerCase());
     parseResult.setPassword(cmd.getOptionValue("password", ""));
     parseResult.setScriptName(cmd.getOptionValue("script-name", ""));
     parseResult.setThemeName(cmd.getOptionValue("theme", "Rune Dark Theme"));
@@ -106,7 +111,7 @@ public class CLIParser {
       parseResult.setServerIp(p.getProperty("server-ip", "game.openrsc.com"));
 
       // Boolean options
-      parseResult.setUsingAccount(true);
+      // parseResult.setUsingAccount(true);
       parseResult.setAutoLogin(
           p.getProperty("auto-login", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setSidebarVisible(

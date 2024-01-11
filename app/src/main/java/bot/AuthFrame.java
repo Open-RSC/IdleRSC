@@ -19,7 +19,6 @@ final class AuthFrame extends JFrame {
   private Color textColor = Main.getColorCode(0, 0);
   private boolean loadSettings = false;
   private final String resourceLocation = "app/src/main/java/bot/res/";
-  private static final Dimension textFieldSize = new Dimension(80, 25);
   private final Window parent;
   private JPasswordField password;
   private final JTextField username,
@@ -86,8 +85,8 @@ final class AuthFrame extends JFrame {
       "Script Name:",
       "Script Args:",
       "Position (-1 to center):",
-      "X Coordinate",
-      "Y Coordinate",
+      "X Coord (640 ea)",
+      "Y Coord (395 ea)",
       "Hotkeys:", // only show label
       "SpellId (F8):",
       "Swap Item (F5):",
@@ -120,16 +119,13 @@ final class AuthFrame extends JFrame {
     for (int i = 0; i < textFields.length; i++) {
       textFieldPanels[i].setLayout(new BoxLayout(textFieldPanels[i], BoxLayout.X_AXIS));
       Label optionLabel = new Label(optionLabels[i], Label.LEFT);
-      optionLabel.setMaximumSize(new Dimension(100, 30));
+      optionLabel.setMaximumSize(new Dimension(110, 30));
       textFieldPanels[i].add(optionLabel);
       if (i == 0 || i == 3 || i == 6 || i == 9) {
         optionLabel.setMaximumSize(new Dimension(140, 30));
         continue;
       }
-      textFields[i].setMaximumSize(textFieldSize);
-      textFields[i].setMinimumSize(textFieldSize);
-      textFields[i].setPreferredSize(textFieldSize);
-      textFields[i].setSize(textFieldSize);
+      setElementSizing(textFields[i], new Dimension(80, 23));
       textFields[i].setBorder(
           BorderFactory.createMatteBorder(0, 0, 2, 2, new java.awt.Color(0, 0, 0, 255)));
       textFieldPanels[i].add(textFields[i]);
@@ -151,22 +147,15 @@ final class AuthFrame extends JFrame {
     for (int i = 0; i < choiceLabels.length; i++) {
       choicePanels[i].setLayout(new BoxLayout(choicePanels[i], BoxLayout.Y_AXIS));
       Label optionLabel2 = new Label(choiceLabels[i], Label.CENTER);
-      optionLabel2.setMaximumSize(new Dimension(120, 30));
+      setElementSizing(optionLabel2, new Dimension(110, 15));
       choicePanels[i].add(optionLabel2);
 
-      choices[i].setMaximumSize(new Dimension(140, 30));
+      setElementSizing(choices[i], new Dimension(140, 20));
       for (final String choiceName : choiceNames[i]) {
         choices[i].add(choiceName);
       }
       choicePanels[i].add(choices[i]);
     }
-
-    //    HashMap<String, Integer> themeTypes = new HashMap<String, Integer>();
-    //    int keyValue = 49;
-    //    for (int i=0; i<themeNames.length; i++) {
-    //      if(keyValue+i > 57) keyValue = (65-i);
-    //      themeTypes.put(themeNames[i], keyValue+i);
-    //    }
 
     // Build out all of our checkbox options
     Checkbox[] checkBoxes = {
@@ -218,15 +207,15 @@ final class AuthFrame extends JFrame {
     buttonPanel.add(okButton);
     buttonPanel.add(cancelButton);
 
-    // Generate gaps todo change to grid bag layout soon
-
     // Set Sizing
     Panel gapPanel = new Panel();
-    gapPanel.setMaximumSize(new Dimension(20, 550));
+    gapPanel.setMaximumSize(new Dimension(10, 550));
     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-    optionsPanel.setMinimumSize(new Dimension(270, 550));
-    optionsPanel2.setMinimumSize(new Dimension(180, 550));
+    setElementSizing(optionsPanel, new Dimension(190, 550));
+    setElementSizing(optionsPanel2, new Dimension(170, 550));
+    setElementSizing(this, new Dimension(415, 550)); // authframe size
 
+    // combine our panels (top part of window)
     inputPanel.add(optionsPanel);
     inputPanel.add(gapPanel);
     inputPanel.add(optionsPanel2);
@@ -249,7 +238,6 @@ final class AuthFrame extends JFrame {
     inputPanel.setBorder(BorderFactory.createMatteBorder(4, 4, 0, 4, backgroundColor.darker()));
     add(inputPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
-    setMinimumSize(new Dimension(405, 450));
 
     // Add action listeners
     cancelButton.addActionListener(
@@ -344,6 +332,13 @@ final class AuthFrame extends JFrame {
     } catch (final Throwable t) {
       System.out.println("Error saving account details: " + t);
     }
+  }
+
+  private static void setElementSizing(Component component, Dimension size) {
+    component.setMaximumSize(size);
+    component.setMinimumSize(size);
+    component.setPreferredSize(size);
+    component.setSize(size);
   }
 
   @Override

@@ -582,16 +582,11 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    */
   protected static void dropItemAmount(int itemId, int amount, boolean leaveCombat) {
-    int startCount = c.getInventoryItemCount(itemId);
-    if (startCount > 0) {
-      if (leaveCombat && c.isInCombat()) leaveCombat();
+    if (c.getInventoryItemCount(itemId) > 0) {
+      if (leaveCombat && c.isInCombat()) leaveCombat(); // this may be breaking things ?
       else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
       c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
-      c.sleep(GAME_TICK);
-      for (int i = 0; i < 8; i++) {
-        if (c.getInventoryItemCount(itemId) <= (startCount - amount)) break;
-        c.sleep(GAME_TICK);
-      }
+      // c.sleep(GAME_TICK);
     }
   }
   /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
@@ -1609,6 +1604,7 @@ public class K_kailaScript extends IdleScript {
     int CRAFTING_CAPE = ItemId.CRAFTING_CAPE.getId();
     if (c.isItemIdEquipped(CRAFTING_CAPE) && c.getInventoryItemCount(CRAFTING_CAPE) < 1) {
       c.unequipItem(EquipSlotIndex.CAPE.getId());
+      c.sleep(640);
     }
     if (c.isInCombat()) leaveCombat();
     for (int i = 1; i <= 200; i++) {
@@ -1842,12 +1838,12 @@ public class K_kailaScript extends IdleScript {
     if (c.getInventoryItemCount(CRAFT_CAPE) > 0 || c.isItemIdEquipped(CRAFT_CAPE)) {
       if (!c.isItemIdEquipped(CRAFT_CAPE)) {
         c.equipItem(c.getInventoryItemSlotIndex(CRAFT_CAPE));
-        c.sleep(6 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       }
     } else if (c.getInventoryItemCount(BROWN_APRON) > 0 || c.isItemIdEquipped(BROWN_APRON)) {
       if (!c.isItemIdEquipped(BROWN_APRON)) {
         c.equipItem(c.getInventoryItemSlotIndex(BROWN_APRON));
-        c.sleep(6 * GAME_TICK);
+        c.sleep(3 * GAME_TICK);
       }
     } else {
       c.log(
@@ -1868,7 +1864,7 @@ public class K_kailaScript extends IdleScript {
     }
     if (reEquipItemId > 0) {
       c.equipItem(c.getInventoryItemSlotIndex(reEquipItemId));
-      c.sleep(6 * GAME_TICK);
+      c.sleep(GAME_TICK);
     }
   }
   /** Goes through the fixed gate leading to Tav. (going from east to west) */

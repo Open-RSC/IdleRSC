@@ -19,10 +19,12 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_NoBank_TavChaos extends K_kailaScript {
+  private boolean startUp = false;
   private int fightMode = 0;
   private int capeSwapId = 0;
   private static final int VIAL = ItemId.VIAL.getId();
   private static final int EMPTY_VIAL = ItemId.EMPTY_VIAL.getId();
+  private static final int SNAPE_GRASS = ItemId.SNAPE_GRASS.getId();
   // todo build out loot based on herb level (use put)
   private final int[] DRUID_LOOT = { // length 14
     ItemId.LAW_RUNE.getId(),
@@ -77,7 +79,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     ItemId.UNID_KWUARM.getId(), // with limp,
   };
   private final int[] CLEAN_HERBS = {
-    ItemId.GUAM_LEAF.getId(),
+    ItemId.GUAM_LEAF.getId(), // order matters here
     ItemId.RANARR_WEED.getId(),
     ItemId.IRIT_LEAF.getId(),
     ItemId.AVANTOE.getId(),
@@ -178,8 +180,14 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       c.displayMessage("@red@Start in tav, near hobs, or near druids");
       if (c.isInBank()) c.closeBank();
       calculateLoot();
-      if (c.currentY() < 550) shopToChaos();
-      else if (c.currentY() > 550 && c.currentY() < 3000) hobsToChaos();
+      if (c.currentY() < 550) {
+        startUp = true;
+        shopToChaos();
+      } else if (c.currentY() > 550 && c.currentY() < 3000) {
+        startUp = true;
+        hobsToChaos();
+      }
+      startUp = false;
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -187,7 +195,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (getHerbCount() > 10 || c.getInventoryItemCount() == 30 || timeToBank) {
+      if (getHerbCount() > 11 || c.getInventoryItemCount() == 30 || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
         totalTrips = totalTrips + 1;
@@ -197,29 +205,29 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
         druidToShop();
         cleanHerbs();
         dropUnneededHerbs();
-        doShop();
+        doShop(0);
         cleanHerbs();
         dropUnneededHerbs(); // redundant but having extra unneeded breaks something
         if ((c.getInventoryItemCount(EMPTY_VIAL) + getLimpSecCount() + getSnapeSecCount()) > 0) {
           shopToHobs();
         }
-        doHerblawLoop();
+        doHerblawLoop(); // stuck here
+        c.log("gathering 2nds");
         if ((getLimpSecCount() + getSnapeSecCount()) > 0) {
-          while (c.isRunning()
-              && c.getInventoryItemCount(ItemId.LIMPWURT_ROOT.getId())
-                  < c.getInventoryItemCount(ItemId.UNF_KWUARM_POTION.getId())) {
-            _combatLoop(270, cleanedHobsLoot);
-            if (c.getInventoryItemCount(ItemId.SNAPE_GRASS.getId())
-                < (c.getInventoryItemCount(ItemId.UNF_RANARR_POTION.getId())
-                    + c.getInventoryItemCount(ItemId.UNF_AVANTOE_POTION.getId()))) {
-              lootItem(true, ItemId.SNAPE_GRASS.getId());
+          while (c.isRunning() // stuck here?
+              && c.getInventoryItemCount(ItemId.LIMPWURT_ROOT.getId()) < getLimpSecCount()) {
+            c.log("doing limp loop");
+            _combatLoop(NpcId.HOBGOBLIN_LVL32.getId(), cleanedHobsLoot);
+            if (c.getInventoryItemCount(SNAPE_GRASS) < getSnapeSecCount()) {
+              lootItem(true, SNAPE_GRASS);
             }
           }
-          while (c.isRunning()
-              && c.getInventoryItemCount(ItemId.SNAPE_GRASS.getId())
-                  < (c.getInventoryItemCount(ItemId.UNF_RANARR_POTION.getId())
-                      + c.getInventoryItemCount(ItemId.UNF_AVANTOE_POTION.getId()))) {
-            lootItem(true, ItemId.SNAPE_GRASS.getId());
+          while (c.isRunning() && c.getInventoryItemCount(SNAPE_GRASS) < getSnapeSecCount()) {
+            c.log("doing snape loop");
+            int[] grass = c.getNearestItemById(SNAPE_GRASS);
+            c.walkTo(grass[0], grass[1]);
+            c.pickupItem(grass[0], grass[1], SNAPE_GRASS, true, false);
+            c.sleep(GAME_TICK);
           }
           // we have our limps and snapes now
           doHerblawLoop();
@@ -227,9 +235,10 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
         if (c.currentY() > 550 && c.currentY() < 3000) {
           doHerblawLoop();
           hobsToChaos();
-          if (getNewtSecCount() > 0) {
+          if (getNewtSecCount() > 0 || c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) < 5) {
             doHerblawLoop();
             buyMoreNewts();
+            doHerblawLoop();
           }
         } else if (c.currentY() > 450 && c.currentY() < 550) shopToChaos();
       }
@@ -241,7 +250,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     c.walkTo(376, 515);
     c.walkTo(374, 509);
     c.walkTo(370, 506);
-    doShop();
+    doShop(6);
     c.sleep(2000);
     doHerblawLoop();
     shopToChaos();
@@ -295,7 +304,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       if (c.getInventoryItemCount(id) > 0) {
         c.itemCommand(id);
         c.sleep(640);
-        waitForBatching();
+        _waitForBatching();
       }
     }
   }
@@ -307,7 +316,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
         c.setStatus("@cya@Making Unid pots");
         c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(id), c.getInventoryItemSlotIndex(VIAL));
         c.sleep(640);
-        waitForBatching();
+        _waitForBatching();
       }
     }
   }
@@ -320,43 +329,51 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
           c.getInventoryItemSlotIndex(ItemId.LIMPWURT_ROOT.getId()),
           c.getInventoryItemSlotIndex(ItemId.UNF_KWUARM_POTION.getId()));
       c.sleep(640);
-      waitForBatching();
+      _waitForBatching();
     }
-    if (c.getInventoryItemCount(ItemId.SNAPE_GRASS.getId()) > 0) {
+    if (c.getInventoryItemCount(SNAPE_GRASS) > 0) {
       if (c.getInventoryItemCount(ItemId.UNF_RANARR_POTION.getId()) > 0) {
         c.setStatus("@cya@Making ranarr pots");
         c.useItemOnItemBySlot(
-            c.getInventoryItemSlotIndex(ItemId.SNAPE_GRASS.getId()),
+            c.getInventoryItemSlotIndex(SNAPE_GRASS),
             c.getInventoryItemSlotIndex(ItemId.UNF_RANARR_POTION.getId()));
         c.sleep(640);
-        waitForBatching();
+        _waitForBatching();
       }
       if (c.getInventoryItemCount(ItemId.UNF_AVANTOE_POTION.getId()) > 0) {
         c.setStatus("@cya@Making avantoe pots");
         c.useItemOnItemBySlot(
-            c.getInventoryItemSlotIndex(ItemId.SNAPE_GRASS.getId()),
+            c.getInventoryItemSlotIndex(SNAPE_GRASS),
             c.getInventoryItemSlotIndex(ItemId.UNF_AVANTOE_POTION.getId()));
         c.sleep(640);
-        waitForBatching();
+        _waitForBatching();
       }
     }
     if (c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) > 0) {
+      if (c.getInventoryItemCount(ItemId.UNF_GUAM_POTION.getId()) > 0) {
+        c.setStatus("@cya@Making guam pots");
+        c.sleep(640);
+        c.useItemOnItemBySlot(
+            c.getInventoryItemSlotIndex(ItemId.UNF_GUAM_POTION.getId()),
+            c.getInventoryItemSlotIndex(ItemId.EYE_OF_NEWT.getId()));
+        c.sleep(1280);
+        _waitForBatching();
+      }
       if (c.getInventoryItemCount(ItemId.UNF_IRIT_POTION.getId()) > 0) {
         c.setStatus("@cya@Making irit pots");
         c.useItemOnItemBySlot(
             c.getInventoryItemSlotIndex(ItemId.EYE_OF_NEWT.getId()),
             c.getInventoryItemSlotIndex(ItemId.UNF_IRIT_POTION.getId()));
         c.sleep(640);
-        waitForBatching();
+        _waitForBatching();
       }
-      if (c.getInventoryItemCount(ItemId.UNF_GUAM_POTION.getId()) > 0) {
-        c.setStatus("@cya@Making guam pots");
-        c.useItemOnItemBySlot(
-            c.getInventoryItemSlotIndex(ItemId.EYE_OF_NEWT.getId()),
-            c.getInventoryItemSlotIndex(ItemId.UNF_GUAM_POTION.getId()));
-        c.sleep(640);
-        waitForBatching();
-      }
+    }
+  }
+
+  private void _waitForBatching() {
+    while (c.isRunning() && c.isBatching()) {
+      c.log("waiting for batching");
+      c.sleep(640);
     }
   }
 
@@ -371,7 +388,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     for (int id : finishedPots) {
       if (c.getInventoryItemCount(id) > 0) {
         c.setStatus("@cya@Dropping finished pot");
-        dropItemAmount(id, c.getInventoryItemCount(id), false);
+        c.dropItem(c.getInventoryItemSlotIndex(id), c.getInventoryItemCount(id));
         c.sleep(GAME_TICK);
       }
     }
@@ -402,6 +419,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     checkFightMode(fightMode);
     checkInventoryItemCounts();
     doHerblawLoop();
+    // todo drop extra snapes here?
     pickUpVials();
     lootItems(true, lootId);
     if (!c.isInCombat()) {
@@ -423,18 +441,19 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
   private void pickUpVials() {
     if ((c.getInventoryItemCount(VIAL) + c.getInventoryItemCount(EMPTY_VIAL))
         > (getHerbCountForVial() + 3)) {
-      dropItemAmount(
-          EMPTY_VIAL,
+
+      c.dropItem(
+          c.getInventoryItemSlotIndex(EMPTY_VIAL),
           (c.getInventoryItemCount(VIAL) + c.getInventoryItemCount(EMPTY_VIAL))
-              - (getHerbCountForVial() + 3),
-          true);
+              - (getHerbCountForVial() + 3));
+
       if ((c.getInventoryItemCount(VIAL) + c.getInventoryItemCount(EMPTY_VIAL))
           > (getHerbCountForVial() + 3)) {
-        dropItemAmount(
-            VIAL,
+
+        c.dropItem(
+            c.getInventoryItemSlotIndex(VIAL),
             (c.getInventoryItemCount(VIAL) + c.getInventoryItemCount(EMPTY_VIAL))
-                - (getHerbCountForVial() + 3),
-            true);
+                - (getHerbCountForVial() + 3));
       }
     } else if ((c.getInventoryItemCount(VIAL) + c.getInventoryItemCount(EMPTY_VIAL))
         < (getHerbCountForVial() + 3)) {
@@ -442,7 +461,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     }
   }
 
-  private void doShop() {
+  private void doShop(int extraNewtsCount) {
     c.setStatus("@yel@Buying Items..");
     if (!c.isInShop()) {
       ORSCharacter npc = c.getNearestNpcById(230, false);
@@ -465,7 +484,9 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       c.sleep(1280);
       c.shopBuy(
           ItemId.EYE_OF_NEWT.getId(),
-          getNewtSecCount() - c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()));
+          extraNewtsCount
+              + getNewtSecCount()
+              - c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()));
       c.sleep(1280);
       c.closeShop();
       c.sleep(640);
@@ -518,7 +539,8 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     c.walkTo(377, 520);
     // check for needing more newts here
     doHerblawLoop();
-    if (getNewtSecCount() == 0) {
+    if (startUp
+        || (getNewtSecCount() == 0 && c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) > 5)) {
       c.atObject(376, 520);
       c.sleep(1280);
       c.walkTo(376, 3347);

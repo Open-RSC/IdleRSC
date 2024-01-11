@@ -191,8 +191,9 @@ public class AIOHarvester extends K_kailaScript {
       }
       if (bringFood) withdrawFood(foodId, foodWithdrawAmount);
       harvestedItemInBank = c.getBankItemCount(harvestItemId);
-      c.closeBank();
       c.sleep(GAME_TICK);
+      c.closeBank();
+      c.sleep(2 * GAME_TICK);
       if (bringFood) eatFood();
     }
   }

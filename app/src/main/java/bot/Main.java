@@ -273,7 +273,7 @@ public class Main {
     debuggerThread.start();
 
     // just building out the windows
-    JComponent botFrame = new JPanel();
+    JPanel botFrame = new JPanel();
     themeMenu = new JMenu();
     JPanel consoleFrame = new JPanel(); // log window
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");

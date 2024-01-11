@@ -212,22 +212,26 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
           shopToHobs();
         }
         doHerblawLoop(); // stuck here
-        c.log("gathering 2nds");
         if ((getLimpSecCount() + getSnapeSecCount()) > 0) {
-          while (c.isRunning() // stuck here?
+          while (c.isRunning()
               && c.getInventoryItemCount(ItemId.LIMPWURT_ROOT.getId()) < getLimpSecCount()) {
-            c.log("doing limp loop");
             _combatLoop(NpcId.HOBGOBLIN_LVL32.getId(), cleanedHobsLoot);
             if (c.getInventoryItemCount(SNAPE_GRASS) < getSnapeSecCount()) {
-              lootItem(true, SNAPE_GRASS);
+              int[] grass = c.getNearestItemById(SNAPE_GRASS);
+              if (grass != null) {
+                c.walkTo(grass[0], grass[1]);
+                c.pickupItem(grass[0], grass[1], SNAPE_GRASS, true, false);
+                c.sleep(GAME_TICK);
+              } else c.sleep(GAME_TICK);
             }
           }
           while (c.isRunning() && c.getInventoryItemCount(SNAPE_GRASS) < getSnapeSecCount()) {
-            c.log("doing snape loop");
             int[] grass = c.getNearestItemById(SNAPE_GRASS);
-            c.walkTo(grass[0], grass[1]);
-            c.pickupItem(grass[0], grass[1], SNAPE_GRASS, true, false);
-            c.sleep(GAME_TICK);
+            if (grass != null) {
+              c.walkTo(grass[0], grass[1]);
+              c.pickupItem(grass[0], grass[1], SNAPE_GRASS, true, false);
+              c.sleep(GAME_TICK);
+            } else c.sleep(GAME_TICK);
           }
           // we have our limps and snapes now
           doHerblawLoop();
@@ -315,7 +319,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       if (c.getInventoryItemCount(id) > 0 && (c.getInventoryItemCount(VIAL) > 0)) {
         c.setStatus("@cya@Making Unid pots");
         c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(id), c.getInventoryItemSlotIndex(VIAL));
-        c.sleep(640);
+        c.sleep(2 * GAME_TICK);
         _waitForBatching();
       }
     }
@@ -372,7 +376,6 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
 
   private void _waitForBatching() {
     while (c.isRunning() && c.isBatching()) {
-      c.log("waiting for batching");
       c.sleep(640);
     }
   }
@@ -389,7 +392,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       if (c.getInventoryItemCount(id) > 0) {
         c.setStatus("@cya@Dropping finished pot");
         c.dropItem(c.getInventoryItemSlotIndex(id), c.getInventoryItemCount(id));
-        c.sleep(GAME_TICK);
+        c.sleep(2 * GAME_TICK);
       }
     }
   }
@@ -399,6 +402,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       if (c.getInventoryItemCount(id) > 0) {
         c.setStatus("@cya@Dropping unneeded herbs");
         c.dropItem(c.getInventoryItemSlotIndex(id), c.getInventoryItemCount(id));
+        c.sleep(2 * GAME_TICK);
       }
     }
   }

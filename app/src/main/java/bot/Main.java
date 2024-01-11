@@ -477,10 +477,8 @@ public class Main {
     } catch (ParseException e) {
       System.err.println(e.getMessage() + "\n");
       parser.printHelp();
-      System.out.println("Waiting for 5 minute...");
+      System.out.println("Closing Bot in 5 minute...");
       Thread.sleep(340000);
-      System.out.println("Closing Bot in 1 minute...");
-      Thread.sleep(60000);
       System.exit(1);
     }
     return parseResult;
@@ -614,7 +612,7 @@ public class Main {
           authFrame.addActionListener(
               e1 -> { // ALWAYS make properties lowercase
                 username = authFrame.getUsername();
-                controller.log(username + " account settings saved");
+                controller.log("IdleRSC: " + username + " account settings saved");
                 authFrame.storeAuthData(authFrame);
                 authFrame.setVisible(false);
               });

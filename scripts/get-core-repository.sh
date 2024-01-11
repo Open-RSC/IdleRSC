@@ -2,6 +2,8 @@
 #
 # Checks if the core repository exists, then creates/updates the repository.
 #
+echo "Running gradle clean task"
+./gradlew clean
 
 # source necessary variables/functions
 if [ ! -f scripts/variables.sh ]; then

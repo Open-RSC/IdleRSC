@@ -418,7 +418,7 @@ public class Main {
     log("WindowListener started.");
 
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
-    Thread.sleep(8000);
+    Thread.sleep(800);
 
     // start up our listener threads
     log("Initializing LoginListener...");

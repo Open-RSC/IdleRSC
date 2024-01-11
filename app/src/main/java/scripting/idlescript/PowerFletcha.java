@@ -1,7 +1,6 @@
 package scripting.idlescript;
 
 import bot.Main;
-
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.JButton;

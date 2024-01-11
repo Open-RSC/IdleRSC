@@ -1,12 +1,11 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-
-import bot.Main;
 import models.entities.ItemId;
 import models.entities.SkillId;
 

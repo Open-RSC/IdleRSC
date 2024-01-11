@@ -1,12 +1,11 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import bot.Main;
 import models.entities.ItemId;
 import orsc.ORSCharacter;
 

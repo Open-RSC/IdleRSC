@@ -1,9 +1,8 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import javax.swing.*;
-
-import bot.Main;
 import models.entities.ItemId;
 import orsc.ORSCharacter;
 

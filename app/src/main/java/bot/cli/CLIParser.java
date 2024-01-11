@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Properties;
 import org.apache.commons.cli.*;
 
@@ -13,19 +14,77 @@ public class CLIParser {
   private static final Options options = new Options();
 
   public ParseResult parse(String[] args) throws ParseException {
-
-    addOptions();
-
     ParseResult parseResult = new ParseResult();
+    CommandLineParser parser = new DefaultParser(false);
+    addOptions();
+    CommandLine cmd = parser.parse(options, args);
+    if (cmd.hasOption("auto-start")) {
+      parseResult.setAutoStart(true);
+      if (cmd.hasOption("account")) {
+        bot.Main.setUsername(cmd.getOptionValue("account"));
+        parseAccountProperties(parseResult, cmd.getOptionValue("account"));
+      } else {
+        parseCommandArgumentOptions(parseResult, cmd);
+      }
+    } else {
+      if (cmd.hasOption("account")) {
+        bot.Main.setUsername(cmd.getOptionValue("account"));
+      }
+      parseAccountProperties(parseResult, bot.Main.getUsername());
+    }
+    return parseResult;
+  }
+
+  private static void parseCommandArgumentOptions(ParseResult parseResult, CommandLine cmd) {
+    parseResult.setUsername(cmd.getOptionValue("username", ""));
+    parseResult.setPassword(cmd.getOptionValue("password", ""));
+    parseResult.setScriptName(cmd.getOptionValue("script-name", ""));
+    parseResult.setThemeName(cmd.getOptionValue("theme", "Rune Dark Theme"));
+    if (cmd.getOptionValues("script-arguments") != null) {
+      parseResult.setScriptArguments(cmd.getOptionValues("script-arguments"));
+    } else {
+      parseResult.setScriptArguments(new String[] {});
+    }
+    parseResult.setInitCache(cmd.getOptionValue("init-cache", "Coleslaw"));
+    parseResult.setServerIp(cmd.getOptionValue("server-ip", "game.openrsc.com"));
+    parseResult.setAutoLogin(cmd.hasOption("auto-login"));
+    parseResult.setSidebarVisible(!cmd.hasOption("hide-sidebar"));
+    parseResult.setLogWindowVisible(cmd.hasOption("log-window"));
+    parseResult.setDebug(cmd.hasOption("debug"));
+    parseResult.setBotPaintVisible(!cmd.hasOption("hide-bot-paint"));
+    parseResult.setGraphicsEnabled(!cmd.hasOption("disable-gfx"));
+    parseResult.setGraphicsInterlacingEnabled(cmd.hasOption("interlace"));
+    parseResult.setScreenRefresh(!cmd.hasOption("no-screen-refresh"));
+    parseResult.setUiStyle(cmd.hasOption("new-ui"));
+    parseResult.setSpellId(cmd.getOptionValue("spell-id", "-1"));
+    if (cmd.getOptionValues("attack-items") != null) {
+      parseResult.setAttackItems(cmd.getOptionValues("attack-items"));
+    } else {
+      parseResult.setAttackItems(new ArrayList<>());
+    }
+    if (cmd.getOptionValues("defense-items") != null) {
+      parseResult.setDefenceItems(cmd.getOptionValues("defense-items"));
+    } else {
+      parseResult.setDefenceItems(new ArrayList<>());
+    }
+    if (cmd.getOptionValues("strength-items") != null) {
+      parseResult.setStrengthItems(cmd.getOptionValues("strength-items"));
+    } else {
+      parseResult.setStrengthItems(new ArrayList<>());
+    }
+    parseResult.setLocalOcr(true);
+    parseResult.setHelp(cmd.hasOption("help"));
+    parseResult.setVersion(cmd.hasOption("version"));
+  }
+
+  private static void parseAccountProperties(ParseResult parseResult, String accountName) {
     final Properties p = new Properties();
     Path accountPath = Paths.get("accounts");
-    final File file = accountPath.resolve(bot.Main.getUsername() + ".properties").toFile();
+    final File file = accountPath.resolve(accountName + ".properties").toFile();
 
     // Ensure our directory and file exist first
-    if (bot.Main.getUsername() == null) bot.Main.setUsername("");
     try {
       Files.createDirectories(accountPath);
-      // Files.createFile(Paths.get("accounts", bot.Main.getUsername() + ".properties"));
     } catch (IOException e2) {
       System.err.println("Failed to create directory or file: " + e2.getMessage());
       e2.printStackTrace();
@@ -34,7 +93,7 @@ public class CLIParser {
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
       // ALWAYS make properties lowercase
-      parseResult.setUsername(bot.Main.getUsername());
+      parseResult.setUsername(accountName);
       parseResult.setPassword(p.getProperty("password", "password"));
       parseResult.setScriptName(p.getProperty("script-name", ""));
       parseResult.setThemeName(p.getProperty("theme", "Rune Dark Theme"));
@@ -45,6 +104,7 @@ public class CLIParser {
       parseResult.setServerIp(p.getProperty("server-ip", "game.openrsc.com"));
 
       // Boolean options
+      parseResult.setUsingAccount(true);
       parseResult.setAutoLogin(
           p.getProperty("auto-login", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setSidebarVisible(
@@ -90,7 +150,6 @@ public class CLIParser {
     } catch (final Throwable t) {
       System.out.println("Error loading account " + parseResult.getUsername() + ": " + t);
     }
-    return parseResult;
   }
 
   public void printHelp() {
@@ -102,6 +161,13 @@ public class CLIParser {
   private static void addOptions() { // todo add new settings to addOptions menu
     // Options with parameters/arguments.
     Option username =
+        Option.builder()
+            .longOpt("account")
+            .hasArg()
+            .argName("account")
+            .desc("Name of saved account")
+            .build();
+    Option account =
         Option.builder("u")
             .longOpt("username")
             .hasArg()
@@ -145,6 +211,11 @@ public class CLIParser {
             .build();
 
     // Boolean options
+    Option autoStart =
+        Option.builder()
+            .longOpt("auto-start")
+            .desc("Skip account selection window and start bot.")
+            .build();
     Option autoLogin =
         Option.builder().longOpt("auto-login").desc("Enable automatic log-in.").build();
     Option logWindow = Option.builder().longOpt("log-window").desc("Display log window.").build();
@@ -197,6 +268,8 @@ public class CLIParser {
     Option help = Option.builder("h").longOpt("help").desc("Program help.").build();
 
     // Add all options
+    options.addOption(account);
+    options.addOption(autoStart);
     options.addOption(username);
     options.addOption(password);
     options.addOption(scriptName);

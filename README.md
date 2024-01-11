@@ -56,27 +56,32 @@ Command Line Interface (CLI) commands can be included following a command line s
 for example `java -jar IdleRSC.jar` , or added to the `run_windows.bat`or `run_linux.sh`
 script files that execute the same startup command.
 
-* `--script-arguments <arguments>` - pass arguments to the script (e.g. dragonstone) <br>
-* `--auto-login` - Enable automatic log-in with credentials (--username, --password) <br>
-* `--debug` - Enable debug logging <br>
-* `--log-window` - Display log window <br>
-* `--disable-gfx` - Disable graphics refresh <br>
-* `--help` - Show help menu (F12) <br>
-* `--hide-side-panel` - Hide side panel <br>
-* `--init-cache <server>` - Initialise cache for specified server (coleslaw|uranium) <br>
-* `--interlace` - Enable graphics interlacing <br>
-* `--local-ocr` - Enable local OCR <br>
-* `--log-window` - Display log window <br>
-* `--script-name <name>` - Name of the script to run <br>
-* `--password <password>` - Account password <br>
-* `--script-selector` - Display script selector window <br>
-* `--username <username>` - Account username <br>
-* `--unstick` - Unstick side panel from main window <br>
-* `--version` - Show version <br>
-* `--attack-items <item1,item2>` - stake switcher attack item swapping <br>
-* `--defence-items <item1,item2>` - stake switcher defence items swapping <br>
-* `--strength-items <item1,item2>` - stake switcher strength items swapping <br>
-* `--spell-id <id>` - Spell id for stake switcher casting <br>
+* `--auto-start` - Auto start bot, bypassing Account Selection window
+  * Must include either:
+    * `--account`
+    * `--username` and `--password`
+* `--account <account>` - Load from saved account
+* `--script-arguments <arguments>` - pass arguments to the script (e.g. dragonstone)
+* `--auto-login` - Enable automatic log-in with credentials (--username, --password)
+* `--debug` - Enable debug logging
+* `--log-window` - Display log window
+* `--disable-gfx` - Disable graphics refresh
+* `--help` - Show help menu (F12)
+* `--hide-side-panel` - Hide side panel
+* `--init-cache <server>` - Initialise cache for specified server (coleslaw|uranium)
+* `--interlace` - Enable graphics interlacing
+* `--local-ocr` - Enable local OCR
+* `--log-window` - Display log window
+* `--script-name <name>` - Name of the script to run
+* `--password <password>` - Account password
+* `--script-selector` - Display script selector window
+* `--username <username>` - Account username
+* `--unstick` - Unstick side panel from main window
+* `--version` - Show version
+* `--attack-items <item1,item2>` - stake switcher attack item swapping
+* `--defence-items <item1,item2>` - stake switcher defence items swapping
+* `--strength-items <item1,item2>` - stake switcher strength items swapping
+* `--spell-id <id>` - Spell id for stake switcher casting
 
 ### Stake Switcher
 

@@ -16,7 +16,9 @@ public class ParseResult {
   private String[] scriptArguments;
 
   // Boolean options
-  private boolean autoLogin,
+  private boolean usingAccount,
+      autoStart = false,
+      autoLogin,
       logWindowVisible,
       debug,
       graphicsInterlacing,
@@ -30,6 +32,14 @@ public class ParseResult {
   // Switching options
   private ArrayList<Integer> attackItems, defenceItems, strengthItems;
   private int spellId;
+
+  public void setUsingAccount(boolean usingAccount) {
+    this.usingAccount = usingAccount;
+  }
+
+  public boolean isUsingAccount() {
+    return usingAccount;
+  }
 
   public void setUsername(String username) {
     this.username = username;
@@ -101,6 +111,14 @@ public class ParseResult {
 
   public boolean isAutoLogin() {
     return autoLogin;
+  }
+
+  public void setAutoStart(boolean autoStart) {
+    this.autoStart = autoStart;
+  }
+
+  public boolean isAutoStart() {
+    return autoStart;
   }
 
   public void setLogWindowVisible(boolean logWindowVisible) {

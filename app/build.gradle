@@ -90,7 +90,8 @@ tasks.named('build') {
 tasks.named('clean') {
   delete '../assets/core'
   delete 'src/main/resources'
-  delete '../IdleRSC.jar'
+  delete '../Cache'
+  delete '../IdleRSC.jar' //delete last
 }
 
 // Create resources before processResources runs

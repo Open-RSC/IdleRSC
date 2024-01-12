@@ -201,7 +201,7 @@ public class Main {
    */
   public static void setThemeElements(String theme) {
     for (int i = 0; i < themeNames.length; i++) {
-      if (themeNames[i].equals(theme)) {
+      if (themeNames[i].equalsIgnoreCase(theme)) {
         themeBackColor = colorCodes[i][0];
         themeTextColor = colorCodes[i][1];
         return;
@@ -238,7 +238,7 @@ public class Main {
    */
   public static Color[] getThemeElements(String theme) {
     for (int i = 0; i < themeNames.length; i++) {
-      if (themeNames[i].equals(theme)) {
+      if (themeNames[i].equalsIgnoreCase(theme)) {
         return colorCodes[i];
       }
     }
@@ -258,7 +258,7 @@ public class Main {
     ParseResult parseResult = new ParseResult();
 
     parseResult = parseArgs(parseResult, parser, args);
-    if (parseResult.getUsername().equals("Username") || !parseResult.isUsingAccount()) {
+    if (parseResult.getUsername().equalsIgnoreCase("username") || parseResult.isUsingAccount()) {
       new EntryFrame(parseResult);
       parseResult = parseArgs(parseResult, parser, args);
     }
@@ -1163,7 +1163,6 @@ public class Main {
     if (controller != null) {
       return controller.isDrawEnabled();
     }
-
     return true;
   }
 

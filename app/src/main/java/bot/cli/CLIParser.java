@@ -16,9 +16,9 @@ public class CLIParser {
   private static final Options options = new Options();
 
   public ParseResult parse(String[] args) throws ParseException {
-    addOptions();
     ParseResult parseResult = new ParseResult();
     CommandLineParser parser = new DefaultParser(false);
+    addOptions();
     CommandLine cmd = parser.parse(options, args);
     if (cmd.hasOption("auto-start")) {
       parseResult.setAutoStart(true);
@@ -111,7 +111,6 @@ public class CLIParser {
       parseResult.setServerIp(p.getProperty("server-ip", "game.openrsc.com"));
 
       // Boolean options
-      // parseResult.setUsingAccount(true);
       parseResult.setAutoLogin(
           p.getProperty("auto-login", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setSidebarVisible(

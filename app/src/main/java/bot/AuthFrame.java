@@ -358,7 +358,7 @@ final class AuthFrame extends JFrame {
         }
         // Now we can parse it
         String account = EntryFrame.getAccount();
-        if (account == null) account = Main.config.getUsername();
+        if (account == null || account.isEmpty()) account = Main.config.getUsername();
         final File file = accountPath.resolve(account + ".properties").toFile();
         try (final FileInputStream stream = new FileInputStream(file)) {
           p.load(stream);
@@ -404,10 +404,6 @@ final class AuthFrame extends JFrame {
 
   public void setLoadSettings(boolean set) {
     loadSettings = set;
-  }
-
-  public boolean getLoadSettings() {
-    return loadSettings;
   }
 
   synchronized String getUsername() {

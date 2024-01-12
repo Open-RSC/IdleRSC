@@ -206,7 +206,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
         druidToShop();
         cleanHerbs();
         dropUnneededHerbs();
-        doShop(0);
+        doShop(0, false);
         cleanHerbs();
         dropUnneededHerbs(); // redundant but having extra unneeded breaks something
         if ((c.getInventoryItemCount(EMPTY_VIAL) + getLimpSecCount() + getSnapeSecCount()) > 0) {
@@ -223,7 +223,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
                 c.walkTo(grass[0], grass[1]);
                 c.pickupItem(grass[0], grass[1], SNAPE_GRASS, true, false);
                 c.sleep(GAME_TICK);
-              } else c.sleep(GAME_TICK);
+              } else c.sleep(2 * GAME_TICK);
             }
           }
           while (c.isRunning() && c.getInventoryItemCount(SNAPE_GRASS) < getSnapeSecCount()) {
@@ -232,7 +232,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
               c.walkTo(grass[0], grass[1]);
               c.pickupItem(grass[0], grass[1], SNAPE_GRASS, true, false);
               c.sleep(GAME_TICK);
-            } else c.sleep(GAME_TICK);
+            } else c.sleep(2 * GAME_TICK);
           }
           // we have our limps and snapes now
           doHerblawLoop();
@@ -255,8 +255,8 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     c.walkTo(376, 515);
     c.walkTo(374, 509);
     c.walkTo(370, 506);
-    doShop(6);
-    c.sleep(2000);
+    doShop(6, true);
+    if (c.isInShop()) c.closeShop();
     doHerblawLoop();
     shopToChaos();
   }
@@ -466,7 +466,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     }
   }
 
-  private void doShop(int extraNewtsCount) {
+  private void doShop(int extraNewtsCount, boolean returnTrip) {
     c.setStatus("@yel@Buying Items..");
     if (!c.isInShop()) {
       ORSCharacter npc = c.getNearestNpcById(230, false);
@@ -475,27 +475,33 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
             npc.serverIndex,
             0); // added, bot doesn't always get runes if npc moves >2 or 3 tiles away
         c.npcCommand1(npc.serverIndex);
-        c.sleep(4000); // need LONG sleep or it breaks npccommand1
+        c.sleep(3000); // need LONG sleep or it breaks npccommand1
       } else {
         c.sleep(1000);
       }
     }
-    if (c.isInShop()) {
-      int numberToBuy =
-          (getHerbCountForVial())
-              - (c.getInventoryItemCount(EMPTY_VIAL)
-                  + c.getInventoryItemCount(ItemId.VIAL.getId() + getUnifCount()));
-      c.shopBuy(EMPTY_VIAL, numberToBuy);
-      c.sleep(1280);
-      c.shopBuy(
-          ItemId.EYE_OF_NEWT.getId(),
-          extraNewtsCount
-              + getNewtSecCount()
-              - c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()));
-      c.sleep(1280);
-      c.closeShop();
-      c.sleep(640);
+    int numberToBuy =
+        (getHerbCountForVial())
+            - (c.getInventoryItemCount(EMPTY_VIAL)
+                + c.getInventoryItemCount(ItemId.VIAL.getId() + getUnifCount()));
+    int newtCount =
+        extraNewtsCount + getNewtSecCount() - c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId());
+    while (c.isInShop()
+        && c.getInventoryItemCount() < 30
+        && ((c.getInventoryItemCount(EMPTY_VIAL) < numberToBuy || returnTrip)
+            || c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) < newtCount)) {
+      if (!returnTrip && c.getInventoryItemCount(EMPTY_VIAL) < numberToBuy) {
+        c.shopBuy(EMPTY_VIAL, numberToBuy);
+        c.sleep(320);
+      }
+      if (c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) < newtCount) {
+        c.shopBuy(ItemId.EYE_OF_NEWT.getId(), newtCount);
+        c.sleep(320);
+      }
+      c.sleep(2 * GAME_TICK);
     }
+    c.closeShop();
+    c.sleep(640);
     c.setStatus("@yel@Done Buying..");
   }
 

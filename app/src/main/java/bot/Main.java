@@ -75,7 +75,7 @@ public class Main {
   private static JMenuBar menuBar;
   private static JMenu themeMenu, settingsMenu;
   private static JFrame scriptFrame;
-  private static JFrame rscFrame; // all the windows
+  private static JFrame rscFrame; // main window frame
   private static JButton startStopButton, buttonClear;
   private static JCheckBox autoLoginCheckbox,
       logWindowCheckbox,
@@ -201,7 +201,7 @@ public class Main {
    */
   public static void setThemeElements(String theme) {
     for (int i = 0; i < themeNames.length; i++) {
-      if (themeNames[i].equals(theme)) {
+      if (themeNames[i].equalsIgnoreCase(theme)) {
         themeBackColor = colorCodes[i][0];
         themeTextColor = colorCodes[i][1];
         return;
@@ -210,6 +210,27 @@ public class Main {
   }
 
   /**
+   * Method to get the point to place Frame components at to center in rscFrame (client window) <br>
+   * * Note the actual point returned is actually to the top left of true center.
+   *
+   * @return Point location to center Frame components at
+   */
+  public static Point getRscFrameCenter() {
+    Point topLeft = Main.rscFrame.getLocationOnScreen();
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    return new Point(
+        Math.max(
+            0,
+            Math.min(
+                (int) screenSize.getWidth() - 655,
+                topLeft.x + (rscFrame.getWidth() / 2) - (scriptFrame.getWidth() / 2))),
+        Math.max(
+            0,
+            Math.min(
+                (int) screenSize.getHeight() - 405,
+                topLeft.y + (rscFrame.getHeight() / 2) - (scriptFrame.getHeight() / 2))));
+  }
+  /**
    * Get the Color[] for the Theme name entered
    *
    * @param theme String -- name of the "Theme"
@@ -217,7 +238,7 @@ public class Main {
    */
   public static Color[] getThemeElements(String theme) {
     for (int i = 0; i < themeNames.length; i++) {
-      if (themeNames[i].equals(theme)) {
+      if (themeNames[i].equalsIgnoreCase(theme)) {
         return colorCodes[i];
       }
     }
@@ -227,7 +248,6 @@ public class Main {
   public static Object getCurrentRunningScript() {
     return currentRunningScript;
   }
-
   /** The initial program entrypoint for IdleRSC. */
   public static void main(String[] args)
       throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
@@ -235,12 +255,12 @@ public class Main {
           IllegalArgumentException, InvocationTargetException, InterruptedException {
     CLIParser parser = new CLIParser();
     Version version = new Version();
-    ParseResult parseResult;
-    parseResult = parseArgs(parser, args);
-    if (parseResult.getUsername().equals("Username") || parseResult.isUsingAccount())
+    ParseResult parseResult = new ParseResult();
+
+    parseResult = parseArgs(parseResult, parser, args);
+    if (parseResult.getUsername().equalsIgnoreCase("username") || parseResult.isUsingAccount()) {
       new EntryFrame(parseResult);
-    if (!parseResult.isAutoStart()) {
-      parseResult = parseArgs(parser, args);
+      parseResult = parseArgs(parseResult, parser, args);
     }
 
     setThemeElements(themeName);
@@ -277,6 +297,11 @@ public class Main {
     themeMenu = new JMenu();
     JPanel consoleFrame = new JPanel(); // log window
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
+
+    if (config.getPositionX() == -1 || config.getPositionY() == -1) {
+      rscFrame.setLocationRelativeTo(null);
+    } else rscFrame.setLocation(config.getPositionX(), config.getPositionY());
+
     if (controller.getPlayerName() != null) {
       scriptFrame = new JFrame(controller.getPlayerName() + "'s Script Selector");
     } else if (config.getUsername() != null && !config.getUsername().equalsIgnoreCase("username")) {
@@ -366,25 +391,10 @@ public class Main {
     }
 
     if (config.isDebug()) debugger.open();
-
-    if (config.getScriptName() != null && !config.getScriptName().isEmpty()) {
-      if (!loadAndRunScript(config.getScriptName())) {
-        System.out.println("Could not find script: " + config.getScriptName());
-      } else {
-        isRunning = true;
-        startStopButton.setText("Stop");
-      }
-    }
-
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
     gfxCheckbox.setSelected(config.isGraphicsEnabled());
     controller.setDrawing(config.isGraphicsEnabled());
-    // start up our listener threads
-    log("Initializing LoginListener...");
-    loginListener = new Thread(new LoginListener(controller));
-    loginListener.start();
-    log("LoginListener initialized.");
 
     log("Initializing WindowListener...");
     windowListener =
@@ -407,7 +417,25 @@ public class Main {
     log("WindowListener started.");
 
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
-    Thread.sleep(3000);
+    Thread.sleep(800);
+
+    // start up our listener threads
+    log("Initializing LoginListener...");
+    loginListener = new Thread(new LoginListener(controller));
+    loginListener.start();
+    log("LoginListener initialized.");
+
+    Thread.sleep(1200);
+
+    if (config.getScriptName() != null && !config.getScriptName().isEmpty()) {
+      if (!loadAndRunScript(config.getScriptName())) {
+        System.out.println("Could not find script: " + config.getScriptName());
+      } else {
+        while (!controller.isLoggedIn()) controller.sleep(640);
+        isRunning = true;
+        startStopButton.setText("Stop");
+      }
+    }
 
     if (config.getScreenRefresh()) {
       DrawCallback.setNextRefresh( // was 25k
@@ -470,8 +498,8 @@ public class Main {
     }
   }
 
-  public static ParseResult parseArgs(CLIParser parser, String[] args) throws InterruptedException {
-    ParseResult parseResult = new ParseResult();
+  public static ParseResult parseArgs(ParseResult parseResult, CLIParser parser, String[] args)
+      throws InterruptedException {
     try {
       parseResult = parser.parse(args);
     } catch (ParseException e) {
@@ -547,22 +575,27 @@ public class Main {
       KeyEvent.VK_F3,
       KeyEvent.VK_F5,
     };
+
     // Make the menu bar
     menuBar = new JMenuBar();
     settingsMenu = new JMenu("Settings");
-    settingsMenu.setEnabled(config.isUsingAccount());
     themeMenu = new JMenu("Theme Menu");
     gfxCheckbox = new JCheckBox("GFX");
     logWindowCheckbox = new JCheckBox("Console");
     sidebarCheckbox = new JCheckBox("Sidebar");
 
+    // add our elements to the main bar
     menuBar.add(settingsMenu);
     menuBar.add(themeMenu);
-    menuBar.add(Box.createHorizontalGlue());
+    menuBar.add(Box.createHorizontalGlue()); // from right
     menuBar.add(gfxCheckbox);
     menuBar.add(logWindowCheckbox);
     menuBar.add(sidebarCheckbox);
+
+    // prevent tab/etc "focusing" an element
     menuBar.setFocusable(false);
+    settingsMenu.setFocusable(false);
+    themeMenu.setFocusable(false);
     gfxCheckbox.setFocusable(false);
     logWindowCheckbox.setFocusable(false);
     sidebarCheckbox.setFocusable(false);
@@ -932,7 +965,7 @@ public class Main {
     scriptFrame.add(scriptButton);
     scriptFrame.setSize(300, 300);
 
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocationRelativeTo(rscFrame);
   }
 
   private static FocusListener getPlaceholderFocusListener(
@@ -1130,7 +1163,6 @@ public class Main {
     if (controller != null) {
       return controller.isDrawEnabled();
     }
-
     return true;
   }
 

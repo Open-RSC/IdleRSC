@@ -10,6 +10,7 @@ import static models.entities.Rock.EMPTY;
 import static scripting.ControllerProvider.getBotController;
 import static scripting.ControllerProvider.setBotController;
 
+import bot.Main;
 import controller.BotController;
 import controller.BotLogLevel;
 import java.awt.GridLayout;
@@ -248,8 +249,9 @@ public class AIOMiner extends IdleScript {
             disableBankCheckBox, bankOptions, miningCampOptions, customX, customY, rockOptions));
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

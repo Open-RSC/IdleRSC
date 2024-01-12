@@ -19,7 +19,6 @@ final class AuthFrame extends JFrame {
   private Color textColor = Main.getColorCode(0, 0);
   private boolean loadSettings = false;
   private final String resourceLocation = "app/src/main/java/bot/res/";
-  private static final Dimension textFieldSize = new Dimension(80, 25);
   private final Window parent;
   private JPasswordField password;
   private final JTextField username,
@@ -28,7 +27,9 @@ final class AuthFrame extends JFrame {
       spellId,
       attackItems,
       strengthItems,
-      defenseItems;
+      defenseItems,
+      positionX,
+      positionY;
   private Checkbox autoLogin,
       sideBar,
       logWindow,
@@ -83,11 +84,14 @@ final class AuthFrame extends JFrame {
       "Startup Options:", // only show label
       "Script Name:",
       "Script Args:",
+      "Position (-1 to center):",
+      "X Coord (640 ea)",
+      "Y Coord (395 ea)",
       "Hotkeys:", // only show label
       "SpellId (F8):",
       "Swap Item (F5):",
       "Swap Item (F6):",
-      "Swap Item (F7):"
+      "Swap Item (F7):",
     };
     JTextField[] textFields = {
       new JTextField(),
@@ -96,6 +100,9 @@ final class AuthFrame extends JFrame {
       new JTextField(), // only show label
       scriptName = new JTextField(),
       scriptArgs = new JTextField(),
+      new JTextField(), // only show label
+      positionX = new JTextField(),
+      positionY = new JTextField(),
       new JTextField(), // only show label
       spellId = new JTextField(),
       attackItems = new JTextField(),
@@ -112,15 +119,13 @@ final class AuthFrame extends JFrame {
     for (int i = 0; i < textFields.length; i++) {
       textFieldPanels[i].setLayout(new BoxLayout(textFieldPanels[i], BoxLayout.X_AXIS));
       Label optionLabel = new Label(optionLabels[i], Label.LEFT);
-      optionLabel.setMaximumSize(new Dimension(100, 30));
+      optionLabel.setMaximumSize(new Dimension(110, 30));
       textFieldPanels[i].add(optionLabel);
-      if (i == 0 || i == 3 || i == 6) {
+      if (i == 0 || i == 3 || i == 6 || i == 9) {
+        optionLabel.setMaximumSize(new Dimension(140, 30));
         continue;
       }
-      textFields[i].setMaximumSize(textFieldSize);
-      textFields[i].setMinimumSize(textFieldSize);
-      textFields[i].setPreferredSize(textFieldSize);
-      textFields[i].setSize(textFieldSize);
+      setElementSizing(textFields[i], new Dimension(80, 23));
       textFields[i].setBorder(
           BorderFactory.createMatteBorder(0, 0, 2, 2, new java.awt.Color(0, 0, 0, 255)));
       textFieldPanels[i].add(textFields[i]);
@@ -142,22 +147,15 @@ final class AuthFrame extends JFrame {
     for (int i = 0; i < choiceLabels.length; i++) {
       choicePanels[i].setLayout(new BoxLayout(choicePanels[i], BoxLayout.Y_AXIS));
       Label optionLabel2 = new Label(choiceLabels[i], Label.CENTER);
-      optionLabel2.setMaximumSize(new Dimension(120, 30));
+      setElementSizing(optionLabel2, new Dimension(110, 15));
       choicePanels[i].add(optionLabel2);
 
-      choices[i].setMaximumSize(new Dimension(140, 30));
+      setElementSizing(choices[i], new Dimension(140, 20));
       for (final String choiceName : choiceNames[i]) {
         choices[i].add(choiceName);
       }
       choicePanels[i].add(choices[i]);
     }
-
-    //    HashMap<String, Integer> themeTypes = new HashMap<String, Integer>();
-    //    int keyValue = 49;
-    //    for (int i=0; i<themeNames.length; i++) {
-    //      if(keyValue+i > 57) keyValue = (65-i);
-    //      themeTypes.put(themeNames[i], keyValue+i);
-    //    }
 
     // Build out all of our checkbox options
     Checkbox[] checkBoxes = {
@@ -209,15 +207,15 @@ final class AuthFrame extends JFrame {
     buttonPanel.add(okButton);
     buttonPanel.add(cancelButton);
 
-    // Generate gaps todo change to grid bag layout soon
-
     // Set Sizing
     Panel gapPanel = new Panel();
-    gapPanel.setMaximumSize(new Dimension(25, 450));
+    gapPanel.setMaximumSize(new Dimension(10, 550));
     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
-    optionsPanel.setMinimumSize(new Dimension(250, 450));
-    optionsPanel2.setMinimumSize(new Dimension(200, 450));
+    setElementSizing(optionsPanel, new Dimension(190, 550));
+    setElementSizing(optionsPanel2, new Dimension(170, 550));
+    setElementSizing(this, new Dimension(415, 550)); // authframe size
 
+    // combine our panels (top part of window)
     inputPanel.add(optionsPanel);
     inputPanel.add(gapPanel);
     inputPanel.add(optionsPanel2);
@@ -240,7 +238,6 @@ final class AuthFrame extends JFrame {
     inputPanel.setBorder(BorderFactory.createMatteBorder(4, 4, 0, 4, backgroundColor.darker()));
     add(inputPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
-    setMinimumSize(new Dimension(405, 450));
 
     // Add action listeners
     cancelButton.addActionListener(
@@ -258,6 +255,8 @@ final class AuthFrame extends JFrame {
     password.setText("");
     scriptName.setText("");
     scriptArgs.setText("");
+    positionX.setText("-1");
+    positionY.setText("-1");
     spellId.setText("");
     attackItems.setText("");
     strengthItems.setText("");
@@ -294,6 +293,8 @@ final class AuthFrame extends JFrame {
     p.put("script-name", auth.getScriptName());
     p.put("script-arguments", auth.getScriptArgs());
     p.put("init-cache", auth.getInitCache());
+    p.put("x-position", auth.getPositionX());
+    p.put("y-position", auth.getPositionY());
     p.put("spell-id", auth.getSpellId());
     p.put("attack-items", auth.getAttackItems());
     p.put("strength-items", auth.getStrengthItems());
@@ -333,6 +334,13 @@ final class AuthFrame extends JFrame {
     }
   }
 
+  private static void setElementSizing(Component component, Dimension size) {
+    component.setMaximumSize(size);
+    component.setMinimumSize(size);
+    component.setPreferredSize(size);
+    component.setSize(size);
+  }
+
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
@@ -350,7 +358,7 @@ final class AuthFrame extends JFrame {
         }
         // Now we can parse it
         String account = EntryFrame.getAccount();
-        if (account == null) account = Main.config.getUsername();
+        if (account == null || account.isEmpty()) account = Main.config.getUsername();
         final File file = accountPath.resolve(account + ".properties").toFile();
         try (final FileInputStream stream = new FileInputStream(file)) {
           p.load(stream);
@@ -362,6 +370,8 @@ final class AuthFrame extends JFrame {
           scriptArgs.setText(p.getProperty("script-arguments", ""));
           initChoice.select(p.getProperty("init-cache", "Coleslaw"));
           serverIpChoice.select(p.getProperty("server-ip", "game.openrsc.com"));
+          positionX.setText(p.getProperty("x-position", "-1"));
+          positionY.setText(p.getProperty("y-position", "-1"));
           spellId.setText(p.getProperty("spell-id", "-1"));
           attackItems.setText(p.getProperty("attack-items", ""));
           strengthItems.setText(p.getProperty("defence-items", ""));
@@ -394,10 +404,6 @@ final class AuthFrame extends JFrame {
 
   public void setLoadSettings(boolean set) {
     loadSettings = set;
-  }
-
-  public boolean getLoadSettings() {
-    return loadSettings;
   }
 
   synchronized String getUsername() {
@@ -442,6 +448,14 @@ final class AuthFrame extends JFrame {
 
   synchronized String getDefenseItems() {
     return defenseItems.getText();
+  }
+
+  synchronized String getPositionX() {
+    return positionX.getText();
+  }
+
+  synchronized String getPositionY() {
+    return positionY.getText();
   }
 
   synchronized String getAutoLogin() {

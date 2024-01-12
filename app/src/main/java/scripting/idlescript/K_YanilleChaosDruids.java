@@ -1,5 +1,6 @@
 package scripting.idlescript;
 
+import bot.Main;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -346,9 +347,11 @@ public final class K_YanilleChaosDruids extends K_kailaScript {
     scriptFrame.add(foodWithdrawAmountLabel);
     scriptFrame.add(foodWithdrawAmountField);
     scriptFrame.add(startScriptButton);
+
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(null);
+    scriptFrame.setLocation(Main.getRscFrameCenter());
     scriptFrame.setVisible(true);
+    scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
   }
 

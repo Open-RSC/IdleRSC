@@ -96,7 +96,9 @@ public final class EntryFrame extends JFrame {
       final String accountName = accountNames[i];
       //    for (final String accountName : accountNames) {
       accountChoice.add(accountName);
-      if (parseResult.getUsername().equals(accountName)) selectedAccount = i;
+      if (parseResult.getUsername().equalsIgnoreCase(accountName)) {
+        selectedAccount = i;
+      }
     }
     if (accountNames.length > 0) {
       account = accountNames[0];

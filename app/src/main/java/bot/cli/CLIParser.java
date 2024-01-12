@@ -1,5 +1,6 @@
 package bot.cli;
 
+import bot.Main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
+import javax.swing.*;
 import org.apache.commons.cli.*;
 
 public class CLIParser {
@@ -21,22 +23,25 @@ public class CLIParser {
     if (cmd.hasOption("auto-start")) {
       parseResult.setAutoStart(true);
       if (cmd.hasOption("account")) {
-        bot.Main.setUsername(cmd.getOptionValue("account"));
-        parseAccountProperties(parseResult, cmd.getOptionValue("account"));
+        Main.setUsername(cmd.getOptionValue("account").toLowerCase());
+        parseAccountProperties(parseResult, Main.getUsername());
+        Main.setThemeName(parseResult.getThemeName());
       } else {
         parseCommandArgumentOptions(parseResult, cmd);
       }
     } else {
       if (cmd.hasOption("account")) {
+        parseResult.setUsingAccount(true);
         bot.Main.setUsername(cmd.getOptionValue("account"));
       }
-      parseAccountProperties(parseResult, bot.Main.getUsername());
+      parseAccountProperties(parseResult, Main.getUsername());
+      Main.setThemeName(parseResult.getThemeName());
     }
     return parseResult;
   }
 
   private static void parseCommandArgumentOptions(ParseResult parseResult, CommandLine cmd) {
-    parseResult.setUsername(cmd.getOptionValue("username", ""));
+    parseResult.setUsername(cmd.getOptionValue("username", "").toLowerCase());
     parseResult.setPassword(cmd.getOptionValue("password", ""));
     parseResult.setScriptName(cmd.getOptionValue("script-name", ""));
     parseResult.setThemeName(cmd.getOptionValue("theme", "Rune Dark Theme"));
@@ -57,6 +62,8 @@ public class CLIParser {
     parseResult.setScreenRefresh(!cmd.hasOption("no-screen-refresh"));
     parseResult.setUiStyle(cmd.hasOption("new-ui"));
     parseResult.setSpellId(cmd.getOptionValue("spell-id", "-1"));
+    parseResult.setPositionX(Integer.parseInt(cmd.getOptionValue("x-position", "-1")));
+    parseResult.setPositionX(Integer.parseInt(cmd.getOptionValue("y-position", "-1")));
     if (cmd.getOptionValues("attack-items") != null) {
       parseResult.setAttackItems(cmd.getOptionValues("attack-items"));
     } else {
@@ -104,7 +111,6 @@ public class CLIParser {
       parseResult.setServerIp(p.getProperty("server-ip", "game.openrsc.com"));
 
       // Boolean options
-      parseResult.setUsingAccount(true);
       parseResult.setAutoLogin(
           p.getProperty("auto-login", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setSidebarVisible(
@@ -129,6 +135,11 @@ public class CLIParser {
           p.getProperty("screen-refresh", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setUiStyle(
           p.getProperty("new-ui", "false").replace(" ", "").toLowerCase().contains("true"));
+
+      parseResult.setPositionX(
+          Integer.parseInt(p.getProperty("x-position", "-1").replace(" ", "")));
+      parseResult.setPositionY(
+          Integer.parseInt(p.getProperty("y-position", "-1").replace(" ", "")));
 
       // Switching options
       parseResult.setSpellId(p.getProperty("spell-id", "-1"));
@@ -158,7 +169,7 @@ public class CLIParser {
     formatter.printHelp("IdleRSC", null, options, footer);
   }
 
-  private static void addOptions() { // todo add new settings to addOptions menu
+  private static void addOptions() { // todo add new settings (recent additions) to addOptions menu
     // Options with parameters/arguments.
     Option username =
         Option.builder()

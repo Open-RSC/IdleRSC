@@ -44,6 +44,10 @@ public class Config extends ParseResult {
     setLocalOcr(parseResult.isLocalOcr());
     setUiStyle(parseResult.getNewUi());
 
+    // position
+    setPositionX(parseResult.getPositionX());
+    setPositionY(parseResult.getPositionY());
+
     // Switching options
     setAttackItems(parseResult.getAttackItems());
     setDefenceItems(parseResult.getDefenceItems());

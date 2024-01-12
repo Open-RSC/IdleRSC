@@ -64,6 +64,7 @@ tasks.register('prepareRelease', Copy) {
 
   // documentation and cache
   from ("${rootProject.projectDir}") {
+    include 'scripts/'
     include 'doc/'
     include 'README.md', 'LICENSE'
     include 'app/src/main/java/bot/res/'

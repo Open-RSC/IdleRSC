@@ -1,5 +1,6 @@
 package bot.cli;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ParseResult {
@@ -31,7 +32,7 @@ public class ParseResult {
 
   // Switching options
   private ArrayList<Integer> attackItems, defenceItems, strengthItems;
-  private int spellId;
+  private int spellId, positionX, positionY;
 
   public void setUsingAccount(boolean usingAccount) {
     this.usingAccount = usingAccount;
@@ -191,6 +192,30 @@ public class ParseResult {
 
   public boolean isScriptSelectorOpen() {
     return scriptSelectorOpen;
+  }
+
+  public void setPositionX(int positionX) {
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    if (positionX < -1 || positionX > (int) screenSize.getWidth()) {
+      System.out.println("Invalid X screen position");
+      this.positionX = -1;
+    } else this.positionX = positionX;
+  }
+
+  public int getPositionX() {
+    return positionX;
+  }
+
+  public void setPositionY(int positionY) {
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    if (positionY < -1 || positionY > (int) screenSize.getHeight()) {
+      System.out.println("Invalid Y screen position");
+      this.positionY = -1;
+    } else this.positionY = positionY;
+  }
+
+  public int getPositionY() {
+    return positionY;
   }
 
   public void setAttackItems(String[] attackItems) {

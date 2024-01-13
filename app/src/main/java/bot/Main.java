@@ -636,7 +636,7 @@ public class Main {
     }
 
     menuItem = new JMenuItem("Account Startup Settings", KeyEvent.VK_F4); // s
-    menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_F4));
+    // menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_F4)); //opens 2 authframes
     menuItem.addActionListener(
         e -> {
           AuthFrame authFrame =

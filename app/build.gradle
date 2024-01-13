@@ -27,6 +27,8 @@ repositories {
 dependencies {
   // Ensure gradle is aware of the patched client dependency
   implementation files(new File(project(':patcher').getBuildDir(), 'libs/patched_client.jar'))
+  //include resource icons in jar
+  //implementation files(new File(project(':app').getProjectDir(), '/src/main/resources/res/'))
   // Used to find/populate scripts
   implementation libs.reflections
   // Dependency of reflections spits out an error when it is not included in the jar.
@@ -89,7 +91,8 @@ tasks.named('build') {
 // Add additional files to clean task
 tasks.named('clean') {
   delete '../assets/core'
-  delete 'src/main/resources'
+  delete 'src/main/resources/map'
+  delete 'src/main/resources/cache'
   delete '../Cache'
   delete '../IdleRSC.jar' //delete last
 }

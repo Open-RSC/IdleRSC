@@ -73,17 +73,19 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     ItemId.UNID_DWARF_WEED.getId(),
   };
   private final int[] UNIF_HERBS_TO_MAKE = {
-    ItemId.UNID_TARROMIN.getId(), // with limp
     ItemId.UNID_RANARR_WEED.getId(), // with snape
-    ItemId.UNID_IRIT.getId(), // eye of newt
     ItemId.UNID_AVANTOE.getId(), // with snape
+    ItemId.UNID_GUAM_LEAF.getId(), // order matters here
+    ItemId.UNID_IRIT.getId(), // eye of newt
+    // ItemId.UNID_TARROMIN.getId(), // with limp
     ItemId.UNID_KWUARM.getId(), // with limp,
   };
   private final int[] CLEAN_HERBS = {
-    ItemId.GUAM_LEAF.getId(), // order matters here
     ItemId.RANARR_WEED.getId(),
-    ItemId.IRIT_LEAF.getId(),
     ItemId.AVANTOE.getId(),
+    ItemId.GUAM_LEAF.getId(), // order matters here
+    ItemId.IRIT_LEAF.getId(),
+    // ItemId.TARROMIN.getId(), // with limp
     ItemId.KWUARM.getId(),
   };
   private final int[] UNIF_POTS = {
@@ -91,6 +93,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     ItemId.UNF_RANARR_POTION.getId(),
     ItemId.UNF_IRIT_POTION.getId(),
     ItemId.UNF_AVANTOE_POTION.getId(),
+    // ItemId.UNF_TARROMIN_POTION.getId(), // with limp
     ItemId.UNF_KWUARM_POTION.getId()
   };
   private final int[] UNNEEDED_CLEAN_HERBS = {
@@ -196,7 +199,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (getHerbCount() > 11 || c.getInventoryItemCount() == 30 || timeToBank) {
+      if (getHerbCount() > 9 || c.getInventoryItemCount() == 30 || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
         totalTrips = totalTrips + 1;
@@ -217,6 +220,14 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
           while (c.isRunning()
               && c.getInventoryItemCount(ItemId.LIMPWURT_ROOT.getId()) < getLimpSecCount()) {
             _combatLoop(NpcId.HOBGOBLIN_LVL32.getId(), cleanedHobsLoot);
+            if (c.getInventoryItemCount(ItemId.LIMPWURT_ROOT.getId()) < getLimpSecCount()) {
+              int[] limp = c.getNearestItemById(ItemId.LIMPWURT_ROOT.getId());
+              if (limp != null) {
+                c.walkTo(limp[0], limp[1]);
+                c.pickupItem(limp[0], limp[1], ItemId.LIMPWURT_ROOT.getId(), true, false);
+                c.sleep(GAME_TICK);
+              } else c.sleep(2 * GAME_TICK);
+            }
             if (c.getInventoryItemCount(SNAPE_GRASS) < getSnapeSecCount()) {
               int[] grass = c.getNearestItemById(SNAPE_GRASS);
               if (grass != null) {

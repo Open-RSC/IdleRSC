@@ -67,7 +67,6 @@ tasks.register('prepareRelease', Copy) {
     include 'scripts/'
     include 'doc/'
     include 'README.md', 'LICENSE'
-    include 'app/src/main/java/bot/res/'
   }
 
   into "build/${releaseName()}"

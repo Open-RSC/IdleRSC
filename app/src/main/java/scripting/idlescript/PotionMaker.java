@@ -32,7 +32,6 @@ public final class PotionMaker extends IdleScript {
   private boolean scriptStarted = false;
   private boolean onlyMakeUnifsCycle = false;
   // private boolean stopWithSecondary = false;
-  private final long startTimestamp = System.currentTimeMillis() / 1000L;
   private long startTime;
   private int levelReq = 0;
   private int combinedVialsInBank = 0;
@@ -383,11 +382,9 @@ public final class PotionMaker extends IdleScript {
       // Colors are based on https://spec.draculatheme.com/#sec-Standard
       int purple = 0xBD93F9;
       int darkGray = 0x282A36;
-      int darkerGray = 0x1d1f27;
       int white = 0xF8F8F2;
       int green = 0x50FA7B;
       int yellow = 0xF1FA8C;
-      int red = 0xFF5555;
       int cyan = 0x8BE9FD;
 
       paintBuilder.setBorderColor(purple);
@@ -395,7 +392,7 @@ public final class PotionMaker extends IdleScript {
 
       String[] titleStrings = {"Potion", "Maker"};
       int[] titleColors = {green, cyan};
-      int[] titleXOffsets = {28, 64};
+      int[] titleXOffsets = {48, 64};
 
       paintBuilder.setTitleMultipleColor(titleStrings, titleColors, titleXOffsets, 4);
       paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta & Kaila", purple, 1));

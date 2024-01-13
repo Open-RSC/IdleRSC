@@ -1036,8 +1036,9 @@ public class Main {
   }
 
   private static boolean checkCacheFiles() {
-    File spriteDirectory = new File("cache/video/spritepacks");
-    File videoDirectory = new File("cache/video/");
+    File spriteDirectory =
+        new File("cache" + File.separator + "video" + File.separator + "spritepacks");
+    File videoDirectory = new File("cache" + File.separator + "video/");
     File[] spriteFilelist = spriteDirectory.listFiles();
     File[] videoFilelist = videoDirectory.listFiles();
     String[] fileNames = {

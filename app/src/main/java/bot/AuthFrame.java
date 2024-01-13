@@ -18,7 +18,20 @@ final class AuthFrame extends JFrame {
   private Color backgroundColor = Main.getColorCode(1, 0);
   private Color textColor = Main.getColorCode(0, 0);
   private boolean loadSettings = false;
-  private final String resourceLocation = "app/src/main/java/bot/res/";
+  private final String resourceLocation =
+      "app"
+          + File.separator
+          + "src"
+          + File.separator
+          + "main"
+          + File.separator
+          + "java"
+          + File.separator
+          + "bot"
+          + File.separator
+          + "res"
+          + File.separator
+          + "";
   private final Window parent;
   private JPasswordField password;
   private final JTextField username,
@@ -51,7 +64,8 @@ final class AuthFrame extends JFrame {
   AuthFrame(final String title, final String message, final Window parent) {
     super(title);
     this.parent = parent;
-    setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
+    setIconImage(
+        new ImageIcon(resourceLocation + "logos" + File.separator + "idlersc.icon.png").getImage());
 
     addWindowListener(
         new WindowAdapter() {
@@ -194,7 +208,9 @@ final class AuthFrame extends JFrame {
     }
     optionsPanel2.add(
         new JLabel(
-            new ImageIcon(resourceLocation + "logos/idlersc.icon.png", "Idlersc"), JLabel.LEFT));
+            new ImageIcon(
+                resourceLocation + "logos" + File.separator + "idlersc.icon.png", "Idlersc"),
+            JLabel.LEFT));
     for (Panel subPanel : checkBoxPanels) {
       optionsPanel2.add(subPanel);
     }
@@ -344,7 +360,9 @@ final class AuthFrame extends JFrame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
-      setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
+      setIconImage(
+          new ImageIcon(resourceLocation + "logos" + File.separator + "idlersc.icon.png")
+              .getImage());
       if (loadSettings) {
         // Make sure our accounts folder exists
         final Properties p = new Properties();

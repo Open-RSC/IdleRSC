@@ -10,6 +10,9 @@ public class ParseResult {
   private String initCache = "Coleslaw";
   private String serverIp = "game.openrsc.com";
   private String themeName = "Rune Dark Theme";
+  private int positionX = -1;
+  private int positionY = -1;
+  private int spellId;
   private String scriptName = "";
   private boolean graphicsEnabled = true;
   private boolean botPaintVisible = true;
@@ -32,7 +35,6 @@ public class ParseResult {
 
   // Switching options
   private ArrayList<Integer> attackItems, defenceItems, strengthItems;
-  private int spellId, positionX, positionY;
 
   public void setUsingAccount(boolean usingAccount) {
     this.usingAccount = usingAccount;

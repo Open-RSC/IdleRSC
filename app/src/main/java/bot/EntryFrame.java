@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
+import orsc.util.Utils;
 
 /** Presents the user with account and sleep solver selection. */
 public final class EntryFrame extends JFrame {
@@ -52,13 +53,13 @@ public final class EntryFrame extends JFrame {
     setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     loadAccounts();
-    setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
+    this.setIconImage(Utils.getImage("res/logos/idlersc.icon.png").getImage());
     Image idleImage =
-        new ImageIcon(resourceLocation + "logos/idlersc.icon.png")
+        Utils.getImage("res/logos/idlersc.icon.png")
             .getImage()
             .getScaledInstance(96, 96, java.awt.Image.SCALE_SMOOTH);
     Image welImage =
-        new ImageIcon(resourceLocation + "icons/welcome.icon.png")
+        Utils.getImage("res/icons/welcome.icon.png")
             .getImage()
             .getScaledInstance(230, 30, java.awt.Image.SCALE_SMOOTH);
     //    Image okImage =
@@ -303,8 +304,7 @@ public final class EntryFrame extends JFrame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
-      setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
-      // setIconImage(Utils.getImage("idlersc.icon.png").getImage());
+      setIconImage(Utils.getImage("res/logos/idlersc.icon.png").getImage());
       setLocationRelativeTo(null);
       toFront();
       requestFocus();

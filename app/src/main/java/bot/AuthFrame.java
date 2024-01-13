@@ -13,12 +13,26 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import javax.swing.*;
+import orsc.util.Utils;
 
 final class AuthFrame extends JFrame {
   private Color backgroundColor = Main.getColorCode(1, 0);
   private Color textColor = Main.getColorCode(0, 0);
   private boolean loadSettings = false;
-  private final String resourceLocation = "app/src/main/java/bot/res/";
+  private final String resourceLocation =
+      "app"
+          + File.separator
+          + "src"
+          + File.separator
+          + "main"
+          + File.separator
+          + "java"
+          + File.separator
+          + "bot"
+          + File.separator
+          + "res"
+          + File.separator
+          + "";
   private final Window parent;
   private JPasswordField password;
   private final JTextField username,
@@ -51,7 +65,7 @@ final class AuthFrame extends JFrame {
   AuthFrame(final String title, final String message, final Window parent) {
     super(title);
     this.parent = parent;
-    setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
+    this.setIconImage(Utils.getImage("res/logos/idlersc.icon.png").getImage());
 
     addWindowListener(
         new WindowAdapter() {
@@ -192,9 +206,7 @@ final class AuthFrame extends JFrame {
     for (Panel subPanel : textFieldPanels) {
       optionsPanel.add(subPanel);
     }
-    optionsPanel2.add(
-        new JLabel(
-            new ImageIcon(resourceLocation + "logos/idlersc.icon.png", "Idlersc"), JLabel.LEFT));
+    optionsPanel2.add(new JLabel(Utils.getImage("res/logos/idlersc.icon.png"), JLabel.LEFT));
     for (Panel subPanel : checkBoxPanels) {
       optionsPanel2.add(subPanel);
     }
@@ -333,7 +345,12 @@ final class AuthFrame extends JFrame {
       System.out.println("Error saving account details: " + t);
     }
   }
-
+  /**
+   * Call all four component sizing methods
+   *
+   * @param component component to be resized
+   * @param size Dimension object representing the x and y size
+   */
   private static void setElementSizing(Component component, Dimension size) {
     component.setMaximumSize(size);
     component.setMinimumSize(size);
@@ -344,7 +361,7 @@ final class AuthFrame extends JFrame {
   @Override
   public void setVisible(final boolean visible) {
     if (visible) {
-      setIconImage(new ImageIcon(resourceLocation + "logos/idlersc.icon.png").getImage());
+      this.setIconImage(Utils.getImage("res/logos/idlersc.icon.png").getImage());
       if (loadSettings) {
         // Make sure our accounts folder exists
         final Properties p = new Properties();

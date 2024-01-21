@@ -46,9 +46,10 @@ build:
   stage: build
   script: 
     - make release
+    - mv *.zip IdleRSC.zip
   artifacts:
     paths:
-      - ./*.zip
+      - IdleRSC.zip
 
 # Upload Javadoc API documentation to Gitlab pages.
 pages:

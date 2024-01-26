@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-#
-# Checks if the core repository exists, then creates/updates the repository.
-#
+# Updates client/src and cache from the Core Framework Gitlab repository.
 
 # --------------VARIABLES--------------
 # colors for echo -e
@@ -49,7 +47,7 @@ run_confirmation () {
 
 # ------------SCRIPT--START------------
 if [ ! -f gradlew ]; then
-  echo -e ${RED}"This script needs to be run from the root project directory!"${RESET}
+  echo -e ${RED}"This script needs to be ran from the root project directory!"${RESET}
   exit 1
 fi
 
@@ -71,7 +69,7 @@ mkdir -p "${CLIENT_DIR}/src/main/java" "${CLIENT_DIR}/src/main/resources" "${ASS
 cp -r "${CLIENT_BASE_DIR}"/Cache/{video,audio} "${ASSET_DIR}/cache"
 cp -r "${CLIENT_BASE_DIR}"/src/* "${CLIENT_DIR}/src/main/java"
 cp -r "${PC_CLIENT_DIR}"/src/* "${CLIENT_DIR}/src/main/java"
-cp -r "${CLIENT_DIR}"/src/main/java/res/ "${CLIENT_DIR}/src/main/resources/"
+mv "${CLIENT_DIR}"/src/main/java/res/ "${CLIENT_DIR}/src/main/resources/"
 echo -e ${LIGHTBLUE}"\nCopied over newly cloned ${GREEN}CACHE${LIGHTBLUE} and ${GREEN}CLIENT/SRC${LIGHTBLUE}!"${RESET}
 
 rm -rf ${CORE_REPOSITORY_DIR}

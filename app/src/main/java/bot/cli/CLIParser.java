@@ -151,9 +151,8 @@ public class CLIParser {
           p.getProperty("strength-items", "").replace(" ", "").toLowerCase().split(","));
 
       // CLI options
-
-      parseResult.setLocalOcr(true); // Forced to true to prevent sleep crashing the client
-      /* parseResult.setLocalOcr(p.getProperty("local-ocr", "").replace(" ", "").toLowerCase().contains("true")); */
+      parseResult.setLocalOcr(
+          p.getProperty("local-ocr", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setHelp(
           p.getProperty("help", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setVersion(

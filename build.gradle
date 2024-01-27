@@ -78,10 +78,12 @@ tasks.register('release', Zip) {
   dependsOn prepareRelease
 
   archiveFileName = "${releaseName()}.zip"
-
   destinationDirectory = rootProject.getProjectDir()
 
-  from('build') {
-    include "${releaseName()}/**/*"
+  // Configure zip task to place contents in IdleRSC folder
+  into('IdleRSC') {
+    from("build/${releaseName()}") {
+      into('.')
+    }
   }
 }

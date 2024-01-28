@@ -18,7 +18,7 @@ public enum OCRType {
 
   public static OCRType fromName(final String name) {
     for (final OCRType ocrType : VALUES) {
-      if (ocrType.name.equals(name)) {
+      if (ocrType.name.equalsIgnoreCase(name)) {
         return ocrType;
       }
     }

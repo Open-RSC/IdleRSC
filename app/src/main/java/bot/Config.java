@@ -32,6 +32,10 @@ public class Config extends ParseResult {
     setThemeName(parseResult.getThemeName());
     // setServerId(parseResult.getServerId());
 
+    // OCR options
+    setOCRType(parseResult.getOCRType());
+    setOCRServer(parseResult.getOCRServer());
+
     // Boolean options
     setUsingAccount(parseResult.isUsingAccount());
     setAutoStart(parseResult.isAutoStart());
@@ -41,7 +45,6 @@ public class Config extends ParseResult {
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
     setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
     setScreenRefresh(parseResult.getScreenRefresh());
-    setLocalOcr(parseResult.isLocalOcr());
     setUiStyle(parseResult.getNewUi());
 
     // position

@@ -1,6 +1,7 @@
 package bot.cli;
 
 import bot.Main;
+import bot.ocrlib.OCRType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,6 +53,8 @@ public class CLIParser {
     }
     parseResult.setInitCache(cmd.getOptionValue("init-cache", "Coleslaw"));
     parseResult.setServerIp(cmd.getOptionValue("server-ip", "game.openrsc.com"));
+    parseResult.setOCRType(
+        OCRType.fromName(cmd.getOptionValue("ocr-type", OCRType.INTERNAL.getName())));
     parseResult.setAutoLogin(cmd.hasOption("auto-login"));
     parseResult.setSidebarVisible(!cmd.hasOption("hide-sidebar"));
     parseResult.setLogWindowVisible(cmd.hasOption("log-window"));
@@ -79,7 +82,6 @@ public class CLIParser {
     } else {
       parseResult.setStrengthItems(new ArrayList<>());
     }
-    parseResult.setLocalOcr(true);
     parseResult.setHelp(cmd.hasOption("help"));
     parseResult.setVersion(cmd.hasOption("version"));
   }
@@ -109,6 +111,11 @@ public class CLIParser {
           p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));
       parseResult.setInitCache(p.getProperty("init-cache", "Coleslaw"));
       parseResult.setServerIp(p.getProperty("server-ip", "game.openrsc.com"));
+
+      // OCR options
+      parseResult.setOCRType(
+          OCRType.fromName(p.getProperty("ocr-type", OCRType.INTERNAL.getName())));
+      parseResult.setOCRServer(p.getProperty("ocr-server", ""));
 
       // Boolean options
       parseResult.setAutoLogin(
@@ -151,8 +158,6 @@ public class CLIParser {
           p.getProperty("strength-items", "").replace(" ", "").toLowerCase().split(","));
 
       // CLI options
-      parseResult.setLocalOcr(
-          p.getProperty("local-ocr", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setHelp(
           p.getProperty("help", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setVersion(
@@ -220,6 +225,23 @@ public class CLIParser {
             .desc("Initialise cache for specified server.")
             .build();
 
+    // OCR options
+    OCRType[] ocrTypes = OCRType.VALUES;
+    String[] ocrOptions = new String[ocrTypes.length];
+    for (int i = 0; i < ocrTypes.length; i++) {
+      ocrOptions[i] = ocrTypes[i].getName();
+    }
+    Option ocrType =
+        Option.builder()
+            .longOpt("ocr-type")
+            .hasArg()
+            .argName(String.join("|", ocrOptions))
+            .desc("OCR sleep solver solution.")
+            .build();
+
+    Option ocrServer =
+        Option.builder().longOpt("ocr-server").desc("URL of OCR sleep server.").build();
+
     // Boolean options
     Option autoStart =
         Option.builder()
@@ -237,7 +259,6 @@ public class CLIParser {
         Option.builder().longOpt("interlace").desc("Enable graphics interlacing.").build();
     Option scriptSelectorWindow =
         Option.builder().longOpt("script-selector").desc("Display script selector window.").build();
-    Option localOCR = Option.builder().longOpt("local-ocr").desc("Enable local OCR.").build();
 
     // Switching options
     Option attackItems =
@@ -286,6 +307,8 @@ public class CLIParser {
     options.addOption(scriptArguments);
     options.addOption(theme);
     options.addOption(initCache);
+    options.addOption(ocrType);
+    options.addOption(ocrServer);
     options.addOption(autoLogin);
     options.addOption(sideWindow);
     options.addOption(logWindow);
@@ -293,7 +316,6 @@ public class CLIParser {
     options.addOption(disableGraphics);
     options.addOption(enableInterlacing);
     options.addOption(scriptSelectorWindow);
-    options.addOption(localOCR);
     options.addOption(attackItems);
     options.addOption(defenceItems);
     options.addOption(strengthItems);

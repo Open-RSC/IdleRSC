@@ -1,5 +1,6 @@
 package bot;
 
+import bot.ocrlib.OCRType;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -43,7 +44,8 @@ final class AuthFrame extends JFrame {
       strengthItems,
       defenseItems,
       positionX,
-      positionY;
+      positionY,
+      ocrServer;
   private Checkbox autoLogin,
       sideBar,
       logWindow,
@@ -52,7 +54,6 @@ final class AuthFrame extends JFrame {
       disableGraphics,
       interlace,
       screenRefresh,
-      localOcr,
       helpMenu,
       showVersion,
       newUi;
@@ -60,6 +61,7 @@ final class AuthFrame extends JFrame {
   private final Choice themeChoice = new Choice();
   private final Choice initChoice = new Choice();
   private final Choice serverIpChoice = new Choice();
+  private final Choice ocrChoice = new Choice();
   private final Button okButton;
 
   AuthFrame(final String title, final String message, final Window parent) {
@@ -171,6 +173,44 @@ final class AuthFrame extends JFrame {
       choicePanels[i].add(choices[i]);
     }
 
+    // Build out OCR options
+    String[] ocrLabels = {
+      "OCR Options:", // only show label
+      "OCR Type:",
+      "Sleep Server:",
+    };
+    Component[] ocrComponents = {
+      new JTextField(), ocrChoice, ocrServer = new JTextField(),
+    };
+    Panel[] ocrPanels = new Panel[ocrLabels.length];
+    for (int i = 0; i < ocrPanels.length; i++) {
+      ocrPanels[i] = new Panel();
+    }
+
+    for (final OCRType ocrType : OCRType.VALUES) {
+      ocrChoice.add(ocrType.getName());
+    }
+    ocrChoice.addItemListener(
+        e -> {
+          ocrServer.setEditable(getOCRType() == OCRType.REMOTE);
+        });
+    ocrServer.setEditable(false);
+    ocrServer.setBorder(
+        BorderFactory.createMatteBorder(0, 0, 2, 2, new java.awt.Color(0, 0, 0, 255)));
+
+    for (int i = 0; i < ocrComponents.length; i++) {
+      ocrPanels[i].setLayout(new BoxLayout(ocrPanels[i], BoxLayout.X_AXIS));
+      Label ocrLabel = new Label(ocrLabels[i], Label.LEFT);
+      ocrLabel.setMaximumSize(new Dimension(110, 30));
+      ocrPanels[i].add(ocrLabel);
+      if (i == 0) {
+        ocrLabel.setMaximumSize(new Dimension(140, 30));
+        continue;
+      }
+      setElementSizing(ocrComponents[i], new Dimension(80, 23));
+      ocrPanels[i].add(ocrComponents[i]);
+    }
+
     // Build out all of our checkbox options
     Checkbox[] checkBoxes = {
       autoLogin = new Checkbox(" Auto-login", false),
@@ -181,7 +221,6 @@ final class AuthFrame extends JFrame {
       disableGraphics = new Checkbox(" Disable Graphics", false),
       newUi = new Checkbox(" New UI style", false),
       interlace = new Checkbox(" Interlace Mode", false),
-      localOcr = new Checkbox(" Use Local-OCR", false),
       screenRefresh = new Checkbox(" 60s Screen Refresh", true),
       helpMenu = new Checkbox(" Show Help Menu", false),
       showVersion = new Checkbox(" Show Version", false)
@@ -207,6 +246,9 @@ final class AuthFrame extends JFrame {
       optionsPanel.add(subPanel);
     }
     optionsPanel2.add(new JLabel(Utils.getImage("res/logos/idlersc.icon.png"), JLabel.LEFT));
+    for (Panel subPanel : ocrPanels) {
+      optionsPanel2.add(subPanel);
+    }
     for (Panel subPanel : checkBoxPanels) {
       optionsPanel2.add(subPanel);
     }
@@ -276,6 +318,8 @@ final class AuthFrame extends JFrame {
     themeChoice.select(0);
     initChoice.select(0);
     serverIpChoice.select(0);
+    ocrChoice.select(0);
+    ocrServer.setText("");
     autoLogin.setState(false);
     sideBar.setState(true);
     logWindow.setState(false);
@@ -283,7 +327,6 @@ final class AuthFrame extends JFrame {
     botPaint.setState(true);
     disableGraphics.setState(false);
     screenRefresh.setState(true);
-    localOcr.setState(false);
     interlace.setState(false);
     helpMenu.setState(false);
     showVersion.setState(false);
@@ -311,6 +354,8 @@ final class AuthFrame extends JFrame {
     p.put("attack-items", auth.getAttackItems());
     p.put("strength-items", auth.getStrengthItems());
     p.put("defence-items", auth.getDefenseItems());
+    p.put("ocr-type", auth.getOCRType().getName());
+    p.put("ocr-server", auth.getOCRServer());
     p.put("auto-login", auth.getAutoLogin());
     p.put("sidebar", auth.getSideBar());
     p.put("log-window", auth.getLogWindow());
@@ -319,7 +364,6 @@ final class AuthFrame extends JFrame {
     p.put("disable-gfx", auth.getDisableGraphics());
     p.put("interlace", auth.getInterlace());
     p.put("screen-refresh", auth.getScreenRefresh());
-    p.put("local-ocr", auth.getLocalOcr());
     p.put("help", auth.getHelpMenu());
     p.put("version", auth.getShowVersion());
     p.put("new-ui", auth.getNewUi());
@@ -393,6 +437,8 @@ final class AuthFrame extends JFrame {
           attackItems.setText(p.getProperty("attack-items", ""));
           strengthItems.setText(p.getProperty("defence-items", ""));
           defenseItems.setText(p.getProperty("strength-items", ""));
+          ocrChoice.select(p.getProperty("ocr-type", OCRType.INTERNAL.getName()));
+          ocrServer.setText(p.getProperty("ocr-server", ""));
           autoLogin.setState(Boolean.parseBoolean(p.getProperty("auto-login", "false")));
           sideBar.setState(Boolean.parseBoolean(p.getProperty("sidebar", "false")));
           logWindow.setState(Boolean.parseBoolean(p.getProperty("log-window", "false")));
@@ -475,6 +521,14 @@ final class AuthFrame extends JFrame {
     return positionY.getText();
   }
 
+  synchronized OCRType getOCRType() {
+    return OCRType.fromName(ocrChoice.getSelectedItem());
+  }
+
+  synchronized String getOCRServer() {
+    return ocrServer.getText();
+  }
+
   synchronized String getAutoLogin() {
     return Boolean.toString(autoLogin.getState());
   }
@@ -505,10 +559,6 @@ final class AuthFrame extends JFrame {
 
   synchronized String getScreenRefresh() {
     return Boolean.toString(screenRefresh.getState());
-  }
-
-  synchronized String getLocalOcr() {
-    return Boolean.toString(localOcr.getState());
   }
 
   synchronized String getHelpMenu() {

@@ -164,7 +164,7 @@ public class SleepCallback {
         //   break;
 
       case REMOTE:
-        String url = Main.config.getRemoteOcrUrl();
+        String url = Main.config.getOCRServer();
 
         if (url.length() < 1) {
           Main.log("No remote OCR URL was set for " + controller.getPlayerName());

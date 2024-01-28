@@ -8,6 +8,7 @@ import bot.cli.CLIParser;
 import bot.cli.ParseResult;
 import bot.debugger.Debugger;
 import callbacks.DrawCallback;
+import callbacks.SleepCallback;
 import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
@@ -291,6 +292,8 @@ public class Main {
     debugger = new Debugger(reflector, client, mud, controller);
     debuggerThread = new Thread(debugger);
     debuggerThread.start();
+
+    SleepCallback.setOCRType(config.getOCRType());
 
     // just building out the windows
     JPanel botFrame = new JPanel();

@@ -70,7 +70,8 @@ script files that execute the same startup command.
 * `--hide-side-panel` - Hide side panel
 * `--init-cache <server>` - Initialise cache for specified server (coleslaw|uranium)
 * `--interlace` - Enable graphics interlacing
-* `--local-ocr` - Enable local OCR
+* `--ocr-type <type>` - Configure OCR sleepr (internal|remote|manual)
+* `--ocr-server <url>` - OCR server URL for remote sleep solver
 * `--log-window` - Display log window
 * `--script-name <name>` - Name of the script to run
 * `--password <password>` - Account password

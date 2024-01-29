@@ -1,26 +1,52 @@
 package callbacks;
 
 import bot.Main;
+import bot.ocrlib.*;
 import controller.Controller;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.imageio.ImageIO;
-import orsc.mudclient;
 
 public class SleepCallback {
-  private static String previousSleepWord = "";
-  private static int currentFatigue = 100;
+  static Controller controller = Main.getController();
+
+  private static final Path PATH_SLEEP = Paths.get("assets/sleep");
+  private static final String DICT_TXT = PATH_SLEEP.resolve("dictionary.txt").toString();
+  private static final String MODEL_TXT = PATH_SLEEP.resolve("model.txt").toString();
+
+  private static final String HC_NAME = "hc.bmp";
+  private static final String HC_BMP = Paths.get(HC_NAME).toString();
+  private static final String SLWORD_TXT = Paths.get("slword.txt").toString();
+
+  private static String sleepWord;
+
+  private static OCRType ocrType;
+
+  private static OCR ocr;
+  private static URL sleepServer;
+
+  private static File hc;
+  private static File slword;
+
+  private static long lastModified;
+  private static boolean checkLastModified;
 
   /**
    * Sleep hook which is called by the patched jar whenever the client goes to sleep.
@@ -30,12 +56,7 @@ public class SleepCallback {
    */
   public static void sleepHook(byte[] packet, int length) {
     if (packet[0] == 117) {
-      saveSleepImage(packet, packet.length);
-
-      Main.log("HC.bmp saved.");
-      if (currentFatigue == 0) handleSleep();
-      // Main.log("Waiting for fatigue to reach 0...");
-
+      onSleepWord(packet, length);
     } else {
       Main.log("Packet received was not a legitimate sleep image!");
     }
@@ -48,132 +69,187 @@ public class SleepCallback {
    * @param fatigue -- the current fatigue
    */
   public static void fatigueHook(int fatigue) {
-    Main.log("Current fatigue in sleep: " + fatigue);
-    currentFatigue = fatigue;
+    if (fatigue > 0) Main.log("Current fatigue in sleep: " + fatigue);
 
-    if (fatigue == 0) {
-      handleSleep();
+    onSleepFatigueUpdate(fatigue);
+  }
+
+  private static void onSleepWord(final byte[] data, final int length) {
+    switch (ocrType) {
+      case INTERNAL:
+        try (final ByteArrayOutputStream out = new ByteArrayOutputStream(4096)) {
+          saveBitmap(out, data, length);
+          sleepWord = ocr.guess(SimpleImageIO.readBMP(out.toByteArray()), true);
+          if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
+        } catch (final IOException ex) {
+          Main.log("Error solving sleep word");
+          ex.printStackTrace();
+          sleepWord = null;
+        }
+        break;
+
+        // case EXTERNAL:
+        //   try (final FileOutputStream out = new FileOutputStream(hc)) {
+        //     Main.log("Saving sleep image...");
+        //     saveBitmap(out, data, length);
+        //     checkLastModified = true;
+        //   } catch (final IOException ex) {
+        //     ex.printStackTrace();
+        //     sleepWord = null;
+        //   }
+        //   break;
+
+      case REMOTE:
+        try {
+          Main.log("Uploading CAPTCHA...");
+          sleepWord = uploadCaptcha(data, length);
+          if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
+        } catch (final Exception ex) {
+
+          Main.log("Error uploading CAPTCHA!");
+          ex.printStackTrace();
+          sleepWord = null;
+        }
+        break;
+
+      case MANUAL:
+      default:
+        break;
     }
   }
-  /** Handles the sleep (fatigue) functionality. Tries to interface with OCR or upload captcha */
-  private static void handleSleep() {
-    Controller controller = Main.getController();
-    mudclient mud = null;
 
-    if (controller == null) return;
+  private static void onSleepFatigueUpdate(final int fatigue) {
+    if (sleepWord == null) return;
 
-    mud = controller.getMud();
+    if (fatigue == 0) sendSleepWord();
+  }
 
-    if (Main.config.isLocalOcr()) {
-      Main.log("Local OCR specified...");
-      controller.sleep(1000); // give OCR time to catch up.
+  private static void sendSleepWord() {
+    controller.sendSleepWord(sleepWord);
+    Main.log("Sent CAPTCHA: " + sleepWord);
+    sleepWord = null;
+  }
 
-      try {
-        String guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
-        int fileReadAttempts = 0;
-        while (guess.equals(previousSleepWord) && fileReadAttempts < 5) {
-          Main.log("Sleep word has not updated... is OCR running?");
-          guess = new String(Files.readAllBytes(new File("./slword.txt").toPath()));
-          controller.sleep(1000);
-          fileReadAttempts++;
+  public static void onGameTick() {
+    if (!checkLastModified) return;
+    final long modifiedTime = slword.lastModified();
+    if (lastModified == modifiedTime) return;
+    lastModified = modifiedTime;
+    checkLastModified = false;
+    sleepWord = readLine(slword);
+    onSleepFatigueUpdate(controller.getFatigue());
+  }
+
+  public static void setOCRType(final OCRType type) {
+    ocrType = type;
+
+    Main.log("Setting up " + type.getName() + " OCR.");
+
+    switch (ocrType) {
+      case INTERNAL:
+        try (final BufferedReader mr = new BufferedReader(new FileReader(MODEL_TXT));
+            final BufferedReader dr = new BufferedReader(new FileReader(DICT_TXT))) {
+          ocr = new OCR(new DictSearch(dr), mr);
+        } catch (final IOException | OCRException e) {
+          e.printStackTrace();
+          Main.log("Falling back to manual.");
+          setOCRType(OCRType.MANUAL);
+        }
+        break;
+
+        // case EXTERNAL:
+        //   hc = new File(HC_BMP);
+        //   slword = new File(SLWORD_TXT);
+        //   lastModified = slword.lastModified();
+        //   break;
+
+      case REMOTE:
+        String url = Main.config.getOCRServer();
+
+        if (url.length() < 1) {
+          Main.log("No remote OCR URL was set for " + controller.getPlayerName());
+          Main.log("Falling back to internal.");
+          setOCRType(OCRType.INTERNAL);
         }
 
-        if (fileReadAttempts == 10) {
-          Main.log("OCR is not running or not functioning properly!");
-          return;
+        try {
+          sleepServer = new URL(url);
+          sleepServer.toURI();
+        } catch (MalformedURLException | URISyntaxException e) {
+          sleepServer = null;
+          Main.log("Remote OCR URL: '" + url + "' is not a valid url.");
+          Main.log("Falling back to internal.");
+          setOCRType(OCRType.INTERNAL);
         }
-        Main.log("guess: " + guess);
-        // controller.chatMessage(guess);
-        controller.sendSleepWord(guess);
-        previousSleepWord = guess;
-      } catch (IOException e) {
-        Main.log(
-            "error reading slword.txt! Ensure sleeper has access to write slword.txt and correct directory is set.");
-        e.printStackTrace();
-      }
-    } else {
-      Main.log("Uploading CAPTCHA...");
-      String result = uploadCaptcha("hc.bmp");
-      if (result == null) {
-        Main.log("Error uploading CAPTCHA!");
-        Main.log("Sleeping 10 seconds and trying again...");
-        controller.sleep(10000);
-        handleSleep();
-      }
-      Main.log("guess: " + result);
-      // controller.chatMessage(result);
-      controller.sendSleepWord(result);
-      controller.sleep(1000);
+        break;
+      case MANUAL:
+      default:
+        break;
     }
   }
+
   /**
    * Uploads a captcha file to the server and returns the result. Error: remote server currently is
    * not active to process Captcha
    *
-   * @param captchaFile the path of the captcha file to upload
+   * @param data -- the raw packet data which contains the sleep image
+   * @param length -- the length of the raw packet data
    * @return the result of the upload operation
    */
-  public static String uploadCaptcha(String captchaFile) {
+  public static String uploadCaptcha(final byte[] data, final int length) throws Exception {
+    String charset = "UTF-8";
+    String param = "fileupload";
+    // File binaryFile = new File(captchaFile);
+    String boundary =
+        Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
+    String CRLF = "\r\n"; // Line separator required by multipart/form-data.
 
-    try {
-      String url = "http://idlersc.com:8080/captcha";
-      String charset = "UTF-8";
-      String param = "fileupload";
-      File binaryFile = new File(captchaFile);
-      String boundary =
-          Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
-      String CRLF = "\r\n"; // Line separator required by multipart/form-data.
+    URLConnection connection = sleepServer.openConnection();
+    connection.setDoOutput(true);
+    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
-      URLConnection connection = new URL(url).openConnection();
-      connection.setDoOutput(true);
-      connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+    try (OutputStream output = connection.getOutputStream();
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true)) {
+      // Send normal param.
+      writer.append("--" + boundary).append(CRLF);
+      writer.append("Content-Disposition: form-data; name=\"param\"").append(CRLF);
+      writer.append("Content-Type: text/plain; charset=" + charset).append(CRLF);
+      writer.append(CRLF).append(param).append(CRLF).flush();
 
-      try (OutputStream output = connection.getOutputStream();
-          PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true)) {
-        // Send normal param.
-        writer.append("--" + boundary).append(CRLF);
-        writer.append("Content-Disposition: form-data; name=\"param\"").append(CRLF);
-        writer.append("Content-Type: text/plain; charset=" + charset).append(CRLF);
-        writer.append(CRLF).append(param).append(CRLF).flush();
+      // Send binary file.
+      writer.append("--" + boundary).append(CRLF);
+      writer
+          .append(
+              "Content-Disposition: form-data; name=\"fileupload\"; filename=\"" + HC_NAME + "\"")
+          .append(CRLF);
+      writer
+          .append("Content-Type: " + URLConnection.guessContentTypeFromName(HC_NAME))
+          .append(CRLF);
+      writer.append("Content-Transfer-Encoding: binary").append(CRLF);
+      writer.append(CRLF).flush();
+      saveBitmap(output, data, length);
+      // Files.copy(binaryFile.toPath(), output);
+      output.flush(); // Important before continuing with writer!
+      writer.append(CRLF).flush(); // CRLF is important! It indicates end of boundary.
 
-        // Send binary file.
-        writer.append("--" + boundary).append(CRLF);
-        writer
-            .append(
-                "Content-Disposition: form-data; name=\"fileupload\"; filename=\""
-                    + binaryFile.getName()
-                    + "\"")
-            .append(CRLF);
-        writer
-            .append("Content-Type: " + URLConnection.guessContentTypeFromName(binaryFile.getName()))
-            .append(CRLF);
-        writer.append("Content-Transfer-Encoding: binary").append(CRLF);
-        writer.append(CRLF).flush();
-        Files.copy(binaryFile.toPath(), output);
-        output.flush(); // Important before continuing with writer!
-        writer.append(CRLF).flush(); // CRLF is important! It indicates end of boundary.
-
-        // End of multipart/form-data.
-        writer.append("--" + boundary + "--").append(CRLF).flush();
-      }
-
-      // Request is lazily fired whenever you need to obtain information about response.
-      int responseCode = ((HttpURLConnection) connection).getResponseCode();
-      if (responseCode == 200) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String result;
-
-        result = in.readLine();
-
-        return result;
-      }
-
-      return null;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+      // End of multipart/form-data.
+      writer.append("--" + boundary + "--").append(CRLF).flush();
     }
+
+    // Request is lazily fired whenever you need to obtain information about response.
+    int responseCode = ((HttpURLConnection) connection).getResponseCode();
+    if (responseCode == 200) {
+      BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      String result;
+
+      result = in.readLine();
+
+      return result;
+    }
+
+    return null;
   }
+
   /**
    * Converts the given image to 1-bit per pixel (1bpp) format.
    *
@@ -192,21 +268,21 @@ public class SleepCallback {
 
     return img;
   }
-  /**
-   * Saves a sleep image.
-   *
-   * @param data the byte array containing the image data
-   * @param length the length of the image data
-   */
-  private static void saveSleepImage(byte[] data, int length) {
+
+  private static String readLine(final File file) {
     try {
-      ByteArrayInputStream in = new ByteArrayInputStream(data, 1, length);
-      BufferedImage fullColorImg = ImageIO.read(in);
-      BufferedImage img = convertImageTo1Bpp(fullColorImg);
-      ImageIO.write(img, "bmp", new File("hc.bmp"));
-    } catch (Exception e) {
-      System.out.println("Error saving CAPTCHA image!");
-      e.printStackTrace();
+      return new String(Files.readAllBytes(file.toPath()));
+    } catch (final Exception ex) {
+      ex.printStackTrace();
     }
+    return null;
+  }
+
+  private static void saveBitmap(final OutputStream out, final byte[] data, int length)
+      throws IOException {
+    ByteArrayInputStream in = new ByteArrayInputStream(data, 1, length);
+    BufferedImage fullColorImg = ImageIO.read(in);
+    BufferedImage img = convertImageTo1Bpp(fullColorImg);
+    ImageIO.write(img, "bmp", out);
   }
 }

@@ -1,5 +1,6 @@
 package bot.cli;
 
+import bot.ocrlib.OCRType;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -10,6 +11,7 @@ public class ParseResult {
   private String initCache = "Coleslaw";
   private String serverIp = "game.openrsc.com";
   private String themeName = "Rune Dark Theme";
+  private String remoteOcrUrl = "";
   private int positionX = -1;
   private int positionY = -1;
   private int spellId;
@@ -18,6 +20,8 @@ public class ParseResult {
   private boolean botPaintVisible = true;
   private boolean showSideBar = true;
   private String[] scriptArguments;
+  private OCRType ocrType = OCRType.INTERNAL;
+  private String ocrServer;
 
   // Boolean options
   private boolean usingAccount,
@@ -26,7 +30,6 @@ public class ParseResult {
       logWindowVisible,
       debug,
       graphicsInterlacing,
-      localOcr,
       screenRefresh,
       scriptSelectorOpen,
       newUi,
@@ -108,6 +111,22 @@ public class ParseResult {
     return serverIp;
   }
 
+  public OCRType getOCRType() {
+    return ocrType;
+  }
+
+  public void setOCRType(OCRType ocrType) {
+    this.ocrType = ocrType;
+  }
+
+  public String getOCRServer() {
+    return this.ocrServer;
+  }
+
+  public void setOCRServer(String ocrServer) {
+    this.ocrServer = ocrServer;
+  }
+
   public void setAutoLogin(boolean autoLogin) {
     this.autoLogin = autoLogin;
   }
@@ -162,14 +181,6 @@ public class ParseResult {
 
   public boolean isGraphicsEnabled() {
     return graphicsEnabled;
-  }
-
-  public void setLocalOcr(boolean localOcr) {
-    this.localOcr = localOcr;
-  }
-
-  public boolean isLocalOcr() {
-    return localOcr;
   }
 
   public void setScreenRefresh(boolean screenRefresh) {

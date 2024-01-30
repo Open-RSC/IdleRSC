@@ -1291,9 +1291,10 @@ public class Main {
   /**
    * A function for controlling whether or not scripts are running.
    *
-   * @param isRunning
+   * @param b
    */
-  public static void setRunning(boolean isRunning) {
+  public static void setRunning(boolean b) {
+    isRunning = b;
     if (isRunning) {
       startStopButton.setText("Stop");
     } else {

@@ -251,7 +251,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
         if (c.currentY() > 550 && c.currentY() < 3000) {
           doHerblawLoop();
           hobsToChaos();
-          if (getNewtSecCount() > 0 || c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) < 5) {
+          if (getNewtSecCount() > 0) { // || c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) < 5
             doHerblawLoop();
             buyMoreNewts();
             doHerblawLoop();
@@ -266,7 +266,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     c.walkTo(376, 515);
     c.walkTo(374, 509);
     c.walkTo(370, 506);
-    doShop(5, true);
+    doShop(getNewtSecCount(), true);
     if (c.isInShop()) c.closeShop();
     doHerblawLoop();
     shopToChaos();

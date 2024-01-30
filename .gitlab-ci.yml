@@ -48,6 +48,7 @@ build:
     - make release
     - mv *.zip IdleRSC.zip
   artifacts:
+    name: IdleRSC
     paths:
       - IdleRSC.zip
 

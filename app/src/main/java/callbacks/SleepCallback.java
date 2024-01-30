@@ -131,6 +131,7 @@ public class SleepCallback {
     sleepWord = readLine(slword);
     onSleepFatigueUpdate(controller.getFatigue());
   }
+
   public static void setOCRType(final OCRType type) {
     ocrType = type;
 
@@ -319,19 +320,19 @@ public class SleepCallback {
     // Copy embedded assets to assets/sleep directory
     try {
       copyResource(
-              "/assets/sleep/dictionary.txt",
-              "."
-                      + File.separator
-                      + "assets"
-                      + File.separator
-                      + "sleep"
-                      + File.separator
-                      + "dictionary.txt",
-              SleepCallback.class);
+          "/assets/sleep/dictionary.txt",
+          "."
+              + File.separator
+              + "assets"
+              + File.separator
+              + "sleep"
+              + File.separator
+              + "dictionary.txt",
+          SleepCallback.class);
       copyResource(
-              "/assets/sleep/model.txt",
-              "." + File.separator + "assets" + File.separator + "sleep" + File.separator + "model.txt",
-              SleepCallback.class);
+          "/assets/sleep/model.txt",
+          "." + File.separator + "assets" + File.separator + "sleep" + File.separator + "model.txt",
+          SleepCallback.class);
     } catch (IOException e) {
       e.printStackTrace();
       System.out.println(e.getMessage());

@@ -27,8 +27,6 @@ repositories {
 dependencies {
   // Ensure gradle is aware of the patched client dependency
   implementation files(new File(project(':patcher').getBuildDir(), 'libs/patched_client.jar'))
-  //include resource icons in jar
-  //implementation files(new File(project(':app').getProjectDir(), '/src/main/resources/res/'))
   // Used to find/populate scripts
   implementation libs.reflections
   // Dependency of reflections spits out an error when it is not included in the jar.
@@ -42,7 +40,7 @@ dependencies {
 
 tasks.named('compileJava') {
   // Create resources before compileJava runs
-  dependsOn ':createClientCache', ':copyMapData', ':buildPatchedClient'
+  dependsOn ':createClientCache', ':copyMapData', ':copyAssetData', ':buildPatchedClient'
 
   // Run spotlessApply after successful compilation rather than before, so
   // that any developer errors can be dealt with prior to formatting
@@ -99,10 +97,10 @@ tasks.named('clean') {
 
 // Create resources before processResources runs
 tasks.named('processResources') {
-  dependsOn ':createClientCache', ':copyMapData', ':buildPatchedClient'
+  dependsOn ':createClientCache', ':copyMapData', ':copyAssetData', ':buildPatchedClient'
 }
 
 // FTBFS: spotlessMisc complains when there is no dependency on copyMapData
 tasks.named('spotlessMisc') {
-  dependsOn ':copyMapData'
+  dependsOn ':copyMapData', ':copyAssetData'
 }

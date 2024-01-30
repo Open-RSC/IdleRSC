@@ -1054,8 +1054,7 @@ public class Main {
     };
 
     if (spriteFilelist != null) {
-      String spriteName = spriteFilelist[0].getName();
-      if (!spriteName.equalsIgnoreCase("Menus.osar")) return false;
+      if (!spriteFilelist[0].getName().equalsIgnoreCase("Menus.osar")) return false;
     } else return false;
     if (videoFilelist != null) {
       if (videoFilelist.length < 6) return false;
@@ -1101,7 +1100,7 @@ public class Main {
     dir.mkdirs();
 
     // Copy embedded cache to cache directory
-    try { // todo access the zip cache stored in the Idlersc.jar file
+    try {
       Extractor.extractZipResource("/cache/ZipCache.zip", dir.toPath());
     } catch (IOException e) {
       e.printStackTrace();

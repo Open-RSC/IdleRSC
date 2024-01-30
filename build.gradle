@@ -52,6 +52,13 @@ tasks.register('copyMapData', Copy) {
   into project(':app').file('src/main/resources/map')
 }
 
+tasks.register('copyAssetData', Copy) {
+  group 'build'
+  description 'Copy asset data for inclusion in the jar archive.'
+  from 'assets/sleep'
+  into project(':app').file('src/main/resources/assets/sleep')
+}
+
 tasks.register('prepareRelease', Copy) {
   group 'Distribution'
   description 'Prepare files for release zip.'

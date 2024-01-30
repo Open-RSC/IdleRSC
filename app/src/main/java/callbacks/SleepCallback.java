@@ -4,16 +4,7 @@ import bot.Main;
 import bot.ocrlib.*;
 import controller.Controller;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -22,6 +13,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import javax.imageio.ImageIO;
 
 public class SleepCallback {
@@ -147,6 +139,9 @@ public class SleepCallback {
 
     switch (ocrType) {
       case INTERNAL:
+        if (!checkAssetFiles()) {
+          createAssetFiles();
+        }
         try (final BufferedReader mr = new BufferedReader(new FileReader(MODEL_TXT));
             final BufferedReader dr = new BufferedReader(new FileReader(DICT_TXT))) {
           ocr = new OCR(new DictSearch(dr), mr);
@@ -284,5 +279,63 @@ public class SleepCallback {
     BufferedImage fullColorImg = ImageIO.read(in);
     BufferedImage img = convertImageTo1Bpp(fullColorImg);
     ImageIO.write(img, "bmp", out);
+  }
+
+  private static void copyResource(String res, String dest, Class c) throws IOException {
+    InputStream src = c.getResourceAsStream(res);
+    Files.copy(src, Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+  }
+
+  private static boolean checkAssetFiles() {
+    File sleepDirectory = new File("assets" + File.separator + "sleep");
+    File[] sleepFilelist = sleepDirectory.listFiles();
+    String[] fileNames = {"dictionary.txt", "model.txt"};
+    if (sleepFilelist != null) {
+      if (sleepFilelist.length != 2) return false;
+      String[] sleepNames = new String[sleepFilelist.length];
+      for (int i = 0; i < sleepFilelist.length; i++) {
+        sleepNames[i] = sleepFilelist[i].getName();
+      }
+      // compare the file names we read to the names we need
+      for (String sleepName : sleepNames) {
+        boolean callReturn = true;
+        for (String fileName : fileNames) {
+          if (sleepName.equalsIgnoreCase(fileName)) {
+            callReturn = false;
+            break;
+          }
+        }
+        // we are missing a file so regen cache
+        if (callReturn) return false;
+      }
+    } else return false;
+    return true;
+  }
+
+  private static void createAssetFiles() {
+    // Create Asset directory
+    File dir = new File("." + File.separator + "assets" + File.separator + "sleep");
+    dir.mkdirs();
+
+    // Copy embedded assets to assets/sleep directory
+    try {
+      copyResource(
+          "/assets/sleep/dictionary.txt",
+          "."
+              + File.separator
+              + "assets"
+              + File.separator
+              + "sleep"
+              + File.separator
+              + "dictionary.txt",
+          SleepCallback.class);
+      copyResource(
+          "/assets/sleep/model.txt",
+          "." + File.separator + "assets" + File.separator + "sleep" + File.separator + "model.txt",
+          SleepCallback.class);
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+    }
   }
 }

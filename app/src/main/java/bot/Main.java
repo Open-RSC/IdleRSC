@@ -420,8 +420,9 @@ public class Main {
     log("WindowListener started.");
 
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
-    Thread.sleep(800);
+    Thread.sleep(1000);
 
+    controller.login();
     // start up our listener threads
     log("Initializing LoginListener...");
     loginListener = new Thread(new LoginListener(controller));
@@ -444,6 +445,7 @@ public class Main {
       DrawCallback.setNextRefresh( // was 25k
           System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
     }
+
     // System.out.println("Next screen refresh at: " + DrawCallback.getNextRefresh());
     while (true) {
       if (isRunning()) {
@@ -711,6 +713,10 @@ public class Main {
     resetXpButton.addActionListener(e -> DrawCallback.resetXpCounter());
     showIdButton.addActionListener(e -> controller.toggleViewId());
     takeScreenshotButton.addActionListener(e -> controller.takeScreenshot(""));
+    autoLoginCheckbox.addActionListener(
+        e -> {
+          if (autoLoginCheckbox.isSelected()) controller.login();
+        });
     graphicsCheckbox.addActionListener(
         e -> {
           if (controller != null) {

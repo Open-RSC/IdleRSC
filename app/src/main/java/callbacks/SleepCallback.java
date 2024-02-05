@@ -163,7 +163,7 @@ public class SleepCallback {
           hashes.load(fs);
         } catch (final IOException e) {
           e.printStackTrace();
-          Main.log("Falling back to manual.");
+          Main.log("Falling back to internal.");
           setOCRType(OCRType.INTERNAL);
         }
         break;
@@ -193,7 +193,7 @@ public class SleepCallback {
 
         if (url.length() < 1) {
           Main.log("No remote OCR URL was set for " + controller.getPlayerName());
-          Main.log("Falling back to internal.");
+          Main.log("Falling back to image hashes.");
           setOCRType(OCRType.HASH);
         }
 
@@ -203,8 +203,8 @@ public class SleepCallback {
         } catch (MalformedURLException | URISyntaxException e) {
           sleepServer = null;
           Main.log("Remote OCR URL: '" + url + "' is not a valid url.");
-          Main.log("Falling back to internal.");
-          setOCRType(OCRType.INTERNAL);
+          Main.log("Falling back to image hashes.");
+          setOCRType(OCRType.HASH);
         }
         break;
       case MANUAL:
@@ -219,7 +219,7 @@ public class SleepCallback {
    * @param data - input byte array
    * @return - hashcode
    */
-  public static int hash32(byte[] data) {
+  private static int hash32(byte[] data) {
     return hash32(data, data.length);
   }
 
@@ -230,7 +230,7 @@ public class SleepCallback {
    * @param length - length of array
    * @return - hashcode
    */
-  public static int hash32(byte[] data, int length) {
+  private static int hash32(byte[] data, int length) {
     int hash = FNV1_32_INIT;
     for (int i = 0; i < length; i++) {
       hash ^= (data[i] & 0xff);
@@ -248,7 +248,7 @@ public class SleepCallback {
    * @param length -- the length of the raw packet data
    * @return the result of the upload operation
    */
-  public static String uploadCaptcha(final byte[] data, final int length) throws Exception {
+  private static String uploadCaptcha(final byte[] data, final int length) throws Exception {
     String charset = "UTF-8";
     String param = "fileupload";
     // File binaryFile = new File(captchaFile);

@@ -346,7 +346,7 @@ public class SleepCallback {
   private static boolean checkAssetFiles() {
     File sleepDirectory = new File("assets" + File.separator + "sleep");
     File[] sleepFilelist = sleepDirectory.listFiles();
-    String[] fileNames = {"dictionary.txt", "model.txt"};
+    String[] fileNames = {"dictionary.txt", "model.txt", "hashes.properties"};
     if (sleepFilelist != null) {
       if (sleepFilelist.length != 2) return false;
       String[] sleepNames = new String[sleepFilelist.length];
@@ -389,6 +389,16 @@ public class SleepCallback {
       copyResource(
           "/assets/sleep/model.txt",
           "." + File.separator + "assets" + File.separator + "sleep" + File.separator + "model.txt",
+          SleepCallback.class);
+      copyResource(
+          "/assets/sleep/hashes.properties",
+          "."
+              + File.separator
+              + "assets"
+              + File.separator
+              + "sleep"
+              + File.separator
+              + "hashes.properties",
           SleepCallback.class);
     } catch (IOException e) {
       e.printStackTrace();

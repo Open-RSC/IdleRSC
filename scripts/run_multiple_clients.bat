@@ -16,31 +16,31 @@
 TIMEOUT /t 1 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 1st Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 2nd Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 3rd Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 4th Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 5th Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 6th Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 7th Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 8th Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 9th Bot
-TIMEOUT /t 2 > NUL
+TIMEOUT /t 5 > NUL
 start javaw -jar IdleRSC.jar --auto-start --account "name"
 echo Launched 10th Bot
 TIMEOUT /t 5

@@ -137,7 +137,7 @@ public class DrawCallback {
       y += 14;
       if (c.isAuthentic()) { // hidden on coleslaw so that submenu ON, Npc Kill counts ON can show
         // Kill counter at that screen location! Uranium will still get fatigue.
-        c.drawString("Fatigue: " + fatigue + "@red@%", 7, y, 0xFFFFFF, 1);
+        c.drawString("Fatigue: " + fatigue + "@red@%", 7, 202, 0xFFFFFF, 1);
       }
       y += 14;
 

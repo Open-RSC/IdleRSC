@@ -677,7 +677,7 @@ public class AIOFighter extends IdleScript {
     else if (message.equals("I can't get a clear shot from here")) {
       c.setStatus("@red@Walking to NPC to get a shot...");
       c.walktoNPCAsync(currentAttackingNpc);
-      c.sleep(1280);
+      c.sleep(2400);
     }
   }
 

@@ -561,8 +561,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
     c.walkTo(377, 520);
     // check for needing more newts here
     doHerblawLoop();
-    if (startUp
-        || (getNewtSecCount() == 0 && c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) > 5)) {
+    if (startUp || (getNewtSecCount() == 0)) {
       c.atObject(376, 520);
       c.sleep(1280);
       c.walkTo(376, 3347);

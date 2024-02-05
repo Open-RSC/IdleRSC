@@ -162,8 +162,11 @@ public class CLIParser {
           p.getProperty("help", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setVersion(
           p.getProperty("version", "").replace(" ", "").toLowerCase().contains("true"));
-    } catch (final Throwable t) {
-      System.out.println("Error loading account " + parseResult.getUsername() + ": " + t);
+    } catch (Exception ignore) {
+      if (!accountName.equalsIgnoreCase("username") && !accountName.isEmpty()) {
+        System.out.println("Error loading account - " + accountName);
+        System.out.println(accountName + ".properties file does not exist");
+      }
     }
   }
 

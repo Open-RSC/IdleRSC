@@ -60,3 +60,5 @@ pages:
   artifacts:
     paths:
       - public
+
+# TODO - upload readme and doc to wiki https://gitlab.com/open-runescape-classic/idlersc/-/wikis/pages

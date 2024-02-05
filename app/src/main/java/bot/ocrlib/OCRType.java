@@ -1,10 +1,11 @@
 package bot.ocrlib;
 
 public enum OCRType {
-  INTERNAL(0, "Internal"),
-  // EXTERNAL(1, "External"),
-  REMOTE(2, "Remote"),
-  MANUAL(3, "Manual");
+  HASH(0, "Hashes"),
+  INTERNAL(1, "Internal"),
+  // EXTERNAL(2, "External"),
+  REMOTE(3, "Remote"),
+  MANUAL(4, "Manual");
 
   public static final OCRType[] VALUES = OCRType.values();
 

@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Properties;
 import javax.imageio.ImageIO;
 
 public class SleepCallback {
@@ -22,14 +24,20 @@ public class SleepCallback {
   private static final Path PATH_SLEEP = Paths.get("assets/sleep");
   private static final String DICT_TXT = PATH_SLEEP.resolve("dictionary.txt").toString();
   private static final String MODEL_TXT = PATH_SLEEP.resolve("model.txt").toString();
+  private static final String HASHES = PATH_SLEEP.resolve("hashes.properties").toString();
 
   private static final String HC_NAME = "hc.bmp";
   private static final String HC_BMP = Paths.get(HC_NAME).toString();
   private static final String SLWORD_TXT = Paths.get("slword.txt").toString();
 
+  private static final int FNV1_32_INIT = 0x811c9dc5;
+  private static final int FNV1_PRIME_32 = 16777619;
+
   private static String sleepWord;
 
   private static OCRType ocrType;
+
+  private static Properties hashes;
 
   private static OCR ocr;
   private static URL sleepServer;
@@ -68,6 +76,17 @@ public class SleepCallback {
 
   private static void onSleepWord(final byte[] data, final int length) {
     switch (ocrType) {
+      case HASH:
+        byte[] image = Arrays.copyOfRange(data, 1, length);
+        int hash = hash32(image);
+        sleepWord = hashes.getProperty(Integer.toString(hash));
+        if (sleepWord == null) {
+          sleepWord = "unknown";
+          Main.log("Could not find hash: " + hash);
+        }
+        if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
+        break;
+
       case INTERNAL:
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream(4096)) {
           saveBitmap(out, data, length);
@@ -138,6 +157,17 @@ public class SleepCallback {
     Main.log("Setting up " + type.getName() + " OCR.");
 
     switch (ocrType) {
+      case HASH:
+        try (FileInputStream fs = new FileInputStream(HASHES)) {
+          hashes = new Properties();
+          hashes.load(fs);
+        } catch (final IOException e) {
+          e.printStackTrace();
+          Main.log("Falling back to manual.");
+          setOCRType(OCRType.INTERNAL);
+        }
+        break;
+
       case INTERNAL:
         if (!checkAssetFiles()) {
           createAssetFiles();
@@ -164,7 +194,7 @@ public class SleepCallback {
         if (url.length() < 1) {
           Main.log("No remote OCR URL was set for " + controller.getPlayerName());
           Main.log("Falling back to internal.");
-          setOCRType(OCRType.INTERNAL);
+          setOCRType(OCRType.HASH);
         }
 
         try {
@@ -181,6 +211,33 @@ public class SleepCallback {
       default:
         break;
     }
+  }
+
+  /**
+   * FNV1a 32 bit variant.
+   *
+   * @param data - input byte array
+   * @return - hashcode
+   */
+  public static int hash32(byte[] data) {
+    return hash32(data, data.length);
+  }
+
+  /**
+   * FNV1a 32 bit variant.
+   *
+   * @param data - input byte array
+   * @param length - length of array
+   * @return - hashcode
+   */
+  public static int hash32(byte[] data, int length) {
+    int hash = FNV1_32_INIT;
+    for (int i = 0; i < length; i++) {
+      hash ^= (data[i] & 0xff);
+      hash *= FNV1_PRIME_32;
+    }
+
+    return hash;
   }
 
   /**

@@ -56,8 +56,8 @@ public class Woodcutting extends IdleScript {
     ItemId.YEW_LOGS.getId(),
     ItemId.MAGIC_LOGS.getId()
   };
-  private int saveX = 0;
-  private int saveY = 0;
+  private int treesX = 0;
+  private int treesY = 0;
   private int bankSelX = -1;
   private int bankSelY = -1;
   private int totalLogs = 0;
@@ -70,6 +70,7 @@ public class Woodcutting extends IdleScript {
   private final int[] bankerIds = {95, 224, 268, 485, 540, 617};
 
   private final int[] axes = {12, 87, 88, 203, 204, 405, 1263};
+
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>
@@ -137,30 +138,36 @@ public class Woodcutting extends IdleScript {
       if (c.getInventoryItemCount() <= 29) {
         bankTime = false;
       }
+
       if (c.getNearestObjectById(treeId) != null && chopTime && !c.isBatching()) {
+        c.setStatus("@red@Clicking tree");
         c.sleepHandler(98, true);
         int[] treeCoords = c.getNearestObjectById(treeId);
         c.atObject(treeCoords[0], treeCoords[1]);
         c.sleep(1200); // more sleep to let batching catch up!
         inventLogs = c.getInventoryItemCount(logId);
         batchingWaitScript();
-      } else { // added else so when getNearestObjectById == null this function doesn't repeat and
-        // overflow cpu usage
+      } else { // added else so when getNearestObjectById == null this function doesn't repeat
+        // and
+        c.setStatus("@red@No trees!");
         c.sleep(
             2000); // added sleep to this function to stop cpu overflow issue going to high usage
-        // (IMPORTANT)
       }
+
       if (bank.isSelected() && bankTime) {
         while (c.getNearestNpcByIds(bankerIds, true) == null) {
+          c.setStatus("@red@Going bank");
           startWalking(bankSelX, bankSelY);
         }
-        c.setStatus("@red@Banking");
-        if (!c.isInBank()) { // changed from while to if, might fix occasional bank break?
+        if (!c.isInBank()) {
+          c.setStatus("@red@Opening bank");
           c.openBank();
           c.sleep(100);
         }
       }
-      if (c.isInBank()) { // && c.getInventoryItemCount() > 0  //removed, not needed
+
+      if (c.isInBank()) {
+        c.setStatus("@red@Banking");
         totalLogs = totalLogs + c.getInventoryItemCount(logId);
         for (int itemId : c.getInventoryItemIds()) {
           if (itemId != 0 && !isAxe(itemId) && itemId != 1263) {
@@ -173,21 +180,20 @@ public class Woodcutting extends IdleScript {
         c.sleep(100);
         c.closeBank();
         bankTime = false;
-        c.sleep(1000); // added
+        c.sleep(1000);
       }
       if (c.getInventoryItemCount() == 0 && c.isInBank()) {
+        c.setStatus("@red@Closing bank");
         c.closeBank();
       }
       if (!bankTime && !chopTime) {
-        // c.sleep(1000);
-        if (c.getNearestObjectById(treeId) == null) { // changed to if
-          startWalking(saveX, saveY);
+        c.setStatus("@red@Walking to trees");
+        if (c.getNearestObjectById(treeId) == null) {
+          startWalking(treesX, treesY);
           c.sleep(
               340); // added sleep, this one probably not needed, but small sleep after pathwalking
           // is fine
-        } else { // changed too else to remove 2nd getNearestObjectById check
-          // if (c.getNearestObjectById(treeId) != null) { //removed
-          c.setStatus("@red@Chopping");
+        } else {
           chopTime = true;
         }
       }
@@ -198,6 +204,7 @@ public class Woodcutting extends IdleScript {
 
   private void batchingWaitScript() {
     while (c.isBatching() && c.getInventoryItemCount() < 30) {
+      c.setStatus("@red@Batching..");
       c.sleep(1000);
     }
   }
@@ -218,9 +225,12 @@ public class Woodcutting extends IdleScript {
           scriptStarted = true;
           chopTime = true;
           c.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
-          c.displayMessage("@red@Saving position");
-          saveX = c.currentX();
-          saveY = c.currentY();
+          c.displayMessage(
+              "@red@Saving position - This is where I'll cut "
+                  + treeField.getSelectedItem()
+                  + " trees");
+          treesX = c.currentX();
+          treesY = c.currentY();
           bankSelX = bankX[destination.getSelectedIndex()];
           bankSelY = bankY[destination.getSelectedIndex()];
           c.displayMessage("@red@Woodcutter started");
@@ -247,7 +257,7 @@ public class Woodcutting extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      c.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
+      c.drawBoxAlpha(7, 7, 132, 21 + 14 + 14, 0xFF0000, 64);
       c.drawString("@red@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       c.drawString(
           "@red@Logs Collected: @yel@" + (totalLogs + inventLogs), 10, 21 + 14, 0xFFFFFF, 1);

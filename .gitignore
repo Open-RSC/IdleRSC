@@ -46,8 +46,8 @@ accounts/
 # Local OCR Sleep BMP
 hc.bmp
 
-# Test IdleScript
-app/src/main/java/scripting/idlescript/AATesting.java
+# Don't include any file or directory from scripting/idlescript that starts with AA_TEST (For testing scripts)
+app/src/main/java/scripting/idlescript/AA_Test*
 
 # Don't include core assets downloaded when updating client with scripts
 assets/core

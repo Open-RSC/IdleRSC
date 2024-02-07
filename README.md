@@ -4,10 +4,13 @@
 
 # IdleRSC
 [![openrsc badge](https://img.shields.io/badge/Open_RSC_Launcher-0?style=flat&label=Play&color=045CDD)][launcher]
-[![releases badge](https://gitlab.com/open-runescape-classic/idlersc/-/badges/release.svg "Latest IdleRSC Releases")][releases] [![pipeline badge](https://gitlab.com/open-runescape-classic/idlersc/badges/master/pipeline.svg "Idlersc Commits")][commits] [![discord badge](https://img.shields.io/discord/459699205674369025?logo=discord&logoColor=%23FFFFFF&label=Open%20RSC&color=%235865F2 "Open Runescape Classic Discord")][discord]
 
-IdleRSC is a bot for the [OpenRSC][OpenRSC] coleslaw and uranium worlds that uses code injection and
-reflection. It has it's own custom scripting API called IdleScript, as well as
+[![releases badge](https://gitlab.com/open-runescape-classic/idlersc/-/badges/release.svg "Latest IdleRSC Releases")][releases]
+[![pipeline badge](https://gitlab.com/open-runescape-classic/idlersc/badges/master/pipeline.svg?key_text=Pipeline "Idlersc Commits")][commits]
+[![discord badge](https://img.shields.io/discord/459699205674369025?logo=discord&logoColor=%23FFFFFF&label=Open%20RSC&color=%235865F2 "Open Runescape Classic Discord")][discord]
+
+IdleRSC is a bot for the [OpenRSC][openrsc] coleslaw and uranium worlds that uses code injection and
+reflection. It has its own custom scripting API called IdleScript, as well as
 backwards compatibility with APOS and SBot scripts. It also provides staker
 bot functionality!
 
@@ -16,9 +19,9 @@ bot functionality!
 ---
 
 ### Rules
-***DO NOT*** use this client to bot on non-botting servers. 
+***DO NOT*** use this client to bot on non-botting servers.
 
-The only allowed openRSC botting servers are Coleslaw and Uranium. 
+The only allowed openRSC botting servers are Coleslaw and Uranium.
 
 Using this client on disallowed OpenRSC servers will result in a ***BAN***.
 
@@ -37,7 +40,7 @@ Using this client on disallowed OpenRSC servers will result in a ***BAN***.
 
 ### Account Security
 
-Please be aware that account property files are not encrypted. 
+Please be aware that account property files are not encrypted.
 
 If someone has your properties file, they have access to your account.
 
@@ -203,7 +206,7 @@ Please see changes made to scripts which were added.
   package scripting.sbot;
   import compatibility.sbot.Script;
 
-3. Remove the mudclient constructor. 
+3. Remove the mudclient constructor.
 For example, for alch.java, you would want to remove the following lines:
   public alch(mudclient rs)
   {
@@ -223,7 +226,7 @@ Compile using Eclipse or IntelliJ Gradle (preferred) or the included compilation
 
 ---
   This started as a project in April 2020 due to a distinct lack of botting
-  clients available for RSC post-closure. 
+  clients available for RSC post-closure.
 
   After Jagex decided to nerf the
   blowpipe in OSRS, the original coder gained renewed interest in January 2021,
@@ -245,18 +248,18 @@ Compile using Eclipse or IntelliJ Gradle (preferred) or the included compilation
   <div align="left">
 
     Q: Can I donate to this project?
-    A: No donations nor subscriptions are accepted. We don't want any money. 
-      We also don't believe that dumping player money into ads will make any 
-      difference for long term player growth and retention. 
+    A: No donations nor subscriptions are accepted. We don't want any money.
+      We also don't believe that dumping player money into ads will make any
+      difference for long term player growth and retention.
       The best way to help the team is to help with submitting bug reports,
-      submitting GitLab merge requests, and spreading the word about us to 
+      submitting GitLab merge requests, and spreading the word about us to
       your friends so they will want to be a part of this too!
 
   </div>
 </details>
 
 ---
-### Discussion and Contributing 
+### Discussion and Contributing
 
 Feel free to join the **#botting-client-development** channel in the [OpenRSC discord][discord].
 

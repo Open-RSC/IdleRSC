@@ -360,9 +360,15 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     }
 
     try {
-      Thread.sleep(1000L);
+      for (int i = 0; i < 5000; i += 100) {
+        if (path != null) break;
+        Thread.sleep(100L);
+      }
     } catch (InterruptedException ex) {
     }
+    if (path == null)
+      System.out.println(
+          "Could not calculate path in 5 seconds! Path is still null, so script will fail to run..");
 
     if (start_time == -1L) {
       start_time = System.currentTimeMillis();
@@ -390,130 +396,128 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
   Button okButton, cancelButton; // References for button actions
 
   private void createFrame() {
-    if (frame == null) {
-      frame = new Frame(getClass().getSimpleName());
+    frame = new Frame(getClass().getSimpleName());
 
-      frame.addWindowListener(
-          new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-              frame.dispose(); // Ensure the frame closes properly
-            }
+    frame.addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent e) {
+            frame.dispose(); // Ensure the frame closes properly
+          }
 
-            public void windowOpened(WindowEvent e) {
-              searchField.requestFocusInWindow();
+          public void windowOpened(WindowEvent e) {
+            searchField.requestFocusInWindow();
+            searchField.selectAll();
+          }
+        });
+
+    searchField = new TextField(20);
+    searchField.addKeyListener(
+        new KeyAdapter() {
+          public void keyPressed(KeyEvent e) {
+            if ((e.getKeyCode() == KeyEvent.VK_A)
+                && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)) {
               searchField.selectAll();
-            }
-          });
-
-      searchField = new TextField(20);
-      searchField.addKeyListener(
-          new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-              if ((e.getKeyCode() == KeyEvent.VK_A)
-                  && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)) {
-                searchField.selectAll();
+              e.consume();
+            } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+              actionPerformed(new ActionEvent(okButton, ActionEvent.ACTION_PERFORMED, "OK"));
+              e.consume();
+            } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+              frame.dispose(); // Closes the frame
+            } else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+              int currentIndex = choice.getSelectedIndex();
+              int newIndex = currentIndex + (e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1);
+              if (newIndex >= 0 && newIndex < choice.getItemCount()) {
+                choice.select(newIndex);
+                choice.makeVisible(newIndex);
+                updateFieldEndWithSelectedLocation();
                 e.consume();
-              } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                actionPerformed(new ActionEvent(okButton, ActionEvent.ACTION_PERFORMED, "OK"));
-                e.consume();
-              } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                frame.dispose(); // Closes the frame
-              } else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
-                int currentIndex = choice.getSelectedIndex();
-                int newIndex = currentIndex + (e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1);
-                if (newIndex >= 0 && newIndex < choice.getItemCount()) {
-                  choice.select(newIndex);
-                  choice.makeVisible(newIndex);
-                  updateFieldEndWithSelectedLocation();
-                  e.consume();
-                }
               }
             }
+          }
 
-            public void keyReleased(KeyEvent e) {
-              if (!e.isActionKey()) {
-                updateSearchResults();
-              }
+          public void keyReleased(KeyEvent e) {
+            if (!e.isActionKey()) {
+              updateSearchResults();
             }
-          });
+          }
+        });
 
-      Panel searchPanel = new Panel();
-      searchPanel.add(new Label("Search:"));
-      searchPanel.add(searchField);
+    Panel searchPanel = new Panel();
+    searchPanel.add(new Label("Search:"));
+    searchPanel.add(searchField);
 
-      okButton = new Button("OK");
-      okButton.addActionListener(this);
-      Button cancelButton = new Button("Cancel");
-      cancelButton.addActionListener(this);
-      Panel bp = new Panel(); // Button panel
-      bp.add(okButton);
-      bp.add(cancelButton);
+    okButton = new Button("OK");
+    okButton.addActionListener(this);
+    Button cancelButton = new Button("Cancel");
+    cancelButton.addActionListener(this);
+    Panel bp = new Panel(); // Button panel
+    bp.add(okButton);
+    bp.add(cancelButton);
 
-      Panel formPanel = new Panel(new GridLayout(2, 2, 5, 5));
-      field_start = new TextField(getX() + "," + getY(), 20);
-      field_end = new TextField("0,0", 20);
-      formPanel.add(new Label("Start location:"));
-      formPanel.add(field_start);
-      formPanel.add(new Label("Target location:"));
-      formPanel.add(field_end);
+    Panel formPanel = new Panel(new GridLayout(2, 2, 5, 5));
+    field_start = new TextField(getX() + "," + getY(), 20);
+    field_end = new TextField("0,0", 20);
+    formPanel.add(new Label("Start location:"));
+    formPanel.add(field_start);
+    formPanel.add(new Label("Target location:"));
+    formPanel.add(field_end);
 
-      choice = new List(4, false);
-      for (Location l : locations) {
-        choice.add(l.name);
-      }
-      choice.addItemListener(this);
-      choice.addKeyListener(
-          new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-              if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
-                e.consume(); // Already handled in searchField's listener
-              }
-            }
-          });
-
-      Panel listPanel = new Panel(new BorderLayout());
-      listPanel.add(new Label("Preset targets", Label.CENTER), BorderLayout.NORTH);
-      listPanel.add(choice, BorderLayout.CENTER);
-
-      Panel centerPanel = new Panel(new BorderLayout());
-      centerPanel.add(formPanel, BorderLayout.NORTH);
-      centerPanel.add(listPanel, BorderLayout.CENTER);
-
-      frame.add(searchPanel, BorderLayout.NORTH);
-      frame.add(centerPanel, BorderLayout.CENTER);
-      frame.add(bp, BorderLayout.SOUTH);
-
-      frame.pack(); // Adjusts frame to fit preferred sizes
-      frame.setMinimumSize(new Dimension(300, 400)); // Ensures a minimum size
-      // frame.setSize(300, 400); // Not necessary due to pack() and setMinimumSize()
-
-      // This ensures UI components are correctly redrawn, addressing the grey-out
-      // issue
-      SwingUtilities.invokeLater(
-          () -> {
-            frame.validate();
-            frame.repaint();
-          });
-
-      frame.setLocationRelativeTo(null);
-      frame.setVisible(true);
-    } else {
-      frame.setVisible(
-          true); // Make sure to make the frame visible again if it's not the first time
-      // Repaint and revalidate in case of re-opening to avoid grey out
-      frame.repaint();
-      frame.revalidate();
+    choice = new List(4, false);
+    for (Location l : locations) {
+      choice.add(l.name);
     }
+    choice.addItemListener(this);
+    choice.addKeyListener(
+        new KeyAdapter() {
+          public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+              e.consume(); // Already handled in searchField's listener
+            }
+          }
+        });
+
+    Panel listPanel = new Panel(new BorderLayout());
+    listPanel.add(new Label("Preset targets", Label.CENTER), BorderLayout.NORTH);
+    listPanel.add(choice, BorderLayout.CENTER);
+
+    Panel centerPanel = new Panel(new BorderLayout());
+    centerPanel.add(formPanel, BorderLayout.NORTH);
+    centerPanel.add(listPanel, BorderLayout.CENTER);
+
+    frame.add(searchPanel, BorderLayout.NORTH);
+    frame.add(centerPanel, BorderLayout.CENTER);
+    frame.add(bp, BorderLayout.SOUTH);
+
+    frame.pack(); // Adjusts frame to fit preferred sizes
+    frame.setMinimumSize(new Dimension(300, 400)); // Ensures a minimum size
+    // frame.setSize(300, 400); // Not necessary due to pack() and setMinimumSize()
+
+    // This ensures UI components are correctly redrawn, addressing the grey-out
+    // issue
+    SwingUtilities.invokeLater(
+        () -> {
+          frame.validate();
+          frame.repaint();
+        });
+
+    frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
   }
+
+  private Map<Integer, Integer> choiceToLocationsMap = new HashMap<>();
 
   private void updateSearchResults() {
     String searchText = searchField.getText().toLowerCase();
     choice.removeAll();
+    choiceToLocationsMap.clear();
     boolean itemAdded = false;
-    for (Location l : locations) {
+    for (int i = 0; i < locations.length; i++) {
+      Location l = locations[i];
       if (l.name.toLowerCase().contains(searchText)) {
         choice.add(l.name);
+        choiceToLocationsMap.put(
+            choice.getItemCount() - 1, i); // Map the choice index to the original array index
         if (!itemAdded) {
           choice.select(0);
           updateFieldEndWithSelectedLocation();
@@ -524,15 +528,22 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
   }
 
   private void updateFieldEndWithSelectedLocation() {
-    if (choice.getSelectedIndex() >= 0) {
-      Location loc = locations[choice.getSelectedIndex()];
-      String b = loc.x + "," + loc.y;
-      field_end.setText(b);
+    int selectedIndex = choice.getSelectedIndex();
+    if (selectedIndex >= 0) {
+      // Use the mapping to get the correct index in locations array
+      Integer originalIndex = choiceToLocationsMap.get(selectedIndex);
+      if (originalIndex != null) {
+        Location loc = locations[originalIndex];
+        String b = loc.x + "," + loc.y;
+        field_end.setText(b);
+      }
     }
   }
 
   public boolean walkPath() {
-    if (path == null) return false;
+    if (path == null) {
+      return false;
+    }
     Node last = path[path.length - 1];
     if (getX() == last.x && getY() == last.y) {
       path = null;
@@ -560,14 +571,17 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         System.out.println("Opening Tav gate going north");
         wait_time = c_time + 8000;
       } else if ((isAtApproxCoords(343, 570, 11) || isAtApproxCoords(342, 574, 7))
-          && (n.y >= 581)) {
+          && n.y >= 581
+          && getY() <= 580) {
+        walkTo(343, 580);
         atObject(343, 581);
         System.out.println("Opening Tav gate going south");
-        wait_time = c_time + 8000;
+        wait_time = c_time + 2000;
       } else if (isAtApproxCoords(703, 542, 10) && (n.y <= 531)) {
+        walkTo(703, 532);
         atObject(703, 531);
-        System.out.println("Opening Gnome Tree gate going north"); // add point here
-        wait_time = c_time + 8000;
+        System.out.println("Opening Gnome Tree gate going north");
+        wait_time = c_time + 2000;
       } else if (isAtApproxCoords(703, 521, 10) && (n.y > 531)) {
         atObject(703, 531);
         System.out.println("Opening Gnome Tree gate going south");

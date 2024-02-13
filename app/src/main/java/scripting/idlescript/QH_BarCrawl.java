@@ -37,6 +37,8 @@ public final class QH_BarCrawl extends QH__QuestHandler {
     c.log("~ by Kaila", "mag");
 
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.isRunning()) {
         CURRENT_QUEST_STEP = "Starting Barcrawl";
         c.walkTo(494, 544);

@@ -49,6 +49,8 @@ public final class K_IronGiftOpener extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount(itemId) < 1 || c.getInventoryItemCount() > 29) {
         if (!c.isInBank()) {
           ORSCharacter npc = c.getNearestNpcByIds(bankerIds, false);

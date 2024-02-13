@@ -93,8 +93,8 @@ public class PowerFletcha extends IdleScript {
 
   public void scriptStart() {
     while (controller.isRunning()) {
-
-      controller.sleepHandler(98, true);
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
 
       for (int id : bowIds) {
         if (controller.getInventoryItemCount(id) > 0) {

@@ -74,6 +74,8 @@ public final class PotionMaker extends IdleScript {
     // Ingredients: Full Vial[0], Clean Herb[1], Secondary[2], Empty Vial[3], Unid Herb[4],
     // Unfinished Potion[5]
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (ingredients[5] != 0 // 1, 2, 4
           && ((c.isItemInInventory(ingredients[1]) || c.isItemInInventory(ingredients[4]))
               && (c.isItemInInventory(ingredients[0]) || c.isItemInInventory(ingredients[3])))) {
@@ -103,7 +105,7 @@ public final class PotionMaker extends IdleScript {
     c.setStatus("@cya@Making Unfinished Potions");
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(ingredients[1]), c.getInventoryItemSlotIndex(ingredients[0]));
-    waitWhileBatching();
+    c.waitForBatching(false);
     bank();
   }
 
@@ -112,7 +114,7 @@ public final class PotionMaker extends IdleScript {
     c.setStatus("@cya@Adding Secondary");
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(ingredients[2]), c.getInventoryItemSlotIndex(ingredients[5]));
-    waitWhileBatching();
+    c.waitForBatching(false);
     made += (before - c.getInventoryItemCount(ingredients[5]));
     bank();
   }
@@ -121,7 +123,7 @@ public final class PotionMaker extends IdleScript {
     c.setStatus("@cya@Grinding " + c.getItemName(ingredients[2]));
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(ingredients[1]), c.getInventoryItemSlotIndex(ingredients[2]));
-    waitWhileBatching();
+    c.waitForBatching(false);
     bank();
     // add to total
     made += c.getInventoryItemCount(ingredients[4]);
@@ -136,7 +138,7 @@ public final class PotionMaker extends IdleScript {
       while (c.isCurrentlyWalking()) {
         c.sleep(640);
       }
-      waitWhileBatching();
+      c.waitForBatching(false);
       bank();
     } catch (Exception e) {
       // No Fountain Nearby, wasn't in Falador west bank
@@ -144,17 +146,10 @@ public final class PotionMaker extends IdleScript {
     }
   }
 
-  private void waitWhileBatching() {
-    c.sleep(2000);
-    while (c.isBatching()) {
-      c.sleep(640);
-    }
-  }
-
   private void cleanHerbs() {
     c.setStatus("@cya@Cleaning Herbs");
     c.itemCommand(ingredients[4]);
-    waitWhileBatching();
+    c.waitForBatching(false);
     bank();
   }
 

@@ -83,7 +83,8 @@ public final class K_EdgeDungeonMine extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() == 30) {
         goToBank();
       }
@@ -93,7 +94,7 @@ public final class K_EdgeDungeonMine extends K_kailaScript {
           currentOre[0] = 0;
           currentOre[1] = 0;
         }
-        if (c.isBatching()) {
+        if (c.isBatching() && !c.getNeedToMove()) {
           if (Objects.equals(isMining, "mithril")) {
             if (adamantiteAvailable()) {
               mine("adamantite");

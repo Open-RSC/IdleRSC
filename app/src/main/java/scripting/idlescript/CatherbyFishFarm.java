@@ -7,7 +7,8 @@ public class CatherbyFishFarm extends IdleScript {
 
   public int start(String[] param) {
     while (controller.isRunning()) {
-      controller.sleepHandler(98, true);
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount() < 30) {
         int fishLvl = controller.getBaseStat(controller.getStatId("Fishing"));
         int cookLvl = controller.getBaseStat(controller.getStatId("Cooking"));
@@ -56,7 +57,7 @@ public class CatherbyFishFarm extends IdleScript {
     for (int rawId : rawIds) {
       while (controller.getInventoryItemCount(rawId) > 0) {
 
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
 
         if (!controller.isBatching()) controller.useItemIdOnObject(432, 480, rawId);
 

@@ -114,7 +114,8 @@ public class Wildberries extends IdleScript {
 
   public void scriptStart() {
     while (controller.isRunning()) {
-
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       // leaveCombat();
       eat();
 

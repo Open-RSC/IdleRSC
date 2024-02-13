@@ -61,6 +61,8 @@ public final class K_MonkRobes extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() == 30) {
         c.setStatus("@red@Banking..");
         GrapeToBank();

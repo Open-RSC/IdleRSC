@@ -33,6 +33,8 @@ public class EssenceMiner extends IdleScript {
   public int start(String[] parameters) {
     controller.displayMessage("@gre@" + '"' + "heh" + '"' + " - Searos");
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       scriptStart();
     }
 

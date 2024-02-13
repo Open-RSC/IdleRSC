@@ -39,19 +39,8 @@ public final class K_WineDrinker extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
-      if (System.currentTimeMillis() > next_attempt) {
-        c.log("@red@Walking to Avoid Logging!");
-        int x = c.currentX();
-        int y = c.currentY();
-        if (c.isReachable(x + 1, y, true)) c.walkTo(x + 1, y, 0, false);
-        else if (c.isReachable(x - 1, y, true)) c.walkTo(x - 1, y, 0, false);
-        else if (c.isReachable(x, y + 1, true)) c.walkTo(x, y + 1, 0, false);
-        else if (c.isReachable(x, y - 1, true)) c.walkTo(x, y - 1, 0, false);
-        c.sleep(640);
-        next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-        long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
-        c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
-      }
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount(142) < 1) {
         c.setStatus("@gre@Banking..");
         c.displayMessage("@gre@Banking..");

@@ -33,6 +33,8 @@ public class HerbHarvester extends IdleScript {
     controller.quitIfAuthentic();
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount() < 30) {
         int[] coords = controller.getNearestObjectById(1274);
 

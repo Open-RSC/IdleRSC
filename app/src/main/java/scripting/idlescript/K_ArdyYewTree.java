@@ -85,6 +85,8 @@ public final class K_ArdyYewTree extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() < 30) {
         c.setStatus("@gre@Cutting Yews..");
         if (c.getObjectAtCoord(509, 571) == 309) {
@@ -127,9 +129,7 @@ public final class K_ArdyYewTree extends K_kailaScript {
     c.walkTo(510, 570);
     c.atObject(509, 571);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       goToBank();
     }
@@ -139,9 +139,7 @@ public final class K_ArdyYewTree extends K_kailaScript {
     c.walkTo(509, 568);
     c.atObject(507, 567);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       goToBank();
     }
@@ -151,9 +149,7 @@ public final class K_ArdyYewTree extends K_kailaScript {
     c.walkTo(512, 526);
     c.atObject(513, 525);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       altYewToMainYew();
       c.walkTo(511, 571);

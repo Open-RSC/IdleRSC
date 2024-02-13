@@ -58,6 +58,8 @@ public final class K_GiftGiver extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (option == 0) { // Xmas Crackers
         crackerLoop();
       } else if (option == 1) { // Xmas Presents

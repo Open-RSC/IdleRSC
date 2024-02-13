@@ -11,6 +11,7 @@ import models.entities.ItemId;
  * <b>Seers Magic Tree</b>
  *
  * <p>Cuts Magic logs in seers, including the far western one, banks in Seers. <br>
+ * Apos compatability fixed
  *
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
@@ -35,6 +36,18 @@ public final class K_SeersMagicTree extends K_kailaScript {
 
   private void startSequence() {
     c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
+    boolean noAxe = true;
+    boolean noBag = true;
+    for (int axe : axeId) {
+      if (c.getInventoryItemCount(axe) > 0) noAxe = false;
+    }
+    if (!c.isAuthentic() || c.getInventoryItemCount(ItemId.SLEEPING_BAG.getId()) > 0) noBag = false;
+    if (noAxe || noBag) {
+      c.log(
+          "START ITEMS MISSING: start with an axe in inventory/equip and sleeping bag if uranium",
+          "red");
+      c.stop();
+    }
     if (c.isInBank()) c.closeBank();
     if (c.currentY() < 458) {
       bank();
@@ -47,7 +60,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
       c.walkTo(516, 488);
       c.sleep(1380);
     }
-    c.setBatchBarsOn();
+    if (!c.isAuthentic()) c.setBatchBarsOn();
   }
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -57,7 +70,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    if (parameters.length > 0 && !parameters[0].equals("")) {
+    if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Magics", 0);
         System.out.println("Got Autostart, Cutting Magics");
@@ -81,113 +94,73 @@ public final class K_SeersMagicTree extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() < 30) {
-        if (c.getObjectAtCoord(519, 494) == 310) {
-          cutFirstTree();
-        }
-        if (c.getObjectAtCoord(519, 494) == 310) {
-          cutFirstTree();
-        }
-        if (c.getObjectAtCoord(519, 494) == 310) {
-          cutFirstTree();
-        }
-        if (c.getObjectAtCoord(521, 492) == 310) {
-          cutSecondTree();
-        }
-        if (c.getObjectAtCoord(521, 492) == 310) {
-          cutSecondTree();
-        }
-        if (c.getObjectAtCoord(521, 492) == 310) {
-          cutSecondTree();
-        }
-        if (c.getObjectAtCoord(524, 489) == 310) {
-          cutThirdTree();
-        }
-        if (c.getObjectAtCoord(524, 489) == 310) {
-          cutThirdTree();
-        }
-        if (c.getObjectAtCoord(524, 489) == 310) {
-          cutThirdTree();
-        }
-        c.walkTo(531, 487);
-        if (c.getObjectAtCoord(548, 484) == 310) {
-          cutFourthTree();
-        }
-        c.sleep(1280);
+        if (c.getObjectAtCoord(519, 494) == 310) cutFirstTree();
+        else if (c.getObjectAtCoord(521, 492) == 310) cutSecondTree();
+        else if (c.getObjectAtCoord(524, 489) == 310) cutThirdTree();
+        else if (c.getObjectAtCoord(548, 484) == 310) cutFourthTree();
+        else if (c.currentX() != 531 || c.currentY() != 487)
+          c.walkTo(531, 487); // go to center position to check
+        c.sleep(GAME_TICK);
       } else {
-        goToBank();
+        if (c.currentX() < 533) goToBank();
+        else goToBank2();
       }
     }
   }
 
   private void cutFirstTree() {
     c.walkTo(519, 493);
-    c.atObject(519, 494);
-    c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
-    if (c.getInventoryItemCount() > 29) {
-      goToBank();
+    while (c.isRunning()
+        && !c.getShouldSleep()
+        && c.getObjectAtCoord(519, 494) == 310
+        && c.getInventoryItemCount() < 30) {
+      c.atObject(519, 494);
+      c.sleep(GAME_TICK);
+      c.waitForBatching(true);
     }
   }
 
   private void cutSecondTree() {
     c.walkTo(521, 491);
-    c.atObject(521, 492);
-    c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
-    if (c.getInventoryItemCount() > 29) {
-      goToBank();
+    while (c.isRunning()
+        && !c.getShouldSleep()
+        && c.getObjectAtCoord(521, 492) == 310
+        && c.getInventoryItemCount() < 30) {
+      c.atObject(521, 492);
+      c.sleep(GAME_TICK);
+      c.waitForBatching(true);
     }
   }
 
   private void cutThirdTree() {
     c.walkTo(524, 488);
-    c.atObject(524, 489);
-    c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
-    if (c.getInventoryItemCount() > 29) {
-      goToBank();
+    while (c.isRunning()
+        && !c.getShouldSleep()
+        && c.getObjectAtCoord(524, 489) == 310
+        && c.getInventoryItemCount() < 30) {
+      c.atObject(524, 489);
+      c.sleep(GAME_TICK);
+      c.waitForBatching(true);
     }
   }
 
   private void cutFourthTree() {
     c.walkTo(538, 486);
     c.walkTo(547, 484);
-    c.atObject(548, 484);
-    c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
+    while (c.isRunning()
+        && !c.getShouldSleep()
+        && c.getObjectAtCoord(548, 484) == 310
+        && c.getInventoryItemCount() < 30) {
+      c.atObject(548, 484);
+      c.sleep(GAME_TICK);
+      c.waitForBatching(true);
     }
-    if (c.getInventoryItemCount() > 29) {
-      goToBank2();
-    }
-    if (c.getObjectAtCoord(548, 484) == 310) {
-      cutFourthTreeAgain();
-    }
-    if (c.getObjectAtCoord(548, 484) == 310) {
-      cutFourthTreeAgain();
-    }
-    if (c.getObjectAtCoord(548, 484) == 310) {
-      cutFourthTreeAgain();
-    }
-    c.walkTo(538, 486);
-    c.walkTo(531, 487);
-  }
-
-  private void cutFourthTreeAgain() {
-    c.atObject(548, 484);
-    c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
-    if (c.getInventoryItemCount() > 29) {
-      goToBank2();
+    if (c.getObjectAtCoord(548, 484) != 310) {
+      c.walkTo(538, 486);
+      c.walkTo(531, 487);
     }
   }
 
@@ -239,13 +212,14 @@ public final class K_SeersMagicTree extends K_kailaScript {
     } else {
       totalLog = totalLog + c.getInventoryItemCount(636);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != 1263
+        if (itemId != ItemId.SLEEPING_BAG.getId()
             && itemId != axeId[0]
             && itemId != axeId[1]
             && itemId != axeId[2]
             && itemId != axeId[3]
             && itemId != axeId[4]
-            && itemId != axeId[5]) {
+            && itemId != axeId[5]
+            && itemId != axeId[6]) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }

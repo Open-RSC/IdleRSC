@@ -76,6 +76,8 @@ public class TaverlyBuyer extends IdleScript {
   public void scriptStart() {
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount() < 30) {
         controller.setStatus("@gre@Buying stuff..");
         ORSCharacter npc = controller.getNearestNpcById(230, false);

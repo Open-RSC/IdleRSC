@@ -326,13 +326,27 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
       nodes = new Node[WORLD_W][WORLD_H];
 
+      boolean completedQuest = isQuestComplete(9);
+
+      if (!completedQuest)
+        System.out.printf(
+            "[%s] Setting Al Kharid Gate to Impassible (Prince Ali Rescue quest is not complete)%n",
+            this);
+
       for (int x = 0; x < WORLD_W; ++x) {
         for (int y = 0; y < WORLD_H; ++y) {
           byte i = walkable[x][y];
           if (i != 0) {
-            Node n = new Node(x, y);
-            n.walkable = i;
-            nodes[x][y] = n;
+            if (completedQuest
+                || (x != 92
+                    || (y != 649
+                        && y
+                            != 650))) { // Coords for al kharid gate, so we dont try to walk through
+              // if haven't done quest.
+              final Node n = new Node(x, y);
+              n.walkable = i;
+              nodes[x][y] = n;
+            }
           }
         }
       }
@@ -602,66 +616,23 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         atObject(111, 142);
         System.out.println("Opening Wilderness gate, going south");
         c_time = wait_time;
-      } else if (isAtApproxCoords(102, 649, 10) && (n.x < 92)) { // enter alkharid
-        // node.x represents value on the other side of the gate
-        // radius puts the circle zone so the furthest left tile on the inside of the
-        // gate
-        if (getInventoryCount(10) < 10) { // need 10 coins to pass
-          System.out.println("Not enough coins, going around to AlKharid");
-          walkTo(101, 636); // refactor this eventually, functional for now
-          walkTo(107, 625);
-          walkTo(113, 611);
-          walkTo(113, 599);
-          walkTo(104, 583);
-          walkTo(91, 574);
-          walkTo(77, 574); // at crossroads
-          walkTo(77, 579);
-          walkTo(85, 590);
-          walkTo(87, 615);
-          walkTo(87, 634);
-          walkTo(88, 644);
-          walkTo(88, 650); // bot needs to go back to the goal node, or you get pathing failure
-        }
-        int npc_id = 161;
-        int[] npc = getNpcById(npc_id);
-        // if prince ali resQ is completed, no response is required, this is negative
-        if (isQuestMenu() && getInventoryCount(10) >= 10) {
-          answer(2);
-          wait_time = c_time + 4000; // wait to open gate
-        }
-        if (npc[0] != -1 && getInventoryCount(10) >= 10) {
+      } else if (isQuestComplete(9)
+          && !isInAlKharid()
+          && isAtApproxCoords(96, 650, 20)
+          && (n.x < 92)) { // enter alkharid
+        // Coordinate X >= 92 means we're on the west side. n.x < 92 means the next node we're
+        // moving to is on the east side.
+        int[] npc = getNpcById(161); // Border Guard (West)
+        if (npc[0] != -1) {
           System.out.println("Entering Al-Kharid Gate");
           talkToNpc(npc[0]);
           wait_time = c_time + 9000; // wait to talk
         }
-      } else if ((isAtApproxCoords(79, 655, 13) || isAtApproxCoords(86, 669, 10)) && (n.x >= 92)) {
-        // node.x represents value on the other side of the gate
-        // radius puts the circle zone so the furthest left tile on the inside of the
-        // gate
-        if (getInventoryCount(10) < 10) { // need 10 coins to pass
-          System.out.println("Not enough coins, going around to Lumbridge");
-          walkTo(88, 650); // refactor this eventually, functional for now
-          walkTo(88, 644);
-          walkTo(87, 634);
-          walkTo(87, 615);
-          walkTo(85, 590);
-          walkTo(77, 579);
-          walkTo(77, 574); // at crossroads
-          walkTo(91, 574);
-          walkTo(104, 583);
-          walkTo(113, 599);
-          walkTo(113, 611);
-          walkTo(107, 625);
-          walkTo(101, 636); // bot needs to go back to the goal node, or you get pathing failure
-        }
-        int npc_id = 162;
-        int[] npc = getNpcById(npc_id);
-        // if prince ali resQ is completed, no response is required, this is negative
-        if (isQuestMenu() && getInventoryCount(10) >= 10) {
-          answer(2);
-          wait_time = c_time + 4000; // wait to open gate
-        }
-        if (npc[0] != -1 && getInventoryCount(10) >= 10) {
+      } else if (isQuestComplete(9) && isInAlKharid() && (n.x >= 92)) {
+        // Coordinate X < 92 means we're on the east side. n.x >= 92 means the next node we're
+        // moving to is on the west side.
+        int[] npc = getNpcById(162); // Border Guard (East)
+        if (npc[0] != -1) {
           System.out.println("Exiting Al-Kharid Gate");
           talkToNpc(npc[0]);
           wait_time = c_time + 9000; // wait to talk
@@ -677,6 +648,31 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
       }
     }
     return true;
+  }
+
+  private boolean isInAlKharid() {
+    int x = getX();
+    int y = getY();
+
+    final Point myLocation = new Point(x, y);
+
+    // Points relate to vertex's running along the line of the fence on the al-kharid side to
+    // create a polygon that we can check to see if we're within.
+    final Point[] alkharidPoints =
+        new Point[] {
+          new Point(93, 669),
+          new Point(93, 656),
+          new Point(92, 655),
+          new Point(91, 654),
+          new Point(91, 645),
+          new Point(92, 644),
+          new Point(92, 638),
+          new Point(80, 638),
+          new Point(80, 669),
+          new Point(93, 669), // first and last points match to create the shape
+        };
+
+    return isWithinArea(myLocation, alkharidPoints);
   }
 
   public void resetWait() {
@@ -775,11 +771,86 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     path_ptr = 0;
   }
 
-  public final Path calcPath(int x, int y) {
-    return calcPath(getX(), getY(), x, y);
+  /**
+   * Caclulate path to provided destination, defaults to radius 5 and start at current tile
+   *
+   * @param x int - destination x coordinate
+   * @param y int - destination y coordinate
+   * @return Path object representing the path to the destination
+   */
+  public final Path calcPath(final int x, final int y) {
+    return calcPath(
+        getX(), getY(), x, y,
+        5); // Default to use varying starting points to assist in successful path generations.
+  }
+  /**
+   * Calculate a path from current location to target destination.
+   *
+   * @param x1 Current X coord
+   * @param y1 Current Y coord
+   * @param x2 Target X coord
+   * @param y2 Target Y coord
+   * @return Path from current to target location.
+   */
+  public Path calcPath(final int x1, final int y1, final int x2, final int y2) {
+    return calcPath(x1, y1, x2, y2, 5);
   }
 
-  public Path calcPath(int x1, int y1, int x2, int y2) {
+  /**
+   * Calculates a path from current location (or a point within the defined radius) to the fixed
+   * target location.
+   *
+   * @param x1 Starting X coord
+   * @param y1 Starting Y coord
+   * @param x2 Target X coord
+   * @param y2 Target Y coord
+   * @param radius Radius around us to set as starting point
+   * @return Path of nodes from current location to target destination.
+   */
+  public Path calcPath(int x1, int y1, final int x2, final int y2, final int radius) {
+    Path path = calculatePath(x1, y1, x2, y2);
+
+    if (path != null) return path;
+
+    // https://stackoverflow.com/a/398302
+    int dx = 0;
+    int _dx;
+    int dy = -1;
+
+    int i = 0;
+
+    do {
+      if (isReachable(x1, y1)
+          && !isObjectAt(x1, y1)
+          && (path = calculatePath(x1, y1, x2, y2)) != null) {
+        break;
+      }
+
+      if ((x1 == y1) || (x1 < 0 && x1 == -y1) || (x1 > 0 && x1 == 1 - y1)) {
+        _dx = dx;
+        dx = -dy;
+        dy = _dx;
+      }
+
+      x1 += dx;
+      y1 += dy;
+
+      i++;
+    } while (i < Math.pow(radius * 2 + 1, 2));
+
+    return path;
+  }
+  /**
+   * Calculate a path from current location to target destination. Returns the previously generated
+   * path if requesting the same coordinates.
+   *
+   * @param x1 Current X coord
+   * @param y1 Current Y coord
+   * @param x2 Target X coord
+   * @param y2 Target Y coord
+   * @return Path from current to target location.
+   */
+  private Path calculatePath(final int x1, final int y1, final int x2, final int y2) {
     Node start = getNode(nodes, x1, y1);
     if (start == null) return null;
     Node end = getNode(nodes, x2, y2);
@@ -957,7 +1028,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
     @Override
     public void run() {
-      String[] split = field_start.getText().split(",");
+      String[] split = field_start.getText().replace(" ", "").split(",");
       int x1 = Integer.parseInt(split[0]);
       int y1 = Integer.parseInt(split[1]);
 
@@ -989,6 +1060,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
       Path p = new Path();
       p.n = path;
+
       setPath(p);
       System.gc();
       System.out.println("Ready to run.");
@@ -1001,7 +1073,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     int y = 46;
     drawString("Storm's Path Walker", x - 1, y, 4, 0x1E90FF);
     y += 15;
-    drawString("Gate Support by kRiStOf", x - 1, y, 4, 0x1E90FF);
+    drawString("Gate Support by kRiStOf", x - 1, y, 2, 0x1E90FF);
     y += 15;
     drawString("Runtime: " + get_time_since(start_time), x, y, 1, 0xFFFFFF);
     drawVLine(x - 7, 36, y - 32, 0x1E90FF);

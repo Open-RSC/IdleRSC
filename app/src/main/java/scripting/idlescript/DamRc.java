@@ -242,6 +242,8 @@ public class DamRc extends IdleScript {
 
   public void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (mineEss) {
         c.setBatchBarsOn();
         if (inArea(mineNW, mineSE)) {

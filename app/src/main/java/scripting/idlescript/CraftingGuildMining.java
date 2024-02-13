@@ -91,10 +91,7 @@ public class CraftingGuildMining extends IdleScript {
         if (objId != 0) {
           if (c.getInventoryItemCount() < 30 && c.getNearestObjectById(objId) != null) {
             c.atObject(c.getNearestObjectById(objId)[0], c.getNearestObjectById(objId)[1]);
-            c.sleep(1280);
-            while (c.isBatching() && c.getInventoryItemCount() < 30) {
-              c.sleep(640);
-            }
+            c.waitForBatching(true);
           }
         }
       }
@@ -116,9 +113,7 @@ public class CraftingGuildMining extends IdleScript {
           if (c.getInventoryItemCount() < 30 && c.getNearestObjectById(objId) != null) {
             c.atObject(c.getNearestObjectById(objId)[0], c.getNearestObjectById(objId)[1]);
             c.sleep(1280);
-            while (c.isBatching() && c.getInventoryItemCount() < 30) {
-              c.sleep(640);
-            }
+            c.waitForBatching(true);
           }
         }
       }
@@ -142,9 +137,7 @@ public class CraftingGuildMining extends IdleScript {
           if (c.getInventoryItemCount() < 30 && c.getNearestObjectById(objId) != null) {
             c.atObject(c.getNearestObjectById(objId)[0], c.getNearestObjectById(objId)[1]);
             c.sleep(1280);
-            while (c.isBatching() && c.getInventoryItemCount() < 30) {
-              c.sleep(640);
-            }
+            c.waitForBatching(true);
           }
         }
       }

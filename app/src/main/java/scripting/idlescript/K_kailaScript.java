@@ -53,7 +53,6 @@ public class K_kailaScript extends IdleScript {
   // ~~~~~~~~~~~random long/int~~~~~~~~~~~~~~~~
 
   protected static long startTime;
-  protected static long next_attempt = -1;
   protected static int foodInBank = -1;
   protected static int usedFood = 0;
   protected static int foodWithdrawAmount = -1;
@@ -587,15 +586,6 @@ public class K_kailaScript extends IdleScript {
       else if (!leaveCombat && c.isInCombat()) return; // blocked by combat
       c.dropItem(c.getInventoryItemSlotIndex(itemId), amount);
       // c.sleep(GAME_TICK);
-    }
-  }
-  /** while batching, sleep 1 Game tick. Unless next_attempt timestamp (triggers autowalk) */
-  protected static void waitForBatching() {
-    while (c.isRunning()
-        && c.isBatching()
-        && c.getInventoryItemCount() < 30
-        && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
-      c.sleep(GAME_TICK);
     }
   }
   /**
@@ -1788,6 +1778,31 @@ public class K_kailaScript extends IdleScript {
         break;
       }
     }
+  }
+
+  /** Goes DOWN the ladder into edge dungeon, that is south of the bank. */
+  protected void edgeLadderDown() {
+    c.setStatus("@gre@Going down ladder..");
+    for (int i = 0; i < 100; i++) {
+      if (c.isRunning() && c.currentY() < 3000 && c.getNearestObjectById(6) != null) {
+        c.walkTo(215, 467);
+        c.atObject(215, 468);
+        c.sleep(4 * GAME_TICK);
+      } else break;
+    }
+    c.setStatus("@gre@Done Going down ladder..");
+  }
+  /** Goes UP the ladder exiting edge dungeon, that is south of the bank. */
+  protected void edgeLadderUp() {
+    c.setStatus("@gre@Going up ladder..");
+    for (int i = 0; i < 100; i++) {
+      if (c.isRunning() && c.currentY() > 3000 && c.getNearestObjectById(5) != null) {
+        c.walkTo(215, 3299);
+        c.atObject(215, 3300);
+        c.sleep(4 * GAME_TICK);
+      } else break;
+    }
+    c.setStatus("@gre@Done Going up ladder..");
   }
   /**
    * Enters through the fixed door leading to craft guild. (north to south) Bot will auto-detect

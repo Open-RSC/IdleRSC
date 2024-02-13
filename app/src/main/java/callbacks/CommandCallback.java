@@ -60,7 +60,7 @@ public class CommandCallback {
         break;
       case "gfx":
         if (c != null) {
-          c.setDrawing(!c.isDrawEnabled());
+          c.setDrawing(!c.isDrawEnabled(), 0);
         }
         break;
       case "bothelp":

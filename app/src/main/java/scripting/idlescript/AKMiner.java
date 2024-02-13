@@ -94,7 +94,7 @@ public class AKMiner extends IdleScript {
         while (controller.isBatching() && controller.getInventoryItemCount() < 30)
           controller.sleep(10);
 
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         int[] objCoord = controller.getNearestObjectById(target.rockId);
         if (objCoord != null) {
           controller.setStatus("@red@Mining!");

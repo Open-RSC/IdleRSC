@@ -47,6 +47,8 @@ public class GnomeFlaxx0r extends IdleScript {
 
   private void startScript() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (spin) {
         if (c.getInventoryItemCount() < 30) {
           c.setStatus("@cya@Walking to the flax...");
@@ -54,7 +56,7 @@ public class GnomeFlaxx0r extends IdleScript {
           c.setStatus("@cya@Picking flax!");
           c.atObject(693, 517);
           if (!c.isAuthentic()) {
-            waitForBatching();
+            c.waitForBatching(true);
           } else c.sleep(150);
         }
         if (c.getInventoryItemCount(675) > 0) {
@@ -62,7 +64,7 @@ public class GnomeFlaxx0r extends IdleScript {
           goToWheel();
           c.useItemIdOnObject(693, 1459, 675);
           if (!c.isAuthentic()) {
-            waitForBatching();
+            c.waitForBatching(false);
           } else c.sleep(500);
         }
         if (c.getInventoryItemCount(676) > 0 && c.currentY() > 1000) {
@@ -78,7 +80,7 @@ public class GnomeFlaxx0r extends IdleScript {
           c.setStatus("@cya@Picking flax!");
           c.atObject(712, 517);
           if (!c.isAuthentic()) {
-            waitForBatching();
+            c.waitForBatching(true);
           } else c.sleep(150);
         } else {
           goToBank();
@@ -86,13 +88,6 @@ public class GnomeFlaxx0r extends IdleScript {
           goToFlax();
         }
       }
-    }
-  }
-
-  private void waitForBatching() {
-    c.sleep(2000);
-    while (c.isRunning() && c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(640);
     }
   }
 

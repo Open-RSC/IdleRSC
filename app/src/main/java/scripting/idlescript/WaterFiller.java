@@ -45,11 +45,12 @@ public class WaterFiller extends K_kailaScript {
 
   public void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount(emptyId) > 0) {
         c.useItemIdOnObject(327, 545, emptyId);
         c.sleep(618);
-
-        while (c.isBatching()) c.sleep(10);
+        c.waitForBatching(false);
       } else {
         openDoor();
         bank();

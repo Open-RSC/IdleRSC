@@ -23,6 +23,8 @@ public class HarvesterTrainer extends IdleScript {
     controller.quitIfAuthentic();
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       // pots and garlic are in the same western patch
       int objectId = 1265; // potatoes
 

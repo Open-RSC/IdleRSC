@@ -107,6 +107,8 @@ public final class K_TavBlackDemonPipe extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       drinkPrayerPotion(31, true);
       prayParalyze();
       if (!eatFood()

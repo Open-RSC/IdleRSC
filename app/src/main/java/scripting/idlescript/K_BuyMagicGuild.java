@@ -66,7 +66,6 @@ public class K_BuyMagicGuild extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@magicGuildBuyer by Kaila!");
       c.displayMessage("@red@Buys staffs/Runes from magic Guild");
       c.displayMessage("@red@Start at magicGuild, or yanille bank!");
@@ -85,6 +84,8 @@ public class K_BuyMagicGuild extends K_kailaScript {
   public void scriptStart() {
 
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() < 30) {
         c.setStatus("@gre@Buying stuff..");
         ORSCharacter npc = c.getNearestNpcById(SHOPKEEPER_ID, false);
@@ -158,8 +159,6 @@ public class K_BuyMagicGuild extends K_kailaScript {
               }
               c.sleep(200);
             }
-
-            checkAutowalk();
           }
         }
 
@@ -170,23 +169,6 @@ public class K_BuyMagicGuild extends K_kailaScript {
       }
 
       c.sleep(100);
-    }
-  }
-
-  private static void checkAutowalk() {
-    if (System.currentTimeMillis() > next_attempt) {
-      c.log("@red@Walking to Avoid Logging!");
-      //      int x = c.currentX();
-      //      int y = c.currentY();
-      //      if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
-      //      else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
-      //      else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
-      //      else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
-      c.walkTo(600, 1700); // walk to just outside doorway
-      c.sleep(GAME_TICK);
-      next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-      long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
-      c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
     }
   }
 
@@ -395,13 +377,6 @@ public class K_BuyMagicGuild extends K_kailaScript {
           21 + (14 * 2),
           0xFFFFFF,
           1);
-      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-      c.drawString(
-          "@red@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-          10,
-          21 + (14 * 3),
-          0xFFFFFF,
-          1);
     } else if (option == 1) {
       c.drawString(
           "@whi@staffs bought: @yel@"
@@ -417,13 +392,6 @@ public class K_BuyMagicGuild extends K_kailaScript {
           "@whi@staffs in bank: @yel@" + String.format("%,d", staffsBanked),
           10,
           21 + (14 * 2),
-          0xFFFFFF,
-          1);
-      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-      c.drawString(
-          "@whi@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-          10,
-          21 + (14 * 3),
           0xFFFFFF,
           1);
     } else {
@@ -457,13 +425,6 @@ public class K_BuyMagicGuild extends K_kailaScript {
           "@whi@staffs in bank: @yel@" + String.format("%,d", staffsBanked),
           10,
           21 + (14 * 4),
-          0xFFFFFF,
-          1);
-      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-      c.drawString(
-          "@red@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-          10,
-          21 + (14 * 5),
           0xFFFFFF,
           1);
     }

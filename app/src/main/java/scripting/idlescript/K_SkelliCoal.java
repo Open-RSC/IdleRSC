@@ -54,7 +54,7 @@ public final class K_SkelliCoal extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    if (parameters.length > 0 && !parameters[0].equals("")) {
+    if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Auto-starting, Mining Skelli Coal", 0);
         System.out.println("Auto-starting, Mining Skelli Coal");
@@ -79,6 +79,8 @@ public final class K_SkelliCoal extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() == 30) { // c.getInventoryItemCount(546) == 0 ||
         goToBank();
       } else {
@@ -89,8 +91,8 @@ public final class K_SkelliCoal extends K_kailaScript {
           currentOre[0] = 0;
           currentOre[1] = 0;
           c.sleep(640);
-        } else if (c.isBatching() && c.getInventoryItemCount() < 30) {
-          c.sleep(1000);
+        } else {
+          c.waitForBatching(true);
         }
         c.setStatus("@yel@Mining..");
         if (!c.isBatching() && Objects.equals(isMining, "none") && rockEmpty()) {
@@ -104,9 +106,7 @@ public final class K_SkelliCoal extends K_kailaScript {
             }
           }
           c.sleep(1280);
-        } else if (c.isBatching() && c.getInventoryItemCount() < 30) {
-          c.sleep(1000);
-        }
+        } else c.waitForBatching(true);
       }
     }
   }

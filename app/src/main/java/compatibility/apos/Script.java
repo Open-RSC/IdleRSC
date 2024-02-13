@@ -4,6 +4,7 @@ import bot.Main;
 import com.openrsc.client.entityhandling.instances.Item;
 import controller.Controller;
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
@@ -314,6 +315,84 @@ public abstract class Script implements IScript {
    */
   public boolean inCombat() {
     return controller.isInCombat();
+  }
+  /**
+   * Returns true if we are within the given NE/SW coordinates.
+   *
+   * @param northEast The North East coordinate.
+   * @param southWest The South West coordinate.
+   * @return true if we are within the NE/SW coordinates.
+   */
+  public boolean isWithinArea(Point northEast, Point southWest) {
+    int x = getX();
+    int y = getY();
+
+    return (x >= northEast.x && x <= southWest.x) && (y >= northEast.y && y <= southWest.y);
+  }
+
+  /**
+   * Returns true if the coordinate is within a basic square area, using North East and South West
+   * coordinates.
+   *
+   * @param searchCoord The coordinate to check
+   * @param northEast The North East coordinate.
+   * @param southWest The South West coordinate.
+   * @return true if the searchCoord is within the NE/SW area.
+   */
+  public boolean isWithinArea(Point searchCoord, Point northEast, Point southWest) {
+    int x = searchCoord.x;
+    int y = searchCoord.y;
+
+    return (x >= northEast.x && x <= southWest.x) && (y >= northEast.y && y <= southWest.y);
+  }
+
+  /**
+   * Returns true if the coordinate is within an area of points. Can be an irregular shape to
+   * support rooms which aren't square. Points provided should be generated in either a clockwise,
+   * or anti-clockwise list, with the first and last entry of the Point[] array being the same
+   * coordinate to "join up" the bounds of the shape.
+   *
+   * @param coord The coordinate to check
+   * @param points The area of points to search within
+   * @return True if coordinate inside the points area array
+   */
+  public boolean isWithinArea(final Point coord, final Point[] points) {
+
+    if (points.length < 3) {
+      System.out.println("isWithinArea() requires a minimum of 3 points to triangulate an area.");
+      throw new UnsupportedOperationException();
+    }
+
+    Polygon polygon = new Polygon();
+
+    for (Point point : points) {
+      polygon.addPoint(point.x, point.y);
+    }
+
+    if (polygon.contains(coord)) { // If we're inside the polygon return true.
+      return true;
+    }
+
+    // Next check if it's on the boundary, or the outside edge, of the polygon.
+    for (int i = 0; i < points.length; i++) {
+      int nextIndex = (i + 1) % points.length;
+      Line2D edge =
+          new Line2D.Double(points[i].x, points[i].y, points[nextIndex].x, points[nextIndex].y);
+      if (edge.ptSegDist(coord) == 0) {
+        return true; // Point is on the boundary
+      }
+    }
+    return false; // Point is not on the boundary
+  }
+
+  /**
+   * Returns the distance between the client and the tile at x, y.
+   *
+   * @param coordinate The X/Y coordinate to check the distance.
+   * @return the distance between the client and the given tile.
+   */
+  public int distanceTo(Point coordinate) {
+    return distanceTo(coordinate.x, coordinate.y, getX(), getY());
   }
 
   /**
@@ -2329,7 +2408,7 @@ public abstract class Script implements IScript {
    * @param flag the rendering flag.
    */
   public void setRendering(boolean flag) {
-    controller.setDrawing(flag);
+    controller.setDrawing(flag, 0);
   }
 
   /**

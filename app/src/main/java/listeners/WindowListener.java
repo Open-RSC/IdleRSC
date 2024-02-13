@@ -58,18 +58,6 @@ public class WindowListener implements Runnable {
     checkBoxArray = _checkBoxArray;
   }
 
-  /**
-   * turn on graphics for X number of ticks and then disable again <br>
-   * Useful to prevent applet white screen on rscFrame changes
-   *
-   * @param pauseTicks int number of ticks to wait while graphics on
-   */
-  private void refreshGraphics(int pauseTicks) {
-    controller.setDrawing(true);
-    controller.sleep(pauseTicks);
-    controller.setDrawing(false);
-  }
-
   @Override
   public void run() {
     String themeName = Main.getThemeName();
@@ -86,12 +74,12 @@ public class WindowListener implements Runnable {
           controller.log("IdleRSC: Showing Log Window!", "gre");
           consoleFrame.setVisible(true);
           rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() + 188);
-          if (!controller.isDrawEnabled()) refreshGraphics(100);
+          if (!controller.isDrawEnabled()) refreshGraphics(50);
         } else {
           controller.log("IdleRSC: Hiding Log Window!", "gre");
           consoleFrame.setVisible(false);
           rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() - 188);
-          if (!controller.isDrawEnabled()) refreshGraphics(100);
+          if (!controller.isDrawEnabled()) refreshGraphics(50);
         }
         consolePrevious = Main.isLogWindowOpen();
       }
@@ -164,5 +152,14 @@ public class WindowListener implements Runnable {
         e.printStackTrace();
       }
     }
+  }
+  /**
+   * turn on graphics for X number of ticks and then disable again <br>
+   * Useful to prevent applet white screen on rscFrame changes
+   *
+   * @param pauseTicks int number of ticks to wait while graphics on
+   */
+  private void refreshGraphics(int pauseTicks) {
+    controller.setDrawing(true, pauseTicks);
   }
 }

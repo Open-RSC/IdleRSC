@@ -131,6 +131,8 @@ public class Woodcutting extends IdleScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() == 30) {
         bankTime = true;
         chopTime = false;
@@ -141,12 +143,12 @@ public class Woodcutting extends IdleScript {
 
       if (c.getNearestObjectById(treeId) != null && chopTime && !c.isBatching()) {
         c.setStatus("@red@Clicking tree");
-        c.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         int[] treeCoords = c.getNearestObjectById(treeId);
         c.atObject(treeCoords[0], treeCoords[1]);
         c.sleep(1200); // more sleep to let batching catch up!
         inventLogs = c.getInventoryItemCount(logId);
-        batchingWaitScript();
+        c.waitForBatching(true);
       } else { // added else so when getNearestObjectById == null this function doesn't repeat
         // and
         c.setStatus("@red@No trees!");
@@ -200,13 +202,6 @@ public class Woodcutting extends IdleScript {
     }
     scriptStarted = false;
     guiSetup = false;
-  }
-
-  private void batchingWaitScript() {
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.setStatus("@red@Batching..");
-      c.sleep(1000);
-    }
   }
 
   private void setupGUI() {

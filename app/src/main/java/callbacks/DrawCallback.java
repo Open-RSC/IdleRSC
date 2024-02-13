@@ -10,7 +10,6 @@ import scripting.idlescript.IdleScript;
  * @author Dvorak
  */
 public class DrawCallback {
-
   private static long startTimestamp = System.currentTimeMillis() / 1000L;
   private static long startingXp = Long.MAX_VALUE;
   private static String statusText = "@red@Botting!";
@@ -21,7 +20,6 @@ public class DrawCallback {
   private static boolean toggleOnViewId = false;
   private static long nextRefresh = -1;
   private static long nextDeRefresh = -1;
-  //  private static long timeNextLogClear = -1;
 
   /**
    * Returns the value of the next refresh.
@@ -31,22 +29,6 @@ public class DrawCallback {
   public static long getNextRefresh() {
     return nextRefresh;
   }
-  /**
-   * A description of the entire Java function.
-   *
-   * @return description of return value
-   */
-  public static long getNextDeRefresh() {
-    return nextDeRefresh;
-  }
-  //  /**
-  //   * Retrieves the next time the log will be cleared.
-  //   *
-  //   * @return the next time the log will be cleared
-  //   */
-  //  public static long getNextLogClear() {
-  //    return timeNextLogClear;
-  //  }
   /**
    * Retrieves the value of the toggleOnViewId variable.
    *
@@ -71,14 +53,6 @@ public class DrawCallback {
   public static void setNextDeRefresh(long nextDeRefreshValue) {
     nextDeRefresh = nextDeRefreshValue;
   }
-  //  /**
-  //   * Sets the value of the next log clear time.
-  //   *
-  //   * @param nextLogClear the next log clear time to be set
-  //   */
-  //  public static void setNextLogClear(long nextLogClear) {
-  //    timeNextLogClear = nextLogClear;
-  //  }
   /**
    * Sets the value of the toggleOnViewId variable.
    *
@@ -186,7 +160,7 @@ public class DrawCallback {
       }
     }
     if ((System.currentTimeMillis() > nextDeRefresh) && nextDeRefresh != -1) {
-      c.setDrawing(false);
+      c.setDrawing(false, 0);
       nextDeRefresh = -1;
     }
     if (System.currentTimeMillis() / 1000L < levelUpTextTimeout) {
@@ -259,12 +233,7 @@ public class DrawCallback {
     if (c != null) {
       c.log("@red@IdleRSC@yel@: XP counter reset!");
       if (!c.isDrawEnabled()) {
-        // if you reset xp, it will toggle on graphics briefly to reset, then
-        // toggle off again. Otherwise, counter will not begin counting xp. It
-        // has to reload counter into memory?  ~ Kaila ~
-        c.setDrawing(true);
-        c.sleep(100);
-        c.setDrawing(false);
+        c.setDrawing(true, 100);
       }
     }
   }

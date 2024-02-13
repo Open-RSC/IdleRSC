@@ -69,7 +69,8 @@ public class HerbIdentifier extends IdleScript {
     controller.displayMessage("@red@Start in any bank with herbs in the bank!");
 
     while (controller.isRunning()) {
-      controller.sleepHandler(98, true);
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (countUnids() == 0) {
         controller.setStatus("@whi@Banking...");
         controller.openBank();

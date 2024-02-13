@@ -96,7 +96,7 @@ public class AIOFighter extends IdleScript {
   }
 
   private void scriptStart() {
-    while (c.isRunning()) {
+    if (c.isRunning()) {
       lootTable = Arrays.copyOf(loot, loot.length);
       if (prioritizeBones) {
         lootTable = Arrays.copyOf(lootTable, loot.length + bones.length);
@@ -109,7 +109,8 @@ public class AIOFighter extends IdleScript {
       startTile[1] = c.currentY();
 
       while (c.isRunning()) {
-
+        if (c.getNeedToMove()) c.moveCharacter();
+        if (c.getShouldSleep()) c.sleepHandler(true);
         // 0th priority: walking back to starting zone if out of zone
         // 1st priority: setting fightmode
         // 2nd priority: eating
@@ -123,13 +124,6 @@ public class AIOFighter extends IdleScript {
 
         if (c.isCurrentlyWalking()) {
           next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-        }
-        if (System.currentTimeMillis() > next_attempt) {
-          c.log("@red@Walking to Avoid Logging!");
-          moveCharacter();
-          next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-          long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
-          c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
         }
 
         if (!isWithinWander(c.currentX(), c.currentY())) {
@@ -187,7 +181,7 @@ public class AIOFighter extends IdleScript {
         }
 
         if (!c.isInCombat()) {
-          c.sleepHandler(98, true);
+          if (c.getShouldSleep()) c.sleepHandler(true);
           ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
 
           if (ranging) {
@@ -310,21 +304,6 @@ public class AIOFighter extends IdleScript {
         throw new RuntimeException(e);
       }
     }
-  }
-
-  private void moveCharacter() {
-    Controller c = Main.getController();
-    int x = c.currentX();
-    int y = c.currentY();
-
-    if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
-    else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
-    else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
-    else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
-
-    c.sleep(1280);
-
-    c.walkTo(x, y, 0, false);
   }
 
   private boolean isWithinWander(int x, int y) {

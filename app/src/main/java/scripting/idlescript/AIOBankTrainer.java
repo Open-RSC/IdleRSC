@@ -103,7 +103,6 @@ public class AIOBankTrainer extends K_kailaScript {
       scriptStarted = false;
       c.quitIfAuthentic();
       startTime = System.currentTimeMillis();
-      if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@AIO Bank Trainer ~ By @mag@Kaila");
       startPos[0] = c.currentX();
       startPos[1] = c.currentY();
@@ -123,6 +122,8 @@ public class AIOBankTrainer extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       // if (bringFood) ate = eatFood();
       if ((primaryItemId != -1 && c.getInventoryItemCount(primaryItemId) == 0)
           || (secondaryItemId != -1
@@ -149,13 +150,6 @@ public class AIOBankTrainer extends K_kailaScript {
         default:
           batchProcessLoop();
       }
-      if (autoWalk && System.currentTimeMillis() > next_attempt) {
-        c.log("@red@Walking to Avoid Logging!");
-        moveCharacter();
-        next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-        long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
-        c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
-      }
     }
   }
 
@@ -178,9 +172,7 @@ public class AIOBankTrainer extends K_kailaScript {
       c.optionAnswer(dialogOption);
       c.sleep(2 * GAME_TICK);
     }
-    while (c.isBatching() && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
-      c.sleep(GAME_TICK);
-    }
+    c.waitForBatching(false);
   }
 
   private void bank() { // works for all
@@ -245,7 +237,7 @@ public class AIOBankTrainer extends K_kailaScript {
       } else c.walkTo(spinningWheel[0], spinningWheel[1] - 1);
       c.useItemIdOnObject(spinningWheel[0], spinningWheel[1], primaryItemId);
       c.sleep(3000);
-      waitForBatching();
+      c.waitForBatching(false);
     }
     // Checks for these actions inside the methods
     walkToSpinBank();
@@ -307,7 +299,7 @@ public class AIOBankTrainer extends K_kailaScript {
       c.optionAnswer(3);
       c.sleep(3000); // was 650
     }
-    waitForBatching();
+    c.waitForBatching(false);
     c.walkTo(150, 507);
   }
   /**
@@ -336,7 +328,7 @@ public class AIOBankTrainer extends K_kailaScript {
             primaryItemId,
             secondaryItemId);
         c.sleep(6 * GAME_TICK);
-        while (c.isBatching()) c.sleep(GAME_TICK);
+        c.waitForBatching(false);
       }
       c.sleep(GAME_TICK);
     }
@@ -376,20 +368,6 @@ public class AIOBankTrainer extends K_kailaScript {
     }
     // "Varrock West", "Varrock East", "Falador West", "Falador East", "Ardougne South", "Seers
     // Village", "Yanille"
-  }
-  /** Moves the character to an adjacent position if possible. */
-  private void moveCharacter() {
-    int x = c.currentX();
-    int y = c.currentY();
-
-    if (c.isReachable(x + 1, y, false)) c.walkTo(x + 1, y, 0, false);
-    else if (c.isReachable(x - 1, y, false)) c.walkTo(x - 1, y, 0, false);
-    else if (c.isReachable(x, y + 1, false)) c.walkTo(x, y + 1, 0, false);
-    else if (c.isReachable(x, y - 1, false)) c.walkTo(x, y - 1, 0, false);
-
-    c.sleep(1280);
-
-    c.walkTo(x, y, 0, false);
   }
 
   private void setupGUI() {
@@ -1062,18 +1040,7 @@ public class AIOBankTrainer extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      if (autoWalk) {
-        long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-        c.drawString(
-            "@whi@Time till AutoWalk: " + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-            x,
-            y + (14 * 5),
-            0xFFFFFF,
-            1);
-        c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
-      } else {
-        c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
-      }
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

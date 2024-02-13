@@ -47,6 +47,8 @@ public final class K_FastChainMaker extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() == 30) {
         spotToBank();
         bank();

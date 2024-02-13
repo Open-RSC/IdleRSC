@@ -57,6 +57,8 @@ public final class K_RedSpiderEggz extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       leaveCombat();
       if (!eatFood()
           || timeToBank

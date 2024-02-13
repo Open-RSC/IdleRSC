@@ -69,6 +69,8 @@ public class PowercraftTalisman extends IdleScript {
 
   public void scriptStart() {
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount(1385) < 1 || getRemaining(dropTimer) <= 0) {
         dropping = false;
       }

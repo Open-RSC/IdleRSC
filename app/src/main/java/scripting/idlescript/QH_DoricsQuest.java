@@ -84,6 +84,8 @@ public final class QH_DoricsQuest extends QH__QuestHandler {
     doQuestChecks();
 
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       QUEST_STAGE = c.getQuestStage(QUEST_ID);
       switch (QUEST_STAGE) {
         case 0:
@@ -118,21 +120,21 @@ public final class QH_DoricsQuest extends QH__QuestHandler {
             while (!hasAtLeastItemAmount(CLAY_ID, 6) && c.isRunning()) {
               c.atObject(CLAY_ROCK[0], CLAY_ROCK[1]);
               c.sleep(640);
-              while (c.isBatching() && c.isRunning()) c.sleep(640);
+              c.waitForBatching(false);
             }
             dropAllButAmount(CLAY_ID, 6);
 
             while (!hasAtLeastItemAmount(COPPER_ID, 4) && c.isRunning()) {
               c.atObject(COPPER_ROCK[0], COPPER_ROCK[1]);
               c.sleep(640);
-              while (c.isBatching() && c.isRunning()) c.sleep(640);
+              c.waitForBatching(false);
             }
             dropAllButAmount(COPPER_ID, 4);
 
             while (!hasAtLeastItemAmount(IRON_ID, 2) && c.isRunning()) {
               c.atObject(IRON_ROCK[0], IRON_ROCK[1]);
               c.sleep(640);
-              while (c.isBatching() && c.isRunning()) c.sleep(640);
+              c.waitForBatching(false);
             }
             dropAllButAmount(IRON_ID, 2);
           }

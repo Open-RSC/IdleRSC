@@ -182,6 +182,8 @@ public final class K_Paladins extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       leaveCombat();
       if (!eatFood()) {
         c.setStatus("@gre@We've ran out of Food! Banking!.");
@@ -434,7 +436,7 @@ public final class K_Paladins extends K_kailaScript {
         c.walkTo(609, 1548); // unlocked door
         c.atWallObject(609, 1548);
         c.sleep(4 * GAME_TICK);
-        while (c.isBatching()) c.sleep(GAME_TICK);
+        c.waitForBatching(false);
       } else break;
     }
     c.setStatus("@gre@Done exiting paladin door..");
@@ -448,7 +450,7 @@ public final class K_Paladins extends K_kailaScript {
         c.walkTo(609, 1547);
         c.atWallObject2(609, 1548); // locked door
         c.sleep(4 * GAME_TICK);
-        while (c.isBatching()) c.sleep(GAME_TICK);
+        c.waitForBatching(false);
       } else break;
     }
     c.setStatus("@gre@Done Entering paladin door..");

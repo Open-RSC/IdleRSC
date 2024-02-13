@@ -23,6 +23,8 @@ public class Flaxx0r extends IdleScript {
   public int start(String[] parameters) {
     controller.log("This script picks flax in seers", "red");
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount() < 30) {
         if (controller.currentY() < 454) {
           // we are inside the bank

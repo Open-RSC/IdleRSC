@@ -72,6 +72,8 @@ public final class K_GnomeMagicTree extends K_kailaScript {
 
   public void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() < 30) {
         if (c.getObjectAtCoord(718, 520) == 310) {
           cutFirstTree(); // this approach forces all bots on a world to cut the SAME tree (more
@@ -136,9 +138,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     c.walkTo(718, 519);
     c.atObject(718, 520);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       goToBank();
     }
@@ -148,9 +148,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     c.walkTo(733, 506);
     c.atObject(734, 506);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       goToBank();
     }
@@ -160,9 +158,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     c.walkTo(718, 494);
     c.atObject(718, 493);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       goToBank();
     }
@@ -172,9 +168,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     c.walkTo(718, 494);
     c.atObject(718, 493);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       goToBank();
     }
@@ -184,9 +178,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     c.walkTo(679, 518);
     c.atObject(678, 518);
     c.sleep(2000);
-    while (c.isBatching() && c.getInventoryItemCount() < 30) {
-      c.sleep(1000);
-    }
+    c.waitForBatching(true);
     if (c.getInventoryItemCount() > 29) {
       c.walkTo(696, 521);
       c.walkTo(710, 519);

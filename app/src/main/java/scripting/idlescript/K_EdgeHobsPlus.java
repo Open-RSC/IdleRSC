@@ -127,6 +127,8 @@ public final class K_EdgeHobsPlus extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (!eatFood()
           || c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0

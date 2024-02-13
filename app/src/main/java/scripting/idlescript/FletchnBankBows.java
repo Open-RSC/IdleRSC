@@ -56,6 +56,8 @@ public class FletchnBankBows extends IdleScript {
 
   public void scriptStart() {
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount(logId) < 1 && !stringTime && !controller.isInBank()) {
         controller.setStatus("Banking");
         controller.openBank();
@@ -130,7 +132,7 @@ public class FletchnBankBows extends IdleScript {
       }
       while (controller.getInventoryItemCount(logId) > 0 && !stringTime) {
         controller.setStatus("Fletching Bow");
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.useItemOnItemBySlot(0, 1);
         controller.sleep(500);
         if (controller.isInOptionMenu()) {

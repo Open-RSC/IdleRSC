@@ -54,6 +54,8 @@ public final class K_NoBank_Superheat extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       dropGems();
       if (!c.isBatching() && c.getInventoryItemCount(IRON_ORE) > 0) {
         c.castSpellOnInventoryItem(
@@ -64,14 +66,14 @@ public final class K_NoBank_Superheat extends K_kailaScript {
       if (!c.isBatching() && c.getInventoryItemCount(IRON_PLATE) > 0) {
         c.dropItem(c.getInventoryItemSlotIndex(IRON_PLATE), c.getInventoryItemCount(IRON_PLATE));
         c.sleep(5 * GAME_TICK);
-        waitForBatching();
+        c.waitForBatching(true);
       }
       if (!c.isBatching() && c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()) > 0) {
         c.dropItem(
             c.getInventoryItemSlotIndex(ItemId.IRON_DAGGER.getId()),
             c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()));
         c.sleep(5 * GAME_TICK);
-        waitForBatching();
+        c.waitForBatching(true);
       }
       if (c.getInventoryItemCount() < 30) {
         mine();
@@ -90,9 +92,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
       c.walkToAsync(oreCoords[0], oreCoords[1], 1);
       c.atObject(oreCoords[0], oreCoords[1]);
       c.sleep(6 * GAME_TICK);
-      while (c.isBatching() && c.getInventoryItemCount() < 30) {
-        c.sleep(2 * GAME_TICK);
-      }
+      c.waitForBatching(true);
     }
   }
 
@@ -126,7 +126,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
         c.optionAnswer(3);
         c.sleep(3000); // was 650
       }
-      waitForBatching();
+      c.waitForBatching(true);
     }
     totalPlates = totalPlates + c.getInventoryItemCount(IRON_PLATE);
     if (c.getInventoryItemCount(IRON_BAR) > 0) { // make daggers if bars left over
@@ -138,19 +138,19 @@ public final class K_NoBank_Superheat extends K_kailaScript {
       c.sleep(GAME_TICK);
       c.optionAnswer(3);
       c.sleep(GAME_TICK);
-      waitForBatching();
+      c.waitForBatching(true);
     }
     if (c.getInventoryItemCount(IRON_PLATE) > 0) {
       c.dropItem(c.getInventoryItemSlotIndex(IRON_PLATE), c.getInventoryItemCount(IRON_PLATE));
       c.sleep(5 * GAME_TICK);
-      waitForBatching();
+      c.waitForBatching(true);
     }
     if (c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()) > 0) {
       c.dropItem(
           c.getInventoryItemSlotIndex(ItemId.IRON_DAGGER.getId()),
           c.getInventoryItemCount(ItemId.IRON_DAGGER.getId()));
       c.sleep(5 * GAME_TICK);
-      waitForBatching();
+      c.waitForBatching(true);
     }
   }
 

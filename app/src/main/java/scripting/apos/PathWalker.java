@@ -282,7 +282,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
   private static final boolean DEBUG = false;
   private static final int WORLD_W = 900;
   private static final int WORLD_H = 4050;
-  private Node[][] nodes;
+  private static Node[][] nodes;
   private Node[] path;
   private long wait_time;
   private int path_ptr;
@@ -294,9 +294,9 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
   private static final int[] bounds_1 = new int[] {2, 8, 55, 68, 44, 74, 117};
   private long start_time;
 
-  public PathWalker(String ex) {
-    // super(ex);
-  }
+  public PathWalker() {}
+
+  public PathWalker(String ex) {}
 
   @Override
   public void init(String params) {
@@ -360,6 +360,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     // If init is called with null, it is being called by another script,
     // so don't create the UI.
     if (params != null) {
+      if (DEBUG) System.out.println("Opening PathWalker GUI...");
       createFrame();
     }
   }
@@ -556,10 +557,12 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
 
   public boolean walkPath() {
     if (path == null) {
+      if (DEBUG) System.out.println("Path is null");
       return false;
     }
     Node last = path[path.length - 1];
     if (getX() == last.x && getY() == last.y) {
+      if (DEBUG) System.out.println("Reached destination");
       path = null;
       return false;
     }
@@ -576,10 +579,11 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
         atObject(341, 487);
         System.out.println("Opening Tav gate going west");
         wait_time = c_time + 8000;
-      } else if (isAtApproxCoords(352, 487, 10) && (n.x <= 341)) {
-        atObject(341, 487);
+      } else if ((isAtApproxCoords(342, 487, 10) || isAtApproxCoords(342, 500, 10)) && n.x <= 341) {
         System.out.println("Opening Tav gate going east");
-        wait_time = c_time + 8000;
+        walkTo(342, 487);
+        atObject(341, 487);
+        wait_time = c_time + 2000;
       } else if ((isAtApproxCoords(343, 593, 12) || isAtApproxCoords(356, 584, 7)) && (n.y < 581)) {
         atObject(343, 581);
         System.out.println("Opening Tav gate going north");

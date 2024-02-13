@@ -11,6 +11,7 @@ import com.openrsc.client.entityhandling.instances.Item;
 import com.openrsc.client.model.Sprite;
 import com.openrsc.interfaces.misc.AuctionHouse;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
+import compatibility.apos.Script;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -47,6 +48,7 @@ import orsc.graphics.gui.SocialLists;
 import orsc.graphics.two.MudClientGraphics;
 import orsc.mudclient;
 import reflector.Reflector;
+import scripting.apos.PathWalker;
 
 /**
  * This is the native scripting API for IdleRSC.
@@ -125,6 +127,83 @@ public class Controller {
   }
 
   /**
+   * Suspends the current thread's execution until the provided condition evaluates to true or a 20
+   * second timeout is reached
+   *
+   * @param condition A Supplier condition that must be met to resume execution.
+   * @return true if the condition was met before the timeout, false if the timeout was reached.
+   */
+  public boolean sleepUntil(java.util.function.Supplier<Boolean> condition) {
+    return sleepUntil(condition, 20_000);
+  }
+
+  /**
+   * Suspends the current thread's execution until the provided condition evaluates to true.
+   *
+   * @param condition A Supplier condition that must be met to resume execution.
+   * @param timeout milliseconds before just returning, even if condition is not yet true
+   * @return true if the condition was met before the timeout, false if the timeout was reached.
+   */
+  public boolean sleepUntil(java.util.function.Supplier<Boolean> condition, int timeout) {
+    final long pollInterval = 250; // Check condition every 250 milliseconds
+
+    long startTime = System.currentTimeMillis();
+    while (!condition.get()) {
+      if (System.currentTimeMillis() - startTime > timeout) {
+        return false; // Timeout reached, condition not met
+      }
+      try {
+        Thread.sleep(pollInterval); // Wait a bit before checking the condition again
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt(); // Restore the interrupted status
+        return false; // Interrupted during sleep
+      }
+    }
+    return true; // Condition met
+  }
+
+  /**
+   * Suspends the current thread's execution until the player gains exp
+   *
+   * @return true if the condition was met before the timeout, false if the timeout was reached.
+   */
+  public boolean sleepUntilGainedXp() {
+    setStatus("Sleeping until xp drop");
+    final long timeout = 10000; // 10 seconds timeout for the condition to become true
+    final long pollInterval = 250; // Check condition every 250 milliseconds
+
+    long startTime = System.currentTimeMillis();
+    long startXp = getTotalXp();
+    while (startXp == getTotalXp()) {
+      if (System.currentTimeMillis() - startTime > timeout) {
+        return false; // Timeout reached, condition not met
+      }
+      try {
+        Thread.sleep(pollInterval); // Wait a bit before checking the condition again
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt(); // Restore the interrupted status
+        return false; // Interrupted during sleep
+      }
+    }
+    return true; // We gained xp
+  }
+
+  /**
+   * Returns the total XP by summing up the player experience for each stat.
+   *
+   * @return the total XP as a long value
+   */
+  public long getTotalXp() {
+    long result = 0;
+
+    for (int statIndex = 0; statIndex < getStatCount(); statIndex++) {
+      result += getPlayerExperience(statIndex);
+    }
+
+    return result;
+  }
+
+  /**
    * Whether or not the client is loaded.
    *
    * @return boolean
@@ -159,6 +238,7 @@ public class Controller {
     }
     typeKey('\n');
   }
+
   /** Pastes the contents of the clipboard to the dialog box. You may use @col@ colors here. */
   public void paste() {
     if (!isLoggedIn()) {
@@ -184,6 +264,7 @@ public class Controller {
       e.printStackTrace();
     }
   }
+
   /** @param mode Sets the fight mode. */
   public void setFightMode(int mode) {
     mud.setCombatStyle(mode);
@@ -446,6 +527,34 @@ public class Controller {
 
     return x != 0 || z != 0;
   }
+
+  /**
+   * Sleeps until the player starts walking
+   *
+   * <p>Good to combine with sleepUntilNotMoving, so you can wait for the player to start responding
+   * to your action, then wait for them to finish
+   *
+   * @param timeout Max ms to wait until moving
+   */
+  public void sleepUntilMoving(long timeout) {
+    long start = System.currentTimeMillis();
+    while (Main.isRunning()
+        && !isCurrentlyWalking()
+        && start + timeout > System.currentTimeMillis()) {}
+  }
+
+  /**
+   * Sleeps until the player is no longer walking
+   *
+   * @param timeout Max ms to wait to stop moving
+   */
+  public void sleepUntilNotMoving(long timeout) {
+    long start = System.currentTimeMillis();
+    while (Main.isRunning()
+        && isCurrentlyWalking()
+        && start + timeout > System.currentTimeMillis()) {}
+  }
+
   /**
    * Determines if the player is currently walking.
    *
@@ -463,6 +572,7 @@ public class Controller {
 
     return x != 0 || z != 0;
   }
+
   /**
    * Checks if an NPC is currently walking.
    *
@@ -522,7 +632,8 @@ public class Controller {
   }
 
   /**
-   * Walks to the specified tile, does not return until at tile.
+   * Walks to the specified tile, does not return until at tile, in combat, or a long timeout is
+   * reached
    *
    * @param x int
    * @param y int
@@ -532,35 +643,27 @@ public class Controller {
   }
 
   /**
-   * Walks to the specified tile, does not return until at tile or within tile radius.
+   * Walks to the specified tile, does not return until at tile or within tile radius, in combat, or
+   * a long timeout is reached
    *
    * @param x int
    * @param y int
    * @param radius int
-   * @param force boolean
+   * @param unused boolean
    */
-  public void walkTo(int x, int y, int radius, boolean force) { // offset applied
-    // TODO: re-examine usage of force, can this be removed?
-
+  public void walkTo(int x, int y, int radius, boolean unused) {
     if (x < 0 || y < 0) return;
 
     Main.logMethod("WalkTo", x, y, radius);
 
-    if (force) {
-      walkToActionSource(
-          mud,
-          mud.getLocalPlayerX(),
-          mud.getLocalPlayerZ(),
-          x - mud.getMidRegionBaseX(),
-          y - mud.getMidRegionBaseZ(),
-          false);
-    }
-
+    int timeout = 60_000;
+    long starttime = System.currentTimeMillis();
     while (((currentX() < x - radius)
             || (currentX() > x + radius)
             || (currentY() < y - radius)
             || (currentY() > y + radius))
-        && Main.isRunning()) { // offset applied
+        && Main.isRunning()
+        && System.currentTimeMillis() < starttime + timeout) {
 
       int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
@@ -572,7 +675,28 @@ public class Controller {
           y - mud.getMidRegionBaseZ() + fudgeFactor,
           false);
 
-      sleep(1280); // was 250
+      // Smart sleeping before clicking again
+      for (int i = 0; i < 20_000; i += 1000) {
+        if (distanceTo(x, y) <= 5 || isInCombat()) break;
+        sleep(1000);
+      }
+      sleep(1250);
+    }
+
+    if (System.currentTimeMillis() >= starttime + timeout) {
+      Main.logMethod(
+          "WalkTo",
+          "FAILED to walk from ",
+          currentX(),
+          currentY(),
+          " to ",
+          x,
+          y,
+          " with a radius of ",
+          radius,
+          ". We timed out waiting ",
+          timeout,
+          " ms!");
     }
   }
 
@@ -600,6 +724,57 @@ public class Controller {
   }
 
   /**
+   * Smartly walk towards any location in the overworld (warning: spikes CPU and RAM)
+   *
+   * <p>It's inefficient because it recalculates the whole path each time I'm too lazy to make it
+   * better right now
+   *
+   * @param x
+   * @param y
+   */
+  public void walkTowards(int x, int y) {
+    if (getNearestNpcByIds(
+            new int[] {
+              NpcId.GUIDE.getId(),
+              NpcId.PETER_SKIPPIN.getId(),
+              NpcId.COMBAT_INSTRUCTOR.getId(),
+              NpcId.COOKING_INSTRUCTOR.getId(),
+              NpcId.MAGIC_INSTRUCTOR.getId()
+            },
+            true)
+        != null) {
+      skipTutorialIsland();
+      log("Skipping tutorial before walking..");
+      sleep(5000);
+    }
+    // System.out.println("Walking to " + x + "," + y + " from " + currentX() + ","
+    // + currentY());
+    if (currentX() == x && currentY() == y) return;
+    // Setup APOS compatibility because we're calling the APOS PathWalker..
+    Script.setController(this);
+    PathWalker pw = new PathWalker();
+    pw.init(null);
+    // System.out.println("Calcing path");
+    PathWalker.Path path = pw.calcPath(x, y);
+    pw.setPath(path);
+    if (!pw.walkPath()) {
+      if (currentX() == x && currentY() == y) {
+        log("Done walk to " + x + "," + y);
+      } else {
+        log(
+            "Failed to walk to "
+                + x
+                + ","
+                + y
+                + ", gonna yeet off in a random direction to get unstuck");
+        walkTo(
+            currentX() + ThreadLocalRandom.current().nextInt(-5, 6),
+            currentY() + ThreadLocalRandom.current().nextInt(-5, 6));
+      }
+    }
+  }
+
+  /**
    * Whether or not the specified tile has an object at it.
    *
    * @param x int
@@ -622,43 +797,64 @@ public class Controller {
   }
 
   /**
-   * Retrieves the coordinates of the specified object id, if nearby.
+   * Retrieves the coordinates of the nearest specified object ID, if nearby.
    *
-   * @param objectId int
-   * @return int[] -- [x, y]. returns null if no object nearby.
+   * @param objectId The ID of the object to find.
+   * @return int[] The coordinates [x, y] of the nearest object, or null if no such object is
+   *     nearby.
    */
   public int[] getNearestObjectById(int objectId) {
     Main.logMethod("getNearestObjectById", objectId);
-    int count = getObjectsCount();
-    int[] xs = getObjectsX();
-    int[] zs = getObjectsZ();
-    int[] ids = getObjectsIds();
-
-    int[] closestCoords = {-1, -1};
+    int[] closestCoords = null;
     int closestDistance = 99999;
 
-    for (int i = 0; i < count; i++) {
-      if (ids[i] == objectId) {
-        int x = offsetX(xs[i]);
-        int z = offsetZ(zs[i]);
-        int dist = distance(this.currentX(), this.currentY(), x, z);
+    for (int[] objCoords : getObjectsById(objectId)) {
+      int dist = distance(this.currentX(), this.currentY(), objCoords[0], objCoords[1]);
+      if (dist < closestDistance) {
+        closestDistance = dist;
+        closestCoords = objCoords;
+      }
+    }
+
+    return closestCoords; // Returns null if no object is nearby
+  }
+
+  /**
+   * Retrieves the coordinates of the nearest specified object ID, if nearby and reachable.
+   *
+   * @param objectId The ID of the object to find.
+   * @param includeTileEdges -- whether or not the edges of the tile are permitted. Such as picking
+   *     up an item on a table -- you can't walk on top of the table, but you can reach the edges.
+   * @return int[] The coordinates [x, y] of the nearest reachable object, or null if no such object
+   *     is nearby and reachable.
+   */
+  public int[] getNearestReachableObjectById(int objectId, boolean includeTileEdges) {
+    Main.logMethod("getNearestReachableObjectById", objectId);
+    int[] closestCoords = null;
+    int closestDistance = 99999;
+
+    for (int[] objCoords : getObjectsById(objectId)) {
+      if (isReachable(objCoords[0], objCoords[1], includeTileEdges)) {
+        int dist = distance(this.currentX(), this.currentY(), objCoords[0], objCoords[1]);
         if (dist < closestDistance) {
           closestDistance = dist;
-          closestCoords[0] = x;
-          closestCoords[1] = z;
+          closestCoords = objCoords;
         }
       }
     }
 
-    if (closestCoords[0] == -1) return null;
-
-    return closestCoords;
+    return closestCoords; // Returns null if no reachable object is nearby
   }
+
   /**
-   * Retrieves all the coordinates of the specified object id, if nearby.
+   * Retrieves all the coordinates of the nearby object ID
    *
-   * @param objectId int
-   * @return int[] -- [x, y]. returns null if no object nearby.
+   * <p>This method returns an array of coordinate pairs for each instance of the object with the
+   * given ID that is nearby.
+   *
+   * @param objectId The ID of the objects to retrieve.
+   * @return int[][] An array of [x, y] coordinates for each object found. Returns an empty array if
+   *     no objects are found.
    */
   public int[][] getObjectsById(int objectId) {
     Main.logMethod("getObjectsById", objectId);
@@ -666,17 +862,23 @@ public class Controller {
     int[] xs = getObjectsX();
     int[] zs = getObjectsZ();
     int[] ids = getObjectsIds();
-    int[][] points = new int[2][count]; // length will be for all objects, not the ones we want...
+    List<int[]> pointsList = new ArrayList<>(); // Use dynamic list to collect valid coordinates
 
     for (int i = 0; i < count; i++) {
       if (ids[i] == objectId) {
         int x = offsetX(xs[i]);
         int z = offsetZ(zs[i]);
-        points[i] = new int[] {x, z};
+        pointsList.add(new int[] {x, z});
       }
     }
+
+    // Convert list back to array
+    int[][] points = new int[pointsList.size()][2];
+    points = pointsList.toArray(points);
+
     return points;
   }
+
   /**
    * Finds the nearest object coordinates based on the given object IDs.
    *
@@ -701,6 +903,44 @@ public class Controller {
     }
 
     return result;
+  }
+
+  /**
+   * Performs the primary command option on the nearest reachable scenery ID
+   *
+   * @param id scenery ID
+   * @return boolean -- returns true if we interacted successfully
+   */
+  public boolean atObject(SceneryId id) {
+    setStatus("Interacting " + id.name() + " " + id.getId());
+    Main.logMethod("atObject", id);
+    return atObject(id.getId());
+  }
+
+  /**
+   * Performs the primary command option on the nearest reachable objectId
+   *
+   * @param id int
+   * @return boolean -- returns true if we interacted successfully
+   */
+  public boolean atObject(int id) {
+    Main.logMethod("atObject", id);
+    int[] coords = getNearestObjectById(id);
+    if (coords == null) return false;
+    return atObject(coords[0], coords[1]);
+  }
+
+  /**
+   * Performs the second command option on the nearest reachable objectId
+   *
+   * @param id int
+   * @return boolean -- returns true if we interacted successfully
+   */
+  public boolean atObject2(int id) {
+    Main.logMethod("atObject", id);
+    int[] coords = getNearestObjectById(id);
+    if (coords == null) return false;
+    return atObject2(coords[0], coords[1]);
   }
 
   /**
@@ -771,6 +1011,7 @@ public class Controller {
     System.out.println(distance(currentX(), currentY(), x, y));
     return this.distance(currentX(), currentY(), x, y) <= 1;
   }
+
   /**
    * Interacts with the object (first option) at the given coordinates with the given id and
    * direction Private method called by atObject()
@@ -798,6 +1039,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putShort(z);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Interacts with the object (2nd option) at the given coordinates with the given id and direction
    * Private method called by atObject()
@@ -862,6 +1104,7 @@ public class Controller {
   public int[] getObjectsIds() {
     return (int[]) reflector.getObjectMember(mud, "gameObjectInstanceID");
   }
+
   /**
    * Retrieves an array of all of the X coordinates of nearby objects.
    *
@@ -895,6 +1138,7 @@ public class Controller {
 
     return _list;
   }
+
   /**
    * Retrieves ORSCharacter[] array of NPCs nearby.
    *
@@ -908,6 +1152,7 @@ public class Controller {
     System.arraycopy(npcs, 0, result, 0, npcCount);
     return result;
   }
+
   /**
    * Retrieves int[] array of NPCs nearby.
    *
@@ -922,6 +1167,7 @@ public class Controller {
     }
     return npcIds;
   }
+
   /**
    * Retrieves the count of NPCs nearby.
    *
@@ -958,6 +1204,7 @@ public class Controller {
   public int[] getWallObjectIds() {
     return (int[]) this.getMudClientValue("wallObjectInstanceID");
   }
+
   /**
    * Retrieves the count of wall objects nearby.
    *
@@ -1098,7 +1345,8 @@ public class Controller {
       int resultLength =
           (resultActiveSlot + 1); // length is 1 more than the index value, so 8 index is 9 values.
       if (result.length > resultLength) {
-        // now we need to shrink our array and remove null cells, then return shortened string
+        // now we need to shrink our array and remove null cells, then return shortened
+        // string
         int[][] newResult = new int[resultLength][3];
         for (int j = 0; j < resultLength; j++) {
           newResult[j][0] = result[j][0];
@@ -1110,6 +1358,7 @@ public class Controller {
     }
     return result;
   }
+
   /**
    * Retrieves the character object of the nearest npc.
    *
@@ -1142,6 +1391,7 @@ public class Controller {
     // TODO: return null for consistency and update scripts.
     return new int[] {-1, -1};
   }
+
   /**
    * Creates an NPC character object based on the server index provided.
    *
@@ -1556,7 +1806,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putByte(direction);
     mud.packetHandler.getClientStream().finishPacket();
 
-    //	sleep(GAME_TICK_COUNT);
+    // sleep(GAME_TICK_COUNT);
     // }
   }
 
@@ -1612,12 +1862,24 @@ public class Controller {
   }
 
   /**
-   * Retrieves the coordinates of the specified item, if on the ground.
+   * Retrieves the coordinates of the nearest specified item within the given distance, if on the
+   * ground
    *
    * @param itemId int
    * @return int[] -- [x, y]. Returns null if item not found.
    */
   public int[] getNearestItemById(int itemId) {
+    return getNearestItemById(itemId, 20000);
+  }
+
+  /**
+   * Retrieves the coordinates of the specified item, if on the ground.
+   *
+   * @param itemId int
+   * @param maxDistance Maximum distance to bother checking
+   * @return int[] -- [x, y]. Returns null if item not found.
+   */
+  public int[] getNearestItemById(int itemId, int maxDistance) {
     int groundItemCount = getGroundItemsCount();
     int[] groundItemID = getGroundItems();
     int[] groundItemX = getGroundItemsX();
@@ -1625,16 +1887,16 @@ public class Controller {
 
     int botX = currentX();
     int botZ = currentY();
-    int closestDistance = 99999;
     int closestItemIndex = -1;
 
     for (int i = 0; i < groundItemCount; i++) {
       if (itemId == groundItemID[i]) {
         int result = distance(groundItemX[i], groundItemZ[i], botX, botZ);
-        if (result < closestDistance) {
-          // Main.logMethod("getnearestitem bleh", botX, botZ, groundItemX[i], groundItemZ[i],
+        if (result <= maxDistance) {
+          // Main.logMethod("getnearestitem bleh", botX, botZ, groundItemX[i],
+          // groundItemZ[i],
           // result, closestDistance);
-          closestDistance = result;
+          maxDistance = result;
           closestItemIndex = i;
         }
       }
@@ -1669,24 +1931,18 @@ public class Controller {
    * @param x int
    * @param y int
    * @param itemId int
-   * @param reachable -- whether or not you can stand on top of the item. Set to false if the item
-   *     is on a table.
+   * @param unused
    * @param async -- whether or not to block when walking to the item. If set to true, it will keep
    *     attempting to walk to the item, until it is close enough to pick it up.
    */
-  public void pickupItem(int x, int y, int itemId, boolean reachable, boolean async) {
+  public void pickupItem(int x, int y, int itemId, boolean unused, boolean async) {
     if (x < 0 || y < 0) return;
 
     Main.logMethod("pickupItem", x, y, itemId);
 
     Main.logMethod("pickupItem calling walkTo...", x, y);
-    if (reachable) {
-      if (async) this.walkToAsync(x, y, 0);
-      else walkTo(x, y, 0, false);
-    } else {
-      if (async) this.walkToAsync(x, y, 0);
-      else this.walkTo(x, y, 0, false);
-    }
+    if (async) this.walkToAsync(x, y, 0);
+    else this.walkTo(x, y, 0, false);
 
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(247);
@@ -1694,6 +1950,19 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putShort(y);
     mud.packetHandler.getClientStream().bufferBits.putShort(itemId);
     mud.packetHandler.getClientStream().finishPacket();
+  }
+
+  /**
+   * Picks up the nearest reachable item with id itemId
+   *
+   * @param itemId int
+   * @return true if the item was found
+   */
+  public boolean pickupItem(int itemId) {
+    int[] item = getNearestItemById(itemId);
+    if (item == null) return false;
+    pickupItem(item[0], item[1], itemId, false, false);
+    return true;
   }
 
   /**
@@ -1797,6 +2066,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putInt(amount);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * return a int item id that is equipped in the provided slot index
    *
@@ -1814,6 +2084,7 @@ public class Controller {
     }
     return result[slotIndex];
   }
+
   /**
    * return a list of all item ids that are equipped
    *
@@ -1833,6 +2104,7 @@ public class Controller {
     System.arraycopy(result, 0, cleanResult, 0, index);
     return cleanResult;
   }
+
   /**
    * Whether or not the specified item slot is equipped. Note that this does not use an item id, but
    * a slot index.
@@ -1845,14 +2117,14 @@ public class Controller {
 
     return mud.getInventory()[slotIndex].getEquipped();
     //
-    //		int[] inventoryItemEquipped = (int[]) reflector.getObjectMember(mud,
+    // int[] inventoryItemEquipped = (int[]) reflector.getObjectMember(mud,
     // "inventoryItemEquipped");
     //
-    //		if(slot != -1) {
-    //			return inventoryItemEquipped[slot] > 0;
-    //		}
+    // if(slot != -1) {
+    // return inventoryItemEquipped[slot] > 0;
+    // }
     //
-    //		return false;
+    // return false;
   }
 
   /**
@@ -1882,10 +2154,21 @@ public class Controller {
    * @param slotIndex int
    */
   public void equipItem(int slotIndex) {
+    if (slotIndex < 0 || slotIndex > 30)
+      System.out.println("Warning: Trying to equip an invalid slot");
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(169);
     mud.packetHandler.getClientStream().bufferBits.putShort(slotIndex);
     mud.packetHandler.getClientStream().finishPacket();
+  }
+
+  /**
+   * Equipts an item by ID. The item must be in your inventory
+   *
+   * @param id the ID of the item to equip
+   */
+  public void equipItemById(int id) {
+    equipItem(getInventoryItemSlotIndex(id));
   }
 
   /**
@@ -2241,6 +2524,7 @@ public class Controller {
 
     return false;
   }
+
   /**
    * Withdraws a specified amount of an item from the bank. (APOS compatibility method)
    *
@@ -2348,6 +2632,20 @@ public class Controller {
     return (int) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
   }
 
+  /*
+   * +
+   * Retrieves the distance to a tile
+   *
+   * @param x1 int
+   *
+   * @param x2 int
+   *
+   * @return int
+   */
+  public int distanceTo(int x, int y) {
+    return distance(currentX(), currentY(), x, y);
+  }
+
   /**
    * Converts local region coordinates to global coordinates.
    *
@@ -2422,6 +2720,7 @@ public class Controller {
     mud.resizeWidth = width;
     mud.resizeHeight = height;
   }
+
   /**
    * Makes the "unique" file name for each screenshot to prevent screenshot file over writing. could
    * be shortened? Theoretically allows 1 screenshot to be saved per second forever, also
@@ -2572,6 +2871,7 @@ public class Controller {
       return false;
     }
   }
+
   /**
    * Retrieves whether or not the item is notable.
    *
@@ -2584,6 +2884,7 @@ public class Controller {
       return false;
     }
   }
+
   /**
    * Retrieves the name of the specified item.
    *
@@ -2717,13 +3018,17 @@ public class Controller {
     while (isBatching()) sleep(640);
   }
 
-  // * The Auction House only allows one interaction every 5 seconds. When making new methods
-  // * for auctions make sure it uses the following methods to guarantee it complies with this
+  // * The Auction House only allows one interaction every 5 seconds. When making
+  // new methods
+  // * for auctions make sure it uses the following methods to guarantee it
+  // complies with this
   // * limitation.
-  // * - waitForAuctionTimer() -- Put this before any part of a method that interacts with the
-  // *      Auction House
-  // * - beginAuctionTimeout() -- Put this after intacting. If you're calling getAuctions() or
-  // *      refreshAuctions() those methods will automatically do this.
+  // * - waitForAuctionTimer() -- Put this before any part of a method that
+  // interacts with the
+  // * Auction House
+  // * - beginAuctionTimeout() -- Put this after intacting. If you're calling
+  // getAuctions() or
+  // * refreshAuctions() those methods will automatically do this.
 
   /**
    * Check if the player is in an auction house and not at the disallowed one on Karamja
@@ -2736,7 +3041,8 @@ public class Controller {
       return false;
     }
 
-    // Disallow auction house on Karamja so creating/cancelling auctions can't be used to bypass the
+    // Disallow auction house on Karamja so creating/cancelling auctions can't be
+    // used to bypass the
     // lack of a bank in the area
     if (currentX() > 320 && currentX() < 400 && currentY() > 679 && currentY() < 730) {
       closeAuctionHouse();
@@ -2764,7 +3070,8 @@ public class Controller {
 
   /** Uses npcCommand1 to open the auction house on the nearest clerk */
   public void openAuctionHouse() {
-    // Open an auction house if near an auction clerk that isn't the disallowed Karamja one
+    // Open an auction house if near an auction clerk that isn't the disallowed
+    // Karamja one
     if (currentX() < 320 && currentX() > 400 && currentY() < 679 && currentY() > 730) {
       ORSCharacter npc = getNearestNpcById(NpcId.AUCTION_CLERK.getId(), false);
       if (npc != null) {
@@ -2895,9 +3202,13 @@ public class Controller {
   public int auctionCancel(AuctionItem auction) {
     if (!isInAuctionHouse() || auction == null) return -1;
     if (this.getPlayerName().equals(auction.getSeller())) {
-      /* Checks if the player is the owner of the auction.If you remove this check and try to
-      cancel someone else's auction you will be logged by the server for potential packet
-      manipulation. */
+      /*
+       * Checks if the player is the owner of the auction.If you remove this check and
+       * try to
+       * cancel someone else's auction you will be logged by the server for potential
+       * packet
+       * manipulation.
+       */
       log("You are not the owner of this auction", "red");
       return -1;
     }
@@ -3022,6 +3333,7 @@ public class Controller {
     auctionRefresh();
     return getAuctions();
   }
+
   /**
    * Gets an ArrayList of com.openrsc.interfaces.misc.AuctionItems from AuctionHouse via the
    * reflectAuctionList method and converts it to an ArrayList of models.entities.AuctionItem then
@@ -3481,7 +3793,8 @@ public class Controller {
 
   /** Uses npcCommand1 to open the shop on the nearest npc id given */
   public void openShop(int[] npcIds) {
-    // I made this a String array just in case some npcs have a different command to open their
+    // I made this a String array just in case some npcs have a different command to
+    // open their
     // shop.
     String[] shopCommandStrings = {"Trade"};
     ORSCharacter npc = getNearestNpcByIds(npcIds, false);
@@ -3775,19 +4088,19 @@ public class Controller {
     return (String[]) this.getMudClientValue("skillNameLong");
   }
 
-  //  See issue on GitLab
-  //	public void keyTyped(int charCode) {
-  //		//overrideable
-  //	}
+  // See issue on GitLab
+  // public void keyTyped(int charCode) {
+  // //overrideable
+  // }
   //
-  //	public void keyPressed(int charCode) {
-  //		//overrideable
-  //		System.out.println("key pressed = " + charCode);
-  //	}
+  // public void keyPressed(int charCode) {
+  // //overrideable
+  // System.out.println("key pressed = " + charCode);
+  // }
   //
-  //	public void keyReleased(int charCode) {
-  //		//overrideable
-  //	}
+  // public void keyReleased(int charCode) {
+  // //overrideable
+  // }
 
   /** Disables autologin and attempts to logout. No guarantee on success. */
   public void logout() {
@@ -3837,6 +4150,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putShort(groundItemId);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Uses the specified item in the inventory on the specified ground item.
    *
@@ -3856,6 +4170,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putShort(groundItemId);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Retrieves the server index of the player at the specified coordinates.
    *
@@ -4136,6 +4451,7 @@ public class Controller {
 
     return true;
   }
+
   /** Removes all trade items from the current trade window. */
   public void removeAllTradeItems() {
     setTradeItems(new int[] {}, new int[] {}, true);
@@ -4208,6 +4524,15 @@ public class Controller {
 
   private void walkToActionSource(
       mudclient mud, int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
+    // System.out.println("Controller walkToActionSource with " + startX + ", " +
+    // startZ + ", " +
+    // destX + ", " + destZ + ", " + walkToEntity);
+
+    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    for (StackTraceElement element : stackTraceElements) {
+      // System.out.println(element.toString());
+    }
+
     reflector.mudInvoker(mud, "walkToActionSource", startX, startZ, destX, destZ, walkToEntity);
   }
 
@@ -4310,6 +4635,7 @@ public class Controller {
   public mudclient getMud() {
     return this.mud;
   }
+
   /**
    * Opens the bank and sleeps until the maximum number of ticks is reached or the bank interface is
    * open.
@@ -4326,6 +4652,7 @@ public class Controller {
       ticks++;
     }
   }
+
   /**
    * Opens the bank option menu and sleeps until options menu dialog is visible or the maximum
    * number of ticks is reached. private method called by openBank()
@@ -4704,6 +5031,7 @@ public class Controller {
           true);
     }
   }
+
   /**
    * Draws text at the specified coordinates. Must be used inside paintInterrupt().
    *
@@ -4791,6 +5119,7 @@ public class Controller {
     }
     return 0;
   }
+
   /**
    * Returns the width of the sprite for an item id
    *
@@ -4824,6 +5153,7 @@ public class Controller {
     }
     return 0;
   }
+
   /**
    * Returns the height of the sprite for an item id
    *
@@ -5210,6 +5540,7 @@ public class Controller {
   public int getGameWidth() {
     return mud.getGameWidth();
   }
+
   /**
    * Checks if the NPC is currently talking.
    *
@@ -5251,6 +5582,7 @@ public class Controller {
       return "";
     }
   }
+
   /**
    * Retrieves the number of spells (total)
    *
@@ -5265,6 +5597,7 @@ public class Controller {
       return result;
     }
   }
+
   /**
    * Retrieves the names of all spells.
    *
@@ -5278,6 +5611,7 @@ public class Controller {
 
     return result;
   }
+
   /**
    * Retrieves the spell level for the given spell ID.
    *
@@ -5291,6 +5625,7 @@ public class Controller {
       return -1;
     }
   }
+
   /**
    * Gets the spell type for the given spell ID.
    *
@@ -5304,6 +5639,7 @@ public class Controller {
       return -1;
     }
   }
+
   /**
    * Retrieves the set of spell runes required for a given spell ID.
    *
@@ -5317,6 +5653,7 @@ public class Controller {
       return null;
     }
   }
+
   /**
    * Determines if the player can cast a specific spell (high enough stat level and has runes)
    *
@@ -5336,6 +5673,7 @@ public class Controller {
 
     return true;
   }
+
   /**
    * Returns an array of quest names.
    *
@@ -5344,6 +5682,7 @@ public class Controller {
   public String[] getQuestNames() {
     return ((String[]) reflector.getObjectMember(mud, "questNames"));
   }
+
   /**
    * Returns the number of quests (total)
    *
@@ -5352,6 +5691,7 @@ public class Controller {
   public int getQuestsCount() {
     return this.getQuestNames().length;
   }
+
   /**
    * Retrieves the quest stage for the specified quest ID.
    *
@@ -5363,6 +5703,7 @@ public class Controller {
 
     return ((int[]) reflector.getObjectMember(mud, "questStages"))[questId];
   }
+
   /**
    * Determines if a quest is complete.
    *
@@ -5372,6 +5713,7 @@ public class Controller {
   public boolean isQuestComplete(int questId) {
     return this.getQuestStage(questId) == -1;
   }
+
   /**
    * Adds a friend to the user's friend list.
    *
@@ -5383,6 +5725,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putString(username);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Adds the specified username to the ignore list
    *
@@ -5394,6 +5737,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putString(username);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Removes a friend from the user's friend list.<br>
    * Does not update on client side
@@ -5406,6 +5750,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, 110);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Removes the specified player from the ignore list. <br>
    * Does not update on client side
@@ -5418,6 +5763,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putNullThenString(username, -78);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Sends a private message to a specified user.
    *
@@ -5481,9 +5827,9 @@ public class Controller {
         if (this.getNpcCoordsByServerIndex(npc.serverIndex)[0] == (this.currentX() + x)
             && this.getNpcCoordsByServerIndex(npc.serverIndex)[1] == (this.currentY() + y))
           return npc.serverIndex;
-        //				if(npc.currentX == (mud.getLocalPlayerX() + x)
-        //				&& npc.currentZ == (mud.getLocalPlayerZ() + y))
-        //					return npc.serverIndex;
+        // if(npc.currentX == (mud.getLocalPlayerX() + x)
+        // && npc.currentZ == (mud.getLocalPlayerZ() + y))
+        // return npc.serverIndex;
       }
     }
 
@@ -5569,6 +5915,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putByte(direction);
     mud.packetHandler.getClientStream().finishPacket();
   }
+
   /**
    * Internal function used to grant the ability for normal accounts to access the developer ID
    * menus.
@@ -5592,6 +5939,7 @@ public class Controller {
       }
     }
   }
+
   /**
    * (setBatchBars(boolean)) Method can be called to toggle ON Batch Bars in the openrsc client
    * config. <br>
@@ -5600,6 +5948,7 @@ public class Controller {
   public void setBatchBarsOn() {
     setBatchBars(true);
   }
+
   /**
    * (use setBatchBars(boolean)) Method can be called to toggle OFF Batch Bars in the openrsc client
    * config for native scripts utilizing batch bars.
@@ -5607,6 +5956,7 @@ public class Controller {
   public void setBatchBarsOff() {
     setBatchBars(false);
   }
+
   /**
    * Method can be called to toggle Batch Bars in the openrsc client config for native scripts
    * utilizing batch bars.
@@ -5616,6 +5966,7 @@ public class Controller {
       Config.C_BATCH_PROGRESS_BAR = value;
     }
   }
+
   /**
    * Display String "Hr:Min:Sec" version of milliseconds long int.
    *
@@ -5648,6 +5999,7 @@ public class Controller {
 
     return twoDigits.format(min) + ":" + twoDigits.format(sec);
   }
+
   /**
    * Shows Time to Completions in hours, minutes, and seconds. ("01:23:45")
    *
@@ -5668,6 +6020,7 @@ public class Controller {
     final long ttl = (long) (secondsPerItem * remaining);
     return String.format("%d:%02d:%02d", ttl / 3600, (ttl % 3600) / 60, (ttl % 60));
   }
+
   /**
    * Shows short Time to Completions in hours only. ("1234")
    *
@@ -5688,10 +6041,12 @@ public class Controller {
     final long ttl = (long) (secondsPerItem * remaining);
     return String.format("%d", ttl / 3600);
   }
+
   /** Show Recovery Question Menu */
   public void showRecoveryDetailsMenu() {
     mud.setShowRecoveryDialogue(true);
   }
+
   /**
    * Hide Recovery Question Menu (Run this every message hook callback to prevent corrupt packets
    * showing this menu)
@@ -5699,10 +6054,12 @@ public class Controller {
   public void hideRecoveryDetailsMenu() {
     mud.setShowRecoveryDialogue(false);
   }
+
   /** Show Details Menu */
   public void showContactDetailsMenu() {
     mud.setShowContactDialogue(true);
   }
+
   /**
    * Hides Details Menu (Run this every message hook callback to prevent corrupt packets showing
    * this menu)

@@ -17154,7 +17154,7 @@ public final class mudclient implements Runnable {
 
 	private void walkToActionSource(int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
 		try {
-
+      // System.out.println("mudclient walkToActionSource with " + startX + "," + startZ + "," + destX + "," + destZ + "," + walkToEntity);
 			this.walkToArea(startX, startZ, destX, destZ, destX, destZ, false, walkToEntity);
 		} catch (RuntimeException var8) {
 			throw GenUtil.makeThrowable(var8, "client.BE(" + destZ + ',' + destX + ',' + startZ + ',' + startX + ','

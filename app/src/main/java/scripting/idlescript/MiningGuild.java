@@ -102,6 +102,8 @@ public class MiningGuild extends IdleScript {
     }
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5
           && controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223) {
         quit(2);

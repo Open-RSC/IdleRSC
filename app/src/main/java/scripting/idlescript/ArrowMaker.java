@@ -50,6 +50,9 @@ public class ArrowMaker extends IdleScript {
   public void scriptStart() {
     if (headless) {
       while (controller.isRunning()) {
+        if (controller.getNeedToMove()) controller.moveCharacter();
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
+
         while (controller.getInventoryItemCount(280) > 9
             && controller.getInventoryItemCount(selectedArrowHead) > 9) {
           controller.useItemOnItemBySlot(
@@ -76,6 +79,8 @@ public class ArrowMaker extends IdleScript {
     }
     if (!headless) {
       while (controller.isRunning()) {
+        if (controller.getNeedToMove()) controller.moveCharacter();
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         while (controller.getInventoryItemCount(637) > 9
             && controller.getInventoryItemCount(selectedArrowHead) > 9) {
           controller.useItemOnItemBySlot(

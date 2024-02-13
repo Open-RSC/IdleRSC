@@ -127,10 +127,7 @@ public class CLIParser {
       parseResult.setDebug(
           p.getProperty("debug", "false").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setBotPaintVisible(
-          !p.getProperty("bot-paint", "true")
-              .replace(" ", "")
-              .toLowerCase()
-              .contains("true")); // negative (enabled by default)
+          p.getProperty("bot-paint", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setGraphicsEnabled(
           !p.getProperty("disable-gfx", "false")
               .replace(" ", "")

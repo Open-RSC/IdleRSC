@@ -58,7 +58,8 @@ public class GetMeToArdougne extends IdleScript {
     controller.displayMessage("@yel@WARNING: @red@Script is not death safe.");
 
     while (controller.isRunning()) {
-
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       while (controller.getInventoryItemCount(10) < 60) {
         controller.setStatus("@yel@Stealing GP..");
         if (controller.isInCombat()) {

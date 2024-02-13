@@ -32,6 +32,8 @@ public class Monkz extends IdleScript {
     }
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       controller.setFightMode(Integer.parseInt(parameters[0]));
       openDoor();
       pray();

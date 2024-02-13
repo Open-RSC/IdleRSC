@@ -51,12 +51,14 @@ public final class K_ChristmasPresents extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() < 30) { // do harvesting
         int[] closestTree = c.getNearestObjectById(FULL_TREE);
         if (closestTree != null) { // harvest closest
           c.atObject(closestTree[0], closestTree[1]);
           c.sleep(2000);
-          waitForBatching();
+          c.waitForBatching(true);
         } else {
           switch (location) { // walk to center
             case 0: // "Lumbridge Walking"

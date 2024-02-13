@@ -75,6 +75,8 @@ public class VialCrafter extends IdleScript {
     }
 
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       // Fill empty buckets
       while (c.getInventoryItemCount(BUCKET) > 0 && c.isRunning()) {
         fillBuckets();
@@ -179,9 +181,7 @@ public class VialCrafter extends IdleScript {
   public void dropEdibleSeaweed() {
     if (c.getInventoryItemCount(EDIBLE_SEAWEED) > 0) {
       c.walkTo(c.currentX(), c.currentY());
-      while (c.isBatching()) {
-        c.sleep(640);
-      }
+      c.waitForBatching(false);
       c.setStatus("@Cya@Dropping Edible Seaweed");
       c.dropItem(
           c.getInventoryItemSlotIndex(EDIBLE_SEAWEED), c.getInventoryItemCount(EDIBLE_SEAWEED));
@@ -196,7 +196,7 @@ public class VialCrafter extends IdleScript {
     c.setStatus("@Cya@Filling Buckets");
     c.useItemIdOnObject(429, 566, BUCKET);
     c.sleep(1280);
-    while (c.isBatching() || c.isCurrentlyWalking()) {
+    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking()) {
       c.sleep(1280);
     }
   }
@@ -205,7 +205,7 @@ public class VialCrafter extends IdleScript {
     c.setStatus("@Cya@Making Soda Ash");
     c.useItemIdOnObject(426, 560, SEAWEED);
     c.sleep(1280);
-    while (c.isBatching() || c.isCurrentlyWalking()) {
+    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking()) {
       c.sleep(640);
     }
   }
@@ -214,7 +214,7 @@ public class VialCrafter extends IdleScript {
     c.setStatus("@Cya@Making Molten Glass");
     c.useItemIdOnObject(419, 559, SAND);
     c.sleep(1280);
-    while (c.isBatching() || c.isCurrentlyWalking()) {
+    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking()) {
       c.sleep(640);
     }
   }
@@ -226,9 +226,7 @@ public class VialCrafter extends IdleScript {
         c.getInventoryItemSlotIndex(GLASSBLOWING_PIPE), c.getInventoryItemSlotIndex(MOLTEN_GLASS));
     c.sleep(1280);
     c.optionAnswer(0);
-    while (c.isBatching()) {
-      c.sleep(640);
-    }
+    c.waitForBatching(false);
     VIALS_MADE += (controller.getInventoryItemCount(EMPTY_VIAL) - startVials);
   }
 

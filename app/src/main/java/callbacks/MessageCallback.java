@@ -46,20 +46,11 @@ public class MessageCallback {
     Controller con = Main.getController();
     con.hideRecoveryDetailsMenu();
     con.hideContactDetailsMenu();
-    //    if (Main.isLogWindowOpen() && DrawCallback.getNextLogClear() == -1) {
-    //      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in
-    // ms
-    //    }
-    //    if (Main.isLogWindowOpen() && (System.currentTimeMillis() >
-    // DrawCallback.getNextLogClear())) {
-    //      Main.clearLog();
-    //      DrawCallback.setNextLogClear(System.currentTimeMillis() + 86400000L); // add 24 hrs in
-    // ms
-    //    }
+
     if ((System.currentTimeMillis() > DrawCallback.getNextRefresh())
         && DrawCallback.getNextRefresh() != -1
         && !con.isDrawEnabled()) {
-      con.setDrawing(true);
+      con.setDrawing(true, 0);
       DrawCallback.setNextDeRefresh(System.currentTimeMillis() + 20L); // toggle on gfx 1 frame
       DrawCallback.setNextRefresh(
           System.currentTimeMillis()
@@ -71,13 +62,15 @@ public class MessageCallback {
       if (message.contains("You just advanced")) {
         // handleLevelUp(message);
       } else if (message.contains("You have been standing here for")) {
-        Controller c = Main.getController();
-        System.out.println("got standing message! Walking character");
-
-        if (c != null) c.moveCharacter(); // this is responsible for auto-walk!
+        con.log("IdleRSC: Standing message recieved, triggering auto-walk.");
+        con.setNeedToMove(true); // this is responsible for auto-walk!
+      }
+    } else if (type == MessageType.QUEST) {
+      if (con.isAuthentic() && message.toLowerCase().contains("you are too tired to")) {
+        con.log("IdleRSC: Tired message recieved, triggering sleep handling.");
+        con.setShouldSleep(true);
       }
     }
-
     if (Main.isRunning() && Main.getCurrentRunningScript() != null) {
       if (Main.getCurrentRunningScript() instanceof IdleScript) {
         if (type == MessageType.GAME) {

@@ -55,6 +55,8 @@ public final class K_CrystalKeyChest extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       lootScript();
       int[] coords = c.getNearestItemById(542); // always pick up keys
       if (coords != null) {

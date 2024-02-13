@@ -51,6 +51,8 @@ public class SmithingVarrock extends IdleScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount(barId) < 5 && !c.isInBank()) {
         c.setStatus("@gre@Banking..");
         c.walkTo(150, 507);
@@ -60,7 +62,7 @@ public class SmithingVarrock extends IdleScript {
         c.walkTo(148, 512);
       }
       if (c.getInventoryItemCount(barId) > 4) {
-        c.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         c.setStatus("@gre@Smithing..");
         c.useItemIdOnObject(148, 513, barId);
         c.sleep(1000); // increased sleep time to fix menuing bug
@@ -73,7 +75,7 @@ public class SmithingVarrock extends IdleScript {
         if (!c.isAuthentic()) {
           c.optionAnswer(ans4);
           c.sleep(1000);
-          while (c.isBatching()) c.sleep(1000);
+          c.waitForBatching(false);
         }
       }
       // c.sleep(320);

@@ -43,7 +43,6 @@ public final class K_FastBarbFisher extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@Power fishes trout/salmon in barb village using Batching");
 
       c.quitIfAuthentic();
@@ -60,23 +59,14 @@ public final class K_FastBarbFisher extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       int[] spot = c.getNearestObjectById(192);
       c.walkTo(spot[0] + 1, spot[1]);
       c.sleep(1240);
       c.atObject(spot[0], spot[1]);
       c.sleep(2000);
-      waitForBatching();
-      if (c.isCurrentlyWalking()) {
-        next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-      }
-      if (System.currentTimeMillis() > next_attempt) {
-        c.log("@red@Walking to Avoid Logging!");
-        c.walkTo(c.currentX() + 1, c.currentY(), 0, true);
-        c.sleep(640);
-        next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-        long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
-        c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
-      }
+      c.waitForBatching(true);
       if (c.getInventoryItemCount(381) == 0 || c.getInventoryItemCount(378) == 0) {
         fishToBank();
         bank();
@@ -268,13 +258,6 @@ public final class K_FastBarbFisher extends K_kailaScript {
               + " hours",
           x,
           y + (14 * 5),
-          0xFFFFFF,
-          1);
-      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-      c.drawString(
-          "@whi@Time till AutoWalk: " + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-          x,
-          y + (14 * 6),
           0xFFFFFF,
           1);
       c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 7), 0xFFFFFF, 1);

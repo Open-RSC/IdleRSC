@@ -92,6 +92,8 @@ public final class K_YanilleBlueDrag extends K_kailaScript {
   // Main Script section
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (useDragonTwoHand && !c.isInCombat() && !c.isItemIdEquipped(ANTI_DRAGON_SHIELD)) {
         c.setStatus("@gre@Equip Antishield.");
         c.equipItem(c.getInventoryItemSlotIndex(ANTI_DRAGON_SHIELD));

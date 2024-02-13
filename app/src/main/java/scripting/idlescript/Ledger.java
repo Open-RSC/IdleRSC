@@ -26,6 +26,8 @@ public class Ledger extends IdleScript {
     int prevX = 0, prevY = 0;
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.isInCombat()) controller.walkTo(controller.currentX(), controller.currentY());
 
       if (eatFood()) continue;
@@ -39,12 +41,12 @@ public class Ledger extends IdleScript {
         controller.atObject(605, 3509);
         controller.sleep(618);
       } else if (controller.currentY() <= 3557) {
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.setStatus("@yel@Ledging...");
         controller.atObject(601, 3558);
         controller.sleep(618);
       } else if (controller.currentY() == 3563) {
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.setStatus("@yel@Ledging...");
         controller.atObject(601, 3562);
         controller.sleep(618);

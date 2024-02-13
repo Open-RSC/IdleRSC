@@ -187,6 +187,8 @@ public class AIOSmelter extends IdleScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (isEnoughOre()) {
         if (c.getNearestObjectById(118) == null) {
           c.setStatus("Walking to furnace..");
@@ -228,14 +230,14 @@ public class AIOSmelter extends IdleScript {
         }
         if (c.getInventoryItemCount(oreId) > 0 && c.getNearestObjectById(118) != null) {
 
-          while (c.isBatching()) c.sleep(640);
+          c.waitForBatching(false);
           if (c.getInventoryItemCount(699) > 0) { // wield gauntlets
             c.setStatus("Wielding gauntlets..");
             c.equipItem(c.getInventoryItemSlotIndex(699));
             c.sleep(618);
           }
           c.setStatus("Smelting!");
-          c.sleepHandler(98, true);
+          if (c.getShouldSleep()) c.sleepHandler(true);
           if (!c.isBatching()) {
             c.useItemIdOnObject(
                 c.getNearestObjectById(118)[0], c.getNearestObjectById(118)[1], oreId);
@@ -251,12 +253,10 @@ public class AIOSmelter extends IdleScript {
             c.optionAnswer(gemAnswer);
             c.sleep(640);
             if (!c.isAuthentic()) {
-              while (c.isBatching()) {
-                c.sleep(640);
-              }
+              c.waitForBatching(false);
             }
           } else c.sleep(640);
-          while (c.isBatching()) c.sleep(640);
+          c.waitForBatching(false);
         }
 
       } else {

@@ -46,6 +46,8 @@ public class CasketFisher extends IdleScript {
         || controller.getInventoryItemCount(netId) == 0) bank();
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount(casketId) < 20) {
         while (controller.currentX() != 406
             && controller.currentY() != 504

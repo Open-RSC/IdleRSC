@@ -81,6 +81,8 @@ public final class K_NatureCrafter extends K_kailaScript {
   // if low hp log out for nature rc
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.currentY() < 50) {
         c.setStatus("@red@Crafting..");
         c.atObject(787, 21);

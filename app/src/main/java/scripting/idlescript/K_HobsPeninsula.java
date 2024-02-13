@@ -103,6 +103,8 @@ public final class K_HobsPeninsula extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       boolean ate = eatFood();
       if (!ate) {
         c.setStatus("@yel@Banking..");

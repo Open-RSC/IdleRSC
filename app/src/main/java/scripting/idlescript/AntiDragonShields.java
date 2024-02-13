@@ -34,6 +34,8 @@ public class AntiDragonShields extends IdleScript {
     controller.displayMessage("@red@Start near Duke of Lumbridge");
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
 
       int targetAmount = 30; // - controller.getInventoryItemCount();
       int stack = 5;

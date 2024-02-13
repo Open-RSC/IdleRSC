@@ -272,7 +272,6 @@ public class QH__QuestHandler extends IdleScript {
     }
     return false;
   }
-
   /**
    * Drops all of a given item id except one.
    *

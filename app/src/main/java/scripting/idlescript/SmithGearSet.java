@@ -60,6 +60,8 @@ public class SmithGearSet extends IdleScript {
 
   public void scriptStart() {
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       while (bankTime && !controller.isInBank()) {
         totalSetCount =
             (controller.getBankItemCount(itemType[barField.getSelectedIndex()][0])
@@ -138,7 +140,7 @@ public class SmithGearSet extends IdleScript {
               <= (controller.getInventoryItemCount(itemType[barField.getSelectedIndex()][2])
                   + controller.getBankItemCount(itemType[barField.getSelectedIndex()][2]))) {
         controller.setStatus("Crafting Plate");
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.useItemIdOnObject(
             controller.getNearestObjectById(50)[0],
             controller.getNearestObjectById(50)[1],
@@ -162,7 +164,7 @@ public class SmithGearSet extends IdleScript {
               <= (controller.getInventoryItemCount(itemType[barField.getSelectedIndex()][3])
                   + controller.getBankItemCount(itemType[barField.getSelectedIndex()][3]))) {
         controller.setStatus("Crafting Legs");
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.useItemIdOnObject(
             controller.getNearestObjectById(50)[0],
             controller.getNearestObjectById(50)[1],
@@ -186,7 +188,7 @@ public class SmithGearSet extends IdleScript {
               <= (controller.getInventoryItemCount(itemType[barField.getSelectedIndex()][4])
                   + controller.getBankItemCount(itemType[barField.getSelectedIndex()][4]))) {
         controller.setStatus("Crafting Kite");
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.useItemIdOnObject(
             controller.getNearestObjectById(50)[0],
             controller.getNearestObjectById(50)[1],
@@ -210,7 +212,7 @@ public class SmithGearSet extends IdleScript {
               <= (controller.getInventoryItemCount(itemType[barField.getSelectedIndex()][5])
                   + controller.getBankItemCount(itemType[barField.getSelectedIndex()][5]))) {
         controller.setStatus("Crafting Baxe");
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.useItemIdOnObject(
             controller.getNearestObjectById(50)[0],
             controller.getNearestObjectById(50)[1],
@@ -234,7 +236,7 @@ public class SmithGearSet extends IdleScript {
               <= (controller.getInventoryItemCount(itemType[barField.getSelectedIndex()][0])
                   + controller.getBankItemCount(itemType[barField.getSelectedIndex()][0]))) {
         controller.setStatus("Crafting 2H");
-        controller.sleepHandler(98, true);
+        if (controller.getShouldSleep()) controller.sleepHandler(true);
         controller.useItemIdOnObject(
             controller.getNearestObjectById(50)[0],
             controller.getNearestObjectById(50)[1],

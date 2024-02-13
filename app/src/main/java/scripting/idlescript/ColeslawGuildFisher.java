@@ -121,6 +121,8 @@ public class ColeslawGuildFisher extends IdleScript {
 
   public void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (dropJunk && bigNetFishing) dropJunk();
       if (c.getInventoryItemCount() == 30) {
         handleFullInven();

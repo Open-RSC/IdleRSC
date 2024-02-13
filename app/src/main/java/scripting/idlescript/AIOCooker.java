@@ -128,6 +128,8 @@ public class AIOCooker extends IdleScript {
   public void scriptStart() {
 
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount(target.rawId) == 0) {
         goToBank();
         bank();
@@ -198,12 +200,12 @@ public class AIOCooker extends IdleScript {
 
   public void cook() {
     if (c.getInventoryItemCount(target.rawId) > 0) {
-      c.sleepHandler(98, true);
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (!c.isBatching()) {
         c.useItemIdOnObject(432, 480, target.rawId);
       }
       c.sleep(640);
-      while (c.isBatching()) c.sleep(640);
+      c.waitForBatching(false);
     }
   }
 

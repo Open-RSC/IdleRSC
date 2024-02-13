@@ -42,6 +42,8 @@ public final class K_FastChainLinks extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount(593) > 0) {
         c.setStatus("@gre@Smithing..");
         c.useItemIdOnObject(320, 3424, 593);

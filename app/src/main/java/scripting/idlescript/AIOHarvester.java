@@ -86,7 +86,6 @@ public class AIOHarvester extends K_kailaScript {
       scriptStarted = false;
       c.quitIfAuthentic();
       startTime = System.currentTimeMillis();
-      if (autoWalk) next_attempt = System.currentTimeMillis() + 5000L;
       if (scriptSelect == 6 && c.getBaseStat(c.getStatId("Agility")) < 77) endSession();
       c.displayMessage("@red@AIOHarvester ~ By @mag@Kaila");
       if (c.getBaseStat(SkillId.HARVESTING.getId()) == 99
@@ -111,6 +110,8 @@ public class AIOHarvester extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (bringFood) ate = eatFood();
       if (c.getInventoryItemCount() == 30 || timeToBank || (bringFood && !ate)) {
         c.setStatus("@red@Banking..");
@@ -127,14 +128,6 @@ public class AIOHarvester extends K_kailaScript {
         walkToCenter();
         c.sleep(GAME_TICK);
       }
-      if (autoWalk && System.currentTimeMillis() > next_attempt) {
-        c.log("@red@Walking to Avoid Logging!");
-        c.walkTo(c.currentX() - 1, c.currentY(), 0, true);
-        c.sleep(GAME_TICK);
-        next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-        long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
-        c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
-      }
     }
   }
 
@@ -145,11 +138,7 @@ public class AIOHarvester extends K_kailaScript {
       c.setStatus("@yel@Harvesting...");
       c.atObject(coords[0], coords[1]);
       c.sleep(2000);
-      while (c.isBatching()
-          && c.getInventoryItemCount() != 30
-          && (next_attempt == -1 || System.currentTimeMillis() < next_attempt)) {
-        c.sleep(GAME_TICK);
-      }
+      c.waitForBatching(false);
       return true;
     }
     return false;
@@ -955,18 +944,7 @@ public class AIOHarvester extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      if (autoWalk) {
-        long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-        c.drawString(
-            "@whi@Time till AutoWalk: " + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-            x,
-            y + (14 * 5),
-            0xFFFFFF,
-            1);
-        c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
-      } else {
-        c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
-      }
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }
 }

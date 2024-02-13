@@ -199,6 +199,8 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (getHerbCount() > 9 || c.getInventoryItemCount() == 30 || timeToBank) {
         c.setStatus("@yel@Banking..");
         timeToBank = false;
@@ -320,7 +322,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       if (c.getInventoryItemCount(id) > 0) {
         c.itemCommand(id);
         c.sleep(640);
-        _waitForBatching();
+        c.waitForBatching(false);
       }
     }
   }
@@ -332,7 +334,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
         c.setStatus("@cya@Making Unid pots");
         c.useItemOnItemBySlot(c.getInventoryItemSlotIndex(id), c.getInventoryItemSlotIndex(VIAL));
         c.sleep(2 * GAME_TICK);
-        _waitForBatching();
+        c.waitForBatching(false);
       }
     }
   }
@@ -345,7 +347,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
           c.getInventoryItemSlotIndex(ItemId.LIMPWURT_ROOT.getId()),
           c.getInventoryItemSlotIndex(ItemId.UNF_KWUARM_POTION.getId()));
       c.sleep(640);
-      _waitForBatching();
+      c.waitForBatching(false);
     }
     if (c.getInventoryItemCount(SNAPE_GRASS) > 0) {
       if (c.getInventoryItemCount(ItemId.UNF_RANARR_POTION.getId()) > 0) {
@@ -354,7 +356,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
             c.getInventoryItemSlotIndex(SNAPE_GRASS),
             c.getInventoryItemSlotIndex(ItemId.UNF_RANARR_POTION.getId()));
         c.sleep(640);
-        _waitForBatching();
+        c.waitForBatching(false);
       }
       if (c.getInventoryItemCount(ItemId.UNF_AVANTOE_POTION.getId()) > 0) {
         c.setStatus("@cya@Making avantoe pots");
@@ -362,7 +364,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
             c.getInventoryItemSlotIndex(SNAPE_GRASS),
             c.getInventoryItemSlotIndex(ItemId.UNF_AVANTOE_POTION.getId()));
         c.sleep(640);
-        _waitForBatching();
+        c.waitForBatching(false);
       }
     }
     if (c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) > 0) {
@@ -373,7 +375,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
             c.getInventoryItemSlotIndex(ItemId.UNF_GUAM_POTION.getId()),
             c.getInventoryItemSlotIndex(ItemId.EYE_OF_NEWT.getId()));
         c.sleep(1280);
-        _waitForBatching();
+        c.waitForBatching(false);
       }
       if (c.getInventoryItemCount(ItemId.UNF_IRIT_POTION.getId()) > 0) {
         c.setStatus("@cya@Making irit pots");
@@ -381,14 +383,8 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
             c.getInventoryItemSlotIndex(ItemId.EYE_OF_NEWT.getId()),
             c.getInventoryItemSlotIndex(ItemId.UNF_IRIT_POTION.getId()));
         c.sleep(640);
-        _waitForBatching();
+        c.waitForBatching(false);
       }
-    }
-  }
-
-  private void _waitForBatching() {
-    while (c.isRunning() && c.isBatching()) {
-      c.sleep(640);
     }
   }
 
@@ -588,7 +584,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       c.walkTo(344, 1547);
       c.useItemIdOnObject(343, 1547, EMPTY_VIAL);
       c.sleep(5000);
-      waitForBatching();
+      c.waitForBatching(false);
       c.walkTo(347, 1547);
       c.sleep(640);
       c.itemCommand(ItemId.CRAFTING_CAPE.getId());

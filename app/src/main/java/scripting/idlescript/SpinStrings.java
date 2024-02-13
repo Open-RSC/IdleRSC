@@ -61,6 +61,8 @@ public class SpinStrings extends IdleScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getNearestObjectById(121) != null && c.getInventoryItemCount(input) > 0) {
         c.setStatus("@gre@Spinning Flax");
         int[] spinningWheel = c.getNearestObjectById(121);
@@ -68,7 +70,7 @@ public class SpinStrings extends IdleScript {
           c.walkTo(spinningWheel[0] + 1, spinningWheel[1]);
         } else c.walkTo(spinningWheel[0], spinningWheel[1] - 1);
         c.useItemIdOnObject(spinningWheel[0], spinningWheel[1], input);
-        waitWhileBatching();
+        c.waitForBatching(false);
       }
       // Checks for these actions inside the methods
       walkToBank();
@@ -145,13 +147,6 @@ public class SpinStrings extends IdleScript {
         while (c.isRunning() && c.currentY() > 1000) c.sleep(640);
       }
       c.walkTo(bankSelX, bankSelY);
-    }
-  }
-
-  private void waitWhileBatching() {
-    c.sleep(3000);
-    while (c.isBatching()) {
-      c.sleep(640);
     }
   }
 

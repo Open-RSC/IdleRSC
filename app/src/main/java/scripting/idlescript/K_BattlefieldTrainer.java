@@ -50,6 +50,8 @@ public final class K_BattlefieldTrainer extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (potUp) {
         attackBoost(0, false);
         strengthBoost(0, false);

@@ -41,7 +41,6 @@ public class K_Trader extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      next_attempt = System.currentTimeMillis() + 5000L;
       c.displayMessage("@red@K_Trader by Kaila!");
       if (c.isInBank()) c.closeBank();
       scriptStart();
@@ -51,6 +50,8 @@ public class K_Trader extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (traderType == 0) { // giver
         if ((indexValue == (tradeItems.length - 1) && c.getInventoryItemCount() == 0)
             || !c.isRunning()) {

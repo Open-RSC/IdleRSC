@@ -99,6 +99,8 @@ public class DamWildyAgility extends IdleScript {
 
   public void scriptStart() {
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (inArea(pipeNW, pipeSE)) {
         if (controller.getInventoryItemCount(foodId) == 0) {
           controller.setStatus("@red@NO Food in Inventory, Logging Out!.");

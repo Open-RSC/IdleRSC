@@ -86,7 +86,8 @@ public class AIOMagic extends IdleScript {
 
   public void scriptStart() {
     while (c.isRunning()) {
-
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (selectedItemId == -1
           && selectedBarId == -1
           && selectedJewelryId == -1
@@ -174,7 +175,7 @@ public class AIOMagic extends IdleScript {
           }
         }
       }
-      c.sleepHandler(98, true);
+      if (c.getShouldSleep()) c.sleepHandler(true);
     }
   }
 

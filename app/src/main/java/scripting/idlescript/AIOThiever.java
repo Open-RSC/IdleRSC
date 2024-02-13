@@ -185,6 +185,8 @@ public class AIOThiever extends IdleScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       eat();
       if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
       if (c.getInventoryItemCount(140) > 0) { // drop jugs from heroes
@@ -192,7 +194,7 @@ public class AIOThiever extends IdleScript {
         c.dropItem(c.getInventoryItemSlotIndex(140));
         c.sleep(GAME_TICK);
       }
-      while (c.isBatching()) c.sleep(GAME_TICK);
+      c.waitForBatching(false);
       if (!c.isInCombat()) {
         eat();
         if (target.isNpc) {

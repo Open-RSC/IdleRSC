@@ -81,6 +81,8 @@ public final class QH_SheepShearer extends QH__QuestHandler {
     doQuestChecks();
 
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       QUEST_STAGE = c.getQuestStage(QUEST_ID);
       switch (QUEST_STAGE) {
         case 0:
@@ -111,7 +113,7 @@ public final class QH_SheepShearer extends QH__QuestHandler {
             while (!hasAtLeastItemAmount(WOOL_ID, 20) && c.isRunning()) {
               useItemOnNearestNpcId(SHEEP_ID, SHEARS_ID);
               c.sleep(640);
-              while (c.isBatching() && c.isRunning()) c.sleep(640);
+              c.waitForBatching(false);
             }
             dropAllButAmount(WOOL_ID, 20);
           }
@@ -125,7 +127,7 @@ public final class QH_SheepShearer extends QH__QuestHandler {
             while (hasAtLeastItemAmount(WOOL_ID, 1) && c.isRunning()) {
               c.useItemIdOnObject(SPINNING_WHEEL[0], SPINNING_WHEEL[1], WOOL_ID);
               c.sleep(1280);
-              while (c.isBatching()) c.sleep(640);
+              c.waitForBatching(false);
             }
             CURRENT_QUEST_STEP = "Taking balls of wool to Fred";
             atObjectSequence(DOWN_LADDER);

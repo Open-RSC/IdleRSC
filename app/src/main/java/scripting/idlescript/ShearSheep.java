@@ -26,6 +26,8 @@ public class ShearSheep extends IdleScript {
     startX = controller.currentX();
     startY = controller.currentY();
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       scriptStart();
     }
 

@@ -39,6 +39,8 @@ public class LimpySnapez extends IdleScript {
     controller.quitIfAuthentic();
 
     while (controller.isRunning()) {
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount() < 30) {
 
         boolean foundPlants = false;

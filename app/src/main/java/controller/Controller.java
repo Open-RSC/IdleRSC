@@ -91,6 +91,7 @@ public class Controller {
   private boolean showBotPaint = true;
   private boolean drawing = true;
   private boolean needToMove = false;
+  private boolean shouldSleep = false;
   private long auctionTimeout = -1;
   public static boolean temporaryToggleSideMenu = false;
   public static final int CTRL_DOWN_MASK = 1 << 7;
@@ -1965,6 +1966,7 @@ public class Controller {
    * @return int -- as a percentage [0, 100].
    */
   public int getFatigue() {
+    if (!isAuthentic()) return 0;
     return mud.getStatFatigue();
   }
 
@@ -2445,12 +2447,10 @@ public class Controller {
     if (isInterlacing()) {
       setInterlacer(false);
       temporaryToggledInterlacing = true;
-      sleep(100); // we NEED to sleep here to give interlacer time to toggle off before taking the
-      // screenshot
+      sleep(100);
     }
-    if (!isDrawEnabled()) { // if you take a screenshot, it will toggle on graphics briefly to take
-      // it, then toggle off again ~ Kaila ~
-      setDrawing(true);
+    if (!isDrawEnabled()) {
+      setDrawing(true, 0);
       temporaryToggledGFX = true;
     }
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -2488,19 +2488,7 @@ public class Controller {
     }
 
     try {
-      /*<pre>
-       * 1st, make a string of /screenshots/playerName/ folder
-       * 2nd, use Path command to turn string into Path for /Screenshots/playerName/
-       * 3rd, use Files.createDirectories to make  the folder structure for /Screenshots/playerName/
-       * -this will regenerate the folder structure if user deleted at any point
-       * -screenshots will NOT save if the folder path doesn't exist when imageIO writes.
-       * 4th, use ImageIO.write to actually write the "img" created earlier
-       * 5th, String the save location, calc Path, calculate boolean Files.exists(Path)
-       * 6th - Confirm image was saved to the user with log
-       *
-       * ~ Kaila ~
-       * </pre>
-       */
+
       if (playerName != null && !playerName.isEmpty()) {
         directory = "Screenshots/" + playerName + "/";
         path = playerName + "_" + playerTime + ".png";
@@ -2513,11 +2501,11 @@ public class Controller {
       } else {
         savePath = directory + path;
       }
+
       Files.createDirectories(Paths.get(directory));
       ImageIO.write(img, "png", new File(savePath));
 
-      boolean newImageExists = Files.exists(Paths.get(savePath));
-      if (newImageExists) {
+      if (Files.exists(Paths.get(savePath))) {
         log("@cya@Screenshot successfully saved to ./IdleRSC/" + savePath);
       } else {
         log("@red@Error: @cya@Screenshot not detected at ./IdleRSC/" + savePath);
@@ -2527,8 +2515,8 @@ public class Controller {
       e.printStackTrace();
       return false;
     }
-    if (temporaryToggledGFX) {
-      setDrawing(false);
+    if (temporaryToggledGFX && isDrawEnabled()) {
+      setDrawing(false, 0);
     }
     if (temporaryToggledInterlacing) {
       setInterlacer(true);
@@ -4279,6 +4267,22 @@ public class Controller {
   }
 
   /**
+   * while batching, sleep 1 Game tick. Cancel loop if controller stops or needToMove is true
+   *
+   * @param checkInventory boolean - true to check for full inventory, false to ignore full invent.
+   */
+  public void waitForBatching(boolean checkInventory) {
+    sleep(GAME_TICK);
+    while (isAuthentic()
+        && isRunning()
+        && isBatching()
+        && !needToMove
+        && !shouldSleep
+        && (!checkInventory || getInventoryItemCount() < 30)) {
+      sleep(GAME_TICK);
+    }
+  }
+  /**
    * Whether or not the server is configured to be authentic. This returns true for Uranium, false
    * for Coleslaw.
    *
@@ -4459,34 +4463,33 @@ public class Controller {
     return mud.getIsSleeping();
   }
 
+  public boolean getShouldSleep() {
+    return shouldSleep;
+  }
+
+  public void setShouldSleep(boolean shouldSleep) {
+    this.shouldSleep = shouldSleep;
+  }
   /**
    * If fatigue is greater or equal to `fatigueToSleepAt`, this will commence the sleep process and
    * IdleRSC will fill in the answer from the OCR. Has no effect on Coleslaw.
    *
-   * @param fatigueToSleepAt -- fatigue to sleep at. Must be between 1 and 100.
    * @param quitOnNoSleepingBag -- whether or not to logout and stop the script if no sleeping bag
    *     is present. If no sleeping bag is present and this is false, this function has no effect.
    */
-  public void sleepHandler(int fatigueToSleepAt, boolean quitOnNoSleepingBag) {
+  public void sleepHandler(boolean quitOnNoSleepingBag) {
     if (!isLoggedIn()) return;
-
-    if (this.getFatigue() >= fatigueToSleepAt) {
-      if (this.getInventoryItemCount(1263) < 1) {
-        while (isLoggedIn() && quitOnNoSleepingBag) {
-          log(this.getPlayerName() + " has no sleeping bag! Logging out...");
-          this.setAutoLogin(false);
-          this.logout();
-          this.stop();
-          this.sleep(1000);
-        }
-
-      } else {
-        this.itemCommand(1263);
-
-        this.sleep(1280);
-        while (this.isSleeping()) sleep(10);
-      }
+    if (getInventoryItemCount(1263) < 1 && quitOnNoSleepingBag) {
+      log(getPlayerName() + " has no sleeping bag! Logging out...");
+      setAutoLogin(false);
+      logout();
+      stop();
+    } else {
+      itemCommand(1263);
+      sleep(1280);
+      while (isSleeping()) sleep(100);
     }
+    shouldSleep = false;
   }
 
   /**
@@ -5032,26 +5035,53 @@ public class Controller {
     return drawing;
   }
 
-  /** Toggle draw/graphics. */
-  public void setDrawing(boolean b) {
-    drawing = b;
+  /**
+   * Toggle draw/graphics.
+   *
+   * @param drawing_ boolean - what draw state to set it
+   * @param pauseTicks int - how long to wait before reverting graphics selection. 0 to not
+   *     derefresh.
+   */
+  public synchronized void setDrawing(boolean drawing_, int pauseTicks) {
+    drawing = drawing_;
+    if (pauseTicks > 0) {
+      sleep(pauseTicks);
+      drawing = !drawing_;
+    }
   }
 
   /**
-   * <b>Internal use only.</b> Called by {@link callbacks.MessageCallback} to avoid 5 minute logout.
+   * Call this method to trigger a move within scripts. Sets the need to move flag.
+   *
+   * @param needToMove_ boolean - true if need to move, false otherwise.
    */
-  public void moveCharacter() {
-    needToMove = true;
+  public void setNeedToMove(Boolean needToMove_) {
+    needToMove = needToMove_;
   }
 
-  /** <b>Internal use only.</b> */
-  public void charactedMoved() {
-    needToMove = false;
-  }
-
-  /** <b>Internal use only.</b> Used by LoginListener to move character every 5 min. */
-  public boolean getMoveCharacter() {
+  /**
+   * Call this method to check the state of needToMove. Script should call moveCharacter() to
+   * prevent logout, if this is true.
+   *
+   * @return boolean - true if needToMove, false otherwise.
+   */
+  public boolean getNeedToMove() {
     return needToMove;
+  }
+
+  /** Call this method from within a script to move the character one tile away to a random tile. */
+  public void moveCharacter() {
+    int x = currentX();
+    int y = currentY();
+
+    if (isReachable(x + 1, y, false)) walkToAsync(x + 1, y, 0);
+    else if (isReachable(x - 1, y, false)) walkToAsync(x - 1, y, 0);
+    else if (isReachable(x, y + 1, false)) walkToAsync(x, y + 1, 0);
+    else if (isReachable(x, y - 1, false)) walkToAsync(x, y - 1, 0);
+    sleep(640); // was 1280
+
+    walkTo(x, y);
+    setNeedToMove(false);
   }
 
   /**

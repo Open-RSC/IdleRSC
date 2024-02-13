@@ -116,6 +116,8 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
   /** Starts the script and executes the main logic in a loop. */
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (!eatFood()
           || c.getInventoryItemCount() == 30
           || c.getInventoryItemCount(foodId) == 0
@@ -241,8 +243,7 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
     c.walkTo(217, 3283);
     c.walkTo(215, 3294);
     c.walkTo(215, 3299);
-    c.atObject(215, 3300);
-    c.sleep(640);
+    edgeLadderUp();
     c.walkTo(217, 458);
     c.walkTo(221, 447);
     c.walkTo(217, 447); // outside bank door
@@ -251,10 +252,7 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
   }
-  /**
-   * BankToDruid function is responsible for walking to the Druids location. It performs a series of
-   * actions to reach the destination.
-   */
+
   private void bankToDruid() {
     c.setStatus("@gre@Walking to Druids..");
     c.walkTo(217, 448); // inside bank door
@@ -262,8 +260,7 @@ public final class K_EdgeChaosDruids extends K_kailaScript {
     c.walkTo(221, 447);
     c.walkTo(217, 458);
     c.walkTo(215, 467);
-    c.atObject(215, 468);
-    c.sleep(640);
+    edgeLadderDown();
     c.walkTo(217, 3283);
     c.walkTo(211, 3273);
     if (c.getObjectAtCoord(211, 3272) == 57) {

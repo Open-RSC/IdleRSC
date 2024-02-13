@@ -21,7 +21,8 @@ public class AlchWheat extends IdleScript {
   public int start(String[] parameters) {
     controller.displayMessage("@red@Start near wheat with fires and nats!");
     while (controller.isRunning()) {
-      controller.sleepHandler(98, true);
+      if (controller.getNeedToMove()) controller.moveCharacter();
+      if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount(29) > 0) {
         controller.setStatus("@gre@Alchin'!");
         if (controller.getCurrentStat(controller.getStatId("Magic")) >= 55)

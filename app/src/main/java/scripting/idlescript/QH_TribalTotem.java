@@ -65,6 +65,8 @@ public final class QH_TribalTotem extends QH__QuestHandler {
     c.log("~ by Kaila", "mag");
 
     while (c.isRunning()) { // start cases with pathwalk for resume cases
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       QUEST_STAGE = c.getQuestStage(QUEST_ID);
       switch (QUEST_STAGE) { // 6 stages in total
         case 0: // not started

@@ -77,6 +77,8 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
     doQuestChecks();
 
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       QUEST_STAGE = c.getQuestStage(QUEST_ID);
       switch (QUEST_STAGE) {
         case 0:

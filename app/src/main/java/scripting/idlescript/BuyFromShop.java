@@ -43,7 +43,6 @@ public class BuyFromShop extends K_kailaScript {
       guiSetup = false;
       scriptStarted = false;
       startTime = System.currentTimeMillis();
-      next_attempt = System.currentTimeMillis() + 5000L;
       scriptStart();
     }
 
@@ -85,6 +84,8 @@ public class BuyFromShop extends K_kailaScript {
 
   public void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() < 30) {
         for (int i = 0; i < 100; i++) {
           if (c.getNearestNpcByIds(npcId, false) == null) {
@@ -114,7 +115,6 @@ public class BuyFromShop extends K_kailaScript {
           }
           c.sleep(640);
         }
-        checkAutowalk();
         c.sleep(640);
       }
       if (c.getInventoryItemCount() == 30) {
@@ -141,23 +141,6 @@ public class BuyFromShop extends K_kailaScript {
         }
         c.sleep(640);
       }
-    }
-  }
-
-  private static void checkAutowalk() {
-    if (System.currentTimeMillis() > next_attempt) {
-      c.log("@red@Walking to Avoid Logging!");
-      int x = c.currentX();
-      int y = c.currentY();
-
-      if (c.isReachable(x + 1, y, false)) c.walkToAsync(x + 1, y, 0);
-      else if (c.isReachable(x - 1, y, false)) c.walkToAsync(x - 1, y, 0);
-      else if (c.isReachable(x, y + 1, false)) c.walkToAsync(x, y + 1, 0);
-      else if (c.isReachable(x, y - 1, false)) c.walkToAsync(x, y - 1, 0);
-      c.sleep(GAME_TICK);
-      next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-      long nextAttemptInSeconds = (next_attempt - System.currentTimeMillis()) / 1000L;
-      c.log("Done Walking to not Log, Next attempt in " + nextAttemptInSeconds + " seconds!");
     }
   }
 
@@ -224,13 +207,6 @@ public class BuyFromShop extends K_kailaScript {
       c.drawBoxAlpha(7, 7, 128, 21 + 14 + 14, 0xFF0000, 64);
       c.drawString("@red@Buy from Shop @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       c.drawString("@red@Purchased items banked: @yel@" + this.purchased, 10, 35, 0xFFFFFF, 1);
-      long timeRemainingTillAutoWalkAttempt = next_attempt - System.currentTimeMillis();
-      c.drawString(
-          "@red@Time till AutoWalk: @yel@" + c.msToShortString(timeRemainingTillAutoWalkAttempt),
-          10,
-          35 + 14,
-          0xFFFFFF,
-          1);
     }
   }
 }

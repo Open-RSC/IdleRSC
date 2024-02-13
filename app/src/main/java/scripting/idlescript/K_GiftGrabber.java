@@ -69,6 +69,8 @@ public final class K_GiftGrabber extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() == 30) goToBank();
       int[] coords = c.getNearestItemById(H_CRACKER); // always pick up tops
       if (coords != null) {

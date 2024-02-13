@@ -160,7 +160,7 @@ public class PacketHandler {
 			handlePacket1(opcode, length);
 	}
 
-	private void handlePacket1(int opcode, int length) {
+	private synchronized void handlePacket1(int opcode, int length) {
 		try {
 			if (Config.DEBUG) {
 				System.out.println("Frame: " + mc.getFrameCounter()
@@ -274,7 +274,7 @@ public class PacketHandler {
 		}
 	}
 
-	public final void handlePacket2(int opcode, int length) {
+	public final synchronized void handlePacket2(int opcode, int length) {
 		try {
 
 			// Show Other Players

@@ -58,6 +58,8 @@ public final class K_BoneyardBury extends K_kailaScript {
 
   private void scriptStart() {
     while (c.isRunning()) {
+      if (c.getNeedToMove()) c.moveCharacter();
+      if (c.getShouldSleep()) c.sleepHandler(true);
       boolean ate = eatFood();
       if (!ate) {
         c.setStatus("@red@We've ran out of Food! Running Away!.");

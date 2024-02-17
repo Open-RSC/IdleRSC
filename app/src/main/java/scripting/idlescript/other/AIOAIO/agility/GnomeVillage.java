@@ -12,13 +12,16 @@ public class GnomeVillage {
     c.setBatchBarsOn();
     System.out.println("Gnome Village run");
 
-    if (!isInsideGnomeAgilityArena()) c.walkTowards(692, 494);
-    else if (c.distanceTo(692, 499) <= 3) {
+    if (!isInsideGnomeAgilityArena()) {
+      c.setStatus("Walking to Gnome Agility Arena");
+      c.walkTowards(692, 494);
+    } else if (c.distanceTo(692, 499) <= 3) {
       c.atObject(SceneryId.NET_GNOME_COURSE_START);
       c.sleepUntilGainedXp();
-    } else if (c.distanceTo(692, 1448) <= 3) {
+    } else if (c.distanceTo(692, 1448) <= 5) {
       c.atObject(SceneryId.WATCH_TOWER_GNOME_COURSE_1ST_F);
       c.sleepUntilGainedXp();
+      c.sleep(680);
     } else if (c.distanceTo(693, 2394) <= 3) {
       c.atObject(SceneryId.ROPESWING_GNOME_COURSE);
       c.sleepUntilGainedXp();
@@ -42,14 +45,12 @@ public class GnomeVillage {
   }
 
   private static boolean isInsideGnomeAgilityArena() {
-    return c.getNearestReachableObjectById(SceneryId.LOG_GNOME_COURSE.getId(), true) != null
-        || c.getNearestReachableObjectById(SceneryId.NET_GNOME_COURSE_START.getId(), true) != null
+
+    return c.currentX() >= 681 && c.currentY() >= 492 && c.currentX() < 695 && c.currentY() <= 510
         || c.getNearestReachableObjectById(SceneryId.WATCH_TOWER_GNOME_COURSE_1ST_F.getId(), true)
             != null
         || c.getNearestReachableObjectById(SceneryId.ROPESWING_GNOME_COURSE.getId(), true) != null
         || c.getNearestReachableObjectById(SceneryId.WATCH_TOWER_GNOME_COURSE_2ND_F.getId(), true)
-            != null
-        || c.getNearestReachableObjectById(SceneryId.NET_GNOME_COURSE_END.getId(), true) != null
-        || c.getNearestReachableObjectById(SceneryId.PIPE_GNOME_COURSE.getId(), true) != null;
+            != null;
   }
 }

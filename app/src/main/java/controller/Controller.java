@@ -168,12 +168,12 @@ public class Controller {
    * @return true if the condition was met before the timeout, false if the timeout was reached.
    */
   public boolean sleepUntilGainedXp() {
-    setStatus("Sleeping until xp drop");
     final long timeout = 10000; // 10 seconds timeout for the condition to become true
     final long pollInterval = 250; // Check condition every 250 milliseconds
 
     long startTime = System.currentTimeMillis();
     long startXp = getTotalXp();
+    setStatus("Sleeping until xp drop (cur xp: " + getTotalXp() + ")");
     while (startXp == getTotalXp()) {
       if (System.currentTimeMillis() - startTime > timeout) {
         return false; // Timeout reached, condition not met
@@ -747,15 +747,15 @@ public class Controller {
       log("Skipping tutorial before walking..");
       sleep(5000);
     }
-    // System.out.println("Walking to " + x + "," + y + " from " + currentX() + ","
-    // + currentY());
+    System.out.println("Walking to " + x + "," + y + " from " + currentX() + "," + currentY());
     if (currentX() == x && currentY() == y) return;
     // Setup APOS compatibility because we're calling the APOS PathWalker..
     Script.setController(this);
     PathWalker pw = new PathWalker();
     pw.init(null);
-    // System.out.println("Calcing path");
+    System.out.println("Calcing path");
     PathWalker.Path path = pw.calcPath(x, y);
+    if (path == null) log("Failed to calculate a path to " + x + "," + y);
     pw.setPath(path);
     if (!pw.walkPath()) {
       if (currentX() == x && currentY() == y) {
@@ -767,9 +767,8 @@ public class Controller {
                 + ","
                 + y
                 + ", gonna yeet off in a random direction to get unstuck");
-        walkTo(
-            currentX() + ThreadLocalRandom.current().nextInt(-5, 6),
-            currentY() + ThreadLocalRandom.current().nextInt(-5, 6));
+        walkToAsync(currentX(), currentY(), 5);
+        sleep(ThreadLocalRandom.current().nextInt(600, 5000));
       }
     }
   }
@@ -1285,7 +1284,6 @@ public class Controller {
     int botX = mud.localPlayer.currentX;
     int botZ = mud.localPlayer.currentZ;
     int closestDistance = Integer.MAX_VALUE;
-    int closestNpcIndex = -1;
 
     for (int i = 0; i < npcCount; i++) {
 
@@ -2787,7 +2785,6 @@ public class Controller {
     }
 
     try {
-
       if (playerName != null && !playerName.isEmpty()) {
         directory = "Screenshots/" + playerName + "/";
         path = playerName + "_" + playerTime + ".png";
@@ -4607,6 +4604,7 @@ public class Controller {
       sleep(GAME_TICK);
     }
   }
+
   /**
    * Whether or not the server is configured to be authentic. This returns true for Uranium, false
    * for Coleslaw.
@@ -4797,6 +4795,7 @@ public class Controller {
   public void setShouldSleep(boolean shouldSleep) {
     this.shouldSleep = shouldSleep;
   }
+
   /**
    * If fatigue is greater or equal to `fatigueToSleepAt`, this will commence the sleep process and
    * IdleRSC will fill in the answer from the OCR. Has no effect on Coleslaw.

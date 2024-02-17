@@ -37,7 +37,7 @@ public class Fish {
   }
 
   private static int bankFish() {
-    if (c.getNearestNpcById(95, false) == null) {
+    if (c.getNearestNpcByIds(c.bankerIds, false) == null) {
       c.setStatus("Walking to Bank");
       c.walkTowards(c.getNearestBank()[0], c.getNearestBank()[1]);
       return 50;

@@ -20,7 +20,7 @@ public class Woodcut {
   }
 
   private static int getTreeId() {
-    switch (AIOAIO.state.currentMethod.getName()) {
+    switch (AIOAIO.state.currentTask.getName()) {
       case "normal":
         return SceneryId.LEAFY_TREE.getId();
       case "oak":
@@ -28,20 +28,22 @@ public class Woodcut {
       case "willow":
         return SceneryId.TREE_WILLOW.getId();
     }
-    throw new IllegalStateException("Unknown tree type: " + AIOAIO.state.currentMethod.getName());
+    throw new IllegalStateException("Unknown tree type: " + AIOAIO.state.currentTask.getName());
   }
 
   private static int findTrees() {
-    switch (AIOAIO.state.currentMethod.getName()) {
+    switch (AIOAIO.state.currentTask.getName()) {
       case "normal":
       case "oak":
         c.setStatus("Walking to Seers");
         c.walkTowards(500, 453);
+        return 50;
       case "willow":
         c.setStatus("Walking to Seers");
         c.walkTowards(509, 442);
+        return 50;
     }
-    throw new IllegalStateException("Unknown tree type: " + AIOAIO.state.currentMethod.getName());
+    throw new IllegalStateException("Unknown tree type: " + AIOAIO.state.currentTask.getName());
   }
 
   private static int chopTree() {
@@ -52,7 +54,7 @@ public class Woodcut {
   }
 
   private static int bankLogs() {
-    if (c.getNearestNpcById(95, false) == null) {
+    if (c.getNearestNpcByIds(c.bankerIds, false) == null) {
       c.setStatus("Walking to Bank");
       c.walkTowards(c.getNearestBank()[0], c.getNearestBank()[1]);
       return 50;

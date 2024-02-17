@@ -2,11 +2,15 @@ package orsc.graphics.three;
 
 import orsc.util.FastMath;
 import orsc.util.GenUtil;
+import orsc.mudclient;
 
 class Shader {
 
 	static void shadeScanline(int var0, int var1, int var2, int var3, int[] var4, int var5, int var6,
 							  int var7, int var8, int var9, int var10, int var11, int var12, int var13, int[] var14, int var15) {
+    if (!mudclient.isRender3DEnabled()) {
+      return;
+    }
 		try {
 
 			if (var15 > 0) {
@@ -202,6 +206,9 @@ class Shader {
 
 	static void shadeScanline(int var0, int var1, byte var2, int var3, int val, int valStep, int[] src,
 							  int dH, int var8, int var9, int high, int low, int[] dest, int var13, int var14) {
+    if (!mudclient.isRender3DEnabled()) {
+      return;
+    }
 		try {
 
 			if (var14 > 0) {
@@ -345,6 +352,9 @@ class Shader {
 
 	static void shadeScanline(int var0, int var1, int var2, int var3, int var4, int var5, int var6,
 							  int var7, int var8, int var9, int[] var10, int var11, int var12, int[] var13, byte var14) {
+    if (!mudclient.isRender3DEnabled()) {
+      return;
+    }
 		try {
 
 			if (var11 > 0) {
@@ -510,6 +520,9 @@ class Shader {
 
 	static void shadeScanline(int[] var0, int var1, int var2, int var3, int var4, int var5, int var6,
 							  int var7, int var8, int var9, int[] var10, boolean var11, int var12, int var13, int var14) {
+    if (!mudclient.isRender3DEnabled()) {
+      return;
+    }
 		try {
 
 			if (var7 > 0) {
@@ -648,6 +661,9 @@ class Shader {
 
 	static void shadeScanline(int var0, int var1, int var2, int var3, int var4, int[] src, int var6,
 							  int var7, int var8, int var9, int[] dest, int var11, int var12, int var13, int var14) {
+    if (!mudclient.isRender3DEnabled()) {
+      return;
+    }
 		try {
 
 			if (var14 > 0) {
@@ -774,6 +790,9 @@ class Shader {
 
 	static void shadeScanline(int var0, int var1, int var2, byte var3, int var4, int var5, int var6,
 							  int var7, int[] var8, int[] var9, int var10, int var11, int var12, int var13, int var14, int var15) {
+    if (!mudclient.isRender3DEnabled()) {
+      return;
+    }
 		try {
 
 			if (var0 > 0) {

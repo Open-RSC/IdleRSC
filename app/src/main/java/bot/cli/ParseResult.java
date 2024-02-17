@@ -17,6 +17,7 @@ public class ParseResult {
   private int spellId;
   private String scriptName = "";
   private boolean graphicsEnabled = true;
+  private boolean render3DEnabled = true;
   private boolean botPaintVisible = true;
   private boolean showSideBar = true;
   private String[] scriptArguments;
@@ -181,6 +182,14 @@ public class ParseResult {
 
   public boolean isGraphicsEnabled() {
     return graphicsEnabled;
+  }
+
+  public void setRender3DEnabled(boolean render3DEnabled) {
+    this.render3DEnabled = render3DEnabled;
+  }
+
+  public boolean isRender3DEnabled() {
+    return render3DEnabled;
   }
 
   public void setScreenRefresh(boolean screenRefresh) {

@@ -172,6 +172,11 @@ public final class MiscFunctions {
 
 	public static void copyBlock16(int val, int srcStride, int negCount, int[] dest, int[] src, int srcHead,
 								   int destHead, int var7) {
+
+    if (!mudclient.isRender3DEnabled()) {
+      return;
+    }
+
 		try {
 
 			if (negCount < 0) {

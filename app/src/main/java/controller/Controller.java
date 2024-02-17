@@ -2736,6 +2736,7 @@ public class Controller {
    */
   public boolean takeScreenshot(String fileName) {
     boolean temporaryToggledGFX = false;
+    boolean temporaryToggle3D = false;
     boolean temporaryToggledInterlacing = false;
     String directory = "";
     String path = "";
@@ -2749,6 +2750,10 @@ public class Controller {
     if (!isDrawEnabled()) {
       setDrawing(true, 0);
       temporaryToggledGFX = true;
+    }
+    if (!isRender3DEnabled()) {
+      setRender3D(true);
+      temporaryToggle3D = true;
     }
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
     String playerTime = screenshotNameFormat.format(timestamp);
@@ -2810,6 +2815,9 @@ public class Controller {
       System.err.println("Failed to create directory and/or take screenshot!" + e.getMessage());
       e.printStackTrace();
       return false;
+    }
+    if (temporaryToggle3D && isRender3DEnabled()) {
+      setRender3D(false);
     }
     if (temporaryToggledGFX && isDrawEnabled()) {
       setDrawing(false, 0);
@@ -5377,6 +5385,24 @@ public class Controller {
       sleep(pauseTicks);
       drawing = !drawing_;
     }
+  }
+
+  /**
+   * Whether or not render 3D is currently enabled.
+   *
+   * @return boolean
+   */
+  public boolean isRender3DEnabled() {
+    return mud.isRender3DEnabled();
+  }
+
+  /**
+   * Toggle render 3D.
+   *
+   * @param render3D boolean - what render state to set.
+   */
+  public void setRender3D(boolean render3D) {
+    mud.setRender3D(render3D);
   }
 
   /**

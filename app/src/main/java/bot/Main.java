@@ -82,6 +82,7 @@ public class Main {
       logWindowCheckbox,
       debugCheckbox,
       graphicsCheckbox,
+      render3DCheckbox,
       botPaintCheckbox,
       interlaceCheckbox,
       autoscrollLogsCheckbox,
@@ -336,6 +337,7 @@ public class Main {
       logWindowCheckbox,
       debugCheckbox,
       graphicsCheckbox,
+      render3DCheckbox,
       botPaintCheckbox,
       interlaceCheckbox,
       sidebarCheckbox,
@@ -400,8 +402,10 @@ public class Main {
     if (config.isDebug()) debugger.open();
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
+    render3DCheckbox.setSelected(config.isRender3DEnabled());
     gfxCheckbox.setSelected(config.isGraphicsEnabled());
     controller.setDrawing(config.isGraphicsEnabled(), 0);
+    controller.setRender3D(config.isRender3DEnabled());
 
     log("Initializing WindowListener...");
     windowListener =
@@ -679,6 +683,7 @@ public class Main {
     autoLoginCheckbox = new JCheckBox("Auto-Login");
     debugCheckbox = new JCheckBox("Debug Messages");
     graphicsCheckbox = new JCheckBox("Show Graphics");
+    render3DCheckbox = new JCheckBox("Render 3D");
     botPaintCheckbox = new JCheckBox("Show Bot Paint");
     interlaceCheckbox = new JCheckBox("Interlace");
     loadScriptButton = new JButton("Load Script");
@@ -738,6 +743,12 @@ public class Main {
             }
           }
         });
+    render3DCheckbox.addActionListener(
+        e -> {
+          if (controller != null) {
+            controller.setRender3D(render3DCheckbox.isSelected());
+          }
+        });
     botPaintCheckbox.addActionListener(
         e -> {
           if (controller != null) {
@@ -761,6 +772,7 @@ public class Main {
     botFrame.add(interlaceCheckbox);
     botFrame.add(botPaintCheckbox);
     botFrame.add(graphicsCheckbox);
+    botFrame.add(render3DCheckbox);
     botFrame.add(takeScreenshotButton);
     botFrame.add(showIdButton);
     botFrame.add(openDebuggerButton);

@@ -42,6 +42,7 @@ public class Config extends ParseResult {
     setAutoLogin(parseResult.isAutoLogin());
     setLogWindowVisible(parseResult.isLogWindowVisible());
     setDebug(parseResult.isDebug());
+    setRender3DEnabled(parseResult.isRender3DEnabled());
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
     setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
     setScreenRefresh(parseResult.getScreenRefresh());

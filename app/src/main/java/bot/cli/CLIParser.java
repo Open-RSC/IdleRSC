@@ -61,6 +61,7 @@ public class CLIParser {
     parseResult.setDebug(cmd.hasOption("debug"));
     parseResult.setBotPaintVisible(!cmd.hasOption("hide-bot-paint"));
     parseResult.setGraphicsEnabled(!cmd.hasOption("disable-gfx"));
+    parseResult.setRender3DEnabled(!cmd.hasOption("disable-3d"));
     parseResult.setGraphicsInterlacingEnabled(cmd.hasOption("interlace"));
     parseResult.setScreenRefresh(!cmd.hasOption("no-screen-refresh"));
     parseResult.setUiStyle(cmd.hasOption("new-ui"));
@@ -130,6 +131,11 @@ public class CLIParser {
           p.getProperty("bot-paint", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setGraphicsEnabled(
           !p.getProperty("disable-gfx", "false")
+              .replace(" ", "")
+              .toLowerCase()
+              .contains("true")); // negative (enabled by default)
+      parseResult.setRender3DEnabled(
+          !p.getProperty("disable-3d", "false")
               .replace(" ", "")
               .toLowerCase()
               .contains("true")); // negative (enabled by default)
@@ -255,6 +261,7 @@ public class CLIParser {
     Option debug = Option.builder().longOpt("debug").desc("Enable debug logging.").build();
     Option disableGraphics =
         Option.builder().longOpt("disable-gfx").desc("Disable graphics refresh.").build();
+    Option disable3D = Option.builder().longOpt("disable-3d").desc("Disable 3D rendering.").build();
     Option enableInterlacing =
         Option.builder().longOpt("interlace").desc("Enable graphics interlacing.").build();
     Option scriptSelectorWindow =
@@ -314,6 +321,7 @@ public class CLIParser {
     options.addOption(logWindow);
     options.addOption(debug);
     options.addOption(disableGraphics);
+    options.addOption(disable3D);
     options.addOption(enableInterlacing);
     options.addOption(scriptSelectorWindow);
     options.addOption(attackItems);

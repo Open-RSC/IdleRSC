@@ -1,4 +1,4 @@
-package scripting.idlescript.other.AIOAIO;
+package scripting.idlescript.other.AIOAIO.core;
 
 public class AIOAIO_State {
   /**
@@ -9,11 +9,11 @@ public class AIOAIO_State {
   // --- Global Management State --- \\
   public AIOAIO_Skill currentSkill;
 
-  public AIOAIO_Method currentMethod;
-  public AIOAIOConfig botConfig = new AIOAIOConfig();
+  public AIOAIO_Task currentTask;
+  public AIOAIO_Config botConfig = new AIOAIO_Config();
   public boolean guiSetup = false;
   public boolean startPressed = false;
-  public boolean methodStartup =
+  public boolean taskStartup =
       true; // Usable in scripts to determine if you've done whatever setup is needed (gets
   // reset to true everytime the remaining time runs out)
 

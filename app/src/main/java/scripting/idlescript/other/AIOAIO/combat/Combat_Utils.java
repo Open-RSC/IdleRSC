@@ -62,7 +62,7 @@ public class Combat_Utils {
 
   public static int getFightingGear() {
     Controller c = Main.getController();
-    if (c.getNearestNpcById(NpcId.BANKER.getId(), false) == null) {
+    if (c.getNearestNpcByIds(c.bankerIds, false) == null) {
       c.setStatus("Walking to Bank");
       c.walkTowards(c.getNearestBank()[0], c.getNearestBank()[1]);
       return 100;
@@ -99,7 +99,7 @@ public class Combat_Utils {
       c.depositItem(c.getInventoryItemIds()[0], 1);
     }
     c.closeBank();
-    AIOAIO.state.methodStartup = false;
+    AIOAIO.state.taskStartup = false;
     System.out.println("Combat Setup complete");
     return 680;
   }
@@ -129,11 +129,11 @@ public class Combat_Utils {
    * @param npcId
    */
   public static void attackNpc(NpcId npcId) {
-    Main.getController().setStatus("@yel@Attacking " + npcId.name());
+    Main.getController().setStatus("@yel@Bopping " + npcId.name());
     ORSCharacter npc = Main.getController().getNearestNpcById(npcId.getId(), false);
     if (npc == null) return;
     Main.getController().attackNpc(npc.serverIndex);
-    Main.getController().sleepUntil(() -> Main.getController().isNpcInCombat(npc.serverIndex));
+    Main.getController().sleepUntil(() -> Main.getController().isInCombat(), 5000);
   }
 
   public static void buryBones() {
@@ -158,7 +158,8 @@ public class Combat_Utils {
     eatFood();
   }
 
-  public static void safelyAbortMethod() {
+  public static void safelyAbortTask() {
+    Main.getController().log("Trying to safely abort task!");
     if (Main.getController().getNearestNpcById(NpcId.BANKER.getId(), false) == null) {
       Main.getController().setStatus("Running to safety");
       Main.getController()
@@ -166,7 +167,7 @@ public class Combat_Utils {
               Main.getController().getNearestBank()[0], Main.getController().getNearestBank()[1]);
     } else {
       AIOAIO.state.endTime = System.currentTimeMillis();
-      Main.getController().log("Aborted fighting method due to lack of food");
+      Main.getController().log("Aborted fighting task due to lack of food");
     }
   }
 }

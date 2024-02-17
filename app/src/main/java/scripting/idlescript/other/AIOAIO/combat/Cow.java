@@ -28,12 +28,12 @@ public class Cow {
     c = Main.getController();
     c.setBatchBarsOn();
 
-    if (AIOAIO.state.methodStartup) return Combat_Utils.getFightingGear();
+    if (AIOAIO.state.taskStartup) return Combat_Utils.getFightingGear();
     else if (c.getInventoryItemCount(ItemId.BONES.getId()) > 0) Combat_Utils.buryBones();
     else if (inCabbageField() && c.getInventoryItemCount() <= 20) pickCabbage();
     else if (Combat_Utils.needToEat() && !Combat_Utils.hasFood()) goToCabbages();
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
-    else if (c.isInCombat()) c.sleepUntilGainedXp();
+    else if (c.isInCombat()) c.sleepUntil(() -> !c.isInCombat());
     else if (c.getNearestNpcById(NpcId.COW_ATTACKABLE.getId(), false) == null) findCows();
     // The NPC we want to bop is found at this point
     else if (c.getInventoryItemCount() < 30

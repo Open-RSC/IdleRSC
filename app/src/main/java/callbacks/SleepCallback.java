@@ -153,8 +153,10 @@ public class SleepCallback {
 
   public static void setOCRType(final OCRType type) {
     ocrType = type;
-
-    Main.log("Setting up " + type.getName() + " OCR.");
+    // force hashes for coleslaw to prevent unnecessary SVM memory usage
+    if (Main.config.getInitCache().equalsIgnoreCase("coleslaw")) ocrType = OCRType.HASH;
+    // todo: Investigate fixing SVM Heap size issue directly. Null the array after using?
+    Main.log("Setting up " + ocrType.getName() + " OCR.");
 
     switch (ocrType) {
       case HASH:

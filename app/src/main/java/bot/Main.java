@@ -649,11 +649,23 @@ public class Main {
           });
       themeMenu.add(menuItem);
     }
+    JMenuItem _accOpp;
+    JCheckBox customUiMode, keepInvOpen;
+    // Define settings menu drop down
+    Component[] _settingsMenu = {
+      _accOpp = new JMenuItem("Account Startup Settings", KeyEvent.VK_F4), // S key
+      customUiMode = new JCheckBox("Custom in-game UI"),
+      keepInvOpen = new JCheckBox("Keep Inventory Open"),
+    };
 
-    menuItem = new JMenuItem("Account Startup Settings", KeyEvent.VK_F4); // s
+    // Add elements to settings menu
+    for (Component _menuItem : _settingsMenu) {
+      settingsMenu.add(_menuItem);
+    }
+
     // menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_F4));
     // //opens 2 authframes
-    menuItem.addActionListener(
+    _accOpp.addActionListener(
         e -> {
           AuthFrame authFrame =
               new AuthFrame("Editing the account - " + config.getUsername(), null, null);
@@ -667,7 +679,14 @@ public class Main {
               });
           authFrame.setVisible(true);
         });
-    settingsMenu.add(menuItem);
+    customUiMode.addActionListener(
+        e -> {
+          controller.setCustomUiMode(customUiMode.isSelected());
+        });
+    keepInvOpen.addActionListener(
+        e -> {
+          controller.setKeepInventoryOpenMode(keepInvOpen.isSelected());
+        });
   }
 
   /**
@@ -720,7 +739,7 @@ public class Main {
 
     openDebuggerButton.addActionListener(
         e -> {
-          controller.log("opening debug window");
+          controller.log("IdleRSC: Opening Debug Window", "gre");
           debugger.open();
         });
     resetXpButton.addActionListener(e -> DrawCallback.resetXpCounter());

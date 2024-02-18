@@ -215,7 +215,7 @@ public class DrawCallback {
     startingXp = Long.MAX_VALUE;
 
     if (c != null) {
-      c.log("@red@IdleRSC@yel@: XP counter reset!");
+      c.log("IdleRSC: XP counter reset!", "gre");
       if (!c.isDrawEnabled()) {
         c.setDrawing(true, 100);
       }

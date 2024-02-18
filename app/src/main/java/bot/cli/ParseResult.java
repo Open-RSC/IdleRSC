@@ -21,7 +21,7 @@ public class ParseResult {
   private boolean botPaintVisible = true;
   private boolean showSideBar = true;
   private String[] scriptArguments;
-  private OCRType ocrType = OCRType.INTERNAL;
+  private OCRType ocrType = OCRType.HASH;
   private String ocrServer;
 
   // Boolean options

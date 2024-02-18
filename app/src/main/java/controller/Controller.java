@@ -4479,10 +4479,65 @@ public class Controller {
   /**
    * Toggles the client interlacer, which is for saving CPU cycles.
    *
-   * @param value boolean
+   * @param interlace boolean
    */
-  public void setInterlacer(boolean value) {
-    mud.interlace = value;
+  public void setInterlacer(boolean interlace) {
+    if (interlace) log("IdleRSC: Turning On Interlacer", "gre");
+    else log("IdleRSC: Turning Off Interlacer", "gre");
+    mud.interlace = interlace;
+  }
+
+  /**
+   * Toggles Custom UI mode, this gives a redesigned in-game UI. The inventory and other tabs stay
+   * open after interaction.
+   *
+   * @param mode boolean
+   */
+  public void setCustomUiMode(boolean mode) {
+    if (mode) log("IdleRSC: Turning On Custom UI mode", "gre");
+    else log("IdleRSC: Turning Off Custom UI mode", "gre");
+    mud.setCustomUI(mode);
+  }
+
+  /**
+   * Set the in-game scroll level of the client.
+   *
+   * @param level int - level to set zoom to. in range ~ 50 - 300
+   */
+  public void setScrollLevel(int level) {
+    mud.setLastZoom(level);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Toggle which types of ground items show up on the screen. In-game setting
+   * * Level 0 - Show ALL items
+   * * Level 1 - Hide ALL items
+   * * Level 3 - Hide Bones only
+   * * Level 3 - No Bones or Ashes
+   * </pre>
+   *
+   * @param level int - level to set (0-3)
+   */
+  public void setGroundItemsToggle(int level) {
+    mud.setGroundItemsToggle(level);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set Inventory Toggle Mode. If false, the inventory will not close between actions.
+   * This was the old android inventory option, but was removed from legitimate game modes.
+   * BOTTING ONLY
+   * </pre>
+   *
+   * @param setting boolean - true to keep invent open, false to let it close.
+   */
+  public void setKeepInventoryOpenMode(boolean setting) {
+    mud.setAndroidInvToggle(!setting);
   }
 
   /** Retrieves whether or not the interlacer is set. */
@@ -5299,10 +5354,12 @@ public class Controller {
   /**
    * Toggle bot painting (such as progress reports.) This does not disable client graphics.
    *
-   * @param b int
+   * @param _showBotPaint int
    */
-  public void setBotPaint(boolean b) {
-    showBotPaint = b;
+  public void setBotPaint(boolean _showBotPaint) {
+    if (_showBotPaint) log("IdleRSC: Turning On Bot Paint", "gre");
+    else log("IdleRSC: Turning Off Bot Paint", "gre");
+    showBotPaint = _showBotPaint;
   }
 
   /**
@@ -5992,6 +6049,15 @@ public class Controller {
     }
   }
 
+  /**
+   * Check if batch bars are enabled
+   *
+   * @return boolean - true if batch bars are enabled, false otherwise or if on uranium.
+   */
+  public boolean getBatchBarsOn() {
+    if (isAuthentic()) return false;
+    return Config.C_BATCH_PROGRESS_BAR;
+  }
   /**
    * Display String "Hr:Min:Sec" version of milliseconds long int.
    *

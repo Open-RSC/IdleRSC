@@ -396,6 +396,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
     if (!walkPath()) {
       System.out.println("Reached destination.");
       System.out.println("Stopping.");
+      path = null; // set path to null to clear Nodes from the heap for GC IMPORTANT
       stopScript();
       Toolkit.getDefaultToolkit().beep();
     }

@@ -5543,24 +5543,24 @@ public final class mudclient implements Runnable {
 						int maxY = getUITabsY();
 						int x = this.getSurface().width2 - 199 - 1;
 						if (this.showUiTab == Config.OPTIONS_TAB) {
-							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(255, 0, 0));
+							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(116,36,28));
 						}
 						x += 33;
 						if (this.showUiTab == Config.FRIENDS_TAB) {
-							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(255, 0, 0));
+							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(116,36,28));
 						}
 						x += 33;
 						if (this.showUiTab == Config.MAGIC_AND_PRAYER_TAB) {
-							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(255, 0, 0));
+							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(116,36,28));
 						}
 						x += 33;
 						if (this.showUiTab == Config.SKILLS_AND_QUESTS_TAB) {
-							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(255, 0, 0));
+							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(116,36,28));
 						}
 						x += 33;
 						x += 33;
 						if (this.showUiTab == Config.INVENTORY_TAB) {
-							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(255, 0, 0));
+							this.getSurface().drawBox(x, maxY, 32, 32, GenUtil.buildColor(116,36,28));
 						}
 					}
 					//redstones above
@@ -7894,7 +7894,7 @@ public final class mudclient implements Runnable {
 				this.packetHandler.handlePacket2(-79, -83);
 			}
 
-			int var3 = this.getSurface().width2 - 248;
+			int var3 = this.getSurface().width2 - 248; //move left or right
 			int xOffset = var3;
 			if (!C_CUSTOM_UI)
 				this.getSurface().drawSprite(spriteSelect(GUIPARTS.BAGTAB.getDef()), var3, 3);
@@ -7902,10 +7902,11 @@ public final class mudclient implements Runnable {
 			int var4;
 			int var5;
 			int id;
-			int yOffset = 36;
-			if (C_CUSTOM_UI)
+			int yOffset = 36; //up or down
+			if (C_CUSTOM_UI) {
 				yOffset = maxY - 228;
-
+				if(!S_WANT_CUSTOM_SPRITES) yOffset += 23; //uranium offset
+			}
 			if (this.tabEquipmentIndex == 0) //inventory tab
 			{
 				for (var4 = 0; this.m_cl > var4; ++var4) {
@@ -8926,7 +8927,8 @@ public final class mudclient implements Runnable {
 			short var5 = 152;
 			if (C_CUSTOM_UI) {
 				int borderSize = 2;
-				posY = 10;
+				posX += 10;
+				posY = 0;
 				posX += borderSize;
 				posY += borderSize;
 				this.getSurface().drawBox(posX - borderSize, posY - borderSize, var4 + (borderSize * 2), var5 + (borderSize * 2), 0);
@@ -10655,8 +10657,10 @@ public final class mudclient implements Runnable {
 			int y = 36;
 			if (!C_CUSTOM_UI)
 				this.getSurface().drawSprite(spriteSelect(GUIPARTS.SKILLSTAB.getDef()), x - 49, 3);
-			if (C_CUSTOM_UI)
+			if (C_CUSTOM_UI) {
 				y = maxY - 287;
+				if(!S_WANT_CUSTOM_SPRITES) y += 13;
+			}
 			short width = 196;
 			short height;
 			if (S_WANT_EXP_INFO)
@@ -12857,13 +12861,17 @@ public final class mudclient implements Runnable {
 				}
 				case ITEM_USE: {
 					this.selectedItemInventoryIndex = indexOrX;
-					this.showUiTab = 0;
+					if (osConfig.C_ANDROID_INV_TOGGLE && !C_CUSTOM_UI) {
+						this.showUiTab = 0;
+					}
 					this.m_ig = EntityHandler.getItemDef(getInventoryItemID(this.selectedItemInventoryIndex)).getName();
 					break;
 				}
 				case ITEM_USE_EQUIPTAB:
 					this.selectedItemInventoryIndex = indexOrX + S_PLAYER_INVENTORY_SLOTS;
-					this.showUiTab = 0;
+					if (osConfig.C_ANDROID_INV_TOGGLE && !C_CUSTOM_UI) {
+						this.showUiTab = 0;
+					}
 					this.m_ig = equippedItems[indexOrX].getName();
 					break;
 				case ITEM_DROP: {
@@ -12872,7 +12880,9 @@ public final class mudclient implements Runnable {
 					int amount = getInventoryItemSize(indexOrX);
 					this.packetHandler.getClientStream().bufferBits.putInt(amount);
 					this.packetHandler.getClientStream().finishPacket();
-					this.showUiTab = 0;
+					if (osConfig.C_ANDROID_INV_TOGGLE && !C_CUSTOM_UI) {
+						this.showUiTab = 0;
+					}
 					this.selectedItemInventoryIndex = -1;
 					this.showMessage(false, null,
 						"Dropping " + EntityHandler.getItemDef(getInventoryItemID(indexOrX)).getName(),
@@ -12892,7 +12902,9 @@ public final class mudclient implements Runnable {
 					this.packetHandler.getClientStream().bufferBits.putShort(dropInventorySlot);
 					this.packetHandler.getClientStream().bufferBits.putInt(dropQuantity);
 					this.packetHandler.getClientStream().finishPacket();
-					this.showUiTab = 0;
+					if (osConfig.C_ANDROID_INV_TOGGLE && !C_CUSTOM_UI) {
+						this.showUiTab = 0;
+					}
 					this.selectedItemInventoryIndex = this.dropInventorySlot = -1;
 					if (dropQuantity == 1)
 						this.showMessage(false, null,
@@ -13561,7 +13573,7 @@ public final class mudclient implements Runnable {
 
 	int getUITabsY() {
 		if (C_CUSTOM_UI)
-			return getGameHeight() - 32 - 10;
+			return getGameHeight() - 32 - 5;
 		else
 			return 3;
 	}

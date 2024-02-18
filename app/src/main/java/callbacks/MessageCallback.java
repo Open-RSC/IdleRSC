@@ -62,12 +62,12 @@ public class MessageCallback {
       if (message.contains("You just advanced")) {
         // handleLevelUp(message);
       } else if (message.contains("You have been standing here for")) {
-        con.log("IdleRSC: Standing message recieved, triggering auto-walk.");
+        con.log("IdleRSC: Standing message recieved, triggering auto-walk.", "gre");
         con.setNeedToMove(true); // this is responsible for auto-walk!
       }
     } else if (type == MessageType.QUEST) {
       if (con.isAuthentic() && message.toLowerCase().contains("you are too tired to")) {
-        con.log("IdleRSC: Tired message recieved, triggering sleep handling.");
+        con.log("IdleRSC: Tired message recieved, triggering sleep handling.", "gre");
         con.setShouldSleep(true);
       }
     }

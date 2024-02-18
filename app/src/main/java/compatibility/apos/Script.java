@@ -657,6 +657,25 @@ public abstract class Script implements IScript {
     }
   }
 
+  /**
+   * Logs text to the console, bot log window, and OpenRSC applet.
+   *
+   * @param text String
+   */
+  public void log(String text) {
+    controller.log(text);
+  }
+
+  /**
+   * Logs text to the console, bot log window, and OpenRSC applet with the specified @col@.
+   *
+   * @param text String
+   * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
+   */
+  public void log(String text, String rsTextColor) {
+    controller.log(text, rsTextColor);
+  }
+
   public int getGroundItemCount() {
     return controller.getGroundItemsCount();
   }

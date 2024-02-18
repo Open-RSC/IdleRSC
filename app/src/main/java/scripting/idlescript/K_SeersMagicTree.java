@@ -24,6 +24,10 @@ import models.entities.ItemId;
 public final class K_SeersMagicTree extends K_kailaScript {
   private static int logInBank = 0;
   private static int totalLog = 0;
+  private long fail = 0;
+  private long success = 0;
+  private long didActionTime = 0;
+  private boolean doAction = true;
   private static final int[] axeId = {
     ItemId.BRONZE_AXE.getId(),
     ItemId.IRON_AXE.getId(),
@@ -38,6 +42,11 @@ public final class K_SeersMagicTree extends K_kailaScript {
     c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
     boolean noAxe = true;
     boolean noBag = true;
+    success = 0;
+    fail = 0;
+    doAction = true;
+    didActionTime = System.currentTimeMillis();
+
     for (int axe : axeId) {
       if (c.getInventoryItemCount(axe) > 0) noAxe = false;
     }
@@ -62,13 +71,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
     }
     if (!c.isAuthentic()) c.setBatchBarsOn();
   }
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * script based on the values of the parameters. <br>
-   * Parameters in this context can be from CLI parsing or in the script options parameters text box
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
+
   public int start(String[] parameters) {
     if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
@@ -96,68 +99,63 @@ public final class K_SeersMagicTree extends K_kailaScript {
     while (c.isRunning()) {
       if (c.getNeedToMove()) c.moveCharacter();
       if (c.getShouldSleep()) c.sleepHandler(true);
-      if (c.getInventoryItemCount() < 30) {
+      if (c.getInventoryItemCount() < 30
+          && c.isRunning()
+          && (c.getBatchBarsOn()
+              || doAction
+              || (didActionTime + 4000L < System.currentTimeMillis()))) {
         if (c.getObjectAtCoord(519, 494) == 310) cutFirstTree();
         else if (c.getObjectAtCoord(521, 492) == 310) cutSecondTree();
         else if (c.getObjectAtCoord(524, 489) == 310) cutThirdTree();
         else if (c.getObjectAtCoord(548, 484) == 310) cutFourthTree();
         else if (c.currentX() != 531 || c.currentY() != 487)
           c.walkTo(531, 487); // go to center position to check
-        c.sleep(GAME_TICK);
-      } else {
+      } else if (c.getInventoryItemCount() == 30) {
         if (c.currentX() < 533) goToBank();
         else goToBank2();
+      } else {
+        c.sleep(320);
       }
     }
   }
 
   private void cutFirstTree() {
-    c.walkTo(519, 493);
-    while (c.isRunning()
-        && !c.getShouldSleep()
-        && c.getObjectAtCoord(519, 494) == 310
-        && c.getInventoryItemCount() < 30) {
-      c.atObject(519, 494);
-      c.sleep(GAME_TICK);
-      c.waitForBatching(true);
-    }
+    if (c.currentX() != 519 || c.currentY() != 493) c.walkTo(519, 493);
+    c.atObject(519, 494);
+    didActionTime = System.currentTimeMillis();
+    doAction = false;
+    c.sleep(GAME_TICK);
+    c.waitForBatching(true);
   }
 
   private void cutSecondTree() {
-    c.walkTo(521, 491);
-    while (c.isRunning()
-        && !c.getShouldSleep()
-        && c.getObjectAtCoord(521, 492) == 310
-        && c.getInventoryItemCount() < 30) {
-      c.atObject(521, 492);
-      c.sleep(GAME_TICK);
-      c.waitForBatching(true);
-    }
+    if (c.currentX() != 521 || c.currentY() != 491) c.walkTo(521, 491);
+    c.atObject(521, 492);
+    didActionTime = System.currentTimeMillis();
+    doAction = false;
+    c.sleep(GAME_TICK);
+    c.waitForBatching(true);
   }
 
   private void cutThirdTree() {
-    c.walkTo(524, 488);
-    while (c.isRunning()
-        && !c.getShouldSleep()
-        && c.getObjectAtCoord(524, 489) == 310
-        && c.getInventoryItemCount() < 30) {
-      c.atObject(524, 489);
-      c.sleep(GAME_TICK);
-      c.waitForBatching(true);
-    }
+    if (c.currentX() != 524 || c.currentY() != 488) c.walkTo(524, 488);
+    c.atObject(524, 489);
+    didActionTime = System.currentTimeMillis();
+    doAction = false;
+    c.sleep(GAME_TICK);
+    c.waitForBatching(true);
   }
 
   private void cutFourthTree() {
-    c.walkTo(538, 486);
-    c.walkTo(547, 484);
-    while (c.isRunning()
-        && !c.getShouldSleep()
-        && c.getObjectAtCoord(548, 484) == 310
-        && c.getInventoryItemCount() < 30) {
-      c.atObject(548, 484);
-      c.sleep(GAME_TICK);
-      c.waitForBatching(true);
+    if (c.currentX() != 547 || c.currentY() != 484) {
+      c.walkTo(538, 486);
+      c.walkTo(547, 484);
     }
+    c.atObject(548, 484);
+    didActionTime = System.currentTimeMillis();
+    doAction = false;
+    c.sleep(GAME_TICK);
+    c.waitForBatching(true);
     if (c.getObjectAtCoord(548, 484) != 310) {
       c.walkTo(538, 486);
       c.walkTo(531, 487);
@@ -226,6 +224,17 @@ public final class K_SeersMagicTree extends K_kailaScript {
 
       logInBank = c.getBankItemCount(636);
       c.closeBank();
+    }
+  }
+
+  @Override
+  public void questMessageInterrupt(String message) {
+    if (message.toLowerCase().contains("you slip and fail")) {
+      fail++;
+      doAction = true;
+    } else if (message.toLowerCase().contains("you get some wood")) {
+      success++;
+      doAction = true;
     }
   }
 

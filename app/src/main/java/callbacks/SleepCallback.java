@@ -154,9 +154,11 @@ public class SleepCallback {
   public static void setOCRType(final OCRType type) {
     ocrType = type;
     // force hashes for coleslaw to prevent unnecessary SVM memory usage
-    if (Main.config.getInitCache().equalsIgnoreCase("coleslaw")) ocrType = OCRType.HASH;
+    if (Main.config.getInitCache().equalsIgnoreCase("coleslaw") && type.equals(OCRType.INTERNAL))
+      ocrType = OCRType.HASH;
     // todo: Investigate fixing SVM Heap size issue directly. Null the array after using?
     Main.log("Setting up " + ocrType.getName() + " OCR.");
+    if (!checkAssetFiles()) createAssetFiles();
 
     switch (ocrType) {
       case HASH:
@@ -165,15 +167,15 @@ public class SleepCallback {
           hashes.load(fs);
         } catch (final IOException e) {
           e.printStackTrace();
-          Main.log("Falling back to internal.");
-          setOCRType(OCRType.INTERNAL);
+          Main.log("Falling back to internal/manual.");
+          // prevent circular recursion between hashes and internal on coleslaw
+          if (Main.config.getInitCache().equalsIgnoreCase("coleslaw"))
+            setOCRType(OCRType.MANUAL); // avoid memory leak from SVM
+          else setOCRType(OCRType.INTERNAL);
         }
         break;
 
       case INTERNAL:
-        if (!checkAssetFiles()) {
-          createAssetFiles();
-        }
         try (final BufferedReader mr = new BufferedReader(new FileReader(MODEL_TXT));
             final BufferedReader dr = new BufferedReader(new FileReader(DICT_TXT))) {
           ocr = new OCR(new DictSearch(dr), mr);

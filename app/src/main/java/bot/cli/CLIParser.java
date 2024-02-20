@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
-import javax.swing.*;
 import org.apache.commons.cli.*;
 
 public class CLIParser {
@@ -64,7 +63,9 @@ public class CLIParser {
     parseResult.setRender3DEnabled(!cmd.hasOption("disable-3d"));
     parseResult.setGraphicsInterlacingEnabled(cmd.hasOption("interlace"));
     parseResult.setScreenRefresh(!cmd.hasOption("no-screen-refresh"));
-    parseResult.setUiStyle(cmd.hasOption("new-ui"));
+    parseResult.setNewIcons(cmd.hasOption("new-icons"));
+    parseResult.setNewUi(cmd.hasOption("new-ui"));
+    parseResult.setKeepOpen(cmd.hasOption("keep-open"));
     parseResult.setSpellId(cmd.getOptionValue("spell-id", "-1"));
     parseResult.setPositionX(Integer.parseInt(cmd.getOptionValue("x-position", "-1")));
     parseResult.setPositionX(Integer.parseInt(cmd.getOptionValue("y-position", "-1")));
@@ -143,9 +144,12 @@ public class CLIParser {
           p.getProperty("interlace", "false").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setScreenRefresh(
           p.getProperty("screen-refresh", "true").replace(" ", "").toLowerCase().contains("true"));
-      parseResult.setUiStyle(
+      parseResult.setNewIcons(
+          p.getProperty("new-icons", "false").replace(" ", "").toLowerCase().contains("true"));
+      parseResult.setNewUi(
           p.getProperty("new-ui", "false").replace(" ", "").toLowerCase().contains("true"));
-
+      parseResult.setKeepOpen(
+          p.getProperty("keep-open", "false").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setPositionX(
           Integer.parseInt(p.getProperty("x-position", "-1").replace(" ", "")));
       parseResult.setPositionY(

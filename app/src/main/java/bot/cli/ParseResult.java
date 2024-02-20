@@ -33,7 +33,9 @@ public class ParseResult {
       graphicsInterlacing,
       screenRefresh,
       scriptSelectorOpen,
+      newIcons,
       newUi,
+      keepOpen,
       help,
       version;
 
@@ -308,12 +310,28 @@ public class ParseResult {
     return version;
   }
 
-  public void setUiStyle(boolean newUi) {
+  public void setNewIcons(boolean newIcons) {
+    this.newIcons = newIcons;
+  }
+
+  public boolean getNewIcons() {
+    return newIcons;
+  }
+
+  public void setNewUi(boolean newUi) {
     this.newUi = newUi;
   }
 
   public boolean getNewUi() {
     return newUi;
+  }
+
+  public void setKeepOpen(boolean keepOpen) {
+    this.keepOpen = keepOpen;
+  }
+
+  public boolean getKeepOpen() {
+    return keepOpen;
   }
 
   private ArrayList<Integer> stringsToIntArray(String[] strings) {

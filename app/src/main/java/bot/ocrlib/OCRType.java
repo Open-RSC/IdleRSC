@@ -2,7 +2,7 @@ package bot.ocrlib;
 
 public enum OCRType {
   HASH(0, "Hashes"),
-  INTERNAL(1, "Internal"),
+  INTERNAL(1, "Num3l OCR"),
   // EXTERNAL(2, "External"),
   REMOTE(3, "Remote"),
   MANUAL(4, "Manual");

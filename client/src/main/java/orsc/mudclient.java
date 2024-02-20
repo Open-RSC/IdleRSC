@@ -17881,7 +17881,9 @@ public final class mudclient implements Runnable {
 	public void setCustomUI(boolean b) {
 		C_CUSTOM_UI = b;
 	}
-
+	public boolean getCustomUI() {
+		return C_CUSTOM_UI;
+	}
 	public void setHideLoginBox(boolean b) {
 		C_HIDE_LOGIN_BOX = b;
 	}

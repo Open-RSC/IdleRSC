@@ -76,6 +76,26 @@ public class SleepCallback {
 
   private static void onSleepWord(final byte[] data, final int length) {
     switch (ocrType) {
+      case REMOTE:
+        try {
+          Main.log("Uploading CAPTCHA...");
+          sleepWord = uploadCaptcha(data, length);
+          if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
+          break; // allow cases to cascade as a fallback when exceptions are called
+        } catch (final Exception ex) {
+          Main.log("Error uploading CAPTCHA! Falling Back to Internal Num3l Sleeper");
+          ex.printStackTrace();
+        }
+      case INTERNAL:
+        try (final ByteArrayOutputStream out = new ByteArrayOutputStream(4096)) {
+          saveBitmap(out, data, length);
+          sleepWord = ocr.guess(SimpleImageIO.readBMP(out.toByteArray()), true);
+          if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
+          break; // allow cases to cascade as a fallback when exceptions are called
+        } catch (final IOException ex) {
+          Main.log("Error solving sleep word! Falling Back to Hashes");
+          ex.printStackTrace();
+        }
       case HASH:
         byte[] image = Arrays.copyOfRange(data, 1, length);
         int hash = hash32(image);
@@ -86,48 +106,22 @@ public class SleepCallback {
         }
         if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
         break;
-
-      case INTERNAL:
-        try (final ByteArrayOutputStream out = new ByteArrayOutputStream(4096)) {
-          saveBitmap(out, data, length);
-          sleepWord = ocr.guess(SimpleImageIO.readBMP(out.toByteArray()), true);
-          if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
-        } catch (final IOException ex) {
-          Main.log("Error solving sleep word");
-          ex.printStackTrace();
-          sleepWord = null;
-        }
-        break;
-
-        // case EXTERNAL:
-        //   try (final FileOutputStream out = new FileOutputStream(hc)) {
-        //     Main.log("Saving sleep image...");
-        //     saveBitmap(out, data, length);
-        //     checkLastModified = true;
-        //   } catch (final IOException ex) {
-        //     ex.printStackTrace();
-        //     sleepWord = null;
-        //   }
-        //   break;
-
-      case REMOTE:
-        try {
-          Main.log("Uploading CAPTCHA...");
-          sleepWord = uploadCaptcha(data, length);
-          if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
-        } catch (final Exception ex) {
-
-          Main.log("Error uploading CAPTCHA!");
-          ex.printStackTrace();
-          sleepWord = null;
-        }
-        break;
-
       case MANUAL:
       default:
         break;
     }
   }
+
+  // case EXTERNAL:
+  //   try (final FileOutputStream out = new FileOutputStream(hc)) {
+  //     Main.log("Saving sleep image...");
+  //     saveBitmap(out, data, length);
+  //     checkLastModified = true;
+  //   } catch (final IOException ex) {
+  //     ex.printStackTrace();
+  //     sleepWord = null;
+  //   }
+  //   break;
 
   private static void onSleepFatigueUpdate(final int fatigue) {
     if (sleepWord == null) return;
@@ -154,63 +148,54 @@ public class SleepCallback {
   public static void setOCRType(final OCRType type) {
     ocrType = type;
     // force hashes for coleslaw to prevent unnecessary SVM memory usage
+    // todo: Investigate fixing SVM Heap size issue directly. Null the array after using?
     if (Main.config.getInitCache().equalsIgnoreCase("coleslaw") && type.equals(OCRType.INTERNAL))
       ocrType = OCRType.HASH;
-    // todo: Investigate fixing SVM Heap size issue directly. Null the array after using?
+
     Main.log("Setting up " + ocrType.getName() + " OCR.");
     if (!checkAssetFiles()) createAssetFiles();
 
     switch (ocrType) {
+      case REMOTE:
+        String url = Main.config.getOCRServer();
+        if (url.isEmpty()) {
+          Main.log("No remote OCR URL was set for " + controller.getPlayerName());
+          Main.log("Falling back to image hashes.");
+        }
+        try {
+          sleepServer = new URL(url);
+          sleepServer.toURI();
+          break;
+        } catch (MalformedURLException | URISyntaxException e) {
+          sleepServer = null;
+          Main.log("Remote OCR URL: '" + url + "' is not a valid url.");
+          Main.log("Falling back to Image hashes.");
+        }
       case HASH:
         try (FileInputStream fs = new FileInputStream(HASHES)) {
           hashes = new Properties();
           hashes.load(fs);
+          break;
         } catch (final IOException e) {
           e.printStackTrace();
-          Main.log("Falling back to internal/manual.");
-          // prevent circular recursion between hashes and internal on coleslaw
-          if (Main.config.getInitCache().equalsIgnoreCase("coleslaw"))
-            setOCRType(OCRType.MANUAL); // avoid memory leak from SVM
-          else setOCRType(OCRType.INTERNAL);
+          Main.log("Issue detected with Image Hashes.");
+          Main.log("Falling back to internal.");
         }
-        break;
-
       case INTERNAL:
         try (final BufferedReader mr = new BufferedReader(new FileReader(MODEL_TXT));
             final BufferedReader dr = new BufferedReader(new FileReader(DICT_TXT))) {
           ocr = new OCR(new DictSearch(dr), mr);
+          break;
         } catch (final IOException | OCRException e) {
           e.printStackTrace();
+          Main.log("Issue detected with Internal Sleeper Num3l.");
           Main.log("Falling back to manual.");
-          setOCRType(OCRType.MANUAL);
         }
-        break;
-
         // case EXTERNAL:
         //   hc = new File(HC_BMP);
         //   slword = new File(SLWORD_TXT);
         //   lastModified = slword.lastModified();
         //   break;
-
-      case REMOTE:
-        String url = Main.config.getOCRServer();
-
-        if (url.length() < 1) {
-          Main.log("No remote OCR URL was set for " + controller.getPlayerName());
-          Main.log("Falling back to image hashes.");
-          setOCRType(OCRType.HASH);
-        }
-
-        try {
-          sleepServer = new URL(url);
-          sleepServer.toURI();
-        } catch (MalformedURLException | URISyntaxException e) {
-          sleepServer = null;
-          Main.log("Remote OCR URL: '" + url + "' is not a valid url.");
-          Main.log("Falling back to image hashes.");
-          setOCRType(OCRType.HASH);
-        }
-        break;
       case MANUAL:
       default:
         break;
@@ -349,31 +334,23 @@ public class SleepCallback {
 
   private static boolean checkAssetFiles() {
     File sleepDirectory = new File("assets" + File.separator + "sleep");
-    File[] sleepFilelist = sleepDirectory.listFiles();
-    String[] fileNames = {"dictionary.txt", "model.txt", "hashes.properties"};
-    if (sleepFilelist != null) {
-      if (sleepFilelist.length != 2) return false;
-      String[] sleepNames = new String[sleepFilelist.length];
-      for (int i = 0; i < sleepFilelist.length; i++) {
-        sleepNames[i] = sleepFilelist[i].getName();
-      }
-      // compare the file names we read to the names we need
-      for (String sleepName : sleepNames) {
-        boolean callReturn = true;
-        for (String fileName : fileNames) {
-          if (sleepName.equalsIgnoreCase(fileName)) {
-            callReturn = false;
-            break;
-          }
-        }
+    String[] sleepFilelist = sleepDirectory.list();
+    String[] fileNames = {"dictionary.txt", "hashes.properties", "model.txt"};
+
+    // check video files
+    if (sleepFilelist != null && sleepFilelist.length == 3) {
+      for (String fileName : fileNames) {
+        boolean callReturn = Arrays.stream(sleepFilelist).noneMatch(fileName::equalsIgnoreCase);
         // we are missing a file so regen cache
         if (callReturn) return false;
       }
     } else return false;
+
     return true;
   }
 
   private static void createAssetFiles() {
+    Main.log("Asset files missing, generating sleep assets.");
     // Create Asset directory
     File dir = new File("." + File.separator + "assets" + File.separator + "sleep");
     dir.mkdirs();

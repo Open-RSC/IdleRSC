@@ -236,7 +236,6 @@ public class AIOBankTrainer extends K_kailaScript {
         c.walkTo(spinningWheel[0] + 1, spinningWheel[1]);
       } else c.walkTo(spinningWheel[0], spinningWheel[1] - 1);
       c.useItemIdOnObject(spinningWheel[0], spinningWheel[1], primaryItemId);
-      c.sleep(3000);
       c.waitForBatching(false);
     }
     // Checks for these actions inside the methods

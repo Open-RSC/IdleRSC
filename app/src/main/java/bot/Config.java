@@ -39,6 +39,7 @@ public class Config extends ParseResult {
     // Boolean options
     setUsingAccount(parseResult.isUsingAccount());
     setAutoStart(parseResult.isAutoStart());
+    setAutoStart(parseResult.isAutoStart());
     setAutoLogin(parseResult.isAutoLogin());
     setLogWindowVisible(parseResult.isLogWindowVisible());
     setDebug(parseResult.isDebug());
@@ -46,7 +47,9 @@ public class Config extends ParseResult {
     setGraphicsInterlacingEnabled(parseResult.isGraphicsInterlacingEnabled());
     setScriptSelectorWindowVisible(parseResult.isScriptSelectorOpen());
     setScreenRefresh(parseResult.getScreenRefresh());
-    setUiStyle(parseResult.getNewUi());
+    setNewIcons(parseResult.getNewIcons());
+    setNewUi(parseResult.getNewUi());
+    setKeepOpen(parseResult.getKeepOpen());
 
     // position
     setPositionX(parseResult.getPositionX());

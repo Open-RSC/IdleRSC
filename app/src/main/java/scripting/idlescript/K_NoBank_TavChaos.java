@@ -254,7 +254,6 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
           doHerblawLoop();
           hobsToChaos();
           if (getNewtSecCount() > 0) { // || c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) < 5
-            doHerblawLoop();
             buyMoreNewts();
             doHerblawLoop();
           }

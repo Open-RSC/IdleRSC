@@ -4498,7 +4498,10 @@ public class Controller {
     else log("IdleRSC: Turning Off Custom UI mode", "gre");
     mud.setCustomUI(mode);
   }
-
+  /** Checks for the Custom UI mode config in mudclient. */
+  public boolean getCustomUiMode() {
+    return mud.getCustomUI();
+  }
   /**
    * Set the in-game scroll level of the client.
    *
@@ -4537,6 +4540,8 @@ public class Controller {
    * @param setting boolean - true to keep invent open, false to let it close.
    */
   public void setKeepInventoryOpenMode(boolean setting) {
+    if (setting) log("IdleRSC: Turning On Custom UI mode", "gre");
+    else log("IdleRSC: Turning Off Custom UI mode", "gre");
     mud.setAndroidInvToggle(!setting);
   }
 
@@ -4653,13 +4658,14 @@ public class Controller {
 
   /**
    * while batching, sleep 1 Game tick. Cancel loop if controller stops or needToMove is true
+   * Warning - sleeps 2 ticks before checking if batching.
    *
    * @param checkInventory boolean - true to check for full inventory, false to ignore full invent.
    */
   public void waitForBatching(boolean checkInventory) {
-    sleep(GAME_TICK);
-    while (isAuthentic()
-        && isRunning()
+    if (isAuthentic()) return;
+    sleep(2 * GAME_TICK);
+    while (isRunning()
         && isBatching()
         && !needToMove
         && !shouldSleep

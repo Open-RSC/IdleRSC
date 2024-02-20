@@ -23,11 +23,9 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.*;
@@ -87,6 +85,8 @@ public class Main {
       interlaceCheckbox,
       autoscrollLogsCheckbox,
       sidebarCheckbox,
+      customUiMode,
+      keepInvOpen,
       gfxCheckbox; // all the checkboxes on the sidepanel.
   private static JButton loadScriptButton,
       pathwalkerButton,
@@ -386,26 +386,26 @@ public class Main {
       rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
 
     // Set checkboxes on side panel using "get" methods
-    logWindowCheckbox.setSelected(config.isLogWindowVisible());
-    sidebarCheckbox.setSelected(config.isSidebarVisible());
-    debugCheckbox.setSelected(config.isDebug());
-    interlaceCheckbox.setSelected(config.isGraphicsInterlacingEnabled());
-    botPaintCheckbox.setSelected(config.isBotPaintVisible());
-
-    if (config.isGraphicsInterlacingEnabled()) {
-      controller.setInterlacer(config.isGraphicsInterlacingEnabled());
-    }
-    if (config.isScriptSelectorOpen()) {
-      showLoadScript();
-    }
-
-    if (config.isDebug()) debugger.open();
     autoLoginCheckbox.setSelected(config.isAutoLogin());
     graphicsCheckbox.setSelected(config.isGraphicsEnabled());
     render3DCheckbox.setSelected(config.isRender3DEnabled());
     gfxCheckbox.setSelected(config.isGraphicsEnabled());
     controller.setDrawing(config.isGraphicsEnabled(), 0);
     controller.setRender3D(config.isRender3DEnabled());
+    logWindowCheckbox.setSelected(config.isLogWindowVisible());
+    sidebarCheckbox.setSelected(config.isSidebarVisible());
+    debugCheckbox.setSelected(config.isDebug());
+    interlaceCheckbox.setSelected(config.isGraphicsInterlacingEnabled());
+    botPaintCheckbox.setSelected(config.isBotPaintVisible());
+    customUiMode.setSelected(config.getNewUi());
+    keepInvOpen.setSelected(config.getKeepOpen());
+
+    // Set client properties from checkboxes
+    if (config.getKeepOpen()) controller.setKeepInventoryOpenMode(keepInvOpen.isSelected());
+    if (config.isGraphicsInterlacingEnabled())
+      controller.setInterlacer(config.isGraphicsInterlacingEnabled());
+    if (config.isScriptSelectorOpen()) showLoadScript();
+    if (config.isDebug()) debugger.open();
 
     log("Initializing WindowListener...");
     windowListener =
@@ -607,14 +607,6 @@ public class Main {
     menuBar.add(logWindowCheckbox);
     menuBar.add(sidebarCheckbox);
 
-    // prevent tab/etc "focusing" an element
-    menuBar.setFocusable(false);
-    settingsMenu.setFocusable(false);
-    themeMenu.setFocusable(false);
-    gfxCheckbox.setFocusable(false);
-    logWindowCheckbox.setFocusable(false);
-    sidebarCheckbox.setFocusable(false);
-
     // style our elements
     settingsMenu.setBackground(themeBackColor);
     settingsMenu.setBorder(BorderFactory.createLineBorder(themeBackColor));
@@ -650,11 +642,10 @@ public class Main {
       themeMenu.add(menuItem);
     }
     JMenuItem _accOpp;
-    JCheckBox customUiMode, keepInvOpen;
     // Define settings menu drop down
     Component[] _settingsMenu = {
       _accOpp = new JMenuItem("Account Startup Settings", KeyEvent.VK_F4), // S key
-      customUiMode = new JCheckBox("Custom in-game UI"),
+      customUiMode = new JCheckBox("Custom In-game UI"),
       keepInvOpen = new JCheckBox("Keep Inventory Open"),
     };
 
@@ -662,6 +653,16 @@ public class Main {
     for (Component _menuItem : _settingsMenu) {
       settingsMenu.add(_menuItem);
     }
+
+    // prevent tab/etc "focusing" an element
+    menuBar.setFocusable(false);
+    settingsMenu.setFocusable(false);
+    themeMenu.setFocusable(false);
+    gfxCheckbox.setFocusable(false);
+    logWindowCheckbox.setFocusable(false);
+    sidebarCheckbox.setFocusable(false);
+    customUiMode.setFocusable(false);
+    keepInvOpen.setFocusable(false);
 
     // menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_F4));
     // //opens 2 authframes
@@ -677,14 +678,20 @@ public class Main {
                 authFrame.storeAuthData(authFrame);
                 authFrame.setVisible(false);
               });
+          settingsMenu.setPopupMenuVisible(false);
+          settingsMenu.setSelected(false);
           authFrame.setVisible(true);
         });
     customUiMode.addActionListener(
         e -> {
+          settingsMenu.setPopupMenuVisible(false);
+          settingsMenu.setSelected(false);
           controller.setCustomUiMode(customUiMode.isSelected());
         });
     keepInvOpen.addActionListener(
         e -> {
+          settingsMenu.setPopupMenuVisible(false);
+          settingsMenu.setSelected(false);
           controller.setKeepInventoryOpenMode(keepInvOpen.isSelected());
         });
   }
@@ -790,8 +797,8 @@ public class Main {
     botFrame.add(debugCheckbox);
     botFrame.add(interlaceCheckbox);
     botFrame.add(botPaintCheckbox);
-    botFrame.add(graphicsCheckbox);
     botFrame.add(render3DCheckbox);
+    botFrame.add(graphicsCheckbox);
     botFrame.add(takeScreenshotButton);
     botFrame.add(showIdButton);
     botFrame.add(openDebuggerButton);
@@ -1063,7 +1070,7 @@ public class Main {
     }
 
     // set new or old UI bar design
-    setUiStyle(config.getNewUi());
+    setIconStyle(config.getNewIcons());
 
     // Generate our port file
     if (config.getInitCache().equalsIgnoreCase("custom")) {
@@ -1088,58 +1095,36 @@ public class Main {
         new File("cache" + File.separator + "video" + File.separator + "spritepacks");
     File videoDirectory = new File("cache" + File.separator + "video/");
     File[] spriteFilelist = spriteDirectory.listFiles();
-    File[] videoFilelist = videoDirectory.listFiles();
+    String[] videoFilelist = videoDirectory.list();
     String[] fileNames = {
       "authentic_landscape.orsc",
       "authentic_sprites.orsc",
       "custom_landscape.orsc",
       "custom_sprites.osar",
       "library.orsc",
-      "models.orsc"
+      "models.orsc",
+      "spritepacks"
     };
 
-    if (spriteFilelist != null) {
-      if (!spriteFilelist[0].getName().equalsIgnoreCase("Menus.osar")) return false;
+    // check sprite files
+    if (spriteFilelist != null && spriteFilelist.length > 0) {
+      if (!spriteFilelist[0].getName().equalsIgnoreCase("menus.osar")) return false;
     } else return false;
-    if (videoFilelist != null) {
-      if (videoFilelist.length < 6) return false;
-      String[] videoNames = new String[videoFilelist.length];
-      for (int i = 0; i < videoFilelist.length; i++) {
-        videoNames[i] = videoFilelist[i].getName();
-      }
-      // compare the file names we read to the names we need
-      for (String videoName : videoNames) {
-        boolean callReturn = true;
-        for (String fileName : fileNames) {
-          if (videoName.equalsIgnoreCase(fileName)) {
-            callReturn = false;
-            break;
-          }
-        }
+
+    // check video files
+    if (videoFilelist != null && videoFilelist.length >= 6) {
+      for (String fileName : fileNames) {
+        boolean callReturn = Arrays.stream(videoFilelist).noneMatch(fileName::equalsIgnoreCase);
         // we are missing a file so regen cache
         if (callReturn) return false;
       }
     } else return false;
+
     return true;
   }
 
-  private static void setUiStyle(boolean newStyle) {
-    // Create Cache directory
-    File dir = new File("." + File.separator + "Cache");
-    dir.mkdirs();
-
-    // Add config.txt to client cache (1 gives new UI icons, 0 gives old Icons)
-    try {
-      FileWriter portFile = new FileWriter("Cache/config.txt");
-      portFile.write("Menus:" + (newStyle ? 1 : 0));
-      portFile.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
-    }
-  }
-
   private static void createCache() {
+    log("Cache Missing, Generating the Cache.");
     // Create Cache directory
     File dir = new File("." + File.separator + "Cache");
     dir.mkdirs();
@@ -1147,6 +1132,22 @@ public class Main {
     // Copy embedded cache to cache directory
     try {
       Extractor.extractZipResource("/cache/ZipCache.zip", dir.toPath());
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+    }
+  }
+
+  private static void setIconStyle(boolean newIcons) {
+    // Create Cache directory
+    File dir = new File("." + File.separator + "Cache");
+    dir.mkdirs();
+
+    // Add config.txt to client cache (1 gives new UI icons, 0 gives old Icons)
+    try {
+      FileWriter portFile = new FileWriter("Cache/config.txt");
+      portFile.write("Menus:" + (newIcons ? 1 : 0));
+      portFile.close();
     } catch (IOException e) {
       e.printStackTrace();
       System.out.println(e.getMessage());
@@ -1290,6 +1291,15 @@ public class Main {
 
   public static String getThemeName() {
     return themeName;
+  }
+
+  /**
+   * Used by login listener to set
+   *
+   * @return
+   */
+  public static boolean isCustomUiSelected() {
+    return customUiMode.isSelected();
   }
 
   /**

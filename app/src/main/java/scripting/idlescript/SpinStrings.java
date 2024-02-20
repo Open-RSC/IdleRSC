@@ -48,6 +48,7 @@ public class SpinStrings extends IdleScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      if (!c.isAuthentic()) c.setBatchBars(true);
       if (c.getNearestNpcByIds(bankerIds, false) != null) {
         if (c.getInventoryItemCount(input) == 0) {
           bankingLoop();

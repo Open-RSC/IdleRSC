@@ -65,92 +65,99 @@ public class WindowListener implements Runnable {
     int prevHeight = rscFrame.getHeight();
     boolean consolePrevious = Main.isLogWindowOpen();
     boolean sidePrevious = Main.isSideWindowOpen();
+    try {
+      while (true) {
 
-    while (true) {
-
-      // Update size of JFrame when log window is opened and closed
-      if (consolePrevious != Main.isLogWindowOpen()) {
-        if (Main.isLogWindowOpen()) {
-          controller.log("IdleRSC: Showing Log Window!", "gre");
-          consoleFrame.setVisible(true);
-          rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() + 188);
-          if (!controller.isDrawEnabled()) refreshGraphics(50);
-        } else {
-          controller.log("IdleRSC: Hiding Log Window!", "gre");
-          consoleFrame.setVisible(false);
-          rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() - 188);
-          if (!controller.isDrawEnabled()) refreshGraphics(50);
+        // set custom UI mode when logged it (relog resets the mode)
+        if (controller.isLoggedIn() && Main.isCustomUiSelected() && !controller.getCustomUiMode()) {
+          Thread.sleep(640);
+          controller.setCustomUiMode(true);
         }
-        consolePrevious = Main.isLogWindowOpen();
-      }
-      // Update size of JFrame when side window is opened and closed
-      if (sidePrevious != Main.isSideWindowOpen()) {
-        if (Main.isSideWindowOpen()) {
-          controller.log("IdleRSC: Showing Side Bar!", "gre");
-          botFrame.setVisible(true);
-          rscFrame.setSize(rscFrame.getWidth() + 122, rscFrame.getHeight());
-          if (!controller.isDrawEnabled()) refreshGraphics(50);
-        } else {
-          controller.log("IdleRSC: Hiding Side Bar!", "gre");
-          botFrame.setVisible(false);
-          rscFrame.setSize(rscFrame.getWidth() - 122, rscFrame.getHeight());
-          if (!controller.isDrawEnabled()) refreshGraphics(50);
+
+        // Update size of JFrame when log window is opened and closed
+        if (consolePrevious != Main.isLogWindowOpen()) {
+          if (Main.isLogWindowOpen()) {
+            controller.log("IdleRSC: Showing Log Window!", "gre");
+            consoleFrame.setVisible(true);
+            rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() + 188);
+            if (!controller.isDrawEnabled()) refreshGraphics(50);
+          } else {
+            controller.log("IdleRSC: Hiding Log Window!", "gre");
+            consoleFrame.setVisible(false);
+            rscFrame.setSize(rscFrame.getWidth(), rscFrame.getHeight() - 188);
+            if (!controller.isDrawEnabled()) refreshGraphics(50);
+          }
+          consolePrevious = Main.isLogWindowOpen();
         }
-        sidePrevious = Main.isSideWindowOpen();
-      }
-
-      // Resize window if it goes below a certain size (crashes when small height and you teleport)
-      if (Main.isLogWindowOpen() && rscFrame.getHeight() < 593) {
-        rscFrame.setSize(rscFrame.getWidth(), 593);
-      } else if (rscFrame.getHeight() < 405) rscFrame.setSize(rscFrame.getWidth(), 405);
-      if (Main.isSideWindowOpen() && rscFrame.getWidth() < 655) {
-        rscFrame.setSize(655, rscFrame.getHeight());
-      } else if (rscFrame.getWidth() < 533) rscFrame.setSize(533, rscFrame.getHeight());
-
-      // Refresh JFrame when resizing happens to prevent white screen
-      if ((rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
-        if (!controller.isDrawEnabled()) refreshGraphics(300);
-        prevWidth = rscFrame.getWidth();
-        prevHeight = rscFrame.getHeight();
-      }
-
-      // update our theme when themeName string is changed in Main
-      if (!themeName.equals(Main.getThemeName())) {
-        controller.log("IdleRSC: Switching Theme to " + Main.getThemeName(), "gre");
-        Color[] colors = Main.getThemeElements(Main.getThemeName()); // back, front
-        botFrame.setBackground(colors[0]);
-        rscFrame.getContentPane().setBackground(colors[0]);
-        botFrame.setBorder(BorderFactory.createLineBorder(colors[0]));
-        themeMenu.setForeground(colors[1]);
-        menu.setForeground(colors[1]); // text color
-        menuBar.setBackground(colors[0]);
-        menuBar.setBorder(BorderFactory.createLineBorder(colors[0]));
-        buttonClear.setBackground(colors[0].darker());
-        buttonClear.setForeground(colors[1]);
-        autoscrollLogsCheckbox.setBackground(colors[0]);
-        autoscrollLogsCheckbox.setForeground(colors[1]);
-        logArea.setBackground(colors[0].brighter());
-        logArea.setForeground(colors[1]);
-        scroller.setBackground(colors[0]);
-        scroller.setForeground(colors[1]);
-        consoleFrame.setBackground(colors[0]);
-        consoleFrame.setForeground(colors[1]);
-
-        for (JButton jButton : buttonArray) {
-          jButton.setBackground(colors[0].darker());
-          jButton.setForeground(colors[1]);
+        // Update size of JFrame when side window is opened and closed
+        if (sidePrevious != Main.isSideWindowOpen()) {
+          if (Main.isSideWindowOpen()) {
+            controller.log("IdleRSC: Showing Side Bar!", "gre");
+            botFrame.setVisible(true);
+            rscFrame.setSize(rscFrame.getWidth() + 122, rscFrame.getHeight());
+            if (!controller.isDrawEnabled()) refreshGraphics(50);
+          } else {
+            controller.log("IdleRSC: Hiding Side Bar!", "gre");
+            botFrame.setVisible(false);
+            rscFrame.setSize(rscFrame.getWidth() - 122, rscFrame.getHeight());
+            if (!controller.isDrawEnabled()) refreshGraphics(50);
+          }
+          sidePrevious = Main.isSideWindowOpen();
         }
-        for (JCheckBox jCheckbox : checkBoxArray) {
-          jCheckbox.setBackground(colors[0]);
-          jCheckbox.setForeground(colors[1]);
+
+        // Resize window if it goes below a certain size (crashes when small height and you
+        // teleport)
+        if (Main.isLogWindowOpen() && rscFrame.getHeight() < 593) {
+          rscFrame.setSize(rscFrame.getWidth(), 593);
+        } else if (rscFrame.getHeight() < 405) rscFrame.setSize(rscFrame.getWidth(), 405);
+        if (Main.isSideWindowOpen() && rscFrame.getWidth() < 655) {
+          rscFrame.setSize(655, rscFrame.getHeight());
+        } else if (rscFrame.getWidth() < 533) rscFrame.setSize(533, rscFrame.getHeight());
+
+        // Refresh JFrame when resizing happens to prevent white screen
+        if ((rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
+          if (!controller.isDrawEnabled()) refreshGraphics(300);
+          prevWidth = rscFrame.getWidth();
+          prevHeight = rscFrame.getHeight();
         }
-        themeName = Main.getThemeName();
+
+        // update our theme when themeName string is changed in Main
+        if (!themeName.equals(Main.getThemeName())) {
+          controller.log("IdleRSC: Switching Theme to " + Main.getThemeName(), "gre");
+          Color[] colors = Main.getThemeElements(Main.getThemeName()); // back, front
+          botFrame.setBackground(colors[0]);
+          rscFrame.getContentPane().setBackground(colors[0]);
+          botFrame.setBorder(BorderFactory.createLineBorder(colors[0]));
+          themeMenu.setForeground(colors[1]);
+          menu.setForeground(colors[1]); // text color
+          menuBar.setBackground(colors[0]);
+          menuBar.setBorder(BorderFactory.createLineBorder(colors[0]));
+          buttonClear.setBackground(colors[0].darker());
+          buttonClear.setForeground(colors[1]);
+          autoscrollLogsCheckbox.setBackground(colors[0]);
+          autoscrollLogsCheckbox.setForeground(colors[1]);
+          logArea.setBackground(colors[0].brighter());
+          logArea.setForeground(colors[1]);
+          scroller.setBackground(colors[0]);
+          scroller.setForeground(colors[1]);
+          consoleFrame.setBackground(colors[0]);
+          consoleFrame.setForeground(colors[1]);
+
+          for (JButton jButton : buttonArray) {
+            jButton.setBackground(colors[0].darker());
+            jButton.setForeground(colors[1]);
+          }
+          for (JCheckBox jCheckbox : checkBoxArray) {
+            jCheckbox.setBackground(colors[0]);
+            jCheckbox.setForeground(colors[1]);
+          }
+          themeName = Main.getThemeName();
+        }
+
+        Thread.sleep(60);
       }
-      try {
-        Thread.sleep(40);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
   }
   /**

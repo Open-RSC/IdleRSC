@@ -124,7 +124,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
     c.atObject(519, 494);
     didActionTime = System.currentTimeMillis();
     doAction = false;
-    c.sleep(GAME_TICK);
     c.waitForBatching(true);
   }
 
@@ -133,7 +132,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
     c.atObject(521, 492);
     didActionTime = System.currentTimeMillis();
     doAction = false;
-    c.sleep(GAME_TICK);
     c.waitForBatching(true);
   }
 
@@ -142,7 +140,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
     c.atObject(524, 489);
     didActionTime = System.currentTimeMillis();
     doAction = false;
-    c.sleep(GAME_TICK);
     c.waitForBatching(true);
   }
 
@@ -154,7 +151,6 @@ public final class K_SeersMagicTree extends K_kailaScript {
     c.atObject(548, 484);
     didActionTime = System.currentTimeMillis();
     doAction = false;
-    c.sleep(GAME_TICK);
     c.waitForBatching(true);
     if (c.getObjectAtCoord(548, 484) != 310) {
       c.walkTo(538, 486);

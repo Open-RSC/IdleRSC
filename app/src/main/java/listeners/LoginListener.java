@@ -30,7 +30,7 @@ public class LoginListener implements Runnable {
               controller.log("Logged out! Logging back in...");
               controller.login();
               loginCount++;
-              controller.sleep(640);
+              Thread.sleep(640);
               // calc the next login time
               if (loginCount > 10)
                 sleepTime =

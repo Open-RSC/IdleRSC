@@ -2,14 +2,9 @@ package scripting.idlescript;
 
 import bot.Main;
 import controller.Controller;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.util.Arrays;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import orsc.ORSCharacter;
 
 /**
@@ -463,78 +458,86 @@ public class AIOFighter extends IdleScript {
 
   private void setupGUI() {
 
-    JLabel label2 = new JLabel("Chat commands can be used to direct the bot");
-    JLabel label3 = new JLabel("Control ::bones ::prioritize :doors");
-    JLabel label4 = new JLabel("Combat Styles ::attack :strength ::defense ::controlled");
-    JLabel fightModeLabel = new JLabel("Fight Mode:");
-    JComboBox<String> fightModeField =
-        new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
-    fightModeField.setSelectedIndex(c.getFightMode());
-    JLabel npcIdsLabel = new JLabel("NPC IDs:");
-    JTextField npcIdsField = new JTextField("3");
-    JLabel maxWanderLabel = new JLabel("Max Wander Distance: (-1 to disable)");
-    JTextField maxWanderField = new JTextField("20");
-    JLabel eatAtHpLabel = new JLabel("Eat at HP: (food is automatically detected)");
-    JTextField eatAtHpField =
-        new JTextField(String.valueOf(c.getCurrentStat(c.getStatId("Hits")) / 2));
-    JLabel lootTableLabel = new JLabel("Loot Table: (comma separated)");
-    JTextField lootTableField = new JTextField("-1");
-    JCheckBox openDoorsCheckbox =
-        new JCheckBox("Open doors/gates? (if On, then set a max wander!)");
-    JCheckBox buryBonesCheckbox =
-        new JCheckBox("Loot & Bury Bones? (only loots bones when npc is null)");
-    JCheckBox prioritizeBonesCheckbox =
-        new JCheckBox("Prioritize Bone looting over attacking NPCs?)");
-    JCheckBox magingCheckbox = new JCheckBox("Magic?");
-    JLabel spellNameLabel = new JLabel("Spell Name: (exactly as it appears in spellbook)");
-    JTextField spellNameField = new JTextField("Wind Bolt");
-    JCheckBox rangingCheckbox = new JCheckBox("Ranging?");
-    JLabel arrowIdLabel = new JLabel("Pickup Arrow ID: (-1 to disable)");
-    JTextField arrowIdField = new JTextField("-1");
-    JLabel switchLabel =
-        new JLabel("Switch ID (weapon to switch to if in melee combat while ranging)");
-    JTextField switchIdField = new JTextField("81");
+    // generate some variables for components we need to manipulate
+    JComboBox<String> fightModeField;
+    JCheckBox openDoorsCheckbox,
+        buryBonesCheckbox,
+        magingCheckbox,
+        rangingCheckbox,
+        prioritizeBonesCheckbox;
+    JTextField npcIdsField,
+        maxWanderField,
+        eatAtHpField,
+        lootTableField,
+        spellNameField,
+        arrowIdField,
+        switchIdField;
     JButton startScriptButton = new JButton("Start");
 
-    scriptFrame = new JFrame(c.getPlayerName() + " - options");
+    // Set up the left and right panels in component arrays
+    Component[] leftSide = {
+      new JLabel("Chat commands can be used to direct the bot"),
+      new JLabel("Control ::bones ::prioritize ::doors"),
+      new JLabel("Combat Styles ::attack :strength ::defense ::controlled"),
+      new JLabel("Fight Mode:"),
+      fightModeField =
+          new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"}),
+      new JLabel("NPC IDs:"),
+      npcIdsField = new JTextField("3"),
+      new JLabel("Max Wander Distance: (-1 to disable)"),
+      maxWanderField = new JTextField("20"),
+      new JLabel("Eat at HP: (food type is automatically detected)"),
+      eatAtHpField = new JTextField(String.valueOf(c.getCurrentStat(c.getStatId("Hits")) / 2)),
+      new JLabel("Loot Table: (comma separated)"),
+      lootTableField = new JTextField("-1")
+    };
+    Component[] rightSide = {
+      new JLabel(""),
+      openDoorsCheckbox = new JCheckBox("Open doors/gates? (if On, then set a max wander!)"),
+      buryBonesCheckbox = new JCheckBox("Loot & Bury Bones? (only loots bones when npc is null)"),
+      prioritizeBonesCheckbox = new JCheckBox("Prioritize Bone looting over attacking NPCs?)"),
+      new JLabel(""),
+      magingCheckbox = new JCheckBox("Magic?"),
+      new JLabel("Spell Name: (exactly as it appears in spellbook)"),
+      spellNameField = new JTextField("Wind Bolt"),
+      rangingCheckbox = new JCheckBox("Ranging?"),
+      new JLabel("Pickup Arrow ID: (-1 to disable)"),
+      arrowIdField = new JTextField("-1"),
+      new JLabel("Switch ID (weapon to switch to if in melee combat while ranging)"),
+      switchIdField = new JTextField("81"),
+    };
 
-    scriptFrame.setLayout(new GridLayout(0, 2));
-    scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    scriptFrame.add(label2);
-    scriptFrame.add(label3);
-    scriptFrame.add(label4);
-    scriptFrame.add(fightModeLabel);
-    scriptFrame.add(fightModeField);
-    scriptFrame.add(npcIdsLabel);
-    scriptFrame.add(npcIdsField);
-    scriptFrame.add(maxWanderLabel);
-    scriptFrame.add(maxWanderField);
-    scriptFrame.add(eatAtHpLabel);
-    scriptFrame.add(eatAtHpField);
-    scriptFrame.add(lootTableLabel);
-    scriptFrame.add(lootTableField);
-    scriptFrame.add(openDoorsCheckbox);
-    scriptFrame.add(new JLabel());
-    scriptFrame.add(buryBonesCheckbox);
-    scriptFrame.add(new JLabel());
-    scriptFrame.add(prioritizeBonesCheckbox);
-    scriptFrame.add(new JLabel());
-    scriptFrame.add(magingCheckbox);
-    scriptFrame.add(new JLabel());
-    scriptFrame.add(spellNameLabel);
-    scriptFrame.add(spellNameField);
-    scriptFrame.add(rangingCheckbox);
-    scriptFrame.add(new JLabel());
-    scriptFrame.add(arrowIdLabel);
-    scriptFrame.add(arrowIdField);
-    scriptFrame.add(switchLabel);
-    scriptFrame.add(switchIdField);
-    scriptFrame.add(startScriptButton);
-
+    // set default states
     spellNameField.setEnabled(false);
     arrowIdField.setEnabled(false);
     switchIdField.setEnabled(false);
     prioritizeBonesCheckbox.setEnabled(false);
+    fightModeField.setSelectedIndex(c.getFightMode());
+
+    // set up our panels
+    JPanel[] jPanels = {new JPanel(), new JPanel()};
+    JPanel gap = new JPanel();
+    gap.setSize(30, 100);
+
+    for (Component comp : leftSide) {
+      jPanels[0].add(comp);
+    }
+    for (Component comp : rightSide) {
+      jPanels[1].add(comp);
+    }
+    for (JPanel panel : jPanels) {
+      panel.setLayout(new GridLayout(0, 1));
+    }
+
+    // set up script frame with finished components
+    scriptFrame = new JFrame(c.getPlayerName() + " - options");
+    scriptFrame.setLayout(new BorderLayout());
+    scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    scriptFrame.add(jPanels[0], BorderLayout.LINE_START);
+
+    scriptFrame.add(gap, BorderLayout.CENTER);
+    scriptFrame.add(jPanels[1], BorderLayout.LINE_END);
+    scriptFrame.add(startScriptButton, BorderLayout.PAGE_END);
 
     scriptFrame.pack();
     scriptFrame.setLocation(Main.getRscFrameCenter());

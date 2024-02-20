@@ -56,7 +56,9 @@ final class AuthFrame extends JFrame {
       screenRefresh,
       helpMenu,
       showVersion,
-      newUi;
+      newIcons,
+      newUi,
+      keepOpen;
 
   private final Choice themeChoice = new Choice();
   private final Choice initChoice = new Choice();
@@ -212,14 +214,16 @@ final class AuthFrame extends JFrame {
     }
 
     // Build out all of our checkbox options
-    Checkbox[] checkBoxes = {
+    Component[] checkBoxes = {
       autoLogin = new Checkbox(" Auto-login", false),
       sideBar = new Checkbox(" Show Side Bar", true),
       logWindow = new Checkbox(" Open Log Window", false),
       debug = new Checkbox(" Open Debugger", false),
       botPaint = new Checkbox(" Show Bot Paint", true),
       disableGraphics = new Checkbox(" Disable Graphics", false),
-      newUi = new Checkbox(" New UI style", false),
+      newUi = new Checkbox(" Custom Game UI", false),
+      newIcons = new Checkbox(" New Skillbar Icons", false),
+      keepOpen = new Checkbox(" Keep Inv Open", false),
       interlace = new Checkbox(" Interlace Mode", false),
       screenRefresh = new Checkbox(" 60s Screen Refresh", true),
       helpMenu = new Checkbox(" Show Help Menu", false),
@@ -330,7 +334,9 @@ final class AuthFrame extends JFrame {
     interlace.setState(false);
     helpMenu.setState(false);
     showVersion.setState(false);
+    newIcons.setState(false);
     newUi.setState(false);
+    keepOpen.setState(true);
   }
 
   public void storeAuthData(AuthFrame auth) {
@@ -366,7 +372,9 @@ final class AuthFrame extends JFrame {
     p.put("screen-refresh", auth.getScreenRefresh());
     p.put("help", auth.getHelpMenu());
     p.put("version", auth.getShowVersion());
+    p.put("new-icons", auth.getNewIcons());
     p.put("new-ui", auth.getNewUi());
+    p.put("keep-open", auth.getKeepOpen());
     p.put("server-ip", auth.getServerIpChoice());
     p.put("theme", auth.getThemeName());
 
@@ -395,7 +403,7 @@ final class AuthFrame extends JFrame {
    * @param component component to be resized
    * @param size Dimension object representing the x and y size
    */
-  private static void setElementSizing(Component component, Dimension size) {
+  private void setElementSizing(Component component, Dimension size) {
     component.setMaximumSize(size);
     component.setMinimumSize(size);
     component.setPreferredSize(size);
@@ -449,7 +457,9 @@ final class AuthFrame extends JFrame {
           helpMenu.setState(Boolean.parseBoolean(p.getProperty("help", "false")));
           showVersion.setState(Boolean.parseBoolean(p.getProperty("version", "false")));
           themeChoice.select(p.getProperty("theme", "RuneDark Theme"));
+          newIcons.setState(Boolean.parseBoolean(p.getProperty("new-icons", "false")));
           newUi.setState(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
+          keepOpen.setState(Boolean.parseBoolean(p.getProperty("keep-open", "false")));
           screenRefresh.setState(Boolean.parseBoolean(p.getProperty("screen-refresh", "true")));
 
         } catch (final Throwable t) {
@@ -569,8 +579,16 @@ final class AuthFrame extends JFrame {
     return Boolean.toString(showVersion.getState());
   }
 
+  synchronized String getNewIcons() {
+    return Boolean.toString(newIcons.getState());
+  }
+
   synchronized String getNewUi() {
     return Boolean.toString(newUi.getState());
+  }
+
+  synchronized String getKeepOpen() {
+    return Boolean.toString(keepOpen.getState());
   }
 
   synchronized void addActionListener(final ActionListener al) {

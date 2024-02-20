@@ -46,8 +46,8 @@ accounts/
 # Local OCR Sleep BMP
 hc.bmp
 
-# Don't include any file or directory from scripting/idlescript that starts with AA_TEST (For testing scripts)
-app/src/main/java/scripting/idlescript/AA_Test*
+# Don't include any file or directory in the scripts directory that has test in the name regardless of casing
+app/src/main/java/scripting/*/*[Tt][Ee][Ss][Tt]*
 
 # Don't include core assets downloaded when updating client with scripts
 assets/core
@@ -81,8 +81,6 @@ app/src/main/java/scripting/idlescript/K_WildyBlackDragon.java
 app/src/main/java/scripting/idlescript/KBD_IronKingBlackDragon.java
 
 app/src/main/java/scripting/idlescript/KBD_KingBlackDragon.java
-
-app/src/main/java/scripting/idlescript/Test_Class.java
 
 
 

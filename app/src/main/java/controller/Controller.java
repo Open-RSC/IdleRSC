@@ -5860,6 +5860,49 @@ public class Controller {
     mud.packetHandler.getClientStream().finishPacket();
   }
 
+  public ORSCharacter getTargetedNpc() {
+    ORSCharacter player = this.getPlayer();
+    ORSCharacter npc = null;
+
+    // Set npc to ranged/mage target
+    if (player.attackingNpcServerIndex > 0) {
+      npc = this.getNpc(player.attackingNpcServerIndex);
+
+      // Set npc to melee target
+    } /*else if (MELEE STUFF) {
+        npc = YEP;
+      }*/
+    if (npc != null) return npc;
+    return null;
+  }
+
+  /**
+   * Returns the id of the last killed npc
+   *
+   * @return int
+   */
+  public int getLastNpcKilledId() {
+    return mud.getLastNpcKilledId();
+  }
+
+  /**
+   * Returns the kill count of the last killed npc
+   *
+   * @return int
+   */
+  public int getLastNpcKilledCount() {
+    return mud.getStatKills3();
+  }
+
+  /**
+   * Returns the total kill count of all npcs
+   *
+   * @return int
+   */
+  public int getTotalKillCount() {
+    return mud.getStatKills2();
+  }
+
   /**
    * Returns the server index of the NPC which is currently blocking you. Useful for scripts where
    * an NPC blocking you is bad. Only works if your character is facing the NPC directly.

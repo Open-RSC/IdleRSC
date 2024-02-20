@@ -83,9 +83,9 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
       switch (QUEST_STAGE) {
         case 0:
           // Gather pot and bucket if needed
-          while ((!hasAtLeastItemAmount(POT_ID, 1) && !hasAtLeastItemAmount(POT_OF_FLOUR_ID, 1))
-              || (!hasAtLeastItemAmount(BUCKET_ID, 1) && !hasAtLeastItemAmount(MILK_ID, 1))
-                  && c.isRunning()) {
+          while (((!hasAtLeastItemAmount(POT_ID, 1) && !hasAtLeastItemAmount(POT_OF_FLOUR_ID, 1))
+                  || (!hasAtLeastItemAmount(BUCKET_ID, 1) && !hasAtLeastItemAmount(MILK_ID, 1)))
+              && c.isRunning()) {
             STEP_ITEMS =
                 new int[][] {
                   {POT_ID, 1},

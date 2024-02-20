@@ -12,8 +12,8 @@ import controller.PaintBuilder.RowBuilder;
  */
 public abstract class IdleScript {
   Controller controller = null;
-  PaintBuilder paintBuilder = new PaintBuilder(4, 18, 214);
-  RowBuilder rowBuilder = new RowBuilder();
+  protected PaintBuilder paintBuilder = new PaintBuilder(4, 18, 214);
+  protected RowBuilder rowBuilder = new RowBuilder();
 
   /**
    * Called by {@link callbacks.MessageCallback} every time a new server message is drawn on the

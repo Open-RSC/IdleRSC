@@ -13,7 +13,6 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Properties;
 import javax.imageio.ImageIO;
@@ -81,21 +80,24 @@ public class SleepCallback {
           Main.log("Uploading CAPTCHA...");
           sleepWord = uploadCaptcha(data, length);
           if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
-          break; // allow cases to cascade as a fallback when exceptions are called
+
         } catch (final Exception ex) {
-          Main.log("Error uploading CAPTCHA! Falling Back to Internal Num3l Sleeper");
+          Main.log("Error uploading CAPTCHA!");
+          sleepWord = "unknown";
           ex.printStackTrace();
         }
+        break;
       case INTERNAL:
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream(4096)) {
           saveBitmap(out, data, length);
           sleepWord = ocr.guess(SimpleImageIO.readBMP(out.toByteArray()), true);
           if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
-          break; // allow cases to cascade as a fallback when exceptions are called
         } catch (final IOException ex) {
-          Main.log("Error solving sleep word! Falling Back to Hashes");
+          Main.log("Error solving sleep word!");
+          sleepWord = "unknown";
           ex.printStackTrace();
         }
+        break;
       case HASH:
         byte[] image = Arrays.copyOfRange(data, 1, length);
         int hash = hash32(image);
@@ -153,7 +155,6 @@ public class SleepCallback {
       ocrType = OCRType.HASH;
 
     Main.log("Setting up " + ocrType.getName() + " OCR.");
-    if (!checkAssetFiles()) createAssetFiles();
 
     switch (ocrType) {
       case REMOTE:
@@ -325,65 +326,5 @@ public class SleepCallback {
     BufferedImage fullColorImg = ImageIO.read(in);
     BufferedImage img = convertImageTo1Bpp(fullColorImg);
     ImageIO.write(img, "bmp", out);
-  }
-
-  private static void copyResource(String res, String dest, Class c) throws IOException {
-    InputStream src = c.getResourceAsStream(res);
-    Files.copy(src, Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
-  }
-
-  private static boolean checkAssetFiles() {
-    File sleepDirectory = new File("assets" + File.separator + "sleep");
-    String[] sleepFilelist = sleepDirectory.list();
-    String[] fileNames = {"dictionary.txt", "hashes.properties", "model.txt"};
-
-    // check video files
-    if (sleepFilelist != null && sleepFilelist.length == 3) {
-      for (String fileName : fileNames) {
-        boolean callReturn = Arrays.stream(sleepFilelist).noneMatch(fileName::equalsIgnoreCase);
-        // we are missing a file so regen cache
-        if (callReturn) return false;
-      }
-    } else return false;
-
-    return true;
-  }
-
-  private static void createAssetFiles() {
-    Main.log("Asset files missing, generating sleep assets.");
-    // Create Asset directory
-    File dir = new File("." + File.separator + "assets" + File.separator + "sleep");
-    dir.mkdirs();
-
-    // Copy embedded assets to assets/sleep directory
-    try {
-      copyResource(
-          "/assets/sleep/dictionary.txt",
-          "."
-              + File.separator
-              + "assets"
-              + File.separator
-              + "sleep"
-              + File.separator
-              + "dictionary.txt",
-          SleepCallback.class);
-      copyResource(
-          "/assets/sleep/model.txt",
-          "." + File.separator + "assets" + File.separator + "sleep" + File.separator + "model.txt",
-          SleepCallback.class);
-      copyResource(
-          "/assets/sleep/hashes.properties",
-          "."
-              + File.separator
-              + "assets"
-              + File.separator
-              + "sleep"
-              + File.separator
-              + "hashes.properties",
-          SleepCallback.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
-    }
   }
 }

@@ -18,11 +18,13 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
@@ -298,6 +300,7 @@ public class Main {
     debuggerThread = new Thread(debugger);
     debuggerThread.start();
 
+    if (!checkAssetFiles()) createAssetFiles();
     SleepCallback.setOCRType(config.getOCRType());
 
     // just building out the windows
@@ -656,7 +659,6 @@ public class Main {
 
     // prevent tab/etc "focusing" an element
     menuBar.setFocusable(false);
-    settingsMenu.setFocusable(false);
     themeMenu.setFocusable(false);
     gfxCheckbox.setFocusable(false);
     logWindowCheckbox.setFocusable(false);
@@ -679,19 +681,16 @@ public class Main {
                 authFrame.setVisible(false);
               });
           settingsMenu.setPopupMenuVisible(false);
-          settingsMenu.setSelected(false);
           authFrame.setVisible(true);
         });
     customUiMode.addActionListener(
         e -> {
           settingsMenu.setPopupMenuVisible(false);
-          settingsMenu.setSelected(false);
           controller.setCustomUiMode(customUiMode.isSelected());
         });
     keepInvOpen.addActionListener(
         e -> {
           settingsMenu.setPopupMenuVisible(false);
-          settingsMenu.setSelected(false);
           controller.setKeepInventoryOpenMode(keepInvOpen.isSelected());
         });
   }
@@ -1087,6 +1086,75 @@ public class Main {
       System.out.println("Server (" + config.getInitCache() + ") is not known.");
       System.out.println("Default: Generating Coleslaw port");
       setPort(COLESLAW_PORT);
+    }
+  }
+
+  /**
+   * Copy resource out of the Jar
+   *
+   * @param res string - full file path with name
+   * @param dest string - full file destination with name
+   * @param c - Class file to copy from
+   * @throws IOException - oof
+   */
+  private static void copyResource(String res, String dest, Class c) throws IOException {
+    InputStream src = c.getResourceAsStream(res);
+    assert src != null;
+    Files.copy(src, Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+  }
+
+  private static boolean checkAssetFiles() {
+    File sleepDirectory = new File("assets" + File.separator + "sleep");
+    String[] sleepList = sleepDirectory.list();
+    String[] sleepNames = {"dictionary.txt", "hashes.properties", "model.txt"};
+
+    // check video files
+    if (sleepList != null && sleepList.length == 3) {
+      for (String fileName : sleepNames) {
+        boolean callReturn = Arrays.stream(sleepList).noneMatch(fileName::equalsIgnoreCase);
+        // we are missing a file so regen cache
+        if (callReturn) return false;
+      }
+    } else return false;
+
+    return true;
+  }
+
+  private static void createAssetFiles() {
+    Main.log("Asset files missing, generating assets.");
+    // Create Asset directory
+    File dir = new File("." + File.separator + "assets" + File.separator + "sleep");
+    dir.mkdirs();
+
+    // Copy embedded assets to assets/sleep directory
+    try {
+      copyResource(
+          "/assets/sleep/dictionary.txt",
+          "."
+              + File.separator
+              + "assets"
+              + File.separator
+              + "sleep"
+              + File.separator
+              + "dictionary.txt",
+          Main.class);
+      copyResource(
+          "/assets/sleep/hashes.properties",
+          "."
+              + File.separator
+              + "assets"
+              + File.separator
+              + "sleep"
+              + File.separator
+              + "hashes.properties",
+          Main.class);
+      copyResource(
+          "/assets/sleep/model.txt",
+          "." + File.separator + "assets" + File.separator + "sleep" + File.separator + "model.txt",
+          Main.class);
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
     }
   }
 

@@ -69,19 +69,9 @@ Cache/
 /run_multiple_clients.bat
 /run_no_console.bat
 /run_set_max_heap_size.bat
+/run_profiler_support.bat
+/compile_windows.bat
 
 #Put any custom git ignore attributes below
 
-app/src/main/java/scripting/idlescript/K_RedDragons.java
 
-app/src/main/java/scripting/idlescript/K_Salarin.java
-
-app/src/main/java/scripting/idlescript/K_WildyBlackDragon.java
-
-app/src/main/java/scripting/idlescript/KBD_IronKingBlackDragon.java
-
-app/src/main/java/scripting/idlescript/KBD_KingBlackDragon.java
-
-
-
-run_profiler_support.bat

@@ -19,7 +19,7 @@ public class AIOAIO extends IdleScript {
    */
   public static AIOAIO_State state = new AIOAIO_State();
 
-  public static final String VERSION = "1.4.4";
+  public static final String VERSION = "1.7.1";
 
   public int start(String[] parameters) {
     if (!state.guiSetup) {
@@ -57,7 +57,7 @@ public class AIOAIO extends IdleScript {
 
   @Override
   public void paintInterrupt() {
-    Main.getController().drawString("@red@AIOAIO", 6, 21, 0xFFFFFF, 1);
+    Main.getController().drawString("@red@AIOAIO v" + AIOAIO.VERSION, 6, 21, 0xFFFFFF, 1);
     String currentSkillText =
         "Current Skill: " + (state.currentSkill != null ? state.currentSkill.getName() : "None");
     String currentTaskText =

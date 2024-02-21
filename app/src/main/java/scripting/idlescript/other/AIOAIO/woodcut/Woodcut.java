@@ -1,9 +1,10 @@
-package scripting.idlescript.other.AIOAIO.woodcutting;
+package scripting.idlescript.other.AIOAIO.woodcut;
 
 import bot.Main;
 import controller.Controller;
 import models.entities.SceneryId;
 import scripting.idlescript.other.AIOAIO.AIOAIO;
+import scripting.idlescript.other.AIOAIO.AIOAIO_Script_Utils;
 
 public class Woodcut {
   private static Controller c;
@@ -12,11 +13,34 @@ public class Woodcut {
     c = Main.getController();
     c.setBatchBarsOn();
 
+    if (!meetsReqs()) {
+      Main.getController()
+          .log(
+              "Aborted " + AIOAIO.state.currentTask.getName() + " task because we don't meet reqs");
+      AIOAIO.state.endTime = System.currentTimeMillis();
+      return 0;
+    }
     if (!Woodcutting_Utils.hasAxeInInventory()) return getAxe();
-    if (c.getInventoryItemCount() >= 30) return bankLogs();
-    if (c.isBatching()) return 250; // Wait to finish chopping
-    if (c.getNearestReachableObjectById(getTreeId(), true) != null) return chopTree();
+    else if (c.getInventoryItemCount() >= 30)
+      AIOAIO_Script_Utils.towardsDepositAll(Woodcutting_Utils.axes);
+    else if (c.isBatching()) return 250; // Wait to finish chopping
+    else if (c.getNearestReachableObjectById(getTreeId(), true) != null) return chopTree();
     else return findTrees();
+    return 250;
+  }
+
+  private static boolean meetsReqs() {
+    switch (AIOAIO.state.currentTask.getName()) {
+      case "normal":
+        return true;
+      case "oak":
+        return Main.getController().getCurrentStat(Main.getController().getStatId("Woodcutting"))
+            >= 15;
+      case "willow":
+        return Main.getController().getCurrentStat(Main.getController().getStatId("Woodcutting"))
+            >= 30;
+    }
+    throw new IllegalStateException("Unknown tree type: " + AIOAIO.state.currentTask.getName());
   }
 
   private static int getTreeId() {
@@ -53,19 +77,6 @@ public class Woodcut {
     return 1200;
   }
 
-  private static int bankLogs() {
-    if (c.getNearestNpcByIds(c.bankerIds, false) == null) {
-      c.setStatus("Walking to Bank");
-      c.walkTowards(c.getNearestBank()[0], c.getNearestBank()[1]);
-      return 50;
-    }
-    c.setStatus("Opening bank");
-    c.openBank();
-    Woodcutting_Utils.depositAllExceptAxe();
-    c.closeBank();
-    return 680;
-  }
-
   private static int getAxe() {
     if (!AIOAIO.state.hasAxeInBank) return getAxeFromFaladorSpawn();
     return getAxeFromBank();
@@ -73,8 +84,7 @@ public class Woodcut {
 
   private static int getAxeFromBank() {
     if (c.getNearestNpcById(95, false) == null) {
-      c.setStatus("Walking to Bank");
-      c.walkTowards(c.getNearestBank()[0], c.getNearestBank()[1]);
+      c.walkTowardsBank();
       return 100;
     }
     c.setStatus("Opening bank");

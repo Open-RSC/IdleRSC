@@ -28,12 +28,10 @@ public class WebWalker {
    */
   public boolean webwalkTowards(int currentX, int currentY, int[][] endCoords) {
     long startTime = System.currentTimeMillis();
-    Set<WebwalkNode> endNodes = new HashSet<>();
+    Map<WebwalkNode, int[]> closestNodesToEndCoords = new HashMap<>();
     for (int[] coords : endCoords) {
       WebwalkNode node = graph.findClosestNode(coords[0], coords[1]);
-      if (node != null) {
-        endNodes.add(node);
-      } else {
+      if (node == null) {
         Main.getController()
             .log(
                 "Can't find the closest walkable node to "
@@ -42,13 +40,13 @@ public class WebWalker {
                     + coords[1]
                     + ", trying Euclidean closest.");
         node = graph.findClosestNodeEuclidian(coords[0], coords[1]);
-        if (node != null) {
-          endNodes.add(node);
-        }
+      }
+      if (node != null) {
+        closestNodesToEndCoords.put(node, coords);
       }
     }
 
-    if (endNodes.isEmpty()) {
+    if (closestNodesToEndCoords.isEmpty()) {
       Main.getController()
           .log("No walkable end nodes found, yeeting off in a random direction to get unstuck..");
       Main.getController()
@@ -71,6 +69,7 @@ public class WebWalker {
 
     // Use modified Dijkstra's algorithm to find the path to the closest of the end
     // nodes
+    Set<WebwalkNode> endNodes = closestNodesToEndCoords.keySet();
     List<WebwalkNode> path = dijkstraPathfinding(startNode, endNodes);
 
     if (path.isEmpty()) {
@@ -78,9 +77,14 @@ public class WebWalker {
       return false;
     }
 
-    // Ensure the final destination is included, which is the last node in the path
-    WebwalkNode finalNode = path.get(path.size() - 1);
-    path.add(new WebwalkNode(finalNode.getX(), finalNode.getY()));
+    WebwalkNode finalGraphNode = path.get(path.size() - 1);
+    int[] finalCoords = closestNodesToEndCoords.get(finalGraphNode);
+    if (finalCoords != null
+        && !(finalGraphNode.getX() == finalCoords[0] && finalGraphNode.getY() == finalCoords[1])) {
+      // If final graph node's coordinates don't match the final coordinates, add a
+      // step towards the actual final coordinates
+      path.add(new WebwalkNode(finalCoords[0], finalCoords[1]));
+    }
 
     // Logging the path
     StringBuilder pathLog = new StringBuilder("Path: ");
@@ -93,7 +97,7 @@ public class WebWalker {
             "Path calculated in "
                 + (System.currentTimeMillis() - startTime)
                 + "ms: "
-                + pathLog.toString());
+                + pathLog.substring(0, pathLog.length() - 4));
 
     // Walk the first edge of the path
     if (path.size() < 2) return false; // Check if a valid path was found

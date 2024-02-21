@@ -19,6 +19,7 @@ import scripting.idlescript.other.AIOAIO.combat.Cow;
 import scripting.idlescript.other.AIOAIO.combat.JailGuard;
 import scripting.idlescript.other.AIOAIO.cooking.Cook;
 import scripting.idlescript.other.AIOAIO.fishing.Fish;
+import scripting.idlescript.other.AIOAIO.fletching.Fletch;
 import scripting.idlescript.other.AIOAIO.thieving.AlKharidMan;
 import scripting.idlescript.other.AIOAIO.woodcut.Woodcut;
 
@@ -78,6 +79,23 @@ public class AIOAIO_Config {
                     new AIOAIO_Task("normal", true, Woodcut::run),
                     new AIOAIO_Task("oak", true, Woodcut::run),
                     new AIOAIO_Task("willow", true, Woodcut::run))),
+            new AIOAIO_Skill(
+                "Fletching",
+                true,
+                Arrays.asList(
+                    new AIOAIO_Task("Arrow shafts", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung shortbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Longbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Oak shortbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Oak Longbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Willow shortbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Willow Longbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Maple shortbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Maple Longbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Yew shortbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Yew Longbow", true, Fletch::run),
+                    new AIOAIO_Task("Unstrung Magic shortbow", false, Fletch::run),
+                    new AIOAIO_Task("Unstrung Magic Longbow", false, Fletch::run))),
             new AIOAIO_Skill(
                 "Fishing",
                 true,

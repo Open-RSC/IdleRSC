@@ -1,4 +1,4 @@
-package scripting.idlescript.other.AIOAIO.woodcutting;
+package scripting.idlescript.other.AIOAIO.woodcut;
 
 import bot.Main;
 
@@ -33,15 +33,6 @@ public class Woodcutting_Utils {
         Main.getController().withdrawItem(axe);
         return;
       }
-    }
-  }
-
-  public static void depositAllExceptAxe() {
-    for (int itemId : Main.getController().getInventoryItemIds()) {
-      if (itemId != 0 && !Woodcutting_Utils.isAxe(itemId))
-        Main.getController()
-            .depositItem(itemId, Main.getController().getInventoryItemCount(itemId));
-      Main.getController().sleep(500);
     }
   }
 

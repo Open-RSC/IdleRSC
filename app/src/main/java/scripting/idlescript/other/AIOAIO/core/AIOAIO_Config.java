@@ -17,9 +17,10 @@ import java.util.stream.Collectors;
 import scripting.idlescript.other.AIOAIO.agility.GnomeVillage;
 import scripting.idlescript.other.AIOAIO.combat.Cow;
 import scripting.idlescript.other.AIOAIO.combat.JailGuard;
+import scripting.idlescript.other.AIOAIO.cooking.Cook;
 import scripting.idlescript.other.AIOAIO.fishing.Fish;
 import scripting.idlescript.other.AIOAIO.thieving.AlKharidMan;
-import scripting.idlescript.other.AIOAIO.woodcutting.Woodcut;
+import scripting.idlescript.other.AIOAIO.woodcut.Woodcut;
 
 public class AIOAIO_Config {
   private static final String CONFIG_PATH = "Cache/botconfigs/aioaio.properties";
@@ -53,14 +54,23 @@ public class AIOAIO_Config {
                 "Defense",
                 true,
                 Arrays.asList(
-                    new AIOAIO_Task("Lummy Cows", true, Cow::attack),
-                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::attack))),
+                    new AIOAIO_Task("Lummy Cows", true, Cow::defense),
+                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::defense))),
             new AIOAIO_Skill(
                 "Strength",
                 true,
                 Arrays.asList(
-                    new AIOAIO_Task("Lummy Cows", true, Cow::attack),
-                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::attack))),
+                    new AIOAIO_Task("Lummy Cows", true, Cow::strength),
+                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::strength))),
+            new AIOAIO_Skill(
+                "Cooking",
+                true,
+                Arrays.asList(
+                    new AIOAIO_Task("Shrimp", true, Cook::run),
+                    new AIOAIO_Task("Trout", true, Cook::run),
+                    new AIOAIO_Task("Salmon", true, Cook::run),
+                    new AIOAIO_Task("Lobster", true, Cook::run),
+                    new AIOAIO_Task("Shark", true, Cook::run))),
             new AIOAIO_Skill(
                 "Woodcut",
                 true,
@@ -71,7 +81,11 @@ public class AIOAIO_Config {
             new AIOAIO_Skill(
                 "Fishing",
                 true,
-                Collections.singletonList(new AIOAIO_Task("Shrimp", true, Fish::run))),
+                Arrays.asList(
+                    new AIOAIO_Task("Shrimp", true, Fish::run),
+                    new AIOAIO_Task("Salmon", true, Fish::run),
+                    new AIOAIO_Task("Lobster", true, Fish::run),
+                    new AIOAIO_Task("Shark", false, Fish::run))),
             new AIOAIO_Skill(
                 "Agility",
                 true,

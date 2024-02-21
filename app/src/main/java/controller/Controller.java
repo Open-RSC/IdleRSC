@@ -11,7 +11,8 @@ import com.openrsc.client.entityhandling.instances.Item;
 import com.openrsc.client.model.Sprite;
 import com.openrsc.interfaces.misc.AuctionHouse;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
-import compatibility.apos.Script;
+import controller.WebWalker.WebWalker;
+import controller.WebWalker.WebwalkGraph;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -48,7 +49,6 @@ import orsc.graphics.gui.SocialLists;
 import orsc.graphics.two.MudClientGraphics;
 import orsc.mudclient;
 import reflector.Reflector;
-import scripting.apos.PathWalker;
 
 /**
  * This is the native scripting API for IdleRSC.
@@ -148,7 +148,7 @@ public class Controller {
     final long pollInterval = 250; // Check condition every 250 milliseconds
 
     long startTime = System.currentTimeMillis();
-    while (!condition.get()) {
+    while (!condition.get() && isRunning()) {
       if (System.currentTimeMillis() - startTime > timeout) {
         return false; // Timeout reached, condition not met
       }
@@ -546,6 +546,9 @@ public class Controller {
   /**
    * Sleeps until the player is no longer walking
    *
+   * <p>Good to combine with sleepUntilMoving, so you can wait for the player to start responding to
+   * your action, then wait for them to finish
+   *
    * @param timeout Max ms to wait to stop moving
    */
   public void sleepUntilNotMoving(long timeout) {
@@ -653,6 +656,7 @@ public class Controller {
    */
   public void walkTo(int x, int y, int radius, boolean unused) {
     if (x < 0 || y < 0) return;
+    if (currentX() == 0 && currentY() == 0) return; // Not logged in yet
 
     Main.logMethod("WalkTo", x, y, radius);
 
@@ -723,54 +727,60 @@ public class Controller {
         false);
   }
 
+  WebWalker webWalker = null;
+
   /**
-   * Smartly walk towards any location in the overworld (warning: spikes CPU and RAM)
+   * Smartly takes the next step towards any location. Handles obstacles, ladders, gates, doors,
+   * etc.
    *
-   * <p>It's inefficient because it recalculates the whole path each time I'm too lazy to make it
-   * better right now
+   * <p>It is a _bug_ if it cannot walk from any location to any location!
    *
-   * @param x
-   * @param y
+   * <p>If it's not getting to your desired location, please update the graph.txt using the GUI
+   * program here - https://github.com/dginovker/Runescape-Classic-Webwalker
+   *
+   * <p>If this function cannot walk to a certain location, please use the above link to add
+   * support!
+   *
+   * <p>Note - If you have enough coins in your inventory, this function may use them for boat/gate
+   * fees! Note - This might not take the most efficient path, but it will be reasonably efficient
+   *
+   * @param x Destination x
+   * @param y Desination y
+   * @return Whether or not we successfully walked towards the destination
    */
-  public void walkTowards(int x, int y) {
-    if (getNearestNpcByIds(
-            new int[] {
-              NpcId.GUIDE.getId(),
-              NpcId.PETER_SKIPPIN.getId(),
-              NpcId.COMBAT_INSTRUCTOR.getId(),
-              NpcId.COOKING_INSTRUCTOR.getId(),
-              NpcId.MAGIC_INSTRUCTOR.getId()
-            },
-            true)
-        != null) {
-      skipTutorialIsland();
-      log("Skipping tutorial before walking..");
-      sleep(5000);
-    }
-    System.out.println("Walking to " + x + "," + y + " from " + currentX() + "," + currentY());
-    if (currentX() == x && currentY() == y) return;
-    // Setup APOS compatibility because we're calling the APOS PathWalker..
-    Script.setController(this);
-    PathWalker pw = new PathWalker();
-    pw.init(null);
-    System.out.println("Calcing path");
-    PathWalker.Path path = pw.calcPath(x, y);
-    if (path == null) log("Failed to calculate a path to " + x + "," + y);
-    pw.setPath(path);
-    if (!pw.walkPath()) {
-      if (currentX() == x && currentY() == y) {
-        log("Done walk to " + x + "," + y);
-      } else {
-        log(
-            "Failed to walk to "
-                + x
-                + ","
-                + y
-                + ", gonna yeet off in a random direction to get unstuck");
-        walkToAsync(currentX(), currentY(), 5);
-        sleep(ThreadLocalRandom.current().nextInt(600, 5000));
-      }
-    }
+  public boolean walkTowards(int x, int y) {
+    setStatus("Walking to " + x + "," + y);
+    if (webWalker == null) webWalker = new WebWalker(new WebwalkGraph("assets/map/graph.txt"));
+    boolean success = webWalker.webwalkTowards(currentX(), currentY(), new int[][] {{x, y}});
+    setStatus("Done taking step towards " + x + "," + y);
+    return success;
+  }
+
+  /**
+   * Smartly takes the next step towards the nearest bank. It considers obstacles, ladders, gates,
+   * doors, etc., and aims to find a path using the web walking algorithm.
+   *
+   * <p>If unable to reach any bank, it suggests updating the graph with the GUI tool available at
+   * https://github.com/dginovker/Runescape-Classic-Webwalker.
+   *
+   * <p>Note: If sufficient coins are available, it may use them for boat/gate fees. While not
+   * guaranteed to take the most efficient path, it seeks to be reasonably efficient.
+   *
+   * @return Whether or not the step towards the nearest bank was successfully taken.
+   */
+  public boolean walkTowardsBank() {
+    int[][] bankLocations = {
+      {220, 635}, {150, 504}, {103, 511}, {220, 365}, {216, 450}, {283, 569},
+      {503, 452}, {582, 576}, {566, 600}, {588, 754}, {129, 3543}, {440, 495},
+      {327, 552}, {89, 694}
+    };
+
+    setStatus("Walking to the nearest bank");
+    if (webWalker == null) webWalker = new WebWalker(new WebwalkGraph("assets/map/graph.txt"));
+    boolean success = webWalker.webwalkTowards(currentX(), currentY(), bankLocations);
+    setStatus(
+        success ? "Walking towards the nearest bank" : "Failed to find a path to the nearest bank");
+    return success;
   }
 
   /**
@@ -1310,6 +1320,33 @@ public class Controller {
   }
 
   /**
+   * Retrieves the character object of the nearest NPC that satisfies the condition
+   *
+   * @param condition - Condition the NPC must satisfy
+   * @return orsc.ORSCharacter -- returns null if npc not present.
+   */
+  public ORSCharacter getNearestNPCByLambda(java.util.function.Predicate<ORSCharacter> condition) {
+    ORSCharacter closestNpc = null;
+    int closestDistance = Integer.MAX_VALUE;
+
+    ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
+    int npcCount = (int) reflector.getObjectMember(mud, "npcCount");
+    int botX = mud.localPlayer.currentX;
+    int botZ = mud.localPlayer.currentZ;
+
+    for (int i = 0; i < npcCount; i++) {
+      ORSCharacter currentNpc = npcs[i];
+      if (!condition.test(currentNpc)) continue;
+      int distance = distance(currentNpc.currentX, currentNpc.currentZ, botX, botZ);
+      if (distance > closestDistance) continue;
+      closestDistance = distance;
+      closestNpc = currentNpc;
+    }
+
+    return closestNpc;
+  }
+
+  /**
    * Method to make a 2D array with all [x,y,npcId] positions of the supplied npcIds[] array<br>
    * Other methods only return the closest npc, this will return all of them in a nx3 matrix
    *
@@ -1567,7 +1604,7 @@ public class Controller {
   }
 
   /**
-   * Walks to the NPC and select the 2nd command option.
+   * Walks to the NPC and select the 1st command option.
    *
    * @param serverIndex int
    */
@@ -2443,6 +2480,20 @@ public class Controller {
    */
   public boolean isItemInBank(int itemId) {
     return getBankItemCount(itemId) > 0;
+  }
+
+  /**
+   * Deposits all yo stuff in the bank
+   *
+   * @return true if we were in the bank
+   */
+  public boolean depositAll() {
+    if (!isInBank()) return false;
+    for (int itemId : getInventoryItemIds()) {
+      depositItem(itemId, getInventoryItemCount(itemId));
+      sleep(320);
+    }
+    return true;
   }
 
   /**
@@ -4030,6 +4081,11 @@ public class Controller {
       if (statName.equalsIgnoreCase(skillNames[i])) return i;
     }
 
+    log(
+        "Error - Unknown stat name: "
+            + statName
+            + ". Available names: "
+            + Arrays.toString(skillNames));
     return -1;
   }
 
@@ -4498,10 +4554,12 @@ public class Controller {
     else log("IdleRSC: Turning Off Custom UI mode", "gre");
     mud.setCustomUI(mode);
   }
+
   /** Checks for the Custom UI mode config in mudclient. */
   public boolean getCustomUiMode() {
     return mud.getCustomUI();
   }
+
   /**
    * Set the in-game scroll level of the client.
    *
@@ -4589,9 +4647,17 @@ public class Controller {
 
   private void walkToActionSource(
       mudclient mud, int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
-    // System.out.println("Controller walkToActionSource with " + startX + ", " +
-    // startZ + ", " +
-    // destX + ", " + destZ + ", " + walkToEntity);
+    System.out.println(
+        "Controller walkToActionSource with "
+            + startX
+            + ", "
+            + startZ
+            + ", "
+            + destX
+            + ", "
+            + destZ
+            + ", "
+            + walkToEntity);
 
     StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
     for (StackTraceElement element : stackTraceElements) {
@@ -4888,7 +4954,8 @@ public class Controller {
   }
 
   /**
-   * Retrieves the coordinates of the nearest bank, based on your current position.
+   * Retrieves the coordinates of the nearest bank, based on your current position. WARNING: Do not
+   * use this with the webwalker (walkTowards). Use getNearestWebwalkBank() instead
    *
    * @return int[] -- [x, y] with the coordinates of the bank. Never returns null.
    */
@@ -5875,9 +5942,11 @@ public class Controller {
       npc = this.getNpc(player.attackingNpcServerIndex);
 
       // Set npc to melee target
-    } /*else if (MELEE STUFF) {
-        npc = YEP;
-      }*/
+    } /*
+       * else if (MELEE STUFF) {
+       * npc = YEP;
+       * }
+       */
     if (npc != null) return npc;
     return null;
   }
@@ -6107,6 +6176,7 @@ public class Controller {
     if (isAuthentic()) return false;
     return Config.C_BATCH_PROGRESS_BAR;
   }
+
   /**
    * Display String "Hr:Min:Sec" version of milliseconds long int.
    *

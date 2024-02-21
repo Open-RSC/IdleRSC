@@ -63,8 +63,7 @@ public class Combat_Utils {
   public static int getFightingGear() {
     Controller c = Main.getController();
     if (c.getNearestNpcByIds(c.bankerIds, false) == null) {
-      c.setStatus("Walking to Bank");
-      c.walkTowards(c.getNearestBank()[0], c.getNearestBank()[1]);
+      c.walkTowardsBank();
       return 100;
     }
     c.setStatus("Opening bank");
@@ -161,10 +160,7 @@ public class Combat_Utils {
   public static void safelyAbortTask() {
     Main.getController().log("Trying to safely abort task!");
     if (Main.getController().getNearestNpcById(NpcId.BANKER.getId(), false) == null) {
-      Main.getController().setStatus("Running to safety");
-      Main.getController()
-          .walkTowards(
-              Main.getController().getNearestBank()[0], Main.getController().getNearestBank()[1]);
+      Main.getController().walkTowardsBank();
     } else {
       AIOAIO.state.endTime = System.currentTimeMillis();
       Main.getController().log("Aborted fighting task due to lack of food");

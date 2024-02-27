@@ -5,8 +5,8 @@ import models.entities.ItemId;
 import models.entities.SkillId;
 
 public class CasketFisher extends IdleScript {
-  int paintColors[] = {
-    0xb74413, 0xcfdf1f, 0xffffff, 0xff0000
+  int[] paintColors = {
+    0xb74413, 0xcfdf1f, 0xffffff
   }; // wooden-ish, golden....-ish, casket amount, trash amounts
 
   private final int[][] CATHERBY_BANK = {{437, 491}, {443, 496}};
@@ -15,17 +15,26 @@ public class CasketFisher extends IdleScript {
 
   final int casketId = ItemId.CASKET.getId();
   final int netId = ItemId.BIG_NET.getId();
+  final int oysterId = ItemId.OYSTER.getId();
+  final int pearlsId = ItemId.OYSTER_PEARLS.getId();
+  final int pearlTipsId = ItemId.OYSTER_PEARL_BOLT_TIPS.getId();
+  final int chiselId = ItemId.CHISEL.getId();
   final int[] trashIds = {
     ItemId.RAW_MACKEREL.getId(),
     ItemId.RAW_COD.getId(),
     ItemId.RAW_BASS.getId(),
+    ItemId.EMPTY_OYSTER.getId(),
     ItemId.SEAWEED.getId(),
-    ItemId.OYSTER.getId(),
     ItemId.LEATHER_GLOVES.getId(),
     ItemId.BOOTS.getId()
   };
-  private int casketAmount = 0; // Caskets then trash items
+  private int casketAmount = 0;
   private int bankedCaskets = 0;
+  private int tipAmount = 0;
+  private int bankedBoltTips = 0;
+
+  private final int casketsPerTrip = 10;
+  private final int maxItemCount = 26;
 
   public int start(String[] param) {
     paintBuilder.start(4, 18, 174);
@@ -41,14 +50,16 @@ public class CasketFisher extends IdleScript {
       controller.stop();
     }
 
-    dropJunk();
+    handleItems();
     if (controller.getInventoryItemCount(casketId) > 0
-        || controller.getInventoryItemCount(netId) == 0) bank();
+        || controller.getInventoryItemCount(pearlTipsId) > 0
+        || controller.getInventoryItemCount(netId) == 0
+        || controller.getInventoryItemCount(chiselId) == 0) bank();
 
     while (controller.isRunning()) {
       if (controller.getNeedToMove()) controller.moveCharacter();
       if (controller.getShouldSleep()) controller.sleepHandler(true);
-      if (controller.getInventoryItemCount(casketId) < 20) {
+      if (controller.getInventoryItemCount(casketId) < casketsPerTrip) {
         while (controller.currentX() != 406
             && controller.currentY() != 504
             && controller.isRunning()
@@ -58,7 +69,7 @@ public class CasketFisher extends IdleScript {
           controller.sleep(640);
         }
 
-        if (!controller.isBatching() && controller.getInventoryItemCount() < 26) {
+        if (!controller.isBatching() && controller.getInventoryItemCount() < maxItemCount) {
           controller.setStatus("@cya@Fishing");
           controller.atObject(406, 505);
           controller.sleep(640);
@@ -67,7 +78,7 @@ public class CasketFisher extends IdleScript {
         int x = controller.currentX();
         int y = controller.currentY();
         while (controller.isBatching() && controller.isRunning() && controller.isLoggedIn()) {
-          if (controller.getInventoryItemCount() >= 26) {
+          if (controller.getInventoryItemCount() >= maxItemCount) {
             controller.stopBatching();
             while (controller.currentY() != y - 1
                 && controller.isRunning()
@@ -77,34 +88,59 @@ public class CasketFisher extends IdleScript {
             }
           }
         }
-        if (!controller.isBatching() && controller.getInventoryItemCount() >= 26) dropJunk();
+        if (!controller.isBatching() && controller.getInventoryItemCount() >= maxItemCount)
+          handleItems();
       } else {
-        dropJunk();
+        handleItems();
         bank();
       }
     }
     controller.stop();
     casketAmount = 0;
     bankedCaskets = 0;
+    tipAmount = 0;
+    bankedBoltTips = 0;
     return 1000; // start() must return a int value now.
   }
 
-  public void dropJunk() {
+  public void handleItems() {
     if (controller.isRunning()) {
-      for (int i = 0; i < trashIds.length; i++) {
-        if (controller.getInventoryItemCount(trashIds[i]) > 0
+
+      // Open oysters
+      while (controller.getInventoryItemCount(oysterId) > 0 && controller.isRunning()) {
+        controller.setStatus("@cya@Opening oysters");
+        controller.itemCommand(oysterId);
+        while (controller.isBatching() && controller.isRunning()) {
+          if (controller.getInventoryItemCount(oysterId) == 0) controller.stopBatching();
+          controller.sleep(640);
+        }
+        controller.sleep(640);
+      }
+      // Chisel pearls into bolt tips
+      while (controller.getInventoryItemCount(pearlsId) > 0 && controller.isRunning()) {
+        controller.setStatus("@cya@Chiseling oyster pearls");
+        controller.useItemOnItemBySlot(
+            controller.getInventoryItemSlotIndex(chiselId),
+            controller.getInventoryItemSlotIndex(pearlsId));
+        while (controller.isBatching() && controller.isRunning() && controller.isLoggedIn()) {
+          if (controller.getInventoryItemCount(pearlsId) == 0) controller.stopBatching();
+          controller.sleep(640);
+        }
+        controller.sleep(640);
+      }
+
+      // Drop trash items
+      for (int trashId : trashIds) {
+        while (controller.getInventoryItemCount(trashId) > 0
             && controller.isRunning()
             && controller.isLoggedIn()) {
-          controller.setStatus("@cya@Dropping Junk");
+          String itemName = controller.getItemName(trashId).toLowerCase();
+          itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1);
+          controller.setStatus("@cya@Dropping Item: " + itemName);
           controller.dropItem(
-              controller.getInventoryItemSlotIndex(trashIds[i]),
-              controller.getInventoryItemCount(trashIds[i]));
+              controller.getInventoryItemSlotIndex(trashId),
+              controller.getInventoryItemCount(trashId));
           controller.sleep(1280);
-          while (controller.getInventoryItemCount(trashIds[i]) > 0
-              && controller.isRunning()
-              && controller.isLoggedIn()) {
-            controller.sleep(640);
-          }
         }
       }
       controller.sleep(640);
@@ -132,21 +168,31 @@ public class CasketFisher extends IdleScript {
       controller.sleep(640);
     // Deposit all items but net
     bankedCaskets += controller.getInventoryItemCount(casketId);
+    bankedBoltTips += controller.getInventoryItemCount(pearlTipsId);
     for (int i : controller.getInventoryItemIds()) {
-      if (i != netId) {
+      if (i != netId && i != chiselId) {
         controller.depositItem(i, controller.getInventoryItemCount(i));
         while (controller.getInventoryItemCount(i) > 0
             && controller.isRunning()
             && controller.isLoggedIn()) controller.sleep(640);
       }
     }
-    // Withdraw a net if not already held or give an error if no net is found.
-    if (controller.getInventoryItemCount(netId) < 1) {
+    // Withdraw a net and chisel if not already held or give an error if they're not found.
+    if (controller.getInventoryItemCount(netId) < 1
+        || controller.getInventoryItemCount(chiselId) < 1) {
       if (controller.getBankItemCount(netId) < 1) {
         controller.log("You are missing a big net.", "red");
         controller.stop();
       } else {
         controller.withdrawItem(netId, 1);
+        controller.sleep(640);
+      }
+      if (controller.getBankItemCount(chiselId) < 1) {
+        controller.log("You are missing a chisel.", "red");
+        controller.stop();
+      } else {
+        controller.withdrawItem(chiselId, 1);
+        controller.sleep(640);
       }
     }
 
@@ -168,13 +214,10 @@ public class CasketFisher extends IdleScript {
     Arrays.sort(toSortY);
     int[][] sortedRectangle = {{toSortX[0], toSortY[0]}, {toSortX[1], toSortY[1]}};
 
-    if (controller.currentX() >= sortedRectangle[0][0]
+    return controller.currentX() >= sortedRectangle[0][0]
         && controller.currentX() <= sortedRectangle[1][0]
         && controller.currentY() >= sortedRectangle[0][1]
-        && controller.currentY() <= sortedRectangle[1][1]) {
-      return true;
-    }
-    return false;
+        && controller.currentY() <= sortedRectangle[1][1];
   }
 
   @Override
@@ -182,6 +225,7 @@ public class CasketFisher extends IdleScript {
     if (controller != null) {
 
       casketAmount = bankedCaskets + controller.getInventoryItemCount(casketId);
+      tipAmount = bankedBoltTips + controller.getInventoryItemCount(pearlTipsId);
 
       paintBuilder.setBorderColor(0xBD93F9);
       paintBuilder.setBackgroundColor(0x282A36, 255);
@@ -206,6 +250,17 @@ public class CasketFisher extends IdleScript {
               new int[] {paintColors[2], 0x00ff00},
               new int[] {36, 52},
               16));
+      paintBuilder.addRow(
+          rowBuilder.singleSpriteMultipleStringRow(
+              pearlTipsId,
+              80,
+              25,
+              new String[] {
+                paintBuilder.stringFormatInt(tipAmount), paintBuilder.stringAmountPerHour(tipAmount)
+              },
+              new int[] {paintColors[2], 0x00ff00},
+              new int[] {31, 52},
+              12));
       paintBuilder.draw();
     }
   }

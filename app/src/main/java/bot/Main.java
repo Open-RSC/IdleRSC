@@ -33,7 +33,9 @@ import java.util.stream.Stream;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 import listeners.LoginListener;
 import listeners.WindowListener;
@@ -929,16 +931,42 @@ public class Main {
             return false;
           }
         };
+
+    JTableHeader header = scriptTable.getTableHeader();
+    header.setDefaultRenderer(
+        new DefaultTableCellRenderer() {
+
+          @Override
+          public Component getTableCellRendererComponent(
+              JTable table,
+              Object value,
+              boolean isSelected,
+              boolean hasFocus,
+              int row,
+              int column) {
+
+            JLabel label =
+                (JLabel)
+                    super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
+
+            label.setBorder(
+                BorderFactory.createMatteBorder(
+                    0, 0, 0, column == 0 ? 1 : 0, UIManager.getColor("controlDkShadow")));
+
+            label.setFont(header.getFont().deriveFont(Font.BOLD, 15f));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+
+            return label;
+          }
+        });
+    ;
+
     scriptTable.setSelectionMode(
         ListSelectionModel.SINGLE_SELECTION); // Only allow single row selected at a time
     scriptTable.setAutoCreateRowSorter(true); // Automatically create a table row sorter
-    scriptTable.getTableHeader().setReorderingAllowed(false); // Disable reordering columns
-    scriptTable.getTableHeader().setResizingAllowed(false); // Disable resizing columns
-    scriptTable
-        .getTableHeader()
-        .setFont(scriptTable.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
-    scriptTable.setBorder(BorderFactory.createEmptyBorder());
-
+    header.setReorderingAllowed(false); // Disable reordering columns
+    header.setResizingAllowed(false); // Disable resizing columns
     final JScrollPane scriptScroller = new JScrollPane(scriptTable);
 
     // Setup script args field
@@ -1013,6 +1041,37 @@ public class Main {
 
     // Setup layout
     scriptFrame.setLayout(new BoxLayout(scriptFrame.getContentPane(), BoxLayout.Y_AXIS));
+    scriptFrame.setResizable(false);
+
+    // Script selector theme coloring
+
+    // Frame theming
+    scriptFrame.getContentPane().setBackground(getThemeBackColor());
+    scriptFrame.getContentPane().setForeground(getThemeTextColor());
+
+    // Script table theming
+    header.setBorder(
+        BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("controlDkShadow")));
+    scriptTable.setBackground(getThemeBackColor().brighter());
+    scriptTable.setForeground(getThemeTextColor());
+    scriptScroller.setBorder(BorderFactory.createEmptyBorder());
+    scriptScroller.setBackground(getThemeBackColor().brighter());
+    scriptScroller.setForeground(getThemeTextColor());
+    scriptScroller.getViewport().setBackground(getThemeBackColor().brighter());
+
+    // Text box theming
+    scriptArgs.setBorder(BorderFactory.createMatteBorder(4, 0, 4, 0, getThemeBackColor()));
+    scriptArgs.setBackground(getThemeBackColor().brighter());
+    scriptArgs.setForeground(getThemeTextColor());
+    scriptFilter.setBorder(BorderFactory.createMatteBorder(4, 0, 4, 0, getThemeBackColor()));
+    scriptFilter.setBackground(getThemeBackColor().brighter());
+    scriptFilter.setForeground(getThemeTextColor());
+
+    // Run button theming
+    scriptButton.setBackground(getThemeBackColor().darker());
+    scriptButton.setForeground(getThemeTextColor());
+
+    // Add components to frame
     scriptFrame.add(scriptFilter);
     scriptFrame.add(scriptScroller);
     scriptFrame.add(scriptArgs);
@@ -1033,7 +1092,7 @@ public class Main {
           }
 
           textField.setText("");
-          textField.setForeground(Color.BLACK);
+          textField.setForeground(getThemeTextColor());
           shouldFilter = true;
         }
       }

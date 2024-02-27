@@ -5870,6 +5870,22 @@ public class Controller {
   }
 
   /**
+   * Returns the amount of quest points the player has.
+   *
+   * @return int
+   */
+  public int getQuestPoints() {
+    try {
+      Field f = mud.getClass().getDeclaredField("questPoints");
+      f.setAccessible(true);
+      return (int) f.get(mud);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return -1;
+    }
+  }
+
+  /**
    * Adds a friend to the user's friend list.
    *
    * @param username the username of the friend to be added

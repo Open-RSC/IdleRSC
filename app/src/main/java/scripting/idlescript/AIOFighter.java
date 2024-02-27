@@ -123,7 +123,7 @@ public class AIOFighter extends IdleScript {
 
         if (!isWithinWander(c.currentX(), c.currentY())) {
           c.setStatus("@red@Out of range! Walking back.");
-          c.walkTo(startTile[0], startTile[1], 0, true);
+          c.walkTo(startTile[0], startTile[1], 0, true, true);
         }
         if (openDoors) {
           for (int doorId : doorObjectIds) {
@@ -144,7 +144,7 @@ public class AIOFighter extends IdleScript {
 
         if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth) {
           c.setStatus("@red@Eating food");
-          c.walkTo(c.currentX(), c.currentY(), 0, true);
+          c.walkTo(c.currentX(), c.currentY(), 0, true, true);
 
           boolean ate = false;
 

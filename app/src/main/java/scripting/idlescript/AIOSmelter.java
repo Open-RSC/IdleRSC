@@ -138,7 +138,7 @@ public class AIOSmelter extends IdleScript {
 
   public int start(String[] parameters) {
     // c.quitIfAuthentic();
-    c.setBatchBarsOn();
+    if (!c.isAuthentic()) c.setBatchBars(true);
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -193,11 +193,11 @@ public class AIOSmelter extends IdleScript {
         if (c.getNearestObjectById(118) == null) {
           c.setStatus("Walking to furnace..");
           if (destinationId == 0) {
-            c.walkTo(318, 551, 0, true);
-            c.walkTo(311, 545, 0, true);
+            c.walkTo(318, 551, 0, true, false);
+            c.walkTo(311, 545, 0, true, false);
           }
           if (destinationId == 1) {
-            c.walkTo(84, 679, 0, true);
+            c.walkTo(84, 679, 0, true, false);
           }
         }
         Iterator<Entry<Integer, Integer>> iterator = ingredients.entrySet().iterator();
@@ -262,11 +262,11 @@ public class AIOSmelter extends IdleScript {
       } else {
         c.setStatus("Banking..");
         if (destinationId == 0) {
-          c.walkTo(318, 551, 0, true);
-          c.walkTo(329, 553, 0, true);
+          c.walkTo(318, 551, 0, true, false);
+          c.walkTo(329, 553, 0, true, false);
         }
         if (destinationId == 1) {
-          c.walkTo(87, 694, 0, true);
+          c.walkTo(87, 694, 0, true, false);
         }
         bank();
       }

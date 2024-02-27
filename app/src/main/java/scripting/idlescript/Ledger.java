@@ -183,7 +183,7 @@ public class Ledger extends IdleScript {
     if (controller.getCurrentStat(controller.getStatId("Hits"))
         <= (controller.getBaseStat(controller.getStatId("Hits")) / 2)) {
       controller.setStatus("@red@Eating food");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
 
       boolean ate = false;
 

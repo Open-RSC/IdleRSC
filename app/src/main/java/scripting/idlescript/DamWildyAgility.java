@@ -156,7 +156,7 @@ public class DamWildyAgility extends IdleScript {
   public void bankToCourse() {}
 
   public void avoidCombat() {
-    controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+    controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
     controller.sleep(400);
   }
 
@@ -197,42 +197,42 @@ public class DamWildyAgility extends IdleScript {
   public void leaveCombat() {
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
     if (controller.isInCombat()) {
       controller.setStatus("@red@Leaving combat..");
-      controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+      controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
       controller.sleep(800);
     }
   }

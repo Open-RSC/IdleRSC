@@ -101,7 +101,7 @@ public class BotController {
     public void walkTo(MapPoint mapPoint) {
       debug("Walking to " + mapPoint);
       debug("Current location: " + getCurrentLocation());
-      controller.walkTo(mapPoint.getX(), mapPoint.getY(), 0, true);
+      controller.walkTo(mapPoint.getX(), mapPoint.getY(), 0, true, false);
     }
 
     public boolean isInventoryFull() {

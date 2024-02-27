@@ -184,7 +184,7 @@ public final class K_Paladins extends K_kailaScript {
     while (c.isRunning()) {
       if (c.getNeedToMove()) c.moveCharacter();
       if (c.getShouldSleep()) c.sleepHandler(true);
-      leaveCombat();
+      if (c.isInCombat()) leaveCombat();
       if (!eatFood()) {
         c.setStatus("@gre@We've ran out of Food! Banking!.");
         paladinsToBank(true);

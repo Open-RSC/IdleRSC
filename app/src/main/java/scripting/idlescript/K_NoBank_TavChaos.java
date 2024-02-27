@@ -253,10 +253,6 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
         if (c.currentY() > 550 && c.currentY() < 3000) {
           doHerblawLoop();
           hobsToChaos();
-          if (getNewtSecCount() > 0) { // || c.getInventoryItemCount(ItemId.EYE_OF_NEWT.getId()) < 5
-            buyMoreNewts();
-            doHerblawLoop();
-          }
         } else if (c.currentY() > 450 && c.currentY() < 550) shopToChaos();
       }
       _combatLoop(270, cleanedDruidLoot);
@@ -565,6 +561,9 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       c.walkTo(372, 3320);
       c.walkTo(362, 3320);
       c.walkTo(352, 3320);
+    } else {
+      buyMoreNewts();
+      doHerblawLoop();
     }
   }
 
@@ -586,8 +585,7 @@ public final class K_NoBank_TavChaos extends K_kailaScript {
       c.waitForBatching(false);
       c.walkTo(347, 1547);
       c.sleep(640);
-      c.itemCommand(ItemId.CRAFTING_CAPE.getId());
-      c.sleep(2000);
+      teleportCraftCape();
     }
     if ((getLimpSecCount() + getSnapeSecCount()) > 0) {
       c.walkTo(340, 598);

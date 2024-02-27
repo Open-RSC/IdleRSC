@@ -21,6 +21,7 @@ public class AIOAIO_State {
 
   // --- Woodcutting state variables --- \\
   public boolean hasAxeInBank = true; // Bot will set this to false if needed
-  public int treeId = 0;
-  public int[] treeLocation = new int[2];
+
+  // --- Mining state variables --- \\
+  public boolean hasPickInBank = true; // Bot will set this to false if needed
 }

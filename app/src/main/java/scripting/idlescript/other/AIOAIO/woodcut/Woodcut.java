@@ -74,6 +74,8 @@ public class Woodcut {
     c.setStatus("Chopping tree");
     int[] treeCoords = c.getNearestReachableObjectById(getTreeId(), true);
     c.atObject(treeCoords[0], treeCoords[1]);
+    c.sleepUntilMoving(1200);
+    c.sleepUntilNotMoving(15000);
     return 1200;
   }
 

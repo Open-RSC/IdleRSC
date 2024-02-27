@@ -2,6 +2,7 @@ package controller.WebWalker;
 
 import bot.Main;
 import models.entities.NpcId;
+import models.entities.SceneryId;
 import orsc.ORSCharacter;
 
 public class CustomLabelHandlers {
@@ -79,7 +80,18 @@ public class CustomLabelHandlers {
 
   public static boolean southFallyTavGate() {
     boolean goingNorth = Main.getController().currentY() >= 581;
+    if (!goingNorth) {
+      // idk, it's finnicky
+      Main.getController().walkTo(343, 580);
+      Main.getController()
+          .sleepUntil(
+              () ->
+                  Main.getController().currentX() == 343 && Main.getController().currentY() == 580,
+              10000);
+    }
+    Main.getController().log("Handling South Fally Gate.. Going North? " + goingNorth);
     Main.getController().atObject(343, 581);
+    Main.getController().log("Finished clicking object at 343, 581");
     Main.getController()
         .sleepUntil(
             () ->
@@ -175,5 +187,105 @@ public class CustomLabelHandlers {
     return goingNorth
         ? Main.getController().currentY() <= 485
         : Main.getController().currentY() >= 486;
+  }
+
+  public static boolean dwarvenMineFaladorEntrance() {
+    boolean goingIntoMines = Main.getController().currentY() <= 600;
+    if (goingIntoMines) {
+      Main.getController().log("Going into Dwarven Mines");
+      Main.getController().atObject(251, 537);
+    } else {
+      Main.getController().log("Going out of Dwarven Mines");
+      Main.getController().atObject(251, 3369);
+    }
+    Main.getController().sleep(1000);
+    return goingIntoMines
+        ? Main.getController().currentY() >= 600
+        : Main.getController().currentY() <= 600;
+  }
+
+  public static boolean dwarvenMineCannonEntrance() {
+    boolean goingIntoMines = Main.getController().currentY() <= 600;
+    if (goingIntoMines) {
+      Main.getController().log("Going into Dwarven Mines");
+      Main.getController().atObject(279, 494);
+    } else {
+      Main.getController().log("Going out of Dwarven Mines");
+      Main.getController().atObject(279, 3326);
+    }
+    Main.getController().sleep(1000);
+    return goingIntoMines
+        ? Main.getController().currentY() >= 600
+        : Main.getController().currentY() <= 600;
+  }
+
+  public static boolean digsiteGate() {
+    boolean goingEast = Main.getController().currentX() >= 59;
+    Main.getController().atObject(59, 573);
+    Main.getController()
+        .sleepUntil(
+            () ->
+                goingEast
+                    ? Main.getController().currentX() < 59
+                    : Main.getController().currentX() >= 59,
+            8000);
+    return goingEast ? Main.getController().currentX() < 59 : Main.getController().currentX() >= 59;
+  }
+
+  public static boolean gnomeTreeGate() {
+    boolean goingNorth = Main.getController().currentY() >= 532;
+    Main.getController().atObject(703, 531);
+    Main.getController()
+        .sleepUntil(
+            () ->
+                goingNorth
+                    ? Main.getController().currentY() <= 531
+                    : Main.getController().currentY() >= 532
+                        || Main.getController().isInOptionMenu(),
+            12000);
+    if (Main.getController().isInOptionMenu()) {
+      Main.getController().log("Handling first time entrance to Gnome Tree...");
+      Main.getController()
+          .sleepUntil(() -> Main.getController().getOptionsMenuText(1).contains("ok then"), 12000);
+      Main.getController().optionAnswer(1);
+      Main.getController().atObject(703, 531);
+      Main.getController().sleepUntil(() -> Main.getController().currentY() <= 531, 12000);
+    }
+    return goingNorth
+        ? Main.getController().currentY() <= 531
+        : Main.getController().currentY() >= 532;
+  }
+
+  public static boolean gnomeAgilityClimbFirstNet() {
+    // Only have to worry about one-way because the path weights are setup such that
+    // it's always easier to continue down the course than to try and go back
+    Main.getController().atObject(SceneryId.NET_GNOME_COURSE_START);
+    Main.getController().sleepUntilGainedXp();
+    Main.getController().sleep(680);
+    return true;
+  }
+
+  public static boolean gnomeAgilityClimbTower() {
+    Main.getController().atObject(SceneryId.WATCH_TOWER_GNOME_COURSE_1ST_F);
+    Main.getController()
+        .sleepUntil(
+            () -> Main.getController().currentX() == 693 && Main.getController().currentY() == 2394,
+            2000);
+    Main.getController().sleep(680);
+    return true;
+  }
+
+  public static boolean gnomeAgilityRopeSwing() {
+    Main.getController().atObject(SceneryId.ROPESWING_GNOME_COURSE);
+    Main.getController().sleepUntilGainedXp();
+    Main.getController().sleep(680);
+    return true;
+  }
+
+  public static boolean gnomeAgilityClimbDownTower() {
+    Main.getController().atObject(SceneryId.WATCH_TOWER_GNOME_COURSE_2ND_F);
+    Main.getController().sleepUntilGainedXp();
+    Main.getController().sleep(680);
+    return true;
   }
 }

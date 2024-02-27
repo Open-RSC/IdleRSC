@@ -114,7 +114,7 @@ public class Fish {
   }
 
   private static int getCoinsFromBank() {
-    if (!AIOAIO_Script_Utils.towardsGetFromBank(ItemId.COINS, 405)) {
+    if (!AIOAIO_Script_Utils.towardsGetFromBank(ItemId.COINS, 1405)) {
       Main.getController().log("Legit too poor to fish.. Skipping task");
       AIOAIO.state.endTime = System.currentTimeMillis();
     }

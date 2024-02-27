@@ -93,7 +93,6 @@ public class WebWalker {
     }
     Main.getController()
         .log(
-            "webwalkTowards",
             "Path calculated in "
                 + (System.currentTimeMillis() - startTime)
                 + "ms: "
@@ -183,6 +182,8 @@ public class WebWalker {
       case "alkharidGate":
         return Main.getController().isQuestComplete(9)
             || Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 10;
+      case "miningGuildDoor":
+        return Main.getController().getCurrentStat(Main.getController().getStatId("Mining")) >= 60;
       default:
         return true;
     }
@@ -210,6 +211,22 @@ public class WebWalker {
         return CustomLabelHandlers.gerrantHouseDoor();
       case "catherbyChefDoor":
         return CustomLabelHandlers.catherbyChefDoor();
+      case "dwarvenMineFaladorEntrance":
+        return CustomLabelHandlers.dwarvenMineFaladorEntrance();
+      case "dwarvenMineCannonEntrance":
+        return CustomLabelHandlers.dwarvenMineCannonEntrance();
+      case "digsiteGate":
+        return CustomLabelHandlers.digsiteGate();
+      case "gnomeTreeGate":
+        return CustomLabelHandlers.gnomeTreeGate();
+      case "gnomeAgilityClimbFirstNet":
+        return CustomLabelHandlers.gnomeAgilityClimbFirstNet();
+      case "gnomeAgilityClimbTower":
+        return CustomLabelHandlers.gnomeAgilityClimbTower();
+      case "gnomeAgilityRopeSwing":
+        return CustomLabelHandlers.gnomeAgilityRopeSwing();
+      case "gnomeAgilityClimbDownTower":
+        return CustomLabelHandlers.gnomeAgilityClimbDownTower();
       default:
         Main.getController().log("Missing function for label: " + label);
         return false;

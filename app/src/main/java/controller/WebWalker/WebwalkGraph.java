@@ -85,7 +85,13 @@ public class WebwalkGraph {
           || current.getX() >= 900
           || current.getY() < 0
           || current.getY() >= 4050
+          // Check if the node is walkable, unless we're already on it
+          // The walkable datamap is outdated/not accurate. This check is needed so that
+          // if we're starting on a node that is actually walkable but the map thinks
+          // it's not walkable, the algorithm pretends it is walkable and continues
           || walkable[current.getX()][current.getY()] == 0
+              && (Main.getController().currentX() != current.getX()
+                  || Main.getController().currentY() != current.getY())
           || visited.contains(current)) continue;
       if (adjacencyList.containsKey(current)) {
         // Main.getController().log("Closest node to " + x + "," + y + " is " +

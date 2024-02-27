@@ -856,6 +856,35 @@ public class Controller {
   }
 
   /**
+   * Retrieves the coordinates of the nearest specified objects by their IDs, if any are nearby and
+   * reachable.
+   *
+   * @param objectIds The array of IDs of the objects to find.
+   * @param includeTileEdges -- whether or not the edges of the tile are permitted.
+   * @return int[] The coordinates [x, y] of the nearest reachable object among the given IDs, or
+   *     null if no such objects are nearby and reachable.
+   */
+  public int[] getNearestReachableObjectByIds(int[] objectIds, boolean includeTileEdges) {
+    Main.logMethod("getNearestReachableObjectByIds", objectIds);
+    int[] closestCoords = null;
+    int closestDistance = 99999;
+
+    for (int objectId : objectIds) {
+      for (int[] objCoords : getObjectsById(objectId)) {
+        if (isReachable(objCoords[0], objCoords[1], includeTileEdges)) {
+          int dist = distance(this.currentX(), this.currentY(), objCoords[0], objCoords[1]);
+          if (dist < closestDistance) {
+            closestDistance = dist;
+            closestCoords = objCoords;
+          }
+        }
+      }
+    }
+
+    return closestCoords; // Returns null if no reachable objects are nearby among the given IDs
+  }
+
+  /**
    * Retrieves all the coordinates of the nearby object ID
    *
    * <p>This method returns an array of coordinate pairs for each instance of the object with the
@@ -2342,7 +2371,7 @@ public class Controller {
    * Retrieves the text of the specified option index when talking to an NPC or performing an
    * action.
    *
-   * @param i int
+   * @param i zero-indexed option (i.e first option is 0, second option is 1, etc..)
    * @return String -- null if option does not exist, or if quest menu is not up.
    */
   public String getOptionsMenuText(int i) {

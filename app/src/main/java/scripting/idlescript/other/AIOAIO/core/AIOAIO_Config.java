@@ -20,6 +20,7 @@ import scripting.idlescript.other.AIOAIO.combat.JailGuard;
 import scripting.idlescript.other.AIOAIO.cooking.Cook;
 import scripting.idlescript.other.AIOAIO.fishing.Fish;
 import scripting.idlescript.other.AIOAIO.fletching.Fletch;
+import scripting.idlescript.other.AIOAIO.mining.Mine;
 import scripting.idlescript.other.AIOAIO.thieving.AlKharidMan;
 import scripting.idlescript.other.AIOAIO.woodcut.Woodcut;
 
@@ -104,6 +105,21 @@ public class AIOAIO_Config {
                     new AIOAIO_Task("Salmon", true, Fish::run),
                     new AIOAIO_Task("Lobster", true, Fish::run),
                     new AIOAIO_Task("Shark", false, Fish::run))),
+            new AIOAIO_Skill(
+                "Mining",
+                true,
+                Arrays.asList(
+                    new AIOAIO_Task("Clay", false, Mine::run),
+                    new AIOAIO_Task("Copper ore", true, Mine::run),
+                    new AIOAIO_Task("Tin ore", true, Mine::run),
+                    new AIOAIO_Task("Iron ore", true, Mine::run),
+                    new AIOAIO_Task("Silver ore", true, Mine::run),
+                    new AIOAIO_Task("Coal ore", true, Mine::run),
+                    new AIOAIO_Task("Gold ore", false, Mine::run),
+                    new AIOAIO_Task("Gem", true, Mine::run),
+                    new AIOAIO_Task("Mithril ore", true, Mine::run),
+                    new AIOAIO_Task("Adamantite ore", false, Mine::run),
+                    new AIOAIO_Task("Runite ore", false, Mine::run))),
             new AIOAIO_Skill(
                 "Agility",
                 true,

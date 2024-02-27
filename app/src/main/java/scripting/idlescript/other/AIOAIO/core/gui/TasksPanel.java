@@ -1,6 +1,7 @@
 package scripting.idlescript.other.AIOAIO.core.gui;
 
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import scripting.idlescript.other.AIOAIO.core.AIOAIO_Skill;
 import scripting.idlescript.other.AIOAIO.core.AIOAIO_Task;
@@ -9,57 +10,71 @@ public class TasksPanel extends JPanel {
   private JList<AIOAIO_Skill> skillList;
   private DefaultListModel<AIOAIO_Skill> skillListModel;
   private JButton enableDisableSkillButton;
+  private JPanel scrollablePanel; // Panel to hold tasks, making them scrollable
 
   public TasksPanel(JList<AIOAIO_Skill> skillList, DefaultListModel<AIOAIO_Skill> skillListModel) {
     this.skillList = skillList;
     this.skillListModel = skillListModel;
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setPreferredSize(new Dimension(200, 100));
-    // Initialize and add the enable/disable button here
-    enableDisableSkillButton = new JButton();
-    enableDisableSkillButton.setAlignmentX(LEFT_ALIGNMENT); // Align button to the left
-    add(enableDisableSkillButton); // Add the button to ensure it's always at the top left
-    updatePanel();
-  }
 
-  public void updatePanel() {
-    removeAll(); // Remove all components including the enable/disable button
-
-    // Re-add the enable/disable button to ensure it's always at the top left
     enableDisableSkillButton = new JButton();
     enableDisableSkillButton.setAlignmentX(LEFT_ALIGNMENT);
     add(enableDisableSkillButton);
 
+    // Initialize scrollablePanel and wrap it in a JScrollPane
+    scrollablePanel = new JPanel();
+    scrollablePanel.setLayout(new BoxLayout(scrollablePanel, BoxLayout.Y_AXIS));
+    JScrollPane scrollPane = new JScrollPane(scrollablePanel);
+    scrollPane.setPreferredSize(new Dimension(200, 100));
+    scrollPane.setAlignmentX(LEFT_ALIGNMENT);
+    add(scrollPane); // Add the JScrollPane to the TasksPanel
+
+    updatePanel();
+  }
+
+  public void updatePanel() {
+    scrollablePanel.removeAll(); // Clear previous task checkboxes
+
     AIOAIO_Skill selectedSkill = skillList.getSelectedValue();
-    if (selectedSkill == null) {
-      revalidate();
-      repaint();
-      return;
-    }
+    if (selectedSkill != null) {
+      // Update the button text based on the selected skill's status
+      enableDisableSkillButton.setText(selectedSkill.isEnabled() ? "Disable" : "Enable");
 
-    // Update the button text and action listener
-    enableDisableSkillButton.setText(selectedSkill.isEnabled() ? "Disable" : "Enable");
-    enableDisableSkillButton.addActionListener(
-        e -> {
-          if (selectedSkill != null) {
-            selectedSkill.setEnabled(!selectedSkill.isEnabled());
-            skillListModel.setElementAt(selectedSkill, skillList.getSelectedIndex());
-            updatePanel(); // Recursively update the panel to reflect changes
-          }
-        });
+      // Remove all action listeners from the button to prevent action listener
+      // stacking
+      ActionListener[] listeners = enableDisableSkillButton.getActionListeners();
+      for (ActionListener listener : listeners) {
+        enableDisableSkillButton.removeActionListener(listener);
+      }
 
-    for (AIOAIO_Task task : selectedSkill.getTasks()) {
-      JCheckBox checkBox = new JCheckBox(task.getName(), task.isEnabled());
-      checkBox.setAlignmentX(LEFT_ALIGNMENT); // Align checkboxes to the left
-      checkBox.addActionListener(
+      // Add a new action listener for the enable/disable button
+      enableDisableSkillButton.addActionListener(
           e -> {
-            task.setEnabled(checkBox.isSelected());
-            updatePanel(); // Optionally update the panel if you want immediate visual feedback
+            // Toggle the enable state of the selected skill
+            selectedSkill.setEnabled(!selectedSkill.isEnabled());
+            // Update the model to reflect the change
+            skillListModel.setElementAt(selectedSkill, skillList.getSelectedIndex());
+            // Recursively update the panel to reflect changes
+            updatePanel();
           });
-      add(checkBox);
+
+      // Loop through tasks of the selected skill and add them to the panel
+      for (AIOAIO_Task task : selectedSkill.getTasks()) {
+        JCheckBox checkBox = new JCheckBox(task.getName(), task.isEnabled());
+        checkBox.setAlignmentX(LEFT_ALIGNMENT);
+        checkBox.addActionListener(
+            e -> {
+              // Toggle the enable state of the task
+              task.setEnabled(checkBox.isSelected());
+              // Optionally update the panel for immediate visual feedback
+              updatePanel();
+            });
+        scrollablePanel.add(checkBox); // Add checkboxes to the scrollable panel
+      }
     }
 
-    revalidate();
-    repaint();
+    scrollablePanel.revalidate();
+    scrollablePanel.repaint();
   }
 }

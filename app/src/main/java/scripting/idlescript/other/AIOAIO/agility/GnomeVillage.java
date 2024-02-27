@@ -20,8 +20,9 @@ public class GnomeVillage {
       c.sleepUntilGainedXp();
     } else if (c.distanceTo(692, 1448) <= 5) {
       c.atObject(SceneryId.WATCH_TOWER_GNOME_COURSE_1ST_F);
-      c.sleepUntilGainedXp();
-      c.sleep(680);
+      c.sleepUntil(
+          () -> Main.getController().currentX() == 693 && Main.getController().currentY() == 2394,
+          2000);
     } else if (c.distanceTo(693, 2394) <= 3) {
       c.atObject(SceneryId.ROPESWING_GNOME_COURSE);
       c.sleepUntilGainedXp();
@@ -35,13 +36,13 @@ public class GnomeVillage {
     } else if (c.distanceTo(683, 501) <= 5) {
       c.atObject(SceneryId.PIPE_GNOME_COURSE);
       c.sleepUntilGainedXp();
-      c.sleep(1250);
+      c.sleep(620);
     } else {
       c.atObject(SceneryId.LOG_GNOME_COURSE);
       // Default - Cross the log
       c.sleepUntilGainedXp();
     }
-    return 50;
+    return 680;
   }
 
   private static boolean isInsideGnomeAgilityArena() {

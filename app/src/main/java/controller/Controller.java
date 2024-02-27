@@ -642,23 +642,36 @@ public class Controller {
    * @param y int
    */
   public void walkTo(int x, int y) {
-    walkTo(x, y, 0, true);
+    walkTo(x, y, 0, true, true);
   }
 
   /**
    * Walks to the specified tile, does not return until at tile or within tile radius, in combat, or
-   * a long timeout is reached
+   * a long timeout is reached. Note: when walking to the same tile as current tile the walkTo will
+   * not be called. If walking to same tile to leaving combat, ensure leaveCombat boolean is true.
    *
    * @param x int
    * @param y int
    * @param radius int
-   * @param unused boolean
+   * @param leaveCombat boolean - true if bot should keep trying walkTo while in combat
+   * @param forced boolean - true if attempt to walkTo should be made reguardless of conditions
    */
-  public void walkTo(int x, int y, int radius, boolean unused) {
+  public void walkTo(int x, int y, int radius, boolean forced, boolean leaveCombat) {
     if (x < 0 || y < 0) return;
     if (currentX() == 0 && currentY() == 0) return; // Not logged in yet
 
     Main.logMethod("WalkTo", x, y, radius);
+
+    if (forced) {
+      walkToActionSource(
+          mud,
+          mud.getLocalPlayerX(),
+          mud.getLocalPlayerZ(),
+          x - mud.getMidRegionBaseX(),
+          y - mud.getMidRegionBaseZ(),
+          false);
+      sleep(640);
+    }
 
     int timeout = 60_000;
     long starttime = System.currentTimeMillis();
@@ -666,8 +679,9 @@ public class Controller {
             || (currentX() > x + radius)
             || (currentY() < y - radius)
             || (currentY() > y + radius))
-        && Main.isRunning()
-        && System.currentTimeMillis() < starttime + timeout) {
+        || (leaveCombat && isInCombat())
+            && Main.isRunning()
+            && System.currentTimeMillis() < starttime + timeout) {
 
       int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
@@ -684,7 +698,7 @@ public class Controller {
         if (distanceTo(x, y) <= 5 || isInCombat()) break;
         sleep(1000);
       }
-      sleep(1250);
+      sleep(1280);
     }
 
     if (System.currentTimeMillis() >= starttime + timeout) {
@@ -1505,7 +1519,7 @@ public class Controller {
       int npcX = (npc.currentX - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
       int npcZ = (npc.currentZ - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
 
-      walkTo(npcX, npcZ, radius, true);
+      walkTo(npcX, npcZ, radius, true, true);
     }
   }
 
@@ -2006,7 +2020,7 @@ public class Controller {
 
     Main.logMethod("pickupItem calling walkTo...", x, y);
     if (async) this.walkToAsync(x, y, 0);
-    else this.walkTo(x, y, 0, false);
+    else this.walkTo(x, y, 0, false, true);
 
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(247);

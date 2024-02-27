@@ -235,7 +235,7 @@ public class Wildberries extends IdleScript {
     for (int i = 1; i <= 15; i++) {
       if (controller.isInCombat()) {
         controller.setStatus("@red@Leaving combat..");
-        controller.walkTo(controller.currentX(), controller.currentY(), 0, true);
+        controller.walkTo(controller.currentX(), controller.currentY(), 0, true, true);
         controller.sleep(600);
       } else {
         controller.setStatus("@red@Done Leaving combat..");

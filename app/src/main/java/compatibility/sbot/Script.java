@@ -363,7 +363,7 @@ public abstract class Script {
    */
   public void ForceWalk(int x, int y) {
     Main.logMethod("ForceWalk", x, y);
-    controller.walkTo(x, y, 0, true);
+    controller.walkTo(x, y, 0, true, true);
   }
   /**
    * Walks to the specified tile, and does not give up until it is there -- asynchronous.
@@ -427,7 +427,7 @@ public abstract class Script {
    */
   public void Walk(int x, int y) {
     Main.logMethod("Walk", x, y);
-    controller.walkTo(x, y, 0, false);
+    controller.walkTo(x, y, 0, false, false);
   }
   /**
    * Some hacky SBot method for walking to a tile involving wait -- not recommended for use.

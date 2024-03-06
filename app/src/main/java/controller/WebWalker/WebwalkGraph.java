@@ -107,9 +107,15 @@ public class WebwalkGraph {
       }
     }
 
-    Main.getController().log("Could not find closest node to " + x + "," + y);
-    cache.put(cacheKey, null);
-    return null;
+    Main.getController()
+        .log(
+            "Can't find the closest walkable node to "
+                + x
+                + ", "
+                + y
+                + ", using Euclidean closest.");
+    cache.put(cacheKey, findClosestNodeEuclidian(x, y));
+    return cache.get(cacheKey);
   }
 
   // Method to get an edge between two nodes, if it exists

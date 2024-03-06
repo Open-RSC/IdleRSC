@@ -675,16 +675,20 @@ public class Controller {
 
     int timeout = 60_000;
     long starttime = System.currentTimeMillis();
-    while (((currentX() < x - radius)
-            || (currentX() > x + radius)
-            || (currentY() < y - radius)
-            || (currentY() > y + radius))
-        || (leaveCombat && isInCombat())
-            && Main.isRunning()
-            && System.currentTimeMillis() < starttime + timeout) {
+    while ((((currentX() < x - radius)
+                || (currentX() > x + radius)
+                || (currentY() < y - radius)
+                || (currentY() > y + radius))
+            || leaveCombat && isInCombat())
+        && Main.isRunning()
+        && System.currentTimeMillis() < starttime + timeout) {
 
       int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
+      // System.out.println(
+      // "Tryng to walk, time remaining: "
+      // + (timeout - (System.currentTimeMillis() - starttime))
+      // + " ms");
       walkToActionSource(
           mud,
           mud.getLocalPlayerX(),

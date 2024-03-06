@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import models.entities.ItemId;
 import models.entities.NpcId;
 import orsc.ORSCharacter;
+import scripting.idlescript.other.AIOAIO.AIOAIO;
+import scripting.idlescript.other.AIOAIO.AIOAIO_Script_Utils;
 import scripting.idlescript.other.AIOAIO.combat.Combat_Utils;
 
 public class AlKharidMan {
@@ -16,20 +18,27 @@ public class AlKharidMan {
     c = Main.getController();
     c.setBatchBarsOn();
 
+    if (AIOAIO.state.taskStartup && c.getInventoryItemCount() <= 0) {
+      AIOAIO.state.taskStartup = false;
+    }
+    if (AIOAIO.state.taskStartup) {
+      AIOAIO_Script_Utils.towardsDepositAll();
+    }
+
     if (inCabbageField() && c.getInventoryItemCount() <= 20) pickCabbage();
     else if (goingToCabbages || Combat_Utils.needToEat() && !Combat_Utils.hasFood()) goToCabbages();
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) {
-      c.setStatus("Getting out of combat");
+      AIOAIO.state.status = ("Getting out of combat");
       c.walkToAsync(c.currentX(), c.currentY(), 0);
       c.sleep(600);
     } else if (c.getNearestNpcById(NpcId.MAN_ALKHARID.getId(), false) == null) findAlkharidMen();
     else {
-      Main.getController().setStatus("@yel@Thieving Man");
+      AIOAIO.state.status = ("@yel@Thieving Man");
       ORSCharacter npc = Main.getController().getNearestNpcById(NpcId.MAN_ALKHARID.getId(), false);
       if (npc == null) {
 
-        Main.getController().setStatus("@yel@Can't find nobody :c");
+        AIOAIO.state.status = ("@yel@Can't find nobody :c");
         return 50;
       }
       Main.getController().thieveNpc(npc.serverIndex);
@@ -44,7 +53,7 @@ public class AlKharidMan {
     if (ThreadLocalRandom.current().nextInt(0, 25) == 1) {
       eastMen = !eastMen;
     }
-    c.setStatus("Finding " + (eastMen ? "east" : "west") + " Al Kharid Men");
+    AIOAIO.state.status = ("Finding " + (eastMen ? "east" : "west") + " Al Kharid Men");
     c.walkTowards(eastMen ? 61 : 77, 673);
   }
 
@@ -59,7 +68,7 @@ public class AlKharidMan {
   }
 
   private static void pickCabbage() {
-    c.setStatus("Picking cabbage");
+    AIOAIO.state.status = ("Picking cabbage");
     goingToCabbages = false;
     c.pickupItem(ItemId.CABBAGE.getId());
   }

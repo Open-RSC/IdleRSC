@@ -34,10 +34,12 @@ public class Cow {
     else if (Combat_Utils.needToEat() && !Combat_Utils.hasFood()) goToCabbages();
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) c.sleepUntil(() -> !c.isInCombat());
-    else if (c.getNearestNpcById(NpcId.COW_ATTACKABLE.getId(), false) == null) findCows();
+    else if (c.getNearestNpcById(NpcId.COW_ATTACKABLE.getId(), false) == null)
+      findCows(); // Should be changed to getNearestReachableNpc
     // The NPC we want to bop is found at this point
     else if (c.getInventoryItemCount() < 30
-        && c.getNearestItemById(ItemId.BONES.getId(), 5) != null) Combat_Utils.lootBones();
+        && c.getNearestItemById(ItemId.BONES.getId(), 5) != null)
+      Combat_Utils.lootBones(); // Should be changed to getNearestReachableItem
     else Combat_Utils.attackNpc(NpcId.COW_ATTACKABLE);
     return 50;
   }
@@ -52,12 +54,12 @@ public class Cow {
   }
 
   private static void pickCabbage() {
-    c.setStatus("Picking cabbage");
+    AIOAIO.state.status = ("Picking cabbage");
     c.pickupItem(ItemId.CABBAGE.getId());
   }
 
   private static void findCows() {
-    c.setStatus("Finding cows");
+    AIOAIO.state.status = ("Finding cows");
     c.walkTowards(99, 617);
   }
 }

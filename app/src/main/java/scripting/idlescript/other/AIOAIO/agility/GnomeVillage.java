@@ -2,18 +2,29 @@ package scripting.idlescript.other.AIOAIO.agility;
 
 import bot.Main;
 import controller.Controller;
+import models.entities.ItemId;
 import models.entities.SceneryId;
+import scripting.idlescript.other.AIOAIO.AIOAIO;
+import scripting.idlescript.other.AIOAIO.AIOAIO_Script_Utils;
 
 public class GnomeVillage {
   private static Controller c;
 
   public static int run() {
     c = Main.getController();
+    if (Main.getController().getCurrentStat(Main.getController().getStatId("Hits")) <= 20) {
+      c.log(
+          "Aborted Gnome Village because I have below 20hp and probably can't cross White Wolf alive!");
+      AIOAIO.state.endTime = System.currentTimeMillis();
+      return 0;
+    }
     c.setBatchBarsOn();
     System.out.println("Gnome Village run");
 
-    if (!isInsideGnomeAgilityArena()) {
-      c.setStatus("Walking to Gnome Agility Arena");
+    if (c.getInventoryItemCount(ItemId.COINS.getId()) > 100) {
+      AIOAIO_Script_Utils.towardsDepositAll();
+    } else if (!isInsideGnomeAgilityArena()) {
+      AIOAIO.state.status = ("Walking to Gnome Agility Arena");
       c.walkTowards(692, 494);
     } else if (c.distanceTo(692, 499) <= 3) {
       c.atObject(SceneryId.NET_GNOME_COURSE_START);

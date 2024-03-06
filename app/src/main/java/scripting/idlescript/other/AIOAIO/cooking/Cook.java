@@ -19,10 +19,8 @@ public class Cook {
       return 50;
     }
     if (c.isBatching()) return 680; // Wait to finish fishing
-    if (c.getInventoryItemCount(getRawFishId().getId()) <= 0 && c.getInventoryItemCount() == 30)
-      AIOAIO_Script_Utils.towardsDepositAll();
     else if (c.getInventoryItemCount(getRawFishId().getId()) <= 0) {
-      if (!AIOAIO_Script_Utils.towardsGetFromBank(getRawFishId(), 30)) {
+      if (!AIOAIO_Script_Utils.towardsGetFromBank(getRawFishId(), 30, true)) {
         c.log("Not enough " + getRawFishId().name() + " to cook! Skipping task");
         AIOAIO.state.endTime = System.currentTimeMillis();
       }

@@ -2,51 +2,14 @@ package scripting.idlescript.other.AIOAIO.combat;
 
 import bot.Main;
 import controller.Controller;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import models.entities.ItemId;
 import models.entities.NpcId;
 import orsc.ORSCharacter;
 import scripting.idlescript.other.AIOAIO.AIOAIO;
+import scripting.idlescript.other.AIOAIO.AIOAIO_Script_Utils;
 
 public class Combat_Utils {
-  // Melee weapons in Runescape Classic ordered from best -> worst with their
-  // required attack levels
-  static final Map<ItemId, Integer> meleeWeaponsWithLevels = new LinkedHashMap<>();
-
-  static {
-    meleeWeaponsWithLevels.put(ItemId.DRAGON_SWORD, 60);
-    meleeWeaponsWithLevels.put(ItemId.DRAGON_AXE, 60);
-    meleeWeaponsWithLevels.put(ItemId.RUNE_2_HANDED_SWORD, 40);
-    meleeWeaponsWithLevels.put(ItemId.RUNE_LONG_SWORD, 40);
-    meleeWeaponsWithLevels.put(ItemId.RUNE_SHORT_SWORD, 40);
-    meleeWeaponsWithLevels.put(ItemId.RUNE_BATTLE_AXE, 40);
-    meleeWeaponsWithLevels.put(ItemId.ADAMANTITE_2_HANDED_SWORD, 30);
-    meleeWeaponsWithLevels.put(ItemId.ADAMANTITE_LONG_SWORD, 30);
-    meleeWeaponsWithLevels.put(ItemId.ADAMANTITE_SHORT_SWORD, 30);
-    meleeWeaponsWithLevels.put(ItemId.ADAMANTITE_BATTLE_AXE, 30);
-    meleeWeaponsWithLevels.put(ItemId.MITHRIL_2_HANDED_SWORD, 20);
-    meleeWeaponsWithLevels.put(ItemId.MITHRIL_LONG_SWORD, 20);
-    meleeWeaponsWithLevels.put(ItemId.MITHRIL_SHORT_SWORD, 20);
-    meleeWeaponsWithLevels.put(ItemId.MITHRIL_BATTLE_AXE, 20);
-    meleeWeaponsWithLevels.put(ItemId.BLACK_2_HANDED_SWORD, 10);
-    meleeWeaponsWithLevels.put(ItemId.BLACK_LONG_SWORD, 10);
-    meleeWeaponsWithLevels.put(ItemId.BLACK_SHORT_SWORD, 10);
-    meleeWeaponsWithLevels.put(ItemId.BLACK_BATTLE_AXE, 10);
-    meleeWeaponsWithLevels.put(ItemId.STEEL_2_HANDED_SWORD, 5);
-    meleeWeaponsWithLevels.put(ItemId.STEEL_LONG_SWORD, 5);
-    meleeWeaponsWithLevels.put(ItemId.STEEL_SHORT_SWORD, 5);
-    meleeWeaponsWithLevels.put(ItemId.STEEL_BATTLE_AXE, 5);
-    meleeWeaponsWithLevels.put(ItemId.IRON_2_HANDED_SWORD, 1);
-    meleeWeaponsWithLevels.put(ItemId.IRON_LONG_SWORD, 1);
-    meleeWeaponsWithLevels.put(ItemId.IRON_SHORT_SWORD, 1);
-    meleeWeaponsWithLevels.put(ItemId.IRON_BATTLE_AXE, 1);
-    meleeWeaponsWithLevels.put(ItemId.BRONZE_2_HANDED_SWORD, 1);
-    meleeWeaponsWithLevels.put(ItemId.BRONZE_LONG_SWORD, 1);
-    meleeWeaponsWithLevels.put(ItemId.BRONZE_SHORT_SWORD, 1);
-    meleeWeaponsWithLevels.put(ItemId.BRONZE_BATTLE_AXE, 1);
-    meleeWeaponsWithLevels.put(ItemId.BRONZE_AXE, 1);
-  }
+  private static ItemId swordToBuy = null; // If not null, we're out buying a sword
 
   // Food to use for training
   public static final ItemId[] food = {
@@ -61,32 +24,34 @@ public class Combat_Utils {
   };
 
   public static int getFightingGear() {
+    AIOAIO.state.status = "Getting fighting gear";
     Controller c = Main.getController();
-    if (c.getNearestNpcByIds(c.bankerIds, false) == null) {
-      c.walkTowardsBank();
-      return 100;
+    if (swordToBuy != null) {
+      if (Get_Weapon_Utils.buySword(swordToBuy)) {
+        swordToBuy = null;
+      }
+      return 50;
     }
-    c.setStatus("Opening bank");
-    c.openBank();
-    c.setStatus("Depositing Everything");
-    for (int itemId : c.getInventoryItemIds()) {
-      Main.getController().depositItem(itemId, Main.getController().getInventoryItemCount(itemId));
-      Main.getController().sleep(100);
+
+    if (!AIOAIO_Script_Utils.towardsDepositAll()) return 50;
+
+    // We are now in bank, with no items
+
+    int bestWeaponId = Get_Weapon_Utils.getBestWeapon().getId();
+    if (!Main.getController().isItemInBank(bestWeaponId)
+        && !Main.getController().isItemIdEquipped(bestWeaponId)) {
+      swordToBuy = ItemId.getById(bestWeaponId);
+      return 50;
     }
-    c.setStatus("Withdrawing best melee weapon");
-    int playerAttackLevel = c.getCurrentStat(c.getStatId("Attack"));
-    for (Map.Entry<ItemId, Integer> entry : meleeWeaponsWithLevels.entrySet()) {
-      if (playerAttackLevel < entry.getValue() || c.getBankItemCount(entry.getKey().getId()) <= 0)
-        continue;
-      c.log("Found " + entry.getKey().name() + " as my best weapon Uwu");
-      c.withdrawItem(entry.getKey().getId());
+
+    if (!Main.getController().isItemIdEquipped(bestWeaponId)) {
+      c.withdrawItem(bestWeaponId);
       c.closeBank();
       c.sleep(750);
-      c.equipItemById(entry.getKey().getId());
-      break;
+      c.equipItemById(bestWeaponId);
     }
-    c.closeBank();
-    c.setStatus("Withdrawing food");
+
+    AIOAIO.state.status = ("Withdrawing food");
     c.openBank();
     for (ItemId foodId : food) {
       if (c.getInventoryItemCount() >= 30) break;
@@ -103,6 +68,7 @@ public class Combat_Utils {
     return 680;
   }
 
+  /** Eats once piece of food from food[] array (assuming you have at least one piece) */
   public static void eatFood() {
     for (ItemId foodId : food) {
       if (Main.getController().getInventoryItemCount(foodId.getId()) <= 0) continue;
@@ -118,8 +84,10 @@ public class Combat_Utils {
     return false;
   }
 
+  /** @return true if we're below 60% health, false otherwise */
   public static boolean needToEat() {
-    return Main.getController().getCurrentStat(Main.getController().getStatId("Hits")) <= 6;
+    return Main.getController().getCurrentStat(Main.getController().getStatId("Hits"))
+        <= 0.6 * Main.getController().getBaseStat(Main.getController().getStatId("Hits"));
   }
 
   /**
@@ -128,7 +96,7 @@ public class Combat_Utils {
    * @param npcId
    */
   public static void attackNpc(NpcId npcId) {
-    Main.getController().setStatus("@yel@Bopping " + npcId.name());
+    AIOAIO.state.status = ("@yel@Bopping " + npcId.name());
     ORSCharacter npc = Main.getController().getNearestNpcById(npcId.getId(), false);
     if (npc == null) return;
     Main.getController().attackNpc(npc.serverIndex);
@@ -136,13 +104,13 @@ public class Combat_Utils {
   }
 
   public static void buryBones() {
-    Main.getController().setStatus("@red@Burying bones");
+    AIOAIO.state.status = ("@red@Burying bones");
     Main.getController().itemCommand(ItemId.BONES.getId());
   }
 
   public static void lootBones() {
     int[] lootCoord = Main.getController().getNearestItemById(ItemId.BONES.getId());
-    Main.getController().setStatus("@red@Picking bones");
+    AIOAIO.state.status = ("@red@Picking bones");
     Main.getController().pickupItem(lootCoord[0], lootCoord[1], ItemId.BONES.getId(), true, false);
     Main.getController()
         .sleepUntil(
@@ -150,7 +118,7 @@ public class Combat_Utils {
   }
 
   public static void runAndEat() {
-    Main.getController().setStatus("@yel@Running and eating");
+    AIOAIO.state.status = ("@yel@Running and eating");
     Main.getController()
         .walkToAsync(Main.getController().currentX(), Main.getController().currentY(), 5);
     Main.getController().sleep(680);
@@ -159,7 +127,7 @@ public class Combat_Utils {
 
   public static void safelyAbortTask() {
     Main.getController().log("Trying to safely abort task!");
-    if (Main.getController().getNearestNpcById(NpcId.BANKER.getId(), false) == null) {
+    if (AIOAIO_Script_Utils.getDistanceToNearestBanker() > 5) {
       Main.getController().walkTowardsBank();
     } else {
       AIOAIO.state.endTime = System.currentTimeMillis();

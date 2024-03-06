@@ -25,7 +25,10 @@ import scripting.idlescript.other.AIOAIO.thieving.AlKharidMan;
 import scripting.idlescript.other.AIOAIO.woodcut.Woodcut;
 
 public class AIOAIO_Config {
-  private static final String CONFIG_PATH = "Cache/botconfigs/aioaio.properties";
+  private static String getConfigPath() {
+    return "Cache/botconfigs/" + Main.config.getUsername() + "/aioaio.properties";
+  }
+
   public List<AIOAIO_Skill> skills = new ArrayList<>();
 
   public AIOAIO_Config() {
@@ -36,13 +39,16 @@ public class AIOAIO_Config {
     Properties prop = new Properties();
     boolean fileExists = false;
     try {
-      File file = new File(CONFIG_PATH);
+      File file = new File(getConfigPath());
       if (file.exists()) {
         prop.load(new FileInputStream(file));
         fileExists = true;
+        Main.log("AIO AIO Loaded existing config for " + Main.config.getUsername() + "!");
+      } else {
+        Main.log("AIO AIO is creating a new config for " + Main.config.getUsername() + "!");
       }
     } catch (IOException e) {
-      Main.getController().log("Error reading config file: " + e.getMessage());
+      Main.getController().log("AIO AIO had error reading config file: " + e.getMessage());
     }
     List<AIOAIO_Skill> defaultSkills =
         Arrays.asList(
@@ -130,7 +136,9 @@ public class AIOAIO_Config {
                 true,
                 Collections.singletonList(
                     new AIOAIO_Task("Al Kharid Man", true, AlKharidMan::run))));
+
     for (AIOAIO_Skill skillConfig : defaultSkills) {
+      // If we already have the skill in the config, use the config's values
       String skillEnabledKey = skillConfig.getName() + ".enabled";
       boolean skillEnabled =
           fileExists
@@ -160,10 +168,10 @@ public class AIOAIO_Config {
       }
     }
     try {
-      Files.createDirectories(Paths.get(CONFIG_PATH).getParent());
-      prop.store(new FileOutputStream(CONFIG_PATH), null);
+      Files.createDirectories(Paths.get(getConfigPath()).getParent());
+      prop.store(new FileOutputStream(getConfigPath()), null);
     } catch (IOException e) {
-      Main.getController().log("Couldn't save config file at " + CONFIG_PATH);
+      Main.getController().log("Couldn't save config file at " + getConfigPath());
       e.printStackTrace();
     }
   }

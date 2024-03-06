@@ -19,6 +19,8 @@ public class AIOAIO_State {
 
   public long endTime = System.currentTimeMillis();
 
+  public String status; // Paint status
+
   // --- Woodcutting state variables --- \\
   public boolean hasAxeInBank = true; // Bot will set this to false if needed
 

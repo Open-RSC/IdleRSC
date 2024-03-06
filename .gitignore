@@ -74,4 +74,4 @@ Cache/
 
 #Put any custom git ignore attributes below
 
-
+hs_err*

@@ -42,7 +42,7 @@ public class JailGuard {
   }
 
   private static void findGuards() {
-    c.setStatus("Finding guards to bop");
+    AIOAIO.state.status = ("Finding guards to bop");
     c.walkTowards(203, 634);
   }
 }

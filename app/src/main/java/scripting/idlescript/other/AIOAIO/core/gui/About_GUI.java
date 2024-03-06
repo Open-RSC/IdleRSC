@@ -20,6 +20,8 @@ public class About_GUI {
             + "<li>Tasks will be automatically completed when running out of the relevant resources.</li>"
             + "<li>Tasks may be automatically skipped if they're way below the bot's level.</li>"
             + "<li>Most tasks will get their own tools if missing from the bank.</li>"
+            + "<li>Your config selection is automatically saved on an account-level basis.</li>"
+            + "<li>Add param \"nogui\" to start the script without a GUI.</li>"
             + "</ul>"
             + "<h2>Contributing:</h2>"
             + "<p>Feel free to contribute new tasks! They can be merged into IdleRSC by anyone, no approval required.</p>"

@@ -19,12 +19,16 @@ public class AIOAIO extends IdleScript {
    */
   public static AIOAIO_State state = new AIOAIO_State();
 
-  public static final String VERSION = "1.9.2";
+  public static final String VERSION = "1.11.2";
 
   public int start(String[] parameters) {
     if (!state.guiSetup) {
       state.guiSetup = true;
-      AIOAIO_GUI.setupGUI();
+      if (parameters.length >= 1 && parameters[0].equals("nogui")) {
+        state.startPressed = true;
+      } else {
+        AIOAIO_GUI.setupGUI();
+      }
     }
     if (state.startPressed) {
       try {
@@ -33,6 +37,11 @@ public class AIOAIO extends IdleScript {
         e.printStackTrace();
         System.out.println("Exception occured! Sleeping 1.5s...");
         return 1500;
+      } catch (Throwable t) {
+        t.printStackTrace();
+        Main.log("A straight JVM error occured! " + t.getMessage());
+        Main.log("I don't know _why_ this happens! Just gonna sleep 20s and ignore it lol");
+        return 20000;
       }
     }
     return 50;
@@ -63,10 +72,11 @@ public class AIOAIO extends IdleScript {
     String currentTaskText =
         "Current Task: " + (state.currentTask != null ? state.currentTask.getName() : "None");
     Main.getController().drawString("@red@" + currentSkillText, 6, 35, 0xFFFFFF, 1);
-    Main.getController().drawString("@red@" + currentTaskText, 6, 49, 0xFFFFFF, 1);
+    Main.getController().drawString("@red@AIOAIO status: " + state.status, 6, 49, 0xFFFFFF, 1);
+    Main.getController().drawString("@red@" + currentTaskText, 6, 63, 0xFFFFFF, 1);
     long timeRemaining = state.endTime - System.currentTimeMillis();
     String timeRemainingText =
         "Time remaining: " + (timeRemaining > 0 ? timeRemaining / 1000 + " seconds" : "None");
-    Main.getController().drawString("@red@" + timeRemainingText, 6, 63, 0xFFFFFF, 1);
+    Main.getController().drawString("@red@" + timeRemainingText, 6, 77, 0xFFFFFF, 1);
   }
 }

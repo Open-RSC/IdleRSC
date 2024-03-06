@@ -27,7 +27,7 @@ public class Fletch {
   }
 
   private static void getKnife() {
-    c.setStatus("Getting knife");
+    AIOAIO.state.status = ("Getting knife");
     if (c.currentX() == 130 && c.currentY() == 667) {
       c.pickupItem(ItemId.KNIFE.getId());
       c.sleep(1200);
@@ -41,7 +41,7 @@ public class Fletch {
   }
 
   private static void withdrawFletchingItems() {
-    c.setStatus("Withdrawing fletching items");
+    AIOAIO.state.status = ("Withdrawing fletching items");
     int[][] requiredItems = getFletchingItemRequirements();
     c.getInventoryItems().stream()
         .forEach(
@@ -59,7 +59,8 @@ public class Fletch {
         .forEach(
             item -> {
               if (c.getInventoryItemCount(item[0]) >= item[1]) return;
-              if (!AIOAIO_Script_Utils.towardsGetFromBank(ItemId.getById(item[0]), item[1])) {
+              if (!AIOAIO_Script_Utils.towardsGetFromBank(
+                  ItemId.getById(item[0]), item[1], false)) {
                 if (item[0] == ItemId.KNIFE.getId()) {
                   needsToGetKnife = true;
                   return;
@@ -204,7 +205,7 @@ public class Fletch {
   }
 
   private static void fletch() {
-    c.setStatus("Fletching " + AIOAIO.state.currentTask.getName());
+    AIOAIO.state.status = ("Fletching " + AIOAIO.state.currentTask.getName());
     c.useItemOnItemBySlot(
         c.getInventoryItemSlotIndex(getFletchingItemRequirements()[0][0]),
         c.getInventoryItemSlotIndex(getFletchingItemRequirements()[1][0]));

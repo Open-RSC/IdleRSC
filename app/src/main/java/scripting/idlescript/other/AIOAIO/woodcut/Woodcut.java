@@ -59,11 +59,11 @@ public class Woodcut {
     switch (AIOAIO.state.currentTask.getName()) {
       case "normal":
       case "oak":
-        c.setStatus("Walking to Seers");
+        AIOAIO.state.status = ("Walking to Seers");
         c.walkTowards(500, 453);
         return 50;
       case "willow":
-        c.setStatus("Walking to Seers");
+        AIOAIO.state.status = ("Walking to Seers");
         c.walkTowards(509, 442);
         return 50;
     }
@@ -71,7 +71,7 @@ public class Woodcut {
   }
 
   private static int chopTree() {
-    c.setStatus("Chopping tree");
+    AIOAIO.state.status = ("Chopping tree");
     int[] treeCoords = c.getNearestReachableObjectById(getTreeId(), true);
     c.atObject(treeCoords[0], treeCoords[1]);
     c.sleepUntilMoving(1200);
@@ -85,11 +85,11 @@ public class Woodcut {
   }
 
   private static int getAxeFromBank() {
-    if (c.getNearestNpcById(95, false) == null) {
+    if (AIOAIO_Script_Utils.getDistanceToNearestBanker() > 5) {
       c.walkTowardsBank();
       return 100;
     }
-    c.setStatus("Opening bank");
+    AIOAIO.state.status = ("Opening bank to get axe");
     c.openBank();
     if (!Woodcutting_Utils.hasAxeInBank()) {
       System.out.println("No axe in bank, gotta get one..");
@@ -98,7 +98,7 @@ public class Woodcut {
       c.closeBank();
       return 100;
     }
-    c.setStatus("Withdrawing axe");
+    AIOAIO.state.status = ("Withdrawing axe");
     Woodcutting_Utils.withdrawAxeFromBank();
     c.closeBank();
     return 680;
@@ -107,21 +107,21 @@ public class Woodcut {
   private static int getAxeFromFaladorSpawn() {
     if (c.isInBank()) c.closeBank();
     if (c.pickupItem(87)) {
-      c.setStatus("Picking up axe");
+      AIOAIO.state.status = ("Picking up axe");
       for (int i = 0; i < 10000; i += 1000) {
         if (Woodcutting_Utils.hasAxeInInventory()) break;
         c.sleep(1000);
       }
-      c.setStatus("Going down ladder");
+      AIOAIO.state.status = ("Going down ladder");
       c.atObject(308, 1466);
       return 5000;
     }
     if (c.distanceTo(308, 522) < 5) {
-      c.setStatus("Going up ladder");
+      AIOAIO.state.status = ("Going up ladder");
       c.atObject(308, 522); // Climb ladder
       return 1000;
     }
-    c.setStatus("Walking to axe");
+    AIOAIO.state.status = ("Walking to axe");
     c.walkTowards(308, 523);
     return 50;
   }

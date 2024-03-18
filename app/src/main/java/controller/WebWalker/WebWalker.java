@@ -78,12 +78,25 @@ public class WebWalker {
                 + pathLog.substring(0, pathLog.length() - 4));
 
     // Walk the first edge of the path
-    if (path.size() < 2) return false; // Check if a valid path was found
+
+    if (path.get(0).getX() == Main.getController().currentX()
+        && path.get(0).getY() == Main.getController().currentY()) {
+      System.out.println(
+          "Removed the first element of the path because it's the same as the current position");
+      path.remove(0);
+      if (path.size() == 1) {
+        // We were already standing on a web node, but we removed it. We're right beside the end
+        // though, so just go
+        Main.getController().walkDamnit(path.get(0).getX(), path.get(0).getY());
+        return true;
+      }
+    }
+
     WebwalkEdge edge = graph.getEdge(path.get(0), path.get(1));
     if (edge != null && edge.getLabel().isPresent()) {
       Main.getController().log("Walking along " + edge + " with label: " + edge.getLabel().get());
       if (executeCustomLabelFunction(edge.getLabel().get())) {
-        Main.getController().walkTo(path.get(1).getX(), path.get(1).getY());
+        Main.getController().walkDamnit(path.get(1).getX(), path.get(1).getY());
         return true;
       } else {
         Main.getController()
@@ -91,7 +104,7 @@ public class WebWalker {
         return false;
       }
     } else {
-      Main.getController().walkTo(path.get(1).getX(), path.get(1).getY());
+      Main.getController().walkDamnit(path.get(1).getX(), path.get(1).getY());
       return true;
     }
   }
@@ -127,6 +140,8 @@ public class WebWalker {
         double newCost =
             costFromStart.getOrDefault(current, Double.POSITIVE_INFINITY) + edge.getDist();
         if (newCost < costFromStart.getOrDefault(neighbor, Double.POSITIVE_INFINITY)) {
+          openSet.remove(
+              neighbor); // Remove the neighbor so we can update it's priority queue placement
           cameFrom.put(neighbor, current);
           costFromStart.put(neighbor, newCost);
           openSet.add(neighbor); // Re-add the neighbor with its updated cost
@@ -210,6 +225,14 @@ public class WebWalker {
         return CustomLabelHandlers.skipTutorial();
       case "lummyNorthChickensGate":
         return CustomLabelHandlers.lummyNorthChickensGate();
+      case "lummyNorthGarlicGate":
+        return CustomLabelHandlers.lummyNorthGarlicGate();
+      case "lummyNorthPotatoGate":
+        return CustomLabelHandlers.lummyNorthPotatoGate();
+      case "varrockPalaceNorthwestLadder":
+        return CustomLabelHandlers.varrockPalaceNorthwestLadder();
+      case "varrockPalaceFence":
+        return CustomLabelHandlers.varrockPalaceFence();
       default:
         Main.getController().log("Missing function for label: " + label);
         return false;

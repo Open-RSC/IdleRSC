@@ -20,8 +20,11 @@ public class AIOAIO_Script_Utils {
    */
   public static boolean towardsGetFromBank(ItemId item, int amount, boolean depositEverythingElse) {
     if (Main.getController().isInBank()) {
-      if (depositEverythingElse) Main.getController().depositAll();
-      Main.getController().sleepUntil(() -> Main.getController().getInventoryItemCount() == 0);
+      AIOAIO.state.status = "Withdrawing " + item.name();
+      if (depositEverythingElse) {
+        Main.getController().depositAll();
+        Main.getController().sleepUntil(() -> Main.getController().getInventoryItemCount() == 0);
+      }
       if (amount == -1) amount = Main.getController().getBankItemCount(item.getId());
       if (Main.getController().getBankItemCount(item.getId()) < amount || amount == 0) {
         Main.getController()
@@ -43,8 +46,8 @@ public class AIOAIO_Script_Utils {
       Main.getController().walkTowardsBank();
       return true;
     }
+    AIOAIO.state.status = "Opening bank to get " + item.name();
     Main.getController().openBank();
-    Main.getController().sleep(680);
     return true;
   }
 
@@ -52,7 +55,9 @@ public class AIOAIO_Script_Utils {
    * Progressively takes steps towards depositing everything except the passed in Ids Returns true
    * if it's done (bank will be open)
    *
-   * @param exceptions
+   * @param exceptions Item Ids to not deposit
+   * @return true if the deposit is completed (+ bank is open), false if we only progressed towards
+   *     making that happen
    */
   public static boolean towardsDepositAll(int... exceptions) {
     if (Main.getController().isInBank()) {
@@ -75,14 +80,25 @@ public class AIOAIO_Script_Utils {
               3000);
       return true;
     }
+    towardsOpenBank();
+    return false;
+  }
+
+  /**
+   * Progressively takes steps towards opening a bank
+   *
+   * @return true if bank is open, false if we're working on it
+   */
+  public static boolean towardsOpenBank() {
     if (getDistanceToNearestBanker() > 5) {
+      AIOAIO.state.status = "Going towards bank to open it";
       Main.getController().walkTowardsBank();
       return false;
     }
-    AIOAIO.state.status = ("Opening bank to deposit all");
+    AIOAIO.state.status = "Opening bank";
     Main.getController().openBank();
     Main.getController().sleep(680);
-    return false;
+    return Main.getController().isInBank();
   }
 
   /**

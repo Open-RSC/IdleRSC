@@ -15,6 +15,11 @@ public class Fish {
   public static int run() {
     c = Main.getController();
     c.setBatchBarsOn();
+    if (AIOAIO.state.taskStartup) {
+      needBuyTool =
+          false; // reset this, since it may have previously wanted to buy a different tool
+      AIOAIO.state.taskStartup = false;
+    }
 
     if (!meetsReqs()) {
       c.log("Missing required level to fish " + AIOAIO.state.currentTask.getName());

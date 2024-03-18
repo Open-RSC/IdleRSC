@@ -15,13 +15,18 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import scripting.idlescript.other.AIOAIO.agility.GnomeVillage;
+import scripting.idlescript.other.AIOAIO.combat.AlKharidScorpions;
 import scripting.idlescript.other.AIOAIO.combat.Cow;
 import scripting.idlescript.other.AIOAIO.combat.JailGuard;
 import scripting.idlescript.other.AIOAIO.cooking.Cook;
 import scripting.idlescript.other.AIOAIO.fishing.Fish;
 import scripting.idlescript.other.AIOAIO.fletching.Fletch;
 import scripting.idlescript.other.AIOAIO.mining.Mine;
+import scripting.idlescript.other.AIOAIO.smelting.Smelt;
 import scripting.idlescript.other.AIOAIO.thieving.AlKharidMan;
+import scripting.idlescript.other.AIOAIO.thieving.AlKharidWarrior;
+import scripting.idlescript.other.AIOAIO.thieving.LumbridgeFarmer;
+import scripting.idlescript.other.AIOAIO.thieving.VarrockGuard;
 import scripting.idlescript.other.AIOAIO.woodcut.Woodcut;
 
 public class AIOAIO_Config {
@@ -57,19 +62,22 @@ public class AIOAIO_Config {
                 true,
                 Arrays.asList(
                     new AIOAIO_Task("Lummy Cows", true, Cow::attack),
-                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::attack))),
+                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::attack),
+                    new AIOAIO_Task("Al Kharid Scorpions", true, AlKharidScorpions::attack))),
             new AIOAIO_Skill(
                 "Defense",
                 true,
                 Arrays.asList(
                     new AIOAIO_Task("Lummy Cows", true, Cow::defense),
-                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::defense))),
+                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::defense),
+                    new AIOAIO_Task("Al Kharid Scorpions", true, AlKharidScorpions::attack))),
             new AIOAIO_Skill(
                 "Strength",
                 true,
                 Arrays.asList(
                     new AIOAIO_Task("Lummy Cows", true, Cow::strength),
-                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::strength))),
+                    new AIOAIO_Task("Draynor Jailguard", true, JailGuard::strength),
+                    new AIOAIO_Task("Al Kharid Scorpions", true, AlKharidScorpions::attack))),
             new AIOAIO_Skill(
                 "Cooking",
                 true,
@@ -112,6 +120,18 @@ public class AIOAIO_Config {
                     new AIOAIO_Task("Lobster", true, Fish::run),
                     new AIOAIO_Task("Shark", false, Fish::run))),
             new AIOAIO_Skill(
+                "Smithing",
+                true,
+                Arrays.asList(
+                    new AIOAIO_Task("Bronze bar", true, Smelt::run),
+                    new AIOAIO_Task("Iron bar", true, Smelt::run),
+                    new AIOAIO_Task("Silver bar", true, Smelt::run),
+                    new AIOAIO_Task("Steel bar", true, Smelt::run),
+                    new AIOAIO_Task("Gold bar", true, Smelt::run),
+                    new AIOAIO_Task("Mithril bar", true, Smelt::run),
+                    new AIOAIO_Task("Adamantite bar", true, Smelt::run),
+                    new AIOAIO_Task("Runite bar", true, Smelt::run))),
+            new AIOAIO_Skill(
                 "Mining",
                 true,
                 Arrays.asList(
@@ -134,8 +154,11 @@ public class AIOAIO_Config {
             new AIOAIO_Skill(
                 "Thieving",
                 true,
-                Collections.singletonList(
-                    new AIOAIO_Task("Al Kharid Man", true, AlKharidMan::run))));
+                Arrays.asList(
+                    new AIOAIO_Task("Al Kharid Men", true, AlKharidMan::run),
+                    new AIOAIO_Task("Lumbridge Farmers", true, LumbridgeFarmer::run),
+                    new AIOAIO_Task("Al Kharid Warriors", true, AlKharidWarrior::run),
+                    new AIOAIO_Task("Varrock Guards", true, VarrockGuard::run))));
 
     for (AIOAIO_Skill skillConfig : defaultSkills) {
       // If we already have the skill in the config, use the config's values

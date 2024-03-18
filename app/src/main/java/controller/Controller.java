@@ -11,6 +11,7 @@ import com.openrsc.client.entityhandling.instances.Item;
 import com.openrsc.client.model.Sprite;
 import com.openrsc.interfaces.misc.AuctionHouse;
 import com.openrsc.interfaces.misc.ProgressBarInterface;
+import controller.WebWalker.BruteForceUtils;
 import controller.WebWalker.WebWalker;
 import controller.WebWalker.WebwalkGraph;
 import java.awt.*;
@@ -58,7 +59,7 @@ import reflector.Reflector;
 public class Controller {
   private final Reflector reflector;
   private final OpenRSC client;
-  private final mudclient mud;
+  public final mudclient mud;
 
   final int[] foodIds = {
     335, 333, 350, 352, 355, 357, 359, 362, 364, 367, 370, 373, 718, 551, 553, 555, 590, 546, 1193,
@@ -173,6 +174,13 @@ public class Controller {
 
     long startTime = System.currentTimeMillis();
     long startXp = getTotalXp();
+
+    // System.out.println("Stack trace for what called sleepUntilGainedXp:");
+    // StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    // for (StackTraceElement element : stackTraceElements) {
+    // System.out.println(element.toString());
+    // }
+
     setStatus("Sleeping until xp drop (cur xp: " + getTotalXp() + ")");
     while (startXp == getTotalXp()) {
       if (System.currentTimeMillis() - startTime > timeout) {
@@ -535,12 +543,14 @@ public class Controller {
    * to your action, then wait for them to finish
    *
    * @param timeout Max ms to wait until moving
+   * @return false if the timeout was reached, true otherwise
    */
-  public void sleepUntilMoving(long timeout) {
+  public boolean sleepUntilMoving(long timeout) {
     long start = System.currentTimeMillis();
     while (Main.isRunning()
         && !isCurrentlyWalking()
         && start + timeout > System.currentTimeMillis()) {}
+    return start + timeout > System.currentTimeMillis();
   }
 
   /**
@@ -550,12 +560,14 @@ public class Controller {
    * your action, then wait for them to finish
    *
    * @param timeout Max ms to wait to stop moving
+   * @return false if the timeout was reached, true otherwise
    */
-  public void sleepUntilNotMoving(long timeout) {
+  public boolean sleepUntilNotMoving(long timeout) {
     long start = System.currentTimeMillis();
     while (Main.isRunning()
         && isCurrentlyWalking()
         && start + timeout > System.currentTimeMillis()) {}
+    return start + timeout > System.currentTimeMillis();
   }
 
   /**
@@ -720,6 +732,30 @@ public class Controller {
           timeout,
           " ms!");
     }
+  }
+
+  public void walkDamnit(int x, int y) {
+    walkToActionSource(
+        mud,
+        mud.getLocalPlayerX(),
+        mud.getLocalPlayerZ(),
+        x - mud.getMidRegionBaseX(),
+        y - mud.getMidRegionBaseZ(),
+        false);
+    if (!sleepUntilMoving(1200)) {
+      Main.log("Ok so basically, the region we want to walk to isn't loaded.");
+      Main.log("So I'm going to brute force a path to our dest, then walk half way");
+      List<int[]> path = BruteForceUtils.findPath(x, y);
+      if (path != null) {
+        walkTo(path.get(path.size() / 2)[0], path.get(path.size() / 2)[1]);
+      } else {
+        Main.log("Failed to find a path to our destination. Yeeting off in a random direction..");
+        walkTo(
+            currentX() + ThreadLocalRandom.current().nextInt(-5, 6),
+            currentY() + ThreadLocalRandom.current().nextInt(-5, 6));
+      }
+    }
+    sleepUntilNotMoving(20000);
   }
 
   /**
@@ -1588,6 +1624,7 @@ public class Controller {
    * @param slotIndex int
    */
   public void useItemSlotOnObject(int x, int y, int slotIndex) {
+    if (slotIndex == -1) log("@red@Warning: useItemSlotOnObject was passed slotIndex -1");
     reflector.mudInvoker(
         mud,
         "walkToObject",
@@ -6339,5 +6376,10 @@ public class Controller {
    */
   public void hideContactDetailsMenu() { // int opcode = 253;
     mud.setShowContactDialogue(false);
+  }
+
+  public void hideWelcomeScreen() {
+    System.out.println("Attempting tohide login screen...");
+    mud.setShowDialogMessage(false);
   }
 }

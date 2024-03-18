@@ -6,7 +6,7 @@ import models.entities.ItemId;
 import models.entities.NpcId;
 import scripting.idlescript.other.AIOAIO.AIOAIO;
 
-public class JailGuard {
+public class AlKharidScorpions {
   private static Controller c;
 
   public static int strength() {
@@ -29,7 +29,7 @@ public class JailGuard {
     c.setBatchBarsOn();
 
     if (Main.getController().getBaseStat(Main.getController().getStatId("Hits")) < 15) {
-      c.log("Skipping Jail Guards until we're at least 15 hits!");
+      c.log("Skipping Scorpions until we're at least 15 hits!");
       AIOAIO.state.endTime = System.currentTimeMillis();
       return 50;
     }
@@ -39,16 +39,16 @@ public class JailGuard {
     else if (Combat_Utils.needToEat() && !Combat_Utils.hasFood()) Combat_Utils.safelyAbortTask();
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) c.sleepUntil(() -> !c.isInCombat() || Combat_Utils.needToEat());
-    else if (c.getNearestNpcById(NpcId.JAILGUARD.getId(), false) == null) findGuards();
+    else if (c.getNearestNpcById(NpcId.SCORPION.getId(), false) == null) findScorpions();
     // The NPC we want to bop is found at this point
     else if (c.getInventoryItemCount() < 30
         && c.getNearestItemById(ItemId.BONES.getId(), 5) != null) Combat_Utils.lootBones();
-    else Combat_Utils.attackNpc(NpcId.JAILGUARD);
+    else Combat_Utils.attackNpc(NpcId.SCORPION);
     return 50;
   }
 
-  private static void findGuards() {
-    AIOAIO.state.status = ("Finding guards to bop");
-    c.walkTowards(203, 634);
+  private static void findScorpions() {
+    AIOAIO.state.status = ("Finding scorpions to bop");
+    c.walkTowards(71, 588);
   }
 }

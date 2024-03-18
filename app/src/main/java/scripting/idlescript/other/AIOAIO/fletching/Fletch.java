@@ -42,7 +42,11 @@ public class Fletch {
 
   private static void withdrawFletchingItems() {
     AIOAIO.state.status = ("Withdrawing fletching items");
-    int[][] requiredItems = getFletchingItemRequirements();
+    if (!c.isInBank()) {
+      AIOAIO_Script_Utils.towardsOpenBank();
+    }
+    int[][] requiredItems = getFletchingItemRequirements(); // [itemId, amount]
+    // Deposit any excessive items I have in inven
     c.getInventoryItems().stream()
         .forEach(
             item -> {
@@ -55,6 +59,7 @@ public class Fletch {
               int excessAmount = item.getAmount() - requiredAmount;
               if (excessAmount > 0) c.depositItem(item.getItemDef().id, excessAmount);
             });
+    // Withdraw any needed items
     Arrays.stream(requiredItems)
         .forEach(
             item -> {
@@ -119,7 +124,8 @@ public class Fletch {
       case "Unstrung Magic Longbow":
         return new int[][] {{ItemId.MAGIC_LOGS.getId(), 29}, {ItemId.KNIFE.getId(), 1}};
       default:
-        throw new IllegalStateException("Unknown fish type: " + AIOAIO.state.currentTask.getName());
+        throw new IllegalStateException(
+            "Unknown fletching item type: " + AIOAIO.state.currentTask.getName());
     }
   }
 

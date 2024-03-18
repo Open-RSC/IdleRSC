@@ -29,6 +29,7 @@ public class DrawCallback {
   public static long getNextRefresh() {
     return nextRefresh;
   }
+
   /**
    * Retrieves the value of the toggleOnViewId variable.
    *
@@ -37,6 +38,7 @@ public class DrawCallback {
   public static boolean getToggleOnViewId() {
     return toggleOnViewId;
   }
+
   /**
    * Sets the value of the nextRefresh variable.
    *
@@ -45,6 +47,7 @@ public class DrawCallback {
   public static void setNextRefresh(long nextRefreshValue) {
     nextRefresh = nextRefreshValue;
   }
+
   /**
    * Sets the value of the nextDeRefresh variable.
    *
@@ -53,6 +56,7 @@ public class DrawCallback {
   public static void setNextDeRefresh(long nextDeRefreshValue) {
     nextDeRefresh = nextDeRefreshValue;
   }
+
   /**
    * Sets the value of the toggleOnViewId variable.
    *
@@ -69,6 +73,7 @@ public class DrawCallback {
     drawBotStatus(c);
     drawScript(c);
   }
+
   /**
    * Sets the left hand pane bot status text.
    *
@@ -77,6 +82,7 @@ public class DrawCallback {
   public static void setStatusText(String str) {
     statusText = str;
   }
+
   /** Draws the status menu of the bot (the onscreen GUI showing hp/prayer/position/etc) */
   private static void drawBotStatus(Controller c) {
     int y = 116;
@@ -103,11 +109,13 @@ public class DrawCallback {
 
       c.drawProgressBar(
           currentHits, maxHits, 0x000000, hitsColor, 0xffffff, 7, y + 2, 80, 14, false, true);
-      // c.drawString("Hits: " + currentHits + "@red@/@whi@" + maxHits, 7, y, 0xFFFFFF, 1);
+      // c.drawString("Hits: " + currentHits + "@red@/@whi@" + maxHits, 7, y,
+      // 0xFFFFFF, 1);
       y += 16;
       c.drawProgressBar(
           currentPrayer, maxPrayer, 0x000000, 0x8BE9FD, 0xffffff, 7, y + 2, 80, 14, false, true);
-      // c.drawString("Prayer: " + currentPrayer + "@red@/@whi@" + maxPrayer, 7, y, 0xFFFFFF, 1);
+      // c.drawString("Prayer: " + currentPrayer + "@red@/@whi@" + maxPrayer, 7, y,
+      // 0xFFFFFF, 1);
       y += 14;
       if (c.isAuthentic()) { // hidden on coleslaw so that submenu ON, Npc Kill counts ON can show
         // Kill counter at that screen location! Uranium will still get fatigue.
@@ -172,6 +180,7 @@ public class DrawCallback {
       }
     }
   }
+
   /** Draws the script on the controller. */
   private static void drawScript(Controller c) {
 
@@ -183,13 +192,14 @@ public class DrawCallback {
         ((IdleScript) Main.getCurrentRunningScript()).paintInterrupt();
       } else if (Main.getCurrentRunningScript() instanceof compatibility.apos.Script) {
         //
-        //	if(((compatibility.apos.Script)Main.getCurrentRunningScript()).isControllerSet()) {
+        // if(((compatibility.apos.Script)Main.getCurrentRunningScript()).isControllerSet())
+        // {
         try {
           ((compatibility.apos.Script) Main.getCurrentRunningScript()).paint();
         } catch (Exception e) {
           // catch paint exceptions caused by a lot of apos scripts
         }
-        //            	}
+        // }
       }
     }
   }
@@ -208,6 +218,7 @@ public class DrawCallback {
     levelUpText = "@red@" + level + " @whi@" + statName + "@red@!";
     levelUpTextTimeout = System.currentTimeMillis() / 1000L + 15; // display for 15seconds
   }
+
   /** Resets the XP counter and re-initializes the necessary variables. */
   public static void resetXpCounter() {
     Controller c = Main.getController();

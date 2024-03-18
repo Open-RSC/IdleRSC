@@ -14,6 +14,7 @@ public class About_GUI {
             + "<p>This script will take your account from nothing to maxed with the default configurations.</p>"
             + "<p>Currently only supports Coleslaw.</p>"
             + "<p>Warning: This script may kill you! Bank everything, the script will use and get what it needs.</p>"
+            + "<p>Help appreciated! Feel free to expand AIO AIO by adding new tasks ❤️</p>"
             + "<h2>Tips:</h2>"
             + "<ul>"
             + "<li>Tasks will be automatically skipped if the bot doesn't meet the reqs, or if it's potentially too dangerous (i.e., noob crossing White Wolf Mountain).</li>"

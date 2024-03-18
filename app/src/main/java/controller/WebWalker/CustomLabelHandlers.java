@@ -297,4 +297,47 @@ public class CustomLabelHandlers {
     return Main.getController()
         .sleepUntil(() -> Main.getController().getObjectAtCoord(158, 614) == 59, 6000);
   }
+
+  public static boolean lummyNorthGarlicGate() {
+    int xCoord = 184, yCoord = 604;
+    if (Main.getController().getObjectAtCoord(xCoord, yCoord) == 59)
+      return true; // Gate is already open
+    Main.log("Opening Lummy North Garlic Gate...");
+    Main.getController().atObject(xCoord, yCoord);
+    return Main.getController()
+        .sleepUntil(() -> Main.getController().getObjectAtCoord(xCoord, yCoord) == 59, 6000);
+  }
+
+  public static boolean lummyNorthPotatoGate() {
+    int xCoord = 184, yCoord = 606;
+    if (Main.getController().getObjectAtCoord(xCoord, yCoord) == 59)
+      return true; // Gate is already open
+    Main.log("Opening Lummy North Garlic Gate...");
+    Main.getController().atObject(xCoord, yCoord);
+    return Main.getController()
+        .sleepUntil(() -> Main.getController().getObjectAtCoord(xCoord, yCoord) == 59, 6000);
+  }
+
+  public static boolean varrockPalaceNorthwestLadder() {
+    boolean goingDown = Main.getController().currentY() >= 1000;
+    int ladderId = goingDown ? 6 : 5;
+    Main.log("Climbing " + (goingDown ? "down" : "up") + " Varrock Palace Ladder...");
+    Main.getController().atObject(ladderId);
+    return Main.getController()
+        .sleepUntil(
+            () ->
+                goingDown
+                    ? Main.getController().currentY() < 1000
+                    : Main.getController().currentY() >= 1000);
+  }
+
+  public static boolean varrockPalaceFence() {
+    int xCoord = 131, yCoord = 501;
+    if (Main.getController().getObjectAtCoord(xCoord, yCoord) == 58)
+      return true; // Gate is already open
+    Main.log("Opening Varrock Palace Fence...");
+    Main.getController().atObject(xCoord, yCoord);
+    return Main.getController()
+        .sleepUntil(() -> Main.getController().getObjectAtCoord(xCoord, yCoord) == 58, 6000);
+  }
 }

@@ -9,7 +9,7 @@ import scripting.idlescript.other.AIOAIO.AIOAIO_Script_Utils;
 
 public class Get_Weapon_Utils {
   /**
-   * Buys a 2h from Tavlery's shop
+   * Buys a 2h from Tavlery's shop and equips it
    *
    * @param sword
    * @return true if bought the 2h, false if working on it
@@ -30,6 +30,7 @@ public class Get_Weapon_Utils {
       Main.getController().sleep(1200);
       if (Main.getController().getInventoryItemCount(sword.getId()) >= 1) {
         Main.getController().log("Got " + sword.name());
+        Main.getController().equipItemById(sword.getId());
         return true;
       }
       Main.getController().log("Failed to get " + sword.name());

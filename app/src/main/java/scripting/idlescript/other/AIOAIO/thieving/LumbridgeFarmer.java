@@ -7,18 +7,24 @@ import models.entities.NpcId;
 import scripting.idlescript.other.AIOAIO.AIOAIO;
 import scripting.idlescript.other.AIOAIO.combat.Combat_Utils;
 
-public class AlKharidMan {
+public class LumbridgeFarmer {
   private static Controller c;
 
   public static int run() {
     c = Main.getController();
     c.setBatchBarsOn();
 
+    if (Main.getController().getCurrentStat(Main.getController().getStatId("Thieving")) < 10) {
+      c.log("Skipping Lummy farmers until we're at least 15 thieving!");
+      AIOAIO.state.endTime = System.currentTimeMillis();
+      return 50;
+    }
+
     if (AIOAIO.state.taskStartup) {
       return Thieving_Utils.getReadyForTheiving();
     }
 
-    c.setStatus("Thieving Al Kharid Men");
+    c.setStatus("Thieving Lumbridge Farmers");
     if (Thieving_Utils.inCabbageField() && c.getInventoryItemCount() <= 20)
       Thieving_Utils.pickCabbage();
     else if (Thieving_Utils.goingToCabbages || Combat_Utils.needToEat() && !Combat_Utils.hasFood())
@@ -26,21 +32,26 @@ public class AlKharidMan {
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) {
       Thieving_Utils.leaveCombat();
-    } else if (c.getNearestNpcById(NpcId.MAN_ALKHARID.getId(), false) == null) findAlkharidMen();
+    } else if (c.getNearestNpcById(NpcId.FARMER.getId(), false) == null) findLummyFarmer();
     else {
-      Thieving_Utils.theiveNpc(NpcId.MAN_ALKHARID);
+      Thieving_Utils.theiveNpc(NpcId.FARMER);
       return 680;
     }
     return 50;
   }
 
-  private static boolean eastMen = ThreadLocalRandom.current().nextBoolean();
+  private static boolean northLummyFarmer = ThreadLocalRandom.current().nextBoolean();
 
-  private static void findAlkharidMen() {
+  private static void findLummyFarmer() {
     if (ThreadLocalRandom.current().nextInt(0, 25) == 1) {
-      eastMen = !eastMen;
+      northLummyFarmer = !northLummyFarmer;
     }
-    AIOAIO.state.status = ("Finding " + (eastMen ? "east" : "west") + " Al Kharid Men");
-    c.walkTowards(eastMen ? 61 : 77, 673);
+    AIOAIO.state.status =
+        ("Finding the " + (northLummyFarmer ? "Northern" : "Southern") + " Lummy farmer");
+    if (northLummyFarmer) {
+      c.walkTowards(114, 595);
+    } else {
+      c.walkTowards(116, 607);
+    }
   }
 }

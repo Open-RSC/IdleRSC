@@ -1,10 +1,11 @@
-package scripting.idlescript;
+package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.ItemId;
 import models.entities.NpcId;
-import models.entities.SkillId;
+import scripting.idlescript.AIOQuester.QuestHandler;
+import scripting.idlescript.AIOQuester.models.QuitReason;
 
-public final class QH_DoricsQuest extends QH__QuestHandler {
+public final class DoricsQuest extends QuestHandler {
 
   // COORDINATES FOR walkPath() PATHS AND pickupUnreachableItem()
   private static final int[] GENERAL_STORE = {316, 533};
@@ -72,21 +73,8 @@ public final class QH_DoricsQuest extends QH__QuestHandler {
     "I wanted to use your anvils", "Yes I will get you materials"
   };
 
-  public int start(String[] param) {
-    QUEST_NAME = "Doric's Quest";
-    START_RECTANGLE = FALADOR_WEST_BANK;
-    QUEST_REQUIREMENTS = new String[] {};
-    SKILL_REQUIREMENTS = new int[][] {{SkillId.MINING.getId(), 15}};
-    ITEM_REQUIREMENTS = new int[][] {};
-    EQUIP_REQUIREMENTS = new int[][] {};
-    INVENTORY_SPACES_NEEDED = 13;
-    TOTAL_QUEST_STAGES = 1;
-    doQuestChecks();
-
-    while (c.isRunning()) {
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
-      QUEST_STAGE = c.getQuestStage(QUEST_ID);
+  public static void run() {
+    while (isQuesting()) {
       switch (QUEST_STAGE) {
         case 0:
           if (c.isRunning()) {
@@ -157,15 +145,10 @@ public final class QH_DoricsQuest extends QH__QuestHandler {
           if (c.isRunning()) talkToNpcId(DORIC_ID);
           sleepUntilQuestStageChanges();
           break;
-        case -1:
-          quit("Quest completed");
-          break;
         default:
-          quit("");
+          quit(QuitReason.QUEST_STAGE_NOT_IN_SWITCH);
           break;
       }
     }
-    quit("Script stopped");
-    return 1000;
   }
 }

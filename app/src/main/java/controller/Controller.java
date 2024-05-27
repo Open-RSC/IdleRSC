@@ -1,6 +1,7 @@
 package controller;
 
 import bot.Main;
+import bot.debugger.Debugger;
 import callbacks.DrawCallback;
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
@@ -6278,6 +6279,30 @@ public class Controller {
   }
 
   /**
+   * Returns a Map of bank items and their amount from the debugger. If you want to do checking
+   * while in a bank, use getBankItems() instead. The debugger stays populated the entire time
+   * you're logged in, and doesn't require being in a bank to use.
+   *
+   * @return Map - Bank items
+   */
+  public Map<Integer, Integer> getDebuggerBank() {
+    Map<Integer, Integer> bankMap = new HashMap<>();
+    try {
+      Debugger debugger = Main.getDebugger();
+      Field debuggerBankField = Debugger.class.getDeclaredField("bankItems");
+      debuggerBankField.setAccessible(true);
+      List<Item> bankList = (List<Item>) debuggerBankField.get(debugger);
+      if (bankList == null) return null;
+      if (bankList.size() > 0)
+        bankList.forEach(item -> bankMap.put(item.getCatalogID(), item.getAmount()));
+      return bankMap;
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      System.out.println(e);
+    }
+    return null;
+  }
+
+  /**
    * Display String "Hr:Min:Sec" version of milliseconds long int.
    *
    * @param milliseconds long timeInMilliseconds
@@ -6379,7 +6404,25 @@ public class Controller {
   }
 
   public void hideWelcomeScreen() {
-    System.out.println("Attempting tohide login screen...");
+    System.out.println("Attempting to hide login screen...");
     mud.setShowDialogMessage(false);
+  }
+
+  /**
+   * Returns the players gamemode. 0 is normal, 1 is ironman, 2 is ultimate, 3 is hardcore.
+   *
+   * @return int -- Mode
+   */
+  public int getPlayerMode() {
+    return mud.getIronmanInterface().getIronManMode();
+  }
+
+  /**
+   * Returns whether the player is an ironman mode.
+   *
+   * @return boolean
+   */
+  public boolean isPlayerAnIronMode() {
+    return getPlayerMode() != 0;
   }
 }

@@ -70,13 +70,8 @@ public class BruteForceUtils {
       }
     }
 
-    Main.getController()
-        .log(
-            "Can't find the closest walkable node to "
-                + x
-                + ", "
-                + y
-                + ", using Euclidean closest.");
+    System.out.println(
+        "Can't find the closest walkable node to " + x + ", " + y + ", using Euclidean closest.");
     closestNodeCache.put(cacheKey, findClosestNodeEuclidian(x, y, adjacencyList));
     return closestNodeCache.get(cacheKey);
   }

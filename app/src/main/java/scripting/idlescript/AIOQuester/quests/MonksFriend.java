@@ -1,9 +1,11 @@
-package scripting.idlescript;
+package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.ItemId;
 import models.entities.NpcId;
+import scripting.idlescript.AIOQuester.QuestHandler;
+import scripting.idlescript.AIOQuester.models.QuitReason;
 
-public final class QH_MonksFriend extends QH__QuestHandler {
+public final class MonksFriend extends QuestHandler {
   private static final int[] OUTSIDE_WAYPOINT = {589, 647};
   private static final int[] INSIDE_MONESTARY = {589, 664};
   private static final int BUCKET_OF_WATER = ItemId.BUCKET_OF_WATER.getId();
@@ -22,22 +24,9 @@ public final class QH_MonksFriend extends QH__QuestHandler {
     "Yes i'd be happy to",
   };
 
-  public int start(String[] param) { // warning does not handle food conditions
-    QUEST_NAME = "Monk's friend";
-    START_RECTANGLE = ARDY_MONASTERY;
-    QUEST_REQUIREMENTS = new String[] {};
-    SKILL_REQUIREMENTS = new int[][] {};
-    EQUIP_REQUIREMENTS = new int[][] {};
-    ITEM_REQUIREMENTS = new int[][] {{ItemId.BRONZE_AXE.getId(), 1}};
-    INVENTORY_SPACES_NEEDED = 5;
-    TOTAL_QUEST_STAGES = 6;
-    doQuestChecks();
+  public static void run() {
     c.log("~ by Kaila", "mag");
-
-    while (c.isRunning()) {
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
-      QUEST_STAGE = c.getQuestStage(QUEST_ID);
+    while (isQuesting()) {
       switch (QUEST_STAGE) { // 6 stages in total
         case 0: // not started
           if (c.isRunning() && c.getInventoryItemCount(LOGS) == 0) {
@@ -69,7 +58,7 @@ public final class QH_MonksFriend extends QH__QuestHandler {
         case 1: // get the blanket and return it
           if (c.isRunning() && c.getInventoryItemCount(BLANKET) == 0) {
             CURRENT_QUEST_STEP = "Walking to Kandarin Dungeon";
-            if (isInRectangle(START_RECTANGLE))
+            if (isAtLocation(START_LOCATION))
               walkPath(new int[][] {OUTSIDE_WAYPOINT}); // walk outside
             pathWalker(618, 657); // walk to kandarin dungeon
           }
@@ -104,7 +93,7 @@ public final class QH_MonksFriend extends QH__QuestHandler {
         case 3: // Talk to cedric
           if (c.isRunning() && c.currentX() < 608) {
             CURRENT_QUEST_STEP = "Walking to Cedric";
-            if (isInRectangle(START_RECTANGLE))
+            if (isAtLocation(START_LOCATION))
               walkPath(new int[][] {OUTSIDE_WAYPOINT}); // walk outside
             pathWalker(616, 640);
             // walkPath(new int[][]{{589,653},{602,645},{615,636}}); //walk outside
@@ -134,7 +123,7 @@ public final class QH_MonksFriend extends QH__QuestHandler {
         case 4: // Sober them up
           if (c.isRunning() && c.currentX() < 608) {
             CURRENT_QUEST_STEP = "Walking to Cedric";
-            if (isInRectangle(START_RECTANGLE))
+            if (isAtLocation(START_LOCATION))
               walkPath(new int[][] {OUTSIDE_WAYPOINT}); // walk outside
             pathWalker(616, 640);
           }
@@ -174,15 +163,10 @@ public final class QH_MonksFriend extends QH__QuestHandler {
             sleepUntilQuestStageChanges();
           }
           break;
-        case -1:
-          quit("Quest completed");
-          break;
         default:
-          quit("");
+          quit(QuitReason.QUEST_STAGE_NOT_IN_SWITCH);
           break;
       }
     }
-    quit("Script stopped");
-    return 1000;
   }
 }

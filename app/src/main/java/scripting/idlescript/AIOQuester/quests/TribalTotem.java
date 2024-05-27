@@ -1,10 +1,12 @@
-package scripting.idlescript;
+package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.ItemId;
 import models.entities.NpcId;
-import models.entities.SkillId;
+import scripting.idlescript.AIOQuester.QuestHandler;
+import scripting.idlescript.AIOQuester.models.Location;
+import scripting.idlescript.AIOQuester.models.QuitReason;
 
-public final class QH_TribalTotem extends QH__QuestHandler {
+public final class TribalTotem extends QuestHandler {
   private static final int[][] BOAT_TO_HORACIO = {{546, 609}, {548, 594}, {554, 579}, {555, 579}};
   private static final int CPT_BARNABY = NpcId.CAPTAIN_BARNABY.getId();
   private static final int CST_OFFICIAL = NpcId.CUSTOMS_OFFICIAL.getId();
@@ -29,7 +31,7 @@ public final class QH_TribalTotem extends QH__QuestHandler {
     "I'm in search of adventure", "Ok I will get it back"
   };
 
-  private void openBradDoor() {
+  private static void openBradDoor() {
     int x = c.currentX();
     int y = c.currentY();
     while (c.currentX() == x && c.currentY() == y) {
@@ -47,30 +49,19 @@ public final class QH_TribalTotem extends QH__QuestHandler {
     }
   }
 
-  public int start(String[] param) { // warning does not handle food conditions
-    QUEST_NAME = "Tribal totem";
+  public static void run() { // warning does not handle food conditions
     if (c.currentX() < 500 && c.currentX() > 400 && c.currentY() > 645) {
-      START_RECTANGLE = SHRIMP_AND_PARROT; // on brim
+      START_LOCATION = Location.BRIMHAVEN_SHRIMP_AND_PARROT;
     } else {
-      START_RECTANGLE = ARDY_SOUTH_BANK;
+      START_LOCATION = Location.ARDOUGNE_SOUTH_BANK;
     }
-    QUEST_REQUIREMENTS = new String[] {};
-    SKILL_REQUIREMENTS = new int[][] {{SkillId.THIEVING.getId(), 21}};
-    EQUIP_REQUIREMENTS = new int[][] {};
-    ITEM_REQUIREMENTS = new int[][] {{ItemId.COINS.getId(), 1000}};
-    INVENTORY_SPACES_NEEDED = 5;
-    TOTAL_QUEST_STAGES = 2;
-    doQuestChecks();
+
     // c.log("WARNING: Entering dangerous areas, low combat not recommended", "red");
     c.log("~ by Kaila", "mag");
-
-    while (c.isRunning()) { // start cases with pathwalk for resume cases
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
-      QUEST_STAGE = c.getQuestStage(QUEST_ID);
+    while (isQuesting()) {
       switch (QUEST_STAGE) { // 6 stages in total
         case 0: // not started
-          if (c.isRunning() && !isInRectangle(START_RECTANGLE)) {
+          if (c.isRunning() && !isAtLocation(START_LOCATION)) {
             CURRENT_QUEST_STEP = "Walking back to Start";
             pathWalker(546, 615);
           }
@@ -81,7 +72,10 @@ public final class QH_TribalTotem extends QH__QuestHandler {
             CURRENT_QUEST_STEP = "Boat to Brimhaven";
             followNPCDialog(CPT_BARNABY, BOAT_TO_BRIM_DIALOG);
             CURRENT_QUEST_STEP = "Walking to Bar";
-            c.walkTo(467, 659);
+            while (!c.isCloseToCoord(467, 659) && c.isRunning()) {
+              c.walkTo(467, 659);
+              c.sleep(640);
+            }
             pathWalker(451, 688);
             CURRENT_QUEST_STEP = "Starting Quest";
             followNPCDialog(KANGAI_MAU, KANGAI_MAU_START_DIALOG);
@@ -188,7 +182,10 @@ public final class QH_TribalTotem extends QH__QuestHandler {
             }
             if (c.isRunning()) {
               CURRENT_QUEST_STEP = "Walking to Bar";
-              c.walkTo(467, 659);
+              while (!c.isCloseToCoord(467, 659) && c.isRunning()) {
+                c.walkTo(467, 659);
+                c.sleep(640);
+              }
               pathWalker(451, 688);
               CURRENT_QUEST_STEP = "Ending Quest";
               talkToNpcId(KANGAI_MAU);
@@ -196,15 +193,10 @@ public final class QH_TribalTotem extends QH__QuestHandler {
             }
           }
           break;
-        case -1:
-          quit("Quest completed");
-          break;
         default:
-          quit("");
+          quit(QuitReason.QUEST_STAGE_NOT_IN_SWITCH);
           break;
       }
     }
-    quit("Script stopped");
-    return 1000;
   }
 }

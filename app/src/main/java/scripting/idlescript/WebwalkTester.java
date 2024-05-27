@@ -1,38 +1,82 @@
 package scripting.idlescript;
 
 import bot.Main;
-import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
- * Tests walking around the map to random locations
+ * Tests walking to specific coordinates passed as parameters
  *
- * @author Red Bracket
+ * @author
  */
 public class WebwalkTester extends IdleScript {
 
-  private final List<List<Integer>> coords =
-      Arrays.asList(
-          Arrays.asList(111, 659), // North of Church
-          Arrays.asList(116, 635), // By Goblin House
-          Arrays.asList(115, 711), // Lummy mines
-          Arrays.asList(118, 607), // Chicken pen
-          Arrays.asList(162, 652)); // Southwest of HAM hideout
-  private List<Integer> dest = coords.get(0);
-  private int successCount = 0;
+  private Queue<Integer> coordinates = new LinkedList<>();
+  private boolean scriptStarted = false;
+  private Integer currentDestX = null;
+  private Integer currentDestY = null;
 
   public int start(String[] parameters) {
-    if (Main.getController().currentX() == dest.get(0)
-        && Main.getController().currentY() == dest.get(1)) {
-      Main.getController().log("Reached dest! Picking new location..");
-      dest = coords.get((int) (Math.random() * coords.size()));
-      successCount += 1;
+    if (!scriptStarted) {
+      if (!startup(parameters)) stop();
     }
 
-    Main.getController().log("Webwalking to: " + dest.get(0) + ", " + dest.get(1));
-    Main.getController().walkTowards(dest.get(0), dest.get(1));
+    if (currentDestX == null && currentDestY == null) {
+      if (coordinates.isEmpty()) {
+        Main.getController().log("All destinations reached!");
+        stop();
+        return 0;
+      } else {
+        currentDestX = coordinates.poll();
+        currentDestY = coordinates.poll();
+        Main.getController().log("New destination: " + currentDestX + ", " + currentDestY);
+      }
+    }
+
+    if (Main.getController().currentX() == currentDestX
+        && Main.getController().currentY() == currentDestY) {
+      Main.getController().log("Made it to " + currentDestX + ", " + currentDestY + "!");
+      currentDestX = null;
+      currentDestY = null;
+    } else {
+      Main.getController().log("Webwalking to: " + currentDestX + ", " + currentDestY);
+      Main.getController().walkTowards(currentDestX, currentDestY);
+    }
 
     return 1000;
+  }
+
+  private boolean startup(String[] parameters) {
+    scriptStarted = true;
+    if (parameters.length != 1) {
+      Main.getController()
+          .log("Invalid parameters. Please pass in coordinates as comma-separated integers.");
+      return false;
+    }
+
+    String[] coords = parameters[0].split(",");
+    if (coords.length % 2 != 0) {
+      Main.getController()
+          .log("Invalid format. Please pass in an even number of comma-separated integers.");
+      return false;
+    }
+
+    try {
+      for (String coord : coords) {
+        coordinates.add(Integer.parseInt(coord.trim()));
+      }
+    } catch (NumberFormatException e) {
+      Main.getController().log("Invalid format. Coordinates must be integers.");
+      return false;
+    }
+
+    return true;
+  }
+
+  private void stop() {
+    scriptStarted = false;
+    coordinates.clear();
+    Main.getController().stop();
   }
 
   @Override
@@ -48,14 +92,17 @@ public class WebwalkTester extends IdleScript {
             21 + 14 * 1,
             0xFFFFFF,
             1);
+    if (currentDestX != null && currentDestY != null) {
+      Main.getController()
+          .drawString(
+              "@red@Current destination: " + currentDestX + ", " + currentDestY,
+              6,
+              21 + 14 * 2,
+              0xFFFFFF,
+              1);
+    }
     Main.getController()
         .drawString(
-            "@red@Current destination: " + dest.get(0) + ", " + dest.get(1),
-            6,
-            21 + 14 * 2,
-            0xFFFFFF,
-            1);
-    Main.getController()
-        .drawString("@red@Successful walks: " + successCount, 6, 21 + 14 * 3, 0xFFFFFF, 1);
+            "@red@Remaining destinations: " + coordinates.size() / 2, 6, 21 + 14 * 3, 0xFFFFFF, 1);
   }
 }

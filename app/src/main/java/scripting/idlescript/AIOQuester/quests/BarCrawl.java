@@ -1,8 +1,10 @@
-package scripting.idlescript;
+package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.*;
+import scripting.idlescript.AIOQuester.QuestHandler;
+import scripting.idlescript.AIOQuester.models.QuitReason;
 
-public final class QH_BarCrawl extends QH__QuestHandler {
+public final class BarCrawl extends QuestHandler {
   private static final int[] BARB_OUTPOST_DOOR = {494, 543};
   // ITEM IDS
   private static final int BAR_CRAWL_CARD = ItemId.BARCRAWL_CARD.getId();
@@ -25,20 +27,9 @@ public final class QH_BarCrawl extends QH__QuestHandler {
     "I want to come through this gate", "Looks can be deceiving, I am in fact a barbarian"
   };
 
-  public int start(String[] param) { // warning does not handle food conditions
-    QUEST_NAME = "Miniquest";
-    START_RECTANGLE = BARB_OUTPOST;
-    QUEST_REQUIREMENTS = new String[] {};
-    SKILL_REQUIREMENTS = new int[][] {};
-    EQUIP_REQUIREMENTS = new int[][] {};
-    ITEM_REQUIREMENTS = new int[][] {{ItemId.COINS.getId(), 1000}};
-    INVENTORY_SPACES_NEEDED = 5;
-    doQuestChecks();
+  public static void run() { // warning does not handle food conditions
     c.log("~ by Kaila", "mag");
-
-    while (c.isRunning()) {
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
+    while (isQuesting()) {
       if (c.isRunning()) {
         CURRENT_QUEST_STEP = "Starting Barcrawl";
         c.walkTo(494, 544);
@@ -48,13 +39,12 @@ public final class QH_BarCrawl extends QH__QuestHandler {
       }
       doBarCrawl();
       CURRENT_QUEST_STEP = "Quest Complete";
-      quit("Quest completed");
+      quit(QuitReason.QUEST_COMPLETED);
     }
-    quit("Script stopped");
-    return 1000;
+    quit(QuitReason.SCRIPT_STOPPED);
   }
 
-  public void doBarCrawl() {
+  public static void doBarCrawl() {
     if (c.getInventoryItemCount(BAR_CRAWL_CARD) > 0) { // do bar crawl
       if (c.isRunning()) {
         CURRENT_QUEST_STEP = "Going to Brimhaven Pub";

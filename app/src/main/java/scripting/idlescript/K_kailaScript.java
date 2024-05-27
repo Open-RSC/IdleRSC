@@ -991,7 +991,7 @@ public class K_kailaScript extends IdleScript {
    *     combat.
    * @return boolean -- true if was able to drink, false if not
    */
-  protected static boolean drinkAnti(boolean leaveCombat) {
+  public static boolean drinkAnti(boolean leaveCombat) {
     int[] curepoison = {
       ItemId.CURE_POISON_POTION_1DOSE.getId(),
       ItemId.CURE_POISON_POTION_2DOSE.getId(),

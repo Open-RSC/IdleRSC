@@ -1,8 +1,12 @@
-package scripting.idlescript;
+package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.*;
+import scripting.idlescript.AIOQuester.QuestHandler;
+import scripting.idlescript.AIOQuester.models.Location;
+import scripting.idlescript.AIOQuester.models.QuitReason;
+import scripting.idlescript.K_kailaScript;
 
-public final class QH_ScorpionCatcher extends QH__QuestHandler {
+public final class ScorpionCatcher extends QuestHandler {
 
   // MAP POINTS377,520
   private static final MapPoint TOWER_ENTRANCE = new MapPoint(511, 507);
@@ -12,8 +16,6 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
   private static final MapPoint MONESTARY_LADDER = new MapPoint(251, 467);
   private static final MapPoint PRAYER_ALTER = new MapPoint(262, 460);
   private static final MapPoint TAV_LADDER_ABOVE = new MapPoint(377, 520);
-  private static final MapPoint TAV_LADDER_UNDER = new MapPoint(376, 3351);
-  private static final MapPoint TAV_DUSTY_WAYPOINT = new MapPoint(376, 3351);
   // OBJECT COORDINATES
   private static final int[] TOWER_LADDER_UP = {510, 507};
   private static final int[] TOWER_LADDER_DOWN = {510, 1451};
@@ -28,25 +30,11 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
   private static final int SCORP_CAGE_STAGE_2 = ItemId.SCORPION_CAGE_TWO.getId();
   private static final int SCORP_CAGE_STAGE_3 = ItemId.SCORPION_CAGE_TWO_THREE.getId();
   private static final int SCORP_CAGE_STAGE_4 = ItemId.SCORPION_CAGE_ONE_TWO_THREE.getId();
-  private static final int BAR_CRAWL_CARD = ItemId.BARCRAWL_CARD.getId();
   // NPC IDS
-  private static final int CPT_BARNABY = NpcId.CAPTAIN_BARNABY.getId();
-  private static final int CST_OFFICIAL = NpcId.CUSTOMS_OFFICIAL.getId();
   private static final int THORMAC_ID = NpcId.THORMAC_THE_SORCEROR.getId();
   private static final int SEER_ID = NpcId.SEER.getId();
   private static final int MONK_ID = NpcId.ABBOT_LANGLEY.getId();
-  private static final int BRIM_TENDER = NpcId.BARTENDER_BRIMHAVEN.getId();
-  private static final int SEERS_TENDER = NpcId.BARTENDER_SEERS.getId();
-  private static final int FALADOR_TENDER = NpcId.BARMAID.getId();
-  private static final int SARIM_TENDER = NpcId.BARTENDER_PORTSARIM.getId();
-  private static final int VARROCK_TENDER = NpcId.BARTENDER_VARROCK.getId();
-  private static final int BOAR_TENDER = NpcId.BARTENDER_JOLLY_BOAR.getId();
   // NPC DIALOGS
-  private static final String[] BOAT_TO_BRIM_DIALOG = {"Yes please"};
-  private static final String[] GENERIC_TENDER_DIALOG = {"I'm doing Alfred Grimhand's barcrawl"};
-  private static final String[] BOAT_TO_ARDY_DIALOG = {
-    "Can I board this ship?", "Search away I have nothing to hide", "Ok"
-  };
   private static final String[] THORMAC_START_QUEST_DIALOG = {
     "What do you need assistance with?",
     "So how would I go about catching them then?",
@@ -59,9 +47,8 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
     "I need to locate some scorpions",
   };
   private static final String[] MONK_DIALOG = {"Well can i join your order?"};
-  private static final int[][] BARB_OUTPOST_REC = {{485, 541}, {493, 555}};
 
-  private void drinkAnti() {
+  private static void drinkAnti() {
     timeToDrinkAntidote = false;
     if (K_kailaScript.drinkAnti(true)) {
       c.stop();
@@ -69,39 +56,27 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
     }
   }
 
-  public int start(String[] param) { // warning does not handle food conditions
-    QUEST_NAME = "Scorpion catcher";
+  public static void run() { // warning does not handle food conditions
     if (c.getInventoryItemCount(SCORP_CAGE_STAGE_1) == 1) {
-      START_RECTANGLE = BARB_OUTPOST;
+      START_LOCATION = Location.BARBARIAN_OUTPOST_ENTRANCE;
     } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_2) == 1) {
-      START_RECTANGLE = EDGE_MONASTERY;
+      START_LOCATION = Location.EDGEVILLE_MONASTERY;
     } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_3) == 1) {
-      START_RECTANGLE = TAV_DUNGEON_LADDER;
+      START_LOCATION = Location.TAVERLEY_DUNGEON_ENTRANCE_OUTER;
     } else if (c.currentY() > 1200) {
-      START_RECTANGLE = SORCERERS_TOWER_ABOVE;
+      START_LOCATION = Location.SORCERERS_TOWER_ABOVE;
     } else {
-      START_RECTANGLE = SORCERERS_TOWER;
+      START_LOCATION = Location.SORCERERS_TOWER;
     }
-    QUEST_REQUIREMENTS = new String[] {};
-    SKILL_REQUIREMENTS = new int[][] {{SkillId.PRAYER.getId(), 31}, {SkillId.AGILITY.getId(), 70}};
-    EQUIP_REQUIREMENTS = new int[][] {{ItemId.ANTI_DRAGON_BREATH_SHIELD.getId(), 1}};
-    ITEM_REQUIREMENTS = new int[][] {{ItemId.COINS.getId(), 1000}};
-    INVENTORY_SPACES_NEEDED = 5;
-    TOTAL_QUEST_STAGES = 2;
-    doQuestChecks();
     c.log("~ by Kaila", "mag");
-
-    while (c.isRunning()) {
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
-      QUEST_STAGE = c.getQuestStage(QUEST_ID);
+    while (isQuesting()) {
       switch (QUEST_STAGE) {
         case 0: // not started
           // get anti
           if (c.isRunning()
               && c.getInventoryItemCount(ItemId.CURE_POISON_POTION_1DOSE.getId()) == 0) {
             CURRENT_QUEST_STEP = "Getting cure poison potion";
-            if (isInRectangle(SORCERERS_TOWER_ABOVE)) climb(510, 1451);
+            if (isAtLocation(Location.SORCERERS_TOWER_ABOVE)) climb(510, 1451);
             c.walkTo(511, 513); // outside tower
             pathWalker(new MapPoint(631, 634)); // battlefield
             pathWalker(new MapPoint(691, 678)); // goblins
@@ -110,7 +85,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
             c.walkTo(691, 678); // outside gobs
             pathWalker(new MapPoint(631, 634)); // battlefield
           }
-          if (c.isRunning() && !isInRectangle(SORCERERS_TOWER_ABOVE)) {
+          if (c.isRunning() && !isAtLocation(Location.SORCERERS_TOWER_ABOVE)) {
             CURRENT_QUEST_STEP = "Walking to Thormac";
             pathWalker(TOWER_ENTRANCE);
             climb(TOWER_LADDER_UP);
@@ -153,8 +128,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
                 c.sleep(3000);
               }
             }
-            QH_BarCrawl barCrawl = new QH_BarCrawl();
-            barCrawl.doBarCrawl();
+            BarCrawl.doBarCrawl();
 
             if (c.isRunning()) {
               CURRENT_QUEST_STEP = "Getting Barb Outpost Scorpion";
@@ -165,7 +139,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
             //   DO IN THIS ORDER barb outpost, monestary, tavelry
           } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_2) == 1) {
             if (c.isRunning()) {
-              if (isInRectangle(BARB_OUTPOST_REC)) {
+              if (isAtLocation(Location.BARBARIAN_OUTPOST_INNER)) {
                 atObject(BARB_OUTPOST_DOOR);
               }
               CURRENT_QUEST_STEP = "Walking to Monestery Scorpion";
@@ -224,7 +198,7 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
               c.walkTo(374, 513);
             }
           } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_4) == 1) {
-            if (c.isRunning() && !isInRectangle(SORCERERS_TOWER_ABOVE)) {
+            if (c.isRunning() && !isAtLocation(Location.SORCERERS_TOWER_ABOVE)) {
               CURRENT_QUEST_STEP = "Walking to Tower";
               if (timeToDrinkAntidote) drinkAnti();
               pathWalker(TOWER_ENTRANCE);
@@ -239,15 +213,10 @@ public final class QH_ScorpionCatcher extends QH__QuestHandler {
             }
           }
           break;
-        case -1:
-          quit("Quest completed");
-          break;
         default:
-          quit("");
+          quit(QuitReason.QUEST_STAGE_NOT_IN_SWITCH);
           break;
       }
     }
-    quit("Script stopped");
-    return 1000;
   }
 }

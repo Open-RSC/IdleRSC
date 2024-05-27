@@ -33,6 +33,7 @@ import models.entities.ItemId;
  * @author Dvorak - origional script
  *     <p>Searos - modified and expanded
  *     <p>Kaila - full update, gui, rewrite
+ *     <p>Seatta - fixed holy/unholy symbol crafting and replaced ids with ItemIds
  */
 /*
  * todo
@@ -54,35 +55,35 @@ public class AIOSmelter extends IdleScript {
   private long startTime;
   private int destinationId = -1;
   private final int[] productIds = { // product smelting in same order as options
-    169,
-    170,
-    384,
-    171,
-    1041,
-    172,
-    173,
-    174,
-    408,
-    44,
-    1027,
-    283,
-    288,
-    296,
-    284,
-    289,
-    297,
-    285,
-    290,
-    298,
-    286,
-    291,
-    299,
-    287,
-    292,
-    300,
-    543,
-    544,
-    524,
+    ItemId.BRONZE_BAR.getId(),
+    ItemId.IRON_BAR.getId(),
+    ItemId.SILVER_BAR.getId(),
+    ItemId.STEEL_BAR.getId(),
+    ItemId.MULTI_CANNON_BALL.getId(),
+    ItemId.GOLD_BAR.getId(),
+    ItemId.MITHRIL_BAR.getId(),
+    ItemId.ADAMANTITE_BAR.getId(),
+    ItemId.RUNITE_BAR.getId(),
+    ItemId.UNSTRUNG_HOLY_SYMBOL_OF_SARADOMIN.getId(),
+    ItemId.UNSTRUNG_UNHOLY_SYMBOL_OF_ZAMORAK.getId(),
+    ItemId.GOLD_RING.getId(),
+    ItemId.GOLD_NECKLACE.getId(),
+    ItemId.UNSTRUNG_GOLD_AMULET.getId(),
+    ItemId.SAPPHIRE_RING.getId(),
+    ItemId.SAPPHIRE_NECKLACE.getId(),
+    ItemId.UNSTRUNG_SAPPHIRE_AMULET.getId(),
+    ItemId.EMERALD_RING.getId(),
+    ItemId.EMERALD_NECKLACE.getId(),
+    ItemId.UNSTRUNG_EMERALD_AMULET.getId(),
+    ItemId.RUBY_RING.getId(),
+    ItemId.RUBY_NECKLACE.getId(),
+    ItemId.UNSTRUNG_RUBY_AMULET.getId(),
+    ItemId.DIAMOND_RING.getId(),
+    ItemId.DIAMOND_NECKLACE.getId(),
+    ItemId.UNSTRUNG_DIAMOND_AMULET.getId(),
+    ItemId.DRAGONSTONE_RING.getId(),
+    ItemId.DRAGONSTONE_NECKLACE.getId(),
+    ItemId.UNSTRUNG_DRAGONSTONE_AMULET.getId(),
     ItemId.GOLD_CROWN.getId(),
     ItemId.SAPPHIRE_CROWN.getId(),
     ItemId.EMERALD_CROWN.getId(),
@@ -182,6 +183,9 @@ public class AIOSmelter extends IdleScript {
           c.stop();
         }
       }*/
+
+    // Fixes UI not showing up after stopping the script once in a session
+    if (!c.isRunning()) guiSetup = false;
     return 1000; // start() must return an int value now.
   }
 
@@ -205,35 +209,43 @@ public class AIOSmelter extends IdleScript {
         int mouldAnswer = -1;
         int gemAnswer = 0;
 
-        if (oreId == 1057) { // do not use the cannonball mold on the furnace!
-          oreId = 171;
-        } else if (c.getInventoryItemCount(293) > 0) {
-          oreId = 172;
+        if (oreId
+            == ItemId.CANNON_AMMO_MOULD.getId()) { // do not use the cannonball mold on the furnace!
+          oreId = ItemId.STEEL_BAR.getId();
+        } else if (c.getInventoryItemCount(ItemId.RING_MOULD.getId()) > 0) {
+          oreId = ItemId.GOLD_BAR.getId();
           mouldAnswer = 0;
-        } else if (c.getInventoryItemCount(295) > 0) {
-          oreId = 172;
+        } else if (c.getInventoryItemCount(ItemId.NECKLACE_MOULD.getId()) > 0) {
+          oreId = ItemId.GOLD_BAR.getId();
           mouldAnswer = 0; // was 1, Fixes menuing after crafting update
-        } else if (c.getInventoryItemCount(294) > 0) {
-          oreId = 172;
+        } else if (c.getInventoryItemCount(ItemId.AMULET_MOULD.getId()) > 0) {
+          oreId = ItemId.GOLD_BAR.getId();
           mouldAnswer = 0; // was 2, Fixes menuing after crafting update
-        } else if (c.getInventoryItemCount(1502) > 0) {
-          oreId = 172;
+        } else if (c.getInventoryItemCount(ItemId.CROWN_MOULD.getId()) > 0) {
+          oreId = ItemId.GOLD_BAR.getId();
           mouldAnswer = 0;
+        } else if (c.getInventoryItemCount(ItemId.HOLY_SYMBOL_MOULD.getId()) > 0) {
+          oreId = ItemId.SILVER_BAR.getId();
+          mouldAnswer = 0;
+        } else if (c.getInventoryItemCount(ItemId.UNHOLY_SYMBOL_MOULD.getId()) > 0) {
+          oreId = ItemId.SILVER_BAR.getId();
+          mouldAnswer = 1;
         }
 
         if (c.isAuthentic()) { // for uranium only
-          if (c.getInventoryItemCount(164) > 0) gemAnswer = 1;
-          if (c.getInventoryItemCount(163) > 0) gemAnswer = 2;
-          if (c.getInventoryItemCount(162) > 0) gemAnswer = 3;
-          if (c.getInventoryItemCount(161) > 0) gemAnswer = 4;
-          if (c.getInventoryItemCount(523) > 0) gemAnswer = 5;
+          if (c.getInventoryItemCount(ItemId.SAPPHIRE.getId()) > 0) gemAnswer = 1;
+          if (c.getInventoryItemCount(ItemId.EMERALD.getId()) > 0) gemAnswer = 2;
+          if (c.getInventoryItemCount(ItemId.RUBY.getId()) > 0) gemAnswer = 3;
+          if (c.getInventoryItemCount(ItemId.DIAMOND.getId()) > 0) gemAnswer = 4;
+          if (c.getInventoryItemCount(ItemId.DRAGONSTONE.getId()) > 0) gemAnswer = 5;
         }
         if (c.getInventoryItemCount(oreId) > 0 && c.getNearestObjectById(118) != null) {
 
           c.waitForBatching(false);
-          if (c.getInventoryItemCount(699) > 0) { // wield gauntlets
+          if (c.getInventoryItemCount(ItemId.GAUNTLETS_OF_GOLDSMITHING.getId())
+              > 0) { // wield gauntlets
             c.setStatus("Wielding gauntlets..");
-            c.equipItem(c.getInventoryItemSlotIndex(699));
+            c.equipItem(c.getInventoryItemSlotIndex(ItemId.GAUNTLETS_OF_GOLDSMITHING.getId()));
             c.sleep(618);
           }
           c.setStatus("Smelting!");
@@ -243,10 +255,10 @@ public class AIOSmelter extends IdleScript {
                 c.getNearestObjectById(118)[0], c.getNearestObjectById(118)[1], oreId);
             c.sleep(640); // added tick to resync the bot before checking batching
           }
-          if (oreId == 171) {
+          if (oreId == ItemId.STEEL_BAR.getId()) {
             c.sleep(
                 3000); // cannonballs take way longer and can be interrupted by starting another one
-          } else if (oreId == 172) {
+          } else if (oreId == ItemId.GOLD_BAR.getId() || oreId == ItemId.SILVER_BAR.getId()) {
             c.sleep(800);
             c.optionAnswer(mouldAnswer);
             c.sleep(800);
@@ -279,17 +291,20 @@ public class AIOSmelter extends IdleScript {
     c.sleep(2000);
     if (c.isInBank()) {
       for (int itemId : c.getInventoryUniqueItemIds()) {
-        if (itemId != 0 && itemId != 1263 && itemId != 1057) {
+        if (itemId != 0
+            && itemId != ItemId.SLEEPING_BAG.getId()
+            && itemId != ItemId.CANNON_AMMO_MOULD.getId()) {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
           c.sleep(618);
         }
       }
       c.sleep(1280);
       for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
-        if (entry.getKey() == 699) continue;
+        if (entry.getKey() == ItemId.GAUNTLETS_OF_GOLDSMITHING.getId()) continue;
 
-        if (entry.getKey() == 151 || entry.getKey() == 153) {
-          if (c.getInventoryItemCount(1263) > 0)
+        if (entry.getKey() == ItemId.IRON_ORE.getId()
+            || entry.getKey() == ItemId.MITHRIL_ORE.getId()) {
+          if (c.getInventoryItemCount(ItemId.SLEEPING_BAG.getId()) > 0)
             c.withdrawItem(entry.getKey(), entry.getValue() - 1);
           else c.withdrawItem(entry.getKey(), entry.getValue());
 
@@ -307,9 +322,9 @@ public class AIOSmelter extends IdleScript {
 
   private boolean isEnoughOre() {
     for (Map.Entry<Integer, Integer> entry : ingredients.entrySet()) {
-      if (entry.getKey() == 699) continue;
+      if (entry.getKey() == ItemId.GAUNTLETS_OF_GOLDSMITHING.getId()) continue;
 
-      if (c.getInventoryItemCount(1263) > 0) {
+      if (c.getInventoryItemCount(ItemId.SLEEPING_BAG.getId()) > 0) {
         if (c.getInventoryItemCount(entry.getKey())
             < entry.getValue()
                 - 1) // this is why bot leaves after 1 ore when batching is off. When ores in inv
@@ -386,96 +401,112 @@ public class AIOSmelter extends IdleScript {
   }
 
   private void whatIsOreId() {
-    if (barId == 169) { // bronze Bars
-      primaryOreId = 150;
-      secondaryOreId = 202;
+    if (barId == ItemId.BRONZE_BAR.getId()) { // bronze Bars
+      primaryOreId = ItemId.COPPER_ORE.getId();
+      secondaryOreId = ItemId.TIN_ORE.getId();
       barName = "Bronze Bars";
       primaryName = "Copper";
       secondaryName = "Tin";
-    } else if (barId == 170) { // Iron Bars
-      primaryOreId = 151;
+    } else if (barId == ItemId.IRON_BAR.getId()) { // Iron Bars
+      primaryOreId = ItemId.IRON_ORE.getId();
       barName = "Iron Bars";
       primaryName = "Iron Ore";
       secondaryName = "N/A";
-    } else if (barId == 384) { // Silver Bars
-      primaryOreId = 383;
+    } else if (barId == ItemId.SILVER_BAR.getId()) { // Silver Bars
+      primaryOreId = ItemId.SILVER.getId();
       barName = "Silver Bars";
       primaryName = "Silver Ore";
       secondaryName = "N/A";
-    } else if (barId == 171) { // Steel Bars
-      primaryOreId = 151;
-      secondaryOreId = 155;
+    } else if (barId == ItemId.STEEL_BAR.getId()) { // Steel Bars
+      primaryOreId = ItemId.IRON_ORE.getId();
+      secondaryOreId = ItemId.COAL.getId();
       barName = "Steel Bars";
       primaryName = "Iron Ore";
       secondaryName = "Coal Ore";
-    } else if (barId == 1041) { // Cannonballs
-      primaryOreId = 171;
+    } else if (barId == ItemId.MULTI_CANNON_BALL.getId()) { // Cannonballs
+      primaryOreId = ItemId.STEEL_BAR.getId();
       barName = "Cannonballs";
       primaryName = "Steel Bars";
       secondaryName = "N/A";
-    } else if (barId == 172) { // Gold Bars
-      primaryOreId = 152;
+    } else if (barId == ItemId.GOLD_BAR.getId()) { // Gold Bars
+      primaryOreId = ItemId.GOLD.getId();
       barName = "Gold Bars";
       primaryName = "Gold Ore";
       secondaryName = "N/A";
-    } else if (barId == 173) { // Mithril Bar
-      primaryOreId = 153;
-      secondaryOreId = 155;
+    } else if (barId == ItemId.MITHRIL_BAR.getId()) { // Mithril Bar
+      primaryOreId = ItemId.MITHRIL_ORE.getId();
+      secondaryOreId = ItemId.COAL.getId();
       barName = "Mithril Bars";
       primaryName = "Mithril Ore";
       secondaryName = "Coal Ore";
-    } else if (barId == 174) { // Addy Bar
-      primaryOreId = 154;
-      secondaryOreId = 155;
+    } else if (barId == ItemId.ADAMANTITE_BAR.getId()) { // Addy Bar
+      primaryOreId = ItemId.ADAMANTITE_ORE.getId();
+      secondaryOreId = ItemId.COAL.getId();
       barName = "Addy Bars";
       primaryName = "Addy Ore";
       secondaryName = "Coal Ore";
-    } else if (barId == 408) { // Rune Bar
-      primaryOreId = 409;
-      secondaryOreId = 155;
+    } else if (barId == ItemId.RUNITE_BAR.getId()) { // Rune Bar
+      primaryOreId = ItemId.RUNITE_ORE.getId();
+      secondaryOreId = ItemId.COAL.getId();
       barName = "Rune Bars";
       primaryName = "Runite Ore";
       secondaryName = "Coal Ore";
-    } else if (barId == 44 || barId == 1027) { // holy/unholy/etc
+    } else if (barId == ItemId.UNSTRUNG_HOLY_SYMBOL_OF_SARADOMIN.getId()
+        || barId == ItemId.UNSTRUNG_UNHOLY_SYMBOL_OF_ZAMORAK.getId()) { // holy/unholy/etc
       primaryOreId = 29;
       barName = "Holy/Unholy Symbols";
       primaryName = "Silver Bar";
       secondaryName = "N/A";
-    } else if (barId == 283 || barId == 288 || barId == 296) { // gold jewelry
-      primaryOreId = 172;
+    } else if (barId == ItemId.GOLD_RING.getId()
+        || barId == ItemId.GOLD_NECKLACE.getId()
+        || barId == ItemId.UNSTRUNG_GOLD_AMULET.getId()
+        || barId == ItemId.GOLD_CROWN.getId()) { // gold jewelry
+      primaryOreId = ItemId.GOLD_BAR.getId();
       barName = "Gold Jewelry";
       primaryName = "Gold Ore";
       secondaryName = "N/A";
-    } else if (barId == 284 || barId == 289 || barId == 297 || barId == 1504) { // Sapphire Jewelry
-      primaryOreId = 164;
-      secondaryOreId = 172;
+    } else if (barId == ItemId.SAPPHIRE_RING.getId()
+        || barId == ItemId.SAPPHIRE_NECKLACE.getId()
+        || barId == ItemId.UNSTRUNG_SAPPHIRE_AMULET.getId()
+        || barId == ItemId.SAPPHIRE_CROWN.getId()) { // Sapphire Jewelry
+      primaryOreId = ItemId.SAPPHIRE.getId();
+      secondaryOreId = ItemId.GOLD_BAR.getId();
       barName = "Sapphire Jewelry";
       primaryName = "Sapphires";
       secondaryName = "Gold Bars";
-    } else if (barId == 285 || barId == 290 || barId == 298 || barId == 1505) { // Emerald Jewelry
-      primaryOreId = 163;
-      secondaryOreId = 172;
+    } else if (barId == ItemId.EMERALD_RING.getId()
+        || barId == ItemId.EMERALD_NECKLACE.getId()
+        || barId == ItemId.UNSTRUNG_EMERALD_AMULET.getId()
+        || barId == ItemId.EMERALD_CROWN.getId()) { // Emerald Jewelry
+      primaryOreId = ItemId.EMERALD.getId();
+      secondaryOreId = ItemId.GOLD_BAR.getId();
       barName = "Emerald Jewelry";
       primaryName = "Emeralds";
       secondaryName = "Gold Bars";
-    } else if (barId == 286 || barId == 291 || barId == 299 || barId == 1506) { // Ruby Jewelry
-      primaryOreId = 162;
-      secondaryOreId = 172;
+    } else if (barId == ItemId.RUBY_RING.getId()
+        || barId == ItemId.RUBY_NECKLACE.getId()
+        || barId == ItemId.UNSTRUNG_RUBY_AMULET.getId()
+        || barId == ItemId.RUBY_CROWN.getId()) { // Ruby Jewelry
+      primaryOreId = ItemId.RUBY.getId();
+      secondaryOreId = ItemId.GOLD_BAR.getId();
       barName = "Ruby Jewelry";
       primaryName = "Rubys";
       secondaryName = "Gold Bars";
-    } else if (barId == 287 || barId == 292 || barId == 300 || barId == 1507) { // Diamond Jewelry
-      primaryOreId = 172;
-      secondaryOreId = 202;
+    } else if (barId == ItemId.DIAMOND_RING.getId()
+        || barId == ItemId.DIAMOND_NECKLACE.getId()
+        || barId == ItemId.UNSTRUNG_DIAMOND_AMULET.getId()
+        || barId == ItemId.DIAMOND_CROWN.getId()) { // Diamond Jewelry
+      primaryOreId = ItemId.GOLD_BAR.getId();
+      secondaryOreId = ItemId.TIN_ORE.getId();
       barName = "Diamond Jewelry";
       primaryName = "Diamonds";
       secondaryName = "Gold Bars";
-    } else if (barId == 543
-        || barId == 544
-        || barId == 524
-        || barId == 1508) { // Dragonstone Jewelry
-      primaryOreId = 523;
-      secondaryOreId = 172;
+    } else if (barId == ItemId.DRAGONSTONE_RING.getId()
+        || barId == ItemId.DRAGONSTONE_NECKLACE.getId()
+        || barId == ItemId.UNSTRUNG_DRAGONSTONE_AMULET.getId()
+        || barId == ItemId.DRAGONSTONE_CROWN.getId()) { // Dragonstone Jewelry
+      primaryOreId = ItemId.DRAGONSTONE.getId();
+      secondaryOreId = ItemId.GOLD_BAR.getId();
       barName = "Dragonstone Jewelry";
       primaryName = "Dragonstones";
       secondaryName = "Gold Bars";
@@ -554,248 +585,248 @@ public class AIOSmelter extends IdleScript {
       new HashMap<Integer, Map<Integer, Integer>>() {
         {
           put(
-              169,
+              ItemId.BRONZE_BAR.getId(),
               new HashMap<Integer, Integer>() { // bronze
                 {
-                  put(150, 15);
-                  put(202, 15);
+                  put(ItemId.COPPER_ORE.getId(), 15);
+                  put(ItemId.TIN_ORE.getId(), 15);
                 }
               }); // bronze needs 1 copper and 1 tin
           put(
-              170,
+              ItemId.IRON_BAR.getId(),
               new HashMap<Integer, Integer>() { // iron
                 {
-                  put(151, 30);
+                  put(ItemId.IRON_ORE.getId(), 30);
                 }
               }); // iron needs 1 iron ore
           put(
-              384,
+              ItemId.SILVER_BAR.getId(),
               new HashMap<Integer, Integer>() { // silver
                 {
-                  put(383, 30);
+                  put(ItemId.SILVER.getId(), 30);
                 }
               }); // silver needs 1 silver ore
           put(
-              171,
+              ItemId.STEEL_BAR.getId(),
               new HashMap<Integer, Integer>() { // steel
                 {
-                  put(151, 10);
-                  put(155, 20);
+                  put(ItemId.IRON_ORE.getId(), 10);
+                  put(ItemId.COAL.getId(), 20);
                 }
               }); // steel needs 1 iron 2 coal
           put(
-              1041,
+              ItemId.MULTI_CANNON_BALL.getId(),
               new HashMap<Integer, Integer>() { // cannonballs
                 {
-                  put(1057, 1); // cannonballs
-                  put(171, 29);
+                  put(ItemId.CANNON_AMMO_MOULD.getId(), 1); // cannonballs
+                  put(ItemId.STEEL_BAR.getId(), 29);
                 }
               });
           put(
-              172,
+              ItemId.GOLD_BAR.getId(),
               new HashMap<Integer, Integer>() { // gold
                 {
-                  put(152, 29); // gold
-                  put(699, 1);
+                  put(ItemId.GOLD.getId(), 29); // gold
+                  put(ItemId.GAUNTLETS_OF_GOLDSMITHING.getId(), 1);
                 }
               }); // gold needs 1 gold ore
           put(
-              173,
+              ItemId.MITHRIL_BAR.getId(),
               new HashMap<Integer, Integer>() { // mith bar
                 {
-                  put(153, 6);
-                  put(155, 24); // coal
+                  put(ItemId.MITHRIL_ORE.getId(), 6);
+                  put(ItemId.COAL.getId(), 24); // coal
                 }
               });
           put(
-              174,
+              ItemId.ADAMANTITE_BAR.getId(),
               new HashMap<Integer, Integer>() { // addy bar
                 {
-                  put(154, 4);
-                  put(155, 24);
+                  put(ItemId.ADAMANTITE_ORE.getId(), 4);
+                  put(ItemId.COAL.getId(), 24);
                 }
               });
           put(
-              408,
+              ItemId.RUNITE_BAR.getId(),
               new HashMap<Integer, Integer>() { // runite bar
                 {
-                  put(409, 3);
-                  put(155, 24);
+                  put(ItemId.RUNITE_ORE.getId(), 3);
+                  put(ItemId.COAL.getId(), 24);
                 }
               });
           put(
-              44,
+              ItemId.UNSTRUNG_HOLY_SYMBOL_OF_SARADOMIN.getId(),
               new HashMap<Integer, Integer>() { // Holy symbol
                 {
-                  put(384, 29);
-                  put(386, 1);
+                  put(ItemId.SILVER_BAR.getId(), 29);
+                  put(ItemId.HOLY_SYMBOL_MOULD.getId(), 1);
                 }
               });
           put(
-              1027,
+              ItemId.UNSTRUNG_UNHOLY_SYMBOL_OF_ZAMORAK.getId(),
               new HashMap<Integer, Integer>() { // Unholy symbol
                 {
-                  put(384, 29);
-                  put(1026, 1);
+                  put(ItemId.SILVER_BAR.getId(), 29);
+                  put(ItemId.UNHOLY_SYMBOL_MOULD.getId(), 1);
                 }
               });
           put(
-              283,
+              ItemId.GOLD_RING.getId(),
               new HashMap<Integer, Integer>() { // Gold ring
                 {
-                  put(293, 1);
-                  put(172, 29);
+                  put(ItemId.RING_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 29);
                 }
               });
           put(
-              288,
+              ItemId.GOLD_NECKLACE.getId(),
               new HashMap<Integer, Integer>() { // Gold necklace
                 {
-                  put(295, 1);
-                  put(172, 29);
+                  put(ItemId.NECKLACE_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 29);
                 }
               });
           put(
-              296,
+              ItemId.UNSTRUNG_GOLD_AMULET.getId(),
               new HashMap<Integer, Integer>() { // Gold amulet
                 {
-                  put(294, 1);
-                  put(172, 29);
+                  put(ItemId.AMULET_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 29);
                 }
               });
           put(
-              284,
+              ItemId.SAPPHIRE_RING.getId(),
               new HashMap<Integer, Integer>() { // Sapphire ring
                 {
-                  put(293, 1);
-                  put(172, 14);
-                  put(164, 14);
+                  put(ItemId.RING_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.SAPPHIRE.getId(), 14);
                 }
               });
           put(
-              289,
+              ItemId.SAPPHIRE_NECKLACE.getId(),
               new HashMap<Integer, Integer>() { // Sapphire necklace
                 {
-                  put(295, 1);
-                  put(172, 14);
-                  put(164, 14);
+                  put(ItemId.NECKLACE_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.SAPPHIRE.getId(), 14);
                 }
               });
           put(
-              297,
+              ItemId.UNSTRUNG_SAPPHIRE_AMULET.getId(),
               new HashMap<Integer, Integer>() { // Sapphire amulet
                 {
-                  put(294, 1);
-                  put(172, 14);
-                  put(164, 14);
+                  put(ItemId.AMULET_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.SAPPHIRE.getId(), 14);
                 }
               });
           put(
-              285,
+              ItemId.EMERALD_RING.getId(),
               new HashMap<Integer, Integer>() { // Emerald ring
                 {
-                  put(293, 1);
-                  put(172, 14);
-                  put(163, 14);
+                  put(ItemId.RING_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.EMERALD.getId(), 14);
                 }
               });
           put(
-              290,
+              ItemId.EMERALD_NECKLACE.getId(),
               new HashMap<Integer, Integer>() { // Emerald necklace
                 {
-                  put(295, 1);
-                  put(172, 14);
-                  put(163, 14);
+                  put(ItemId.NECKLACE_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.EMERALD.getId(), 14);
                 }
               });
           put(
-              298,
+              ItemId.UNSTRUNG_EMERALD_AMULET.getId(),
               new HashMap<Integer, Integer>() { // Emerald amulet
                 {
-                  put(294, 1);
-                  put(172, 14);
-                  put(163, 14);
+                  put(ItemId.AMULET_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.EMERALD.getId(), 14);
                 }
               });
           put(
-              286,
+              ItemId.RUBY_RING.getId(),
               new HashMap<Integer, Integer>() { // Ruby ring
                 {
-                  put(293, 1);
-                  put(172, 14);
-                  put(162, 14);
+                  put(ItemId.RING_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.RUBY.getId(), 14);
                 }
               });
           put(
-              291,
+              ItemId.RUBY_NECKLACE.getId(),
               new HashMap<Integer, Integer>() { // Ruby necklace
                 {
-                  put(295, 1);
-                  put(172, 14);
-                  put(162, 14);
+                  put(ItemId.NECKLACE_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.RUBY.getId(), 14);
                 }
               });
           put(
-              299,
+              ItemId.UNSTRUNG_RUBY_AMULET.getId(),
               new HashMap<Integer, Integer>() { // Ruby amulet
                 {
-                  put(294, 1);
-                  put(172, 14);
-                  put(162, 14);
+                  put(ItemId.AMULET_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.RUBY.getId(), 14);
                 }
               });
           put(
-              287,
+              ItemId.DIAMOND_RING.getId(),
               new HashMap<Integer, Integer>() { // Diamond ring
                 {
-                  put(293, 1);
-                  put(172, 14);
-                  put(161, 14);
+                  put(ItemId.RING_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DIAMOND.getId(), 14);
                 }
               });
           put(
-              292,
+              ItemId.DIAMOND_NECKLACE.getId(),
               new HashMap<Integer, Integer>() { // Diamond necklace
                 {
-                  put(295, 1);
-                  put(172, 14);
-                  put(161, 14);
+                  put(ItemId.NECKLACE_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DIAMOND.getId(), 14);
                 }
               });
           put(
-              300,
+              ItemId.UNSTRUNG_DIAMOND_AMULET.getId(),
               new HashMap<Integer, Integer>() { // Diamond amulet
                 {
-                  put(294, 1);
-                  put(172, 14);
-                  put(161, 14);
+                  put(ItemId.AMULET_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DIAMOND.getId(), 14);
                 }
               });
           put(
-              543,
+              ItemId.DRAGONSTONE_RING.getId(),
               new HashMap<Integer, Integer>() { // Dragonstone ring
                 {
-                  put(293, 1);
-                  put(172, 14);
-                  put(523, 14);
+                  put(ItemId.RING_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DRAGONSTONE.getId(), 14);
                 }
               });
           put(
-              544,
+              ItemId.DRAGONSTONE_NECKLACE.getId(),
               new HashMap<Integer, Integer>() { // Dragonstone necklace
                 {
-                  put(295, 1);
-                  put(172, 14);
-                  put(523, 14);
+                  put(ItemId.NECKLACE_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DRAGONSTONE.getId(), 14);
                 }
               });
           put(
-              524,
+              ItemId.UNSTRUNG_DRAGONSTONE_AMULET.getId(),
               new HashMap<Integer, Integer>() { // Dragonstone amulet
                 {
-                  put(294, 1);
-                  put(172, 14);
-                  put(523, 14);
+                  put(ItemId.AMULET_MOULD.getId(), 1);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DRAGONSTONE.getId(), 14);
                 }
               });
           put(
@@ -811,8 +842,8 @@ public class AIOSmelter extends IdleScript {
               new HashMap<Integer, Integer>() { // Sapp Crown
                 {
                   put(ItemId.CROWN_MOULD.getId(), 1);
-                  put(172, 14);
-                  put(164, 14);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.SAPPHIRE.getId(), 14);
                 }
               });
           put(
@@ -820,8 +851,8 @@ public class AIOSmelter extends IdleScript {
               new HashMap<Integer, Integer>() { // Emerald Crown
                 {
                   put(ItemId.CROWN_MOULD.getId(), 1);
-                  put(172, 14);
-                  put(163, 14);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.EMERALD.getId(), 14);
                 }
               });
           put(
@@ -829,8 +860,8 @@ public class AIOSmelter extends IdleScript {
               new HashMap<Integer, Integer>() { // ruby Crown
                 {
                   put(ItemId.CROWN_MOULD.getId(), 1);
-                  put(172, 14);
-                  put(162, 14);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.RUBY.getId(), 14);
                 }
               });
           put(
@@ -838,8 +869,8 @@ public class AIOSmelter extends IdleScript {
               new HashMap<Integer, Integer>() { // Diamond Crown
                 {
                   put(ItemId.CROWN_MOULD.getId(), 1);
-                  put(172, 14);
-                  put(161, 14);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DIAMOND.getId(), 14);
                 }
               });
           put(
@@ -847,8 +878,8 @@ public class AIOSmelter extends IdleScript {
               new HashMap<Integer, Integer>() { // Dragonstone Crown
                 {
                   put(ItemId.CROWN_MOULD.getId(), 1);
-                  put(172, 14);
-                  put(523, 14);
+                  put(ItemId.GOLD_BAR.getId(), 14);
+                  put(ItemId.DRAGONSTONE.getId(), 14);
                 }
               });
         }

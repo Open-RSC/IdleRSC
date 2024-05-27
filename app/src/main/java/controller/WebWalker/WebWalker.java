@@ -24,7 +24,7 @@ public class WebWalker {
    * @param currentY the current Y coordinate
    * @param endCoords the array of end coordinate pairs, where each pair is an array of two integers
    *     [endX, endY]
-   * @return true if successfully took a step towards the closest end coordinate pair
+   * @return if successfully took a step towards the closest end coordinate pair
    */
   public boolean webwalkTowards(int currentX, int currentY, int[][] endCoords) {
     long startTime = System.currentTimeMillis();
@@ -35,8 +35,8 @@ public class WebWalker {
     }
 
     if (closestNodesToEndCoords.isEmpty()) {
-      Main.getController()
-          .log("No walkable end nodes found, yeeting off in a random direction to get unstuck..");
+      System.out.println(
+          "No walkable end nodes found, yeeting off in a random direction to get unstuck..");
       Main.getController()
           .walkTo(
               currentX + ThreadLocalRandom.current().nextInt(-5, 6),
@@ -70,43 +70,70 @@ public class WebWalker {
     for (WebwalkNode node : path) {
       pathLog.append("(").append(node.getX()).append(", ").append(node.getY()).append(") -> ");
     }
-    Main.getController()
-        .log(
-            "Path calculated in "
-                + (System.currentTimeMillis() - startTime)
-                + "ms: "
-                + pathLog.substring(0, pathLog.length() - 4));
+    System.out.println(
+        "Path calculated in "
+            + (System.currentTimeMillis() - startTime)
+            + "ms: "
+            + pathLog.substring(0, pathLog.length() - 4));
 
-    // Walk the first edge of the path
-
-    if (path.get(0).getX() == Main.getController().currentX()
-        && path.get(0).getY() == Main.getController().currentY()) {
-      System.out.println(
-          "Removed the first element of the path because it's the same as the current position");
-      path.remove(0);
-      if (path.size() == 1) {
-        // We were already standing on a web node, but we removed it. We're right beside the end
-        // though, so just go
-        Main.getController().walkDamnit(path.get(0).getX(), path.get(0).getY());
-        return true;
-      }
+    if (path.size() == 1) {
+      Main.getController().log("Walking to the last node..");
+      Main.getController().walkDamnit(path.get(0).getX(), path.get(0).getY());
+      return true;
     }
 
     WebwalkEdge edge = graph.getEdge(path.get(0), path.get(1));
     if (edge != null && edge.getLabel().isPresent()) {
-      Main.getController().log("Walking along " + edge + " with label: " + edge.getLabel().get());
+      System.out.println("Walking along " + edge + " with label: " + edge.getLabel().get());
       if (executeCustomLabelFunction(edge.getLabel().get())) {
         Main.getController().walkDamnit(path.get(1).getX(), path.get(1).getY());
         return true;
       } else {
-        Main.getController()
-            .log("Failed to execute custom function for label: " + edge.getLabel().get());
+        System.out.println("Failed to execute custom function for label: " + edge.getLabel().get());
         return false;
       }
     } else {
       Main.getController().walkDamnit(path.get(1).getX(), path.get(1).getY());
       return true;
     }
+  }
+
+  /**
+   * Returns a rough estimate of the distance of a webwalker path.
+   *
+   * @param x1 int -- X1
+   * @param y1 int -- Y1
+   * @param x2 int -- X2
+   * @param y2 int -- Y2
+   * @return int
+   */
+  public int distanceBetween(int x1, int y1, int x2, int y2) {
+    Map<WebwalkNode, int[]> closestNodesToEndCoords = new HashMap<>();
+    int[][] endCoords = new int[][] {{x2, y2}};
+    for (int[] coords : endCoords) {
+      WebwalkNode node = graph.findClosestNode(coords[0], coords[1]);
+      closestNodesToEndCoords.put(node, coords);
+    }
+    WebwalkNode startNode = graph.findClosestNode(x1, y1);
+
+    Set<WebwalkNode> endNodes = closestNodesToEndCoords.keySet();
+    List<WebwalkNode> path = dijkstraPathfinding(startNode, endNodes);
+
+    int distance = 0;
+    WebwalkNode previousNode = path.get(0);
+
+    for (WebwalkNode current : path) {
+      if (current.equals(previousNode)) continue;
+      int stepDistance =
+          Main.getController()
+              .distance(previousNode.getX(), previousNode.getY(), current.getX(), current.getY());
+
+      distance += stepDistance;
+      previousNode = current;
+    }
+    System.out.printf(
+        "The distance between (%s, %s) and (%s, %s) is roughly: %s%n", x1, y1, x2, y2, distance);
+    return distance;
   }
 
   private List<WebwalkNode> dijkstraPathfinding(WebwalkNode start, Set<WebwalkNode> goals) {
@@ -233,6 +260,12 @@ public class WebWalker {
         return CustomLabelHandlers.varrockPalaceNorthwestLadder();
       case "varrockPalaceFence":
         return CustomLabelHandlers.varrockPalaceFence();
+      case "varrockEastDigsiteGate":
+        return CustomLabelHandlers.varrockEastDigsiteGate();
+      case "wizardTowerDoor":
+        return CustomLabelHandlers.wizardTowerDoor();
+      case "wizardTowerBasement":
+        return CustomLabelHandlers.wizardTowerBasement();
       default:
         Main.getController().log("Missing function for label: " + label);
         return false;

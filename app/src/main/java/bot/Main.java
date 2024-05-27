@@ -1498,8 +1498,11 @@ public class Main {
   }
 
   /**
-   * A function which returns the current running IdleScript/Script instance.
+   * Returns the debugger.
    *
-   * @return Object (which is an instanceof IdleScript or Script)
+   * @return debugger
    */
+  public static Debugger getDebugger() {
+    return debugger;
+  }
 }

@@ -1,10 +1,11 @@
-package scripting.idlescript;
+package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.ItemId;
 import models.entities.NpcId;
-import models.entities.SkillId;
+import scripting.idlescript.AIOQuester.QuestHandler;
+import scripting.idlescript.AIOQuester.models.QuitReason;
 
-public final class QH_FishingContest extends QH__QuestHandler {
+public final class FishingContest extends QuestHandler {
   private static final int[] OUTSIDE_HUT_WAYPOINT = {433, 460};
   private static final int[] CUPBOARD_COORDS = {216, 1562};
   private static final int GIANT_CARP = ItemId.RAW_GIANT_CARP.getId();
@@ -28,23 +29,10 @@ public final class QH_FishingContest extends QH__QuestHandler {
   private static final String[] BONZO_START_DIALOG = {"I'll give that a go then"};
   private static final String[] BONZO_END_DIALOG = {"I have this big fish,is it enough to win?"};
 
-  public int start(String[] param) { // warning does not handle food conditions
-    QUEST_NAME = "Fishing contest";
-    START_RECTANGLE = WEST_DWARF_TUNNEL;
-    QUEST_REQUIREMENTS = new String[] {};
-    SKILL_REQUIREMENTS = new int[][] {{SkillId.FISHING.getId(), 10}};
-    EQUIP_REQUIREMENTS = new int[][] {};
-    ITEM_REQUIREMENTS = new int[][] {{ItemId.COINS.getId(), 1000}};
-    INVENTORY_SPACES_NEEDED = 10;
-    TOTAL_QUEST_STAGES = 3;
-    doQuestChecks();
+  public static void run() { // warning does not handle food conditions
     c.log("WARNING: Entering dangerous areas, low combat not recommended", "red");
     c.log("~ by Kaila", "mag");
-
-    while (c.isRunning()) {
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
-      QUEST_STAGE = c.getQuestStage(QUEST_ID);
+    while (isQuesting()) {
       switch (QUEST_STAGE) { // 6 stages in total
         case 0: // not started
           CURRENT_QUEST_STEP = "Getting ingredients";
@@ -100,7 +88,7 @@ public final class QH_FishingContest extends QH__QuestHandler {
               && c.getInventoryItemCount(SPADE) > 0
               && c.getInventoryItemCount(GARLIC) > 0) {
 
-            if (c.isRunning() && !isInRectangle(START_RECTANGLE)) {
+            if (c.isRunning() && !isAtLocation(START_LOCATION)) {
               CURRENT_QUEST_STEP = "Walking back to Dwarf";
               pathWalker(OUTSIDE_HUT_WAYPOINT);
             }
@@ -185,7 +173,7 @@ public final class QH_FishingContest extends QH__QuestHandler {
         case 3: // has trophy
           int FISHING_TROPHY = ItemId.HEMENSTER_FISHING_TROPHY.getId();
           if (c.getInventoryItemCount(FISHING_TROPHY) > 0) {
-            if (c.isRunning() && !isInRectangle(START_RECTANGLE)) {
+            if (c.isRunning() && !isAtLocation(START_LOCATION)) {
               CURRENT_QUEST_STEP = "Walking to Dwarf";
               pathWalker(OUTSIDE_HUT_WAYPOINT);
             }
@@ -196,15 +184,10 @@ public final class QH_FishingContest extends QH__QuestHandler {
             }
           }
           break;
-        case -1:
-          quit("Quest completed");
-          break;
         default:
-          quit("");
+          quit(QuitReason.QUEST_STAGE_NOT_IN_SWITCH);
           break;
       }
     }
-    quit("Script stopped");
-    return 1000;
   }
 }

@@ -1,10 +1,11 @@
-package scripting.idlescript;
+package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.ItemId;
 import models.entities.NpcId;
+import scripting.idlescript.AIOQuester.QuestHandler;
+import scripting.idlescript.AIOQuester.models.QuitReason;
 
-public final class QH_CooksAssistant extends QH__QuestHandler {
-
+public final class CooksAssistant extends QuestHandler {
   // COORDINATES FOR walkPath() PATHS AND pickupUnreachableItem()
   private static final int[] WHEAT_FIELD_OUTER = {172, 607};
   private static final int[] WHEAT_FIELD_INNER = {172, 606};
@@ -65,21 +66,8 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
   // NPC DIALOGS
   private static final String[] COOK_START_QUEST_DIALOG = {"What's wrong?", "Yes, I'll help you"};
 
-  public int start(String[] param) {
-    QUEST_NAME = "Cook's Assistant";
-    START_RECTANGLE = LUMBRIDGE_CASTLE_COURTYARD;
-    TOTAL_QUEST_STAGES = 1;
-    QUEST_REQUIREMENTS = new String[] {};
-    SKILL_REQUIREMENTS = new int[][] {};
-    ITEM_REQUIREMENTS = new int[][] {};
-    EQUIP_REQUIREMENTS = new int[][] {};
-    INVENTORY_SPACES_NEEDED = 4;
-    doQuestChecks();
-
-    while (c.isRunning()) {
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
-      QUEST_STAGE = c.getQuestStage(QUEST_ID);
+  public static void run() {
+    while (isQuesting()) {
       switch (QUEST_STAGE) {
         case 0:
           // Gather pot and bucket if needed
@@ -117,7 +105,7 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
             CURRENT_QUEST_STEP = "Getting ingredients";
             while (!hasAtLeastItemAmount(EGG_ID, 1) && c.isRunning()) {
               CURRENT_QUEST_STEP = "Getting an egg";
-              if (isInRectangle(START_RECTANGLE)) {
+              if (isAtLocation(START_LOCATION)) {
                 walkPath(COURTYARD_TO_PENS);
                 walkPath(PENS_TO_CHICKENS);
               }
@@ -125,7 +113,7 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
             }
             while (!hasAtLeastItemAmount(MILK_ID, 1) && c.isRunning()) {
               CURRENT_QUEST_STEP = "Getting milk";
-              if (isInRectangle(START_RECTANGLE)) {
+              if (isAtLocation(START_LOCATION)) {
                 walkPath(COURTYARD_TO_PENS);
                 walkPath(PENS_TO_COWS);
               } else {
@@ -135,7 +123,7 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
             }
             while (!hasAtLeastItemAmount(POT_OF_FLOUR_ID, 1) && c.isRunning()) {
               CURRENT_QUEST_STEP = "Getting flour";
-              if (isInRectangle(START_RECTANGLE)) {
+              if (isAtLocation(START_LOCATION)) {
                 walkPathReverse(MILL_TO_COURTYARD);
               } else {
                 walkPath(COWS_TO_MILL);
@@ -175,15 +163,10 @@ public final class QH_CooksAssistant extends QH__QuestHandler {
           CURRENT_QUEST_STEP = "Handing in items to the Cook";
           talkToNpcId(COOK_ID);
           break;
-        case -1:
-          quit("Quest completed");
-          break;
         default:
-          quit("");
+          quit(QuitReason.QUEST_STAGE_NOT_IN_SWITCH);
           break;
       }
     }
-    quit("Script stopped");
-    return 1000;
   }
 }

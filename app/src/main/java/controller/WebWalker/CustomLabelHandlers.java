@@ -340,4 +340,47 @@ public class CustomLabelHandlers {
     return Main.getController()
         .sleepUntil(() -> Main.getController().getObjectAtCoord(xCoord, yCoord) == 58, 6000);
   }
+
+  public static boolean varrockEastDigsiteGate() {
+    int xCoord = 79, yCoord = 505;
+    if (Main.getController().getObjectAtCoord(xCoord, yCoord) == 59)
+      return true; // Gate is already open
+    Main.log("Opening Varrock East Digsite Gate...");
+    Main.getController().atObject(xCoord, yCoord);
+    return Main.getController()
+        .sleepUntil(() -> Main.getController().getObjectAtCoord(xCoord, yCoord) == 59, 6000);
+  }
+
+  public static boolean wizardTowerBasement() {
+    boolean goingDown = Main.getController().currentY() <= 1000;
+    int ladderId = goingDown ? 6 : 5;
+
+    if (!Main.getController().isDoorOpen(217, 690)) {
+      while (!Main.getController().isDoorOpen(217, 690) && Main.getController().isRunning()) {
+        Main.getController().openDoor(217, 690);
+        Main.getController().sleep(1280);
+      }
+    }
+
+    Main.log("Going down the ladder to Wizards' Tower Basement...");
+    Main.getController().atObject(ladderId);
+    return Main.getController()
+        .sleepUntil(() -> goingDown == (Main.getController().currentY() < 1000));
+  }
+
+  public static boolean wizardTowerDoor() {
+    boolean goingNorth = Main.getController().currentY() >= 689;
+    if (Main.getController().getWallObjectIdAtCoord(215, 689) == 8) {
+      Main.getController().log("Opening the Wizards' Tower Door");
+      while (Main.getController().getWallObjectIdAtCoord(215, 689) == 8
+          && Main.getController().isRunning()) {
+        Main.getController().atWallObject(215, 689);
+        Main.getController().sleep(1280);
+      }
+    }
+    Main.getController().walkTo(215, goingNorth ? 688 : 689);
+    return goingNorth
+        ? Main.getController().currentY() <= 688
+        : Main.getController().currentY() >= 689;
+  }
 }

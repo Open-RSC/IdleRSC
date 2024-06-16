@@ -119,4 +119,14 @@ public class AIOAIO_Script_Utils {
     // Main.getController().log("Dist to bank: " + dist);
     return dist;
   }
+
+  static long lastBankCheckTime = 0;
+
+  public static void checkAccountValue() {
+    // Kinda sorta not really expensive, so only do it every 10s
+    if (System.currentTimeMillis() - lastBankCheckTime < 10000) return;
+    AIOAIO.state.lastCheckedBankValue = Main.getController().getAccountValue();
+    if (AIOAIO.state.initBankValue == -1)
+      AIOAIO.state.initBankValue = AIOAIO.state.lastCheckedBankValue;
+  }
 }

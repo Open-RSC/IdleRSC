@@ -32,11 +32,8 @@ public class LumbridgeFarmer {
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) {
       Thieving_Utils.leaveCombat();
-    } else if (c.getNearestNpcById(NpcId.FARMER.getId(), false) == null) findLummyFarmer();
-    else {
-      Thieving_Utils.theiveNpc(NpcId.FARMER);
-      return 680;
-    }
+    } else if (Thieving_Utils.getNpc(NpcId.FARMER) == null) findLummyFarmer();
+    else return Thieving_Utils.theiveNpc(NpcId.FARMER);
     return 50;
   }
 

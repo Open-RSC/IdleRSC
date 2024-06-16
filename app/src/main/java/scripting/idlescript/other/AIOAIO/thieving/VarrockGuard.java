@@ -31,11 +31,8 @@ public class VarrockGuard {
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) {
       Thieving_Utils.leaveCombat();
-    } else if (c.getNearestNpcById(NpcId.GUARD.getId(), false) == null) findVarrockGuards();
-    else {
-      Thieving_Utils.theiveNpc(NpcId.GUARD);
-      return 680;
-    }
+    } else if (Thieving_Utils.getNpc(NpcId.GUARD) == null) findVarrockGuards();
+    else return Thieving_Utils.theiveNpc(NpcId.GUARD);
     return 50;
   }
 

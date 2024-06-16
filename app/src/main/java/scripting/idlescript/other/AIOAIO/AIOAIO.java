@@ -19,12 +19,12 @@ public class AIOAIO extends IdleScript {
    */
   public static AIOAIO_State state = new AIOAIO_State();
 
-  public static final String VERSION = "1.15.2";
+  public static final String VERSION = "1.18.1";
 
   public int start(String[] parameters) {
+    paintBuilder.start(4, 4, 240);
     if (!state.guiSetup) {
       state.guiSetup = true;
-      Main.getController().hideWelcomeScreen();
       if (parameters.length >= 1 && parameters[0].equals("nogui")) {
         state.startPressed = true;
       } else {
@@ -40,7 +40,7 @@ public class AIOAIO extends IdleScript {
         return 1500;
       } catch (Throwable t) {
         t.printStackTrace();
-        Main.log("A straight JVM error occured! " + t.getMessage());
+        Main.log("A straight JVM error occured! Check stdout for details.");
         Main.log("I don't know _why_ this happens! Just gonna sleep 20s and ignore it lol");
         return 20000;
       }
@@ -49,6 +49,9 @@ public class AIOAIO extends IdleScript {
   }
 
   private int loop() {
+    if (!state.postLoginSetup && Main.getController().isLoggedIn()) {
+      loginSetup();
+    }
     if (System.currentTimeMillis() >= state.endTime) {
       state.currentSkill = state.botConfig.getRandomEnabledSkill();
       state.currentTask = state.currentSkill.getRandomEnabledTask();
@@ -62,22 +65,18 @@ public class AIOAIO extends IdleScript {
       state.endTime = System.currentTimeMillis() + 600_000;
       state.taskStartup = true;
     }
+    AIOAIO_Script_Utils.checkAccountValue();
     return state.currentTask.getAction().get();
+  }
+
+  private void loginSetup() {
+    Main.getController().hideWelcomeScreen();
+    state.initLevel = Main.getController().getTotalLevel();
+    state.postLoginSetup = true;
   }
 
   @Override
   public void paintInterrupt() {
-    Main.getController().drawString("@red@AIOAIO v" + AIOAIO.VERSION, 6, 21, 0xFFFFFF, 1);
-    String currentSkillText =
-        "Current Skill: " + (state.currentSkill != null ? state.currentSkill.getName() : "None");
-    String currentTaskText =
-        "Current Task: " + (state.currentTask != null ? state.currentTask.getName() : "None");
-    Main.getController().drawString("@red@" + currentSkillText, 6, 35, 0xFFFFFF, 1);
-    Main.getController().drawString("@red@AIOAIO status: " + state.status, 6, 49, 0xFFFFFF, 1);
-    Main.getController().drawString("@red@" + currentTaskText, 6, 63, 0xFFFFFF, 1);
-    long timeRemaining = state.endTime - System.currentTimeMillis();
-    String timeRemainingText =
-        "Time remaining: " + (timeRemaining > 0 ? timeRemaining / 1000 + " seconds" : "None");
-    Main.getController().drawString("@red@" + timeRemainingText, 6, 77, 0xFFFFFF, 1);
+    AIOAIO_Paint.paint(paintBuilder, rowBuilder);
   }
 }

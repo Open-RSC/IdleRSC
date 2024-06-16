@@ -205,6 +205,9 @@ public class WebWalker {
             || Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 10;
       case "miningGuildDoor":
         return Main.getController().getCurrentStat(Main.getController().getStatId("Mining")) >= 60;
+      case "portSarimKaramjaBoat":
+      case "brimhavenKaramjaGate":
+        return Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 60;
       default:
         return true;
     }
@@ -262,6 +265,14 @@ public class WebWalker {
         return CustomLabelHandlers.varrockPalaceFence();
       case "varrockEastDigsiteGate":
         return CustomLabelHandlers.varrockEastDigsiteGate();
+      case "brimhavenArdyBoat":
+        return CustomLabelHandlers.brimhavenArdyBoat();
+      case "portSarimKaramjaBoat":
+        return CustomLabelHandlers.portSarimKaramjaBoat();
+      case "brimhavenKaramjaGate":
+        return CustomLabelHandlers.brimhavenKaramjaGate();
+      case "lummyEastChickenGate":
+        return CustomLabelHandlers.lummyEastChickenGate();
       case "wizardTowerDoor":
         return CustomLabelHandlers.wizardTowerDoor();
       case "wizardTowerBasement":

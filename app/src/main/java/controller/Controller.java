@@ -177,7 +177,8 @@ public class Controller {
     long startXp = getTotalXp();
 
     // System.out.println("Stack trace for what called sleepUntilGainedXp:");
-    // StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    // StackTraceElement[] stackTraceElements =
+    // Thread.currentThread().getStackTrace();
     // for (StackTraceElement element : stackTraceElements) {
     // System.out.println(element.toString());
     // }
@@ -207,6 +208,21 @@ public class Controller {
 
     for (int statIndex = 0; statIndex < getStatCount(); statIndex++) {
       result += getPlayerExperience(statIndex);
+    }
+
+    return result;
+  }
+
+  /**
+   * Returns the total level by summing up the player level for each stat.
+   *
+   * @return the total level as an int value
+   */
+  public int getTotalLevel() {
+    int result = 0;
+
+    for (int statIndex = 0; statIndex < getStatCount(); statIndex++) {
+      result += getBaseStat(statIndex);
     }
 
     return result;
@@ -743,6 +759,7 @@ public class Controller {
         x - mud.getMidRegionBaseX(),
         y - mud.getMidRegionBaseZ(),
         false);
+    if (x == currentX() && y == currentY()) return;
     if (!sleepUntilMoving(1200)) {
       Main.log("Ok so basically, the region we want to walk to isn't loaded.");
       Main.log("So I'm going to brute force a path to our dest, then walk half way");
@@ -2483,6 +2500,23 @@ public class Controller {
   }
 
   /**
+   * Talks to the specified npc by ID.
+   *
+   * @param npcId int
+   * @param waitUntilInDialog boolean -- whether to wait until the dialog is opened before returning
+   * @return true -- true if request to talk sent, false if we couldn't find the NPC or we timed out
+   *     waiting for the dialog
+   */
+  public boolean talkToNpcId(int npcId, boolean waitUntilInDialog) {
+    ORSCharacter npc = getNearestNpcById(npcId, false);
+    if (!talkToNpc(npc.serverIndex)) return false;
+    if (waitUntilInDialog) {
+      if (!sleepUntil(() -> isInOptionMenu())) return false;
+    }
+    return true;
+  }
+
+  /**
    * Whether or not the bank window is currently open.
    *
    * @return boolean
@@ -2503,11 +2537,10 @@ public class Controller {
    * @return guaranteed to not be null.
    */
   public List<Item> getBankItems() {
-    List<Item> bankItems = new ArrayList<>();
-
     if (!isInBank()) {
-      return bankItems;
+      return new ArrayList<>();
     }
+    ArrayList<Item> bankItems = new ArrayList<>();
 
     ArrayList<Object> _bankItems =
         (ArrayList<Object>) reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
@@ -2538,7 +2571,7 @@ public class Controller {
    * Retrieves the amount of the item in the bank.
    *
    * @param itemId int
-   * @return int -- returns -1 if bank not open.
+   * @return int -- returns -1 if bank was not opened this session.
    */
   public int getBankItemCount(int itemId) {
     if (!this.isInBank()) return -1;
@@ -2554,6 +2587,25 @@ public class Controller {
     }
 
     return 0;
+  }
+
+  /**
+   * Retrieves the estimated value of everything in your inventory and bank
+   *
+   * @return -1 if the bank has not been opened this session, otherwise the sum of all item values
+   */
+  public long getAccountValue() {
+    long value = 0;
+    Map<Integer, Integer> bankItems = getDebuggerBank();
+    if (bankItems == null) return -1;
+    for (int itemId : bankItems.keySet()) {
+      ItemDef item = EntityHandler.getItemDef(itemId, false);
+      value += item.basePrice * getDebuggerBank().get(itemId);
+    }
+    for (Item item : getInventoryItems()) {
+      value += item.getItemDef().basePrice * item.getAmount();
+    }
+    return value;
   }
 
   /**
@@ -4732,22 +4784,26 @@ public class Controller {
 
   private void walkToActionSource(
       mudclient mud, int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
-    System.out.println(
-        "Controller walkToActionSource with "
-            + startX
-            + ", "
-            + startZ
-            + ", "
-            + destX
-            + ", "
-            + destZ
-            + ", "
-            + walkToEntity);
-
-    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-    for (StackTraceElement element : stackTraceElements) {
-      // System.out.println(element.toString());
-    }
+    // Uncomment to debug
+    /*
+     * System.out.println(
+     * "Controller walkToActionSource with "
+     * + startX
+     * + ", "
+     * + startZ
+     * + ", "
+     * + destX
+     * + ", "
+     * + destZ
+     * + ", "
+     * + walkToEntity);
+     *
+     * StackTraceElement[] stackTraceElements =
+     * Thread.currentThread().getStackTrace();
+     * for (StackTraceElement element : stackTraceElements) {
+     * System.out.println(element.toString());
+     * }
+     */
 
     reflector.mudInvoker(mud, "walkToActionSource", startX, startZ, destX, destZ, walkToEntity);
   }
@@ -6404,7 +6460,6 @@ public class Controller {
   }
 
   public void hideWelcomeScreen() {
-    System.out.println("Attempting to hide login screen...");
     mud.setShowDialogMessage(false);
   }
 

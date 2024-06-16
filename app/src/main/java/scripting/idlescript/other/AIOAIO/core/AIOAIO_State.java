@@ -2,8 +2,8 @@ package scripting.idlescript.other.AIOAIO.core;
 
 public class AIOAIO_State {
   /**
-   * This class exists to not clutter up AIOAIO.java tbh Try to keep things isolated! The bot should
-   * never get into a confusing state
+   * This class exists to not clutter up AIOAIO.java tbh. Try to keep things isolated! The bot
+   * should never get into a confusing state.
    */
 
   // --- Global Management State --- \\
@@ -11,6 +11,7 @@ public class AIOAIO_State {
 
   public AIOAIO_Task currentTask;
   public AIOAIO_Config botConfig = new AIOAIO_Config();
+  public boolean postLoginSetup = false; // Whether we completed any setup needed on first login
   public boolean guiSetup = false;
   public boolean startPressed = false;
   public boolean taskStartup =
@@ -26,4 +27,9 @@ public class AIOAIO_State {
 
   // --- Mining state variables --- \\
   public boolean hasPickInBank = true; // Bot will set this to false if needed
+
+  // --- Paint State Variables --- \\
+  public int initLevel = -1; // What total level we started at
+  public long initBankValue = -1;
+  public long lastCheckedBankValue = -1;
 }

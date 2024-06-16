@@ -15,22 +15,22 @@ public class WebwalkTester extends IdleScript {
   private boolean scriptStarted = false;
   private Integer currentDestX = null;
   private Integer currentDestY = null;
+  private String[] initialParameters;
 
   public int start(String[] parameters) {
     if (!scriptStarted) {
       if (!startup(parameters)) stop();
     }
 
+    Main.getController().hideWelcomeScreen();
     if (currentDestX == null && currentDestY == null) {
       if (coordinates.isEmpty()) {
-        Main.getController().log("All destinations reached!");
-        stop();
-        return 0;
-      } else {
-        currentDestX = coordinates.poll();
-        currentDestY = coordinates.poll();
-        Main.getController().log("New destination: " + currentDestX + ", " + currentDestY);
+        Main.getController().log("All destinations reached! Restarting loop.");
+        startup(initialParameters); // Restart the loop by reinitializing coordinates
       }
+      currentDestX = coordinates.poll();
+      currentDestY = coordinates.poll();
+      Main.getController().log("New destination: " + currentDestX + ", " + currentDestY);
     }
 
     if (Main.getController().currentX() == currentDestX
@@ -48,6 +48,7 @@ public class WebwalkTester extends IdleScript {
 
   private boolean startup(String[] parameters) {
     scriptStarted = true;
+    initialParameters = parameters;
     if (parameters.length != 1) {
       Main.getController()
           .log("Invalid parameters. Please pass in coordinates as comma-separated integers.");

@@ -1,6 +1,7 @@
 package scripting.idlescript.other.AIOAIO.thieving;
 
 import bot.Main;
+import controller.Controller;
 import models.entities.ItemId;
 import models.entities.NpcId;
 import orsc.ORSCharacter;
@@ -18,9 +19,22 @@ public class Thieving_Utils {
     Main.getController().sleep(600);
   }
 
+  public static ORSCharacter getNpc(NpcId npcId) {
+    Controller c = Main.getController();
+    return c.getNearestNPCByLambda(
+        n ->
+            n.npcId == npcId.getId()
+                && !c.isNpcInCombat(n.serverIndex)
+                && c.isReachable(
+                    c.getNpcCoordsByServerIndex(n.serverIndex)[0],
+                    c.getNpcCoordsByServerIndex(n.serverIndex)[1],
+                    true));
+  }
+
   public static int theiveNpc(NpcId npcId) {
+    if (Main.getController().isBatching()) return 600;
     AIOAIO.state.status = ("@yel@Thieving " + npcId.name());
-    ORSCharacter npc = Main.getController().getNearestNpcById(npcId.getId(), false);
+    ORSCharacter npc = getNpc(npcId);
     if (npc == null) {
       AIOAIO.state.status = ("@yel@Can't find a " + npcId.name() + " :c");
       return 50;

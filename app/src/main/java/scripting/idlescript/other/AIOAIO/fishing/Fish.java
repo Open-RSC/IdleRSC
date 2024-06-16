@@ -32,6 +32,7 @@ public class Fish {
     else if (!hasFishingTool()) return getToolFromBank();
     else if (c.getInventoryItemCount() >= 30)
       AIOAIO_Script_Utils.towardsDepositAll(fishTool().getId(), ItemId.FEATHER.getId());
+    else if (c.isInCombat()) return findFishingSpot(); // Get out of combat
     else if (c.isBatching()) return 250; // Wait to finish fishing
     else if (c.getNearestReachableObjectById(getFishingSpotId(), true) != null) return fish();
     else return findFishingSpot();

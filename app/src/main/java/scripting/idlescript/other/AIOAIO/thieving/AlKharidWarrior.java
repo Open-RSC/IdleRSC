@@ -31,12 +31,8 @@ public class AlKharidWarrior {
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) {
       Thieving_Utils.leaveCombat();
-    } else if (c.getNearestNpcById(NpcId.ALKHARID_WARRIOR.getId(), false) == null)
-      findAlkharidWarriors();
-    else {
-      Thieving_Utils.theiveNpc(NpcId.ALKHARID_WARRIOR);
-      return 680;
-    }
+    } else if (Thieving_Utils.getNpc(NpcId.ALKHARID_WARRIOR) == null) findAlkharidWarriors();
+    else return Thieving_Utils.theiveNpc(NpcId.ALKHARID_WARRIOR);
     return 50;
   }
 

@@ -26,11 +26,8 @@ public class AlKharidMan {
     else if (Combat_Utils.needToEat()) Combat_Utils.runAndEat();
     else if (c.isInCombat()) {
       Thieving_Utils.leaveCombat();
-    } else if (c.getNearestNpcById(NpcId.MAN_ALKHARID.getId(), false) == null) findAlkharidMen();
-    else {
-      Thieving_Utils.theiveNpc(NpcId.MAN_ALKHARID);
-      return 680;
-    }
+    } else if (Thieving_Utils.getNpc(NpcId.MAN_ALKHARID) == null) findAlkharidMen();
+    else return Thieving_Utils.theiveNpc(NpcId.MAN_ALKHARID);
     return 50;
   }
 

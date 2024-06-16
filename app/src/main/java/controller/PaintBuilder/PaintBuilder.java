@@ -398,7 +398,6 @@ public class PaintBuilder {
 
                   if (text != null && color != 0)
                     c.drawCenteredString(text, x, y, color, r.fontSize);
-
                   break;
                 }
                 // Draws a row with multiple item sprites and strings for each
@@ -414,11 +413,7 @@ public class PaintBuilder {
 
                   cumulativeSpacing += c.getItemSpriteScaledWidth(id, scale) + r.spriteSpacing;
                   int spriteX = r.borderXOffset + cumulativeSpacing;
-                  int spriteY =
-                      pY
-                          + rowsY
-                          + cumulativeRowHeight
-                          + (int) (c.getItemSpriteScaledWidth(id, scale) / 2);
+                  int spriteY = pY + rowsY + cumulativeRowHeight;
                   int stringX = pX + r.borderXOffset + stringXOffset + cumulativeSpacing;
                   int stringY = pY + spriteY + r.stringYOffset + 11;
 

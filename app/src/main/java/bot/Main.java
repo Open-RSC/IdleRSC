@@ -717,7 +717,7 @@ public class Main {
     pathwalkerButton = new JButton("PathWalker");
     // all the buttons on the sidepanel.
     takeScreenshotButton = new JButton("Screenshot");
-    showIdButton = new JButton("Show ID's");
+    showIdButton = new JButton("Show IDs");
     openDebuggerButton = new JButton("Debugger");
     resetXpButton = new JButton("Reset XP");
 

@@ -351,6 +351,91 @@ public class CustomLabelHandlers {
         .sleepUntil(() -> Main.getController().getObjectAtCoord(xCoord, yCoord) == 59, 6000);
   }
 
+  public static boolean brimhavenArdyBoat() {
+    // Only gets considered if we have 60gp, to prevent getting stuck.
+    boolean comingFromArdy =
+        Main.getController().getNearestNpcById(NpcId.CAPTAIN_BARNABY.getId(), false) != null;
+    if (comingFromArdy) {
+      // Talk to Barnaby
+      Main.getController().talkToNpcId(NpcId.CAPTAIN_BARNABY.getId(), true);
+      Main.getController().optionAnswer(1);
+    } else {
+      // Talk to Customs Official
+      Main.getController().talkToNpcId(NpcId.CUSTOMS_OFFICIAL.getId(), true);
+      Main.log("Answering..");
+      Main.getController().optionAnswer(0); // Can I board this ship?
+      Main.getController().sleepUntil(() -> !Main.getController().isInOptionMenu());
+      Main.getController().sleepUntil(() -> Main.getController().isInOptionMenu());
+      Main.getController().optionAnswer(1); // Search away, I have nothing to hide
+      Main.getController().sleepUntil(() -> !Main.getController().isInOptionMenu());
+      Main.getController().sleepUntil(() -> Main.getController().isInOptionMenu());
+      Main.getController().optionAnswer(0); // Ok
+    }
+    return Main.getController()
+        .sleepUntil(
+            () ->
+                comingFromArdy
+                    ? Main.getController().getNearestNpcById(NpcId.CAPTAIN_BARNABY.getId(), false)
+                        == null
+                    : Main.getController().getNearestNpcById(NpcId.CUSTOMS_OFFICIAL.getId(), false)
+                        == null);
+  }
+
+  public static boolean portSarimKaramjaBoat() {
+    // Only gets considered if we have 60gp, to prevent getting stuck.
+    boolean comingFromKaramja =
+        Main.getController().getNearestNpcById(NpcId.CUSTOMS_OFFICER.getId(), false) != null;
+    if (comingFromKaramja) {
+      // Talk to Customs Officer
+      Main.getController().talkToNpcId(NpcId.CUSTOMS_OFFICER.getId(), true);
+      Main.log("Answering..");
+      Main.getController().optionAnswer(0); // Can I board this ship?
+      Main.getController().sleepUntil(() -> !Main.getController().isInOptionMenu());
+      Main.getController().sleepUntil(() -> Main.getController().isInOptionMenu());
+      Main.getController().optionAnswer(1); // Search away, I have nothing to hide
+      Main.getController().sleepUntil(() -> !Main.getController().isInOptionMenu());
+      Main.getController().sleepUntil(() -> Main.getController().isInOptionMenu());
+      Main.getController().optionAnswer(0); // Ok
+    } else {
+      Main.log("Talking to Npc..");
+      // Talk to Seaman Lorris
+      Main.getController().talkToNpcId(NpcId.SEAMAN_LORRIS.getId(), true);
+      Main.getController().sleepUntil(() -> !Main.getController().isInOptionMenu());
+      Main.getController().sleepUntil(() -> Main.getController().isInOptionMenu());
+      Main.getController().optionAnswer(1);
+    }
+    return Main.getController()
+        .sleepUntil(
+            () ->
+                comingFromKaramja
+                    ? Main.getController().getNearestNpcById(NpcId.CUSTOMS_OFFICER.getId(), false)
+                        == null
+                    : Main.getController().getNearestNpcById(NpcId.SEAMAN_LORRIS.getId(), false)
+                        == null);
+  }
+
+  public static boolean brimhavenKaramjaGate() {
+    boolean goingEast = Main.getController().currentX() >= 435;
+    // Interact with the gate
+    Main.getController().atObject(434, 682);
+    // Sleep until we're on the other side of the gate
+    return Main.getController()
+        .sleepUntil(
+            () ->
+                goingEast
+                    ? Main.getController().currentX() < 435
+                    : Main.getController().currentX() >= 435);
+  }
+
+  public static boolean lummyEastChickenGate() {
+    // Check if the gate is open; if object at 114, 608 == 59, gate is open and we
+    // just walk through
+    if (Main.getController().getObjectAtCoord(114, 608) == 59) return true;
+    // Interact with the gate
+    Main.getController().atObject(114, 608);
+    return true;
+  }
+
   public static boolean wizardTowerBasement() {
     boolean goingDown = Main.getController().currentY() <= 1000;
     int ladderId = goingDown ? 6 : 5;

@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import models.entities.ItemId;
 
@@ -16,6 +18,14 @@ import models.entities.ItemId;
  * @author Seatta with fixes by Kaila
  */
 public class VialCrafter extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.CRAFTING, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Seatta & Kaila",
+          "Crafts vials on Entrana.");
+
   protected static final Controller c = Main.getController();
 
   // TILE COORDINATES

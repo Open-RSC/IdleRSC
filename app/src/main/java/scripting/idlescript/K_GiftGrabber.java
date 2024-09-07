@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Calendar;
 import javax.swing.*;
@@ -28,6 +30,11 @@ bot gets stuck too far north in draynor (add exception)
  */
 
 public final class K_GiftGrabber extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Gathers Christmas Crackers.");
   private final int[] pos = {
     211, 611, 610, 653, 185, 502, 88, 549, 444, 477
   }; // remove pos 0 and pos 1

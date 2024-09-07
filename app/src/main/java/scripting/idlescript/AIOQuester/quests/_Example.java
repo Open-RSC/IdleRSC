@@ -10,7 +10,7 @@ import scripting.idlescript.AIOQuester.models.QuitReason;
 
 // * Please strive to make quest scripts viable to UIMs.
 
-/* Any info you need from the QuestDef for your quest you can get from 'quest,'
+/* Any info you need from the QuestDef for your quest you can get from the 'quest' object.
 For example, to get the array of required equipped items you would use:
 quest.getRequiredEquippedItems(); */
 

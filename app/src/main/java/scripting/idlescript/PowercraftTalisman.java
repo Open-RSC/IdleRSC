@@ -1,11 +1,25 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * Trains mining and crafting at the essence rocks.
  *
  * @author Searos
  */
 public class PowercraftTalisman extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.MINING,
+            Category.CRAFTING,
+            Category.IRONMAN_SUPPORTED,
+            Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Searos",
+          "Trains mining and crafting at the essence rocks.");
+
   int a = 0;
   int totalTalismans = 0;
   boolean dropping = false;

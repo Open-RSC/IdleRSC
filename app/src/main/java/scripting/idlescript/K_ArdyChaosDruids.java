@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -16,6 +18,14 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_ArdyChaosDruids extends K_kailaCombatScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT, Category.MELEE, Category.PRAYER, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights Chaos Druids in the Ardougne Chaos Druid Tower.");
+
   private int fightMode = 0;
   private boolean bloodChest = true;
   private boolean thieveChest1 = false;

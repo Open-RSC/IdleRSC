@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import models.entities.SpellId;
 
 /**
@@ -8,6 +10,13 @@ import models.entities.SpellId;
  * @author Dvorak
  */
 public class AlchWheat extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.MAGIC, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "High/Low alchs wheat anywhere there's wheat.");
 
   final long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;

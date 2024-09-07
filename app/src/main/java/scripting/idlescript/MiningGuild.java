@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -10,6 +12,12 @@ import models.entities.ItemId;
 import models.entities.SkillId;
 
 public class MiningGuild extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
+          "Seatta",
+          "Mines ores in the Mining Guild.");
+
   // Mining Guild Script by Seatta
 
   private static final JCheckBox runiteCheck = new JCheckBox("Mine Runite", true);

@@ -1,6 +1,14 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 public class CatherbyFishFarm extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.FISHING, Category.COOKING, Category.IRONMAN_SUPPORTED},
+          "",
+          "Fishes and cooks fish in Catherby.");
 
   final int[] rawIds = {349, 351, 366, 369};
   final int[] cookedIds = {350, 352, 353, 367, 368, 370, 371};

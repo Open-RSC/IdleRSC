@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -14,6 +16,12 @@ import javax.swing.JLabel;
  * @author Searos
  */
 public class FletchnBankBows extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.FLETCHING, Category.IRONMAN_SUPPORTED},
+          "Searos",
+          "Fletches and banks bows.");
+
   final JCheckBox string = new JCheckBox("String", true);
   JFrame scriptFrame = null;
   boolean guiSetup = false;

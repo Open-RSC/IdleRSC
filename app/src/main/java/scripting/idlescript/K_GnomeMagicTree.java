@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,6 +19,12 @@ import models.entities.ItemId;
  * @author Kaila
  */
 public final class K_GnomeMagicTree extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.WOODCUTTING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Cuts Magic trees in the Tree Gnome Stronghold.");
+
   private static final int[] axeId = {
     ItemId.BRONZE_AXE.getId(),
     ItemId.IRON_AXE.getId(),

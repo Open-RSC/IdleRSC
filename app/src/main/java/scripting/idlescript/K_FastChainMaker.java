@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +21,9 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_FastChainMaker extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(new Category[] {}, "Kaila", "Dragon scale mail maker.");
+
   private static int totalBars = 0;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes

@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -17,6 +19,14 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_Waterfall_FireGiants extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT, Category.MELEE, Category.PRAYER, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights Fire Giants in the Waterfall Dungeon. Start in Seers bank with armor. Sharks/Laws/Airs IN BANK REQUIRED");
+
   private int amuletId = 0;
   private static int totalBstaff = 0;
   private static int totalRscim = 0;

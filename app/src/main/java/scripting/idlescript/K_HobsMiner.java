@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -31,6 +33,12 @@ import models.entities.ItemId;
  * @author Kaila
  */
 public final class K_HobsMiner extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Mines Addy/Mith/Coal in Hobgoblin Mine and banks in Edgeville.");
+
   private static String isMining = "none";
   private static boolean teleportOut = false;
   private static boolean returnEscape = true;

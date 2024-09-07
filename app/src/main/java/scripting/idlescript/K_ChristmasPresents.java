@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -21,6 +23,12 @@ import models.entities.SceneryId;
  */
 // 1238/39
 public final class K_ChristmasPresents extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Gathers Christmas Presents from the Christmas event.");
+
   private final int FULL_TREE = SceneryId.CHRISTMAS_TREE.getId();
   private final int EMPTY_TREE = SceneryId.DECORATED_TREE.getId();
   private int totalPresents = 0;

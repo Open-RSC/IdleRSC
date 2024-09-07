@@ -1,11 +1,20 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * This is a basic script that picks flax and banks it in Seers Village.
  *
  * @author Dvorak
  */
 public class Flaxx0r extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "Picks flax in Seers' Village.");
+
   long flaxPicked = 0;
   long flaxBanked = 0;
   int modifier = 128;

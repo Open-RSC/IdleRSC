@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.*;
 import java.util.*;
@@ -15,6 +17,12 @@ import orsc.ORSCharacter;
 
 public class FoulRunecraft extends IdleScript {
   public static final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.RUNECRAFTING},
+          "Foulwerp",
+          "Mines essence and crafts runes.\n\nNature runes are currently not supported for ironmen.");
+
   private JFrame frame;
   private String runtime, action;
   private long start;

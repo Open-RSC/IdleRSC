@@ -1,15 +1,17 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * Tests walking to specific coordinates passed as parameters
- *
- * @author
- */
 public class WebwalkTester extends IdleScript {
+  public static ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS},
+          "Red Bracket",
+          "Tests walking to specific coordinates passed as parameters.");
 
   private Queue<Integer> coordinates = new LinkedList<>();
   private boolean scriptStarted = false;

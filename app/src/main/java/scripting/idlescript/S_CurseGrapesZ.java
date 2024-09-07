@@ -1,11 +1,20 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * Zammy Curse Grapes by spilk
  *
  * @author spilk
  */
 public class S_CurseGrapesZ extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Spilk",
+          "Curses grapes to get Grapes of Zamorak.");
+
   boolean guiSetup = false;
   boolean scriptStarted = true;
   int[] bankLoc = {588, 754}; // Yanille

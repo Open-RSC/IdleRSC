@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,6 +20,12 @@ import models.entities.SpellId;
  * @author Kaila
  */
 public final class K_TeleWines extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MAGIC, Category.GATHERING},
+          "Kaila",
+          "Telegrabs wines in the Chaos Temple. Start in Edgeville bank");
+
   private static int WinezInBank = 0;
   private static int totalWinez = 0;
   /**

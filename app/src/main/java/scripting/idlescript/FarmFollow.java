@@ -1,11 +1,22 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * A basic script for following other players. Useful for farms.
  *
  * @author Dvorak
  */
 public class FarmFollow extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "Follows a player with a given name" + "\n\nParameter:" + "\n - Name - Player to follow");
+
   public int start(String[] param) {
     if (controller.isRunning()) {
       if (controller.isInCombat()) controller.walkTo(controller.currentX(), controller.currentY());

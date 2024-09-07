@@ -1,11 +1,19 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * Harvests limpwurt roots and snape grass in Taverly. Coleslaw only.
  *
  * @author Dvorak
  */
 public class LimpySnapez extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.HARVESTING, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "Harvests Limpwurt Roots and Snape Grass in Taverly. Coleslaw only.");
 
   final int[] herbToDoorPath = {366, 472, 360, 478, 353, 484, 347, 487, 342, 487, 342, 488};
 

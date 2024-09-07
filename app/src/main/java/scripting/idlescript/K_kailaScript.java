@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import javax.swing.*;
 import models.entities.EquipSlotIndex;
@@ -32,6 +34,12 @@ import orsc.ORSCharacter;
  */
 public class K_kailaScript extends IdleScript {
   protected static final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.HIDDEN_FROM_SELECTOR},
+          "Kaila",
+          "WIP master file for common commands used in Kaila_Scripts");
+
   protected static JFrame scriptFrame = null;
   protected static String foodName = "";
   // ~~~~~~~~~~~Boolean~~~~~~~~~~~~

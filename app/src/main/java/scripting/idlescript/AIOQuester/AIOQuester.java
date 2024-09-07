@@ -1,6 +1,8 @@
 package scripting.idlescript.AIOQuester;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import scripting.idlescript.AIOQuester.models.*;
 import scripting.idlescript.IdleScript;
@@ -12,6 +14,17 @@ import scripting.idlescript.IdleScript;
  */
 public class AIOQuester extends IdleScript {
   protected static final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.QUESTING, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Seatta",
+          "An all-in-one questing script."
+              + "\n\nNOT ALL QUESTS ARE AVAILABLE YET!"
+              + "\n\nSpecial thanks to:"
+              // Feel free to add your name here if you've helped write quest scripts.
+              + "\n - Kaila");
 
   /* TODO: Don't forget to set these to false before committing
   These are for testing quest stages and methods. There's obviously no way to reinitialize a

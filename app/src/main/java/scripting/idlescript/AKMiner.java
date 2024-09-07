@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.JButton;
@@ -14,6 +16,12 @@ import javax.swing.JLabel;
  * @author Dvorak
  */
 public class AKMiner extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "A basic mining script with banking for Al-Kharid.");
+
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;

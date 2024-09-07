@@ -1,11 +1,29 @@
 package scripting.idlescript.other.AIOAIO;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import scripting.idlescript.IdleScript;
 import scripting.idlescript.other.AIOAIO.core.AIOAIO_State;
 import scripting.idlescript.other.AIOAIO.core.gui.AIOAIO_GUI;
 
 public class AIOAIO extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.AGILITY,
+            Category.COMBAT,
+            Category.COOKING,
+            Category.FISHING,
+            Category.FLETCHING,
+            Category.MINING,
+            Category.SMITHING,
+            Category.THIEVING,
+            Category.WOODCUTTING,
+            Category.IRONMAN_SUPPORTED
+          },
+          "Red Bracket",
+          "One script to rule them all.");
   /**
    * Welcome to AIO AIO! The goal of this script is to train your account in all aspects.
    *
@@ -17,12 +35,13 @@ public class AIOAIO extends IdleScript {
    * script do PK events at certain times of the day! (It's also just fun to watch your account
    * progress on its own, with no user input)
    */
-  public static AIOAIO_State state = new AIOAIO_State();
+  public static AIOAIO_State state;
 
   public static final String VERSION = "1.18.1";
 
   public int start(String[] parameters) {
     paintBuilder.start(4, 4, 240);
+    if (state == null) state = new AIOAIO_State();
     if (!state.guiSetup) {
       state.guiSetup = true;
       if (parameters.length >= 1 && parameters[0].equals("nogui")) {

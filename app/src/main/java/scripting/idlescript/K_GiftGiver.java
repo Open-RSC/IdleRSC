@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -8,24 +10,39 @@ import orsc.ORSCharacter;
 /**
  * <b>Coleslaw Present/Cracker/Trick Giver</b>
  *
- * <p>Opens gift item by using them on a 2nd account. Used in conjunction with K_GiftTaker Script!
- * <br>
+ * <p>Opens gift item by using them on a second account. Used in conjunction with K_GiftTaker
+ * Script! <br>
  *
- * <p>Should work in any bank, Ideal location is Draynor Bank! Requires 2 accounts. This bot is the
- * present "taker", it will bank when you have 29 items.<br>
+ * <p>Should work in any bank, Ideal location is Draynor Bank! Requires two accounts. This bot is
+ * the present "taker", it will bank when you have 29 items.<br>
  *
- * <p>To setup start both accounts near each other with NO items in either inventory. start the
- * taker bot FIRST before even starting giver bot. the bots will need to be synced up similar to
- * trader bots. ideally monitor them, if something goes wrong present stuff will drop to the floor
- * and despawn!!!!! you have been warned!<br>
+ * <p>To setup start both accounts near each other with NO items in either inventory. Start the
+ * taker bot FIRST before even starting giver bot. The bots will need to be synced up similar to
+ * trader bots. Ideally monitor them, if something goes wrong present stuff will drop to the floor
+ * and despawn!!!!! You have been warned!<br>
  *
- * <p>WARNING: while within 1 tile of the giver, you will continue to recieve presents. WARNING:
- * regardless of how full your inventory is. items WILL drop to the floor. <br>
+ * <p>WARNING: while within one tile of the giver, you will continue to receive presents. WARNING:
+ * regardless of how full your inventory is. Items WILL drop to the floor. <br>
  *
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
 public final class K_GiftGiver extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Opens gift item by using them on a second account. It is used in conjunction with K_GiftTaker Script!"
+              + "It should work in any bank, Ideal location is Draynor Bank! Requires two accounts."
+              + "This script is the present \"giver\", it will bank when you have 29 items."
+              + "\n\nTo setup start both accounts near each other with NO items in either inventory. "
+              + "Start the taker bot FIRST before even starting giver bot."
+              + "The bots will need to be synced up similar to trader bots ideally monitor them."
+              + "If something goes wrong present stuff will drop to the floor and despawn!"
+              + "\n\nWARNING: while within one tile of the taker, you will continue to receive presents,"
+              + "regardless of how full your inventory is."
+              + "Items WILL drop to the floor. Recommend observing bot due to high value of rares.");
+
   private final String[] options =
       new String[] {"Xmas Crackers", "Xmas Presents", "Halloween Crackers"};
   private final int[] bankerIds = {95, 224, 268, 540, 617, 792};

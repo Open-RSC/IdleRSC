@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import javax.swing.*;
@@ -11,6 +13,12 @@ import javax.swing.*;
  * @author Dvorak
  */
 public class Wildberries extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "Picks Whiteberries in the Wilderness. Needs an anti dragon shield.");
+
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;

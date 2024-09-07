@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
@@ -23,7 +25,11 @@ import models.entities.ItemId;
  * @author Dvorak
  */
 public class AIOMagic extends IdleScript {
-
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MAGIC, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "Performs all magic spells that require banking");
   private static final Controller c = Main.getController();
   private final String[] spells =
       new String[] {

@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import orsc.ORSCharacter;
 
 /**
@@ -12,6 +14,12 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_WineDrinker extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Drinks wine from the bank, Banks the jugs and any half wine you might get.");
+
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>

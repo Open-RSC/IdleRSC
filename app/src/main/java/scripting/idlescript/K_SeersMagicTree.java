@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,6 +24,12 @@ import models.entities.ItemId;
  *   logic to cut same tree as other players.
  */
 public final class K_SeersMagicTree extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.WOODCUTTING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Cuts Magic logs in Seers' Village.");
+
   private static int logInBank = 0;
   private static int totalLog = 0;
   private long fail = 0;

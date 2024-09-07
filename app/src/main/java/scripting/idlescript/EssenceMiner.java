@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
@@ -9,6 +11,12 @@ import javax.swing.JFrame;
  * @author Searos
  */
 public class EssenceMiner extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
+          "Searos",
+          "Mines and banks rune essence.");
+
   JComboBox<String> destination = new JComboBox<>(new String[] {"Seers", "Falador"});
   JFrame scriptFrame = null;
   boolean guiSetup = false;

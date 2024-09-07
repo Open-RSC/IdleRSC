@@ -3212,16 +3212,12 @@ public class Controller {
   }
 
   // * The Auction House only allows one interaction every 5 seconds. When making
-  // new methods
-  // * for auctions make sure it uses the following methods to guarantee it
-  // complies with this
-  // * limitation.
+  // * new methods for auctions make sure it uses the following methods to guarantee it
+  // * complies with this limitation.
   // * - waitForAuctionTimer() -- Put this before any part of a method that
-  // interacts with the
-  // * Auction House
-  // * - beginAuctionTimeout() -- Put this after intacting. If you're calling
-  // getAuctions() or
-  // * refreshAuctions() those methods will automatically do this.
+  // *     interacts with the Auction House
+  // * - beginAuctionTimeout() -- Put this after intacting.
+  // * - getAuctions() automatically does this.
 
   /**
    * Check if the player is in an auction house and not at the disallowed one on Karamja
@@ -3249,8 +3245,8 @@ public class Controller {
   }
 
   /** Closes the Auction House window */
-  public int closeAuctionHouse() {
-    if (!mud.auctionHouse.isVisible()) return -1;
+  public void closeAuctionHouse() {
+    if (!mud.auctionHouse.isVisible()) return;
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(199);
     mud.packetHandler.getClientStream().bufferBits.putByte(10);
@@ -3258,22 +3254,30 @@ public class Controller {
     mud.packetHandler.getClientStream().finishPacket();
     mud.auctionHouse.setVisible(false);
     sleep(640);
-    return 1;
   }
 
   /** Uses npcCommand1 to open the auction house on the nearest clerk */
   public void openAuctionHouse() {
+    System.out.println("Attempting to open the Auction House");
     // Open an auction house if near an auction clerk that isn't the disallowed
     // Karamja one
-    if (currentX() < 320 && currentX() > 400 && currentY() < 679 && currentY() > 730) {
+    boolean isOnKaramja =
+        (currentX() < 320 && currentX() > 400 && currentY() < 679 && currentY() > 730);
+    if (!isOnKaramja) {
       ORSCharacter npc = getNearestNpcById(NpcId.AUCTION_CLERK.getId(), false);
       if (npc != null) {
-        npcCommand1(npc.serverIndex);
-        sleep(1280);
-        while (!isInAuctionHouse() && isRunning()) sleep(640);
+        while (!isInAuctionHouse() && isRunning()) {
+          npcCommand1(npc.serverIndex);
+          sleep(1280);
+        }
       } else {
         log("Auction house clerk not found", "red");
       }
+    } else {
+      log(
+          "This auction house clerk has been disallowed from creating auctions in scripts to prevent",
+          "red");
+      log("the potentially unintended noting of items in an area without a bank", "red");
     }
   }
 
@@ -3283,23 +3287,23 @@ public class Controller {
    * @param auction AuctionItem -- Auction to buy from
    * @param itemAmount int -- Amount of items to buy
    */
-  public int auctionBuy(AuctionItem auction, int itemAmount) {
-    if (!isInAuctionHouse()) return -1;
+  public void auctionBuy(AuctionItem auction, int itemAmount) {
+    if (!isInAuctionHouse()) return;
     if (auction == null) {
       log("AuctionItem may not be null", "red");
-      return -1;
+      return;
     }
     if (auction.getSeller().equals(getPlayerName())) {
       log("Skipping auction " + auction.getAuctionId() + " since you are the seller", "red");
-      return -1;
+      return;
     }
     if (itemAmount < 1) {
       log("The amount to sell must be higher than 0", "red");
-      return -1;
+      return;
     }
     if (getInventoryItemCount(ItemId.COINS.getId()) < auction.getPricePerItem()) {
       log("You do not have enough coins to buy anything from this auction", "red");
-      return -1;
+      return;
     }
 
     waitForAuctionTimer();
@@ -3327,7 +3331,6 @@ public class Controller {
     sleep(2560);
     mud.setShowDialogServerMessage(false); // Close the dialog
     beginAuctionTimeout();
-    return 1;
   }
 
   /**
@@ -3349,15 +3352,15 @@ public class Controller {
    * @param itemAmount int -- Amount of item
    * @param pricePerItem int -- Price to sell each item at
    */
-  public int auctionCreate(int itemId, int itemAmount, int pricePerItem) {
-    if (!isInAuctionHouse()) return -1;
+  public void auctionCreate(int itemId, int itemAmount, int pricePerItem) {
+    if (!isInAuctionHouse()) return;
     if (itemId < 0) {
       log(itemId + " is not a valid item id", "red");
-      return -1;
+      return;
     }
     if (getInventoryItemCount(itemId) == 0) {
       log("Item " + itemId + " is not in inventory!", "red");
-      return -1;
+      return;
     }
 
     int sellAmount =
@@ -3384,7 +3387,6 @@ public class Controller {
     sleep(2560);
     mud.setShowDialogServerMessage(false);
     beginAuctionTimeout();
-    return 1;
   }
 
   /**
@@ -3392,18 +3394,16 @@ public class Controller {
    *
    * @param auction AuctionItem -- Auction Id
    */
-  public int auctionCancel(AuctionItem auction) {
-    if (!isInAuctionHouse() || auction == null) return -1;
+  public void auctionCancel(AuctionItem auction) {
+    if (!isInAuctionHouse() || auction == null) return;
     if (this.getPlayerName().equals(auction.getSeller())) {
       /*
        * Checks if the player is the owner of the auction.If you remove this check and
-       * try to
-       * cancel someone else's auction you will be logged by the server for potential
-       * packet
-       * manipulation.
+       * try to cancel someone else's auction the server will log you for potential
+       * packet manipulation.
        */
       log("You are not the owner of this auction", "red");
-      return -1;
+      return;
     }
 
     waitForAuctionTimer();
@@ -3416,22 +3416,20 @@ public class Controller {
     sleep(2560);
     mud.setShowDialogServerMessage(false);
     beginAuctionTimeout();
-    return 1;
   }
 
   /** Refreshes the Auction House listings. */
-  public int auctionRefresh() {
-    if (!isInAuctionHouse()) return -1;
+  public void auctionRefresh() {
+    if (!isInAuctionHouse()) return;
 
     waitForAuctionTimer();
-    log("Refreshed Auction House", "gre");
+    log("\nRefreshed Auction House", "gre");
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(199);
     mud.packetHandler.getClientStream().bufferBits.putByte(10);
     mud.packetHandler.getClientStream().bufferBits.putByte(3);
     mud.packetHandler.getClientStream().finishPacket();
     beginAuctionTimeout();
-    return 1;
   }
 
   /**
@@ -3450,7 +3448,7 @@ public class Controller {
     ArrayList<AuctionItem> searchedArray = new ArrayList<>();
 
     waitForAuctionTimer();
-    for (AuctionItem item : getAuctions()) {
+    for (AuctionItem item : getAuctionList()) {
       if (item.getItemId() == itemId) searchedArray.add(item);
     }
     if (searchedArray.size() > 0) return searchedArray;
@@ -3502,7 +3500,7 @@ public class Controller {
     if (playerName.length() < 1) return null;
 
     waitForAuctionTimer();
-    ArrayList<AuctionItem> auctions = getAuctions();
+    ArrayList<AuctionItem> auctions = getAuctionList();
     ArrayList<AuctionItem> myAuctions = new ArrayList<>();
 
     for (AuctionItem auction : auctions) {
@@ -3514,7 +3512,18 @@ public class Controller {
   }
 
   /**
-   * Does the same as getAuctions except it refreshes the auctions before returning the list.<br>
+   * Returns an ArrayList of AuctionItems after checking and waiting for the auction timeout to
+   * finish.
+   *
+   * @return ArrayList -- List of auctions
+   */
+  public ArrayList<AuctionItem> getAuctions() {
+    auctionRefresh();
+    return getAuctionList();
+  }
+
+  /**
+   * Made private to force end users to use getAuctions().<br>
    * <br>
    * Gets an ArrayList of com.openrsc.interfaces.misc.AuctionItems from AuctionHouse via the
    * reflectAuctionList method and converts it to an ArrayList of models.entities.AuctionItem then
@@ -3522,19 +3531,7 @@ public class Controller {
    *
    * @return ArrayList -- List of auctions
    */
-  public ArrayList<AuctionItem> getAuctionsWithRefresh() {
-    auctionRefresh();
-    return getAuctions();
-  }
-
-  /**
-   * Gets an ArrayList of com.openrsc.interfaces.misc.AuctionItems from AuctionHouse via the
-   * reflectAuctionList method and converts it to an ArrayList of models.entities.AuctionItem then
-   * returns it
-   *
-   * @return ArrayList -- List of auctions
-   */
-  public ArrayList<AuctionItem> getAuctions() {
+  private ArrayList<AuctionItem> getAuctionList() {
     if (!isInAuctionHouse()) return null;
 
     ArrayList<AuctionItem> auctionItems = new ArrayList<>();
@@ -3615,7 +3612,7 @@ public class Controller {
    */
   public void beginAuctionTimeout() {
     auctionTimeout = (System.currentTimeMillis() + 6000);
-    System.out.println("\nAuction timeout: " + auctionTimeout);
+    System.out.println("Auction timeout: " + auctionTimeout);
     log("Setting an auction timeout for 5.5 seconds", "yel");
   }
 

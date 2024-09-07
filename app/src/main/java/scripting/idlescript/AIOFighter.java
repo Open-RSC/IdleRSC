@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.*;
 import java.util.Arrays;
@@ -36,6 +38,19 @@ import orsc.ORSCharacter;
  */
 public class AIOFighter extends IdleScript {
   private final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT,
+            Category.MELEE,
+            Category.RANGED,
+            Category.MAGIC,
+            Category.PRAYER,
+            Category.IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "This is your standard melee/range/mage fighter script.");
+
   private int fightMode = 2;
   private int maxWander = 3;
   private int eatingHealth = 5;

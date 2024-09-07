@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,6 +15,12 @@ import javax.swing.JLabel;
  * @author Searos
  */
 public class ArrowMaker extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.FLETCHING},
+          "Searos",
+          "Make headless arrows or tipped arrows of any type.");
+
   final int[] arrowHeads = {669, 670, 671, 672, 673, 674, 381};
   final int[] completed = {11, 638, 640, 642, 644, 646, 637};
   int selectedArrowHead = -1;

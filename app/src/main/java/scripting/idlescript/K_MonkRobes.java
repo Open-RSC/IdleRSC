@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +21,12 @@ import javax.swing.JLabel;
  * @author Kaila
  */
 public final class K_MonkRobes extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Collects Monk Robe sets from Edgeville Monastery.");
+
   private static int totalTopz = 0;
   private static int totalBotz = 0;
   private static int TopzInBank = 0;

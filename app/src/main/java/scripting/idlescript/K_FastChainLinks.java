@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +17,12 @@ import javax.swing.JLabel;
  * @author Kaila
  */
 public final class K_FastChainLinks extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.SMITHING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Makes Chain Links from dragon longs for use in Dragon Scale Mail armor.");
+
   private static int barsInBank = 0;
   private static int totalBars = 0;
 

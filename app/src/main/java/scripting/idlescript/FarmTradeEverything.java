@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import com.openrsc.client.entityhandling.instances.Item;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,6 +9,8 @@ import java.util.List;
 
 /** MassGive by Dvorak. */
 public class FarmTradeEverything extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(new Category[] {Category.MISCELLANEOUS}, "Dvorak", "");
 
   private void trade_sleep(int maxTicks) {
     int ticks = 0;

@@ -1,12 +1,21 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * Withdraws unidentified herbs from the bank, identifies them, deposits clean herbs. Rinse, repeat.
- * Does the highest level herb you can identify and have in bank.
+ * Does the highest level herb you can identify and have in the bank.
  *
  * @author Dvorak
  */
 public class HerbIdentifier extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.HERBLAW, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "Withdraws unidentified herbs from the bank, identifies them, deposits clean herbs. "
+              + "Does the highest level herb you can identify and have in bank.");
 
   final int[] unids = {933, 443, 442, 441, 440, 439, 438, 437, 436, 435, 165};
 

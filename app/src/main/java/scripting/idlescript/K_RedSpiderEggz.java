@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 
@@ -21,6 +23,13 @@ import javax.swing.*;
  * @author Kaila
  */
 public final class K_RedSpiderEggz extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Collects Red Spider Eggs from Edgeville Dungeon."
+              + "It is recommended to have very high stats ~90+ and good defensive armor.");
+
   private static boolean teleportOut = false;
   private static boolean returnEscape = true;
   private static int eggzInBank = 0;

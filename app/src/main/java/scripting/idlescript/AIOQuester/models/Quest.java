@@ -437,7 +437,7 @@ public enum Quest {
           false,
           "The mountain Dwarves home would be an ideal way to get across White Wolf mountain safely. However the Dwarves aren't to fond of strangers. They will let you through if you can bring them a trophy. The trophy is the prize for the annual Hemenster fishing competition.",
           3,
-          Location.DWARF_TUNNEL_WEST_ENTRANCE,
+          Location.DWARF_TUNNEL_WEST,
           null,
           new int[][] {{SkillId.FISHING.getId(), 10}},
           new int[][] {{ItemId.COINS.getId(), 1000}},

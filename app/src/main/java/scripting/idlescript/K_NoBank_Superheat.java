@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +21,18 @@ import models.entities.ItemId;
  * @author Kaila
  */
 public final class K_NoBank_Superheat extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.MAGIC,
+            Category.SMITHING,
+            Category.IRONMAN_SUPPORTED,
+            Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Mines, superheats, and smiths iron into plate bodies"
+              + "\n\nStart at Khazard Mine with Nature Runes, a hammer, a fire staff,and a pickaxe");
+
   private static int castsRemaining = 0;
   private static int spellsCasted = 0;
   private static final int IRON_ORE = 151, IRON_BAR = 170, SUPERHEAT_ID = 21, IRON_PLATE = 8;

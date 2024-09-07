@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
@@ -15,6 +17,12 @@ import javax.swing.JLabel;
  */
 public class SmithingVarrock extends IdleScript {
   private static final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.SMITHING, Category.IRONMAN_SUPPORTED},
+          "Searos & Kaila",
+          "Smiths items at the anvil in Varrock.");
+
   private JFrame scriptFrame = null;
   private boolean guiSetup = false;
   private boolean scriptStarted = false;

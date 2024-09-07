@@ -1,8 +1,9 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
-import javax.swing.*;
 
 /**
  * WIP master file for common commands used in Kaila combat Scripts
@@ -29,6 +30,11 @@ import javax.swing.*;
  */
 public class K_kailaCombatScript extends K_kailaScript {
   public static final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.HIDDEN_FROM_SELECTOR},
+          "Kaila",
+          "WIP master file for common commands used in Kaila combat scripts");
 }
   /*public void combineDef() {
   	if(!c.isInCombat()) {  //not working

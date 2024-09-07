@@ -1,11 +1,19 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * Picks herbs in Taverly via harvesting. Coleslaw only.
  *
  * @author Dvorak
  */
 public class HerbHarvester extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.HARVESTING, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "Picks herbs in Taverly via harvesting. Coleslaw only.");
 
   final int[] herbToDoorPath = {363, 503, 364, 495, 364, 488, 355, 487, 349, 487, 342, 488};
 

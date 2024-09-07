@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,6 +15,12 @@ import javax.swing.JLabel;
  * @author Searos
  */
 public class SmithGearSet extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.SMITHING, Category.IRONMAN_SUPPORTED},
+          "Searos",
+          "Smith entire gear sets.");
+
   JFrame scriptFrame = null;
   final JComboBox<String> barField =
       new JComboBox<>(new String[] {"Bronze", "Iron", "Steel", "Mithril", "Adamantite", "Runite"});

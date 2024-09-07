@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -19,6 +21,11 @@ import javax.swing.JLabel;
  * @author Kaila
  */
 public final class K_EdgeDungeonMine extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Mines Addy/Mith/Coal in Hobgoblin Mine and banks in Edgeville.");
   private static String isMining = "none";
   private static final int[] currentOre = {0, 0};
   private static final int[] addyIDs = {108, 231, 109};

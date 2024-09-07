@@ -1,10 +1,18 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.util.Arrays;
 import models.entities.ItemId;
 import models.entities.SkillId;
 
 public class CasketFisher extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.FISHING, Category.IRONMAN_SUPPORTED},
+          "Seatta",
+          "Fishes for caskets in Catherby. Also chisels oyster pearls into bolt tips.");
+
   int[] paintColors = {
     0xb74413, 0xcfdf1f, 0xffffff
   }; // wooden-ish, golden....-ish, casket amount, trash amounts

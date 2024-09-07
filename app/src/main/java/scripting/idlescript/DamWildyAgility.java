@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import javax.swing.JButton;
@@ -11,6 +13,16 @@ import javax.swing.JLabel;
 // import javax.swing.JTextField;
 
 public class DamWildyAgility extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.AGILITY, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+            // If banking is ever implemented, make sure to keep UIM
+            // support, even if it just logs out like the current
+            // version does when food runs out.
+          },
+          "Damrau",
+          "Trains agility at the Wilderness agility course.");
 
   public boolean started = false;
   public final boolean debug = false;

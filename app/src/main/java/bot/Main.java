@@ -451,6 +451,7 @@ public class Main {
         isRunning = true;
         startStopButton.setText("Stop");
       }
+      syncMainMenuButtonsEnabledStatusToBackingState();
     }
 
     if (config.getScreenRefresh()) {
@@ -706,6 +707,7 @@ public class Main {
     botFrame.setLayout(new BoxLayout(botFrame, BoxLayout.Y_AXIS));
 
     startStopButton = new JButton(isRunning ? "Stop" : "Start");
+    startStopButton.setEnabled(currentRunningScript != null);
 
     autoLoginCheckbox = new JCheckBox("Auto-Login");
     debugCheckbox = new JCheckBox("Debug Messages");
@@ -723,12 +725,16 @@ public class Main {
 
     startStopButton.addActionListener(
         e -> {
+          if (currentRunningScript == null) {
+            return;
+          }
           isRunning = !isRunning;
           if (isRunning) {
             startStopButton.setText("Stop");
           } else {
             startStopButton.setText("Start");
           }
+          syncMainMenuButtonsEnabledStatusToBackingState();
         });
 
     loadScriptButton.addActionListener(e -> showLoadScript());
@@ -743,6 +749,7 @@ public class Main {
           } else {
             JOptionPane.showMessageDialog(null, "Stop the current script first.");
           }
+          syncMainMenuButtonsEnabledStatusToBackingState();
         });
 
     openDebuggerButton.addActionListener(
@@ -1037,6 +1044,7 @@ public class Main {
               scriptFrame.setVisible(false);
             }
           }
+          syncMainMenuButtonsEnabledStatusToBackingState();
         });
 
     // Setup layout
@@ -1265,6 +1273,12 @@ public class Main {
     }
   }
 
+  private static void syncMainMenuButtonsEnabledStatusToBackingState() {
+    loadScriptButton.setEnabled(!isRunning);
+    pathwalkerButton.setEnabled(!isRunning);
+    startStopButton.setEnabled(currentRunningScript != null);
+  }
+
   private static void setIconStyle(boolean newIcons) {
     // Create Cache directory
     File dir = new File("." + File.separator + "Cache");
@@ -1486,6 +1500,7 @@ public class Main {
     } else {
       startStopButton.setText("Start");
     }
+    syncMainMenuButtonsEnabledStatusToBackingState();
   }
 
   /**

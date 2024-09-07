@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 
 /**
@@ -11,6 +13,12 @@ import controller.Controller;
  */
 public class GnomeFlaxx0r extends IdleScript {
   private final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.CRAFTING, Category.IRONMAN_SUPPORTED},
+          "Dvorak & Kaila",
+          "This is a basic script that picks flax, optionally spins it, in Tree Stronghold.");
+
   private boolean spin = false;
   private long flaxPicked = 0;
   private long flaxBanked = 0;

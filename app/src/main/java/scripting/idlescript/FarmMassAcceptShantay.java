@@ -1,7 +1,13 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /** MassGive by Dvorak. */
 public class FarmMassAcceptShantay extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(new Category[] {Category.TRADING}, "Dvorak", "Accepts traded items.");
+
   int itemId, amount;
   boolean stackable;
   boolean canTrade = true;

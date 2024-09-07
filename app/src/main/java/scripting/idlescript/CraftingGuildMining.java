@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.*;
@@ -12,6 +14,11 @@ import models.entities.ItemId;
  * @author Searos bugfixes by kaila
  */
 public class CraftingGuildMining extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
+          "Searos & Kaila",
+          "Mines gold, silver, and clay in the crafting guild.");
   private static final Controller c = Main.getController();
   private final int[] gold = {112, 113};
   private final int[] clay = {114, 115};

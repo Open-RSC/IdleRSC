@@ -1,6 +1,15 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 public class ObtainSleepingBag extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS},
+          "",
+          "Gets a sleeping bag from Bilbo Baggin. Probably no longer useful.");
+
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>

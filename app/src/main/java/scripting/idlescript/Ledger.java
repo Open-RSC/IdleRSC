@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import orsc.ORSCharacter;
 
 /**
@@ -11,6 +13,14 @@ import orsc.ORSCharacter;
  * @author Dvorak
  */
 public class Ledger extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.AGILITY, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "Uses the ledge in Yanille agility dungeon. "
+              + "Eats food, runs up stairs if fail. Logs out on low hp or no food.");
 
   int successCount = 0;
   int failureCount = 0;

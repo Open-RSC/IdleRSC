@@ -25,7 +25,7 @@ bot functionality!
 ### Rules
 ***DO NOT*** use this client to bot on non-botting servers.
 
-The only allowed openRSC botting servers are Coleslaw and Uranium.
+The only allowed OpenRSC botting servers are Coleslaw and Uranium.
 
 Using this client on disallowed OpenRSC servers will result in a ***BAN***.
 

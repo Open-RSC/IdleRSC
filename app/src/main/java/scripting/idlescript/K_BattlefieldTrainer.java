@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -18,6 +20,12 @@ import orsc.ORSCharacter;
  *   todo add food type selection add maging option
  */
 public final class K_BattlefieldTrainer extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.COMBAT, Category.MELEE, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Fights enemies at the Khazard Battlefield.  Start in Ardougne or at the Battlefield.");
+
   private int fightMode = 0;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes

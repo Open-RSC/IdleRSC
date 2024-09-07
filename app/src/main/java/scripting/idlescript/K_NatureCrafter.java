@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -25,6 +27,13 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_NatureCrafter extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.RUNECRAFTING},
+          "Kaila",
+          "Crafts Nature runes on Karamja (coleslaw only)"
+              + "\nUn-notes essence at the Tai Bwo Wannai shop.");
+
   private static boolean lowLevel = false;
 
   private void startSequence() {

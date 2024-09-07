@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,6 +30,14 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_BlackUnicorns extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT, Category.MELEE, Category.PRAYER, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights Unicorns in the Wilderness. Start in Edgeville bank with armor.");
+
   private static final int UNI_HORN = ItemId.UNICORN_HORN.getId();
   private static final int SHARK = ItemId.SHARK.getId();
   private static boolean bankTeleport = false;

@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -17,6 +19,14 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_YanilleDruidWarriors extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT, Category.MELEE, Category.PRAYER, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights Chaos Druid Warriors in the Yanille Agility Dungeon");
+
   private boolean agilityCapeTeleport = false;
   private final int LOCKPICK = ItemId.LOCKPICK.getId();
   private final int AGILITY_CAPE = ItemId.AGILITY_CAPE.getId();

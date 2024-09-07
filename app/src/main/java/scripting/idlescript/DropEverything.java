@@ -1,11 +1,22 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
- * This is a basic script which drops everything in your inventory.
+ * This is a basic script that drops everything in your inventory.
  *
  * @author Dvorak
  */
 public class DropEverything extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "This is a basic script that drops everything in your inventory.");
+
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>

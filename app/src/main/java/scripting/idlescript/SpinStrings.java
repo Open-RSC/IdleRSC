@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
@@ -15,6 +17,12 @@ import models.entities.ItemId;
  * @author Searos and Kaila
  */
 public class SpinStrings extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.CRAFTING, Category.IRONMAN_SUPPORTED},
+          "Searos & Kaila",
+          "Spins bowstrings in Falador, Seers' Village, or the Crafting Guild.");
+
   private final Controller c = Main.getController();
   private final JComboBox<String> item = new JComboBox<>(new String[] {"Flax", "Wool"});
   private final JComboBox<String> destination =

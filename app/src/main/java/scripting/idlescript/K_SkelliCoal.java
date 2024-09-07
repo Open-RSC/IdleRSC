@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -18,6 +20,14 @@ import javax.swing.JLabel;
  * @author Kaila
  */
 public final class K_SkelliCoal extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Mines coal from the Wilderness skeleton coal mine, banks in edge. "
+              + "Brings food, banks if out of food. "
+              + "Start in Edge bank with Armor and Pickaxe or near the mine.");
+
   private static String isMining = "none";
   private static final Integer[] currentOre = {0, 0};
   private static final int[] coalIDs = {110, 111};

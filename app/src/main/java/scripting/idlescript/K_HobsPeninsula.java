@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -19,6 +21,14 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_HobsPeninsula extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT, Category.MELEE, Category.PRAYER, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights Hobgoblins at the peninsula south west of Falador.");
+
   private static int totalLimp = 0;
   private static final int[] loot = {
     ItemId.UNID_GUAM_LEAF.getId(),

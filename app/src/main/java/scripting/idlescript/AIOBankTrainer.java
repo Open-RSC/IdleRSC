@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,13 +15,26 @@ import models.entities.ItemId;
  * <p>Harvests Berries from Edgeville Monastery (Coleslaw Only).<br>
  * Start in yanille Bank with Herb Clippers or near Berries. <br>
  * Recommend level 89+ combat so warriors are non aggressive. <br>
- * This bot supports the "autostart" parameter to automatiically start the bot without gui.<br>
+ * This bot supports the "autostart" parameter to automatically start the bot without gui.<br>
  *
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  * @author Kaila
  */
 public class AIOBankTrainer extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.FLETCHING,
+            Category.CRAFTING,
+            Category.PRAYER,
+            Category.FIREMAKING,
+            Category.SMITHING,
+            Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "An all-in-one script for training bankable skills.");
+
   /**
    *
    *

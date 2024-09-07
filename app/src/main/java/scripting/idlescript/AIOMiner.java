@@ -11,6 +11,8 @@ import static scripting.ControllerProvider.getBotController;
 import static scripting.ControllerProvider.setBotController;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.BotController;
 import controller.BotLogLevel;
 import java.awt.GridLayout;
@@ -51,6 +53,13 @@ import scripting.idlescript.framework.tasks.skilling.MineOre;
  * @author kkoemets
  */
 public class AIOMiner extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.MINING, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "kkoemets",
+          "an all-in-one Mining script. Enjoys the game and mines ores.");
   private final int CAMP_DISTANCE_THRESHOLD = 13;
   private JFrame scriptFrame = null;
   private boolean guiSetup = false;

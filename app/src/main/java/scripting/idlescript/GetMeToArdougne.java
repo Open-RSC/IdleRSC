@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import orsc.ORSCharacter;
 
 /**
@@ -8,6 +10,13 @@ import orsc.ORSCharacter;
  * @author Dvorak
  */
 public class GetMeToArdougne extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "Walks from Lumbridge to Ardougne. Thieves men for 60 gp to use the ships to/from Karamja.");
 
   final int[] lumbToShip = {
     120, 648,

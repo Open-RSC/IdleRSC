@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,6 +19,10 @@ import orsc.ORSCharacter;
  * @author Dvorak, rewritten by Kaila
  */
 public class TaverlyBuyer extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {}, "Dvorak & Kaila", "Buys vials or newts in Taverly, banks in Falador.");
+
   private int option = -1;
   private boolean scriptStarted = false;
   private boolean guiSetup = false;

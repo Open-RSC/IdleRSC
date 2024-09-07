@@ -1,7 +1,13 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /** MassGive by Dvorak. */
 public class FarmMassTake extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(new Category[] {Category.MISCELLANEOUS}, "Dvorak", "");
+
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>

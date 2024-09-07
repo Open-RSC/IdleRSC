@@ -3,6 +3,8 @@ package scripting.idlescript;
 import static bot.Main.log;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -20,6 +22,12 @@ import javax.swing.JLabel;
  */
 public class AIOCooker extends IdleScript {
   final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.COOKING, Category.IRONMAN_SUPPORTED},
+          "Dvorak & Kaila",
+          "A basic cooking script to use in Catherby.");
+
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;

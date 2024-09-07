@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -24,6 +26,14 @@ import orsc.ORSCharacter;
  */
 // todo possible paladins bug loops banking, doesnt recognize food "out of food" status
 public final class K_Paladins extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.THIEVING, Category.COMBAT, Category.MELEE, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Thieves from Paladins in the Ardougne Castle.");
+
   String foodName = "food";
   private int totalCoins = 0;
   private int totalShark = 0; // raw sharks that we pick up

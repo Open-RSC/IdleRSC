@@ -7,13 +7,13 @@ import static org.reflections.util.ClasspathHelper.forJavaClassPath;
 import bot.cli.CLIParser;
 import bot.cli.ParseResult;
 import bot.debugger.Debugger;
+import bot.scriptselector.ScriptSelectorUI;
+import bot.scriptselector.models.PackageInfo;
 import callbacks.DrawCallback;
 import callbacks.SleepCallback;
 import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
@@ -31,12 +31,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableRowSorter;
 import listeners.LoginListener;
 import listeners.WindowListener;
 import org.apache.commons.cli.ParseException;
@@ -78,8 +72,9 @@ public class Main {
   private static JMenuBar menuBar;
   private static JMenu themeMenu, settingsMenu;
   private static JFrame scriptFrame;
-  private static JFrame rscFrame; // main window frame
-  private static JButton startStopButton, buttonClear;
+  public static JFrame rscFrame; // main window frame
+  public static JButton startStopButton;
+  private static JButton buttonClear;
   private static JCheckBox autoLoginCheckbox,
       logWindowCheckbox,
       debugCheckbox,
@@ -112,7 +107,6 @@ public class Main {
   // language.
   private static Object currentRunningScript =
       null; // the object instance of the current running script.
-  private static boolean shouldFilter = true;
   private static boolean aposInitCalled = false;
 
   // themeNames and colorCodes MUST have the same index values
@@ -302,6 +296,9 @@ public class Main {
     debuggerThread = new Thread(debugger);
     debuggerThread.start();
 
+    // Populates the script selector's script map.
+    ScriptSelectorUI.populateScripts();
+
     if (!checkAssetFiles()) createAssetFiles();
     SleepCallback.setOCRType(config.getOCRType());
 
@@ -325,7 +322,6 @@ public class Main {
 
     initializeBotFrame(botFrame);
     initializeConsoleFrame(consoleFrame);
-    initializeScriptFrame(scriptFrame);
     initializeMenuBar();
 
     JButton[] buttonArray = {
@@ -441,10 +437,16 @@ public class Main {
     loginListener = new Thread(new LoginListener(controller));
     loginListener.start();
     log("LoginListener initialized.");
-
     Thread.sleep(1200);
+
+    // Print any error or warning messages from the script selector.
+    // This is a separate method call, so the message is printed after the client is initialized.
+    ScriptSelectorUI.printScriptMessage();
+
     if (config.getScriptName() != null && !config.getScriptName().isEmpty()) {
-      if (!loadAndRunScript(config.getScriptName())) {
+      // loadAndRunScript() now takes a second argument of PackageInfo.
+      // Leaving it null makes it go through scripts like it used to.
+      if (!loadAndRunScript(config.getScriptName(), null)) {
         System.out.println("Could not find script: " + config.getScriptName());
       } else {
         while (!controller.isLoggedIn()) controller.sleep(640);
@@ -736,7 +738,7 @@ public class Main {
     pathwalkerButton.addActionListener(
         e -> {
           if (!isRunning) {
-            loadAndRunScript("PathWalker");
+            loadAndRunScript("PathWalker", PackageInfo.APOS);
             config.setScriptArguments(new String[] {""});
             isRunning = true;
             startStopButton.setText("Stop");
@@ -867,33 +869,50 @@ public class Main {
   }
 
   /**
+   * Creates an instance of clazz depending on superclass
+   *
+   * @param clazz Class to create an instance of
+   * @return Instantiated class object
+   */
+  private static Object instantiateScriptClass(Class<?> clazz) {
+    try {
+      return clazz.getSuperclass().equals(PackageInfo.APOS.getSuperClass())
+          ? clazz.getDeclaredConstructor(String.class).newInstance("")
+          : clazz.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException
+        | IllegalAccessException
+        | NoSuchMethodException
+        | InvocationTargetException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  /**
    * This function will go ahead and find the location of the `scriptName` and try to load the class
-   * file.
+   * file. This fixes scripts having the same script name in separate packages.
    *
    * @param scriptName -- the name of the script (without .class at the end.)
-   * @return boolean -- whether or not the script was successfully loaded.
+   * @param scriptType -- the name of the package for the script
+   * @return boolean -- whether the script was successfully loaded.
    */
-  private static boolean loadAndRunScript(String scriptName) {
+  public static boolean loadAndRunScript(String scriptName, PackageInfo scriptType) {
     try {
+      // If scriptType is defined as non-null search that package directly for script
+      // name, else search through all packages.
+      // Searching through all packages will likely return the wrong script if multiple scripts
+      // contain the same name across packages.
+
+      Stream<Class<?>> scriptStream =
+          scriptType != null
+              ? scripts.get(scriptType.getType()).stream()
+              : scripts.values().stream().flatMap(List::stream);
+
       currentRunningScript =
-          scripts.values().stream()
-              .flatMap(List::stream)
+          scriptStream
               .filter(c -> c.getSimpleName().equalsIgnoreCase(scriptName))
               .findFirst()
-              .map(
-                  clazz -> {
-                    try {
-                      return clazz.getSuperclass().equals(compatibility.apos.Script.class)
-                          ? clazz.getDeclaredConstructor(String.class).newInstance("")
-                          : clazz.getDeclaredConstructor().newInstance();
-                    } catch (InstantiationException
-                        | IllegalAccessException
-                        | NoSuchMethodException
-                        | InvocationTargetException e) {
-                      e.printStackTrace();
-                      return null;
-                    }
-                  })
+              .map(Main::instantiateScriptClass)
               .orElse(null);
 
       if (currentRunningScript == null) {
@@ -906,210 +925,6 @@ public class Main {
       e.printStackTrace();
       return false;
     }
-  }
-
-  /**
-   * Initializes the script menu selector.
-   *
-   * @param scriptFrame -- the script menu selector frame.
-   */
-  private static void initializeScriptFrame(JFrame scriptFrame) {
-    String[] columnNames = {"Name", "Type"};
-    DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-    scripts.forEach(
-        (type, classes) ->
-            classes.stream()
-                .sorted(Comparator.comparing(Class::getSimpleName))
-                .forEach(clazz -> tableModel.addRow(new String[] {clazz.getSimpleName(), type})));
-
-    // Setup table
-    final JTable scriptTable =
-        new JTable(tableModel) {
-          @Override
-          public boolean isCellEditable(int row, int column) {
-            return false;
-          }
-        };
-
-    JTableHeader header = scriptTable.getTableHeader();
-    header.setDefaultRenderer(
-        new DefaultTableCellRenderer() {
-
-          @Override
-          public Component getTableCellRendererComponent(
-              JTable table,
-              Object value,
-              boolean isSelected,
-              boolean hasFocus,
-              int row,
-              int column) {
-
-            JLabel label =
-                (JLabel)
-                    super.getTableCellRendererComponent(
-                        table, value, isSelected, hasFocus, row, column);
-
-            label.setBorder(
-                BorderFactory.createMatteBorder(
-                    0, 0, 0, column == 0 ? 1 : 0, UIManager.getColor("controlDkShadow")));
-
-            label.setFont(header.getFont().deriveFont(Font.BOLD, 15f));
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-
-            return label;
-          }
-        });
-    ;
-
-    scriptTable.setSelectionMode(
-        ListSelectionModel.SINGLE_SELECTION); // Only allow single row selected at a time
-    scriptTable.setAutoCreateRowSorter(true); // Automatically create a table row sorter
-    header.setReorderingAllowed(false); // Disable reordering columns
-    header.setResizingAllowed(false); // Disable resizing columns
-    final JScrollPane scriptScroller = new JScrollPane(scriptTable);
-
-    // Setup script args field
-    final String scriptArgsPlaceholder = "Script args (ex: arg1 arg2 arg3 ...)";
-    final JTextField scriptArgs = new JTextField(scriptArgsPlaceholder);
-    scriptArgs.setForeground(Color.GRAY);
-    scriptArgs.addFocusListener(
-        getPlaceholderFocusListener(scriptArgs, scriptArgsPlaceholder, false));
-
-    // Setup filter field
-    final String scriptFilterPlaceholder = "Filter";
-    final JTextField scriptFilter = new JTextField(scriptFilterPlaceholder);
-    scriptFilter.setForeground(Color.GRAY);
-    scriptFilter.addFocusListener(
-        getPlaceholderFocusListener(scriptFilter, scriptFilterPlaceholder, true));
-    scriptFilter
-        .getDocument()
-        .addDocumentListener(
-            new DocumentListener() {
-              @Override
-              public void insertUpdate(DocumentEvent e) {
-                filter();
-              }
-
-              @Override
-              public void removeUpdate(DocumentEvent e) {
-                filter();
-              }
-
-              @Override
-              public void changedUpdate(DocumentEvent e) {
-                filter();
-              }
-
-              public void filter() {
-                if (!shouldFilter) {
-                  return;
-                }
-                String filterValue = scriptFilter.getText().toLowerCase().trim();
-                TableRowSorter sorter = ((TableRowSorter) scriptTable.getRowSorter());
-                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + filterValue, 0));
-
-                scriptTable.setRowSorter(sorter);
-              }
-            });
-
-    // Setup script button
-    final JButton scriptButton = new JButton("Run");
-    scriptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-    scriptButton.addActionListener(
-        e -> {
-          int selectedRowIndex = scriptTable.getSelectedRow();
-          if (selectedRowIndex > -1) {
-            String scriptName =
-                (String)
-                    scriptTable
-                        .getModel()
-                        .getValueAt(scriptTable.convertRowIndexToModel(selectedRowIndex), 0);
-
-            if (loadAndRunScript(scriptName)) {
-              if (scriptArgs.getText().equals(scriptArgsPlaceholder)) {
-                scriptArgs.setText("");
-              }
-
-              config.setScriptArguments(scriptArgs.getText().split(" "));
-              isRunning = true;
-              startStopButton.setText("Stop");
-              scriptFrame.setVisible(false);
-            }
-          }
-        });
-
-    // Setup layout
-    scriptFrame.setLayout(new BoxLayout(scriptFrame.getContentPane(), BoxLayout.Y_AXIS));
-    scriptFrame.setResizable(false);
-
-    // Script selector theme coloring
-
-    // Frame theming
-    scriptFrame.getContentPane().setBackground(getThemeBackColor());
-    scriptFrame.getContentPane().setForeground(getThemeTextColor());
-
-    // Script table theming
-    header.setBorder(
-        BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("controlDkShadow")));
-    scriptTable.setBackground(getThemeBackColor().brighter());
-    scriptTable.setForeground(getThemeTextColor());
-    scriptScroller.setBorder(BorderFactory.createEmptyBorder());
-    scriptScroller.setBackground(getThemeBackColor().brighter());
-    scriptScroller.setForeground(getThemeTextColor());
-    scriptScroller.getViewport().setBackground(getThemeBackColor().brighter());
-
-    // Text box theming
-    scriptArgs.setBorder(BorderFactory.createMatteBorder(4, 0, 4, 0, getThemeBackColor()));
-    scriptArgs.setBackground(getThemeBackColor().brighter());
-    scriptArgs.setForeground(getThemeTextColor());
-    scriptFilter.setBorder(BorderFactory.createMatteBorder(4, 0, 4, 0, getThemeBackColor()));
-    scriptFilter.setBackground(getThemeBackColor().brighter());
-    scriptFilter.setForeground(getThemeTextColor());
-
-    // Run button theming
-    scriptButton.setBackground(getThemeBackColor().darker());
-    scriptButton.setForeground(getThemeTextColor());
-
-    // Add components to frame
-    scriptFrame.add(scriptFilter);
-    scriptFrame.add(scriptScroller);
-    scriptFrame.add(scriptArgs);
-    scriptFrame.add(scriptButton);
-    scriptFrame.setSize(300, 300);
-
-    scriptFrame.setLocationRelativeTo(rscFrame);
-  }
-
-  private static FocusListener getPlaceholderFocusListener(
-      JTextField textField, String placeholderText, boolean disableFilter) {
-    return new FocusListener() {
-      @Override
-      public void focusGained(FocusEvent e) {
-        if (textField.getText().equals(placeholderText)) {
-          if (disableFilter) {
-            shouldFilter = false;
-          }
-
-          textField.setText("");
-          textField.setForeground(getThemeTextColor());
-          shouldFilter = true;
-        }
-      }
-
-      @Override
-      public void focusLost(FocusEvent e) {
-        if (textField.getText().isEmpty()) {
-          if (disableFilter) {
-            shouldFilter = false;
-          }
-
-          textField.setText(placeholderText);
-          textField.setForeground(Color.GRAY);
-          shouldFilter = true;
-        }
-      }
-    };
   }
 
   /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
@@ -1344,10 +1159,8 @@ public class Main {
 
   public static void showLoadScript() {
     if (!isRunning) {
-      scriptFrame.setVisible(true);
-      scriptFrame.toFront();
-      scriptFrame.requestFocusInWindow();
-      scriptFrame.setLocationRelativeTo(rscFrame);
+      setRunning(false);
+      ScriptSelectorUI.showUI();
     } else {
       // JOptionPane.showMessageDialog(null, "Stop the current script first.");
 

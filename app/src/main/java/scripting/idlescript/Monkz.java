@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import orsc.ORSCharacter;
 
 /**
@@ -8,6 +10,18 @@ import orsc.ORSCharacter;
  * @author Dvorak
  */
 public class Monkz extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT,
+            Category.MELEE,
+            Category.PRAYER,
+            Category.IRONMAN_SUPPORTED,
+            Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "This is a basic script that attacks monks and heals using monks.");
+
   int fightMode = -1;
   boolean doBuryBones = false;
   int prayerId = -1;

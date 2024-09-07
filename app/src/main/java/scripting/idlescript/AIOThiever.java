@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -20,6 +22,12 @@ import orsc.ORSCharacter;
  * @author Dvorak
  */
 public class AIOThiever extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.THIEVING, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "A basic thiever that supports most things in the game. \nOnly supports banking in Ardougne");
+
   private final int[][][]
       tiles = { // {objectX, objectY, object Id}, {walkTo}, {walkTo}, {walkTo}, {walkTo}
     { // tea

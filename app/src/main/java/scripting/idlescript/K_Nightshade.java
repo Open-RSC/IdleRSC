@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,6 +19,14 @@ import javax.swing.JLabel;
  * @author Kaila
  */
 public final class K_Nightshade extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Collects Nightshade from Gu'Tanoth (for entrance to ogre enclave). "
+              + "Picks Nightshade in northern Skavid cave. Start in Yanille bank or northern nightshade cave. "
+              + "\n\nRequires a Lit Candle and Skavid Map in your inventory.");
+
   private static int totalShade = 0;
   private static int shadeInBank = 0;
   /**

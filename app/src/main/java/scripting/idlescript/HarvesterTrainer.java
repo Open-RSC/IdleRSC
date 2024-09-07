@@ -1,11 +1,21 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * Trains Harvesting on Coleslaw in Draynor and Ardougne fields.
  *
  * @author Dvorak
  */
 public class HarvesterTrainer extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.HARVESTING, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "Trains Harvesting on Coleslaw in Draynor and Ardougne fields.");
 
   int harvested = 0;
   final long startTimestamp = System.currentTimeMillis() / 1000L;

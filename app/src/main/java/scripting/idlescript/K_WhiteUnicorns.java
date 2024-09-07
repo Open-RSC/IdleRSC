@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -19,6 +21,16 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_WhiteUnicorns extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT, Category.MELEE, Category.PRAYER, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights the White Unicorns near Catherby. "
+              + "Used for Hardcore accounts to gather Unicorn Horns safely. "
+              + "Start by Catherby bank");
+
   private int fightMode = 0;
   private int totalUni = 0, inventUni = 0, uniInBank = 0;
   private static final int UNI_HORN = ItemId.UNICORN_HORN.getId();

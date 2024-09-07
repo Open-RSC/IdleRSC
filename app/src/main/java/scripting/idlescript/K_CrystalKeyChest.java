@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +21,12 @@ import javax.swing.JLabel;
  * todo add, "if fail agility shortcut" fallback? - currently bot may break.
  */
 public final class K_CrystalKeyChest extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Opens the crystal chest in Taverley.");
+
   private static int totalDragonstones = 0;
   private static int KeysInBank = 0;
   private static int DragonstonesInBank = 0;

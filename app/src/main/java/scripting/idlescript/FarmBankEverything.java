@@ -1,6 +1,15 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 public class FarmBankEverything extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Dvorak",
+          "Banks everything in your inventory.");
+
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>

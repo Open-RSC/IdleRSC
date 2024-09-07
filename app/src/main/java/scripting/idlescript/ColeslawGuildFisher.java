@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.*;
 import javax.swing.*;
@@ -12,6 +14,12 @@ import models.entities.ItemId;
  * @author Searos and Kaila
  */
 public class ColeslawGuildFisher extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.FISHING, Category.IRONMAN_SUPPORTED},
+          "Searos & Kaila",
+          "Fishes in the fishing guild.");
+
   private static final Controller c = Main.getController();
   private static boolean guiSetup = false;
   private static boolean scriptStarted = false;

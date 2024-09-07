@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +25,11 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public class AIOHarvester extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.HARVESTING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "An all-in-one Harvesting script.");
   private boolean teleportBanking = false;
   private boolean bringFood = false;
   private boolean ate = true;

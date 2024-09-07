@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.util.HashMap;
@@ -42,6 +44,11 @@ import models.entities.ItemId;
  *      Fix script selector/cli parameters to work properly
  */
 public class AIOSmelter extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.SMITHING, Category.IRONMAN_SUPPORTED},
+          "Dvorak, Searos, and Kaila",
+          "Standard Falador/Al-Kharid smelter script.");
   private static final Controller c = Main.getController();
   private JFrame scriptFrame = null;
   private boolean guiSetup = false;

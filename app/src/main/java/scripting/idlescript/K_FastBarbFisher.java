@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,6 +18,14 @@ import javax.swing.JLabel;
  * @author Kaila.
  */
 public final class K_FastBarbFisher extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.FISHING, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Power fishes trout/salmon in Barbarian Village.");
+
   private static int troutSuccess = 0;
   private static int salmonSuccess = 0;
   private static int failure = 0;

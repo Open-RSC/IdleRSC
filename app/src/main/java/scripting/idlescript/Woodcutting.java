@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
@@ -19,6 +21,12 @@ import models.entities.SceneryId;
  * @author Searos, Kaila
  */
 public class Woodcutting extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.WOODCUTTING, Category.IRONMAN_SUPPORTED},
+          "Searos & Kaila",
+          "An all-in-one Woodcutting script.");
+
   private static final Controller c = Main.getController();
   private final JCheckBox bank = new JCheckBox("Bank", true);
   private final JComboBox<String> destination =

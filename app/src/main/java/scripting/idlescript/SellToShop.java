@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import javax.swing.JButton;
@@ -14,6 +16,12 @@ import javax.swing.JTextField;
  * @author Searos
  */
 public class SellToShop extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.SELLING, Category.IRONMAN_SUPPORTED},
+          "Searos",
+          "Sells items to shops.");
+
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;

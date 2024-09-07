@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.util.Objects;
@@ -22,6 +24,12 @@ import orsc.ORSCharacter;
  * todo add uranium support/no batching support
  */
 public final class PotionMaker extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.HERBLAW, Category.IRONMAN_SUPPORTED},
+          "Seatta & Kaila",
+          "An all-in-one potion making script.");
+
   private final Controller c = Main.getController();
   private String potion = "";
   private String primaryIngredientName = "";

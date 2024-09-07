@@ -12,6 +12,7 @@ import javax.swing.table.JTableHeader;
 import scripting.idlescript.AIOQuester.models.Quest;
 import scripting.idlescript.AIOQuester.models.QuestDef;
 
+// TODO: Add amount checking for required equipped items for ammunition
 public class QuestUI {
   static final Color backgroundColor = Main.getThemeBackColor();
   static final Color foregroundColor = Main.getThemeTextColor();

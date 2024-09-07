@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -21,6 +23,14 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_TavBlackDragonPipe extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT, Category.MELEE, Category.PRAYER, Category.IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights Black Dragons in the Taverley Dungeon.");
+
   private boolean useDragonTwoHand = false;
   private boolean craftCapeTeleport = false;
   private boolean timeToDrinkAntidote = false;

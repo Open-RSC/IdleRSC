@@ -1,11 +1,20 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /**
  * ShearSheep by Searos
  *
  * @author Searos
  */
 public class ShearSheep extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Searos",
+          "Shears sheep and banks wool.");
+
   int startX = -1;
   int startY = -1;
   int totalWool = 0;

@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -14,6 +16,12 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public class K_BuyBettyShop extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.BUYING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Buys eyes of new and runes from Betty in Port Sarim.");
+
   private final String[] options = new String[] {"Runes then Newts", "Newts", "Elemental Runes"};
   private final int[] runeIds = {
     ItemId.AIR_RUNE.getId(),

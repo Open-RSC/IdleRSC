@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,6 +20,12 @@ import orsc.ORSCharacter;
  * @author Kaila.
  */
 public final class K_BuyAttackCape extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.BUYING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Buys and banks Attack Capes from Rovin. Start by Rovin or varrock west bank!");
+
   private static int totalTopz = 0;
   private static int totalTrips = 0;
   private static int TopzInBank = 0;

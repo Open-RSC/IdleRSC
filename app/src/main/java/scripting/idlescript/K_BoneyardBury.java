@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 
@@ -14,6 +16,14 @@ import javax.swing.*;
  * @author Kaila
  */
 public final class K_BoneyardBury extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.PRAYER, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Loots and buries bones from the Boneyard.");
+
   private int fightMode = 0;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes

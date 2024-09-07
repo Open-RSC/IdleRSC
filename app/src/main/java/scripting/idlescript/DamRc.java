@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
@@ -24,6 +26,11 @@ import orsc.ORSCharacter;
  *     <p>1.2 - artisan crowns, cosmic runes, added parameter support, partial rewrite ~ Kaila
  */
 public class DamRc extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MINING, Category.RUNECRAFTING, Category.IRONMAN_SUPPORTED},
+          "Damrau & Kaila",
+          "Mines ess and/or crafts runes. Coleslaw only");
   private final Controller c = Main.getController();
   private boolean started = false;
   private boolean debug;

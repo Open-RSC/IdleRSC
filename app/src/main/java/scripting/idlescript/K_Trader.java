@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.*;
 import javax.swing.*;
@@ -9,6 +11,12 @@ import javax.swing.*;
 public class K_Trader extends K_kailaScript {
 
   private static final Controller c = Main.getController();
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.TRADING},
+          "Kaila",
+          "Trade items to another player (coleslaw only).");
+
   private String playerName = "";
   private int[] tradeItems;
   private int indexValue;

@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import javax.swing.*;
 import orsc.ORSCharacter;
@@ -16,6 +18,12 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_IronGiftOpener extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Opens Holiday event Presents on an Ironman.");
+
   private final String[] options =
       new String[] {"Xmas Crackers", "Xmas Presents", "Halloween Crackers"};
   private final int[] itemIds = {575, 980, 1330}; // same order as options

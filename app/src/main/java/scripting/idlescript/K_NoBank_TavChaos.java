@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import javax.swing.*;
@@ -20,6 +22,18 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public final class K_NoBank_TavChaos extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.COMBAT,
+            Category.MELEE,
+            Category.PRAYER,
+            Category.IRONMAN_SUPPORTED,
+            Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Kaila",
+          "Fights Chaos Druids in Taverly without going to the bank.");
+
   private boolean startUp = false;
   private int fightMode = 0;
   private int capeSwapId = 0;

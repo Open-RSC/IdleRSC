@@ -1,7 +1,15 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
+
 /** MassGive by Dvorak. */
 public class FarmMassGive extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS},
+          "Dvorak",
+          "Gives items between Dvorak's alts. Can probably be removed");
 
   private final String[] names =
       new String[] {

@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -14,6 +16,12 @@ import orsc.ORSCharacter;
  * @author Kaila
  */
 public class K_BuyMagicGuild extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.BUYING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Buys runes and battlestaves from the Magic Guild in Yanille.");
+
   private final String[] options = new String[] {"Runes and Battlestaff", "Battlestaff", "Runes"};
   private final int[] runeIds = {
     ItemId.AIR_RUNE.getId(),

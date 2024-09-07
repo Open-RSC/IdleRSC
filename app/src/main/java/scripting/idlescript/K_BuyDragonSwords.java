@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -17,6 +19,12 @@ import orsc.ORSCharacter;
  * @author Kaila.
  */
 public final class K_BuyDragonSwords extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.BUYING, Category.IRONMAN_SUPPORTED},
+          "Kaila",
+          "Buys Dragon Swords from Jakut in Zanaris. Start by Jakut or Zanaris bank!");
+
   private static int totalTopz = 0;
   private static int totalTrips = 0;
   private static int TopzInBank = 0;

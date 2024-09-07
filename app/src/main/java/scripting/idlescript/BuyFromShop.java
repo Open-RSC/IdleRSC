@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import javax.swing.JButton;
@@ -14,6 +16,9 @@ import javax.swing.JTextField;
  * @author Searos and Kaila (fixed/improved)
  */
 public class BuyFromShop extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(new Category[] {Category.BUYING}, "Searos & Kaila", "Buys items from shops.");
+
   int[] itemIds = {};
   int[] npcId = {};
   int shopNumber = -1;

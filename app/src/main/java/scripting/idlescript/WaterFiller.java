@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -11,6 +13,12 @@ import models.entities.ItemId;
  * @author Dvorak and Kaila
  */
 public class WaterFiller extends K_kailaScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.MISCELLANEOUS, Category.IRONMAN_SUPPORTED},
+          "Dvorak & Kaila",
+          "Fills vials/jugs in Falador.");
+
   int itemsFilled = 0;
   int fullItems = 0;
   int emptyItems = 0;

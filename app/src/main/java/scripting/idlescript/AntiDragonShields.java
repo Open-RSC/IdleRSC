@@ -1,5 +1,7 @@
 package scripting.idlescript;
 
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import orsc.ORSCharacter;
 
 /**
@@ -8,6 +10,12 @@ import orsc.ORSCharacter;
  * @author Dvorak Fixed by Kaila
  */
 public class AntiDragonShields extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {Category.GATHERING, Category.IRONMAN_SUPPORTED},
+          "Dvorak & Kaila",
+          "Collects anti dragon shields from the Duke of Lumbridge.");
+
   long startTimestamp = System.currentTimeMillis() / 1000L;
   int success = 0;
 

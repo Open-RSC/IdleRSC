@@ -1,6 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.scriptselector.models.Category;
+import bot.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.JButton;
@@ -14,6 +16,17 @@ import javax.swing.JLabel;
  * @author Dvorak
  */
 public class PowerFletcha extends IdleScript {
+  public static final ScriptInfo info =
+      new ScriptInfo(
+          new Category[] {
+            Category.WOODCUTTING,
+            Category.FLETCHING,
+            Category.IRONMAN_SUPPORTED,
+            Category.ULTIMATE_IRONMAN_SUPPORTED
+          },
+          "Dvorak",
+          "Cuts, fletches and drops bows of any log type.");
+
   JFrame scriptFrame = null;
   boolean guiSetup = false;
   boolean scriptStarted = false;

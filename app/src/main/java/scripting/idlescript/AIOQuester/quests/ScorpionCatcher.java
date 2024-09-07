@@ -62,7 +62,7 @@ public final class ScorpionCatcher extends QuestHandler {
     } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_2) == 1) {
       START_LOCATION = Location.EDGEVILLE_MONASTERY;
     } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_3) == 1) {
-      START_LOCATION = Location.TAVERLEY_DUNGEON_ENTRANCE_OUTER;
+      START_LOCATION = Location.TAVERLEY_DUNGEON_ENTRANCE;
     } else if (c.currentY() > 1200) {
       START_LOCATION = Location.SORCERERS_TOWER_ABOVE;
     } else {

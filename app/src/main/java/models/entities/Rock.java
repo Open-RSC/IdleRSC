@@ -16,7 +16,8 @@ public enum Rock implements ObjectIds {
   GOLD(createSet(112, 113)),
   MITHRIL(createSet(106, 107)),
   ADAMANTITE(createSet(108, 109)),
-  RUNITE(createSet(210));
+  RUNITE(createSet(210)),
+  CLAY(createSet(114, 115));
 
   private final Set<InteractableId> ids;
 

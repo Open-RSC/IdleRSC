@@ -12,10 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import models.entities.ItemId;
+import models.entities.Location;
 import models.entities.MapPoint;
 import models.entities.SkillId;
 import orsc.ORSCharacter;
-import scripting.idlescript.AIOQuester.models.Location;
 import scripting.idlescript.AIOQuester.models.QuestDef;
 import scripting.idlescript.AIOQuester.models.QuitReason;
 

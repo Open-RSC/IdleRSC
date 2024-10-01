@@ -6,6 +6,7 @@ import static scripting.idlescript.AIOQuester.AIOQuester.TESTING_QUESTS;
 import bot.Main;
 import controller.Controller;
 import java.util.ArrayList;
+import models.entities.Location;
 import models.entities.QuestId;
 import scripting.idlescript.AIOQuester.QuestHandler;
 

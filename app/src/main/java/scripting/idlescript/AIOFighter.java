@@ -5,37 +5,22 @@ import bot.scriptselector.models.Category;
 import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.*;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import models.entities.ItemId;
 import orsc.ORSCharacter;
 
-/**
- * This is AIOFighter written for IdleRSC.
- *
- * <p>It is your standard melee/range/mage fighter script.
- *
- * <p>It has the following features:
- *
- * <p>GUI
- *
- * <p>Multiple NPCs
- *
- * <p>Food eating -- logs out when out of food
- *
- * <p>Looting
- *
- * <p>Bone burying (supports all bone types)
- *
- * <p>Maging (even when in melee combat)
- *
- * <p>Ranging (will switch to melee
- *
- * <p>weapon if in combat. Can also pick up arrows.)
- *
- * <p>Anti-wander (will walk back if out of bounds)
- *
- * @author Dvorak
- */
 public class AIOFighter extends IdleScript {
   private final Controller c = Main.getController();
   public static final ScriptInfo info =
@@ -48,8 +33,18 @@ public class AIOFighter extends IdleScript {
             Category.PRAYER,
             Category.IRONMAN_SUPPORTED
           },
-          "Dvorak",
-          "This is your standard melee/range/mage fighter script.");
+          "Dvorak, Redesigned UI by Seatta",
+          "This is your standard melee/range/mage fighter script.\n\n"
+              + "Chat commands can be used to direct the bot\n"
+              + "    Control\n"
+              + "        ::bones\n"
+              + "        ::prioritize\n"
+              + "        ::doors\n"
+              + "    Combat Styles:\n"
+              + "        ::controlled\n"
+              + "        ::attack\n"
+              + "        ::strength\n"
+              + "        ::defense");
 
   private int fightMode = 2;
   private int maxWander = 3;
@@ -57,8 +52,6 @@ public class AIOFighter extends IdleScript {
   private boolean openDoors = false;
   private boolean buryBones = true;
   private boolean prioritizeBones = false;
-  private long next_attempt = -1;
-  private final long nineMinutesInMillis = 540000L;
   private boolean maging = true;
   private int spellId = 0;
   private boolean ranging = true;
@@ -68,44 +61,507 @@ public class AIOFighter extends IdleScript {
   private int[] loot = {}; // feathers
   private final int[] bones = {20, 413, 604, 814};
   private final int[] bowIds = {188, 189, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 59, 60};
-  private final int[] arrowIds = {
-    638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 11, 574, 190, 592, 786
-  };
   private final int[] doorObjectIds = {60, 64};
+
   // do not modify these
   private int currentAttackingNpc = -1;
   private int[] lootTable = null;
   private final int[] startTile = {-1, -1};
-  private JFrame scriptFrame;
   private boolean guiSetup = false;
   private boolean scriptStarted = false;
-  private final long startTimestamp = System.currentTimeMillis() / 1000L;
   private int bonesBuried = 0;
   private int spellsCasted = 0;
-  /**
-   * This function is the entry point for the program. It takes an array of parameters and executes
-   * script based on the values of the parameters. <br>
-   * Parameters in this context can be from CLI parsing or in the script options parameters text box
-   *
-   * @param parameters an array of String values representing the parameters passed to the function
-   */
+
+  private final JFrame frame = new JFrame("AIOFighter: " + c.getPlayerName());
+  private final JPanel panel = new JPanel();
+
+  // UI Components
+  private final SpringLayout sl = new SpringLayout();
+  private final String[] nearbyTableColumns = {"", "Name", "Id"};
+  private final DefaultTableModel tableModel =
+      new DefaultTableModel(new Object[][] {}, nearbyTableColumns) {
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+          if (columnIndex == 0) {
+            return Boolean.class;
+          }
+          return super.getColumnClass(columnIndex);
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+          return false;
+        }
+      };
+
+  private final JTable nearbyTable = new JTable(tableModel) {};
+  private final JScrollPane nearbyScrollPane = new JScrollPane(nearbyTable);
+  private final JTableHeader nearbyHeader = nearbyTable.getTableHeader();
+
+  private final JLabel npcIdLabel = new JLabel("NPC IDs: (comma separated)");
+  private final JLabel lootLabel = new JLabel("Loot Table: (comma separated)");
+  private final JLabel wanderLabel = new JLabel("Wander Distance: (-1 to disable)");
+  private final JLabel eatLabel = new JLabel("Eat at HP:");
+  private final JLabel fightModeLabel = new JLabel("Fight Mode:");
+  private final JLabel switchLabel = new JLabel("In melee range weapon switch id:");
+
+  private final JTextField npcIdsField = new JTextField("");
+  private final JTextField wanderField = new JTextField("20");
+  private final JTextField eatAtHpField =
+      new JTextField(String.valueOf(c.getCurrentStat(c.getStatId("Hits")) / 2));
+  private final JTextField lootField = new JTextField("-1");
+  private final JTextField switchIdField = new JTextField("81");
+
+  private final JCheckBox openDoorsCheckbox =
+      new JCheckBox("Open doors/gates? (if On, then set a max wander!)");
+  private final JCheckBox buryBonesCheckbox = new JCheckBox("Loot and bury bones?");
+  private final JCheckBox prioritizeBonesCheckbox =
+      new JCheckBox("Prioritize bones over attacking?");
+  private final JCheckBox magingCheckbox = new JCheckBox("Magic?");
+  private final JCheckBox rangingCheckbox = new JCheckBox("Ranging?");
+
+  private final JButton refreshBtn = new JButton("\u21BB");
+  private final JButton startBtn = new JButton("Run Script");
+
+  private final JComboBox<String> modeCombobBox =
+      new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"});
+  private final JComboBox<String> spellComboBox = new JComboBox<>(c.getSpellNames());
+  private final Map<String, Integer> arrowMap =
+      new LinkedHashMap<String, Integer>() {
+        {
+          put("Pick up no arrows", -1);
+          put("Pick up Bronze Arrows", ItemId.BRONZE_ARROWS.getId());
+          put("Pick up Iron Arrows", ItemId.IRON_ARROWS.getId());
+          put("Pick up Steel Arrows", ItemId.STEEL_ARROWS.getId());
+          put("Pick up Mithril Arrows", ItemId.MITHRIL_ARROWS.getId());
+          put("Pick up Adamantite Arrows", ItemId.ADAMANTITE_ARROWS.getId());
+          put("Pick up Rune Arrows", ItemId.RUNE_ARROWS.getId());
+          put("Pick up Poison Bronze Arrows", ItemId.POISON_BRONZE_ARROWS.getId());
+          put("Pick up Poison Iron Arrows", ItemId.POISON_IRON_ARROWS.getId());
+          put("Pick up Poison Steel Arrows", ItemId.POISON_STEEL_ARROWS.getId());
+          put("Pick up Poison Mithril Arrows", ItemId.POISON_MITHRIL_ARROWS.getId());
+          put("Pick up Poison Adamantite Arrows", ItemId.POISON_ADAMANTITE_ARROWS.getId());
+          put("Pick up Poison Rune Arrows", ItemId.POISON_RUNE_ARROWS.getId());
+          put("Pick up Ice Arrows", ItemId.ICE_ARROWS.getId());
+        }
+      };
+  private final List<Integer> arrowIds =
+      arrowMap.values().stream().filter(id -> id != -1).collect(Collectors.toList());
+  private final JComboBox<String> arrowComboBox =
+      new JComboBox<>(arrowMap.keySet().toArray(new String[0]));
+
+  private Map<String, Integer> nearbyNPCs = getNearbyNpcs();
+
+  public void showGUI() {
+    setDefaultValues();
+    addComponentsToPanel();
+    setConstraints();
+    setTheming();
+    setListeners();
+    frame.add(panel);
+    frame.pack();
+    frame.setLocationRelativeTo(Main.rscFrame);
+    frame.setVisible(true);
+    frame.requestFocus();
+
+    populateNearbyNPCsTable();
+    while (!scriptStarted && c.isRunning() && frame.isVisible()) c.sleep(640);
+  }
+
+  private void setDefaultValues() {
+    scriptStarted = false;
+    nearbyTable.clearSelection();
+    arrowComboBox.setEnabled(false);
+    spellComboBox.setEnabled(false);
+    startBtn.setEnabled(false);
+    magingCheckbox.setSelected(false);
+    rangingCheckbox.setSelected(false);
+    prioritizeBonesCheckbox.setSelected(false);
+    openDoorsCheckbox.setSelected(false);
+    buryBonesCheckbox.setSelected(false);
+    switchIdField.setEnabled(false);
+    prioritizeBonesCheckbox.setEnabled(false);
+  }
+
+  private void addComponentsToPanel() {
+    panel.setLayout(sl);
+    panel.add(fightModeLabel);
+    panel.add(modeCombobBox);
+    panel.add(npcIdLabel);
+    panel.add(nearbyScrollPane);
+    panel.add(npcIdsField);
+    panel.add(refreshBtn);
+    panel.add(wanderLabel);
+    panel.add(wanderField);
+    panel.add(eatAtHpField);
+    panel.add(eatLabel);
+    panel.add(lootLabel);
+    panel.add(lootField);
+    panel.add(openDoorsCheckbox);
+    panel.add(buryBonesCheckbox);
+    panel.add(prioritizeBonesCheckbox);
+    panel.add(magingCheckbox);
+    panel.add(spellComboBox);
+    panel.add(rangingCheckbox);
+    panel.add(arrowComboBox);
+    panel.add(switchLabel);
+    panel.add(switchIdField);
+    panel.add(startBtn);
+  }
+
+  public void setListeners() {
+    npcIdsField
+        .getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+              public void changedUpdate(DocumentEvent e) {
+                update();
+              }
+
+              public void removeUpdate(DocumentEvent e) {
+                update();
+              }
+
+              public void insertUpdate(DocumentEvent e) {
+                update();
+              }
+
+              public void update() {
+                startBtn.setEnabled(!npcIdsField.getText().isEmpty());
+              }
+            });
+    startBtn.addActionListener(
+        e -> {
+          if (validateFields(npcIdsField, wanderField, eatAtHpField, lootField, switchIdField)) {
+            setValuesFromGUI(
+                modeCombobBox,
+                npcIdsField,
+                wanderField,
+                eatAtHpField,
+                lootField,
+                openDoorsCheckbox,
+                buryBonesCheckbox,
+                prioritizeBonesCheckbox,
+                magingCheckbox,
+                spellComboBox,
+                rangingCheckbox,
+                arrowComboBox,
+                switchIdField);
+
+            c.displayMessage("@red@AIOFighter by Dvorak. Let's party like it's 2004!");
+            c.setStatus("@red@Started...");
+
+            frame.setVisible(false);
+            frame.dispose();
+            scriptStarted = true;
+          }
+        });
+
+    magingCheckbox.addActionListener(
+        e -> {
+          spellComboBox.setEnabled(magingCheckbox.isSelected());
+          if (magingCheckbox.isSelected()) {
+            rangingCheckbox.setSelected(false);
+            arrowComboBox.setEnabled(false);
+            switchIdField.setEnabled(false);
+          }
+        });
+    rangingCheckbox.addActionListener(
+        e -> {
+          arrowComboBox.setEnabled(rangingCheckbox.isSelected());
+          switchIdField.setEnabled(rangingCheckbox.isSelected());
+          if (rangingCheckbox.isSelected()) {
+            magingCheckbox.setSelected(false);
+            spellComboBox.setEnabled(false);
+          }
+        });
+
+    buryBonesCheckbox.addActionListener(
+        e -> {
+          if (!buryBonesCheckbox.isSelected()) prioritizeBonesCheckbox.setSelected(false);
+          prioritizeBonesCheckbox.setEnabled(buryBonesCheckbox.isSelected());
+        });
+
+    // Button listener for refreshing nearby npcs
+    refreshBtn.addActionListener(e -> populateNearbyNPCsTable());
+
+    // Mouse click listener to nearby enemies table
+    nearbyTable.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            int row = nearbyTable.rowAtPoint(e.getPoint()); // Get the row clicked
+            if (row != -1) {
+              // Toggle the boolean value in the first column
+              boolean currentValue = (Boolean) nearbyTable.getValueAt(row, 0);
+              nearbyTable.setValueAt(!currentValue, row, 0);
+            }
+            setNearbyNpcsFromTable();
+          }
+        });
+  }
+
+  public void setNearbyNpcsFromTable() {
+    StringBuilder text = new StringBuilder();
+    for (int i = 0; i < nearbyTable.getRowCount(); i++) {
+      if ((boolean) nearbyTable.getValueAt(i, 0)) {
+        if (text.length() > 0) text.append(",");
+        text.append((String) nearbyTable.getValueAt(i, 2));
+      }
+    }
+    npcIdsField.setText(text.toString());
+  }
+
+  public void setConstraints() {
+    // LEFT SIDE
+    sl.putConstraint(SpringLayout.NORTH, npcIdLabel, 4, SpringLayout.NORTH, panel);
+    sl.putConstraint(SpringLayout.WEST, npcIdLabel, 4, SpringLayout.WEST, panel);
+    sl.putConstraint(SpringLayout.EAST, npcIdLabel, 4, SpringLayout.EAST, refreshBtn);
+    sl.putConstraint(SpringLayout.SOUTH, npcIdLabel, 18, SpringLayout.NORTH, npcIdLabel);
+
+    sl.putConstraint(SpringLayout.NORTH, npcIdsField, 4, SpringLayout.SOUTH, npcIdLabel);
+    sl.putConstraint(SpringLayout.SOUTH, npcIdsField, 18, SpringLayout.NORTH, npcIdsField);
+    sl.putConstraint(SpringLayout.WEST, npcIdsField, 0, SpringLayout.WEST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.EAST, npcIdsField, -4, SpringLayout.WEST, refreshBtn);
+
+    sl.putConstraint(SpringLayout.NORTH, nearbyScrollPane, 4, SpringLayout.SOUTH, npcIdsField);
+    sl.putConstraint(SpringLayout.WEST, nearbyScrollPane, 4, SpringLayout.WEST, panel);
+    sl.putConstraint(SpringLayout.EAST, nearbyScrollPane, 240, SpringLayout.WEST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.SOUTH, nearbyScrollPane, -4, SpringLayout.NORTH, lootLabel);
+
+    sl.putConstraint(SpringLayout.SOUTH, refreshBtn, 0, SpringLayout.SOUTH, npcIdsField);
+    sl.putConstraint(SpringLayout.NORTH, refreshBtn, 0, SpringLayout.NORTH, npcIdsField);
+    sl.putConstraint(SpringLayout.WEST, refreshBtn, -46, SpringLayout.EAST, refreshBtn);
+    sl.putConstraint(SpringLayout.EAST, refreshBtn, 0, SpringLayout.EAST, nearbyScrollPane);
+
+    sl.putConstraint(SpringLayout.NORTH, lootLabel, -18, SpringLayout.SOUTH, lootLabel);
+    sl.putConstraint(SpringLayout.WEST, lootLabel, 4, SpringLayout.WEST, panel);
+    sl.putConstraint(SpringLayout.EAST, lootLabel, 0, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.SOUTH, lootLabel, -4, SpringLayout.NORTH, lootField);
+
+    sl.putConstraint(SpringLayout.NORTH, lootField, -18, SpringLayout.SOUTH, lootField);
+    sl.putConstraint(SpringLayout.WEST, lootField, 4, SpringLayout.WEST, panel);
+    sl.putConstraint(SpringLayout.EAST, lootField, 0, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.SOUTH, lootField, -4, SpringLayout.NORTH, startBtn);
+
+    // RIGHT SIDE
+    sl.putConstraint(SpringLayout.NORTH, fightModeLabel, 4, SpringLayout.NORTH, panel);
+    sl.putConstraint(SpringLayout.WEST, fightModeLabel, 4, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.SOUTH, fightModeLabel, 18, SpringLayout.NORTH, fightModeLabel);
+
+    sl.putConstraint(SpringLayout.NORTH, eatLabel, 4, SpringLayout.NORTH, panel);
+    sl.putConstraint(SpringLayout.WEST, eatLabel, 22, SpringLayout.EAST, modeCombobBox);
+    sl.putConstraint(SpringLayout.SOUTH, eatLabel, 18, SpringLayout.NORTH, eatLabel);
+
+    sl.putConstraint(SpringLayout.NORTH, modeCombobBox, 4, SpringLayout.SOUTH, fightModeLabel);
+    sl.putConstraint(SpringLayout.WEST, modeCombobBox, 4, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.EAST, modeCombobBox, 100, SpringLayout.WEST, modeCombobBox);
+    sl.putConstraint(SpringLayout.SOUTH, modeCombobBox, 18, SpringLayout.NORTH, modeCombobBox);
+
+    sl.putConstraint(SpringLayout.NORTH, eatAtHpField, 4, SpringLayout.SOUTH, eatLabel);
+    sl.putConstraint(SpringLayout.WEST, eatAtHpField, 24, SpringLayout.EAST, modeCombobBox);
+    sl.putConstraint(SpringLayout.EAST, eatAtHpField, 48, SpringLayout.WEST, eatAtHpField);
+    sl.putConstraint(SpringLayout.SOUTH, eatAtHpField, 18, SpringLayout.NORTH, eatAtHpField);
+
+    sl.putConstraint(SpringLayout.NORTH, wanderLabel, 4, SpringLayout.SOUTH, modeCombobBox);
+    sl.putConstraint(SpringLayout.WEST, wanderLabel, 8, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.SOUTH, wanderLabel, 18, SpringLayout.NORTH, wanderLabel);
+
+    sl.putConstraint(SpringLayout.NORTH, wanderField, 0, SpringLayout.NORTH, wanderLabel);
+    sl.putConstraint(SpringLayout.SOUTH, wanderField, 0, SpringLayout.SOUTH, wanderLabel);
+    sl.putConstraint(SpringLayout.WEST, wanderField, 4, SpringLayout.EAST, wanderLabel);
+    sl.putConstraint(SpringLayout.EAST, wanderField, -4, SpringLayout.EAST, panel);
+
+    sl.putConstraint(SpringLayout.NORTH, openDoorsCheckbox, 4, SpringLayout.SOUTH, wanderField);
+    sl.putConstraint(SpringLayout.WEST, openDoorsCheckbox, 4, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.EAST, openDoorsCheckbox, -4, SpringLayout.EAST, panel);
+    sl.putConstraint(
+        SpringLayout.SOUTH, openDoorsCheckbox, 18, SpringLayout.NORTH, openDoorsCheckbox);
+
+    sl.putConstraint(
+        SpringLayout.NORTH, buryBonesCheckbox, 14, SpringLayout.SOUTH, openDoorsCheckbox);
+    sl.putConstraint(SpringLayout.WEST, buryBonesCheckbox, 4, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.EAST, buryBonesCheckbox, -4, SpringLayout.EAST, panel);
+    sl.putConstraint(
+        SpringLayout.SOUTH, buryBonesCheckbox, 18, SpringLayout.NORTH, buryBonesCheckbox);
+
+    sl.putConstraint(
+        SpringLayout.NORTH, prioritizeBonesCheckbox, 4, SpringLayout.SOUTH, buryBonesCheckbox);
+    sl.putConstraint(
+        SpringLayout.WEST, prioritizeBonesCheckbox, 4, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.EAST, prioritizeBonesCheckbox, -4, SpringLayout.EAST, panel);
+    sl.putConstraint(
+        SpringLayout.SOUTH,
+        prioritizeBonesCheckbox,
+        18,
+        SpringLayout.NORTH,
+        prioritizeBonesCheckbox);
+
+    sl.putConstraint(SpringLayout.NORTH, magingCheckbox, -18, SpringLayout.SOUTH, magingCheckbox);
+    sl.putConstraint(SpringLayout.SOUTH, magingCheckbox, -4, SpringLayout.NORTH, rangingCheckbox);
+    sl.putConstraint(SpringLayout.WEST, magingCheckbox, 4, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.EAST, magingCheckbox, 78, SpringLayout.WEST, magingCheckbox);
+
+    sl.putConstraint(SpringLayout.NORTH, spellComboBox, 0, SpringLayout.NORTH, magingCheckbox);
+    sl.putConstraint(SpringLayout.SOUTH, spellComboBox, 0, SpringLayout.SOUTH, magingCheckbox);
+    sl.putConstraint(SpringLayout.WEST, spellComboBox, 4, SpringLayout.EAST, magingCheckbox);
+    sl.putConstraint(SpringLayout.EAST, spellComboBox, -4, SpringLayout.EAST, panel);
+
+    sl.putConstraint(SpringLayout.NORTH, rangingCheckbox, -18, SpringLayout.SOUTH, rangingCheckbox);
+    sl.putConstraint(SpringLayout.SOUTH, rangingCheckbox, -4, SpringLayout.NORTH, switchLabel);
+    sl.putConstraint(SpringLayout.WEST, rangingCheckbox, 4, SpringLayout.EAST, nearbyScrollPane);
+    sl.putConstraint(SpringLayout.EAST, rangingCheckbox, 78, SpringLayout.WEST, rangingCheckbox);
+
+    sl.putConstraint(SpringLayout.NORTH, arrowComboBox, 0, SpringLayout.NORTH, rangingCheckbox);
+    sl.putConstraint(SpringLayout.SOUTH, arrowComboBox, 0, SpringLayout.SOUTH, rangingCheckbox);
+    sl.putConstraint(SpringLayout.WEST, arrowComboBox, 4, SpringLayout.EAST, rangingCheckbox);
+    sl.putConstraint(SpringLayout.EAST, arrowComboBox, -4, SpringLayout.EAST, panel);
+
+    sl.putConstraint(SpringLayout.NORTH, switchLabel, -18, SpringLayout.SOUTH, switchLabel);
+    sl.putConstraint(SpringLayout.SOUTH, switchLabel, -18, SpringLayout.NORTH, startBtn);
+    sl.putConstraint(SpringLayout.WEST, switchLabel, 20, SpringLayout.WEST, modeCombobBox);
+
+    sl.putConstraint(SpringLayout.NORTH, switchIdField, 0, SpringLayout.NORTH, switchLabel);
+    sl.putConstraint(SpringLayout.SOUTH, switchIdField, 0, SpringLayout.SOUTH, switchLabel);
+    sl.putConstraint(SpringLayout.WEST, switchIdField, 4, SpringLayout.EAST, switchLabel);
+    sl.putConstraint(SpringLayout.EAST, switchIdField, -4, SpringLayout.EAST, panel);
+
+    // BOTTOM
+    sl.putConstraint(SpringLayout.NORTH, startBtn, -24, SpringLayout.SOUTH, panel);
+    sl.putConstraint(SpringLayout.SOUTH, startBtn, -4, SpringLayout.SOUTH, panel);
+    sl.putConstraint(SpringLayout.WEST, startBtn, 4, SpringLayout.WEST, panel);
+    sl.putConstraint(SpringLayout.EAST, startBtn, -4, SpringLayout.EAST, panel);
+  }
+
+  public void setTheming() {
+    final Color backgroundColor = Main.getThemeBackColor();
+    final Color foregroundColor = Main.getThemeTextColor();
+
+    TableColumn nearbyColumn1 = nearbyTable.getColumnModel().getColumn(0);
+    nearbyColumn1.setPreferredWidth(18);
+    nearbyColumn1.setMinWidth(18);
+    nearbyColumn1.setMaxWidth(18);
+    TableColumn nearbyColumn3 = nearbyTable.getColumnModel().getColumn(2);
+    nearbyColumn3.setPreferredWidth(40);
+    nearbyColumn3.setMinWidth(40);
+    nearbyColumn3.setMaxWidth(40);
+
+    frame.getContentPane().setBackground(backgroundColor);
+    frame.getContentPane().setForeground(foregroundColor);
+    frame.setResizable(false);
+    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frame.setPreferredSize(new Dimension(600, 300));
+
+    panel.setBackground(backgroundColor);
+    panel.setForeground(foregroundColor);
+
+    npcIdLabel.setForeground(foregroundColor);
+    lootLabel.setForeground(foregroundColor);
+    wanderLabel.setForeground(foregroundColor);
+    switchLabel.setForeground(foregroundColor);
+    fightModeLabel.setForeground(foregroundColor);
+    eatLabel.setForeground(foregroundColor);
+
+    buryBonesCheckbox.setForeground(foregroundColor);
+    buryBonesCheckbox.setBackground(backgroundColor);
+    magingCheckbox.setForeground(foregroundColor);
+    magingCheckbox.setBackground(backgroundColor);
+    openDoorsCheckbox.setForeground(foregroundColor);
+    openDoorsCheckbox.setBackground(backgroundColor);
+    prioritizeBonesCheckbox.setForeground(foregroundColor);
+    prioritizeBonesCheckbox.setBackground(backgroundColor);
+    rangingCheckbox.setForeground(foregroundColor);
+    rangingCheckbox.setBackground(backgroundColor);
+
+    refreshBtn.setBackground(backgroundColor.darker());
+    refreshBtn.setForeground(foregroundColor);
+    startBtn.setBackground(backgroundColor.darker());
+    startBtn.setForeground(foregroundColor);
+
+    nearbyTable.setRowSelectionAllowed(false);
+    nearbyTable.setBorder(BorderFactory.createEmptyBorder());
+    nearbyTable.setBackground(backgroundColor.brighter());
+    nearbyTable.setForeground(foregroundColor);
+
+    npcIdsField.setForeground(foregroundColor);
+    npcIdsField.setBackground(backgroundColor.brighter().brighter());
+    eatAtHpField.setForeground(foregroundColor);
+    eatAtHpField.setBackground(backgroundColor.brighter().brighter());
+    wanderField.setForeground(foregroundColor);
+    wanderField.setBackground(backgroundColor.brighter().brighter());
+    lootField.setForeground(foregroundColor);
+    lootField.setBackground(backgroundColor.brighter().brighter());
+    switchIdField.setForeground(foregroundColor);
+    switchIdField.setBackground(backgroundColor.brighter().brighter());
+
+    modeCombobBox.setForeground(foregroundColor);
+    modeCombobBox.setBackground(backgroundColor.brighter().brighter());
+    modeCombobBox.setBorder(BorderFactory.createEmptyBorder());
+    arrowComboBox.setForeground(foregroundColor);
+    arrowComboBox.setBackground(backgroundColor.brighter().brighter());
+    arrowComboBox.setBorder(BorderFactory.createEmptyBorder());
+    spellComboBox.setForeground(foregroundColor);
+    spellComboBox.setBackground(backgroundColor.brighter().brighter());
+    spellComboBox.setBorder(BorderFactory.createEmptyBorder());
+
+    nearbyScrollPane.setBackground(backgroundColor);
+    nearbyScrollPane.setForeground(foregroundColor);
+    nearbyScrollPane.getViewport().setBackground(backgroundColor.brighter());
+    nearbyScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    nearbyHeader.setReorderingAllowed(false);
+    nearbyHeader.setResizingAllowed(false);
+    nearbyHeader.setFont(nearbyTable.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
+    nearbyHeader.setBackground(backgroundColor);
+    nearbyHeader.setForeground(foregroundColor);
+    nearbyHeader.setBorder(
+        BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("controlDkShadow")));
+    nearbyHeader.setDefaultRenderer(
+        new DefaultTableCellRenderer() {
+          @Override
+          public Component getTableCellRendererComponent(
+              JTable table,
+              Object value,
+              boolean isSelected,
+              boolean hasFocus,
+              int row,
+              int column) {
+
+            JLabel label =
+                (JLabel)
+                    super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+            table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+            label.setBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 0, UIManager.getColor("controlDkShadow")));
+            label.setFont(nearbyHeader.getFont().deriveFont(Font.BOLD, 15f));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setBackground(backgroundColor);
+            return label;
+          }
+        });
+  }
+
   public int start(String[] parameters) {
     if (!guiSetup) {
-      setupGUI();
+      showGUI();
       guiSetup = true;
     }
 
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
-      next_attempt = System.currentTimeMillis() + 5000L;
       scriptStart();
     }
-
+    c.stop();
     return 1000; // start() must return an int value now.
   }
 
   private void scriptStart() {
+    paintBuilder.start(4, 18, 180);
     if (c.isRunning()) {
       lootTable = Arrays.copyOf(loot, loot.length);
       if (prioritizeBones) {
@@ -131,10 +587,6 @@ public class AIOFighter extends IdleScript {
         // 7th priority: maging
 
         c.sleep(618); // wait 1 tick
-
-        if (c.isCurrentlyWalking()) {
-          next_attempt = System.currentTimeMillis() + nineMinutesInMillis;
-        }
 
         if (!isWithinWander(c.currentX(), c.currentY())) {
           c.setStatus("@red@Out of range! Walking back.");
@@ -204,6 +656,7 @@ public class AIOFighter extends IdleScript {
             }
 
             boolean hasArrows = false;
+
             for (int id : arrowIds) {
               if (c.getInventoryItemCount(id) > 0 || c.isItemIdEquipped(id)) {
                 hasArrows = true;
@@ -346,8 +799,6 @@ public class AIOFighter extends IdleScript {
       JTextField maxWanderField,
       JTextField eatAtHpField,
       JTextField lootTableField,
-      JTextField spellNameField,
-      JTextField arrowIdField,
       JTextField switchIdField) {
 
     try {
@@ -402,18 +853,6 @@ public class AIOFighter extends IdleScript {
       return false;
     }
 
-    if (c.getSpellIdFromName(spellNameField.getText()) < 0) {
-      popup("Error", "Spell name does not exist.");
-      return false;
-    }
-
-    try {
-      Integer.valueOf(arrowIdField.getText());
-    } catch (Exception e) {
-      popup("Error", "Invalid arrow ID value.");
-      return false;
-    }
-
     try {
       Integer.valueOf(switchIdField.getText());
     } catch (Exception e) {
@@ -434,9 +873,9 @@ public class AIOFighter extends IdleScript {
       JCheckBox buryBonesCheckbox,
       JCheckBox prioritizeBonesCheckbox,
       JCheckBox magingCheckbox,
-      JTextField spellNameField,
+      JComboBox<String> spellNameField,
       JCheckBox rangingCheckbox,
-      JTextField arrowIdField,
+      JComboBox<String> arrowIdField,
       JTextField switchIdField) {
     this.fightMode = fightModeField.getSelectedIndex();
 
@@ -465,146 +904,93 @@ public class AIOFighter extends IdleScript {
     this.buryBones = buryBonesCheckbox.isSelected();
     this.prioritizeBones = prioritizeBonesCheckbox.isSelected();
     this.maging = magingCheckbox.isSelected();
-    this.spellId = c.getSpellIdFromName(spellNameField.getText());
+    this.spellId = c.getSpellIdFromName((String) spellNameField.getSelectedItem());
     this.ranging = rangingCheckbox.isSelected();
-    this.arrowId = Integer.parseInt(arrowIdField.getText());
+    this.arrowId = arrowMap.get((String) arrowIdField.getSelectedItem());
     this.switchId = Integer.parseInt(switchIdField.getText());
   }
 
-  private void setupGUI() {
+  private void populateNearbyNPCsTable() {
+    Map<String, Integer> newMap = getNearbyNpcs();
+    if (newMap != null && !newMap.isEmpty()) {
+      tableModel.setRowCount(0);
 
-    // generate some variables for components we need to manipulate
-    JComboBox<String> fightModeField;
-    JCheckBox openDoorsCheckbox,
-        buryBonesCheckbox,
-        magingCheckbox,
-        rangingCheckbox,
-        prioritizeBonesCheckbox;
-    JTextField npcIdsField,
-        maxWanderField,
-        eatAtHpField,
-        lootTableField,
-        spellNameField,
-        arrowIdField,
-        switchIdField;
-    JButton startScriptButton = new JButton("Start");
+      if (nearbyNPCs == null) {
+        nearbyNPCs = newMap;
+      } else {
+        nearbyNPCs.putAll(newMap);
+      }
 
-    // Set up the left and right panels in component arrays
-    Component[] leftSide = {
-      new JLabel("Chat commands can be used to direct the bot"),
-      new JLabel("Control ::bones ::prioritize ::doors"),
-      new JLabel("Combat Styles ::attack :strength ::defense ::controlled"),
-      new JLabel("Fight Mode:"),
-      fightModeField =
-          new JComboBox<>(new String[] {"Controlled", "Aggressive", "Accurate", "Defensive"}),
-      new JLabel("NPC IDs:"),
-      npcIdsField = new JTextField("3"),
-      new JLabel("Max Wander Distance: (-1 to disable)"),
-      maxWanderField = new JTextField("20"),
-      new JLabel("Eat at HP: (food type is automatically detected)"),
-      eatAtHpField = new JTextField(String.valueOf(c.getCurrentStat(c.getStatId("Hits")) / 2)),
-      new JLabel("Loot Table: (comma separated)"),
-      lootTableField = new JTextField("-1")
-    };
-    Component[] rightSide = {
-      new JLabel(""),
-      openDoorsCheckbox = new JCheckBox("Open doors/gates? (if On, then set a max wander!)"),
-      buryBonesCheckbox = new JCheckBox("Loot & Bury Bones? (only loots bones when npc is null)"),
-      prioritizeBonesCheckbox = new JCheckBox("Prioritize Bone looting over attacking NPCs?)"),
-      new JLabel(""),
-      magingCheckbox = new JCheckBox("Magic?"),
-      new JLabel("Spell Name: (exactly as it appears in spellbook)"),
-      spellNameField = new JTextField("Wind Bolt"),
-      rangingCheckbox = new JCheckBox("Ranging?"),
-      new JLabel("Pickup Arrow ID: (-1 to disable)"),
-      arrowIdField = new JTextField("-1"),
-      new JLabel("Switch ID (weapon to switch to if in melee combat while ranging)"),
-      switchIdField = new JTextField("81"),
-    };
-
-    // set default states
-    spellNameField.setEnabled(false);
-    arrowIdField.setEnabled(false);
-    switchIdField.setEnabled(false);
-    prioritizeBonesCheckbox.setEnabled(false);
-    fightModeField.setSelectedIndex(c.getFightMode());
-
-    // set up our panels
-    JPanel[] jPanels = {new JPanel(), new JPanel()};
-    JPanel gap = new JPanel();
-    gap.setSize(30, 100);
-
-    for (Component comp : leftSide) {
-      jPanels[0].add(comp);
+      if (nearbyNPCs != null && !nearbyNPCs.isEmpty()) {
+        List<String> sortedKeys =
+            nearbyNPCs.keySet().stream()
+                .sorted(
+                    Comparator.comparing(this::extractName).thenComparingInt(this::extractNumber))
+                .collect(Collectors.toList());
+        sortedKeys.forEach(
+            name -> {
+              Integer id = nearbyNPCs.get(name);
+              tableModel.addRow(new Object[] {false, name, String.valueOf(id)});
+            });
+      }
     }
-    for (Component comp : rightSide) {
-      jPanels[1].add(comp);
+  }
+
+  /**
+   * Used for sorting npc names alphabetically then by level
+   *
+   * @param str String -- Name (level)
+   * @return String -- Name
+   */
+  private String extractName(String str) {
+    int index = str.indexOf('(');
+    if (index != -1) {
+      return str.substring(0, index).trim();
     }
-    for (JPanel panel : jPanels) {
-      panel.setLayout(new GridLayout(0, 1));
+    return str;
+  }
+
+  /**
+   * Used for sorting npc names alphabetically then by level
+   *
+   * @param str String -- Name (level)
+   * @return int -- level as int
+   */
+  private int extractNumber(String str) {
+    int start = str.indexOf('(');
+    int end = str.indexOf(')');
+    if (start != -1 && end != -1) {
+      return Integer.parseInt(str.substring(start + 1, end));
     }
+    return 0; // Default if no number found
+  }
 
-    // set up script frame with finished components
-    scriptFrame = new JFrame(c.getPlayerName() + " - options");
-    scriptFrame.setLayout(new BorderLayout());
-    scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    scriptFrame.add(jPanels[0], BorderLayout.LINE_START);
-
-    scriptFrame.add(gap, BorderLayout.CENTER);
-    scriptFrame.add(jPanels[1], BorderLayout.LINE_END);
-    scriptFrame.add(startScriptButton, BorderLayout.PAGE_END);
-
-    scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
-    scriptFrame.setVisible(true);
-    scriptFrame.toFront();
-    scriptFrame.requestFocusInWindow();
-
-    c.setStatus("@red@Waiting for start...");
-
-    // action listeners below
-    startScriptButton.addActionListener(
-        e -> {
-          if (validateFields(
-              npcIdsField,
-              maxWanderField,
-              eatAtHpField,
-              lootTableField,
-              spellNameField,
-              arrowIdField,
-              switchIdField)) {
-            setValuesFromGUI(
-                fightModeField,
-                npcIdsField,
-                maxWanderField,
-                eatAtHpField,
-                lootTableField,
-                openDoorsCheckbox,
-                buryBonesCheckbox,
-                prioritizeBonesCheckbox,
-                magingCheckbox,
-                spellNameField,
-                rangingCheckbox,
-                arrowIdField,
-                switchIdField);
-
-            c.displayMessage("@red@AIOFighter by Dvorak. Let's party like it's 2004!");
-            c.setStatus("@red@Started...");
-
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-            scriptStarted = true;
-          }
-        });
-
-    magingCheckbox.addActionListener(e -> spellNameField.setEnabled(magingCheckbox.isSelected()));
-    buryBonesCheckbox.addActionListener(
-        e -> prioritizeBonesCheckbox.setEnabled(buryBonesCheckbox.isSelected()));
-    rangingCheckbox.addActionListener(
-        e -> {
-          arrowIdField.setEnabled(rangingCheckbox.isSelected());
-          switchIdField.setEnabled(rangingCheckbox.isSelected());
-        });
+  /**
+   * Returns a map of nearby NPC names and ids to show in the UI
+   *
+   * @return List
+   */
+  private Map<String, Integer> getNearbyNpcs() {
+    try {
+      return Arrays.stream(controller.getNpcsAsArray())
+          .filter(
+              npc ->
+                  controller.isNpcAttackable(npc.npcId)
+                      && controller.getNearestNpcById(npc.npcId, true) != null)
+          .distinct()
+          .collect(
+              Collectors.toMap(
+                  npc -> {
+                    String name = c.getNpcName(npc.npcId);
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    name += String.format(" (%s)", c.calculateNpcLevel(npc.npcId));
+                    return name;
+                  },
+                  npc -> npc.npcId,
+                  (oldValue, newValue) -> oldValue));
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   @Override
@@ -664,66 +1050,71 @@ public class AIOFighter extends IdleScript {
   }
 
   @Override
-  public void serverMessageInterrupt(String message) {
-    if (message.contains("bury")) bonesBuried++;
-  }
-
-  @Override
   public void questMessageInterrupt(String message) {
+    if (message.contains("bury")) bonesBuried++;
     if (message.contains("successfully")) spellsCasted++;
     else if (message.equals("I can't get a clear shot from here")) {
+      // ! This lags very badly for some reason
       c.setStatus("@red@Walking to NPC to get a shot...");
       c.walktoNPCAsync(currentAttackingNpc);
-      c.sleep(2400);
+      c.sleep(640);
     }
   }
 
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      int bonesPerHr = 0;
-      int spellsPerHr = 0;
-      long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
-      try {
-        float timeRan = currentTimeInSeconds - startTimestamp;
-        float scale = (60 * 60) / timeRan;
-        bonesPerHr = (int) (bonesBuried * scale);
-        spellsPerHr = (int) (spellsCasted * scale);
-      } catch (Exception e) {
-        // divide by zero
-      }
+      paintBuilder.setBorderColor(0xBD93F9);
+      paintBuilder.setBackgroundColor(0x282A36, 255);
+      String bonesPerHr = paintBuilder.stringAmountPerHour(bonesBuried);
+      String spellsPerHr = paintBuilder.stringAmountPerHour(spellsCasted);
 
-      int y = 21;
-      c.drawBoxAlpha(7, 7, 160, 21 + 14 + 14, 0xFF0000, 128);
-      c.drawString("@red@AIOFighter @whi@by @red@Dvorak", 10, 21, 0xFFFFFF, 1);
-      y += 14;
+      int yellow = 0xF1FA8C;
+      int red = 0xFF5555;
+      int white = 0xF8F8F2;
+      int purple = 0xBD93F9;
 
+      paintBuilder.setTitleMultipleColor(
+          new String[] {"AIO", "Fighter"},
+          new int[] {yellow, red},
+          new int[] {(paintBuilder.getWidth() - c.getStringWidth("AIOFighter", 6)) / 2, 34},
+          4);
+
+      paintBuilder.addRow(
+          rowBuilder.multipleStringRow(
+              new String[] {"Dvorak", "&", "Seatta"},
+              new int[] {red, white, purple},
+              new int[] {
+                (paintBuilder.getWidth() - c.getStringWidth("Dvorak & Seatta", 1)) / 2, 42, 11
+              },
+              1));
+
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(paintBuilder.stringRunTime, white, 1));
+      paintBuilder.addSpacerRow(8);
       if (buryBones) {
-        c.drawString(
-            "@red@Bones Buried: @whi@"
-                + String.format("%,d", bonesBuried)
-                + " @red@(@whi@"
-                + String.format("%,d", bonesPerHr)
-                + "@red@/@whi@hr@red@)",
-            10,
-            y,
-            0xFFFFFF,
-            1);
-        y += 14;
+        paintBuilder.addRow(
+            rowBuilder.singleSpriteMultipleStringRow(
+                ItemId.BONES.getId(),
+                60,
+                4,
+                new String[] {"Buried: " + bonesBuried, bonesPerHr},
+                new int[] {white, yellow},
+                new int[] {25, 64},
+                12));
+      }
+      if (maging) {
+        paintBuilder.addRow(
+            rowBuilder.singleSpriteMultipleStringRow(
+                ItemId.STAFF.getId(),
+                60,
+                4,
+                new String[] {"Casts: " + spellsCasted, spellsPerHr},
+                new int[] {white, yellow},
+                new int[] {25, 64},
+                12));
       }
 
-      if (maging) {
-        c.drawString(
-            "@red@Spells Casted: @whi@"
-                + String.format("%,d", spellsCasted)
-                + " @red@(@whi@"
-                + String.format("%,d", spellsPerHr)
-                + "@red@/@whi@hr@red@)",
-            10,
-            y,
-            0xFFFFFF,
-            1);
-      }
+      paintBuilder.draw();
     }
   }
 }

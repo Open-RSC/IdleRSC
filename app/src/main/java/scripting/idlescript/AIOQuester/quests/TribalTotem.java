@@ -1,9 +1,9 @@
 package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.ItemId;
+import models.entities.Location;
 import models.entities.NpcId;
 import scripting.idlescript.AIOQuester.QuestHandler;
-import scripting.idlescript.AIOQuester.models.Location;
 import scripting.idlescript.AIOQuester.models.QuitReason;
 
 public final class TribalTotem extends QuestHandler {

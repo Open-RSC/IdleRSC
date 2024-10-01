@@ -2,9 +2,13 @@ package scripting.idlescript;
 
 import bot.scriptselector.models.Category;
 import bot.scriptselector.models.ScriptInfo;
+import java.util.Arrays;
+import models.entities.Location;
+import models.entities.SceneryId;
+import models.entities.SkillId;
 
 /**
- * Trains Harvesting on Coleslaw in Draynor and Ardougne fields.
+ * Trains Harvesting on Coleslaw in Lumbridge and Ardougne fields.
  *
  * @author Dvorak
  */
@@ -14,8 +18,8 @@ public class HarvesterTrainer extends IdleScript {
           new Category[] {
             Category.HARVESTING, Category.IRONMAN_SUPPORTED, Category.ULTIMATE_IRONMAN_SUPPORTED
           },
-          "Dvorak",
-          "Trains Harvesting on Coleslaw in Draynor and Ardougne fields.");
+          "Dvorak, Auto-Pathing by Seatta",
+          "Trains Harvesting on Coleslaw in Lumbridge and Ardougne fields.");
 
   int harvested = 0;
   final long startTimestamp = System.currentTimeMillis() / 1000L;
@@ -28,29 +32,26 @@ public class HarvesterTrainer extends IdleScript {
    */
   public int start(String[] parameters) {
     controller.displayMessage("@red@HarvesterTrainer by Dvorak. Let's party like it's 2004!");
-    controller.displayMessage("@red@If less than 85 harvesting, start in Draynor/Lumbridge field.");
-    controller.displayMessage("@red@If >85 harvesting, start in Ardougne field.");
     controller.quitIfAuthentic();
 
     while (controller.isRunning()) {
       if (controller.getNeedToMove()) controller.moveCharacter();
       if (controller.getShouldSleep()) controller.sleepHandler(true);
-      // pots and garlic are in the same western patch
-      int objectId = 1265; // potatoes
 
-      if (controller.getBaseStat(19) >= 9) objectId = 1267; // garlic
+      // Gets the highest level crop training method that the player can do based on the Crop enum
+      CropInfo crop =
+          Arrays.stream(CropInfo.values())
+              .filter(cr -> controller.getBaseStat(SkillId.HARVESTING.getId()) >= cr.getLevel())
+              .reduce((crop1, crop2) -> crop1.getLevel() > crop2.getLevel() ? crop1 : crop2)
+              .orElse(CropInfo.POTATO);
 
-      if (controller.getBaseStat(19) >= 20) objectId = 1269; // corn
+      // Walk to the closest crop field if not already there
+      boolean isAtPlot =
+          Arrays.stream(crop.getFields()).anyMatch(location -> Location.isAtLocation(location));
+      if (!isAtPlot) Location.walkTowardsClosest(crop.getFields());
 
-      if (controller.getBaseStat(19) >= 60) objectId = 1263; // red cabbage
-
-      if (controller.currentX() > 450 && controller.getBaseStat(19) >= 85) objectId = 1264;
-
-      if ((objectId == 1269 || objectId == 1263) && controller.currentX() > 179) {
-        controller.walkTo(178, 607);
-        controller.walkTo(170, 609);
-      }
-      int[] coords = controller.getNearestObjectById(objectId);
+      // Harvest crop or wait for the plant to spawn
+      int[] coords = controller.getNearestObjectById(crop.id);
       if (coords != null) {
         controller.setStatus("@yel@Harvesting...");
         controller.atObject(coords[0], coords[1]);
@@ -101,5 +102,44 @@ public class HarvesterTrainer extends IdleScript {
           0xFFFFFF,
           1);
     }
+  }
+}
+
+enum CropInfo {
+  POTATO(
+      0,
+      SceneryId.POTATO_PLANT,
+      new Location[] {Location.LUMBRIDGE_POTATO_FIELD, Location.ARDOUGNE_CROP_FIELD}),
+  GARLIC(
+      9,
+      SceneryId.GARLIC_PLANT,
+      new Location[] {Location.LUMBRIDGE_POTATO_FIELD, Location.ARDOUGNE_CROP_FIELD}),
+  CORN(
+      20,
+      SceneryId.CORN_PLANT,
+      new Location[] {Location.LUMBRIDGE_CORN_FIELD, Location.ARDOUGNE_CROP_FIELD}),
+  RED_CABBAGE(60, SceneryId.RED_CABBAGE, new Location[] {Location.LUMBRIDGE_CABBAGE_FIELD}),
+  WHITE_PUMPKIN(90, SceneryId.WHITE_PUMPKIN, new Location[] {Location.ARDOUGNE_CROP_FIELD});
+
+  final int level;
+  final int id;
+  final Location[] locations;
+
+  CropInfo(int level, SceneryId plant, Location[] locations) {
+    this.level = level;
+    this.id = plant.getId();
+    this.locations = locations;
+  }
+
+  public int getLevel() {
+    return level;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public Location[] getFields() {
+    return locations;
   }
 }

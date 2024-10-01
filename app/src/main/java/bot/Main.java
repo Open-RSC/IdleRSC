@@ -257,6 +257,20 @@ public class Main {
       throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
           SecurityException, InstantiationException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, InterruptedException {
+
+    // Force-stops batching when closing the client.
+    // This only triggers when closed regularly with the X button.
+    // Prevents getting stuck unable to log in until the batch completes.
+    Runtime.getRuntime()
+        .addShutdownHook(
+            new Thread(
+                () -> {
+                  if (controller != null && controller.isBatching()) {
+                    controller.stopBatching();
+                    System.out.println("Batching force-stopped at shutdown");
+                  }
+                }));
+
     CLIParser parser = new CLIParser();
     Version version = new Version();
     ParseResult parseResult = new ParseResult();
@@ -729,6 +743,7 @@ public class Main {
           if (isRunning) {
             startStopButton.setText("Stop");
           } else {
+            if (controller != null && controller.isBatching()) controller.stopBatching();
             startStopButton.setText("Start");
           }
         });

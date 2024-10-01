@@ -345,13 +345,40 @@ public class Controller {
   }
 
   /**
-   * Retrieves the count of the specified item in the inventory.
+   * Retrieves the count of the specified item in the inventory. This will include both noted and
+   * unnoted items.
    *
    * @param itemId int
    * @return int
    */
   public int getInventoryItemCount(int itemId) {
     return mud.getInventoryCount(itemId);
+  }
+
+  /**
+   * Retrieves the count of the specified item that is not noted in the inventory.
+   *
+   * @param itemId int
+   * @return int
+   */
+  public int getUnnotedInventoryItemCount(int itemId) {
+    return mud.getInventoryCount(itemId) - getNotedInventoryItemCount(itemId);
+  }
+
+  /**
+   * Retrieves the count of the specified item that is noted in the inventory.
+   *
+   * @param itemId int
+   * @return int
+   */
+  public int getNotedInventoryItemCount(int itemId) {
+    int amount = 0;
+    for (Item item : getInventoryItems()) {
+      boolean isNoted = item.getNoted();
+      if (!isNoted || item.getCatalogID() != itemId) continue;
+      amount = item.getAmount();
+    }
+    return amount;
   }
 
   /**
@@ -1614,7 +1641,8 @@ public class Controller {
   }
 
   /**
-   * Uses the specified item on the specified npc.
+   * Uses the specified item on the specified npc. This will use the first item, regardless of
+   * whether it is unnoted or not.
    *
    * @param serverIndex int
    * @param itemId int
@@ -1626,6 +1654,39 @@ public class Controller {
     mud.packetHandler.getClientStream().newPacket(135);
     mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
     mud.packetHandler.getClientStream().bufferBits.putShort(this.getInventoryItemSlotIndex(itemId));
+    mud.packetHandler.getClientStream().finishPacket();
+  }
+
+  /**
+   * Uses the specified unnoted item on the specified npc.
+   *
+   * @param serverIndex int
+   * @param itemId int
+   */
+  public void useUnnotedItemOnNpc(int serverIndex, int itemId) {
+    walktoNPCAsync(serverIndex);
+    int inventoryIndex = getUnnotedInventoryItemSlotIndex(itemId);
+    if (inventoryIndex == -1) return;
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+    mud.packetHandler.getClientStream().newPacket(135);
+    mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
+    mud.packetHandler.getClientStream().bufferBits.putShort(inventoryIndex);
+    mud.packetHandler.getClientStream().finishPacket();
+  }
+  /**
+   * Uses the specified noted item on the specified npc.
+   *
+   * @param serverIndex int
+   * @param itemId int
+   */
+  public void useNotedItemOnNpc(int serverIndex, int itemId) {
+    walktoNPCAsync(serverIndex);
+    int inventoryIndex = getNotedInventoryItemSlotIndex(itemId);
+    if (inventoryIndex == -1) return;
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+    mud.packetHandler.getClientStream().newPacket(135);
+    mud.packetHandler.getClientStream().bufferBits.putShort(serverIndex);
+    mud.packetHandler.getClientStream().bufferBits.putShort(inventoryIndex);
     mud.packetHandler.getClientStream().finishPacket();
   }
 
@@ -1672,6 +1733,26 @@ public class Controller {
    */
   public void useItemIdOnObject(int x, int y, int itemId) {
     useItemSlotOnObject(x, y, this.getInventoryItemSlotIndex(itemId));
+  }
+
+  /**
+   * Uses the specified item id on the object at the specified coordinates.
+   *
+   * <p>This is primarily used to interact with an object, such as using an axe with a tree. For
+   * tasks like opening locked doors try using "c.useItemOnWall(int x, int y, int slotIndex)"
+   * instead
+   *
+   * @param x int
+   * @param y int
+   * @param itemId int
+   */
+  public void useUnnotedItemIdOnObject(int x, int y, int itemId) {
+    int index = this.getUnnotedInventoryItemSlotIndex(itemId);
+    if (index == -1) {
+      log("@red@Item " + itemId + " not found unnoted in inventory");
+      return;
+    }
+    useItemSlotOnObject(x, y, index);
   }
 
   /**
@@ -2155,7 +2236,38 @@ public class Controller {
   }
 
   /**
-   * Retrieves the slot id of the specified item id.
+   * Retrieves the slot id of the specified unnoted item id.
+   *
+   * @param itemId -- returns -1 if item not in inventory.
+   * @return int
+   */
+  public int getUnnotedInventoryItemSlotIndex(int itemId) {
+    List<Item> items = getInventoryItems();
+    for (int i = 0; i < items.size(); i++) {
+      Item item = items.get(i);
+      if (item.getCatalogID() == itemId && !item.getNoted()) return i;
+    }
+    return -1;
+  }
+
+  /**
+   * Retrieves the slot id of the specified noted item id.
+   *
+   * @param itemId -- returns -1 if item not in inventory.
+   * @return int
+   */
+  public int getNotedInventoryItemSlotIndex(int itemId) {
+    List<Item> items = getInventoryItems();
+    for (int i = 0; i < items.size(); i++) {
+      Item item = items.get(i);
+      if (item.getCatalogID() == itemId && item.getNoted()) return i;
+    }
+    return -1;
+  }
+
+  /**
+   * Retrieves the slot id of the specified item id. This will return the first occurrence of the
+   * id, regardless of if the item is unnoted or noted.
    *
    * @param itemId -- returns -1 if item not in inventory.
    * @return int
@@ -3797,6 +3909,27 @@ public class Controller {
   }
 
   /**
+   * Calculates an NPC's level based on it's stats
+   *
+   * @param npcId int -- npc id
+   * @return int -- level
+   */
+  public int calculateNpcLevel(int npcId) {
+    try {
+      int def = EntityHandler.getNpcDef(npcId).getDef();
+      int att = EntityHandler.getNpcDef(npcId).getAtt();
+      int str = EntityHandler.getNpcDef(npcId).getStr();
+      int hits = EntityHandler.getNpcDef(npcId).getHits();
+
+      final double level = (att + str + def + hits) / 4D;
+
+      return (int) Math.floor(level);
+    } catch (Exception e) {
+      return -1;
+    }
+  }
+
+  /**
    * Whether or not the specified npcId is attackable. This does not reflect whether or not the
    * specified NPC is in combat.
    *
@@ -4337,6 +4470,7 @@ public class Controller {
   public void useSlotIndexOnGroundItem(int x, int y, int slotIndex, int groundItemId) {
     // if (getInventoryItemCount(itemId) < 1) return;
     // TODO: check if item is on ground
+    if (slotIndex < 0 || slotIndex > 30) return;
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(53);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
@@ -4355,15 +4489,31 @@ public class Controller {
    * @param groundItemId int
    */
   public void useItemOnGroundItem(int x, int y, int itemId, int groundItemId) {
-    // if (getInventoryItemCount(itemId) < 1) return;
-    // TODO: check if item is on ground
-    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
-    mud.packetHandler.getClientStream().newPacket(53);
-    mud.packetHandler.getClientStream().bufferBits.putShort(x);
-    mud.packetHandler.getClientStream().bufferBits.putShort(y);
-    mud.packetHandler.getClientStream().bufferBits.putShort(getInventoryItemSlotIndex(itemId));
-    mud.packetHandler.getClientStream().bufferBits.putShort(groundItemId);
-    mud.packetHandler.getClientStream().finishPacket();
+    useSlotIndexOnGroundItem(x, y, getInventoryItemSlotIndex(itemId), groundItemId);
+  }
+
+  /**
+   * Uses the specified unnoted item in the inventory on the specified ground item.
+   *
+   * @param x int
+   * @param y int
+   * @param itemId int
+   * @param groundItemId int
+   */
+  public void useUnnotedItemOnGroundItem(int x, int y, int itemId, int groundItemId) {
+    useSlotIndexOnGroundItem(x, y, getUnnotedInventoryItemSlotIndex(itemId), groundItemId);
+  }
+
+  /**
+   * Uses the specified noted item in the inventory on the specified ground item.
+   *
+   * @param x int
+   * @param y int
+   * @param itemId int
+   * @param groundItemId int
+   */
+  public void useNotedItemOnGroundItem(int x, int y, int itemId, int groundItemId) {
+    useSlotIndexOnGroundItem(x, y, getNotedInventoryItemSlotIndex(itemId), groundItemId);
   }
 
   /**

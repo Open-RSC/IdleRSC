@@ -2,6 +2,7 @@ package scripting.idlescript.AIOQuester.models;
 
 import java.util.Arrays;
 import models.entities.ItemId;
+import models.entities.Location;
 import models.entities.QuestId;
 import models.entities.SkillId;
 import scripting.idlescript.AIOQuester.quests.*;
@@ -389,7 +390,7 @@ public enum Quest {
           false,
           "Thormac has lost his rare lesser kharid scorpions after leaving their cage door open. These scorpions have hidden in areas that are rather difficult to get into. You will have to overcome various challenges (and drink a lot of beer) to get all the scorpions back If you manage to help him Thormac will improve your battle staffs.",
           2,
-          Location.SORCERERS_TOWER,
+          Location.SORCERERS_TOWER_F1,
           new Quest[] {BARCRAWL},
           new int[][] {{SkillId.PRAYER.getId(), 31}, {SkillId.AGILITY.getId(), 70}},
           new int[][] {{ItemId.COINS.getId(), 1000}},

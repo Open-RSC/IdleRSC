@@ -440,32 +440,105 @@ public class CustomLabelHandlers {
     boolean goingDown = Main.getController().currentY() <= 1000;
     int ladderId = goingDown ? 6 : 5;
 
-    if (!Main.getController().isDoorOpen(217, 690)) {
-      while (!Main.getController().isDoorOpen(217, 690) && Main.getController().isRunning()) {
-        Main.getController().openDoor(217, 690);
-        Main.getController().sleep(1280);
-      }
-    }
+    openWallObject(217, 690, 2, null);
 
-    Main.log("Going down the ladder to Wizards' Tower Basement...");
+    Main.log(
+        String.format(
+            "Going %s the ladder %s Wizards' Tower Basement...",
+            goingDown ? "down" : "up", goingDown ? "to" : "from"));
     Main.getController().atObject(ladderId);
     return Main.getController()
         .sleepUntil(() -> goingDown == (Main.getController().currentY() < 1000));
   }
 
   public static boolean wizardTowerDoor() {
-    boolean goingNorth = Main.getController().currentY() >= 689;
-    if (Main.getController().getWallObjectIdAtCoord(215, 689) == 8) {
-      Main.getController().log("Opening the Wizards' Tower Door");
-      while (Main.getController().getWallObjectIdAtCoord(215, 689) == 8
+    if (isWithinArea(216, 690, 219, 694)) openWallObject(217, 690, 2, null);
+    return openWallObject(215, 689, 8, "Opening door to Wizards' Tower...");
+  }
+
+  /**
+   * Returns whether the player is within a rectangle of coordinates.
+   *
+   * @param x1 int -- X1 coordinate to check for
+   * @param y1 int -- Y1 coordinate to check for
+   * @param x2 int -- X2 coordinate to check for
+   * @param y2 int -- Y2 coordinate to check for
+   * @return boolean
+   */
+  private static boolean isWithinArea(int x1, int y1, int x2, int y2) {
+    int x = Main.getController().currentX();
+    int y = Main.getController().currentY();
+    return (x >= x1 && x <= x2 && y >= y1 && y <= y2);
+  }
+
+  /**
+   * Handles interacting with an object id at given coordinates if it matches objectId. Then wait
+   * for that id to change before continuing.
+   *
+   * @implNote Only use on objects that change ids after interacting with them. Do not use this for
+   *     objects that move the player without changing ids (teleports, crawlspaces, etc.)
+   * @param x int -- X coordinate of the object
+   * @param y int -- Y coordinate of the object
+   * @param objectId int -- Id of an object to interact with (a closed gate, for example). Skips
+   *     check if id is not at coordinates
+   * @param logMessage String -- Message to log when doing the interaction. Leave null or empty if
+   *     not wanted
+   * @return boolean
+   */
+  private static boolean openObject(int x, int y, int objectId, String logMessage) {
+    if (Main.getController().getObjectAtCoord(x, y) == objectId) {
+      if (logMessage != null && !logMessage.isEmpty()) Main.log(logMessage);
+      while (Main.getController().getObjectAtCoord(x, y) == objectId
           && Main.getController().isRunning()) {
-        Main.getController().atWallObject(215, 689);
+        Main.getController().atObject(x, y);
         Main.getController().sleep(1280);
       }
     }
-    Main.getController().walkTo(215, goingNorth ? 688 : 689);
-    return goingNorth
-        ? Main.getController().currentY() <= 688
-        : Main.getController().currentY() >= 689;
+    return true;
+  }
+
+  /**
+   * Handles interacting with a wall object at given coordinates that matches the given id, while
+   * waiting for that wall object's id to change.
+   *
+   * @implNote Only use on objects that change ids after interacting with them. Do not use this for
+   *     objects that move the player without changing ids (teleports, crawlspaces, etc.)
+   * @param x int -- X coordinate of a wall object
+   * @param y int -- Y coordinate of a wall object
+   * @param wallObjectId int -- Id of an object to interact with (a closed door, for example). Skips
+   *     check if id is not at coordinates
+   * @param logMessage String -- Message to print to log
+   * @return boolean
+   */
+  private static boolean openWallObject(int x, int y, int wallObjectId, String logMessage) {
+    if (Main.getController().getWallObjectIdAtCoord(x, y) == wallObjectId) {
+      if (logMessage != null && !logMessage.isEmpty()) Main.log(logMessage);
+      while (Main.getController().getWallObjectIdAtCoord(x, y) == wallObjectId
+          && Main.getController().isRunning()) {
+        Main.getController().atWallObject(x, y);
+        Main.getController().sleep(1280);
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Handles opening a door at given coordinates. Some doors may not be detected with this method.
+   * Those require using handleWallObject() instead.
+   *
+   * @param x int -- X Coordinate of a wall object
+   * @param y int -- Y Coordinate of a wall object
+   * @param logMessage String -- Message to print to log
+   * @return boolean
+   */
+  private static boolean openDoor(int x, int y, String logMessage) {
+    if (!Main.getController().isDoorOpen(x, y)) {
+      if (logMessage != null && !logMessage.isEmpty()) Main.log(logMessage);
+      while (!Main.getController().isDoorOpen(x, y) && Main.getController().isRunning()) {
+        Main.getController().openDoor(x, y);
+        Main.getController().sleep(1280);
+      }
+    }
+    return true;
   }
 }

@@ -1,8 +1,8 @@
 package scripting.idlescript.AIOQuester.quests;
 
 import models.entities.*;
+import models.entities.Location;
 import scripting.idlescript.AIOQuester.QuestHandler;
-import scripting.idlescript.AIOQuester.models.Location;
 import scripting.idlescript.AIOQuester.models.QuitReason;
 import scripting.idlescript.K_kailaScript;
 
@@ -64,9 +64,9 @@ public final class ScorpionCatcher extends QuestHandler {
     } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_3) == 1) {
       START_LOCATION = Location.TAVERLEY_DUNGEON_ENTRANCE;
     } else if (c.currentY() > 1200) {
-      START_LOCATION = Location.SORCERERS_TOWER_ABOVE;
+      START_LOCATION = Location.SORCERERS_TOWER_F2;
     } else {
-      START_LOCATION = Location.SORCERERS_TOWER;
+      START_LOCATION = Location.SORCERERS_TOWER_F1;
     }
     c.log("~ by Kaila", "mag");
     while (isQuesting()) {
@@ -76,7 +76,7 @@ public final class ScorpionCatcher extends QuestHandler {
           if (c.isRunning()
               && c.getInventoryItemCount(ItemId.CURE_POISON_POTION_1DOSE.getId()) == 0) {
             CURRENT_QUEST_STEP = "Getting cure poison potion";
-            if (isAtLocation(Location.SORCERERS_TOWER_ABOVE)) climb(510, 1451);
+            if (isAtLocation(Location.SORCERERS_TOWER_F2)) climb(510, 1451);
             c.walkTo(511, 513); // outside tower
             pathWalker(new MapPoint(631, 634)); // battlefield
             pathWalker(new MapPoint(691, 678)); // goblins
@@ -85,7 +85,7 @@ public final class ScorpionCatcher extends QuestHandler {
             c.walkTo(691, 678); // outside gobs
             pathWalker(new MapPoint(631, 634)); // battlefield
           }
-          if (c.isRunning() && !isAtLocation(Location.SORCERERS_TOWER_ABOVE)) {
+          if (c.isRunning() && !isAtLocation(Location.SORCERERS_TOWER_F2)) {
             CURRENT_QUEST_STEP = "Walking to Thormac";
             pathWalker(TOWER_ENTRANCE);
             climb(TOWER_LADDER_UP);
@@ -198,7 +198,7 @@ public final class ScorpionCatcher extends QuestHandler {
               c.walkTo(374, 513);
             }
           } else if (c.getInventoryItemCount(SCORP_CAGE_STAGE_4) == 1) {
-            if (c.isRunning() && !isAtLocation(Location.SORCERERS_TOWER_ABOVE)) {
+            if (c.isRunning() && !isAtLocation(Location.SORCERERS_TOWER_F2)) {
               CURRENT_QUEST_STEP = "Walking to Tower";
               if (timeToDrinkAntidote) drinkAnti();
               pathWalker(TOWER_ENTRANCE);

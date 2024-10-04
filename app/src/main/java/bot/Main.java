@@ -310,10 +310,11 @@ public class Main {
     debuggerThread = new Thread(debugger);
     debuggerThread.start();
 
+    if (!checkAssetFiles()) createAssetFiles();
+
     // Populates the script selector's script map.
     ScriptSelectorUI.populateScripts();
 
-    if (!checkAssetFiles()) createAssetFiles();
     SleepCallback.setOCRType(config.getOCRType());
 
     // just building out the windows
@@ -996,11 +997,22 @@ public class Main {
     File sleepDirectory = new File("assets" + File.separator + "sleep");
     String[] sleepList = sleepDirectory.list();
     String[] sleepNames = {"dictionary.txt", "hashes.properties", "model.txt"};
-
-    // check video files
+    // check sleep files
     if (sleepList != null && sleepList.length == 3) {
       for (String fileName : sleepNames) {
         boolean callReturn = Arrays.stream(sleepList).noneMatch(fileName::equalsIgnoreCase);
+        // we are missing a file so regen cache
+        if (callReturn) return false;
+      }
+    } else return false;
+
+    File mapDirectory = new File("assets" + File.separator + "map");
+    String[] mapList = mapDirectory.list();
+    String[] mapNames = {"data", "graph.txt"};
+    // check map files
+    if (mapList != null && mapList.length == 2) {
+      for (String fileName : mapNames) {
+        boolean callReturn = Arrays.stream(mapList).noneMatch(fileName::equalsIgnoreCase);
         // we are missing a file so regen cache
         if (callReturn) return false;
       }
@@ -1014,6 +1026,24 @@ public class Main {
     // Create Asset directory
     File dir = new File("." + File.separator + "assets" + File.separator + "sleep");
     dir.mkdirs();
+
+    File mapDir = new File("." + File.separator + "assets" + File.separator + "map");
+    mapDir.mkdir();
+
+    // Copy embedded assets to assets/map directory
+    try {
+      copyResource(
+          "/assets/map/data",
+          "." + File.separator + "assets" + File.separator + "map" + File.separator + "data",
+          Main.class);
+      copyResource(
+          "/assets/map/graph.txt",
+          "." + File.separator + "assets" + File.separator + "map" + File.separator + "graph.txt",
+          Main.class);
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+    }
 
     // Copy embedded assets to assets/sleep directory
     try {

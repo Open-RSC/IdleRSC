@@ -85,10 +85,6 @@ public enum Location {
   DRAYNOR_MORGANS_HOUSE_UPSTAIRS(
       new Boundary(214, 1562, 217, 1565), new Tile(216, 1563), "Draynor - Morgan's House Upstairs"),
   DRAYNOR_NEDS_HOUSE(new Boundary(214, 624, 217, 627), new Tile(215, 625), "Draynor - Ned's House"),
-  DRAYNOR_POTATO_FIELD(
-      new Boundary(181, 608, 189, 620), new Tile(185, 608), "Draynor - Potato Field"),
-  DRAYNOR_TOMATO_FIELD(
-      new Boundary(181, 597, 189, 603), new Tile(185, 603), "Draynor - Tomato Field"),
   DWARF_TUNNEL_EAST(
       new Boundary(383, 462, 388, 465), new Tile(385, 464), "Taverley - Dwarf Tunnel East"),
   DWARF_TUNNEL_WEST(
@@ -190,6 +186,10 @@ public enum Location {
   LUMBRIDGE_CORN_FIELD(
       new Boundary(157, 600, 163, 610), new Tile(160, 607), "Lumbridge - Corn Field"),
   LUMBRIDGE_COW_PEN(new Boundary(96, 605, 104, 628), new Tile(103, 619), "Lumbridge - Cow Pen"),
+  LUMBRIDGE_CROP_FIELD(
+      new Boundary(181, 597, 189, 603), new Tile(185, 603), "Lumbridge - Crop Field"),
+  LUMBRIDGE_EAST_POTATO_FIELD(
+      new Boundary(95, 588, 103, 603), new Tile(102, 597), "Lumbridge - East Potato Field"),
   LUMBRIDGE_FARMER_FREDS_HOUSE(
       new Boundary(157, 617, 161, 620), new Tile(159, 618), "Lumbridge - Farmer Fred's House"),
   LUMBRIDGE_FURNACE(new Boundary(130, 626, 133, 630), new Tile(130, 628), "Lumbridge - Furnace"),
@@ -209,8 +209,6 @@ public enum Location {
       new Boundary(119, 664, 119, 667), new Tile(119, 666), "Lumbridge - Mum's House"),
   LUMBRIDGE_ONION_FIELD(
       new Boundary(157, 621, 160, 623), new Tile(160, 621), "Lumbridge - Onion Field"),
-  LUMBRIDGE_POTATO_FIELD(
-      new Boundary(95, 588, 103, 603), new Tile(102, 597), "Lumbridge - Potato Field"),
   LUMBRIDGE_SHEEP_PEN(
       new Boundary(136, 618, 156, 633), new Tile(144, 630), "Lumbridge - Sheep Pen"),
   LUMBRIDGE_SWAMP_KRESHS_HUT(
@@ -223,6 +221,8 @@ public enum Location {
       new Boundary(115, 709, 118, 712), new Tile(116, 710), "Lumbridge - Father Urhney's House"),
   LUMBRIDGE_SWAMP_ZANARIS_SHED(
       new Boundary(126, 685, 127, 687), new Tile(126, 686), "Lumbridge - Zanaris Shed"),
+  LUMBRIDGE_WEST_POTATO_FIELD(
+      new Boundary(181, 608, 189, 620), new Tile(185, 608), "Lumbridge - West Potato Field"),
   LUMBRIDGE_WHEAT_FIELD(
       new Boundary(170, 596, 178, 604), new Tile(172, 604), "Lumbridge - Wheat Field"),
   MCGROUBERS_WOOD_ENTRANCE(

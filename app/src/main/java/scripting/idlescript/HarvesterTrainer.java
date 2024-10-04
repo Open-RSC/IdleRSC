@@ -109,11 +109,11 @@ enum CropInfo {
   POTATO(
       0,
       SceneryId.POTATO_PLANT,
-      new Location[] {Location.LUMBRIDGE_POTATO_FIELD, Location.ARDOUGNE_CROP_FIELD}),
+      new Location[] {Location.LUMBRIDGE_CROP_FIELD, Location.ARDOUGNE_CROP_FIELD}),
   GARLIC(
       9,
       SceneryId.GARLIC_PLANT,
-      new Location[] {Location.LUMBRIDGE_POTATO_FIELD, Location.ARDOUGNE_CROP_FIELD}),
+      new Location[] {Location.LUMBRIDGE_CROP_FIELD, Location.ARDOUGNE_CROP_FIELD}),
   CORN(
       20,
       SceneryId.CORN_PLANT,

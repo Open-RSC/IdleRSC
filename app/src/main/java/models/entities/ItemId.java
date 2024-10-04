@@ -3,6 +3,9 @@ package models.entities;
 import java.util.HashMap;
 import java.util.Map;
 
+// Keep up to date with ORSC server constants:
+// https://gitlab.com/open-runescape-classic/core/-/blob/develop/server/src/com/openrsc/server/constants/ItemId.java?ref_type=heads
+
 public enum ItemId implements Id {
   NOTHING(-1),
   IRON_MACE(0),

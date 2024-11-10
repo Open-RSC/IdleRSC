@@ -40,7 +40,7 @@ dependencies {
 
 tasks.named('compileJava') {
   // Create resources before compileJava runs
-  dependsOn ':createClientCache', ':copyMapData', ':copyAssetData', ':buildPatchedClient'
+  dependsOn ':createClientCache', ':copyMapData', ':copySleepData', ':buildPatchedClient'
 
   // Run spotlessApply after successful compilation rather than before, so
   // that any developer errors can be dealt with prior to formatting
@@ -97,10 +97,10 @@ tasks.named('clean') {
 
 // Create resources before processResources runs
 tasks.named('processResources') {
-  dependsOn ':createClientCache', ':copyMapData', ':copyAssetData', ':buildPatchedClient'
+  dependsOn ':createClientCache', ':copyMapData', ':copySleepData', ':buildPatchedClient'
 }
 
 // FTBFS: spotlessMisc complains when there is no dependency on copyMapData
 tasks.named('spotlessMisc') {
-  dependsOn ':copyMapData', ':copyAssetData'
+  dependsOn ':copyMapData', ':copySleepData'
 }

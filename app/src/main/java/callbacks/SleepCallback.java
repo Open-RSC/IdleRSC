@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
 import javax.imageio.ImageIO;
+import utils.Extractor;
 
 public class SleepCallback {
   static Controller controller = Main.getController();
@@ -174,9 +175,10 @@ public class SleepCallback {
           Main.log("Falling back to Image hashes.");
         }
       case HASH:
-        try (FileInputStream fs = new FileInputStream(HASHES)) {
+        String inJarHashesPath = "/" + HASHES.replace("\\", "/");
+        try (InputStream hashesStream = Extractor.extractResourceAsStream(inJarHashesPath)) {
           hashes = new Properties();
-          hashes.load(fs);
+          hashes.load(hashesStream);
           break;
         } catch (final IOException e) {
           e.printStackTrace();
@@ -184,15 +186,23 @@ public class SleepCallback {
           Main.log("Falling back to internal.");
         }
       case INTERNAL:
-        try (final BufferedReader mr = new BufferedReader(new FileReader(MODEL_TXT));
-            final BufferedReader dr = new BufferedReader(new FileReader(DICT_TXT))) {
-          ocr = new OCR(new DictSearch(dr), mr);
-          break;
-        } catch (final IOException | OCRException e) {
+        String inJarModelPath = "/" + MODEL_TXT.replace("\\", "/");
+        String inJarDictPath = "/" + DICT_TXT.replace("\\", "/");
+        try (InputStream ms = Extractor.extractResourceAsStream(inJarModelPath);
+            InputStream ds = Extractor.extractResourceAsStream(inJarDictPath)) {
+          try (final BufferedReader mr = new BufferedReader(new InputStreamReader(ms));
+              final BufferedReader dr = new BufferedReader(new InputStreamReader(ds))) {
+            ocr = new OCR(new DictSearch(dr), mr);
+            break;
+          } catch (final IOException | OCRException e) {
+            e.printStackTrace();
+            Main.log("Issue detected with Internal Sleeper Num3l.");
+            Main.log("Falling back to manual.");
+          }
+        } catch (final IOException e) {
           e.printStackTrace();
-          Main.log("Issue detected with Internal Sleeper Num3l.");
-          Main.log("Falling back to manual.");
         }
+
         // case EXTERNAL:
         //   hc = new File(HC_BMP);
         //   slword = new File(SLWORD_TXT);

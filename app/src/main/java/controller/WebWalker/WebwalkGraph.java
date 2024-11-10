@@ -1,14 +1,14 @@
 package controller.WebWalker;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
+import utils.Extractor;
 
 public class WebwalkGraph {
   private final Map<WebwalkNode, List<WebwalkEdge>> adjacencyList = new HashMap<>();
 
-  public WebwalkGraph(String filePath) {
-    try (Scanner scanner = new Scanner(new File(filePath))) {
+  public WebwalkGraph(String inJarFilePath) {
+    try (Scanner scanner = new Scanner(Extractor.extractResourceAsStream(inJarFilePath))) {
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
         // Split the line into parts: node1x, node1y, node2x, node2y, dist, label

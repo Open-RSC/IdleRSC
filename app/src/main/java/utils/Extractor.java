@@ -1,8 +1,14 @@
 package utils;
 
+import bot.Main;
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -55,6 +61,84 @@ public class Extractor {
           bos.write(buffer, 0, len);
         }
       }
+    }
+  }
+
+  /**
+   * Extracts any missing files from assetPath in the JAR to the same path relative to the JAR file.
+   * <br>
+   * For example, IdleRSC.jar!/assets/map → assets/map
+   *
+   * @param assetPath Path to extract items from the jar
+   */
+  public static void extractMissingResources(Path assetPath) {
+
+    if (assetPath == null) return;
+    String path = assetPath.toString().replace("\\", "/");
+
+    if (path.startsWith("/")) {
+      System.out.println("Unable to generate missing assets as the path was not relative.\n");
+      return;
+    }
+
+    ClassLoader classLoader = Main.class.getClassLoader();
+    if (classLoader == null) {
+      System.err.println("ClassLoader was null. Unable to access resources.");
+      return;
+    }
+    try {
+      Enumeration<URL> urls = classLoader.getResources(path);
+      while (urls.hasMoreElements()) {
+        URL url = urls.nextElement();
+        if (url.getProtocol().equals("jar")) {
+          String jarPath = url.getPath().substring(5, url.getPath().indexOf("!"));
+          try (JarFile jarFile = new JarFile(jarPath)) {
+            Enumeration<JarEntry> entries = jarFile.entries();
+
+            // Loop through all entries in the JAR
+            while (entries.hasMoreElements()) {
+              JarEntry entry = entries.nextElement();
+              String entryName = entry.getName();
+
+              // If the entry starts with path and is not a directory, check if it needs extracting
+              if (entryName.startsWith(path) && !entry.isDirectory()) {
+                File entryFile = new File(entryName);
+                entryFile.getParentFile().mkdirs();
+
+                // Skip resource if it already exists
+                if (Files.exists(entryFile.toPath())) continue;
+                extractResource(
+                    entryFile.toPath(), entryFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println(String.format("Regenerated '%s' from JAR.", entryFile));
+              }
+            }
+          }
+        }
+      }
+      System.out.println();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Extracts a resource from a Path in the JAR archive to outputPath.
+   *
+   * @param resourcePath Path -- In-JAR path of the resource to extract
+   * @param outputPath Path -- Path to extract the resource to
+   * @param option StandardCopyOption
+   * @return boolean -- Whether extractResource succeeded
+   */
+  public static boolean extractResource(
+      Path resourcePath, Path outputPath, StandardCopyOption option) {
+    try {
+      String res = "/" + resourcePath.toString().replace("\\", "/");
+      InputStream src = Extractor.extractResourceAsStream(res);
+      Files.copy(src, outputPath, option);
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
     }
   }
 

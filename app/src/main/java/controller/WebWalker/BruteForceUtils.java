@@ -34,7 +34,7 @@ public class BruteForceUtils {
 
     if (walkable == null) {
       walkable = new byte[900][4050];
-      String dataPath = "/map/data";
+      String dataPath = "/assets/map/data";
       try (BufferedInputStream in =
           new BufferedInputStream(Extractor.extractResourceAsStream(dataPath))) {
         for (int i = 0; i < 900; ++i) {

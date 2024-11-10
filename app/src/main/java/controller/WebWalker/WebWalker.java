@@ -5,6 +5,8 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import models.entities.ItemId;
+import models.entities.QuestId;
+import models.entities.SkillId;
 
 public class WebWalker {
   // See https://github.com/dginovker/Runescape-Classic-Webwalker for generating
@@ -201,10 +203,18 @@ public class WebWalker {
     if (!edge.getLabel().isPresent()) return true;
     switch (edge.getLabel().get()) {
       case "alkharidGate":
-        return Main.getController().isQuestComplete(9)
+        return Main.getController().isQuestComplete(QuestId.PRINCE_ALI_RESCUE.getId())
             || Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 10;
       case "miningGuildDoor":
-        return Main.getController().getCurrentStat(Main.getController().getStatId("Mining")) >= 60;
+        return Main.getController().getCurrentStat(SkillId.MINING.getId()) >= 60;
+      case "taverleySteppingStones":
+        return Main.getController().getCurrentStat(SkillId.AGILITY.getId()) >= 50
+            && Main.getController().getCurrentStat(SkillId.HITS.getId()) > 20;
+      case "dwarfTunnel":
+        return Main.getController().isQuestComplete(QuestId.FISHING_CONTEST.getId());
+      case "witchsHouseDoor":
+        return Main.getController().isQuestComplete(QuestId.WITCHS_HOUSE.getId())
+            || Main.getController().getInventoryItemCount(ItemId.FRONT_DOOR_KEY.getId()) > 0;
       case "portSarimKaramjaBoat":
       case "brimhavenKaramjaGate":
         return Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 60;
@@ -221,8 +231,10 @@ public class WebWalker {
         return CustomLabelHandlers.southFallyTavGate();
       case "lummyNorthCowGate":
         return CustomLabelHandlers.lummyNorthCowGate();
-      case "lummyNorthCabbageGate":
-        return CustomLabelHandlers.lummyNorthCabbageGate();
+      case "lummyCabbageGate":
+        return CustomLabelHandlers.lummyCabbageGate();
+      case "mcgroubersGate":
+        return CustomLabelHandlers.mcgroubersGate();
       case "lummyEastCowGate":
         return CustomLabelHandlers.lummyEastCowGate();
       case "northFallyTavGate":
@@ -277,6 +289,16 @@ public class WebWalker {
         return CustomLabelHandlers.wizardTowerDoor();
       case "wizardTowerBasement":
         return CustomLabelHandlers.wizardTowerBasement();
+      case "lummyNorthWheatSouthGate":
+        return CustomLabelHandlers.lummyNorthWheatSouthGate();
+      case "lummyNorthWheatNorthGate":
+        return CustomLabelHandlers.lummyNorthWheatNorthGate();
+      case "witchsHouseDoor":
+        return CustomLabelHandlers.witchsHouseDoor();
+      case "taverleySteppingStones":
+        return CustomLabelHandlers.taverleySteppingStones();
+      case "dwarfTunnel":
+        return CustomLabelHandlers.dwarfTunnel();
       default:
         Main.getController().log("Missing function for label: " + label);
         return false;

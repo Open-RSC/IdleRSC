@@ -306,7 +306,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
       System.out.print("Reading map... ");
 
       byte[][] walkable = new byte[WORLD_W][WORLD_H];
-      String dataPath = "/map/data";
+      String dataPath = "/assets/map/data";
       try (BufferedInputStream in =
           new BufferedInputStream(Extractor.extractResourceAsStream(dataPath))) {
         for (int i = 0; i < WORLD_W; ++i) {

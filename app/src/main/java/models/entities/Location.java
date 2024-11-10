@@ -3,7 +3,6 @@ package models.entities;
 import bot.Main;
 import controller.Controller;
 import controller.WebWalker.WebWalker;
-import controller.WebWalker.WebwalkGraph;
 import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,6 +62,8 @@ public enum Location {
   CATHERBY_CHEFS_HOUSE(
       new Boundary(427, 481, 430, 485), new Tile(429, 484), "Catherby - Chef Caleb's House"),
   CATHERBY_DOCK(new Boundary(439, 503, 441, 507), new Tile(440, 505), "Catherby - Dock"),
+  CATHERBY_DWARF_TUNNEL(
+      new Boundary(420, 450, 432, 464), new Tile(427, 457), "Catherby - Dwarf Tunnel West"),
   CATHERBY_FISHING_SPOT(
       new Boundary(399, 495, 419, 506), new Tile(412, 499), "Catherby - Fishing Spot"),
   CATHERBY_HARRYS_FISHING_SHOP(
@@ -85,12 +86,6 @@ public enum Location {
   DRAYNOR_MORGANS_HOUSE_UPSTAIRS(
       new Boundary(214, 1562, 217, 1565), new Tile(216, 1563), "Draynor - Morgan's House Upstairs"),
   DRAYNOR_NEDS_HOUSE(new Boundary(214, 624, 217, 627), new Tile(215, 625), "Draynor - Ned's House"),
-  DWARF_TUNNEL_EAST(
-      new Boundary(383, 462, 388, 465), new Tile(385, 464), "Taverley - Dwarf Tunnel East"),
-  DWARF_TUNNEL_WEST(
-      new Boundary(420, 450, 432, 464),
-      new Tile(427, 457),
-      "Catherby - Dwarf Tunnel Western Entrance"),
   EDGEVILLE_BANK(new Boundary(212, 448, 220, 453), new Tile(216, 451), "Edgeville - Bank"),
   EDGEVILLE_BLACK_KNIGHTS_FORTRESS_ENTRANCE(
       new Boundary(268, 438, 270, 443), new Tile(270, 441), "Edgeville - Black Knight's Fortress"),
@@ -227,8 +222,8 @@ public enum Location {
       new Boundary(170, 596, 178, 604), new Tile(172, 604), "Lumbridge - Wheat Field"),
   MCGROUBERS_WOOD_ENTRANCE(
       new Boundary(538, 444, 539, 446), new Tile(539, 445), "McGrouber's Wood Entrance"),
-  MCGROUBERS_WOOD_EXIT(
-      new Boundary(540, 444, 541, 446), new Tile(540, 445), "McGrouber's Wood Exit"),
+  MCGROUBERS_WOOD_RED_VINE(
+      new Boundary(567, 449, 569, 454), new Tile(568, 453), "McGrouber's Wood - Red Vine"),
   PORT_KHAZARD(new Boundary(562, 687, 571, 695), new Tile(566, 691), "Port Khazard"),
   PORT_KHAZARD_ANVIL_HOUSE(
       new Boundary(558, 701, 562, 702), new Tile(560, 702), "Port Khazard - Anvil House"),
@@ -312,6 +307,8 @@ public enum Location {
       new Boundary(366, 493, 370, 498), new Tile(367, 496), "Taverley - Crystal Chest"),
   TAVERLEY_DUNGEON_ENTRANCE(
       new Boundary(371, 514, 384, 525), new Tile(377, 520), "Taverley - Taverley Dungeon Entrance"),
+  TAVERLEY_DWARF_TUNNEL(
+      new Boundary(383, 462, 388, 465), new Tile(385, 464), "Taverley - Dwarf Tunnel East"),
   TAVERLEY_GAUIS_HOUSE(
       new Boundary(377, 500, 381, 503), new Tile(378, 501), "Taverley - Gauis' House"),
   TAVERLEY_GUTHIX_ALTAR(
@@ -324,6 +321,8 @@ public enum Location {
       new Boundary(350, 520, 356, 526), new Tile(353, 523), "Taverley - Lady of the Lake"),
   TAVERLEY_SANFEWS_HOUSE(
       new Boundary(377, 486, 381, 489), new Tile(379, 487), "Taverley - Sanfew's House"),
+  TAVERLEY_WITCHS_HOUSE(
+      new Boundary(358, 491, 362, 496), new Tile(362, 494), "Taverley - Witch's House"),
   TEMPLE_OF_IKOV_ENTRANCE(
       new Boundary(531, 514, 535, 524), new Tile(533, 518), "Temple of Ikov Entrance"),
   TREE_GNOME_STRONGHOLD_SPIRIT_TREE(
@@ -468,7 +467,7 @@ public enum Location {
   // TREE_GNOME_VILLAGE_SPIRIT_TREE(new Boundary(), new Tile(), "Tree Gnome Village - Spirit Tree"),
 
   private static final Controller c = Main.getController();
-  private static final WebWalker w = new WebWalker(new WebwalkGraph("assets/map/graph.txt"));
+  private static final WebWalker w = c.getWebWalker();
 
   // TODO: Update this array as new banks get added
   private static final Location[] bankArray = {

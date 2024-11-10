@@ -49,10 +49,10 @@ tasks.register('copyMapData', Copy) {
   group 'build'
   description 'Copy map data for inclusion in the jar archive.'
   from 'assets/map'
-  into project(':app').file('src/main/resources/map')
+  into project(':app').file('src/main/resources/assets/map')
 }
 
-tasks.register('copyAssetData', Copy) {
+tasks.register('copySleepData', Copy) {
   group 'build'
   description 'Copy asset data for inclusion in the jar archive.'
   from 'assets/sleep'

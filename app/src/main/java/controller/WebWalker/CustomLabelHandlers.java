@@ -1,11 +1,13 @@
 package controller.WebWalker;
 
 import bot.Main;
+import models.entities.ItemId;
 import models.entities.NpcId;
 import models.entities.SceneryId;
 import orsc.ORSCharacter;
 
 public class CustomLabelHandlers {
+
   public static boolean alkharidGate() {
     // Only even gets considered if we have 10gp or quest is complete, so we don't
     // have to handle walking around case manually
@@ -48,25 +50,12 @@ public class CustomLabelHandlers {
         : Main.getController().currentY() >= 593;
   }
 
-  public static boolean lummyNorthCabbageGate() {
-    boolean goingNorth = Main.getController().currentY() >= 597;
-    if (Main.getController().getObjectAtCoord(148, 596) != -1) {
-      Main.getController().log("Opening Lummy North Cabbage Fence Gate");
-      Main.getController().atObject(148, 596);
-      Main.getController().sleep(1000);
-    }
-    Main.getController().walkTo(148, goingNorth ? 596 : 597);
-    return goingNorth
-        ? Main.getController().currentY() <= 596
-        : Main.getController().currentY() >= 597;
+  public static boolean lummyCabbageGate() {
+    return openObject(148, 596, 60, "Opening Lumbridge Cabbage Gate...");
   }
 
   public static boolean lummyEastCowGate() {
-    if (Main.getController().getObjectAtCoord(105, 619) == 59) return true;
-    Main.getController().log("Opening Lummy East Cow Gate");
-    Main.getController().atObject(105, 619);
-    return Main.getController()
-        .sleepUntil(() -> Main.getController().getObjectAtCoord(105, 619) == 59, 6000);
+    return openObject(105, 619, 60, "Opening Lumbridge East Cow Gate...");
   }
 
   public static boolean southFallyTavGate() {
@@ -291,21 +280,11 @@ public class CustomLabelHandlers {
   }
 
   public static boolean lummyNorthChickensGate() {
-    if (Main.getController().getObjectAtCoord(158, 614) == 59) return true; // Gate is already open
-    Main.log("Opening North Chickens Gate...");
-    Main.getController().atObject(158, 614);
-    return Main.getController()
-        .sleepUntil(() -> Main.getController().getObjectAtCoord(158, 614) == 59, 6000);
+    return openObject(158, 614, 60, "Opening North Chickens Gate...");
   }
 
   public static boolean lummyNorthGarlicGate() {
-    int xCoord = 184, yCoord = 604;
-    if (Main.getController().getObjectAtCoord(xCoord, yCoord) == 59)
-      return true; // Gate is already open
-    Main.log("Opening Lummy North Garlic Gate...");
-    Main.getController().atObject(xCoord, yCoord);
-    return Main.getController()
-        .sleepUntil(() -> Main.getController().getObjectAtCoord(xCoord, yCoord) == 59, 6000);
+    return openObject(184, 604, 60, "Opening Lumbridge North Garlic Gate...");
   }
 
   public static boolean lummyNorthPotatoGate() {
@@ -428,12 +407,15 @@ public class CustomLabelHandlers {
   }
 
   public static boolean lummyEastChickenGate() {
-    // Check if the gate is open; if object at 114, 608 == 59, gate is open and we
-    // just walk through
-    if (Main.getController().getObjectAtCoord(114, 608) == 59) return true;
-    // Interact with the gate
-    Main.getController().atObject(114, 608);
-    return true;
+    return openObject(114, 608, 60, "Opening Lumbridge East Chicken Gate...");
+  }
+
+  public static boolean lummyNorthWheatSouthGate() {
+    return openObject(172, 607, 60, "Opening Lumbridge Wheat South Gate...");
+  }
+
+  public static boolean lummyNorthWheatNorthGate() {
+    return openObject(177, 595, 60, "Opening Lumbridge Wheat North Gate...");
   }
 
   public static boolean wizardTowerBasement() {
@@ -456,6 +438,98 @@ public class CustomLabelHandlers {
     return openWallObject(215, 689, 8, "Opening door to Wizards' Tower...");
   }
 
+  public static boolean mcgroubersGate() {
+    boolean entering = Main.getController().currentX() < 540;
+    Main.getController().atWallObject(540, 445);
+    Main.getController()
+        .sleepUntil(() -> entering == (Main.getController().currentX() >= 540), 10000);
+    Main.getController().sleep(680);
+    return entering == (Main.getController().currentX() >= 540);
+  }
+
+  public static boolean taverleySteppingStones() {
+    boolean goingWest = Main.getController().currentX() < 396;
+    String logString =
+        String.format(
+            "Crossing the stepping stones from %s...",
+            goingWest ? "Taverley to Catherby" : "Catherby to Taverley");
+
+    Main.log(logString);
+    Main.getController().atObject(goingWest ? 395 : 397, 502);
+    Main.getController()
+        .sleepUntil(() -> Main.getController().currentX() == (goingWest ? 397 : 395), 10000);
+    return Main.getController().currentX() == (goingWest ? 397 : 395);
+  }
+
+  public static boolean dwarfTunnel() {
+    int cY = Main.getController().currentY();
+    int cX = Main.getController().currentX();
+    boolean descending = cY < 1000;
+    int ladderId = descending ? 359 : 43;
+    boolean west = cX > 400;
+
+    String dir = descending ? "down" : "up";
+    String start = descending ? west ? "from Catherby" : "from Taverley" : "from Dwarf Tunnel";
+    String destination = descending ? "to Dwarf Tunnel" : west ? "to Catherby" : "to Taverley";
+
+    String logString = String.format("Going %s the stairs %s %s...", dir, start, destination);
+
+    Main.log(logString);
+
+    Main.getController().atObject(ladderId);
+    return Main.getController()
+        .sleepUntil(() -> descending == (Main.getController().currentY() < 1000));
+  }
+
+  public static boolean witchsHouseDoor() {
+    boolean entering = !isWithinArea(358, 491, 362, 496);
+    int doorKey = ItemId.FRONT_DOOR_KEY.getId();
+
+    // Get key if needed (returns false if inventory is full)
+    if (Main.getController().getInventoryItemCount(doorKey) == 0) {
+      if (Main.getController().getInventoryItemCount() == 30) return false;
+      Main.log("Getting a front door key...");
+      if (entering) {
+        Main.getController().atObject2(SceneryId.DOOR_MAT.getId());
+        Main.getController()
+            .sleepUntil(() -> Main.getController().getInventoryItemCount(doorKey) == 1, 10000);
+      } else {
+        Main.getController().walkTo(359, 491);
+        Main.getController().atObject(358, 492);
+        Main.getController().sleepUntil(() -> Main.getController().currentY() > 1000, 10000);
+        Main.getController()
+            .sleepUntil(
+                () -> Main.getController().getGroundItemAmount(doorKey, 362, 1439) > 0, 10000);
+        Main.getController().pickupItem(doorKey);
+        Main.getController()
+            .sleepUntil(() -> Main.getController().getInventoryItemCount(doorKey) > 0, 10000);
+        Main.getController().walkTo(359, 1439);
+        Main.getController().atObject(358, 1436);
+        Main.getController().sleepUntil(() -> Main.getController().currentY() < 1000, 10000);
+      }
+    }
+    if (Main.getController().getInventoryItemCount(doorKey) < 1) return false;
+    Main.log(String.format("%s the Witch's House...", entering ? "Entering" : "Leaving"));
+
+    // These loops may not be necessary. I added them just in case.
+    int attempts = 0;
+    while (++attempts < 5
+        && Main.getController().isRunning()
+        && Main.getController().isLoggedIn()) {
+
+      // Wait for the door to close
+      Main.getController()
+          .sleepUntil(() -> Main.getController().getWallObjectIdAtCoord(363, 494) == 69);
+
+      // Use key on the door
+      Main.getController()
+          .useItemOnWall(363, 494, Main.getController().getInventoryItemSlotIndex(doorKey));
+      Main.getController().sleepUntil(() -> isWithinArea(358, 491, 362, 496) == entering, 5000);
+      if (isWithinArea(358, 491, 362, 496) == entering) return true;
+    }
+    return false;
+  }
+
   /**
    * Returns whether the player is within a rectangle of coordinates.
    *
@@ -472,24 +546,25 @@ public class CustomLabelHandlers {
   }
 
   /**
-   * Handles interacting with an object id at given coordinates if it matches objectId. Then wait
-   * for that id to change before continuing.
+   * Handles interacting with an object id at given coordinates if it matches closedObjectId. Then
+   * wait for that id to change before continuing.
    *
    * @implNote Only use on objects that change ids after interacting with them. Do not use this for
    *     objects that move the player without changing ids (teleports, crawlspaces, etc.)
    * @param x int -- X coordinate of the object
    * @param y int -- Y coordinate of the object
-   * @param objectId int -- Id of an object to interact with (a closed gate, for example). Skips
-   *     check if id is not at coordinates
+   * @param closedObjectId int -- Id of an object to interact with (a closed gate, for example).
+   *     Skips check if id is not at coordinates
    * @param logMessage String -- Message to log when doing the interaction. Leave null or empty if
    *     not wanted
    * @return boolean
    */
-  private static boolean openObject(int x, int y, int objectId, String logMessage) {
-    if (Main.getController().getObjectAtCoord(x, y) == objectId) {
+  private static boolean openObject(int x, int y, int closedObjectId, String logMessage) {
+    if (Main.getController().getObjectAtCoord(x, y) == closedObjectId) {
       if (logMessage != null && !logMessage.isEmpty()) Main.log(logMessage);
-      while (Main.getController().getObjectAtCoord(x, y) == objectId
-          && Main.getController().isRunning()) {
+      while (Main.getController().getObjectAtCoord(x, y) == closedObjectId
+          && Main.getController().isRunning()
+          && Main.getController().isLoggedIn()) {
         Main.getController().atObject(x, y);
         Main.getController().sleep(1280);
       }
@@ -505,16 +580,17 @@ public class CustomLabelHandlers {
    *     objects that move the player without changing ids (teleports, crawlspaces, etc.)
    * @param x int -- X coordinate of a wall object
    * @param y int -- Y coordinate of a wall object
-   * @param wallObjectId int -- Id of an object to interact with (a closed door, for example). Skips
-   *     check if id is not at coordinates
+   * @param closedWallObjectId int -- Id of an object to interact with (a closed door, for example).
+   *     Skips check if id is not at coordinates
    * @param logMessage String -- Message to print to log
    * @return boolean
    */
-  private static boolean openWallObject(int x, int y, int wallObjectId, String logMessage) {
-    if (Main.getController().getWallObjectIdAtCoord(x, y) == wallObjectId) {
+  private static boolean openWallObject(int x, int y, int closedWallObjectId, String logMessage) {
+    if (Main.getController().getWallObjectIdAtCoord(x, y) == closedWallObjectId) {
       if (logMessage != null && !logMessage.isEmpty()) Main.log(logMessage);
-      while (Main.getController().getWallObjectIdAtCoord(x, y) == wallObjectId
-          && Main.getController().isRunning()) {
+      while (Main.getController().getWallObjectIdAtCoord(x, y) == closedWallObjectId
+          && Main.getController().isRunning()
+          && Main.getController().isLoggedIn()) {
         Main.getController().atWallObject(x, y);
         Main.getController().sleep(1280);
       }
@@ -534,11 +610,15 @@ public class CustomLabelHandlers {
   private static boolean openDoor(int x, int y, String logMessage) {
     if (!Main.getController().isDoorOpen(x, y)) {
       if (logMessage != null && !logMessage.isEmpty()) Main.log(logMessage);
-      while (!Main.getController().isDoorOpen(x, y) && Main.getController().isRunning()) {
+      while (!Main.getController().isDoorOpen(x, y)
+          && Main.getController().isRunning()
+          && Main.getController().isLoggedIn()) {
         Main.getController().openDoor(x, y);
         Main.getController().sleep(1280);
       }
     }
     return true;
   }
+
+  // TODO: Add methods for interacting with static doors/gates
 }

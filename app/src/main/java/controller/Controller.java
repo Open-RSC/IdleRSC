@@ -849,7 +849,7 @@ public class Controller {
    */
   public boolean walkTowards(int x, int y) {
     setStatus("Walking to " + x + "," + y);
-    if (webWalker == null) webWalker = new WebWalker(new WebwalkGraph("assets/map/graph.txt"));
+    setWebWalkerIfNeeded();
     boolean success = webWalker.webwalkTowards(currentX(), currentY(), new int[][] {{x, y}});
     setStatus("Done taking step towards " + x + "," + y);
     return success;
@@ -875,11 +875,26 @@ public class Controller {
     };
 
     setStatus("Walking to the nearest bank");
-    if (webWalker == null) webWalker = new WebWalker(new WebwalkGraph("assets/map/graph.txt"));
+    setWebWalkerIfNeeded();
     boolean success = webWalker.webwalkTowards(currentX(), currentY(), bankLocations);
     setStatus(
         success ? "Walking towards the nearest bank" : "Failed to find a path to the nearest bank");
     return success;
+  }
+
+  /**
+   * Returns controllers instance of WebWalker.
+   *
+   * @return WebWalker
+   */
+  public WebWalker getWebWalker() {
+    setWebWalkerIfNeeded();
+    return webWalker;
+  }
+
+  /** Sets webwalker from the JAR's internal graph if needed */
+  private void setWebWalkerIfNeeded() {
+    if (webWalker == null) webWalker = new WebWalker(new WebwalkGraph("/assets/map/graph.txt"));
   }
 
   /**

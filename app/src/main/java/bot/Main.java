@@ -18,13 +18,10 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
@@ -254,9 +251,9 @@ public class Main {
 
   /** The initial program entrypoint for IdleRSC. */
   public static void main(String[] args)
-      throws MalformedURLException, ClassNotFoundException, NoSuchMethodException,
-          SecurityException, InstantiationException, IllegalAccessException,
-          IllegalArgumentException, InvocationTargetException, InterruptedException {
+      throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+          InstantiationException, IllegalAccessException, IllegalArgumentException,
+          InvocationTargetException, InterruptedException {
 
     // Force-stops batching when closing the client.
     // This only triggers when closed regularly with the X button.
@@ -309,8 +306,6 @@ public class Main {
     debugger = new Debugger(reflector, client, mud, controller);
     debuggerThread = new Thread(debugger);
     debuggerThread.start();
-
-    if (!checkAssetFiles()) createAssetFiles();
 
     // Populates the script selector's script map.
     ScriptSelectorUI.populateScripts();
@@ -976,104 +971,6 @@ public class Main {
       System.out.println("Server (" + config.getInitCache() + ") is not known.");
       System.out.println("Default: Generating Coleslaw port");
       setPort(COLESLAW_PORT);
-    }
-  }
-
-  /**
-   * Copy resource out of the Jar
-   *
-   * @param res string - full file path with name
-   * @param dest string - full file destination with name
-   * @param c - Class file to copy from
-   * @throws IOException - oof
-   */
-  private static void copyResource(String res, String dest, Class c) throws IOException {
-    InputStream src = c.getResourceAsStream(res);
-    assert src != null;
-    Files.copy(src, Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
-  }
-
-  private static boolean checkAssetFiles() {
-    File sleepDirectory = new File("assets" + File.separator + "sleep");
-    String[] sleepList = sleepDirectory.list();
-    String[] sleepNames = {"dictionary.txt", "hashes.properties", "model.txt"};
-    // check sleep files
-    if (sleepList != null && sleepList.length == 3) {
-      for (String fileName : sleepNames) {
-        boolean callReturn = Arrays.stream(sleepList).noneMatch(fileName::equalsIgnoreCase);
-        // we are missing a file so regen cache
-        if (callReturn) return false;
-      }
-    } else return false;
-
-    File mapDirectory = new File("assets" + File.separator + "map");
-    String[] mapList = mapDirectory.list();
-    String[] mapNames = {"data", "graph.txt"};
-    // check map files
-    if (mapList != null && mapList.length == 2) {
-      for (String fileName : mapNames) {
-        boolean callReturn = Arrays.stream(mapList).noneMatch(fileName::equalsIgnoreCase);
-        // we are missing a file so regen cache
-        if (callReturn) return false;
-      }
-    } else return false;
-
-    return true;
-  }
-
-  private static void createAssetFiles() {
-    Main.log("Asset files missing, generating assets.");
-    // Create Asset directory
-    File dir = new File("." + File.separator + "assets" + File.separator + "sleep");
-    dir.mkdirs();
-
-    File mapDir = new File("." + File.separator + "assets" + File.separator + "map");
-    mapDir.mkdir();
-
-    // Copy embedded assets to assets/map directory
-    try {
-      copyResource(
-          "/assets/map/data",
-          "." + File.separator + "assets" + File.separator + "map" + File.separator + "data",
-          Main.class);
-      copyResource(
-          "/assets/map/graph.txt",
-          "." + File.separator + "assets" + File.separator + "map" + File.separator + "graph.txt",
-          Main.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
-    }
-
-    // Copy embedded assets to assets/sleep directory
-    try {
-      copyResource(
-          "/assets/sleep/dictionary.txt",
-          "."
-              + File.separator
-              + "assets"
-              + File.separator
-              + "sleep"
-              + File.separator
-              + "dictionary.txt",
-          Main.class);
-      copyResource(
-          "/assets/sleep/hashes.properties",
-          "."
-              + File.separator
-              + "assets"
-              + File.separator
-              + "sleep"
-              + File.separator
-              + "hashes.properties",
-          Main.class);
-      copyResource(
-          "/assets/sleep/model.txt",
-          "." + File.separator + "assets" + File.separator + "sleep" + File.separator + "model.txt",
-          Main.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
     }
   }
 

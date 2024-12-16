@@ -265,7 +265,7 @@ public class PathWalker_Wild extends Script implements ActionListener, ItemListe
       System.out.print("Reading map... ");
 
       byte[][] walkable = new byte[WORLD_W][WORLD_H];
-      String dataPath = "/map/data";
+      String dataPath = "/assets/map/data";
       try (BufferedInputStream in =
           new BufferedInputStream(Extractor.extractResourceAsStream(dataPath))) {
         if (in == null) {

@@ -6,7 +6,7 @@ plugins {
 }
 
 ext.releaseName = { ->
-  return "${rootProject.getName()}-${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}"
+  return "${rootProject.getName()} - ${gitCommitDate()}-${gitCommitCount()}-${gitCommitHash()}"
 }
 
 tasks.register('run', JavaExec) {
@@ -80,6 +80,7 @@ tasks.register('prepareRelease', Copy) {
 }
 
 tasks.register('release', Zip) {
+  release.mustRunAfter(prepareRelease)
   group 'Distribution'
   description 'Create release zip for end-users.'
   dependsOn prepareRelease
@@ -90,7 +91,8 @@ tasks.register('release', Zip) {
   // Configure zip task to place contents in IdleRSC folder
   into('IdleRSC') {
     from("build/${releaseName()}") {
-      into('.')
+      include '**/*' // Ensure all files are included
+      //into('.')
     }
   }
 }

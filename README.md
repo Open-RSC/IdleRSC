@@ -5,8 +5,8 @@
 # IdleRSC
 [![openrsc badge](https://img.shields.io/badge/OpenRSC_Launcher-0?style=flat&label=Play&color=045CDD)][launcher]
 
-[![releases badge](https://gitlab.com/open-runescape-classic/idlersc/-/badges/release.svg "Latest IdleRSC Releases")][releases]
-[![pipeline badge](https://gitlab.com/open-runescape-classic/idlersc/badges/master/pipeline.svg?key_text=Pipeline "Idlersc Commits")][commits]
+[![releases badge](https://gitlab.com/openrsc/idlersc/-/badges/release.svg "Latest IdleRSC Releases")][releases]
+[![pipeline badge](https://gitlab.com/openrsc/idlersc/badges/master/pipeline.svg?key_text=Pipeline "Idlersc Commits")][commits]
 [![discord badge](https://img.shields.io/discord/459699205674369025?logo=discord&logoColor=%23FFFFFF&label=Open%20RSC&color=%235865F2 "Open Runescape Classic Discord")][discord]
 
 [![openrsc wiki badge](https://img.shields.io/badge/OpenRSC-0?style=flat&color=045CDD&label=Wiki "OpenRSC Wiki")][openrsc-wiki]
@@ -283,7 +283,7 @@ If you would like to contribute to IdleRSC, but don't know where to start check 
  ---
 
 ### Contributors
-<a href="https://gitlab.com/open-runescape-classic/idlersc/-/graphs/master?ref_type=heads">
+<a href="https://gitlab.com/openrsc/idlersc/-/graphs/master?ref_type=heads">
     <img src="https://contrib.rocks/image?repo=open-rsc/idlersc" alt="IdleRSC Contributors" title="IdleRSC Contributors" width="400"/>
 </a>
 
@@ -293,15 +293,15 @@ If you would like to contribute to IdleRSC, but don't know where to start check 
 [openrsc]: https://rsc.vet
 [openrsc-wiki]: https://rsc.vet/wiki/index.php/Open_RuneScape_Classic_Wiki
 [discord]: https://discord.gg/CutQxDZ8Np
-[commits]: https://gitlab.com/open-runescape-classic/idlersc/-/commits/master
-[repository]: https://gitlab.com/open-runescape-classic/idlersc
-[documentation]: https://open-runescape-classic.gitlab.io/idlersc
-[releases]: https://gitlab.com/open-runescape-classic/idlersc/-/releases
+[commits]: https://gitlab.com/openrsc/idlersc/-/commits/master
+[repository]: https://gitlab.com/openrsc/idlersc
+[documentation]: https://openrsc.gitlab.io/idlersc
+[releases]: https://gitlab.com/openrsc/idlersc/-/releases
 [launcher]: https://rsc.vet/downloads/OpenRSC.jar
-[issue-tracker]: https://gitlab.com/open-runescape-classic/idlersc/-/issues
-[merge-requests]: https://gitlab.com/open-runescape-classic/idlersc/-/merge_requests
-[contributors]: https://gitlab.com/open-runescape-classic/idlersc/-/graphs/master?ref_type=heads
-[wiki]: https://gitlab.com/open-runescape-classic/idlersc/-/wikis/home
-[api]: https://open-runescape-classic.gitlab.io/idlersc/overview-summary.html
+[issue-tracker]: https://gitlab.com/openrsc/idlersc/-/issues
+[merge-requests]: https://gitlab.com/openrsc/idlersc/-/merge_requests
+[contributors]: https://gitlab.com/openrsc/idlersc/-/graphs/master?ref_type=heads
+[wiki]: https://gitlab.com/openrsc/idlersc/-/wikis/home
+[api]: https://openrsc.gitlab.io/idlersc/overview-summary.html
 [java8]: https://adoptium.net/temurin/releases/?version=8&package=jdk
 [jarfix]: https://johann.loefflmann.net/downloads/jarfix.exe

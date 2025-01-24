@@ -348,7 +348,9 @@ public class PaintBuilder {
 
         // Draw rows
         if (!rowData.isEmpty()) {
-          for (RowBuilder r : rowData) {
+          // Create a defensive copy of rowData to prevent concurrent modification
+          ArrayList<RowBuilder> rowDataCopy = new ArrayList<>(rowData);
+          for (RowBuilder r : rowDataCopy) {
             // Highlight row backgrounds for testing r.rowHeight
             /*boolean debug = false;
             if (debug) {

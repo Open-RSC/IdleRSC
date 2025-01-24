@@ -10,17 +10,21 @@ public class AIOAIO_Paint {
     paintBuilder.setBorderColor(0xBD93F9);
     paintBuilder.setBackgroundColor(0x282A36, 125);
     paintBuilder.setTitleCenteredSingleColor(
-        AIOAIO.state.currentSkill != null ? AIOAIO.state.currentSkill.getName() : "Initializing",
+        AIOAIO.state != null && AIOAIO.state.currentSkill != null
+            ? AIOAIO.state.currentSkill.getName()
+            : "Initializing",
         0xcfdf1f,
         6);
     paintBuilder.addRow(
         rowBuilder.centeredSingleStringRow(
-            AIOAIO.state.currentTask != null
+            AIOAIO.state != null && AIOAIO.state.currentTask != null
                 ? AIOAIO.state.currentTask.getName() + taskTimeRemaining()
                 : "",
             0xffffff,
             1));
-    paintBuilder.addRow(rowBuilder.centeredSingleStringRow(AIOAIO.state.status, 0xffffff, 1));
+    paintBuilder.addRow(
+        rowBuilder.centeredSingleStringRow(
+            AIOAIO.state != null ? AIOAIO.state.status : "", 0xffffff, 1));
     paintBuilder.addRow(
         rowBuilder.multiItemSpriteRow(
             new int[] {
@@ -32,10 +36,16 @@ public class AIOAIO_Paint {
             new int[] {100, 25, 140, 25},
             new String[] {
               paintBuilder.stringFormatInt(Main.getController().getTotalLevel()),
-              "(+ " + (Main.getController().getTotalLevel() - AIOAIO.state.initLevel) + ")",
-              formatValue(AIOAIO.state.lastCheckedBankValue),
               "(+ "
-                  + formatValue(AIOAIO.state.lastCheckedBankValue - AIOAIO.state.initBankValue)
+                  + (Main.getController().getTotalLevel()
+                      - (AIOAIO.state != null ? AIOAIO.state.initLevel : 0))
+                  + ")",
+              formatValue(AIOAIO.state != null ? AIOAIO.state.lastCheckedBankValue : 0),
+              "(+ "
+                  + formatValue(
+                      AIOAIO.state != null
+                          ? AIOAIO.state.lastCheckedBankValue - AIOAIO.state.initBankValue
+                          : 0)
                   + ")"
             },
             new int[] {
@@ -52,7 +62,8 @@ public class AIOAIO_Paint {
   }
 
   private static String taskTimeRemaining() {
-    long timeRemaining = AIOAIO.state.endTime - System.currentTimeMillis();
+    long timeRemaining =
+        AIOAIO.state != null ? AIOAIO.state.endTime - System.currentTimeMillis() : 0;
 
     if (timeRemaining <= 0) {
       return " 00:00";

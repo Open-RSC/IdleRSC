@@ -24,8 +24,10 @@ import scripting.idlescript.AIOQuester.models.QuitReason;
 // TODO: Add support for eating and handling combat in quest scripts
 
 /* USE THESE FOR HELP WITH QUEST STAGES/DIALOGUES/ETC...
-Authentic Quests: https://gitlab.com/open-runescape-classic/core/-/tree/develop/server/plugins/com/openrsc/server/plugins/authentic/quests
-Custom Quests: https://gitlab.com/open-runescape-classic/core/-/tree/develop/server/plugins/com/openrsc/server/plugins/custom/quests
+Authentic Quests:
+https://gitlab.com/openrsc/openrsc/-/tree/develop/server/plugins/com/openrsc/server/plugins/authentic/quests
+Custom Quests:
+https://gitlab.com/openrsc/openrsc/-/tree/develop/server/plugins/com/openrsc/server/plugins/custom/quests
 */
 
 /**
@@ -198,9 +200,9 @@ public abstract class QuestHandler {
   }
 
   /**
-   * Returns whether the controller is still running; while handling sleep, afk anti-logout
-   * movement, setting QUEST_STAGE, and doing the initial walk to START_LOCATION. Use this for
-   * looping the stage switch in scripts.
+   * THIS IS THE MAIN QUEST LOOP -- Returns whether the controller is still running; while handling
+   * sleep, afk anti-logout movement, setting QUEST_STAGE, and doing the initial walk to
+   * START_LOCATION. Use this for looping the stage switch in scripts.
    *
    * @return boolean
    */
@@ -221,7 +223,7 @@ public abstract class QuestHandler {
   }
 
   /**
-   * Drops all of a given item id except one.
+   * Drops all of a given item id except for a given amount.
    *
    * @param itemId int -- Id of the item to drop
    * @param amountToKeep int -- Amount of item to keep

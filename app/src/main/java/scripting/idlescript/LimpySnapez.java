@@ -2,6 +2,9 @@ package scripting.idlescript;
 
 import bot.scriptselector.models.Category;
 import bot.scriptselector.models.ScriptInfo;
+import models.entities.ItemId;
+import models.entities.Location;
+import models.entities.SceneryId;
 
 /**
  * Harvests limpwurt roots and snape grass in Taverly. Coleslaw only.
@@ -12,25 +15,12 @@ public class LimpySnapez extends IdleScript {
   public static final ScriptInfo info =
       new ScriptInfo(
           new Category[] {Category.HARVESTING, Category.IRONMAN_SUPPORTED},
-          "Dvorak",
-          "Harvests Limpwurt Roots and Snape Grass in Taverly. Coleslaw only.");
+          "Dvorak, Auto-Pathing by Seatta",
+          "Harvests Limpwurt Roots and Snape Grass in Taverley. Coleslaw only.");
 
-  final int[] herbToDoorPath = {366, 472, 360, 478, 353, 484, 347, 487, 342, 487, 342, 488};
-
-  final int[] doorToBankPath = {
-    338, 488, 335, 493, 329, 498, 324, 501, 318, 507, 316, 513, 316, 518, 320, 526, 323, 535, 325,
-    544, 327, 552
-  };
-
-  final int[] doorToHerbPath = {347, 487, 353, 484, 360, 478, 366, 472};
-
-  final int[] bankToDoorPath = {
-    327, 552, 325, 544, 323, 535, 320, 526, 316, 518, 316, 513, 318, 507, 324, 501, 329, 498, 335,
-    493, 338, 488, 341, 488
-  };
-
-  final int[] plants = {1273, 1281};
-  final int[] loot = {220, 469};
+  final int clippers = ItemId.HERB_CLIPPERS.getId();
+  final int[] plants = {SceneryId.SNAPE_GRASS.getId(), SceneryId.LIMPWURT_ROOT.getId()};
+  final int[] loot = {ItemId.SNAPE_GRASS.getId(), ItemId.LIMPWURT_ROOT.getId()};
 
   boolean tileFlick = false;
 
@@ -42,14 +32,21 @@ public class LimpySnapez extends IdleScript {
 
   public int start(String[] param) {
 
-    controller.displayMessage("@red@LimpySnapez by Dvorak. Let's party like it's 2004!");
-    controller.displayMessage("@red@Start in Taverly with herb clippers!");
-    controller.quitIfAuthentic();
+    if (controller.getUnnotedInventoryItemCount(clippers) < 1) {
+      controller.displayMessage("@red@You need to have herb clippers in your inventory!");
+      controller.displayMessage("@red@Quitting script!");
+      controller.stop();
+    }
+    if (controller.isRunning()) {
+      controller.displayMessage("@red@LimpySnapez by Dvorak. Let's party like it's 2004!");
+      controller.quitIfAuthentic();
+    }
 
     while (controller.isRunning()) {
       if (controller.getNeedToMove()) controller.moveCharacter();
       if (controller.getShouldSleep()) controller.sleepHandler(true);
       if (controller.getInventoryItemCount() < 30) {
+        if (!Location.isAtLocation(Location.TAVERLEY)) Location.TAVERLEY.walkTowards();
 
         boolean foundPlants = false;
         for (int plantId : plants) {
@@ -78,38 +75,15 @@ public class LimpySnapez extends IdleScript {
         }
 
       } else {
-        walkToBank();
+        Location.FALADOR_WEST_BANK.walkTowards();
         bank();
-        walkToTaverly();
+        Location.TAVERLEY.walkTowards();
       }
 
       controller.sleep(100);
     }
 
     return 1000; // start() must return a int value now.
-  }
-
-  public void walkToBank() {
-    controller.setStatus("@whi@Walking to bank....");
-    controller.walkPath(herbToDoorPath);
-    controller.sleep(1000);
-
-    // open gate
-    while (controller.currentX() != 341 || controller.currentY() != 487) {
-      controller.displayMessage("@red@Opening door..");
-      if (controller.getObjectAtCoord(341, 487) == 137) controller.atObject(341, 487);
-      controller.sleep(5000);
-    }
-
-    controller.walkPath(doorToBankPath);
-
-    // open bank door
-    while (controller.getObjectAtCoord(327, 552) == 64) {
-      controller.atObject(327, 552);
-      controller.sleep(100);
-    }
-
-    controller.walkTo(328, 552);
   }
 
   public int countPlants() {
@@ -137,29 +111,6 @@ public class LimpySnapez extends IdleScript {
 
     snapezInBank = controller.getBankItemCount(220);
     limpzInBank = controller.getBankItemCount(469);
-  }
-
-  public void walkToTaverly() {
-    controller.setStatus("@whi@Walking back to Taverly...");
-
-    while (controller.getObjectAtCoord(327, 552) == 64) {
-      controller.atObject(327, 552);
-      controller.sleep(100);
-    }
-
-    controller.walkTo(327, 552);
-
-    controller.walkPath(bankToDoorPath);
-    controller.sleep(1000);
-
-    // open door
-    while (controller.currentX() != 342 || controller.currentY() != 487) {
-      controller.displayMessage("@red@Opening door...");
-      if (controller.getObjectAtCoord(341, 487) == 137) controller.atObject(341, 487);
-      controller.sleep(5000);
-    }
-
-    controller.walkPath(doorToHerbPath);
   }
 
   @Override

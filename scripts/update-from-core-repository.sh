@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Updates client/src and cache from the Core Framework Gitlab repository.
+clear
 
 # --------------VARIABLES--------------
 # colors for echo -e
@@ -15,7 +16,7 @@ ASSET_DIR="$(pwd)/assets"
 CLIENT_DIR="$(pwd)/client"
 
 # repository-related variables
-CORE_REPOSITORY="https://gitlab.com/open-runescape-classic/core.git"
+CORE_REPOSITORY="https://gitlab.com/openrsc/openrsc.git"
 CORE_REPOSITORY_NAME="core"
 CORE_REPOSITORY_DIR="${ASSET_DIR}/${CORE_REPOSITORY_NAME}"
 
@@ -50,6 +51,10 @@ if [ ! -f gradlew ]; then
   echo -e ${RED}"This script needs to be ran from the root project directory!"${RESET}
   exit 1
 fi
+if ! command -v git >/dev/null 2>&1; then
+    echo -e "${RED}Git must be installed for this script to run!${RESET}"
+    exit 1
+fi
 
 run_confirmation
 echo -e ${LIGHTBLUE}"Running gradle clean task!"${RESET}
@@ -78,5 +83,5 @@ echo -e ${LIGHTBLUE}"\nDeleted leftover Core Framework files to save space!"${RE
 echo -e ${LIGHTBLUE}"\nRunning gradle build task!"${RESET}
  ./gradlew build
 
-echo -e ${LIGHTBLUE}"\nFINISHED!"${RESET}
+echo -e ${GREEN}"\nFINISHED!"${RESET}
 

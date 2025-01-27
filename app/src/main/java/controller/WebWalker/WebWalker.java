@@ -206,6 +206,7 @@ public class WebWalker {
         return Main.getController().isQuestComplete(QuestId.PRINCE_ALI_RESCUE.getId())
             || Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 10;
       case "miningGuildDoor":
+      case "miningGuildLadder":
         return Main.getController().getCurrentStat(SkillId.MINING.getId()) >= 60;
       case "taverleySteppingStones":
         return Main.getController().getCurrentStat(SkillId.AGILITY.getId()) >= 50
@@ -299,6 +300,12 @@ public class WebWalker {
         return CustomLabelHandlers.taverleySteppingStones();
       case "dwarfTunnel":
         return CustomLabelHandlers.dwarfTunnel();
+      case "faladorWestBankDoor":
+        return CustomLabelHandlers.faladorWestBankDoor();
+      case "miningGuildDoor":
+        return CustomLabelHandlers.miningGuildDoor();
+      case "miningGuildLadder":
+        return CustomLabelHandlers.miningGuildLadder();
       default:
         Main.getController().log("Missing function for label: " + label);
         return false;

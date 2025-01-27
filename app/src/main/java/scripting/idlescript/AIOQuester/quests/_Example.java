@@ -1,5 +1,6 @@
 package scripting.idlescript.AIOQuester.quests;
 
+import models.entities.ItemId;
 import models.entities.Location;
 import scripting.idlescript.AIOQuester.QuestHandler;
 import scripting.idlescript.AIOQuester.models.QuitReason;
@@ -50,9 +51,31 @@ public final class _Example extends QuestHandler {
           sleepUntilQuestStageChanges() to make sure nothing unexpected happens.
           Make sure everything else in the stage is finished or the script will get
           stuck. */
+
+          // Get quest stages from their server plugins
+          /*
+          Authentic Quests:
+          https://gitlab.com/openrsc/openrsc/-/tree/develop/server/plugins/com/openrsc/server/plugins/authentic/quests
+          Custom Quests:
+          https://gitlab.com/openrsc/openrsc/-/tree/develop/server/plugins/com/openrsc/server/plugins/custom/quests
+          */
+
         case 0:
           // You can set CURRENT_QUEST_STEP to update the paint's second string.
           CURRENT_QUEST_STEP = "Doing stage 0 stuff";
+
+          // You can set STEP_ITEMS to an int[][] where each nested array is an {item id, amount}
+          // pair.
+          // If set the items will be displayed in the paint as either:
+          //   GREEN - If the player has the item with the correct amount
+          //   YELLOW - If the player has the item, but not the entire amount
+          //   RED - If the player does not have the item
+          STEP_ITEMS =
+              new int[][] {
+                {ItemId.POT_OF_FLOUR.getId(), 1},
+                {ItemId.BUCKET.getId(), 1}
+              };
+
           // Do stage 0 stuff here
           sleepUntilQuestStageChanges();
         case 1:

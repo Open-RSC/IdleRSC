@@ -7,6 +7,8 @@ import models.entities.ItemId;
 
 public class AIOAIO_Paint {
   public static void paint(PaintBuilder paintBuilder, RowBuilder rowBuilder) {
+    if (AIOAIO.state == null) return;
+
     paintBuilder.setBorderColor(0xBD93F9);
     paintBuilder.setBackgroundColor(0x282A36, 125);
     paintBuilder.setTitleCenteredSingleColor(

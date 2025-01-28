@@ -11,7 +11,6 @@ import bot.scriptselector.ScriptSelectorUI;
 import bot.scriptselector.models.PackageInfo;
 import callbacks.DrawCallback;
 import callbacks.SleepCallback;
-import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -60,7 +59,7 @@ public class Main {
               new SimpleEntry<>("APOS", reflections.getSubTypesOf(compatibility.apos.Script.class)),
               new SimpleEntry<>("SBot", reflections.getSubTypesOf(compatibility.sbot.Script.class)))
           .collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
-  // this is tied to the start/stop button on the side panel.
+
   private static Color themeTextColor = new java.awt.Color(219, 219, 219, 255);
   private static Color themeBackColor = new java.awt.Color(40, 40, 40, 255);
   private static boolean isRunning = false;
@@ -70,7 +69,7 @@ public class Main {
   private static JMenu themeMenu, settingsMenu;
   private static JFrame scriptFrame;
   public static JFrame rscFrame; // main window frame
-  public static JButton startStopButton;
+  public static JButton scriptButton;
   private static JButton buttonClear;
   private static JCheckBox autoLoginCheckbox,
       logWindowCheckbox,
@@ -84,12 +83,16 @@ public class Main {
       customUiMode,
       keepInvOpen,
       gfxCheckbox; // all the checkboxes on the sidepanel.
-  private static JButton loadScriptButton,
-      pathwalkerButton,
+  private static JButton pathwalkerButton,
       takeScreenshotButton,
       showIdButton,
       openDebuggerButton,
       resetXpButton;
+
+  // This boolean switches the pathwalker button to use LocationWalker instead.
+  // It is temporary until I feel it is ready to replace it entirely.
+  private static final boolean switchToLocationWalkerButton = false;
+
   private static JTextArea logArea; // self explanatory
   private static JScrollPane scroller; // this is the main window for the log.
   private static Debugger debugger = null;
@@ -98,12 +101,12 @@ public class Main {
   private static Thread windowListener = null; // see WindowListener.java
   private static final Thread messageListener = null; // see MessageListener.java
   private static Thread debuggerThread = null;
-  private static Controller controller =
-      null; // this is the queen bee that controls the actual bot and is the native
-  // scripting
-  // language.
-  private static Object currentRunningScript =
-      null; // the object instance of the current running script.
+  // Scripts run in this thread (Hence the name) :)
+  private static Thread runningScriptThread = null;
+  // the object instance of the current running script.
+  private static Object currentRunningScript = null;
+  // this is the queen bee that controls the actual bot and is the native scripting language.
+  private static Controller controller = null;
   private static boolean aposInitCalled = false;
 
   // themeNames and colorCodes MUST have the same index values
@@ -266,7 +269,8 @@ public class Main {
                     controller.stopBatching();
                     System.out.println("Batching force-stopped at shutdown");
                   }
-                }));
+                },
+                "IdleRSC - Shutdown Hook"));
 
     CLIParser parser = new CLIParser();
     Version version = new Version();
@@ -304,7 +308,7 @@ public class Main {
 
     controller = new Controller(reflector, client, mud); // start up our controller
     debugger = new Debugger(reflector, client, mud, controller);
-    debuggerThread = new Thread(debugger);
+    debuggerThread = new Thread(debugger, "IdleRSC - Debugger");
     debuggerThread.start();
 
     // Populates the script selector's script map.
@@ -335,8 +339,7 @@ public class Main {
     initializeMenuBar();
 
     JButton[] buttonArray = {
-      startStopButton,
-      loadScriptButton,
+      scriptButton,
       pathwalkerButton,
       takeScreenshotButton,
       showIdButton,
@@ -415,7 +418,7 @@ public class Main {
     if (config.getKeepOpen()) controller.setKeepInventoryOpenMode(keepInvOpen.isSelected());
     if (config.isGraphicsInterlacingEnabled())
       controller.setInterlacer(config.isGraphicsInterlacingEnabled());
-    if (config.isScriptSelectorOpen()) showLoadScript();
+    if (config.isScriptSelectorOpen()) ScriptSelectorUI.showUI();
     if (config.isDebug()) debugger.open();
 
     log("Initializing WindowListener...");
@@ -434,7 +437,8 @@ public class Main {
                 buttonClear,
                 autoscrollLogsCheckbox,
                 buttonArray,
-                checkBoxArray));
+                checkBoxArray),
+            "IdleRSC - Window Listener");
     windowListener.start();
     log("WindowListener started.");
 
@@ -444,7 +448,7 @@ public class Main {
     if (autoLoginCheckbox.isSelected()) controller.login();
     // start up our listener threads
     log("Initializing LoginListener...");
-    loginListener = new Thread(new LoginListener(controller));
+    loginListener = new Thread(new LoginListener(controller), "IdleRSC - Login Listener");
     loginListener.start();
     log("LoginListener initialized.");
     Thread.sleep(1200);
@@ -461,7 +465,6 @@ public class Main {
       } else {
         while (!controller.isLoggedIn()) controller.sleep(640);
         isRunning = true;
-        startStopButton.setText("Stop");
       }
     }
 
@@ -472,61 +475,109 @@ public class Main {
 
     // System.out.println("Next screen refresh at: " +
     // DrawCallback.getNextRefresh());
+
+    String defaultFrameTitle = rscFrame.getTitle();
     while (true) {
+      Thread.sleep(320);
       if (isRunning()) {
         if (currentRunningScript == null) continue;
 
-        // handle native scripts
-        if (currentRunningScript instanceof IdleScript) {
-          ((IdleScript) currentRunningScript).setController(controller);
-          int sleepAmount =
-              ((IdleScript) currentRunningScript).start(config.getScriptArguments()) + 1;
-          Thread.sleep(sleepAmount);
-        } else if (currentRunningScript instanceof compatibility.sbot.Script) {
-          controller.displayMessage(
-              "@red@IdleRSC: Note that SBot scripts are mostly, but not fully compatible.", 3);
-          controller.displayMessage(
-              "@red@IdleRSC: If you still experience problems after modifying script please report.",
-              3);
-          ((compatibility.sbot.Script) currentRunningScript).setController(controller);
+        toggleScriptButtons(true);
+        scriptButton.setText("Stop Script");
+        if (!rscFrame.getTitle().equals(defaultFrameTitle + ": " + Main.config.getScriptName()))
+          rscFrame.setTitle(defaultFrameTitle + ": " + Main.config.getScriptName());
 
-          String sbotScriptName = config.getScriptName();
-          ((compatibility.sbot.Script) currentRunningScript)
-              .start(sbotScriptName, config.getScriptArguments());
-
-          Thread.sleep(618); // wait 1 tick before performing next action
-        } else if (currentRunningScript instanceof compatibility.apos.Script) {
-          if (!controller.isSleeping()) {
-            StringBuilder params = new StringBuilder();
-
-            if (config.getScriptArguments() != null) {
-              for (int i = 0; i < config.getScriptArguments().length; i++) {
-                String arg = config.getScriptArguments()[i];
-                if (i == 0) params = new StringBuilder(arg);
-                else params.append(" ").append(arg);
-              }
-            }
-
-            if (!aposInitCalled) {
-              Script.setController(controller);
-              ((compatibility.apos.Script) currentRunningScript).init(params.toString());
-              aposInitCalled = true;
-            }
-
-            int sleepAmount = ((compatibility.apos.Script) currentRunningScript).main() + 1;
-            Thread.sleep(sleepAmount);
-          } else {
-            Thread.sleep(10);
-          }
-        }
+        runScriptThread();
+        Thread.sleep(320);
       } else {
+        if (!rscFrame.getTitle().equals(defaultFrameTitle)) rscFrame.setTitle(defaultFrameTitle);
         if (controller.getNeedToMove() && controller.isLoggedIn() && controller.isAutoLogin()) {
           controller.moveCharacter();
         }
+        Thread.sleep(100);
+        scriptButton.setText("Load Script");
+        toggleScriptButtons(false);
         aposInitCalled = false;
         Thread.sleep(100);
       }
     }
+  }
+
+  /** Runs the script in a thread to allow force-stopping. */
+  private static void runScriptThread() {
+    if (runningScriptThread != null && runningScriptThread.isAlive()) return;
+
+    runningScriptThread =
+        new Thread(
+            () -> {
+              while (isRunning()) {
+                try {
+                  // Handle Native scripts
+                  if (currentRunningScript instanceof IdleScript) {
+                    IdleScript currentScript = (IdleScript) currentRunningScript;
+                    currentScript.setController(controller);
+                    Thread.sleep(
+                        Math.max(100, currentScript.start(config.getScriptArguments()) + 1));
+
+                    // Handle SBot scripts
+                  } else if (currentRunningScript instanceof compatibility.sbot.Script) {
+                    compatibility.sbot.Script currentScript =
+                        (compatibility.sbot.Script) currentRunningScript;
+                    currentScript.setController(controller);
+                    currentScript.start(config.getScriptName(), config.getScriptArguments());
+                    Thread.sleep(618);
+
+                    // Handle APOS scripts
+                  } else if (currentRunningScript instanceof compatibility.apos.Script) {
+                    compatibility.apos.Script currentScript =
+                        (compatibility.apos.Script) currentRunningScript;
+                    if (!aposInitCalled) {
+                      compatibility.apos.Script.setController(Main.getController());
+                      currentScript.init(
+                          Main.config.getScriptArguments() != null
+                              ? String.join(" ", Main.config.getScriptArguments())
+                              : "");
+                      aposInitCalled = true;
+                    }
+                    Thread.sleep(controller.isSleeping() ? 10 : currentScript.main() + 1);
+                  }
+                } catch (InterruptedException e) {
+                  Thread.currentThread().interrupt();
+                  System.out.println("Script thread interrupted. Exiting...");
+                }
+              }
+            },
+            "IdleRSC - Running Script");
+    runningScriptThread.start();
+  }
+
+  private static void printThreadInformation() {
+
+    // Recursively searches threads to find the one that matches our script thread.
+    ThreadGroup group = Thread.currentThread().getThreadGroup();
+    while (group.getParent() != null) group = group.getParent();
+    Thread[] threads = new Thread[group.activeCount()];
+    group.enumerate(threads, true);
+
+    StringBuilder threadString = new StringBuilder();
+    for (int i = 0; i < threads.length; i++) {
+      String threadName = threads[i].getName();
+      int spaces = 28 - threadName.length();
+      threadString.append(threads[i].getName());
+      for (int j = 0; j < spaces; j++) threadString.append(" ");
+
+      if (i % 3 == 0 && i != 0) threadString.append("\n   ");
+    }
+
+    System.out.printf("Running Threads: %n   %s%n", threadString);
+  }
+
+  private static void printScriptInformation() {
+    System.out.printf(
+        "Current Script: %s - Type: %s%n" + "Current Script Args: %s%n",
+        currentRunningScript.getClass().getSimpleName(),
+        currentRunningScript.getClass().getSuperclass().getSimpleName(),
+        Arrays.toString(config.getScriptArguments()));
   }
 
   public static ParseResult parseArgs(ParseResult parseResult, CLIParser parser, String[] args)
@@ -717,7 +768,7 @@ public class Main {
   private static void initializeBotFrame(JComponent botFrame) {
     botFrame.setLayout(new BoxLayout(botFrame, BoxLayout.Y_AXIS));
 
-    startStopButton = new JButton(isRunning ? "Stop" : "Start");
+    scriptButton = new JButton("Load Script");
 
     autoLoginCheckbox = new JCheckBox("Auto-Login");
     debugCheckbox = new JCheckBox("Debug Messages");
@@ -725,34 +776,25 @@ public class Main {
     render3DCheckbox = new JCheckBox("Render 3D");
     botPaintCheckbox = new JCheckBox("Show Bot Paint");
     interlaceCheckbox = new JCheckBox("Interlace");
-    loadScriptButton = new JButton("Load Script");
-    pathwalkerButton = new JButton("PathWalker");
+    pathwalkerButton = new JButton(switchToLocationWalkerButton ? "LocationWalker" : "PathWalker");
     // all the buttons on the sidepanel.
     takeScreenshotButton = new JButton("Screenshot");
     showIdButton = new JButton("Show IDs");
     openDebuggerButton = new JButton("Debugger");
     resetXpButton = new JButton("Reset XP");
 
-    startStopButton.addActionListener(
-        e -> {
-          isRunning = !isRunning;
-          if (isRunning) {
-            startStopButton.setText("Stop");
-          } else {
-            if (controller != null && controller.isBatching()) controller.stopBatching();
-            startStopButton.setText("Start");
-          }
-        });
-
-    loadScriptButton.addActionListener(e -> showLoadScript());
+    scriptButton.addActionListener(e -> handleScriptButton());
 
     pathwalkerButton.addActionListener(
         e -> {
           if (!isRunning) {
-            loadAndRunScript("PathWalker", PackageInfo.APOS);
+            if (switchToLocationWalkerButton) {
+              loadAndRunScript("LocationWalker", PackageInfo.NATIVE);
+            } else {
+              loadAndRunScript("PathWalker", PackageInfo.APOS);
+            }
             config.setScriptArguments(new String[] {""});
             isRunning = true;
-            startStopButton.setText("Stop");
           } else {
             JOptionPane.showMessageDialog(null, "Stop the current script first.");
           }
@@ -804,8 +846,7 @@ public class Main {
 
     Dimension buttonSize = new Dimension(125, 25);
 
-    botFrame.add(startStopButton);
-    botFrame.add(loadScriptButton);
+    botFrame.add(scriptButton);
     botFrame.add(pathwalkerButton);
     botFrame.add(autoLoginCheckbox);
     botFrame.add(debugCheckbox);
@@ -936,6 +977,15 @@ public class Main {
       e.printStackTrace();
       return false;
     }
+  }
+
+  /**
+   * Toggle script buttons (currently only the walker button)
+   *
+   * @param isScriptRunning boolean -- Set the buttons enabled statuses to this
+   */
+  private static void toggleScriptButtons(boolean isScriptRunning) {
+    pathwalkerButton.setEnabled(!isScriptRunning);
   }
 
   /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
@@ -1099,50 +1149,24 @@ public class Main {
     return true;
   }
 
-  public static void showLoadScript() {
-    if (!isRunning) {
-      setRunning(false);
+  public static void handleScriptButton() {
+    if (!isRunning()) {
       ScriptSelectorUI.showUI();
     } else {
-      // JOptionPane.showMessageDialog(null, "Stop the current script first.");
+      setRunning(false);
 
-      JLabel stopLabel = new JLabel("Script already running for Account!");
-      JLabel stopLabel2 = new JLabel("You must stop the script first");
-      JLabel stopLabel3 = new JLabel("May require client restart to fix");
-      // JButton cancelButton = new JButton("Force cancel script");
-      JButton closeWindow = new JButton("Close this warning");
-
-      // cancelButton.addActionListener(
-      // e -> {
-      // setRunning(false);
-      // currentRunningScript = null; //did not work
-      // scriptFrame.setVisible(false);
-      // scriptFrame.dispose();
-      // });
-
-      closeWindow.addActionListener(
-          e -> {
-            scriptFrame.setVisible(false);
-            scriptFrame.dispose();
-          });
-
-      if (controller.getPlayerName() != null) {
-        scriptFrame = new JFrame(controller.getPlayerName() + "'s Script already running");
-      } else if (config.getUsername() != null
-          && !config.getUsername().equalsIgnoreCase("username")) {
-        scriptFrame = new JFrame(config.getUsername() + "'s Script already running");
+      // If the script thread is still alive, force-stop it
+      if (runningScriptThread != null && runningScriptThread.isAlive()) {
+        if (controller != null) {
+          if (controller.isBatching()) controller.stopBatching();
+          String scriptName = Main.getCurrentRunningScript().getClass().getSimpleName();
+          controller.log(String.format("The '%s' script has been stopped!", scriptName), "yel");
+          controller.stop();
+        }
+        runningScriptThread.stop();
       } else {
-        scriptFrame = new JFrame("Script already running");
+        System.out.println("The 'Running Script' thread doesn't exist for some reason!");
       }
-
-      scriptFrame.setLayout(new GridLayout(0, 1));
-      scriptFrame.add(stopLabel);
-      scriptFrame.add(stopLabel2);
-      scriptFrame.add(stopLabel3);
-      // scriptFrame.add(cancelButton);
-      scriptFrame.add(closeWindow);
-      scriptFrame.setMinimumSize(new Dimension(225, 125)); // test this)); //test this
-      scriptFrame.setSize(225, 125); // test this
     }
   }
 
@@ -1236,11 +1260,6 @@ public class Main {
    */
   public static void setRunning(boolean _isRunning) {
     isRunning = _isRunning;
-    if (isRunning) {
-      startStopButton.setText("Stop");
-    } else {
-      startStopButton.setText("Start");
-    }
   }
 
   /**

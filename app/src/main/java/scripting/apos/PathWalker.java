@@ -1017,7 +1017,7 @@ public class PathWalker extends Script implements ActionListener, ItemListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getActionCommand().equals("OK")) {
-      new Thread(new FinderInit()).start();
+      new Thread(new FinderInit(), "IdleRSC - Pathwalker Action Thread").start();
     }
     frame.setVisible(false);
   }

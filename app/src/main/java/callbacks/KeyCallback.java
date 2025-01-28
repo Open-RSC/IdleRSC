@@ -1,6 +1,7 @@
 package callbacks;
 
 import bot.Main;
+import bot.scriptselector.ScriptSelectorUI;
 import compatibility.sbot.Script;
 import controller.Controller;
 import java.awt.event.KeyEvent;
@@ -84,6 +85,7 @@ public class KeyCallback {
     char keyChar = key.getKeyChar();
     int keycode = key.getKeyCode();
 
+    // is it safe to create threads like this and never destroy them?
     if (keycode == KeyEvent.VK_F5) {
       SwitchThread switchThread = new SwitchThread(c, true, false, false);
       Thread t = new Thread(switchThread);
@@ -119,10 +121,8 @@ public class KeyCallback {
       c.takeScreenshot("");
       // F10 is already reserved for locking render
     } else if (keycode == KeyEvent.VK_F11) {
-      if (Main.isRunning()) c.displayMessage("@red@IdleRSC@yel@: SCRIPT STOPPED");
-
-      Main.setRunning(false);
-      Main.showLoadScript();
+      if (Main.isRunning()) Main.handleScriptButton();
+      ScriptSelectorUI.showUI();
     } else if (keycode == KeyEvent.VK_F12) {
       if (c != null) {
         c.chatMessage("::bothelp");

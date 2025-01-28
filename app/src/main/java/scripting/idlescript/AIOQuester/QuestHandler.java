@@ -69,12 +69,17 @@ public abstract class QuestHandler {
         if (!run.isAccessible()) run.setAccessible(true);
         run.invoke(null);
         quit(QuitReason.SCRIPT_STOPPED);
+      } catch (InvocationTargetException e) {
+        // Ignore ThreadDeath exception
+        if (!(e.getTargetException() instanceof ThreadDeath)) {
+          e.printStackTrace();
+        }
       } catch (NoSuchMethodException e) {
         System.out.println("\nError: 'run' method not available for the class: " + cl.getName());
       } catch (NullPointerException e) {
         System.out.println(
             "\nError: 'run' method may not be static for the class: " + cl.getName());
-      } catch (IllegalAccessException | InvocationTargetException e) {
+      } catch (IllegalAccessException e) {
         System.out.println();
         //noinspection CallToPrintStackTrace
         e.printStackTrace();

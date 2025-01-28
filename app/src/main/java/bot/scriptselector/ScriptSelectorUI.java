@@ -388,7 +388,6 @@ public class ScriptSelectorUI {
       if (scriptArgs.getText().equals(scriptArgsPlaceholder)) scriptArgs.setText("");
       config.setScriptArguments(scriptArgs.getText().split(" "));
       Main.setRunning(true);
-      Main.startStopButton.setText("Stop");
     }
     started = true;
     frame.dispose();

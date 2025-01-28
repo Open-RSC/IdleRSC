@@ -672,7 +672,8 @@ public class MultiFight extends Script {
                   Wait(400);
                 }
               }
-            })
+            },
+            "IdleRSC - MultiFight open gate")
         .start();
   }
 

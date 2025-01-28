@@ -137,7 +137,8 @@ public class GnomeAgility extends Script {
                 }
                 Wait(250);
               }
-            })
+            },
+            "IdleRSC - Gnome Agility Sleeping Thread")
         .start();
   }
 }

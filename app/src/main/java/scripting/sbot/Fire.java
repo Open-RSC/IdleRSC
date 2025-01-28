@@ -96,7 +96,8 @@ public class Fire extends Script {
                 }
                 Wait(250);
               }
-            })
+            },
+            "IdleRSC - Fire script sleeping bag thread")
         .start();
   }
 }

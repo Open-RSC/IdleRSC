@@ -3,12 +3,10 @@ package scripting.idlescript;
 import bot.Main;
 import bot.scriptselector.models.Category;
 import bot.scriptselector.models.ScriptInfo;
+import controller.BotController;
 import controller.Controller;
 import javax.swing.*;
-import models.entities.EquipSlotIndex;
-import models.entities.ItemId;
-import models.entities.NpcId;
-import models.entities.SpellId;
+import models.entities.*;
 import orsc.ORSCharacter;
 
 /**
@@ -34,6 +32,7 @@ import orsc.ORSCharacter;
  */
 public class K_kailaScript extends IdleScript {
   protected static final Controller c = Main.getController();
+  protected static final BotController bc = new BotController(c);
   public static final ScriptInfo info =
       new ScriptInfo(
           new Category[] {Category.HIDDEN_FROM_SELECTOR},
@@ -1155,11 +1154,14 @@ public class K_kailaScript extends IdleScript {
    *
    * @param itemId int - accepts int variables such as "airId, lawId, earthId, waterId, fireId, etc"
    * @param itemAmount int - number of item that should be in the inventory.
+   * @return boolean - true if item contains correct amount now, false otherwise
    */
-  protected static void inventoryItemCheck(int itemId, int itemAmount) {
+  protected static boolean inventoryItemCheck(int itemId, int itemAmount) {
     if (c.getInventoryItemCount(itemId) < itemAmount) {
       c.withdrawItem(itemId, itemAmount - c.getInventoryItemCount(itemId));
     }
+    c.sleep(640);
+    return c.getInventoryItemCount(itemId) >= itemAmount;
   }
 
   /**
@@ -1541,6 +1543,41 @@ public class K_kailaScript extends IdleScript {
    *
    *      Magic/Other Methods
    */
+  /**
+   * Ideally, this will eventually be removed in place of walkToward(). Uses PathWalkerApi to walk
+   * to a tile.
+   *
+   * @param x int -- X coordinate of the tile to walk to
+   * @param y int -- Y coordinate of the tile to walk to
+   */
+  public static void pathWalker(int x, int y) {
+    pathWalker(new MapPoint(x, y));
+  }
+
+  /**
+   * Ideally, this will eventually be removed in place of walkToward(). Uses PathWalkerApi to walk
+   * to a tile.
+   *
+   * @param mapPoint MapPoint -- Coordinates of the tile to walk to
+   */
+  public static void pathWalker(MapPoint mapPoint) {
+    while (distanceFromTile(mapPoint) > 0 && c.isRunning()) {
+      c.openNearbyDoor(1);
+      bc.pathWalkerApi.walkTo(mapPoint);
+    }
+  }
+
+  /**
+   * Returns the distance the player is from the specified Map Point
+   *
+   * @param mapPoint MapPoint -- MapPoint to check
+   * @return int -- Returns the distance from the MapPoint
+   */
+  public static int distanceFromTile(MapPoint mapPoint) {
+    MapPoint current = new MapPoint(c.currentX(), c.currentY());
+    return MapPoint.distance(current, mapPoint);
+  }
+
   /** checks if brass key is in inventory, if not, sets warning message, and shuts down bot. */
   protected static void brassKeyCheck() {
     if (c.getInventoryItemCount(99) == 0) {

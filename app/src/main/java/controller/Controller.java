@@ -5138,9 +5138,9 @@ public class Controller {
               openBank_sleep(200);
             } else {
               talkToNpc(bankerNpc.serverIndex);
-              openBank_optionMenu_sleep(500);
+              openBank_optionMenu_sleep(640);
               optionAnswer(0);
-              openBank_sleep(200);
+              openBank_sleep(300);
             }
           }
         }

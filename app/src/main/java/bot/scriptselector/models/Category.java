@@ -70,7 +70,7 @@ public enum Category {
   MISCELLANEOUS("Miscellaneous"),
   IRONMAN_SUPPORTED("Ironman Supported"),
   ULTIMATE_IRONMAN_SUPPORTED("Ultimate Ironman Supported"),
-
+  URANIUM_SUPPORTED("Uranium Server Actions Supported"),
   // Add custom categories above this line
 
   DO_NOT_MANUALLY_ASSIGN_UNCATEGORIZED("Uncategorized");

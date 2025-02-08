@@ -18,15 +18,12 @@ import models.entities.ItemId;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-/*
- * todo:
- *   reduce walking between locations - pause at each side.
- *   logic to cut same tree as other players.
- */
 public final class K_SeersMagicTree extends K_kailaScript {
   public static final ScriptInfo info =
       new ScriptInfo(
-          new Category[] {Category.WOODCUTTING, Category.IRONMAN_SUPPORTED},
+          new Category[] {
+            Category.WOODCUTTING, Category.IRONMAN_SUPPORTED, Category.URANIUM_SUPPORTED
+          },
           "Kaila",
           "Cuts Magic logs in Seers' Village.");
 
@@ -47,7 +44,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
   };
 
   private void startSequence() {
-    c.displayMessage("@red@SeersMagicTree, start with an axe in inv/equipment");
+    c.displayMessage("@gre@SeersMagicTree, start with an axe in inv/equipment");
     boolean noAxe = true;
     boolean noBag = true;
     success = 0;
@@ -68,14 +65,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
     if (c.isInBank()) c.closeBank();
     if (c.currentY() < 458) {
       bank();
-      c.walkTo(500, 454);
-      c.walkTo(503, 457);
-      c.walkTo(503, 460);
-      c.walkTo(506, 463);
-      c.walkTo(506, 472);
-      c.walkTo(506, 478);
-      c.walkTo(516, 488);
-      c.sleep(1380);
+      pathWalker(516, 488);
     }
     if (!c.isAuthentic()) c.setBatchBarsOn();
   }
@@ -112,97 +102,47 @@ public final class K_SeersMagicTree extends K_kailaScript {
           && (c.getBatchBarsOn()
               || doAction
               || (didActionTime + 4000L < System.currentTimeMillis()))) {
-        if (c.getObjectAtCoord(519, 494) == 310) cutFirstTree();
-        else if (c.getObjectAtCoord(521, 492) == 310) cutSecondTree();
-        else if (c.getObjectAtCoord(524, 489) == 310) cutThirdTree();
-        else if (c.getObjectAtCoord(548, 484) == 310) cutFourthTree();
-        else if (c.currentX() != 531 || c.currentY() != 487)
-          c.walkTo(531, 487); // go to center position to check
+        // if there is an active tree, cut it
+        if (c.getObjectAtCoord(519, 494) == 310) cutTree(519, 493, 519, 494);
+        else if (c.getObjectAtCoord(521, 492) == 310) cutTree(521, 491, 521, 492);
+        else if (c.getObjectAtCoord(524, 489) == 310) cutTree(524, 488, 524, 489);
+        else if (c.getObjectAtCoord(548, 484) == 310) cutTree(547, 484, 548, 484);
+        // We dont see valid trees, check from where you can see all 4 trees
+        else if (c.currentX() != 528 || c.currentY() != 488) {
+          c.setStatus("@yel@Walking to check for trees");
+          c.walkTo(528, 488);
+          // first 3 are probably down, check the west tree again, now that we can see it
+          if (c.getObjectAtCoord(548, 484) == 310) {
+            c.setStatus("@yel@Cutting the fourth tree");
+            cutTree(547, 484, 548, 484);
+          } else {
+            c.setStatus("@yel@East tree is down, walking back");
+            c.walkTo(528, 488); // east tree is down, walk back
+          }
+        }
       } else if (c.getInventoryItemCount() == 30) {
-        if (c.currentX() < 533) goToBank();
-        else goToBank2();
-      } else {
-        c.sleep(320);
+        c.setStatus("@yel@Walking to the bank");
+        goToBank();
       }
+      c.sleep(640); // sleep once each loop
     }
   }
 
-  private void cutFirstTree() {
-    if (c.currentX() != 519 || c.currentY() != 493) c.walkTo(519, 493);
-    c.atObject(519, 494);
+  private void cutTree(int walkX, int walkY, int objX, int objY) {
+    if (c.currentX() != walkX || c.currentY() != walkY) c.walkTo(walkX, walkY);
+    c.atObject(objX, objY);
     didActionTime = System.currentTimeMillis();
     doAction = false;
     c.waitForBatching(true);
-  }
-
-  private void cutSecondTree() {
-    if (c.currentX() != 521 || c.currentY() != 491) c.walkTo(521, 491);
-    c.atObject(521, 492);
-    didActionTime = System.currentTimeMillis();
-    doAction = false;
-    c.waitForBatching(true);
-  }
-
-  private void cutThirdTree() {
-    if (c.currentX() != 524 || c.currentY() != 488) c.walkTo(524, 488);
-    c.atObject(524, 489);
-    didActionTime = System.currentTimeMillis();
-    doAction = false;
-    c.waitForBatching(true);
-  }
-
-  private void cutFourthTree() {
-    if (c.currentX() != 547 || c.currentY() != 484) {
-      c.walkTo(538, 486);
-      c.walkTo(547, 484);
-    }
-    c.atObject(548, 484);
-    didActionTime = System.currentTimeMillis();
-    doAction = false;
-    c.waitForBatching(true);
-    if (c.getObjectAtCoord(548, 484) != 310) {
-      c.walkTo(538, 486);
-      c.walkTo(531, 487);
-    }
   }
 
   private void goToBank() {
-    c.walkTo(516, 488);
-    c.walkTo(506, 478);
-    c.walkTo(506, 472);
-    c.walkTo(506, 463);
-    c.walkTo(503, 460);
-    c.walkTo(503, 457);
-    c.walkTo(500, 454);
+    pathWalker(504, 457);
+    c.setStatus("Made it to the bank...");
     totalTrips = totalTrips + 1;
     bank();
-    c.walkTo(500, 454);
-    c.walkTo(503, 457);
-    c.walkTo(503, 460);
-    c.walkTo(506, 463);
-    c.walkTo(506, 472);
-    c.walkTo(506, 478);
-    c.walkTo(516, 488);
-  }
-
-  private void goToBank2() {
-    c.walkTo(547, 484);
-    c.walkTo(537, 474);
-    c.walkTo(531, 468);
-    c.walkTo(521, 468);
-    c.walkTo(510, 468);
-    c.walkTo(504, 462);
-    c.walkTo(504, 458);
-    c.walkTo(500, 454);
-    totalTrips = totalTrips + 1;
-    bank();
-    c.walkTo(500, 454);
-    c.walkTo(503, 457);
-    c.walkTo(503, 460);
-    c.walkTo(506, 463);
-    c.walkTo(506, 472);
-    c.walkTo(506, 478);
-    c.walkTo(516, 488);
+    pathWalker(516, 488);
+    c.setStatus("@yel@Chopping Logs");
   }
 
   private void bank() {
@@ -214,7 +154,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
     } else {
       totalLog = totalLog + c.getInventoryItemCount(636);
       for (int itemId : c.getInventoryItemIds()) {
-        if (itemId != ItemId.SLEEPING_BAG.getId()
+        if ((itemId != ItemId.SLEEPING_BAG.getId())
             && itemId != axeId[0]
             && itemId != axeId[1]
             && itemId != axeId[2]
@@ -225,8 +165,13 @@ public final class K_SeersMagicTree extends K_kailaScript {
           c.depositItem(itemId, c.getInventoryItemCount(itemId));
         }
       }
-
+      c.sleep(1280);
       logInBank = c.getBankItemCount(636);
+      for (int axe : axeId) {
+        withdrawItem(axe, 1);
+        if (c.getInventoryItemCount(axe) > 0) break;
+      }
+      if (c.isAuthentic()) withdrawItem(ItemId.SLEEPING_BAG.getId(), 1);
       c.closeBank();
     }
   }
@@ -275,13 +220,15 @@ public final class K_SeersMagicTree extends K_kailaScript {
     if (c != null) {
       String runTime = c.msToString(System.currentTimeMillis() - startTime);
       int successPerHr = 0;
-      int tripSuccessPerHr = 0;
+      int tripsPerHr = 0;
+      int failurePerHr = 0;
       long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
       try {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
-        successPerHr = (int) (totalLog * scale);
-        tripSuccessPerHr = (int) (totalTrips * scale);
+        successPerHr = (int) (success * scale);
+        failurePerHr = (int) (fail * scale);
+        tripsPerHr = (int) (totalTrips * scale);
       } catch (Exception e) {
         // divide by zero
       }
@@ -292,7 +239,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
       c.drawString("@whi@Logs in Bank: @gre@" + logInBank, x, y + 14, 0xFFFFFF, 1);
       c.drawString(
           "@whi@Logs Cut: @gre@"
-              + totalLog
+              + success
               + "@yel@ (@whi@"
               + String.format("%,d", successPerHr)
               + "@yel@/@whi@hr@yel@)",
@@ -301,17 +248,27 @@ public final class K_SeersMagicTree extends K_kailaScript {
           0xFFFFFF,
           1);
       c.drawString(
-          "@whi@Total Trips: @gre@"
-              + totalTrips
+          "@whi@Failure to Cut: @gre@"
+              + fail
               + "@yel@ (@whi@"
-              + String.format("%,d", tripSuccessPerHr)
+              + failurePerHr
               + "@yel@/@whi@hr@yel@)",
           x,
           y + (14 * 3),
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
-      c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
+      c.drawString(
+          "@whi@Total Trips: @gre@"
+              + totalTrips
+              + "@yel@ (@whi@"
+              + String.format("%,d", tripsPerHr)
+              + "@yel@/@whi@hr@yel@)",
+          x,
+          y + (14 * 4),
+          0xFFFFFF,
+          1);
+      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 5), 0xFFFFFF, 1);
+      c.drawString("@whi@____________________", x, y + 3 + (14 * 5), 0xFFFFFF, 1);
     }
   }
 }

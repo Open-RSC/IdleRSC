@@ -6,6 +6,7 @@ import bot.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -16,17 +17,20 @@ import models.entities.SkillId;
 import orsc.ORSCharacter;
 
 /**
- * A basic thiever that supports most things in the game. Only supports banking in Ardougne at the
- * moment.
+ * A basic thiever that supports most things in the game. Supports specific bank/thieving areas.
+ * Parameters are: fight style (0,1,2,3), eatingHealth, Target, food withdraw amount Example: 3, 60,
+ * Hero, 1
  *
- * @author Dvorak
+ * @author Dvorak and Kaila
  */
 public class AIOThiever extends IdleScript {
   public static final ScriptInfo info =
       new ScriptInfo(
-          new Category[] {Category.THIEVING, Category.IRONMAN_SUPPORTED},
-          "Dvorak",
-          "A basic thiever that supports most things in the game. \nOnly supports banking in Ardougne");
+          new Category[] {
+            Category.THIEVING, Category.IRONMAN_SUPPORTED, Category.URANIUM_SUPPORTED
+          },
+          "Dvorak and Kaila",
+          "A basic thiever that supports most things in the game.");
 
   private final int[][][]
       tiles = { // {objectX, objectY, object Id}, {walkTo}, {walkTo}, {walkTo}, {walkTo}
@@ -146,6 +150,8 @@ public class AIOThiever extends IdleScript {
   private ThievingObject target = null;
   private int success = 0;
   private int failure = 0;
+  private long didActionTime = 0;
+  private boolean doAction = true;
   private int fightMode = 0;
   private int eatingHealth = 0;
   private int foodWithdrawAmount = 0;
@@ -162,9 +168,10 @@ public class AIOThiever extends IdleScript {
     if (scriptStarted) {
       guiSetup = false;
       scriptStarted = false;
+      c.setBatchBars(false);
       scriptStart();
     } else {
-      if (parameters[0].isEmpty()) {
+      if (parameters.length == 0 || parameters[0] == null || parameters[0].trim().isEmpty()) {
         if (!guiSetup) {
           setupGUI();
           guiSetup = true;
@@ -174,16 +181,26 @@ public class AIOThiever extends IdleScript {
         try {
           fightMode = Integer.parseInt(parameters[0]);
           eatingHealth = Integer.parseInt(parameters[1]);
+          bankSpot = bankSpots[Integer.parseInt(parameters[2])];
+          foodWithdrawAmount = Integer.parseInt(parameters[3]);
           for (ThievingObject obj : objects) {
-            if (obj.name.equals(parameters[2])) target = obj;
+            if (obj.name.equalsIgnoreCase(parameters[4])) target = obj;
           }
-          foodWithdrawAmount = Integer.parseInt(parameters[4]);
-          if (target == null) throw new Exception("Could not parse thieving target!");
+          if (target == null)
+            throw new Exception("Could not parse thieving target name! Try a different name.");
+          c.setBatchBars(false);
+          c.log("Welcome to AIOThiever. Let's party like it's 2004!", "gre");
           scriptStarted = true;
-          c.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
         } catch (Exception e) {
-          System.out.println("Could not parse parameters!");
-          c.displayMessage("@red@Could not parse parameters!");
+          c.log("Could not parse parameters: " + Arrays.toString(parameters), "red");
+          c.log(
+              "Parameters should be: fightStyle, eatingHealth, bankSpot, foodWithdrawAmount, targetName",
+              "gre"); // (none, ardy, var west, var east    (0,1,2,3)
+          c.log(
+              "fightStyle indexes are [0 = controlled, 1 = attack, 2 = strength, 3 = defense]",
+              "gre");
+          c.log("Bank indexes are [0 = none, 1 = ardy, 2 = var west, 3 = var east]", "gre");
+          c.log("For Example: 3, 60, 1, 1, Hero", "gre");
           c.stop();
         }
       }
@@ -195,33 +212,41 @@ public class AIOThiever extends IdleScript {
     while (c.isRunning()) {
       if (c.getNeedToMove()) c.moveCharacter();
       if (c.getShouldSleep()) c.sleepHandler(true);
-      eat();
       if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
       if (c.getInventoryItemCount(140) > 0) { // drop jugs from heroes
         c.setStatus("@red@Dropping empty jugs..");
         c.dropItem(c.getInventoryItemSlotIndex(140));
-        c.sleep(GAME_TICK);
       }
-      c.waitForBatching(false);
+      eat();
+      // Banking
+      if (!bankSpot.equals(bankSpots[0]) // not the "None" option
+          && (c.getInventoryItemCount() == 30 || countFood() == 0)) {
+        bankingLoop();
+      }
+
       if (!c.isInCombat()) {
-        eat();
         if (target.isNpc) {
-          // c.sleepHandler(98, true);
           ORSCharacter npc = c.getNearestNpcById(target.id, false);
           if (npc != null && npc.serverIndex > 0) {
             if (c.isEquipped(EquipSlotIndex.WEAPON.getId())) {
               c.log("Silly goose, looks like you have a weapon equipped, You should not wear");
-              c.log(
-                  "weapons when thieving, it severely drops xp rates for everyone, including you!");
+              c.log("weapons when thieving, it lowers xp rates for everyone, including you!");
               c.chatMessage("I did something bad and tried to wield a weapon while thieving");
               if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
             }
-            c.setStatus("@red@Stealing..");
-            c.npcCommand1(npc.serverIndex);
-            c.sleep(320);
+            // handle uranium pauses to do action
+            if (c.getBatchBarsOn()
+                || doAction
+                || (didActionTime + 4000L < System.currentTimeMillis())) {
+              c.setStatus("@yel@Stealing..");
+              c.npcCommand1(npc.serverIndex);
+              didActionTime = System.currentTimeMillis();
+              doAction = false;
+              c.waitForBatching(true);
+            }
           } else {
-            c.setStatus("@red@Waiting for NPC to become available..");
-            c.sleep(100);
+            c.setStatus("@yel@Waiting for NPC...");
+            c.sleep(GAME_TICK / 2);
           }
           // Stall Thieving
           // todo investiagte searching npc positions and selecting opposite them
@@ -258,18 +283,10 @@ public class AIOThiever extends IdleScript {
               c.atObject2(coords[0], coords[1]);
             } else {
               c.atObject(coords[0], coords[1]);
-              c.sleep(GAME_TICK);
             }
           } else {
             c.setStatus("@red@Waiting for respawn..");
-            c.sleep(GAME_TICK);
           }
-        }
-
-        // Banking
-        if (!bankSpot.equals(bankSpots[0]) // not the "None" option
-            && (c.getInventoryItemCount() == 30 || countFood() == 0)) {
-          bankingLoop();
         }
       } else {
         c.setStatus("@red@Leaving combat..");
@@ -424,9 +441,9 @@ public class AIOThiever extends IdleScript {
 
           scriptFrame.setVisible(false);
           scriptFrame.dispose();
-          scriptStarted = true;
 
-          c.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
+          scriptStarted = true;
+          c.log("Welcome to AIOThiever. Let's party like it's 2004!", "gre");
         });
 
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
@@ -455,19 +472,19 @@ public class AIOThiever extends IdleScript {
   }
 
   @Override
-  public void serverMessageInterrupt(String message) {
-    if (message.contains("You steal")) success++;
+  public void questMessageInterrupt(String message) {
+    if (message.contains("You pick")
+        || message.contains("You steal")
+        || message.contains("You find")) {
+      success++;
+      doAction = true;
+    } else if (message.contains("You fail")
+        || message.contains("Hey thats mine")
+        || message.contains("hands off there")) {
+      failure++;
+      doAction = true;
+    }
   }
-
-  //  @Override
-  //  public void questMessageInterrupt(String message) {
-  //    if (message.contains("You pick") || message.contains("You steal")) success++;
-  //    else if (message.contains("You fail")) failure++;
-  //    else if (message.contains("Hey thats mine") || (message.contains("hands off there"))) {
-  //      failure++;
-  //      goToOtherSide = true;
-  //    }
-  //  }
 
   @Override
   public void paintInterrupt() {
@@ -480,7 +497,7 @@ public class AIOThiever extends IdleScript {
         float timeRan = currentTimeInSeconds - startTimestamp;
         float scale = (60 * 60) / timeRan;
         successPerHr = (int) (success * scale);
-        ratio = (float) success / (float) failure;
+        ratio = failure == 0 ? (float) success : (float) success / (float) failure;
       } catch (Exception e) {
         // divide by zero
       }

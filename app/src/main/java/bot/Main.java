@@ -1148,10 +1148,10 @@ public class Main {
   /**
    * A function for controlling whether or not scripts are running.
    *
-   * @param _isRunning
+   * @param b
    */
-  public static void setRunning(boolean _isRunning) {
-    isRunning = _isRunning;
+  public static void setRunning(boolean b) {
+    isRunning = b;
   }
 
   /**

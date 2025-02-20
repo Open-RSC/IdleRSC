@@ -166,7 +166,8 @@ public class WindowListener implements Runnable {
         Thread.sleep(60);
       }
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      // Restore interrupted status
+      Thread.currentThread().interrupt();
     }
   }
   /**

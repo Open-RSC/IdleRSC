@@ -8,11 +8,14 @@ import controller.Controller;
  *
  * <p>LoginListener is always running, and it runs as a separate thread from the main bot.
  *
- * @author Dvorak
+ * @author Dvorak and Kaila
+ */
+/*
+ * TODO: Only spawn this thread when autologin is turned on, otherwise kill thread!
  */
 public class LoginListener implements Runnable {
-  private static double loginCount = 0;
-  private static double sleepTime = 0.0;
+  private double loginCount = 0;
+  private double sleepTime = System.currentTimeMillis();
   private final Controller controller;
 
   public LoginListener(Controller _controller) {
@@ -24,34 +27,41 @@ public class LoginListener implements Runnable {
     try {
       while (true) {
 
-        if (Main.isAutoLogin()) {
-          if (!controller.isLoggedIn()) {
-            if (System.currentTimeMillis() > sleepTime) {
-              controller.log("Logged out! Logging back in...");
-              controller.login();
-              loginCount++;
-              Thread.sleep(640);
-              // calc the next login time
-              if (loginCount > 10)
-                sleepTime =
-                    System.currentTimeMillis() + (((loginCount * 30) / (loginCount + 60)) * 20000);
-              else
-                sleepTime =
-                    System.currentTimeMillis() + ((Math.random() * 20000 * loginCount) + 20000);
-              if (!controller.isLoggedIn()) {
-                controller.log(
-                    "Looks like we could not login... trying again in "
-                        + (int) ((sleepTime - System.currentTimeMillis()) / 1000)
-                        + " seconds...",
-                    "cya");
-              }
-            }
-          } else if (loginCount != 0) loginCount = 0;
+        Thread.sleep(5000);
+
+        if (!Main.isAutoLogin() || controller.isLoggedIn()) { // Thread is not needed, long sleep
+          loginCount = 0;
+          Thread.sleep(15000);
+          continue;
         }
-        Thread.sleep(1000);
+        if (System.currentTimeMillis() <= sleepTime) { // waiting to login again, short sleep
+          continue;
+        }
+
+        controller.log("Logged out! Logging back in...");
+        controller.login();
+        loginCount++;
+
+        // short wait, 30s to 60s in all cases
+        if (loginCount < 3) sleepTime = System.currentTimeMillis() + 30000 + Math.random() * 30000;
+        // long wait, 5 mins to 15 mins, scaling up with more attempts
+        else
+          sleepTime =
+              System.currentTimeMillis() + 240_000 + loginCount * 20000 + Math.random() * 60000;
+        // reset counter if sleep time gets longer than 15 mins (starts again at ~5 mins)
+        if (sleepTime > 900_000) loginCount = 3;
+
+        if (!controller.isLoggedIn()) {
+          controller.log(
+              "Looks like we could not log in... trying again in "
+                  + (int) ((sleepTime - System.currentTimeMillis()) / 1000)
+                  + " seconds...",
+              "cya");
+        }
       }
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      // Restore interrupted status
+      Thread.currentThread().interrupt();
     }
   }
 }

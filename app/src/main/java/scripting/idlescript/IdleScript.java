@@ -3,7 +3,6 @@ package scripting.idlescript;
 import controller.Controller;
 import controller.PaintBuilder.PaintBuilder;
 import controller.PaintBuilder.RowBuilder;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is the base class from which all IdleScript scripts are derived; this class also contains
@@ -15,7 +14,6 @@ public abstract class IdleScript {
   Controller controller = null;
   protected PaintBuilder paintBuilder = new PaintBuilder(4, 18, 214);
   protected RowBuilder rowBuilder = new RowBuilder();
-  private final AtomicInteger sleepInt = new AtomicInteger(640);
 
   /**
    * Called by {@link callbacks.MessageCallback} every time a new server message is drawn on the

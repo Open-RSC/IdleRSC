@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import orsc.ORSCharacter;
 
 /**
@@ -18,9 +17,6 @@ import orsc.ORSCharacter;
  * @author Dvorak
  */
 public abstract class Script implements IScript {
-  private Thread scriptThread;
-  private final AtomicInteger sleepInt = new AtomicInteger(640);
-
   private static HashMap<Image, BufferedImage> imageCache;
 
   private String toType = "";

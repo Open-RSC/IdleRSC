@@ -14,9 +14,6 @@ import scripting.idlescript.AIOQuester.models.QuestDef;
 
 // TODO: Add amount checking for required equipped items for ammunition
 public class QuestUI {
-  static final Color backgroundColor = Main.getThemeBackColor();
-  static final Color foregroundColor = Main.getThemeTextColor();
-
   static SpringLayout sl = new SpringLayout();
   static final JFrame frame = new JFrame("AIOQuester");
   static final JPanel panel = new JPanel();
@@ -106,39 +103,39 @@ public class QuestUI {
 
   /** Manages the JFrame's, and its child components' theming */
   private static void setTheming() {
-    frame.getContentPane().setBackground(backgroundColor);
-    frame.getContentPane().setForeground(foregroundColor);
+    frame.getContentPane().setBackground(Main.primaryBG);
+    frame.getContentPane().setForeground(Main.primaryFG);
     frame.setResizable(false);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setPreferredSize(new Dimension(600, 400));
 
-    panel.setBackground(backgroundColor);
-    panel.setForeground(foregroundColor);
+    panel.setBackground(Main.primaryBG);
+    panel.setForeground(Main.primaryFG);
 
     startBtn.setEnabled(false);
-    startBtn.setBackground(backgroundColor.darker());
-    startBtn.setForeground(foregroundColor);
+    startBtn.setBackground(Main.secondaryBG);
+    startBtn.setForeground(Main.secondaryFG);
 
-    questScroller.setBackground(backgroundColor);
-    questScroller.setForeground(foregroundColor);
-    questScroller.getViewport().setBackground(backgroundColor.brighter());
+    questScroller.setBackground(Main.primaryBG);
+    questScroller.setForeground(Main.primaryFG);
+    questScroller.getViewport().setBackground(Main.primaryBG.brighter());
     questScroller.setBorder(BorderFactory.createEmptyBorder());
 
     descLabel.setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
     descLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    descLabel.setBackground(backgroundColor);
-    descLabel.setForeground(foregroundColor);
+    descLabel.setBackground(Main.primaryBG);
+    descLabel.setForeground(Main.primaryFG);
 
     descriptionTextPane.setEditable(false);
-    descriptionTextPane.setBackground(backgroundColor.brighter());
-    descriptionTextPane.setForeground(foregroundColor);
+    descriptionTextPane.setBackground(Main.primaryBG.brighter());
+    descriptionTextPane.setForeground(Main.primaryFG);
 
-    descriptionScroller.setBackground(backgroundColor.brighter());
-    descriptionScroller.setForeground(foregroundColor);
+    descriptionScroller.setBackground(Main.primaryBG.brighter());
+    descriptionScroller.setForeground(Main.primaryFG);
     descriptionScroller.setBorder(BorderFactory.createEmptyBorder());
 
-    showCanStartCheckbox.setBackground(backgroundColor);
-    showCanStartCheckbox.setForeground(foregroundColor);
+    showCanStartCheckbox.setBackground(Main.primaryBG);
+    showCanStartCheckbox.setForeground(Main.primaryFG);
     showCanStartCheckbox.setHorizontalAlignment(SwingConstants.CENTER);
     showCanStartCheckbox.setSelected(true);
     showCanStartCheckbox.setToolTipText(
@@ -146,14 +143,14 @@ public class QuestUI {
 
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     table.setBorder(BorderFactory.createEmptyBorder());
-    table.setBackground(backgroundColor.brighter());
-    table.setForeground(foregroundColor);
+    table.setBackground(Main.primaryBG.brighter());
+    table.setForeground(Main.primaryFG);
 
     header.setReorderingAllowed(false);
     header.setResizingAllowed(false);
     header.setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
-    header.setBackground(backgroundColor);
-    header.setForeground(foregroundColor);
+    header.setBackground(Main.primaryBG);
+    header.setForeground(Main.primaryFG);
     header.setBorder(
         BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("controlDkShadow")));
     header.setDefaultRenderer(
@@ -175,7 +172,7 @@ public class QuestUI {
                 BorderFactory.createMatteBorder(0, 0, 0, 0, UIManager.getColor("controlDkShadow")));
             label.setFont(header.getFont().deriveFont(Font.BOLD, 15f));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setBackground(backgroundColor);
+            label.setBackground(Main.primaryBG);
             return label;
           }
         });

@@ -18,7 +18,7 @@ reflection. It has its own custom scripting API called IdleScript, as well as
 backwards compatibility with APOS and SBot scripts. It also provides staker
 bot functionality!
 
-![main window screenshot](doc/images/main-window-new.png "Main window")
+![main window screenshot](doc/images/main-window.png "Main window")
 
 ---
 

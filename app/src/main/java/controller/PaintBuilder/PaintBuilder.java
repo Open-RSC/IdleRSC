@@ -17,7 +17,7 @@ public class PaintBuilder {
   public float runTimeSeconds, timeScale;
   public int colorRainbow;
 
-  private static long startTime = System.currentTimeMillis();
+  private long startTime = System.currentTimeMillis();
   private int pWidth, pHeight, pX, pY;
   private int borderColor, bgColor, bgTransparency = 0;
   private int rowsY = 2;

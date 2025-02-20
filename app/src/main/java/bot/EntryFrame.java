@@ -263,7 +263,7 @@ public final class EntryFrame extends JFrame {
     try {
       themeName = getStringProperty(account, "theme");
       UIManager.getDefaults().remove("Button.gradient");
-      Main.setThemeName(themeName);
+      Main.setTheme(themeName);
       Main.setUsername(account);
       setVisible(false);
       dispose();

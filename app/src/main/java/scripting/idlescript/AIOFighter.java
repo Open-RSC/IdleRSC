@@ -434,9 +434,6 @@ public class AIOFighter extends IdleScript {
   }
 
   public void setTheming() {
-    final Color backgroundColor = Main.getThemeBackColor();
-    final Color foregroundColor = Main.getThemeTextColor();
-
     TableColumn nearbyColumn1 = nearbyTable.getColumnModel().getColumn(0);
     nearbyColumn1.setPreferredWidth(18);
     nearbyColumn1.setMinWidth(18);
@@ -446,74 +443,74 @@ public class AIOFighter extends IdleScript {
     nearbyColumn3.setMinWidth(40);
     nearbyColumn3.setMaxWidth(40);
 
-    frame.getContentPane().setBackground(backgroundColor);
-    frame.getContentPane().setForeground(foregroundColor);
+    frame.getContentPane().setBackground(Main.primaryBG);
+    frame.getContentPane().setForeground(Main.primaryFG);
     frame.setResizable(false);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setPreferredSize(new Dimension(600, 300));
 
-    panel.setBackground(backgroundColor);
-    panel.setForeground(foregroundColor);
+    panel.setBackground(Main.primaryBG);
+    panel.setForeground(Main.primaryFG);
 
-    npcIdLabel.setForeground(foregroundColor);
-    lootLabel.setForeground(foregroundColor);
-    wanderLabel.setForeground(foregroundColor);
-    switchLabel.setForeground(foregroundColor);
-    fightModeLabel.setForeground(foregroundColor);
-    eatLabel.setForeground(foregroundColor);
+    npcIdLabel.setForeground(Main.primaryFG);
+    lootLabel.setForeground(Main.primaryFG);
+    wanderLabel.setForeground(Main.primaryFG);
+    switchLabel.setForeground(Main.primaryFG);
+    fightModeLabel.setForeground(Main.primaryFG);
+    eatLabel.setForeground(Main.primaryFG);
 
-    buryBonesCheckbox.setForeground(foregroundColor);
-    buryBonesCheckbox.setBackground(backgroundColor);
-    magingCheckbox.setForeground(foregroundColor);
-    magingCheckbox.setBackground(backgroundColor);
-    openDoorsCheckbox.setForeground(foregroundColor);
-    openDoorsCheckbox.setBackground(backgroundColor);
-    prioritizeBonesCheckbox.setForeground(foregroundColor);
-    prioritizeBonesCheckbox.setBackground(backgroundColor);
-    rangingCheckbox.setForeground(foregroundColor);
-    rangingCheckbox.setBackground(backgroundColor);
+    buryBonesCheckbox.setForeground(Main.primaryFG);
+    buryBonesCheckbox.setBackground(Main.primaryBG);
+    magingCheckbox.setForeground(Main.primaryFG);
+    magingCheckbox.setBackground(Main.primaryBG);
+    openDoorsCheckbox.setForeground(Main.primaryFG);
+    openDoorsCheckbox.setBackground(Main.primaryBG);
+    prioritizeBonesCheckbox.setForeground(Main.primaryFG);
+    prioritizeBonesCheckbox.setBackground(Main.primaryBG);
+    rangingCheckbox.setForeground(Main.primaryFG);
+    rangingCheckbox.setBackground(Main.primaryBG);
 
-    refreshBtn.setBackground(backgroundColor.darker());
-    refreshBtn.setForeground(foregroundColor);
-    startBtn.setBackground(backgroundColor.darker());
-    startBtn.setForeground(foregroundColor);
+    refreshBtn.setBackground(Main.secondaryBG);
+    refreshBtn.setForeground(Main.secondaryFG);
+    startBtn.setBackground(Main.secondaryBG);
+    startBtn.setForeground(Main.secondaryFG);
 
     nearbyTable.setRowSelectionAllowed(false);
     nearbyTable.setBorder(BorderFactory.createEmptyBorder());
-    nearbyTable.setBackground(backgroundColor.brighter());
-    nearbyTable.setForeground(foregroundColor);
+    nearbyTable.setBackground(Main.primaryBG.brighter());
+    nearbyTable.setForeground(Main.primaryFG);
 
-    npcIdsField.setForeground(foregroundColor);
-    npcIdsField.setBackground(backgroundColor.brighter().brighter());
-    eatAtHpField.setForeground(foregroundColor);
-    eatAtHpField.setBackground(backgroundColor.brighter().brighter());
-    wanderField.setForeground(foregroundColor);
-    wanderField.setBackground(backgroundColor.brighter().brighter());
-    lootField.setForeground(foregroundColor);
-    lootField.setBackground(backgroundColor.brighter().brighter());
-    switchIdField.setForeground(foregroundColor);
-    switchIdField.setBackground(backgroundColor.brighter().brighter());
+    npcIdsField.setForeground(Main.primaryFG);
+    npcIdsField.setBackground(Main.primaryBG.brighter().brighter());
+    eatAtHpField.setForeground(Main.primaryFG);
+    eatAtHpField.setBackground(Main.primaryBG.brighter().brighter());
+    wanderField.setForeground(Main.primaryFG);
+    wanderField.setBackground(Main.primaryBG.brighter().brighter());
+    lootField.setForeground(Main.primaryFG);
+    lootField.setBackground(Main.primaryBG.brighter().brighter());
+    switchIdField.setForeground(Main.primaryFG);
+    switchIdField.setBackground(Main.primaryBG.brighter().brighter());
 
-    modeCombobBox.setForeground(foregroundColor);
-    modeCombobBox.setBackground(backgroundColor.brighter().brighter());
+    modeCombobBox.setForeground(Main.primaryFG);
+    modeCombobBox.setBackground(Main.primaryBG.brighter().brighter());
     modeCombobBox.setBorder(BorderFactory.createEmptyBorder());
-    arrowComboBox.setForeground(foregroundColor);
-    arrowComboBox.setBackground(backgroundColor.brighter().brighter());
+    arrowComboBox.setForeground(Main.primaryFG);
+    arrowComboBox.setBackground(Main.primaryBG.brighter().brighter());
     arrowComboBox.setBorder(BorderFactory.createEmptyBorder());
-    spellComboBox.setForeground(foregroundColor);
-    spellComboBox.setBackground(backgroundColor.brighter().brighter());
+    spellComboBox.setForeground(Main.primaryFG);
+    spellComboBox.setBackground(Main.primaryBG.brighter().brighter());
     spellComboBox.setBorder(BorderFactory.createEmptyBorder());
 
-    nearbyScrollPane.setBackground(backgroundColor);
-    nearbyScrollPane.setForeground(foregroundColor);
-    nearbyScrollPane.getViewport().setBackground(backgroundColor.brighter());
+    nearbyScrollPane.setBackground(Main.primaryBG);
+    nearbyScrollPane.setForeground(Main.primaryFG);
+    nearbyScrollPane.getViewport().setBackground(Main.primaryBG.brighter());
     nearbyScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     nearbyHeader.setReorderingAllowed(false);
     nearbyHeader.setResizingAllowed(false);
     nearbyHeader.setFont(nearbyTable.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
-    nearbyHeader.setBackground(backgroundColor);
-    nearbyHeader.setForeground(foregroundColor);
+    nearbyHeader.setBackground(Main.primaryBG);
+    nearbyHeader.setForeground(Main.primaryFG);
     nearbyHeader.setBorder(
         BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("controlDkShadow")));
     nearbyHeader.setDefaultRenderer(
@@ -539,7 +536,7 @@ public class AIOFighter extends IdleScript {
                 BorderFactory.createMatteBorder(0, 0, 0, 0, UIManager.getColor("controlDkShadow")));
             label.setFont(nearbyHeader.getFont().deriveFont(Font.BOLD, 15f));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setBackground(backgroundColor);
+            label.setBackground(Main.primaryBG);
             return label;
           }
         });

@@ -10,7 +10,7 @@ public class ParseResult {
   private String password = "Password";
   private String initCache = "Coleslaw";
   private String serverIp = "game.openrsc.com";
-  private String themeName = "Rune Dark Theme";
+  private String themeName = "RuneDark Theme";
   private String remoteOcrUrl = "";
   private int positionX = -1;
   private int positionY = -1;

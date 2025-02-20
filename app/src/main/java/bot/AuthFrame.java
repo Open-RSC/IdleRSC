@@ -1,10 +1,9 @@
 package bot;
 
 import bot.ocrlib.OCRType;
+import bot.ui.Theme;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,13 +11,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Properties;
 import javax.swing.*;
 import orsc.util.Utils;
 
 final class AuthFrame extends JFrame {
-  private Color backgroundColor = Main.getColorCode(1, 0);
-  private Color textColor = Main.getColorCode(0, 0);
+
+  private Theme theme = Theme.RUNEDARK;
   private boolean loadSettings = false;
   private final String resourceLocation =
       "app"
@@ -36,16 +36,16 @@ final class AuthFrame extends JFrame {
           + "";
   private final Window parent;
   private JPasswordField password;
-  private final JTextField username,
-      scriptName,
-      scriptArgs,
-      spellId,
-      attackItems,
-      strengthItems,
-      defenseItems,
-      positionX,
-      positionY,
-      ocrServer;
+  private final JTextField username;
+  private final JTextField scriptName;
+  private final JTextField scriptArgs;
+  private final JTextField spellId;
+  private final JTextField attackItems;
+  private final JTextField strengthItems;
+  private final JTextField defenseItems;
+  private final JTextField positionX;
+  private final JTextField positionY;
+  private JTextField ocrServer = null;
   private Checkbox autoLogin,
       sideBar,
       logWindow,
@@ -65,6 +65,88 @@ final class AuthFrame extends JFrame {
   private final Choice serverIpChoice = new Choice();
   private final Choice ocrChoice = new Choice();
   private final Button okButton;
+  private final Panel optionsPanel = new Panel();
+  private final Panel optionsPanel2 = new Panel();
+  final JPanel inputPanel = new JPanel();
+  final JPanel buttonPanel = new JPanel();
+  Button cancelButton = new Button("Cancel");
+
+  final JTextField[] textFields = {
+    new JTextField(),
+    username = new JTextField(),
+    password = new JPasswordField(),
+    new JTextField(), // only show label
+    scriptName = new JTextField(),
+    scriptArgs = new JTextField(),
+    new JTextField(), // only show label
+    positionX = new JTextField(),
+    positionY = new JTextField(),
+    new JTextField(), // only show label
+    spellId = new JTextField(),
+    attackItems = new JTextField(),
+    strengthItems = new JTextField(),
+    defenseItems = new JTextField()
+  };
+
+  // Build out all of our text field options
+  final String[] optionLabels = { // 12
+    "Login Credentials:", // only show label
+    "Username:",
+    "Password:",
+    "Startup Options:", // only show label
+    "Script Name:",
+    "Script Args:",
+    "Position (-1 to center):",
+    "X Coord (640 ea)",
+    "Y Coord (395 ea)",
+    "Hotkeys:", // only show label
+    "SpellId (F8):",
+    "Swap Item (F5):",
+    "Swap Item (F6):",
+    "Swap Item (F7):",
+  };
+  Panel[] textFieldPanels = new Panel[optionLabels.length];
+
+  // Build out OCR options
+  String[] ocrLabels = {
+    "OCR Options:", // only show label
+    "OCR Type:",
+    "Sleep Server:",
+  };
+  Component[] ocrComponents = {
+    new JTextField(), ocrChoice, ocrServer = new JTextField(),
+  };
+  JPanel[] ocrPanels = new JPanel[ocrLabels.length];
+
+  // Build out our choice selectors (comboboxes)
+  String[] choiceLabels = {"Theme Selector: ", "Server Port: ", "Server Ip: "};
+  Choice[] choices = {themeChoice, initChoice, serverIpChoice};
+  // the strings representing our choices go here
+  String[][] choiceNames = {
+    Arrays.stream(Theme.values()).map(Theme::getName).toArray(String[]::new),
+    {"Coleslaw", "Uranium", "Custom"},
+    {"game.openrsc.com", "Custom"}
+  };
+  Panel[] choicePanels = new Panel[choiceLabels.length];
+
+  // Build out all of our checkbox options
+  Component[] checkBoxes = {
+    autoLogin = new Checkbox(" Auto-login", false),
+    sideBar = new Checkbox(" Show Side Bar", true),
+    logWindow = new Checkbox(" Open Log Window", false),
+    debug = new Checkbox(" Open Debugger", false),
+    botPaint = new Checkbox(" Show Bot Paint", true),
+    disableGraphics = new Checkbox(" Disable Graphics", false),
+    newUi = new Checkbox(" Custom Game UI", false),
+    newIcons = new Checkbox(" New Skillbar Icons", false),
+    keepOpen = new Checkbox(" Keep Inv Open", false),
+    interlace = new Checkbox(" Interlace Mode", false),
+    screenRefresh = new Checkbox(" 60s Screen Refresh", true),
+    helpMenu = new Checkbox(" Show Help Menu", false),
+    showVersion = new Checkbox(" Show Version", false)
+  };
+
+  Panel[] checkBoxPanels = new Panel[checkBoxes.length];
 
   AuthFrame(final String title, final String message, final Window parent) {
     super(title);
@@ -89,47 +171,10 @@ final class AuthFrame extends JFrame {
         labelPanel.add(new Label(s));
       }
     }
-    final Panel optionsPanel = new Panel();
     optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
-    final Panel optionsPanel2 = new Panel();
     optionsPanel2.setLayout(new BoxLayout(optionsPanel2, BoxLayout.Y_AXIS));
 
-    // Build out all of our text field options
-    String[] optionLabels = { // 12
-      "Login Credentials:", // only show label
-      "Username:",
-      "Password:",
-      "Startup Options:", // only show label
-      "Script Name:",
-      "Script Args:",
-      "Position (-1 to center):",
-      "X Coord (640 ea)",
-      "Y Coord (395 ea)",
-      "Hotkeys:", // only show label
-      "SpellId (F8):",
-      "Swap Item (F5):",
-      "Swap Item (F6):",
-      "Swap Item (F7):",
-    };
-    JTextField[] textFields = {
-      new JTextField(),
-      username = new JTextField(),
-      password = new JPasswordField(),
-      new JTextField(), // only show label
-      scriptName = new JTextField(),
-      scriptArgs = new JTextField(),
-      new JTextField(), // only show label
-      positionX = new JTextField(),
-      positionY = new JTextField(),
-      new JTextField(), // only show label
-      spellId = new JTextField(),
-      attackItems = new JTextField(),
-      strengthItems = new JTextField(),
-      defenseItems = new JTextField()
-    };
-
     password.setEchoChar('*');
-    Panel[] textFieldPanels = new Panel[optionLabels.length];
     for (int i = 0; i < textFieldPanels.length; i++) {
       textFieldPanels[i] = new Panel();
     }
@@ -144,20 +189,10 @@ final class AuthFrame extends JFrame {
         continue;
       }
       setElementSizing(textFields[i], new Dimension(80, 23));
-      textFields[i].setBorder(
-          BorderFactory.createMatteBorder(0, 0, 2, 2, new java.awt.Color(0, 0, 0, 255)));
+      textFields[i].setBorder(BorderFactory.createMatteBorder(0, 0, 2, 2, new Color(0, 0, 0, 255)));
       textFieldPanels[i].add(textFields[i]);
     }
 
-    // Build out our choice selectors (comboboxes)
-    String[] choiceLabels = {"Theme Selector: ", "Server Port: ", "Server Ip: "};
-    Choice[] choices = {themeChoice, initChoice, serverIpChoice};
-    // the strings representing our choices go here
-    String[][] choiceNames = {
-      Main.getThemeNames(), {"Coleslaw", "Uranium", "Custom"}, {"game.openrsc.com", "Custom"}
-    };
-
-    Panel[] choicePanels = new Panel[choiceLabels.length];
     for (int i = 0; i < choicePanels.length; i++) {
       choicePanels[i] = new Panel();
     }
@@ -175,18 +210,8 @@ final class AuthFrame extends JFrame {
       choicePanels[i].add(choices[i]);
     }
 
-    // Build out OCR options
-    String[] ocrLabels = {
-      "OCR Options:", // only show label
-      "OCR Type:",
-      "Sleep Server:",
-    };
-    Component[] ocrComponents = {
-      new JTextField(), ocrChoice, ocrServer = new JTextField(),
-    };
-    Panel[] ocrPanels = new Panel[ocrLabels.length];
     for (int i = 0; i < ocrPanels.length; i++) {
-      ocrPanels[i] = new Panel();
+      ocrPanels[i] = new JPanel();
     }
 
     for (final OCRType ocrType : OCRType.VALUES) {
@@ -197,8 +222,7 @@ final class AuthFrame extends JFrame {
           ocrServer.setEditable(getOCRType() == OCRType.REMOTE);
         });
     ocrServer.setEditable(false);
-    ocrServer.setBorder(
-        BorderFactory.createMatteBorder(0, 0, 2, 2, new java.awt.Color(0, 0, 0, 255)));
+    ocrServer.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 2, new Color(0, 0, 0, 255)));
 
     for (int i = 0; i < ocrComponents.length; i++) {
       ocrPanels[i].setLayout(new BoxLayout(ocrPanels[i], BoxLayout.X_AXIS));
@@ -213,24 +237,6 @@ final class AuthFrame extends JFrame {
       ocrPanels[i].add(ocrComponents[i]);
     }
 
-    // Build out all of our checkbox options
-    Component[] checkBoxes = {
-      autoLogin = new Checkbox(" Auto-login", false),
-      sideBar = new Checkbox(" Show Side Bar", true),
-      logWindow = new Checkbox(" Open Log Window", false),
-      debug = new Checkbox(" Open Debugger", false),
-      botPaint = new Checkbox(" Show Bot Paint", true),
-      disableGraphics = new Checkbox(" Disable Graphics", false),
-      newUi = new Checkbox(" Custom Game UI", false),
-      newIcons = new Checkbox(" New Skillbar Icons", false),
-      keepOpen = new Checkbox(" Keep Inv Open", false),
-      interlace = new Checkbox(" Interlace Mode", false),
-      screenRefresh = new Checkbox(" 60s Screen Refresh", true),
-      helpMenu = new Checkbox(" Show Help Menu", false),
-      showVersion = new Checkbox(" Show Version", false)
-    };
-
-    Panel[] checkBoxPanels = new Panel[checkBoxes.length];
     for (int i = 0; i < checkBoxPanels.length; i++) {
       checkBoxPanels[i] = new Panel();
     }
@@ -250,18 +256,15 @@ final class AuthFrame extends JFrame {
       optionsPanel.add(subPanel);
     }
     optionsPanel2.add(new JLabel(Utils.getImage("res/logos/idlersc.icon.png"), JLabel.LEFT));
-    for (Panel subPanel : ocrPanels) {
+    for (JPanel subPanel : ocrPanels) {
       optionsPanel2.add(subPanel);
     }
     for (Panel subPanel : checkBoxPanels) {
       optionsPanel2.add(subPanel);
     }
 
-    // Build out the 2 main panels
-    final JPanel inputPanel = new JPanel();
-    final JPanel buttonPanel = new JPanel();
     okButton = new Button("Save");
-    final Button cancelButton = new Button("Cancel");
+    cancelButton = new Button("Cancel");
     buttonPanel.add(okButton);
     buttonPanel.add(cancelButton);
 
@@ -278,22 +281,11 @@ final class AuthFrame extends JFrame {
     inputPanel.add(gapPanel);
     inputPanel.add(optionsPanel2);
 
-    // colorize our elements
-    optionsPanel.setBackground(backgroundColor);
-    optionsPanel.setForeground(textColor);
-    optionsPanel2.setBackground(backgroundColor);
-    optionsPanel2.setForeground(textColor);
-    inputPanel.setBackground(backgroundColor);
-    buttonPanel.setBackground(backgroundColor.darker());
-    buttonPanel.setForeground(textColor);
-    okButton.setForeground(Color.BLACK);
-    cancelButton.setForeground(Color.BLACK);
-
     // Add the 3 main panels to the frame
     if (labelPanel != null) {
       add(labelPanel, BorderLayout.NORTH);
     }
-    inputPanel.setBorder(BorderFactory.createMatteBorder(4, 4, 0, 4, backgroundColor.darker()));
+    inputPanel.setBorder(BorderFactory.createMatteBorder(4, 4, 0, 4, theme.getPrimaryBackground()));
     add(inputPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
 
@@ -302,6 +294,14 @@ final class AuthFrame extends JFrame {
         e -> {
           setDefaultValues();
           dispose();
+        });
+
+    themeChoice.addItemListener(
+        e -> {
+          if (e.getStateChange() == ItemEvent.SELECTED) {
+            theme = Theme.getFromName(themeChoice.getSelectedItem());
+            colorizeComponents();
+          }
         });
 
     pack();
@@ -456,7 +456,8 @@ final class AuthFrame extends JFrame {
           interlace.setState(Boolean.parseBoolean(p.getProperty("interlace", "false")));
           helpMenu.setState(Boolean.parseBoolean(p.getProperty("help", "false")));
           showVersion.setState(Boolean.parseBoolean(p.getProperty("version", "false")));
-          themeChoice.select(p.getProperty("theme", "RuneDark Theme"));
+          themeChoice.select(p.getProperty("theme", Theme.RUNEDARK.getName()));
+          theme = Theme.getFromName(p.getProperty("theme", Theme.RUNEDARK.getName()));
           newIcons.setState(Boolean.parseBoolean(p.getProperty("new-icons", "false")));
           newUi.setState(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
           keepOpen.setState(Boolean.parseBoolean(p.getProperty("keep-open", "false")));
@@ -465,6 +466,8 @@ final class AuthFrame extends JFrame {
         } catch (final Throwable t) {
           System.out.println("Error loading account " + account + ": " + t);
         }
+        colorizeComponents();
+
       } else {
         setDefaultValues();
       }
@@ -473,6 +476,83 @@ final class AuthFrame extends JFrame {
       requestFocus();
     }
     super.setVisible(visible);
+  }
+
+  private void colorizeComponents() {
+    // This is kind of slow at recoloring. Not really a big deal, but doesn't look great.
+
+    for (Component component : inputPanel.getComponents())
+      component.setBackground(theme.getPrimaryBackground());
+    optionsPanel.setBackground(theme.getPrimaryBackground());
+    optionsPanel.setForeground(theme.getPrimaryForeground());
+    optionsPanel2.setBackground(theme.getPrimaryBackground());
+    optionsPanel2.setForeground(theme.getPrimaryForeground());
+    inputPanel.setBackground(theme.getPrimaryBackground());
+    buttonPanel.setBackground(theme.getPrimaryBackground().brighter());
+    buttonPanel.setForeground(theme.getPrimaryForeground().brighter());
+
+    okButton.setBackground(theme.getSecondaryBackground());
+    cancelButton.setBackground(theme.getSecondaryBackground());
+    okButton.setForeground(theme.getSecondaryForeground());
+    cancelButton.setForeground(theme.getSecondaryForeground());
+    for (Panel choicePanel : choicePanels) {
+      choicePanel.setForeground(theme.getPrimaryForeground());
+      choicePanel.setBackground(theme.getPrimaryBackground());
+      for (Component component : choicePanel.getComponents()) {
+        if (component instanceof Choice) {
+          component.setBackground(theme.getSecondaryBackground());
+          component.setForeground(theme.getSecondaryForeground());
+        }
+        if (component instanceof Label) {
+          component.setBackground(theme.getPrimaryBackground());
+          component.setForeground(theme.getPrimaryForeground());
+        }
+        if (component instanceof JTextField) {
+          component.setForeground(theme.getSecondaryForeground());
+          component.setBackground(theme.getSecondaryBackground());
+        }
+      }
+
+      for (Panel textFieldPanel : textFieldPanels) {
+        textFieldPanel.setForeground(theme.getPrimaryForeground());
+        textFieldPanel.setBackground(theme.getPrimaryBackground());
+
+        for (Component component : textFieldPanel.getComponents()) {
+          if (component instanceof Label) {
+            component.setBackground(theme.getPrimaryBackground());
+            component.setForeground(theme.getPrimaryForeground());
+          }
+          if (component instanceof JTextField) {
+            component.setForeground(theme.getSecondaryForeground());
+            component.setBackground(theme.getSecondaryBackground());
+          }
+        }
+      }
+
+      for (JPanel panel : ocrPanels) {
+        panel.setBackground(theme.getPrimaryBackground());
+        panel.setForeground(theme.getPrimaryForeground());
+        for (Component component : panel.getComponents()) {
+          if (component instanceof Choice) {
+            component.setBackground(theme.getSecondaryBackground());
+            component.setForeground(theme.getSecondaryForeground());
+          }
+          if (component instanceof Label) {
+            component.setBackground(theme.getPrimaryBackground());
+            component.setForeground(theme.getPrimaryForeground());
+          }
+          if (component instanceof JTextField) {
+            component.setForeground(theme.getSecondaryForeground());
+            component.setBackground(theme.getSecondaryBackground());
+          }
+        }
+      }
+    }
+
+    for (Component checkBox : checkBoxes) {
+      checkBox.setBackground(theme.getPrimaryBackground());
+      checkBox.setForeground(theme.getPrimaryForeground());
+    }
   }
 
   public void setLoadSettings(boolean set) {
@@ -488,6 +568,7 @@ final class AuthFrame extends JFrame {
   }
 
   synchronized String getThemeName() {
+    theme = Theme.getFromName(themeChoice.getSelectedItem());
     return themeChoice.getSelectedItem();
   }
 

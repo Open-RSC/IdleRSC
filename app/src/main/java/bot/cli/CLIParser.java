@@ -25,7 +25,7 @@ public class CLIParser {
       if (cmd.hasOption("account")) {
         Main.setUsername(cmd.getOptionValue("account").toLowerCase());
         parseAccountProperties(parseResult, Main.getUsername());
-        Main.setThemeName(parseResult.getThemeName());
+        Main.setTheme(parseResult.getThemeName());
       } else {
         parseCommandArgumentOptions(parseResult, cmd);
       }
@@ -35,7 +35,7 @@ public class CLIParser {
         bot.Main.setUsername(cmd.getOptionValue("account"));
       }
       parseAccountProperties(parseResult, Main.getUsername());
-      Main.setThemeName(parseResult.getThemeName());
+      Main.setTheme(parseResult.getThemeName());
     }
     return parseResult;
   }
@@ -178,7 +178,7 @@ public class CLIParser {
   }
 
   public void printHelp() {
-    String footer = "\nPlease report bugs to https://gitlab.com/open-runescape-classic/idlersc!\n";
+    String footer = "\nPlease report bugs to https://gitlab.com/openrsc/idlersc\n";
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("IdleRSC", null, options, footer);
   }
@@ -224,7 +224,7 @@ public class CLIParser {
         Option.builder()
             .longOpt("theme")
             .hasArg()
-            .argName("RuneDark Theme")
+            .argName("RuneDark")
             .desc("Set client theme.")
             .build();
     Option initCache =

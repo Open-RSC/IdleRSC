@@ -36,9 +36,6 @@ public class ScriptSelectorUI {
               ? config.getUsername() + "'s Script Selector"
               : "Script Selector";
 
-  private static final Color backgroundColor = Main.getThemeBackColor();
-  private static final Color foregroundColor = Main.getThemeTextColor();
-
   private static Map<String, List<SelectorScript>> scripts = new HashMap<>();
 
   private static String selectedScriptName;
@@ -173,57 +170,57 @@ public class ScriptSelectorUI {
 
   /** Manages the JFrame's, and its child components' theming */
   private static void setTheming() {
-    frame.getContentPane().setBackground(backgroundColor);
-    frame.getContentPane().setForeground(foregroundColor);
+    frame.getContentPane().setBackground(Main.primaryBG);
+    frame.getContentPane().setForeground(Main.primaryFG);
     frame.setResizable(false);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setPreferredSize(new Dimension(600, 400));
 
-    panel.setBackground(backgroundColor);
-    panel.setForeground(foregroundColor);
+    panel.setBackground(Main.primaryBG);
+    panel.setForeground(Main.primaryFG);
 
     startBtn.setEnabled(false);
-    startBtn.setBackground(backgroundColor.darker());
-    startBtn.setForeground(foregroundColor);
+    startBtn.setBackground(Main.secondaryBG);
+    startBtn.setForeground(Main.secondaryFG);
 
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     table.setBorder(BorderFactory.createEmptyBorder());
-    table.setBackground(backgroundColor.brighter());
-    table.setForeground(foregroundColor);
+    table.setBackground(Main.primaryBG.brighter());
+    table.setForeground(Main.primaryFG);
 
-    scriptScrollPane.setBackground(backgroundColor);
-    scriptScrollPane.setForeground(foregroundColor);
-    scriptScrollPane.getViewport().setBackground(backgroundColor.brighter());
+    scriptScrollPane.setBackground(Main.primaryBG);
+    scriptScrollPane.setForeground(Main.primaryFG);
+    scriptScrollPane.getViewport().setBackground(Main.primaryBG.brighter());
     scriptScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-    descriptionScrollPane.setBackground(backgroundColor.brighter());
-    descriptionScrollPane.setForeground(foregroundColor);
+    descriptionScrollPane.setBackground(Main.primaryBG.brighter());
+    descriptionScrollPane.setForeground(Main.primaryFG);
     descriptionScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-    descriptionTextPane.setForeground(foregroundColor.darker());
-    descriptionTextPane.setBackground(backgroundColor.brighter());
+    descriptionTextPane.setForeground(Main.primaryFG.darker());
+    descriptionTextPane.setBackground(Main.primaryBG.brighter());
     descriptionTextPane.setBorder(BorderFactory.createEmptyBorder());
     descriptionTextPane.setEditable(false);
 
-    scriptArgs.setForeground(foregroundColor.darker());
-    scriptArgs.setBackground(backgroundColor.brighter());
-    scriptArgs.setCaretColor(foregroundColor);
+    scriptArgs.setForeground(Main.primaryFG.darker());
+    scriptArgs.setBackground(Main.primaryBG.brighter());
+    scriptArgs.setCaretColor(Main.primaryFG);
     scriptArgs.setBorder(BorderFactory.createEmptyBorder());
 
-    scriptFilter.setForeground(foregroundColor.darker());
-    scriptFilter.setBackground(backgroundColor.brighter());
-    scriptFilter.setCaretColor(foregroundColor);
+    scriptFilter.setForeground(Main.primaryFG.darker());
+    scriptFilter.setBackground(Main.primaryBG.brighter());
+    scriptFilter.setCaretColor(Main.primaryFG);
     scriptFilter.setBorder(BorderFactory.createEmptyBorder());
 
-    categoryComboBox.setForeground(foregroundColor);
-    categoryComboBox.setBackground(backgroundColor.brighter().brighter());
+    categoryComboBox.setForeground(Main.primaryFG);
+    categoryComboBox.setBackground(Main.primaryBG.brighter().brighter());
     categoryComboBox.setBorder(BorderFactory.createEmptyBorder());
 
     header.setReorderingAllowed(false);
     header.setResizingAllowed(false);
     header.setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD, 15f));
-    header.setBackground(backgroundColor);
-    header.setForeground(foregroundColor);
+    header.setBackground(Main.primaryBG);
+    header.setForeground(Main.primaryFG);
     header.setBorder(
         BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("controlDkShadow")));
     header.setDefaultRenderer(
@@ -245,7 +242,7 @@ public class ScriptSelectorUI {
                 BorderFactory.createMatteBorder(0, 0, 0, 0, UIManager.getColor("controlDkShadow")));
             label.setFont(header.getFont().deriveFont(Font.BOLD, 15f));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setBackground(backgroundColor);
+            label.setBackground(Main.primaryBG);
             return label;
           }
         });
@@ -400,7 +397,7 @@ public class ScriptSelectorUI {
       public void focusGained(FocusEvent e) {
         if (textField.getText().equals(placeholderText)) {
           textField.setText("");
-          textField.setForeground(foregroundColor);
+          textField.setForeground(Main.primaryFG);
         }
       }
 
@@ -410,8 +407,8 @@ public class ScriptSelectorUI {
           textField.setText(placeholderText);
           textField.setForeground(
               textField.getText().equals(placeholderText)
-                  ? foregroundColor.darker()
-                  : foregroundColor);
+                  ? Main.primaryFG.darker()
+                  : Main.primaryFG);
         }
       }
     };

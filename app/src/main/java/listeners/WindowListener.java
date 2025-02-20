@@ -19,7 +19,7 @@ public class WindowListener implements Runnable {
   final JComponent botFrame;
   final JPanel consoleFrame;
   final JMenuBar menuBar;
-  final JMenu themeMenu, menu;
+  final JMenu themeMenu, settingsMenu;
   final JButton buttonClear;
   final JCheckBox autoscrollLogsCheckbox;
   final JScrollPane scroller;
@@ -32,7 +32,7 @@ public class WindowListener implements Runnable {
       JComponent _botFrame,
       JPanel _consoleFrame,
       JFrame _rscFrame,
-      JMenu _menu,
+      JMenu _settingsMenu,
       JMenu _themeMenu,
       JMenuBar _menuBar,
       JScrollPane _scroller,
@@ -46,7 +46,7 @@ public class WindowListener implements Runnable {
     botFrame = _botFrame;
     consoleFrame = _consoleFrame;
     rscFrame = _rscFrame;
-    menu = _menu;
+    settingsMenu = _settingsMenu;
     themeMenu = _themeMenu;
     menuBar = _menuBar;
     scroller = _scroller;
@@ -60,7 +60,7 @@ public class WindowListener implements Runnable {
 
   @Override
   public void run() {
-    String themeName = Main.getThemeName();
+    Color[] colors = null;
     int prevWidth = rscFrame.getWidth();
     int prevHeight = rscFrame.getHeight();
     boolean consolePrevious = Main.isLogWindowOpen();
@@ -122,18 +122,23 @@ public class WindowListener implements Runnable {
         }
 
         // update our theme when themeName string is changed in Main
-        if (!themeName.equals(Main.getThemeName())) {
-          controller.log("IdleRSC: Switching Theme to " + Main.getThemeName(), "gre");
-          Color[] colors = Main.getThemeElements(Main.getThemeName()); // back, front
+
+        if (colors == null
+            || colors[0] != Main.primaryBG
+            || colors[1] != Main.primaryFG
+            || colors[2] != Main.secondaryBG
+            || colors[3] != Main.secondaryFG) {
+          colors = new Color[] {Main.primaryBG, Main.primaryFG, Main.secondaryBG, Main.secondaryFG};
           botFrame.setBackground(colors[0]);
           rscFrame.getContentPane().setBackground(colors[0]);
           botFrame.setBorder(BorderFactory.createLineBorder(colors[0]));
           themeMenu.setForeground(colors[1]);
-          menu.setForeground(colors[1]); // text color
+          themeMenu.getPopupMenu().setBackground(colors[0]);
+          settingsMenu.setForeground(colors[1]); // text color
           menuBar.setBackground(colors[0]);
           menuBar.setBorder(BorderFactory.createLineBorder(colors[0]));
-          buttonClear.setBackground(colors[0].darker());
-          buttonClear.setForeground(colors[1]);
+          buttonClear.setBackground(colors[2]);
+          buttonClear.setForeground(colors[3]);
           autoscrollLogsCheckbox.setBackground(colors[0]);
           autoscrollLogsCheckbox.setForeground(colors[1]);
           logArea.setBackground(colors[0].brighter());
@@ -143,15 +148,19 @@ public class WindowListener implements Runnable {
           consoleFrame.setBackground(colors[0]);
           consoleFrame.setForeground(colors[1]);
 
+          for (Component menuComponent : settingsMenu.getMenuComponents()) {
+            menuComponent.setBackground(colors[0]);
+            menuComponent.setForeground(colors[1]);
+          }
+
           for (JButton jButton : buttonArray) {
-            jButton.setBackground(colors[0].darker());
-            jButton.setForeground(colors[1]);
+            jButton.setBackground(colors[2]);
+            jButton.setForeground(colors[3]);
           }
           for (JCheckBox jCheckbox : checkBoxArray) {
             jCheckbox.setBackground(colors[0]);
             jCheckbox.setForeground(colors[1]);
           }
-          themeName = Main.getThemeName();
         }
 
         Thread.sleep(60);

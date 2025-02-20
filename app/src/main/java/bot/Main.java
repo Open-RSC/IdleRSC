@@ -9,8 +9,11 @@ import bot.cli.ParseResult;
 import bot.debugger.Debugger;
 import bot.scriptselector.ScriptSelectorUI;
 import bot.scriptselector.models.PackageInfo;
+import bot.ui.Theme;
+import bot.ui.ThemesMenu;
 import callbacks.DrawCallback;
 import callbacks.SleepCallback;
+import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -56,17 +59,31 @@ public class Main {
   private static final Map<String, List<Class<?>>> scripts =
       Stream.of(
               new SimpleEntry<>("Native", reflections.getSubTypesOf(IdleScript.class)),
-              new SimpleEntry<>("APOS", reflections.getSubTypesOf(compatibility.apos.Script.class)),
+              new SimpleEntry<>("APOS", reflections.getSubTypesOf(Script.class)),
               new SimpleEntry<>("SBot", reflections.getSubTypesOf(compatibility.sbot.Script.class)))
           .collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
 
-  private static Color themeTextColor = new java.awt.Color(219, 219, 219, 255);
-  private static Color themeBackColor = new java.awt.Color(40, 40, 40, 255);
+  private static Theme theme = Theme.RUNEDARK;
+  // Use the colors below when coloring windows since theme doesn't work with 'custom'
+  public static Color primaryBG = theme.getPrimaryBackground();
+  public static Color primaryFG = theme.getPrimaryForeground();
+  public static Color secondaryBG = theme.getSecondaryBackground();
+  public static Color secondaryFG = theme.getSecondaryForeground();
+
+  // ! Update this array from the instantiated Parser later when support is added to
+  // ! the Parser and AuthFrame
+  // * Indexes:
+  // *   0 - Primary BG Color
+  // *   1 - Primary FG Color
+  // *   2 - Secondary BG Color
+  // *   3 - Secondary FG Color
+  public static Color[] customColors = new Color[] {Color.RED, Color.BLUE, Color.RED, Color.BLUE};
+
   private static boolean isRunning = false;
   private static String username = "";
-  private static String themeName = "RuneDark Theme";
   private static JMenuBar menuBar;
-  private static JMenu themeMenu, settingsMenu;
+  private static JMenu settingsMenu;
+  private static ThemesMenu themeMenu;
   private static JFrame scriptFrame;
   public static JFrame rscFrame; // main window frame
   public static JButton scriptButton;
@@ -80,9 +97,10 @@ public class Main {
       interlaceCheckbox,
       autoscrollLogsCheckbox,
       sidebarCheckbox,
-      customUiMode,
-      keepInvOpen,
       gfxCheckbox; // all the checkboxes on the sidepanel.
+
+  private static JCheckBoxMenuItem keepInvOpen;
+  private static JCheckBoxMenuItem customUiMode;
   private static JButton pathwalkerButton,
       takeScreenshotButton,
       showIdButton,
@@ -109,106 +127,21 @@ public class Main {
   private static Controller controller = null;
   private static boolean aposInitCalled = false;
 
-  // themeNames and colorCodes MUST have the same index values
-  // todo hash map
-  private static final String[] themeNames = {
-    "RuneDark Theme",
-    "2007scape Theme",
-    "Classic Theme",
-    "Purple Theme",
-    "Magenta Theme",
-    "Red Theme",
-    "Aquamarine Theme",
-    "Blue Theme",
-    "Green Theme",
-    "Brown Theme",
-    "Orange Theme",
-    "Gold Theme"
-  };
-  private static final Color[][] colorCodes = { // {background, text color, log color}
-    {
-      new java.awt.Color(40, 40, 40, 255), // Runelite Dark Mode
-      new java.awt.Color(219, 219, 219, 255)
-    },
-    {
-      new java.awt.Color(194, 177, 144, 255), // 2007scape Theme
-      new java.awt.Color(10, 10, 8, 255)
-    },
-    {
-      new java.awt.Color(91, 100, 128, 255), // Classic Theme
-      new java.awt.Color(0, 0, 0, 255)
-    },
-    {
-      new java.awt.Color(41, 21, 72, 255), // Purple Theme
-      new java.awt.Color(209, 186, 255, 255)
-    },
-    {
-      new java.awt.Color(141, 22, 129, 255), // Magenta Theme
-      new java.awt.Color(255, 217, 255, 255)
-    },
-    {
-      new java.awt.Color(110, 0, 16, 255), // Red Theme
-      new java.awt.Color(255, 183, 195, 255)
-    },
-    {
-      new java.awt.Color(11, 143, 137, 255), // Aquamarine Theme
-      new java.awt.Color(210, 255, 255, 255)
-    },
-    {
-      new java.awt.Color(22, 65, 182, 255), // Blue Theme
-      new java.awt.Color(191, 208, 255, 255)
-    },
-    {
-      new java.awt.Color(9, 94, 0, 255), // Green Theme
-      new java.awt.Color(195, 255, 187, 255)
-    },
-    {
-      new java.awt.Color(73, 48, 48, 255), // Brown Theme
-      new java.awt.Color(234, 202, 202, 255)
-    },
-    {
-      new java.awt.Color(159, 58, 0, 255), // Orange Theme
-      new java.awt.Color(255, 202, 188, 255)
-    },
-    {
-      new java.awt.Color(141, 113, 22, 255), // Gold Theme
-      new java.awt.Color(255, 254, 200, 255)
-    }
-  };
-
-  public static Color getThemeTextColor() {
-    return themeTextColor;
-  }
-
-  public static void setThemeTextColor(Color textColor) {
-    themeTextColor = textColor;
-  }
-
-  public static Color getThemeBackColor() {
-    return themeBackColor;
-  }
-
-  public static void setThemeBackColor(Color backColor) {
-    themeBackColor = backColor;
-  }
-
-  public static Color getColorCode(int x, int y) {
-    return colorCodes[x][y];
-  }
-
   /**
    * Set the Color elements for the Theme name entered Changes themeColorBack and themeTextColor
    *
    * @param theme String -- name of the "Theme"
    */
   public static void setThemeElements(String theme) {
-    for (int i = 0; i < themeNames.length; i++) {
-      if (themeNames[i].equalsIgnoreCase(theme)) {
-        themeBackColor = colorCodes[i][0];
-        themeTextColor = colorCodes[i][1];
-        return;
-      }
-    }
+    if (controller != null) controller.log("IdleRSC: Switching theme to " + theme, "gre");
+
+    boolean isThemeCustom = theme.equalsIgnoreCase("custom");
+    primaryBG = isThemeCustom ? customColors[0] : Theme.getFromName(theme).getPrimaryBackground();
+    primaryFG = isThemeCustom ? customColors[1] : Theme.getFromName(theme).getPrimaryForeground();
+    secondaryBG =
+        isThemeCustom ? customColors[2] : Theme.getFromName(theme).getSecondaryBackground();
+    secondaryFG =
+        isThemeCustom ? customColors[3] : Theme.getFromName(theme).getSecondaryForeground();
   }
 
   /**
@@ -231,21 +164,6 @@ public class Main {
             Math.min(
                 (int) screenSize.getHeight() - 405,
                 topLeft.y + (rscFrame.getHeight() / 2) - (scriptFrame.getHeight() / 2))));
-  }
-
-  /**
-   * Get the Color[] for the Theme name entered
-   *
-   * @param theme String -- name of the "Theme"
-   * @return Color[] -- with values [back, front]
-   */
-  public static Color[] getThemeElements(String theme) {
-    for (int i = 0; i < themeNames.length; i++) {
-      if (themeNames[i].equalsIgnoreCase(theme)) {
-        return colorCodes[i];
-      }
-    }
-    return new Color[] {Color.BLACK, Color.WHITE};
   }
 
   public static Object getCurrentRunningScript() {
@@ -282,11 +200,9 @@ public class Main {
       parseResult = parseArgs(parseResult, parser, args);
     }
 
-    setThemeElements(themeName);
+    setThemeElements(theme.getName());
 
-    if (parseResult.isHelp()) {
-      parser.printHelp();
-    }
+    if (parseResult.isHelp()) parser.printHelp();
 
     if (parseResult.isVersion()) {
       System.out.println(
@@ -318,7 +234,7 @@ public class Main {
 
     // just building out the windows
     JPanel botFrame = new JPanel();
-    themeMenu = new JMenu();
+
     JPanel consoleFrame = new JPanel(); // log window
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
 
@@ -360,21 +276,21 @@ public class Main {
     Dimension buttonSize = new Dimension(125, 25);
     // todo swap side bar by swapping container contents
     for (JCheckBox jCheckbox : checkBoxArray) {
-      jCheckbox.setBackground(themeBackColor);
-      jCheckbox.setForeground(themeTextColor);
+      jCheckbox.setBackground(primaryBG);
+      jCheckbox.setForeground(primaryFG);
       jCheckbox.setFocusable(false);
     }
     for (JButton jButton : buttonArray) {
-      jButton.setBackground(themeBackColor.darker());
-      jButton.setForeground(themeTextColor);
+      jButton.setBackground(primaryBG);
+      jButton.setForeground(primaryFG);
       jButton.setFocusable(false);
       jButton.setMaximumSize(buttonSize);
       jButton.setPreferredSize(buttonSize);
     }
 
-    botFrame.setBackground(themeBackColor);
-    rscFrame.getContentPane().setBackground(themeBackColor);
-    botFrame.setBorder(BorderFactory.createLineBorder(themeBackColor));
+    botFrame.setBackground(primaryBG);
+    rscFrame.getContentPane().setBackground(primaryBG);
+    botFrame.setBorder(BorderFactory.createLineBorder(primaryBG));
 
     // combine everything into our client
     rscFrame.add(botFrame, BorderLayout.EAST);
@@ -642,27 +558,11 @@ public class Main {
   }
 
   private static void initializeMenuBar() {
-    int[] keyEvents = {
-      KeyEvent.VK_1,
-      KeyEvent.VK_2,
-      KeyEvent.VK_3,
-      KeyEvent.VK_4,
-      KeyEvent.VK_5,
-      KeyEvent.VK_6,
-      KeyEvent.VK_7,
-      KeyEvent.VK_8,
-      KeyEvent.VK_9,
-      KeyEvent.VK_0,
-      KeyEvent.VK_F1,
-      KeyEvent.VK_F2,
-      KeyEvent.VK_F3,
-      KeyEvent.VK_F5,
-    };
 
     // Make the menu bar
     menuBar = new JMenuBar();
     settingsMenu = new JMenu("Settings");
-    themeMenu = new JMenu("Theme Menu");
+    themeMenu = new ThemesMenu("Themes");
     gfxCheckbox = new JCheckBox("GFX");
     logWindowCheckbox = new JCheckBox("Console");
     sidebarCheckbox = new JCheckBox("Sidebar");
@@ -676,12 +576,18 @@ public class Main {
     menuBar.add(sidebarCheckbox);
 
     // style our elements
-    settingsMenu.setBackground(themeBackColor);
-    settingsMenu.setBorder(BorderFactory.createLineBorder(themeBackColor));
-    settingsMenu.setForeground(themeTextColor);
-    themeMenu.setForeground(themeTextColor);
-    menuBar.setBackground(themeBackColor);
-    menuBar.setBorder(BorderFactory.createLineBorder(themeBackColor));
+    settingsMenu.setBorder(BorderFactory.createEmptyBorder());
+    settingsMenu.setBackground(primaryBG);
+    settingsMenu.setForeground(primaryFG);
+    settingsMenu.getPopupMenu().setBorder(BorderFactory.createEmptyBorder());
+    themeMenu.setForeground(primaryFG);
+    themeMenu.setBackground(primaryBG);
+    themeMenu.setBorder(BorderFactory.createEmptyBorder());
+    themeMenu.getPopupMenu().setBorder(BorderFactory.createEmptyBorder());
+    themeMenu.getPopupMenu().setBackground(primaryBG);
+    menuBar.setBackground(primaryBG);
+    menuBar.setForeground(primaryFG);
+    menuBar.setBorder(BorderFactory.createEmptyBorder());
 
     gfxCheckbox.addActionListener(
         e -> {
@@ -697,30 +603,23 @@ public class Main {
           }
         });
 
-    // Build Theme Menu
-    JMenuItem menuItem;
-    for (int i = 0; i < themeNames.length; i++) {
-      menuItem = new JMenuItem(themeNames[i], keyEvents[i]);
-      menuItem.setAccelerator(KeyStroke.getKeyStroke((char) keyEvents[i]));
-      int finalI = i;
-      menuItem.addActionListener(
-          e -> {
-            themeName = themeNames[finalI];
-          });
-      themeMenu.add(menuItem);
-    }
-    JMenuItem _accOpp;
     // Define settings menu drop down
+    JMenuItem _accOpp;
     Component[] _settingsMenu = {
       _accOpp = new JMenuItem("Account Startup Settings", KeyEvent.VK_F4), // S key
-      customUiMode = new JCheckBox("Custom In-game UI"),
-      keepInvOpen = new JCheckBox("Keep Inventory Open"),
+      customUiMode = new JCheckBoxMenuItem("Custom In-game UI"),
+      keepInvOpen = new JCheckBoxMenuItem("Keep Inventory Open"),
     };
 
     // Add elements to settings menu
     for (Component _menuItem : _settingsMenu) {
+      _menuItem.setBackground(primaryBG);
+      _menuItem.setForeground(primaryFG);
       settingsMenu.add(_menuItem);
     }
+
+    // Should force settings popup menu to be on top of the game window... Hopefully.
+    settingsMenu.getPopupMenu().setLightWeightPopupEnabled(false);
 
     // prevent tab/etc "focusing" an element
     menuBar.setFocusable(false);
@@ -875,17 +774,17 @@ public class Main {
     logArea.setEditable(false);
     scroller = new JScrollPane(logArea);
 
-    buttonClear.setBackground(themeBackColor.darker());
-    buttonClear.setForeground(themeTextColor);
-    autoscrollLogsCheckbox.setBackground(themeBackColor);
-    autoscrollLogsCheckbox.setForeground(themeTextColor);
-    logArea.setBackground(themeBackColor.brighter());
-    logArea.setForeground(themeTextColor);
-    scroller.setBackground(themeBackColor);
-    scroller.setForeground(themeTextColor);
+    buttonClear.setBackground(secondaryBG);
+    buttonClear.setForeground(secondaryFG);
+    autoscrollLogsCheckbox.setBackground(primaryBG);
+    autoscrollLogsCheckbox.setForeground(primaryFG);
+    logArea.setBackground(primaryBG.brighter());
+    logArea.setForeground(primaryFG);
+    scroller.setBackground(primaryBG);
+    scroller.setForeground(primaryFG);
 
-    consoleFrame.setBackground(themeBackColor);
-    consoleFrame.setForeground(themeTextColor);
+    consoleFrame.setBackground(primaryBG);
+    consoleFrame.setForeground(primaryFG);
 
     consoleFrame.setLayout(new GridBagLayout());
 
@@ -1179,10 +1078,6 @@ public class Main {
     return controller;
   }
 
-  public static String[] getThemeNames() {
-    return themeNames;
-  }
-
   public static void setUsername(String name) {
     username = name;
   }
@@ -1191,12 +1086,9 @@ public class Main {
     return username;
   }
 
-  public static void setThemeName(String name) {
-    themeName = name;
-  }
-
-  public static String getThemeName() {
-    return themeName;
+  public static void setTheme(String name) {
+    theme = Theme.getFromName(name);
+    setThemeElements(theme.getName());
   }
 
   /**

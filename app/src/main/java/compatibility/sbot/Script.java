@@ -14,7 +14,6 @@ import orsc.ORSCharacter;
  */
 public abstract class Script {
   Controller controller = null;
-  private Thread scriptThread;
 
   /**
    * Used internally by the bot to set {@link controller.Controller}, as that is what adapts SBot to

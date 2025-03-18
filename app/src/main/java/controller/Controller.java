@@ -5226,8 +5226,13 @@ public class Controller {
     return mud.getIsSleeping();
   }
 
+  /**
+   * Returns whether or not the player should sleep. Extra check with `getFatigue()` because callbacks.MessageCallback does not reliably set this from game messages.
+   *
+   * @return boolean
+   */
   public boolean getShouldSleep() {
-    return shouldSleep;
+    return shouldSleep || (isAuthentic() && getFatigue() >= 99);
   }
 
   public void setShouldSleep(boolean shouldSleep) {

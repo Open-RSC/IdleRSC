@@ -1,9 +1,11 @@
-package bot.debugger;
+package bot.ui.debugger;
 
 import static bot.Main.config;
-import static bot.debugger.DebuggerSectionType.Bank;
+import static bot.ui.debugger.DebuggerSectionType.Bank;
 
-import bot.ui.table.Table;
+import bot.Main;
+import bot.ui.UiContract;
+import bot.ui.components.table.Table;
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
 import com.openrsc.client.entityhandling.defs.GameObjectDef;
@@ -22,7 +24,7 @@ import orsc.OpenRSC;
 import orsc.mudclient;
 import reflector.Reflector;
 
-public class Debugger implements Runnable {
+public class Debugger implements Runnable, UiContract {
   private Reflector reflector = null;
   private OpenRSC client = null;
   private mudclient mud = null;
@@ -48,6 +50,7 @@ public class Debugger implements Runnable {
   // GUI
   private JFrame frame = null;
   private JScrollPane scrollPane = null;
+  private Table sectionTable = null;
 
   // Sections
   private DebuggerSection activeSection = null;
@@ -101,6 +104,7 @@ public class Debugger implements Runnable {
     this.frame.setVisible(true);
     this.frame.requestFocusInWindow();
     this.listen();
+    applyTheme();
   }
 
   public void close() {
@@ -111,6 +115,28 @@ public class Debugger implements Runnable {
     if (this.activeSection != null) {
       this.activeSection.table.removeAllRows();
     }
+  }
+
+  @Override
+  public void applyTheme() {
+    actionsPanel.setBackground(Main.primaryBG);
+    actionsPanel.setForeground(Main.primaryFG);
+    refreshCheckbox.setBackground(Main.primaryBG);
+    refreshCheckbox.setForeground(Main.primaryFG);
+    clearButton.setBackground(Main.secondaryBG);
+    clearButton.setForeground(Main.secondaryFG);
+    refreshButton.setBackground(Main.secondaryBG);
+    refreshButton.setForeground(Main.secondaryFG);
+    closeButton.setBackground(Main.secondaryBG);
+    closeButton.setForeground(Main.secondaryFG);
+    sectionDropdown.setBackground(Main.primaryBG);
+    sectionDropdown.setForeground(Main.primaryFG);
+    sectionTable.getParent().setForeground(Main.primaryFG);
+    sectionTable.getParent().setBackground(Main.primaryBG);
+    sectionTable.setForeground(Main.primaryFG);
+    sectionTable.setBackground(Main.primaryBG);
+    sectionTable.getTableHeader().setBackground(Main.secondaryBG);
+    sectionTable.getTableHeader().setForeground(Main.secondaryFG);
   }
 
   public void refresh() {
@@ -322,7 +348,8 @@ public class Debugger implements Runnable {
       return;
     }
     DebuggerSectionType sectionType = this.activeSection.sectionType;
-    Table sectionTable = this.activeSection.table;
+    sectionTable = this.activeSection.table;
+    applyTheme();
 
     JScrollBar scrollBar = this.scrollPane.getVerticalScrollBar();
 

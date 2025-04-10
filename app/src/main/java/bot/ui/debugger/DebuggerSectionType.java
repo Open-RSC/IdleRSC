@@ -1,4 +1,4 @@
-package bot.debugger;
+package bot.ui.debugger;
 
 public enum DebuggerSectionType {
   NPCs,

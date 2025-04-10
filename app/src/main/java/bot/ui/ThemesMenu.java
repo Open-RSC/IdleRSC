@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicMenuItemUI;
 
-public class ThemesMenu extends JMenu {
+public class ThemesMenu extends JMenu implements UiContract {
 
   // Array of KeyEvents that is used for Theme accelerators.
   int[] keyEvents = {
@@ -63,6 +63,18 @@ public class ThemesMenu extends JMenu {
       // Add the theme to the ThemesMenu
       add(menuItem);
     }
+
+    // Apply Theming
+    applyTheme();
+    setBorder(BorderFactory.createEmptyBorder());
+    getPopupMenu().setBorder(BorderFactory.createEmptyBorder());
+  }
+
+  /** Invoke this method to have this panel update the theme colors. */
+  public void applyTheme() {
+    setForeground(Main.primaryFG);
+    setBackground(Main.primaryBG);
+    getPopupMenu().setBackground(Main.primaryBG);
   }
 
   /**
@@ -74,10 +86,23 @@ public class ThemesMenu extends JMenu {
   private void addMenuItemActionListener(JMenuItem menuItem, Theme theme) {
     menuItem.addActionListener(
         e -> {
-          if (!Theme.colorsMatchTheme(
-              Main.primaryBG, Main.primaryFG, Main.secondaryBG, Main.secondaryFG, theme))
+          if (!Theme.themeIsCurrentlyApplied(theme)) {
             Main.setTheme(theme.getName());
+            applyThemeToClient();
+          }
         });
+  }
+
+  /** Call this method to have the client update the current theme */
+  public static void applyThemeToClient() {
+    // Main.getRscFrame().getContentPane().setBackground(Main.primaryBG);
+    // applyTheme cant be static because of java swing, but we can access it this way
+    Main.getBottomPanel().applyTheme();
+    Main.getSidePanel().applyTheme();
+    Main.getTopPanel().applyTheme();
+    TopPanel.getThemeMenu().applyTheme();
+    TopPanel.getSettingsMenu().applyTheme();
+    BottomPanel.getConsolePanel().applyTheme();
   }
 
   /**

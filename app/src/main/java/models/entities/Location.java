@@ -796,7 +796,8 @@ public enum Location {
   private static Location getClosest(Location[] locations) {
     if (locations == null || locations.length < 1) return null;
     // Makes the array objects distinct.
-    Location[] distinctLocations = Arrays.stream(locations).distinct().toArray(Location[]::new);
+    Location[] distinctLocations =
+        Arrays.stream(locations).distinct().filter(Location::isWalkable).toArray(Location[]::new);
     Map<Location, Integer> locationMap =
         Arrays.stream(distinctLocations).collect(Collectors.toMap(l -> l, Location::distanceTo));
     return Collections.min(locationMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue))

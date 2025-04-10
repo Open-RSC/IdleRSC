@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import java.util.Objects;
 import javax.swing.JButton;
@@ -248,7 +248,7 @@ public final class K_SkelliCoal extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

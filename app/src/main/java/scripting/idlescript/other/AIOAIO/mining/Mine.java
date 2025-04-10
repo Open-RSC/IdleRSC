@@ -12,7 +12,7 @@ public class Mine {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (!Mining_Utils.meetsReqs()) {
       Main.getController()

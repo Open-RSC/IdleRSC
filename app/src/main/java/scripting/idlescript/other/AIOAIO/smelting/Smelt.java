@@ -12,7 +12,7 @@ public class Smelt {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (!meetsReqs()) {
       c.log("Missing required level to smelt " + AIOAIO.state.currentTask.getName());

@@ -1,4 +1,4 @@
-package bot.ui.table;
+package bot.ui.components.table;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;

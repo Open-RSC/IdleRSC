@@ -12,7 +12,7 @@ public class LumbridgeFarmer {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (Main.getController().getCurrentStat(Main.getController().getStatId("Thieving")) < 10) {
       c.log("Skipping Lummy farmers until we're at least 15 thieving!");

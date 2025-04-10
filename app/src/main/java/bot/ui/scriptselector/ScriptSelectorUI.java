@@ -1,9 +1,9 @@
-package bot.scriptselector;
+package bot.ui.scriptselector;
 
 import static bot.Main.config;
 
 import bot.Main;
-import bot.scriptselector.models.*;
+import bot.ui.scriptselector.models.*;
 import controller.Controller;
 import java.awt.*;
 import java.awt.event.FocusEvent;
@@ -197,23 +197,23 @@ public class ScriptSelectorUI {
     descriptionScrollPane.setForeground(Main.primaryFG);
     descriptionScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-    descriptionTextPane.setForeground(Main.primaryFG.darker());
+    descriptionTextPane.setForeground(Main.primaryFG);
     descriptionTextPane.setBackground(Main.primaryBG.brighter());
     descriptionTextPane.setBorder(BorderFactory.createEmptyBorder());
     descriptionTextPane.setEditable(false);
 
-    scriptArgs.setForeground(Main.primaryFG.darker());
+    scriptArgs.setForeground(Main.primaryFG);
     scriptArgs.setBackground(Main.primaryBG.brighter());
     scriptArgs.setCaretColor(Main.primaryFG);
     scriptArgs.setBorder(BorderFactory.createEmptyBorder());
 
-    scriptFilter.setForeground(Main.primaryFG.darker());
+    scriptFilter.setForeground(Main.primaryFG);
     scriptFilter.setBackground(Main.primaryBG.brighter());
     scriptFilter.setCaretColor(Main.primaryFG);
     scriptFilter.setBorder(BorderFactory.createEmptyBorder());
 
     categoryComboBox.setForeground(Main.primaryFG);
-    categoryComboBox.setBackground(Main.primaryBG.brighter().brighter());
+    categoryComboBox.setBackground(Main.primaryBG.brighter());
     categoryComboBox.setBorder(BorderFactory.createEmptyBorder());
 
     header.setReorderingAllowed(false);
@@ -405,10 +405,7 @@ public class ScriptSelectorUI {
       public void focusLost(FocusEvent e) {
         if (textField.getText().isEmpty()) {
           textField.setText(placeholderText);
-          textField.setForeground(
-              textField.getText().equals(placeholderText)
-                  ? Main.primaryFG.darker()
-                  : Main.primaryFG);
+          textField.setForeground(Main.primaryFG);
         }
       }
     };

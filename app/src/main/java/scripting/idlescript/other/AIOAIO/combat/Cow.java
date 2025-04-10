@@ -26,7 +26,7 @@ public class Cow {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (AIOAIO.state.taskStartup) return Combat_Utils.getFightingGear();
     else if (c.getInventoryItemCount(ItemId.BONES.getId()) > 0) Combat_Utils.buryBones();

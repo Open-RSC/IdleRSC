@@ -3,8 +3,8 @@ package scripting.idlescript;
 import static bot.Main.log;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public class AIOCooker extends IdleScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     String[] splitParams = null;
     if (parameters != null && parameters[0].contains(" ")) {
       splitParams = parameters[0].split(" ");

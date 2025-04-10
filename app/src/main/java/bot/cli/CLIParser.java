@@ -2,6 +2,9 @@ package bot.cli;
 
 import bot.Main;
 import bot.ocrlib.OCRType;
+import bot.ui.Theme;
+import bot.ui.components.ColorPickerPanel;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +17,7 @@ import org.apache.commons.cli.*;
 
 public class CLIParser {
   private static final Options options = new Options();
+  private static Color[] colors;
 
   public ParseResult parse(String[] args) throws ParseException {
     ParseResult parseResult = new ParseResult();
@@ -23,9 +27,10 @@ public class CLIParser {
     if (cmd.hasOption("auto-start")) {
       parseResult.setAutoStart(true);
       if (cmd.hasOption("account")) {
-        Main.setUsername(cmd.getOptionValue("account").toLowerCase());
+        Main.setUsername(cmd.getOptionValue("account"));
         parseAccountProperties(parseResult, Main.getUsername());
-        Main.setTheme(parseResult.getThemeName());
+        if (!Theme.themeIsCurrentlyApplied(Theme.getFromName(parseResult.getThemeName())))
+          Main.setTheme(parseResult.getThemeName());
       } else {
         parseCommandArgumentOptions(parseResult, cmd);
       }
@@ -35,7 +40,9 @@ public class CLIParser {
         bot.Main.setUsername(cmd.getOptionValue("account"));
       }
       parseAccountProperties(parseResult, Main.getUsername());
-      Main.setTheme(parseResult.getThemeName());
+      Main.customColors = getCustomColors();
+      if (!Theme.themeIsCurrentlyApplied(Theme.getFromName(parseResult.getThemeName())))
+        Main.setTheme(parseResult.getThemeName());
     }
     return parseResult;
   }
@@ -44,7 +51,7 @@ public class CLIParser {
     parseResult.setUsername(cmd.getOptionValue("username", "").toLowerCase());
     parseResult.setPassword(cmd.getOptionValue("password", ""));
     parseResult.setScriptName(cmd.getOptionValue("script-name", ""));
-    parseResult.setThemeName(cmd.getOptionValue("theme", "Rune Dark Theme"));
+    parseResult.setThemeName(cmd.getOptionValue("theme", "RuneDark Theme"));
     if (cmd.getOptionValues("script-arguments") != null) {
       parseResult.setScriptArguments(cmd.getOptionValues("script-arguments"));
     } else {
@@ -55,7 +62,7 @@ public class CLIParser {
     parseResult.setOCRType(
         OCRType.fromName(cmd.getOptionValue("ocr-type", OCRType.INTERNAL.getName())));
     parseResult.setAutoLogin(cmd.hasOption("auto-login"));
-    parseResult.setSidebarVisible(!cmd.hasOption("hide-sidebar"));
+    parseResult.setSidePanelVisible(!cmd.hasOption("hide-sidebar"));
     parseResult.setLogWindowVisible(cmd.hasOption("log-window"));
     parseResult.setDebug(cmd.hasOption("debug"));
     parseResult.setBotPaintVisible(!cmd.hasOption("hide-bot-paint"));
@@ -103,11 +110,31 @@ public class CLIParser {
 
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
+      String pbgHex = "#" + p.getProperty("custom-primary-background");
+      String pfgHex = "#" + p.getProperty("custom-primary-foreground");
+      String sbgHex = "#" + p.getProperty("custom-secondary-background");
+      String sfgHex = "#" + p.getProperty("custom-secondary-foreground");
+      colors =
+          new Color[] {
+            ColorPickerPanel.validateHex(pbgHex)
+                ? Color.decode(pbgHex)
+                : Theme.RUNEDARK.getPrimaryBackground(),
+            ColorPickerPanel.validateHex(pfgHex)
+                ? Color.decode(pfgHex)
+                : Theme.RUNEDARK.getPrimaryForeground(),
+            ColorPickerPanel.validateHex(sbgHex)
+                ? Color.decode(sbgHex)
+                : Theme.RUNEDARK.getSecondaryBackground(),
+            ColorPickerPanel.validateHex(sfgHex)
+                ? Color.decode(sfgHex)
+                : Theme.RUNEDARK.getSecondaryForeground()
+          };
+
       // ALWAYS make properties lowercase
       parseResult.setUsername(accountName);
       parseResult.setPassword(p.getProperty("password", "password"));
       parseResult.setScriptName(p.getProperty("script-name", ""));
-      parseResult.setThemeName(p.getProperty("theme", "Rune Dark Theme"));
+      parseResult.setThemeName(p.getProperty("theme", "RuneDark Theme"));
 
       parseResult.setScriptArguments(
           p.getProperty("script-arguments", "").replace(" ", "").toLowerCase().split(","));
@@ -122,7 +149,7 @@ public class CLIParser {
       // Boolean options
       parseResult.setAutoLogin(
           p.getProperty("auto-login", "true").replace(" ", "").toLowerCase().contains("true"));
-      parseResult.setSidebarVisible(
+      parseResult.setSidePanelVisible(
           p.getProperty("sidebar", "true").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setLogWindowVisible(
           p.getProperty("log-window", "false").replace(" ", "").toLowerCase().contains("true"));
@@ -169,6 +196,7 @@ public class CLIParser {
           p.getProperty("help", "").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setVersion(
           p.getProperty("version", "").replace(" ", "").toLowerCase().contains("true"));
+
     } catch (Exception ignore) {
       if (!accountName.equalsIgnoreCase("username") && !accountName.isEmpty()) {
         System.out.println("Error loading account - " + accountName);
@@ -334,5 +362,9 @@ public class CLIParser {
     options.addOption(spellID);
     options.addOption(version);
     options.addOption(help);
+  }
+
+  public Color[] getCustomColors() {
+    return colors;
   }
 }

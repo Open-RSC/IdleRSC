@@ -14,7 +14,7 @@ public class Fish {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     if (AIOAIO.state.taskStartup) {
       needBuyTool =
           false; // reset this, since it may have previously wanted to buy a different tool

@@ -1,8 +1,8 @@
 package scripting.idlescript.other.AIOAIO;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import scripting.idlescript.IdleScript;
 import scripting.idlescript.other.AIOAIO.core.AIOAIO_State;
 import scripting.idlescript.other.AIOAIO.core.gui.AIOAIO_GUI;
@@ -20,10 +20,14 @@ public class AIOAIO extends IdleScript {
             Category.SMITHING,
             Category.THIEVING,
             Category.WOODCUTTING,
-            Category.IRONMAN_SUPPORTED
+            Category.IRONMAN_SUPPORTED,
+            Category.BROKEN
           },
           "Red Bracket",
           "One script to rule them all.");
+
+  // * Apparently this is broken, so I gave it the BROKEN category until it's working again -Seatta
+
   /**
    * Welcome to AIO AIO! The goal of this script is to train your account in all aspects.
    *

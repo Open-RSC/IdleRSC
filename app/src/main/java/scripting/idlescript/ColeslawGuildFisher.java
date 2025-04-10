@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.*;
 import javax.swing.*;
@@ -53,7 +53,7 @@ public class ColeslawGuildFisher extends IdleScript {
    */
   public int start(String[] parameters) {
     fishInBank = 0;
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -269,7 +269,7 @@ public class ColeslawGuildFisher extends IdleScript {
     dropJunkCheckbox.setEnabled(false);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

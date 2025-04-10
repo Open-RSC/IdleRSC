@@ -13,7 +13,7 @@ public class Fletch {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (needsToGetKnife) getKnife();
     else if (!meetsReqs()) {

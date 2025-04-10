@@ -1,6 +1,8 @@
-package bot;
+package bot.ui;
 
+import bot.Main;
 import bot.cli.ParseResult;
+import bot.ui.settingsframe.SettingsFrame;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +17,7 @@ import orsc.util.Utils;
 
 /** Presents the user with account and sleep solver selection. */
 public final class EntryFrame extends JFrame {
-  private AuthFrame authFrame, authFrame2;
+  private SettingsFrame authFrame;
   private String[] accountNames;
   private static String account = "";
   private final Choice accountChoice;
@@ -54,10 +56,7 @@ public final class EntryFrame extends JFrame {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     loadAccounts();
     this.setIconImage(Utils.getImage("res/logos/idlersc.icon.png").getImage());
-    Image idleImage =
-        Utils.getImage("res/logos/idlersc.icon.png")
-            .getImage()
-            .getScaledInstance(96, 96, java.awt.Image.SCALE_SMOOTH);
+    Image idleImage = Utils.getImage("res/logos/idlersc_transparent.icon.png").getImage();
     Image welImage =
         Utils.getImage("res/icons/welcome.icon.png")
             .getImage()
@@ -190,6 +189,7 @@ public final class EntryFrame extends JFrame {
     buttonPanel.setBackground(backColor);
 
     optionsPanel.add(mainGridBag, BorderLayout.NORTH);
+
     optionsPanel.add(subGridBag, BorderLayout.CENTER);
     add(optionsPanel, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
@@ -205,45 +205,18 @@ public final class EntryFrame extends JFrame {
 
     addButton.addActionListener(
         e -> {
-          if (authFrame2 != null) {
-            authFrame2.dispose();
-          }
-          if (authFrame == null) {
-            final AuthFrame authFrame = new AuthFrame("Add an account", null, EntryFrame.this);
-            authFrame.addActionListener(
-                e1 -> { // ALWAYS make properties lowercase
-                  authFrame.storeAuthData(authFrame);
-                  accountChoice.add(authFrame.getUsername());
-                  accountChoice.select(authFrame.getUsername());
-                  account = authFrame.getUsername();
-                  EntryFrame.this.authFrame.setVisible(false);
-                });
-            EntryFrame.this.authFrame = authFrame;
-          }
+          if (authFrame != null) authFrame.dispose();
+          authFrame = new SettingsFrame("Add an account", null, this);
           authFrame.setVisible(true);
         });
+
     editButton.addActionListener(
         e -> {
-          if (authFrame != null) {
-            authFrame.dispose();
-          }
-          if (authFrame2 == null) {
-            final AuthFrame authFrame2 = new AuthFrame("Editing an account", null, EntryFrame.this);
-            authFrame2.setLoadSettings(true);
-
-            authFrame2.addActionListener(
-                e1 -> {
-                  authFrame2.storeAuthData(authFrame2);
-                  accountChoice.select(authFrame2.getUsername());
-                  themeName = authFrame2.getThemeName();
-                  account = authFrame2.getUsername();
-                  if (themeName == null) themeName = getStringProperty(account, themeName);
-                  authFrame2.setVisible(false);
-                });
-            this.authFrame2 = authFrame2;
-          }
-          authFrame2.setVisible(true);
+          if (authFrame != null) authFrame.dispose();
+          authFrame = new SettingsFrame("Editing an account", account, this);
+          authFrame.setVisible(true);
         });
+
     okButton.addActionListener(e -> launch());
     cancelButton.addActionListener(
         e -> {
@@ -254,16 +227,11 @@ public final class EntryFrame extends JFrame {
   }
 
   public void launch() {
-    if (authFrame != null) {
-      authFrame.dispose();
-    }
-    if (authFrame2 != null) {
-      authFrame2.dispose();
-    }
+    if (authFrame != null) authFrame.dispose();
+
     try {
       themeName = getStringProperty(account, "theme");
       UIManager.getDefaults().remove("Button.gradient");
-      Main.setTheme(themeName);
       Main.setUsername(account);
       setVisible(false);
       dispose();

@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -191,6 +191,8 @@ public class AIOThiever extends IdleScript {
           c.setBatchBars(false);
           c.log("Welcome to AIOThiever. Let's party like it's 2004!", "gre");
           scriptStarted = true;
+          c.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
+          c.setBatchBars(false);
         } catch (Exception e) {
           c.log("Could not parse parameters: " + Arrays.toString(parameters), "red");
           c.log(
@@ -235,7 +237,7 @@ public class AIOThiever extends IdleScript {
               if (c.getInventoryItemCount() < 30) c.unequipItem(EquipSlotIndex.WEAPON.getId());
             }
             // handle uranium pauses to do action
-            if (c.getBatchBarsOn()
+            if (c.getBatchBarStatus()
                 || doAction
                 || (didActionTime + 4000L < System.currentTimeMillis())) {
               c.setStatus("@yel@Stealing..");
@@ -444,6 +446,7 @@ public class AIOThiever extends IdleScript {
 
           scriptStarted = true;
           c.log("Welcome to AIOThiever. Let's party like it's 2004!", "gre");
+          c.setBatchBars(false);
         });
 
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
@@ -465,7 +468,7 @@ public class AIOThiever extends IdleScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

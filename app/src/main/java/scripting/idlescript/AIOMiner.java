@@ -11,8 +11,8 @@ import static scripting.ControllerProvider.getBotController;
 import static scripting.ControllerProvider.setBotController;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import controller.BotController;
 import controller.BotLogLevel;
 import java.awt.GridLayout;
@@ -258,7 +258,7 @@ public class AIOMiner extends IdleScript {
             disableBankCheckBox, bankOptions, miningCampOptions, customX, customY, rockOptions));
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

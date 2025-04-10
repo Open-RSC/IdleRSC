@@ -1,6 +1,5 @@
 package listeners;
 
-import bot.Main;
 import controller.Controller;
 
 /**
@@ -14,12 +13,13 @@ import controller.Controller;
  * TODO: Only spawn this thread when autologin is turned on, otherwise kill thread!
  */
 public class LoginListener implements Runnable {
-  private double loginCount = 0;
-  private double sleepTime = System.currentTimeMillis();
+  private double loginCount;
+  private double sleepTime;
   private final Controller controller;
 
-  public LoginListener(Controller _controller) {
-    controller = _controller;
+  public LoginListener(Controller controller) {
+    this.controller = controller;
+    sleepTime = System.currentTimeMillis();
   }
 
   @Override
@@ -29,7 +29,8 @@ public class LoginListener implements Runnable {
 
         Thread.sleep(5000);
 
-        if (!Main.isAutoLogin() || controller.isLoggedIn()) { // Thread is not needed, long sleep
+        // Thread is not needed, long sleep
+        if (!controller.isAutoLogin() || controller.isLoggedIn()) {
           loginCount = 0;
           Thread.sleep(15000);
           continue;

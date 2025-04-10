@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
@@ -252,7 +252,7 @@ public class DamRc extends IdleScript {
       if (c.getNeedToMove()) c.moveCharacter();
       if (c.getShouldSleep()) c.sleepHandler(true);
       if (mineEss) {
-        c.setBatchBarsOn();
+        c.setBatchBars(true);
         if (inArea(mineNW, mineSE)) {
           if (c.getInventoryItemCount() >= 30) {
             if (!c.isBatching()) {
@@ -728,7 +728,7 @@ public class DamRc extends IdleScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

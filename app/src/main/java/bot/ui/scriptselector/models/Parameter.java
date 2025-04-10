@@ -1,4 +1,4 @@
-package bot.scriptselector.models;
+package bot.ui.scriptselector.models;
 
 public class Parameter {
   private final String name;

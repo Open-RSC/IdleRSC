@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -205,7 +205,7 @@ public class FletchnBankBows extends IdleScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

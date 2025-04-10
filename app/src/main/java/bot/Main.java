@@ -6,17 +6,17 @@ import static org.reflections.util.ClasspathHelper.forJavaClassPath;
 
 import bot.cli.CLIParser;
 import bot.cli.ParseResult;
-import bot.debugger.Debugger;
-import bot.scriptselector.ScriptSelectorUI;
-import bot.scriptselector.models.PackageInfo;
-import bot.ui.Theme;
-import bot.ui.ThemesMenu;
+import bot.ui.*;
+import bot.ui.debugger.Debugger;
+import bot.ui.scriptselector.ScriptSelectorUI;
+import bot.ui.scriptselector.models.PackageInfo;
 import callbacks.DrawCallback;
 import callbacks.SleepCallback;
 import compatibility.apos.Script;
 import controller.Controller;
 import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.*;
 import listeners.LoginListener;
-import listeners.WindowListener;
 import org.apache.commons.cli.ParseException;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
@@ -64,59 +63,26 @@ public class Main {
           .collect(Collectors.toMap(SimpleEntry::getKey, e -> new ArrayList<>(e.getValue())));
 
   private static Theme theme = Theme.RUNEDARK;
-  // Use the colors below when coloring windows since theme doesn't work with 'custom'
+  // Use the colors below when coloring windows since using theme doesn't work with custom colors
   public static Color primaryBG = theme.getPrimaryBackground();
   public static Color primaryFG = theme.getPrimaryForeground();
   public static Color secondaryBG = theme.getSecondaryBackground();
   public static Color secondaryFG = theme.getSecondaryForeground();
-
-  // ! Update this array from the instantiated Parser later when support is added to
-  // ! the Parser and AuthFrame
-  // * Indexes:
-  // *   0 - Primary BG Color
-  // *   1 - Primary FG Color
-  // *   2 - Secondary BG Color
-  // *   3 - Secondary FG Color
-  public static Color[] customColors = new Color[] {Color.RED, Color.BLUE, Color.RED, Color.BLUE};
+  // init to a default (runeDark) color theme
+  public static Color[] customColors = {primaryFG, primaryBG, secondaryFG, secondaryBG};
 
   private static boolean isRunning = false;
   private static String username = "";
-  private static JMenuBar menuBar;
-  private static JMenu settingsMenu;
-  private static ThemesMenu themeMenu;
-  private static JFrame scriptFrame;
+  // Extracted Object Components
+  private static BottomPanel bottomPanel;
+  public static SidePanel sidePanel;
+  public static TopPanel topPanel;
   public static JFrame rscFrame; // main window frame
-  public static JButton scriptButton;
-  private static JButton buttonClear;
-  private static JCheckBox autoLoginCheckbox,
-      logWindowCheckbox,
-      debugCheckbox,
-      graphicsCheckbox,
-      render3DCheckbox,
-      botPaintCheckbox,
-      interlaceCheckbox,
-      autoscrollLogsCheckbox,
-      sidebarCheckbox,
-      gfxCheckbox; // all the checkboxes on the sidepanel.
 
-  private static JCheckBoxMenuItem keepInvOpen;
-  private static JCheckBoxMenuItem customUiMode;
-  private static JButton pathwalkerButton,
-      takeScreenshotButton,
-      showIdButton,
-      openDebuggerButton,
-      resetXpButton;
-
-  // This boolean switches the pathwalker button to use LocationWalker instead.
-  // It is temporary until I feel it is ready to replace it entirely.
-  private static final boolean switchToLocationWalkerButton = false;
-
-  private static JTextArea logArea; // self explanatory
-  private static JScrollPane scroller; // this is the main window for the log.
   private static Debugger debugger = null;
   private static Thread loginListener = null; // see LoginListener.java
   private static final Thread positionListener = null; // see PositionListener.java
-  private static Thread windowListener = null; // see WindowListener.java
+  // private static Thread windowListener = null; // see WindowListener.java
   private static final Thread messageListener = null; // see MessageListener.java
   private static Thread debuggerThread = null;
   // Scripts run in this thread (Hence the name) :)
@@ -126,6 +92,12 @@ public class Main {
   // this is the queen bee that controls the actual bot and is the native scripting language.
   private static Controller controller = null;
   private static boolean aposInitCalled = false;
+
+  // Used when resizing the main frame
+  private static int prevWidth;
+  private static int prevHeight;
+  private static CLIParser parser;
+  private static ParseResult parseResult;
 
   /**
    * Set the Color elements for the Theme name entered Changes themeColorBack and themeTextColor
@@ -144,30 +116,63 @@ public class Main {
         isThemeCustom ? customColors[3] : Theme.getFromName(theme).getSecondaryForeground();
   }
 
-  /**
-   * Method to get the point to place Frame components at to center in rscFrame (client window) <br>
-   * * Note the actual point returned is actually to the top left of true center.
-   *
-   * @return Point location to center Frame components at
-   */
-  public static Point getRscFrameCenter() {
-    Point topLeft = Main.rscFrame.getLocationOnScreen();
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    return new Point(
-        Math.max(
-            0,
-            Math.min(
-                (int) screenSize.getWidth() - 655,
-                topLeft.x + (rscFrame.getWidth() / 2) - (scriptFrame.getWidth() / 2))),
-        Math.max(
-            0,
-            Math.min(
-                (int) screenSize.getHeight() - 405,
-                topLeft.y + (rscFrame.getHeight() / 2) - (scriptFrame.getHeight() / 2))));
-  }
-
   public static Object getCurrentRunningScript() {
     return currentRunningScript;
+  }
+
+  /**
+   * Reloads properties for the running client. Called by SettingsFrame when settings are saved,
+   * provided the parent window is RSCFrame. This occurs whenever SettingsFrame is opened from the
+   * SettingsMenu.
+   */
+  public static void reloadProperties() {
+    System.out.println("Updated client to match account properties");
+
+    // Variables keeping track of various old client states
+    String oldThemeName = theme.getName();
+    boolean oldLogPanelState = BottomPanel.logPanelSelected();
+    boolean oldSidePanelState = BottomPanel.sidePanelSelected();
+    int oldHeight = rscFrame.getHeight();
+    int oldWidth = rscFrame.getWidth();
+
+    try {
+      // Reload the config
+      parser = new CLIParser();
+      parseResult = new ParseResult();
+      parseResult = parseArgs(parseResult, parser, new String[] {});
+      config.absorb(parseResult);
+
+      // Apply the theme if it was changed
+      if (!oldThemeName.equals(parseResult.getThemeName())) ThemesMenu.applyThemeToClient();
+
+      // If checkbox states in either of these two panels aren't being loaded correctly,
+      // you might need to modify their loadSettingsFromConfig() methods.
+      bottomPanel.loadSettingsFromConfig();
+      TopPanel.getSettingsMenu().loadSettingsFromConfig();
+      sidePanel.setVisible(config.isSidePanelVisible());
+
+      // Set rscFrame's new minimum size depending on visible panels
+      Dimension newMinSize =
+          new Dimension(
+              BottomPanel.sidePanelSelected() ? 655 : 533,
+              BottomPanel.logPanelSelected() ? 611 : 423);
+      rscFrame.setMinimumSize(newMinSize);
+
+      // Set rscFrame's new size depending on visible panels
+      Dimension newSize =
+          new Dimension(
+              (oldSidePanelState != BottomPanel.sidePanelSelected())
+                  ? oldWidth + (BottomPanel.sidePanelSelected() ? 140 : -140)
+                  : oldWidth,
+              (oldLogPanelState != BottomPanel.logPanelSelected())
+                  ? oldHeight + (BottomPanel.logPanelSelected() ? 187 : -187)
+                  : oldHeight);
+      rscFrame.setSize(newSize);
+
+    } catch (InterruptedException e) {
+      System.out.println("Failed to reload client config:");
+      throw new RuntimeException(e);
+    }
   }
 
   /** The initial program entrypoint for IdleRSC. */
@@ -190,16 +195,15 @@ public class Main {
                 },
                 "IdleRSC - Shutdown Hook"));
 
-    CLIParser parser = new CLIParser();
+    parser = new CLIParser();
     Version version = new Version();
-    ParseResult parseResult = new ParseResult();
+    parseResult = new ParseResult();
 
     parseResult = parseArgs(parseResult, parser, args);
     if (parseResult.getUsername().equalsIgnoreCase("username") || parseResult.isUsingAccount()) {
       new EntryFrame(parseResult);
       parseResult = parseArgs(parseResult, parser, args);
     }
-
     setThemeElements(theme.getName());
 
     if (parseResult.isHelp()) parser.printHelp();
@@ -232,72 +236,34 @@ public class Main {
 
     SleepCallback.setOCRType(config.getOCRType());
 
-    // just building out the windows
-    JPanel botFrame = new JPanel();
-
-    JPanel consoleFrame = new JPanel(); // log window
     rscFrame = (JFrame) reflector.getClassMember("orsc.OpenRSC", "jframe");
+
+    // Handles resizing rscFrame when graphics are disabled.
+    rscFrame.addComponentListener(
+        new ComponentAdapter() {
+          @Override
+          public void componentResized(ComponentEvent e) {
+            if ((rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
+              if (!controller.isDrawEnabled()) controller.setDrawing(true, 300);
+              prevWidth = rscFrame.getWidth();
+              prevHeight = rscFrame.getHeight();
+            }
+          }
+        });
 
     if (config.getPositionX() == -1 || config.getPositionY() == -1) {
       rscFrame.setLocationRelativeTo(null);
     } else rscFrame.setLocation(config.getPositionX(), config.getPositionY());
 
-    if (controller.getPlayerName() != null) {
-      scriptFrame = new JFrame(controller.getPlayerName() + "'s Script Selector");
-    } else if (config.getUsername() != null && !config.getUsername().equalsIgnoreCase("username")) {
-      scriptFrame = new JFrame(config.getUsername() + "'s Script Selector");
-    } else {
-      scriptFrame = new JFrame("Script Selector");
-    }
+    // Initialize Panels for client
+    sidePanel = new SidePanel();
+    bottomPanel = new BottomPanel();
+    topPanel = new TopPanel();
 
-    initializeBotFrame(botFrame);
-    initializeConsoleFrame(consoleFrame);
-    initializeMenuBar();
-
-    JButton[] buttonArray = {
-      scriptButton,
-      pathwalkerButton,
-      takeScreenshotButton,
-      showIdButton,
-      openDebuggerButton,
-      resetXpButton
-    };
-    JCheckBox[] checkBoxArray = {
-      autoLoginCheckbox,
-      logWindowCheckbox,
-      debugCheckbox,
-      graphicsCheckbox,
-      render3DCheckbox,
-      botPaintCheckbox,
-      interlaceCheckbox,
-      sidebarCheckbox,
-      gfxCheckbox
-    };
-    Dimension buttonSize = new Dimension(125, 25);
-    // todo swap side bar by swapping container contents
-    for (JCheckBox jCheckbox : checkBoxArray) {
-      jCheckbox.setBackground(primaryBG);
-      jCheckbox.setForeground(primaryFG);
-      jCheckbox.setFocusable(false);
-    }
-    for (JButton jButton : buttonArray) {
-      jButton.setBackground(primaryBG);
-      jButton.setForeground(primaryFG);
-      jButton.setFocusable(false);
-      jButton.setMaximumSize(buttonSize);
-      jButton.setPreferredSize(buttonSize);
-    }
-
-    botFrame.setBackground(primaryBG);
-    rscFrame.getContentPane().setBackground(primaryBG);
-    botFrame.setBorder(BorderFactory.createLineBorder(primaryBG));
-
-    // combine everything into our client
-    rscFrame.add(botFrame, BorderLayout.EAST);
-    rscFrame.add(menuBar, BorderLayout.NORTH);
-    rscFrame.add(consoleFrame, BorderLayout.SOUTH);
-    consoleFrame.setVisible(config.isLogWindowVisible());
-    botFrame.setVisible(config.isSidebarVisible());
+    // combine panels into the client Frame
+    rscFrame.add(topPanel, BorderLayout.NORTH);
+    rscFrame.add(sidePanel, BorderLayout.EAST);
+    rscFrame.add(bottomPanel, BorderLayout.SOUTH);
 
     if (config.getUsername() != null) {
       log("Starting client for " + config.getUsername());
@@ -307,61 +273,29 @@ public class Main {
     // don't do anything until RSC is loaded.
     while (!controller.isLoaded()) controller.sleep(1);
 
-    // Set Sizes After initilizing for correct sizing
-    rscFrame.setMinimumSize(new Dimension(533, 405)); // this doesn't seem to be doing anything
-    rscFrame.setSize(new Dimension(533, 405));
-    if (config.isLogWindowVisible())
-      rscFrame.setSize(new Dimension(rscFrame.getWidth(), rscFrame.getHeight() + 188));
-    if (config.isSidebarVisible())
-      rscFrame.setSize(new Dimension(rscFrame.getWidth() + 122, rscFrame.getHeight()));
-
-    // Set checkboxes on side panel using "get" methods
-    autoLoginCheckbox.setSelected(config.isAutoLogin());
-    graphicsCheckbox.setSelected(config.isGraphicsEnabled());
-    render3DCheckbox.setSelected(config.isRender3DEnabled());
-    gfxCheckbox.setSelected(config.isGraphicsEnabled());
-    controller.setDrawing(config.isGraphicsEnabled(), 0);
-    controller.setRender3D(config.isRender3DEnabled());
-    logWindowCheckbox.setSelected(config.isLogWindowVisible());
-    sidebarCheckbox.setSelected(config.isSidebarVisible());
-    debugCheckbox.setSelected(config.isDebug());
-    interlaceCheckbox.setSelected(config.isGraphicsInterlacingEnabled());
-    botPaintCheckbox.setSelected(config.isBotPaintVisible());
-    customUiMode.setSelected(config.getNewUi());
-    keepInvOpen.setSelected(config.getKeepOpen());
+    // Set minimum size depending on BottomPanel options
+    rscFrame.setMinimumSize(
+        new Dimension(
+            BottomPanel.sidePanelSelected() ? 655 : 533,
+            BottomPanel.logPanelSelected() ? 611 : 423));
 
     // Set client properties from checkboxes
-    if (config.getKeepOpen()) controller.setKeepInventoryOpenMode(keepInvOpen.isSelected());
-    if (config.isGraphicsInterlacingEnabled())
-      controller.setInterlacer(config.isGraphicsInterlacingEnabled());
+    controller.setKeepInventoryOpenMode(config.getKeepOpen());
+    controller.setInterlacer(config.isGraphicsInterlacingEnabled());
     if (config.isScriptSelectorOpen()) ScriptSelectorUI.showUI();
     if (config.isDebug()) debugger.open();
 
-    log("Initializing WindowListener...");
-    windowListener =
-        new Thread(
-            new WindowListener(
-                botFrame,
-                consoleFrame,
-                rscFrame,
-                settingsMenu,
-                themeMenu,
-                menuBar,
-                scroller,
-                logArea,
-                controller,
-                buttonClear,
-                autoscrollLogsCheckbox,
-                buttonArray,
-                checkBoxArray),
-            "IdleRSC - Window Listener");
-    windowListener.start();
-    log("WindowListener started.");
+    // ? WindowListener no longer does anything.
+    // ? Potentially consider deleting it.
+    //    log("Initializing WindowListener...");
+    //    windowListener = new Thread(new WindowListener(), "IdleRSC - Window Listener");
+    //    windowListener.start();
+    //    log("WindowListener started.");
 
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(1000);
 
-    if (autoLoginCheckbox.isSelected()) controller.login();
+    if (BottomPanel.autoLoginSelected()) controller.login();
     // start up our listener threads
     log("Initializing LoginListener...");
     loginListener = new Thread(new LoginListener(controller), "IdleRSC - Login Listener");
@@ -389,17 +323,14 @@ public class Main {
           System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000));
     }
 
-    // System.out.println("Next screen refresh at: " +
-    // DrawCallback.getNextRefresh());
-
     String defaultFrameTitle = rscFrame.getTitle();
     while (true) {
       Thread.sleep(320);
       if (isRunning()) {
         if (currentRunningScript == null) continue;
 
-        toggleScriptButtons(true);
-        scriptButton.setText("Stop Script");
+        SidePanel.toggleScriptButtons(true);
+        SidePanel.setScriptButton(true); // running
         if (!rscFrame.getTitle().equals(defaultFrameTitle + ": " + Main.config.getScriptName()))
           rscFrame.setTitle(defaultFrameTitle + ": " + Main.config.getScriptName());
 
@@ -411,8 +342,8 @@ public class Main {
           controller.moveCharacter();
         }
         Thread.sleep(100);
-        scriptButton.setText("Load Script");
-        toggleScriptButtons(false);
+        SidePanel.setScriptButton(false); // stopped
+        SidePanel.toggleScriptButtons(false);
         aposInitCalled = false;
         Thread.sleep(100);
       }
@@ -510,11 +441,6 @@ public class Main {
     return parseResult;
   }
 
-  /** Clears the log window. */
-  public static void clearLog() {
-    logArea.setText("");
-  }
-
   /**
    * Add a line to the log window.
    *
@@ -522,13 +448,14 @@ public class Main {
    */
   public static void log(String text) {
     System.out.println(text);
+    JTextArea logArea = ConsolePanel.getLogArea();
     if (logArea == null) {
       return; // messages will still add text if element isVisible is false.
     }
 
     logArea.append(text + "\n");
 
-    if (autoscrollLogsCheckbox.isSelected()) {
+    if (BottomPanel.logPanelSelected()) {
       logArea.setCaretPosition(logArea.getDocument().getLength());
     }
   }
@@ -540,7 +467,7 @@ public class Main {
    * @param params -- the object(s) which were sent to the function. You may put in any object.
    */
   public static void logMethod(String method, Object... params) {
-    if (isDebug()) {
+    if (SettingsMenu.debugSelected()) {
       StringBuilder current = new StringBuilder(method + "(");
 
       if (params != null && params.length > 0) {
@@ -555,268 +482,6 @@ public class Main {
 
       log(current.toString());
     }
-  }
-
-  private static void initializeMenuBar() {
-
-    // Make the menu bar
-    menuBar = new JMenuBar();
-    settingsMenu = new JMenu("Settings");
-    themeMenu = new ThemesMenu("Themes");
-    gfxCheckbox = new JCheckBox("GFX");
-    logWindowCheckbox = new JCheckBox("Console");
-    sidebarCheckbox = new JCheckBox("Sidebar");
-
-    // add our elements to the main bar
-    menuBar.add(settingsMenu);
-    menuBar.add(themeMenu);
-    menuBar.add(Box.createHorizontalGlue()); // from right
-    menuBar.add(gfxCheckbox);
-    menuBar.add(logWindowCheckbox);
-    menuBar.add(sidebarCheckbox);
-
-    // style our elements
-    settingsMenu.setBorder(BorderFactory.createEmptyBorder());
-    settingsMenu.setBackground(primaryBG);
-    settingsMenu.setForeground(primaryFG);
-    settingsMenu.getPopupMenu().setBorder(BorderFactory.createEmptyBorder());
-    themeMenu.setForeground(primaryFG);
-    themeMenu.setBackground(primaryBG);
-    themeMenu.setBorder(BorderFactory.createEmptyBorder());
-    themeMenu.getPopupMenu().setBorder(BorderFactory.createEmptyBorder());
-    themeMenu.getPopupMenu().setBackground(primaryBG);
-    menuBar.setBackground(primaryBG);
-    menuBar.setForeground(primaryFG);
-    menuBar.setBorder(BorderFactory.createEmptyBorder());
-
-    gfxCheckbox.addActionListener(
-        e -> {
-          if (controller != null) {
-            graphicsCheckbox.setSelected(gfxCheckbox.isSelected());
-            controller.setDrawing(gfxCheckbox.isSelected(), 0);
-            if (gfxCheckbox.isSelected()) {
-              DrawCallback.setNextRefresh(-1);
-            } else if (gfxCheckbox.isSelected() && config.getScreenRefresh()) {
-              DrawCallback.setNextRefresh(
-                  (System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000)));
-            }
-          }
-        });
-
-    // Define settings menu drop down
-    JMenuItem _accOpp;
-    Component[] _settingsMenu = {
-      _accOpp = new JMenuItem("Account Startup Settings", KeyEvent.VK_F4), // S key
-      customUiMode = new JCheckBoxMenuItem("Custom In-game UI"),
-      keepInvOpen = new JCheckBoxMenuItem("Keep Inventory Open"),
-    };
-
-    // Add elements to settings menu
-    for (Component _menuItem : _settingsMenu) {
-      _menuItem.setBackground(primaryBG);
-      _menuItem.setForeground(primaryFG);
-      settingsMenu.add(_menuItem);
-    }
-
-    // Should force settings popup menu to be on top of the game window... Hopefully.
-    settingsMenu.getPopupMenu().setLightWeightPopupEnabled(false);
-
-    // prevent tab/etc "focusing" an element
-    menuBar.setFocusable(false);
-    themeMenu.setFocusable(false);
-    gfxCheckbox.setFocusable(false);
-    logWindowCheckbox.setFocusable(false);
-    sidebarCheckbox.setFocusable(false);
-    customUiMode.setFocusable(false);
-    keepInvOpen.setFocusable(false);
-
-    // menuItem.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_F4));
-    // //opens 2 authframes
-    _accOpp.addActionListener(
-        e -> {
-          AuthFrame authFrame =
-              new AuthFrame("Editing the account - " + config.getUsername(), null, null);
-          authFrame.setLoadSettings(true);
-          authFrame.addActionListener(
-              e1 -> { // ALWAYS make properties lowercase
-                username = authFrame.getUsername();
-                controller.log("IdleRSC: " + username + " account settings saved");
-                authFrame.storeAuthData(authFrame);
-                authFrame.setVisible(false);
-              });
-          settingsMenu.setPopupMenuVisible(false);
-          authFrame.setVisible(true);
-        });
-    customUiMode.addActionListener(
-        e -> {
-          settingsMenu.setPopupMenuVisible(false);
-          controller.setCustomUiMode(customUiMode.isSelected());
-        });
-    keepInvOpen.addActionListener(
-        e -> {
-          settingsMenu.setPopupMenuVisible(false);
-          controller.setKeepInventoryOpenMode(keepInvOpen.isSelected());
-        });
-  }
-
-  /**
-   * Sets up the sidepanel
-   *
-   * @param botFrame -- the sidepanel frame
-   */
-  private static void initializeBotFrame(JComponent botFrame) {
-    botFrame.setLayout(new BoxLayout(botFrame, BoxLayout.Y_AXIS));
-
-    scriptButton = new JButton("Load Script");
-
-    autoLoginCheckbox = new JCheckBox("Auto-Login");
-    debugCheckbox = new JCheckBox("Debug Messages");
-    graphicsCheckbox = new JCheckBox("Show Graphics");
-    render3DCheckbox = new JCheckBox("Render 3D");
-    botPaintCheckbox = new JCheckBox("Show Bot Paint");
-    interlaceCheckbox = new JCheckBox("Interlace");
-    pathwalkerButton = new JButton(switchToLocationWalkerButton ? "LocationWalker" : "PathWalker");
-    // all the buttons on the sidepanel.
-    takeScreenshotButton = new JButton("Screenshot");
-    showIdButton = new JButton("Show IDs");
-    openDebuggerButton = new JButton("Debugger");
-    resetXpButton = new JButton("Reset XP");
-
-    scriptButton.addActionListener(e -> handleScriptButton());
-
-    pathwalkerButton.addActionListener(
-        e -> {
-          if (!isRunning) {
-            if (switchToLocationWalkerButton) {
-              loadAndRunScript("LocationWalker", PackageInfo.NATIVE);
-            } else {
-              loadAndRunScript("PathWalker", PackageInfo.APOS);
-            }
-            config.setScriptArguments(new String[] {""});
-            isRunning = true;
-          } else {
-            JOptionPane.showMessageDialog(null, "Stop the current script first.");
-          }
-        });
-
-    openDebuggerButton.addActionListener(
-        e -> {
-          controller.log("IdleRSC: Opening Debug Window", "gre");
-          debugger.open();
-        });
-    resetXpButton.addActionListener(e -> DrawCallback.resetXpCounter());
-    showIdButton.addActionListener(e -> controller.toggleViewId());
-    takeScreenshotButton.addActionListener(e -> controller.takeScreenshot(""));
-    autoLoginCheckbox.addActionListener(
-        e -> {
-          if (autoLoginCheckbox.isSelected()) controller.login();
-        });
-    graphicsCheckbox.addActionListener(
-        e -> {
-          if (controller != null) {
-            gfxCheckbox.setSelected(graphicsCheckbox.isSelected());
-            controller.setDrawing(graphicsCheckbox.isSelected(), 0);
-            if (graphicsCheckbox.isSelected()) {
-              DrawCallback.setNextRefresh(-1);
-            } else if (graphicsCheckbox.isSelected() && config.getScreenRefresh()) {
-              DrawCallback.setNextRefresh(
-                  (System.currentTimeMillis() + 25000L + (long) (Math.random() * 10000)));
-            }
-          }
-        });
-    render3DCheckbox.addActionListener(
-        e -> {
-          if (controller != null) {
-            controller.setRender3D(render3DCheckbox.isSelected());
-          }
-        });
-    botPaintCheckbox.addActionListener(
-        e -> {
-          if (controller != null) {
-            controller.setBotPaint(botPaintCheckbox.isSelected());
-          }
-        });
-    interlaceCheckbox.addActionListener(
-        e -> {
-          if (controller != null) {
-            controller.setInterlacer(interlaceCheckbox.isSelected());
-          }
-        });
-
-    Dimension buttonSize = new Dimension(125, 25);
-
-    botFrame.add(scriptButton);
-    botFrame.add(pathwalkerButton);
-    botFrame.add(autoLoginCheckbox);
-    botFrame.add(debugCheckbox);
-    botFrame.add(interlaceCheckbox);
-    botFrame.add(botPaintCheckbox);
-    botFrame.add(render3DCheckbox);
-    botFrame.add(graphicsCheckbox);
-    botFrame.add(takeScreenshotButton);
-    botFrame.add(showIdButton);
-    botFrame.add(openDebuggerButton);
-    botFrame.add(resetXpButton);
-
-    botFrame.setSize(buttonSize.width, botFrame.getHeight());
-  }
-
-  /**
-   * Sets up the log window
-   *
-   * @param consoleFrame -- the log window frame
-   */
-  private static void initializeConsoleFrame(JPanel consoleFrame) {
-    buttonClear = new JButton("Clear");
-    autoscrollLogsCheckbox = new JCheckBox("Lock scroll to bottom", true);
-
-    logArea = new JTextArea(9, 44);
-    logArea.setEditable(false);
-    scroller = new JScrollPane(logArea);
-
-    buttonClear.setBackground(secondaryBG);
-    buttonClear.setForeground(secondaryFG);
-    autoscrollLogsCheckbox.setBackground(primaryBG);
-    autoscrollLogsCheckbox.setForeground(primaryFG);
-    logArea.setBackground(primaryBG.brighter());
-    logArea.setForeground(primaryFG);
-    scroller.setBackground(primaryBG);
-    scroller.setForeground(primaryFG);
-
-    consoleFrame.setBackground(primaryBG);
-    consoleFrame.setForeground(primaryFG);
-
-    consoleFrame.setLayout(new GridBagLayout());
-
-    GridBagConstraints constraints = new GridBagConstraints();
-
-    constraints.gridy = 1;
-    constraints.insets = new Insets(5, 5, 5, 5);
-    constraints.anchor = GridBagConstraints.SOUTHEAST;
-    constraints.gridx = 2;
-    constraints.weightx = 0.5;
-    consoleFrame.add(autoscrollLogsCheckbox, constraints);
-
-    constraints.gridy = 1;
-    constraints.insets = new Insets(0, 5, 5, 5);
-    constraints.anchor = GridBagConstraints.SOUTHWEST;
-    constraints.gridx = 1;
-    constraints.weightx = 0.5;
-    consoleFrame.add(buttonClear, constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 0;
-    constraints.gridwidth = 4;
-    constraints.fill = GridBagConstraints.BOTH;
-    constraints.anchor = GridBagConstraints.NORTH;
-    constraints.weightx = 1.0;
-    constraints.weighty = 1.0;
-    consoleFrame.add(new JScrollPane(logArea), constraints);
-
-    buttonClear.addActionListener(evt -> clearLog());
-
-    // consoleFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    consoleFrame.setSize(480, 320);
   }
 
   /**
@@ -876,15 +541,6 @@ public class Main {
       e.printStackTrace();
       return false;
     }
-  }
-
-  /**
-   * Toggle script buttons (currently only the walker button)
-   *
-   * @param isScriptRunning boolean -- Set the buttons enabled statuses to this
-   */
-  private static void toggleScriptButtons(boolean isScriptRunning) {
-    pathwalkerButton.setEnabled(!isScriptRunning);
   }
 
   /** Checks if the user has made a Cache/ folder. If not, spawns a wizard to create the folder. */
@@ -1062,6 +718,7 @@ public class Main {
           controller.log(String.format("The '%s' script has been stopped!", scriptName), "yel");
           controller.stop();
         }
+        // Stop() seems to be the only way to force-close stuck scripts.
         runningScriptThread.stop();
       } else {
         System.out.println("The 'Running Script' thread doesn't exist for some reason!");
@@ -1078,97 +735,94 @@ public class Main {
     return controller;
   }
 
+  /**
+   * Set username
+   *
+   * @param name String - the RSC username used to log into the game
+   */
   public static void setUsername(String name) {
     username = name;
   }
 
+  /**
+   * Get username
+   *
+   * @return String - The username that is used to log into the game
+   */
   public static String getUsername() {
     return username;
   }
 
+  /**
+   * Set the client theme
+   *
+   * @param name String - the enumerated name of the theme
+   */
   public static void setTheme(String name) {
     theme = Theme.getFromName(name);
     setThemeElements(theme.getName());
   }
 
   /**
-   * Used by login listener to set
+   * Returns whether a script is running.
    *
-   * @return
-   */
-  public static boolean isCustomUiSelected() {
-    return customUiMode.isSelected();
-  }
-
-  /**
-   * Used by the WindowListener for tracking the log window.
-   *
-   * @return whether or not the log window is open.
-   */
-  public static boolean isLogWindowOpen() {
-    return logWindowCheckbox.isSelected();
-  }
-
-  /**
-   * Used by the WindowListener for tracking the side window.
-   *
-   * @return whether or not the side window is open.
-   */
-  public static boolean isSideWindowOpen() {
-    return sidebarCheckbox.isSelected();
-  }
-
-  /**
-   * Returns whether or not a script is running.
-   *
-   * @return boolean with whether or not a script is running.
+   * @return boolean - whether a script is running.
    */
   public static boolean isRunning() {
     return isRunning;
   }
 
   /**
-   * Returns whether or not auto-login is enabled.
+   * A function for controlling whether scripts are running.
    *
-   * @return boolean with whether or not autologin is enabled.
-   */
-  public static boolean isAutoLogin() {
-    return autoLoginCheckbox.isSelected();
-  }
-
-  /**
-   * Returns whether or not debug is enabled.
-   *
-   * @return boolean with whether or not debug is enabled.
-   */
-  public static boolean isDebug() {
-    return debugCheckbox.isSelected();
-  }
-
-  /**
-   * A function for controlling whether or not scripts are running.
-   *
-   * @param b
+   * @param b - set true when a script runs, false when it ends
    */
   public static void setRunning(boolean b) {
     isRunning = b;
   }
 
   /**
-   * A function for controlling the autologin functionality.
+   * Returns the debugger panel.
    *
-   * @param b
-   */
-  public static void setAutoLogin(boolean b) {
-    autoLoginCheckbox.setSelected(b);
-  }
-
-  /**
-   * Returns the debugger.
-   *
-   * @return debugger
+   * @return Debugger - returns static reference to debugger class
    */
   public static Debugger getDebugger() {
     return debugger;
+  }
+
+  /**
+   * Returns the Bottom Panel wrapper class
+   *
+   * @return BottomPanel - JPanel wrapper class
+   */
+  public static BottomPanel getBottomPanel() {
+    return bottomPanel;
+  }
+
+  /**
+   * Returns the Right side panel wrapper class
+   *
+   * @return SidePanel - JPanel wrapper class
+   */
+  public static SidePanel getSidePanel() {
+    return sidePanel;
+  }
+
+  /**
+   * Returns the Top panel wrapper class
+   *
+   * @return TopPanel - JMenuBar wrapper class
+   */
+  public static TopPanel getTopPanel() {
+    return topPanel;
+  }
+
+  /**
+   * Returns the RSC frame class (the game panel)
+   *
+   * @return JFrame - the game client JFrame (client panels are added too it)
+   */
+  public static JFrame getRscFrame() {
+    return rscFrame;
   }
 }

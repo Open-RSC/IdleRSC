@@ -1,6 +1,6 @@
-package bot.scriptselector.models;
+package bot.ui.scriptselector.models;
 
-import bot.scriptselector.ScriptSelectorUI;
+import bot.ui.scriptselector.ScriptSelectorUI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

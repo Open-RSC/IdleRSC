@@ -1,7 +1,7 @@
 package scripting.idlescript;
 
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 
 /**
  * This is a basic script that drops everything in your inventory.

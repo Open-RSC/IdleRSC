@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -64,7 +64,7 @@ public final class K_FastBarbFisher extends K_kailaScript {
       doAction = true;
       didActionTime = System.currentTimeMillis();
 
-      if (!c.isAuthentic()) c.setBatchBarsOn();
+      if (!c.isAuthentic()) c.setBatchBars(true);
       if (c.isInBank()) c.closeBank();
       if (c.currentX() < 195) {
         bank();
@@ -92,7 +92,7 @@ public final class K_FastBarbFisher extends K_kailaScript {
       }
       // time to fish
       if (c.isRunning()
-          && (c.getBatchBarsOn()
+          && (c.getBatchBarStatus()
               || doAction
               || (didActionTime + 4000L < System.currentTimeMillis()))) {
 
@@ -180,7 +180,7 @@ public final class K_FastBarbFisher extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

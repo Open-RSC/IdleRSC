@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -33,7 +33,7 @@ public class WaterFiller extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
@@ -141,7 +141,7 @@ public class WaterFiller extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

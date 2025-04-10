@@ -11,7 +11,7 @@ public class Woodcut {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (!meetsReqs()) {
       Main.getController()

@@ -26,7 +26,7 @@ public class JailGuard {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (Main.getController().getBaseStat(Main.getController().getStatId("Hits")) < 15) {
       c.log("Skipping Jail Guards until we're at least 15 hits!");

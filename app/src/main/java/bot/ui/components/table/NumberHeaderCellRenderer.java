@@ -1,4 +1,4 @@
-package bot.ui.table;
+package bot.ui.components.table;
 
 public class NumberHeaderCellRenderer extends DefaultTableCellHeaderRenderer {
   public NumberHeaderCellRenderer() {

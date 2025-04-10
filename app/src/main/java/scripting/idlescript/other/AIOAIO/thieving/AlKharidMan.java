@@ -12,7 +12,7 @@ public class AlKharidMan {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (AIOAIO.state.taskStartup) {
       return Thieving_Utils.getReadyForTheiving();

@@ -1,5 +1,6 @@
 package bot.ui;
 
+import bot.Main;
 import java.awt.*;
 import java.util.Arrays;
 
@@ -112,11 +113,10 @@ public enum Theme {
           new Color(114, 135, 253),
           new Color(204, 208, 218))),
 
-// Do not modify the custom theme here as this is a placeholder so that it appears in the Themes
-// menu.
-// ! UNCOMMENT THIS WHEN PARSER/AUTHFRAME HAS SUPPORT FOR CUSTOM THEME
-// CUSTOM(new UITheme("Custom", null, null, null, null))
-;
+  // Do not modify the custom theme here as this is a placeholder so that it appears in the Themes
+  // menu.
+  // ! UNCOMMENT THIS WHEN PARSER/AUTHFRAME HAS SUPPORT FOR CUSTOM THEME
+  CUSTOM(new UITheme("Custom", null, null, null, null));
 
   final UITheme theme;
 
@@ -124,11 +124,23 @@ public enum Theme {
     this.theme = theme;
   }
 
-  public static boolean colorsMatchTheme(Color PB, Color PF, Color SB, Color SF, Theme v) {
-    return v.getPrimaryBackground() == PB
-        && v.getPrimaryForeground() == PF
-        && v.getSecondaryBackground() == SB
-        && v.getSecondaryForeground() == SF;
+  public static boolean themeIsCurrentlyApplied(Theme theme) {
+    Color[] currentThemeColors =
+        new Color[] {
+          Main.primaryBG, Main.primaryFG, Main.secondaryBG, Main.secondaryFG,
+        };
+
+    Color[] newThemeColors =
+        theme.equals(Theme.CUSTOM)
+            ? Main.customColors
+            : new Color[] {
+              theme.getPrimaryBackground(),
+              theme.getPrimaryForeground(),
+              theme.getSecondaryBackground(),
+              theme.getSecondaryForeground()
+            };
+
+    return Arrays.equals(currentThemeColors, newThemeColors);
   }
 
   public String getName() {

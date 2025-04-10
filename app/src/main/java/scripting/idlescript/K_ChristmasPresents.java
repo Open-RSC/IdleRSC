@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import javax.swing.*;
 import models.entities.ItemId;
@@ -51,7 +51,7 @@ public final class K_ChristmasPresents extends K_kailaScript {
       startTime = System.currentTimeMillis();
       c.displayMessage("@mag@Present Picker");
       if (c.isInBank()) c.closeBank();
-      c.setBatchBarsOn();
+      c.setBatchBars(true);
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -212,7 +212,7 @@ public final class K_ChristmasPresents extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

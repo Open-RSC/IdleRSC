@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 
 /**
@@ -48,7 +48,7 @@ public class GnomeFlaxx0r extends IdleScript {
     } else {
       spin = Boolean.parseBoolean(parameters[0].replace(" ", "").toLowerCase());
     }
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     startScript();
     return 1000; // start() must return an int value now.
   }

@@ -11,7 +11,7 @@ public class AlKharidWarrior {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (Main.getController().getCurrentStat(Main.getController().getStatId("Thieving")) < 25) {
       c.log("Skipping Al Kharid Warriors until we're at least 25 thieving!");

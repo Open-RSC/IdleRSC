@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -109,7 +109,7 @@ public class AIOHarvester extends K_kailaScript {
           break;
         }
       }
-      c.setBatchBarsOn();
+      c.setBatchBars(true);
       scriptStart();
     }
     return 1000; // start() must return an int value now.
@@ -886,7 +886,7 @@ public class AIOHarvester extends K_kailaScript {
     scriptFrame.add(buttons, BorderLayout.SOUTH);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

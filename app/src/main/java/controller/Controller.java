@@ -1,7 +1,8 @@
 package controller;
 
 import bot.Main;
-import bot.debugger.Debugger;
+import bot.ui.BottomPanel;
+import bot.ui.debugger.Debugger;
 import callbacks.DrawCallback;
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
@@ -2466,8 +2467,8 @@ public class Controller {
    */
   public void createAccount(String email, String username, String password) {
     // TODO: return true/false based on success
-    boolean autoLogin = Main.isAutoLogin();
-    Main.setAutoLogin(false);
+    boolean autoLogin = BottomPanel.autoLoginSelected();
+    BottomPanel.setAutoLogin(false);
 
     Main.logMethod("createAccount", "nothing");
 
@@ -2485,7 +2486,7 @@ public class Controller {
 
     reflector.setObjectMember(mud, "enterPressed", true);
 
-    Main.setAutoLogin(autoLogin);
+    BottomPanel.setAutoLogin(autoLogin);
   }
 
   /** Attempts in using the credentials specified in the command line. */
@@ -2752,7 +2753,7 @@ public class Controller {
    * @return true if we were in the bank
    */
   public boolean depositAll() {
-    if (!isInBank()) return false;
+    if (!isInBank() || getInventoryItemCount() < 1) return false;
     for (int itemId : getInventoryItemIds()) {
       depositItem(itemId, getInventoryItemCount(itemId));
       sleep(320);
@@ -4823,12 +4824,12 @@ public class Controller {
    * @param value boolean
    */
   public void setAutoLogin(boolean value) {
-    Main.setAutoLogin(value);
+    BottomPanel.setAutoLogin(value);
   }
 
   /** Retrieves whether or not auto-login is set. */
   public boolean isAutoLogin() {
-    return Main.isAutoLogin();
+    return BottomPanel.autoLoginSelected();
   }
 
   /**
@@ -5808,15 +5809,15 @@ public class Controller {
   /**
    * Toggle draw/graphics.
    *
-   * @param drawing_ boolean - what draw state to set it
-   * @param pauseTicks int - how long to wait before reverting graphics selection. 0 to not
+   * @param b boolean - what draw state to set it
+   * @param ms int - how long to wait in milliseconds before reverting graphics selection. 0 to not
    *     derefresh.
    */
-  public synchronized void setDrawing(boolean drawing_, int pauseTicks) {
-    drawing = drawing_;
-    if (pauseTicks > 0) {
-      sleep(pauseTicks);
-      drawing = !drawing_;
+  public synchronized void setDrawing(boolean b, int ms) {
+    drawing = b;
+    if (ms > 0) {
+      sleep(ms);
+      drawing = !b;
     }
   }
 
@@ -6460,29 +6461,30 @@ public class Controller {
   }
 
   /**
-   * (setBatchBars(boolean)) Method can be called to toggle ON Batch Bars in the openrsc client
-   * config. <br>
-   * This is necessary for scripts utilizing batch bars.
+   * Gets the current state of the id view
+   *
+   * @return boolean -- Id view state
    */
-  public void setBatchBarsOn() {
-    setBatchBars(true);
+  public boolean getViewIdState() {
+    return DrawCallback.getToggleOnViewId();
   }
 
   /**
-   * (use setBatchBars(boolean)) Method can be called to toggle OFF Batch Bars in the openrsc client
-   * config for native scripts utilizing batch bars.
+   * Sets the id view.
+   *
+   * @param enabled boolean -- Whether to make ids visible in the right click menu
    */
-  public void setBatchBarsOff() {
-    setBatchBars(false);
+  public void setViewIdState(boolean enabled) {
+    DrawCallback.setToggleOnViewId(enabled);
   }
 
   /**
    * Method can be called to toggle Batch Bars in the openrsc client config for native scripts
    * utilizing batch bars.
    */
-  public void setBatchBars(boolean value) {
+  public void setBatchBars(boolean b) {
     if (isLoggedIn() && !isAuthentic()) {
-      Config.C_BATCH_PROGRESS_BAR = value;
+      Config.C_BATCH_PROGRESS_BAR = b;
     }
   }
 
@@ -6491,7 +6493,7 @@ public class Controller {
    *
    * @return boolean - true if batch bars are enabled, false otherwise or if on uranium.
    */
-  public boolean getBatchBarsOn() {
+  public boolean getBatchBarStatus() {
     if (isAuthentic()) return false;
     return Config.C_BATCH_PROGRESS_BAR;
   }

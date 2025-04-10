@@ -1,6 +1,7 @@
 package compatibility.sbot;
 
 import bot.Main;
+import bot.ui.BottomPanel;
 import callbacks.MessageCallback;
 import controller.Controller;
 import java.awt.*;
@@ -1807,17 +1808,17 @@ public abstract class Script {
 
   public boolean AutoLogin() {
     Main.logMethod("AutoLogin");
-    return Main.isAutoLogin();
+    return BottomPanel.autoLoginSelected();
   }
 
   public void EnableAutoLogin() {
     Main.logMethod("EnableAutoLogin");
-    Main.setAutoLogin(true);
+    BottomPanel.setAutoLogin(true);
   }
 
   public void DisableAutoLogin() {
     Main.logMethod("DisableAutoLogin");
-    Main.setAutoLogin(false);
+    BottomPanel.setAutoLogin(false);
   }
 
   public String Version() {

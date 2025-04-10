@@ -1,7 +1,7 @@
 package callbacks;
 
 import bot.Main;
-import bot.scriptselector.ScriptSelectorUI;
+import bot.ui.scriptselector.ScriptSelectorUI;
 import compatibility.sbot.Script;
 import controller.Controller;
 import java.awt.event.KeyEvent;

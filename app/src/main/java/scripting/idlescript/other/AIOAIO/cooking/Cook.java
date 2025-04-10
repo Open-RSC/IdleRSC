@@ -11,7 +11,7 @@ public class Cook {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (!meetsReqs()) {
       c.log("Missing required level to cook " + getRawFishId().name());

@@ -18,7 +18,7 @@ public class GnomeVillage {
       AIOAIO.state.endTime = System.currentTimeMillis();
       return 0;
     }
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     System.out.println("Gnome Village run");
 
     if (c.getInventoryItemCount(ItemId.COINS.getId()) > 100) {

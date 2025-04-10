@@ -1,6 +1,6 @@
-package bot.debugger;
+package bot.ui.debugger;
 
-import bot.ui.table.Table;
+import bot.ui.components.table.Table;
 
 public class DebuggerSection {
   public DebuggerSectionType sectionType = null;

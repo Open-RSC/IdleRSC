@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -65,7 +65,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       c.walkTo(722, 507);
       c.sleep(1380);
     }
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
   }
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -75,7 +75,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
    * @param parameters an array of String values representing the parameters passed to the function
    */
   public int start(String[] parameters) {
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
     if (parameters.length > 0 && !parameters[0].isEmpty()) {
       if (parameters[0].toLowerCase().startsWith("auto")) {
         c.displayMessage("Got Autostart, Cutting Magics", 0);
@@ -104,7 +104,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() < 30
           && c.isRunning()
-          && (c.getBatchBarsOn()
+          && (c.getBatchBarStatus()
               || doAction
               || (didActionTime + 4000L < System.currentTimeMillis()))) {
         // if there is an active tree, cut it
@@ -230,7 +230,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

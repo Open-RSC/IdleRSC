@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
 import javax.swing.JButton;
@@ -158,7 +158,7 @@ public class SmithingVarrock extends IdleScript {
           ans1 = ans1Field.getSelectedIndex();
           ans2 = ans2Field.getSelectedIndex();
           ans3 = ans3Field.getSelectedIndex();
-          if (ans3 > 0) c.setBatchBarsOn();
+          if (ans3 > 0) c.setBatchBars(true);
           ans4 = ans4Field.getSelectedIndex();
           barId = barIds[barField.getSelectedIndex()];
           scriptFrame.setVisible(false);
@@ -304,7 +304,7 @@ public class SmithingVarrock extends IdleScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

@@ -14,12 +14,12 @@ public class Config extends ParseResult {
     if (parseResult.getUsername() != null) {
       setUsername(parseResult.getUsername());
       setGraphicsEnabled(parseResult.isGraphicsEnabled());
-      setSidebarVisible(parseResult.isSidebarVisible());
+      setSidePanelVisible(parseResult.isSidePanelVisible());
       setBotPaintVisible(parseResult.isBotPaintVisible());
     } else { // default settings if no account.properties is provided
       setUsername("Username");
       setGraphicsEnabled(true);
-      setSidebarVisible(true);
+      setSidePanelVisible(true);
       setBotPaintVisible(true);
     }
     if (parseResult.getPassword() != null) {

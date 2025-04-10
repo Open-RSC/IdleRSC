@@ -1,4 +1,4 @@
-package bot.scriptselector.models;
+package bot.ui.scriptselector.models;
 
 import java.util.ArrayList;
 import java.util.Arrays;

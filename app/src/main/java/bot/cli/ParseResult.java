@@ -14,15 +14,15 @@ public class ParseResult {
   private String remoteOcrUrl = "";
   private int positionX = -1;
   private int positionY = -1;
-  private int spellId;
+  private int spellId = 0;
   private String scriptName = "";
   private boolean graphicsEnabled = true;
   private boolean render3DEnabled = true;
   private boolean botPaintVisible = true;
-  private boolean showSideBar = true;
-  private String[] scriptArguments;
+  private boolean showSidePanel = true;
+  private String[] scriptArguments = {""};
   private OCRType ocrType = OCRType.HASH;
-  private String ocrServer;
+  private String ocrServer = "";
 
   // Boolean options
   private boolean usingAccount,
@@ -154,12 +154,12 @@ public class ParseResult {
     return logWindowVisible;
   }
 
-  public void setSidebarVisible(boolean sidebarVisible) {
-    this.showSideBar = sidebarVisible;
+  public void setSidePanelVisible(boolean sidePanelVisible) {
+    this.showSidePanel = sidePanelVisible;
   }
 
-  public boolean isSidebarVisible() {
-    return showSideBar;
+  public boolean isSidePanelVisible() {
+    return showSidePanel;
   }
 
   public void setDebug(boolean debug) {

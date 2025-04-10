@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,7 +42,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     c.displayMessage("@red@No Bank Iron Superheat- By Kaila");
     c.displayMessage("@red@Start in Khazard Mine with nats,hammer,fire staff,pickaxe");
     if (c.isInBank()) c.closeBank();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
   }
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
@@ -216,7 +216,7 @@ public final class K_NoBank_Superheat extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

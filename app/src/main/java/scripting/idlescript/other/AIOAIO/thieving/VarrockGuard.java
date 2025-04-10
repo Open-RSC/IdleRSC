@@ -11,7 +11,7 @@ public class VarrockGuard {
 
   public static int run() {
     c = Main.getController();
-    c.setBatchBarsOn();
+    c.setBatchBars(true);
 
     if (Main.getController().getCurrentStat(Main.getController().getStatId("Thieving")) < 40) {
       c.log("Skipping Varrock Guards until we're at least 40 thieving!");

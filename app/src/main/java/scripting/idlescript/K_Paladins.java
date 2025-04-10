@@ -1,8 +1,8 @@
 package scripting.idlescript;
 
 import bot.Main;
-import bot.scriptselector.models.Category;
-import bot.scriptselector.models.ScriptInfo;
+import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -183,7 +183,7 @@ public final class K_Paladins extends K_kailaScript {
       invCoins = c.getInventoryItemCount(10);
       invChaos = c.getInventoryItemCount(41);
       startTime = System.currentTimeMillis();
-      c.setBatchBarsOff();
+      c.setBatchBars(false);
       startSequence();
       scriptStart();
     }
@@ -516,7 +516,7 @@ public final class K_Paladins extends K_kailaScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocation(Main.getRscFrameCenter());
+    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

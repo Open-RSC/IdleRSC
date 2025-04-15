@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import models.entities.ItemId;
+import models.entities.Location;
 import models.entities.SkillId;
 
 public class MiningGuild extends IdleScript {
@@ -18,7 +19,7 @@ public class MiningGuild extends IdleScript {
           "Seatta",
           "Mines ores in the Mining Guild.");
 
-  // Mining Guild Script by Seatta
+  // Eventually I'd like to refactor this and clean it up a bit
 
   private static final JCheckBox runiteCheck = new JCheckBox("Mine Runite", true);
   private static final JCheckBox adamantiteCheck = new JCheckBox("Mine Adamantite", true);
@@ -81,7 +82,7 @@ public class MiningGuild extends IdleScript {
           && !mithrilCheck.isSelected()
           && !goldCheck.isSelected()
           && !coalCheck.isSelected()) {
-        quit(3); // You can't mine nothing!
+        quit(2); // You can't mine nothing!
       }
       mineRunite = runiteCheck.isSelected();
       mineAdamantite = adamantiteCheck.isSelected();
@@ -95,7 +96,7 @@ public class MiningGuild extends IdleScript {
 
   public void run() {
 
-    if (controller.getBaseStat(SkillId.MINING.getId()) < 60) quit(4);
+    if (controller.getBaseStat(SkillId.MINING.getId()) < 60) quit(3);
 
     for (int id : pickaxeIds) {
       if (controller.isItemIdEquipped(id) || controller.getInventoryItemCount(id) > 0) {
@@ -104,24 +105,13 @@ public class MiningGuild extends IdleScript {
         controller.displayMessage("@gre@Using: " + pickaxe);
         break;
       }
-      if (id == pickaxeIds[pickaxeIds.length - 1]) {
-        quit(5);
-      }
+      if (id == pickaxeIds[pickaxeIds.length - 1]) quit(4);
+      Location.FALADOR_MINING_GUILD.walkTowards();
     }
 
     while (controller.isRunning()) {
       if (controller.getNeedToMove()) controller.moveCharacter();
       if (controller.getShouldSleep()) controller.sleepHandler(true);
-      if (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5
-          && controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223) {
-        quit(2);
-      } else {
-        while (controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) == 223
-            && controller.isRunning()) {
-          controller.atObject(ladderDown[0], ladderDown[1]);
-          controller.sleep(640);
-        }
-      }
       miningLevel = controller.getBaseStat(SkillId.MINING.getId());
       if (controller.getInventoryItemCount() == 30) {
         bank();
@@ -225,28 +215,19 @@ public class MiningGuild extends IdleScript {
   }
 
   public void bank() {
-    controller.setStatus("@cya@Banking");
     isMining = "none";
     currentOre = new int[] {0, 0};
-    while (controller.getObjectAtCoord(ladderDown[0], ladderDown[1]) != 223
-        && controller.isRunning()
-        && controller.isLoggedIn()) { // sleep until the mining guild has been exited
-
-      controller.atObject(ladderUp[0], ladderUp[1]); // attempt to ascend ladder to Falador
-      controller.sleep(1280);
-    }
-    if (!controller.isRunning()) {
-      quit(1);
-    }
+    Location.FALADOR_EAST_BANK.walkTowards();
+    controller.sleep(1280);
+    if (!controller.isRunning()) quit(1);
     controller.openBank();
     while (!controller.isInBank()
         && controller.isRunning()
         && controller.isLoggedIn()) { // sleep until the bank has been opened
       controller.sleep(1280);
     }
-    if (!controller.isRunning()) {
-      quit(1);
-    }
+    if (!controller.isRunning()) quit(1);
+
     if (controller.isInBank() && controller.isRunning()) {
       for (int i = 0; i < oreIds.length; i++) { // deposits all ores
         if (controller.getInventoryItemCount(oreIds[i]) > 0) {
@@ -267,18 +248,9 @@ public class MiningGuild extends IdleScript {
         }
       }
       controller.closeBank();
-      controller.setStatus("@cya@Walking to Mining Guild");
-      while (controller.getObjectAtCoord(ladderUp[0], ladderUp[1]) != 5
-          && controller.isRunning()
-          && controller.isLoggedIn()) { // sleep until the mining guild has been entered
-
-        controller.atObject(
-            ladderDown[0], ladderDown[1]); // attempt to descend ladder to mining guild
-        controller.sleep(1280);
-      }
-      if (!controller.isRunning()) {
-        quit(1);
-      }
+      Location.FALADOR_MINING_GUILD.walkTowards();
+      controller.sleep(1280);
+      if (!controller.isRunning()) quit(1);
     }
   }
 
@@ -317,17 +289,13 @@ public class MiningGuild extends IdleScript {
           controller.displayMessage("@red@Script has been stopped!");
           break;
         case 2:
-          controller.displayMessage(
-              "@red@Start the script inside the mining guild or the Falador east bank!");
-          break;
-        case 3:
           controller.displayMessage("@red@Are you planning to mine nothing?");
           break;
-        case 4:
+        case 3:
           controller.displayMessage(
               "@red@You need a mining level of 60 to enter the mining guild!");
           break;
-        case 5:
+        case 4:
           controller.displayMessage(
               "@red@You do not have a pickaxe equipped or in your inventory!");
           controller.displayMessage("@red@Get one and start the script again!");
@@ -365,9 +333,8 @@ public class MiningGuild extends IdleScript {
   }
 
   public boolean rockEmpty() {
-    return currentOre[0] != 0
-        ? controller.getObjectAtCoord(currentOre[0], currentOre[1]) == EMPTY_ROCK
-        : true;
+    return currentOre[0] == 0
+        || controller.getObjectAtCoord(currentOre[0], currentOre[1]) == EMPTY_ROCK;
   }
 
   @Override

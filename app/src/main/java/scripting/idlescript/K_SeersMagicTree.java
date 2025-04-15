@@ -53,7 +53,7 @@ public final class K_SeersMagicTree extends K_kailaScript {
     didActionTime = System.currentTimeMillis();
 
     for (int axe : axeId) {
-      if (c.getInventoryItemCount(axe) > 0) noAxe = false;
+      if (c.getInventoryItemCount(axe) > 0 || c.isItemIdEquipped(axe)) noAxe = false;
     }
     if (!c.isAuthentic() || c.getInventoryItemCount(ItemId.SLEEPING_BAG.getId()) > 0) noBag = false;
     if (noAxe || noBag) {

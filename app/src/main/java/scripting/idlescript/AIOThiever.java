@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import bot.Main;
 import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.Parameter;
 import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
@@ -16,13 +17,6 @@ import models.entities.EquipSlotIndex;
 import models.entities.SkillId;
 import orsc.ORSCharacter;
 
-/**
- * A basic thiever that supports most things in the game. Supports specific bank/thieving areas.
- * Parameters are: fight style (0,1,2,3), eatingHealth, Target, food withdraw amount Example: 3, 60,
- * Hero, 1
- *
- * @author Dvorak and Kaila
- */
 public class AIOThiever extends IdleScript {
   public static final ScriptInfo info =
       new ScriptInfo(
@@ -30,7 +24,53 @@ public class AIOThiever extends IdleScript {
             Category.THIEVING, Category.IRONMAN_SUPPORTED, Category.URANIUM_SUPPORTED
           },
           "Dvorak and Kaila",
-          "A basic thiever that supports most things in the game.");
+          "A basic thiever that supports most things in the game. "
+              + "\n   Supports specific bank/thieving areas."
+              + "\n   Parameters are: "
+              + "\n      1: fightStyle (0,1,2,3)"
+              + "\n      2: bankSpot (0,1,2,3)"
+              + "\n      3: eatThreshold"
+              + "\n      4: foodWithdrawAmount"
+              + "\n      5: targetName"
+              + "\n\n   Example: "
+              + "\n      Script Selector: '3 1 60 5 Hero'"
+              + "\n      Account Properties: '3, 1, 60, 5, Hero'",
+          new Parameter[] {
+            new Parameter(
+                "P1: fightStyle (number)",
+                "Which style to use"
+                    + "\n      0 - Controlled"
+                    + "\n      1 - Attack"
+                    + "\n      2 - Strength"
+                    + "\n      3 - Defense"),
+            new Parameter(
+                "P2: bankSpot (number)",
+                "Where to bank"
+                    + "\n      0 - None"
+                    + "\n      1 - Ardougne"
+                    + "\n      2 - Varrock West"
+                    + "\n      3 - Varrock East"),
+            new Parameter("P3: eatThreshold (number)", "\n      What health to eat food at"),
+            new Parameter(
+                "P4: foodWithdrawAmount (number)",
+                "\n      How much food to withdraw from the bank"),
+            new Parameter(
+                "P5: targetName (name)",
+                "Target to thieve"
+                    + "\n      NPCs:"
+                    + "\n         Man, Farmer, Warrior,"
+                    + "\n         Workman, Rogue, Guard_Ardougne,"
+                    + "\n         Guard_Varrock, Knight, Watchmen,"
+                    + "\n         Paladin, Gnome, Hero"
+                    + "\n      Stalls:"
+                    + "\n         All_Ardougne_Stalls, Tea_Stall,"
+                    + "\n        Bakers_Stall, Silk_Stall, Fur_Stall,"
+                    + "\n         Silver_Stall, Spice_Stall, Gem_Stall"
+                    + "\n      Chests:"
+                    + "\n         Nature_Rune_Chest,"
+                    + "\n         50_Coin_Chest,"
+                    + "\n         Hemenster_Chest"),
+          });
 
   private final int[][][]
       tiles = { // {objectX, objectY, object Id}, {walkTo}, {walkTo}, {walkTo}, {walkTo}
@@ -106,6 +146,7 @@ public class AIOThiever extends IdleScript {
       {568, 595}, // West
     }
   };
+
   private final ArrayList<ThievingObject> objects =
       new ArrayList<ThievingObject>() {
         {
@@ -114,8 +155,8 @@ public class AIOThiever extends IdleScript {
           add(new ThievingObject("Warrior", 86, true, false));
           add(new ThievingObject("Workman", 722, true, false));
           add(new ThievingObject("Rogue", 342, true, false));
-          add(new ThievingObject("Guard (Ardy)", 321, true, false));
-          add(new ThievingObject("Guard (Varrock)", 65, true, false));
+          add(new ThievingObject("Guard_Ardougne", 321, true, false));
+          add(new ThievingObject("Guard_Varrock", 65, true, false));
           add(new ThievingObject("Knight", 322, true, false));
           add(new ThievingObject("Watchman", 574, true, false));
           add(new ThievingObject("Paladin", 323, true, false));
@@ -123,21 +164,21 @@ public class AIOThiever extends IdleScript {
           add(new ThievingObject("Hero", 324, true, false));
 
           // index 12
-          add(new ThievingObject("All Stalls (Ardougne)", 327, false, true));
-          add(new ThievingObject("Tea Stall", 1183, false, true));
-          add(new ThievingObject("Bakers Stall", 322, false, true));
+          add(new ThievingObject("All_Ardougne_Stalls", 327, false, true));
+          add(new ThievingObject("Tea_Stall", 1183, false, true));
+          add(new ThievingObject("Bakers_Stall", 322, false, true));
           // add(new ThievingObject("Rock Cake Stall", , false, true)); //be my guest
-          add(new ThievingObject("Silk Stall", 323, false, true));
-          add(new ThievingObject("Fur Stall", 324, false, true));
-          add(new ThievingObject("Silver Stall", 325, false, true));
-          add(new ThievingObject("Spice Stall", 326, false, true));
-          add(new ThievingObject("Gem Stall", 327, false, true));
+          add(new ThievingObject("Silk_Stall", 323, false, true));
+          add(new ThievingObject("Fur_Stall", 324, false, true));
+          add(new ThievingObject("Silver_Stall", 325, false, true));
+          add(new ThievingObject("Spice_Stall", 326, false, true));
+          add(new ThievingObject("Gem_Stall", 327, false, true));
 
           // index 20
           // add(new ThievingObject("10 Coin Chest", 327, false, true)); //who's gonna bother?
-          add(new ThievingObject("Nature Rune Chest", 335, false, true));
-          add(new ThievingObject("50 Coin Chest", 336, false, true));
-          add(new ThievingObject("Hemenster Chest", 379, false, true));
+          add(new ThievingObject("Nature_Rune_Chest", 335, false, true));
+          add(new ThievingObject("50_Coin_Chest", 336, false, true));
+          add(new ThievingObject("Hemenster_Chest", 379, false, true));
         }
       };
   private final int[] lootIds = {10, 41, 333, 335, 330, 619, 38, 152, 612, 142, 161};
@@ -169,6 +210,7 @@ public class AIOThiever extends IdleScript {
       guiSetup = false;
       scriptStarted = false;
       c.setBatchBars(false);
+      System.out.println(target.name);
       scriptStart();
     } else {
       if (parameters.length == 0 || parameters[0] == null || parameters[0].trim().isEmpty()) {
@@ -180,29 +222,27 @@ public class AIOThiever extends IdleScript {
       } else {
         try {
           fightMode = Integer.parseInt(parameters[0]);
-          eatingHealth = Integer.parseInt(parameters[1]);
-          bankSpot = bankSpots[Integer.parseInt(parameters[2])];
+          bankSpot = bankSpots[Integer.parseInt(parameters[1])];
+          eatingHealth = Integer.parseInt(parameters[2]);
           foodWithdrawAmount = Integer.parseInt(parameters[3]);
-          for (ThievingObject obj : objects) {
+          for (ThievingObject obj : objects)
             if (obj.name.equalsIgnoreCase(parameters[4])) target = obj;
-          }
+
           if (target == null)
             throw new Exception("Could not parse thieving target name! Try a different name.");
           c.setBatchBars(false);
           c.log("Welcome to AIOThiever. Let's party like it's 2004!", "gre");
           scriptStarted = true;
-          c.displayMessage("@red@AIOThiever by Dvorak. Let's party like it's 2004!");
-          c.setBatchBars(false);
         } catch (Exception e) {
           c.log("Could not parse parameters: " + Arrays.toString(parameters), "red");
           c.log(
-              "Parameters should be: fightStyle, eatingHealth, bankSpot, foodWithdrawAmount, targetName",
+              "Parameters should be: style, bank, eatThreshold, foodWithdrawAmount, targetName",
               "gre"); // (none, ardy, var west, var east    (0,1,2,3)
-          c.log(
-              "fightStyle indexes are [0 = controlled, 1 = attack, 2 = strength, 3 = defense]",
-              "gre");
+          c.log("Style indexes are [0 = controlled, 1 = attack, 2 = strength, 3 = defense]", "gre");
           c.log("Bank indexes are [0 = none, 1 = ardy, 2 = var west, 3 = var east]", "gre");
-          c.log("For Example: 3, 60, 1, 1, Hero", "gre");
+          c.log(
+              "For Example: '3 1 60 5 Hero' (Selector) or '3, 1, 60, 5, Hero' (Account Args)",
+              "gre");
           c.stop();
         }
       }
@@ -251,7 +291,7 @@ public class AIOThiever extends IdleScript {
             c.sleep(GAME_TICK / 2);
           }
           // Stall Thieving
-          // todo investiagte searching npc positions and selecting opposite them
+          // todo investigate searching npc positions and selecting opposite them
         } else if (targetIndex > 11 && targetIndex < 20) {
           if (targetIndex == 12 || target.name.contains("All")) {
             for (int i = 1; i < tiles.length; i++) {
@@ -409,7 +449,7 @@ public class AIOThiever extends IdleScript {
     JButton startScriptButton = new JButton("Start");
 
     for (ThievingObject obj : objects) {
-      targetField.addItem(obj.name);
+      targetField.addItem(obj.name.replaceAll("_", " "));
     }
     targetField.addActionListener( // set suggested values for option
         e -> {
@@ -446,7 +486,6 @@ public class AIOThiever extends IdleScript {
 
           scriptStarted = true;
           c.log("Welcome to AIOThiever. Let's party like it's 2004!", "gre");
-          c.setBatchBars(false);
         });
 
     scriptFrame = new JFrame(c.getPlayerName() + " - options");
@@ -468,7 +507,7 @@ public class AIOThiever extends IdleScript {
     scriptFrame.add(startScriptButton);
 
     scriptFrame.pack();
-    scriptFrame.setLocationRelativeTo(Main.getRscFrame());
+    scriptFrame.setLocationRelativeTo(Main.rscFrame);
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();

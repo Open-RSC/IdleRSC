@@ -109,8 +109,8 @@ public class LimpySnapez extends IdleScript {
       }
     }
 
-    snapezInBank = controller.getBankItemCount(220);
-    limpzInBank = controller.getBankItemCount(469);
+    snapezInBank = controller.getBankItemCount(ItemId.SNAPE_GRASS.getId());
+    limpzInBank = controller.getBankItemCount(ItemId.LIMPWURT_ROOT.getId());
   }
 
   @Override

@@ -1,373 +1,366 @@
 package scripting.idlescript;
 
 import bot.Main;
+import bot.ui.components.CustomCheckBox;
 import bot.ui.scriptselector.models.Category;
+import bot.ui.scriptselector.models.Parameter;
 import bot.ui.scriptselector.models.ScriptInfo;
-import java.awt.GridLayout;
-import java.util.Objects;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.*;
 import models.entities.ItemId;
 import models.entities.Location;
+import models.entities.SceneryId;
 import models.entities.SkillId;
 
-public class MiningGuild extends IdleScript {
-  public static final ScriptInfo info =
+public class MiningGuild extends SeattaScript {
+  public static ScriptInfo info =
       new ScriptInfo(
           new Category[] {Category.MINING, Category.IRONMAN_SUPPORTED},
           "Seatta",
-          "Mines ores in the Mining Guild.");
+          "Mines ores in the Mining Guild.",
+          new Parameter[] {
+            new Parameter(
+                "Ores",
+                "The ores to mine"
+                    + "\n   r - Runite"
+                    + "\n   a - Adamantite"
+                    + "\n   m - Mithril"
+                    + "\n   c - Coal"
+                    + "\n   g - Gold"
+                    + "\n\nExample for coal and gold: \"c g\"")
+          });
 
-  // Eventually I'd like to refactor this and clean it up a bit
+  private boolean started = false;
+  private Boolean[] mineOres = {false, false, false, false, false};
 
-  private static final JCheckBox runiteCheck = new JCheckBox("Mine Runite", true);
-  private static final JCheckBox adamantiteCheck = new JCheckBox("Mine Adamantite", true);
-  private static final JCheckBox mithrilCheck = new JCheckBox("Mine Mithril", true);
-  private static final JCheckBox goldCheck = new JCheckBox("Mine Gold", true);
-  private static final JCheckBox coalCheck = new JCheckBox("Mine Coal", true);
+  private final int[] banked = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+  private Ore current = Ore.NONE;
 
-  private static final int RUNITE_ROCK = 210;
-  private static final int ADAMANTITE_ROCK = 109;
-  private static final int MITHRIL_ROCK = 107;
-  private static final int GOLD_ROCK = 113;
-  private static final int[] COAL_ROCK = {110, 111};
-  private static final int EMPTY_ROCK = 98;
-
-  private static final int[] oreIds = {
+  private final int[] lootIds = {
     ItemId.RUNITE_ORE.getId(),
     ItemId.ADAMANTITE_ORE.getId(),
     ItemId.MITHRIL_ORE.getId(),
     ItemId.COAL.getId(),
-    ItemId.GOLD.getId()
-  };
-  private static final int[] gemIds = {
+    ItemId.GOLD.getId(),
     ItemId.UNCUT_DIAMOND.getId(),
     ItemId.UNCUT_RUBY.getId(),
     ItemId.UNCUT_EMERALD.getId(),
     ItemId.UNCUT_SAPPHIRE.getId()
   };
-  private static final int[] pickaxeIds = {
-    ItemId.BRONZE_PICKAXE.getId(),
-    ItemId.IRON_PICKAXE.getId(),
-    ItemId.STEEL_PICKAXE.getId(),
-    ItemId.MITHRIL_PICKAXE.getId(),
-    ItemId.ADAMANTITE_PICKAXE.getId(),
-    ItemId.RUNE_PICKAXE.getId()
-  };
 
-  private static int[] banked = {0, 0, 0, 0, 0};
-  private static int[] currentOre = {0, 0};
-
-  private static final int[] ladderUp = {274, 3398};
-  private static final int[] ladderDown = {274, 566};
-  private static JFrame scriptFrame = null;
-
-  private static boolean mineRunite, mineAdamantite, mineMithril, mineGold, mineCoal = false;
-  private static boolean guiSetup, setupCompleted = false;
-  private static String isMining = "none";
-  private static int miningLevel;
-
+  /**
+   * The entry point of the script where we'll check for requirements.
+   *
+   * @param param String[] -- Args passed into the script
+   * @return int -- Sleep int, not used since this script loops internally
+   */
   public int start(String[] param) {
+    checkForSkillLevelOrQuit(SkillId.MINING, 60);
+    checkForUsablePickaxeOrQuit();
+
+    // Convert args into indices for mineOres
+    Map<Character, Integer> oreMap =
+        new HashMap<Character, Integer>() {
+          {
+            put('r', 0);
+            put('a', 1);
+            put('m', 2);
+            put('c', 3);
+            put('g', 4);
+          }
+        };
+
+    // Set mineOres based on the input args and their corresponding indices
+    for (String str : param) {
+      String s = str.trim().toLowerCase();
+      if (s.isEmpty()) continue;
+
+      Integer index = oreMap.get(s.charAt(0));
+      if (index != null) mineOres[index] = true;
+    }
+
+    // If no args were sent, instead run setup
+    if (Arrays.stream(mineOres).noneMatch(Boolean::booleanValue)) setup();
+
     paintBuilder.start(4, 18, 162);
-    if (!guiSetup) {
-      setup();
-      guiSetup = true;
-    }
-    if (setupCompleted) {
-      guiSetup = false;
-      setupCompleted = false;
-      if (!runiteCheck.isSelected()
-          && !adamantiteCheck.isSelected()
-          && !mithrilCheck.isSelected()
-          && !goldCheck.isSelected()
-          && !coalCheck.isSelected()) {
-        quit(2); // You can't mine nothing!
-      }
-      mineRunite = runiteCheck.isSelected();
-      mineAdamantite = adamantiteCheck.isSelected();
-      mineMithril = mithrilCheck.isSelected();
-      mineGold = goldCheck.isSelected();
-      mineCoal = coalCheck.isSelected();
-      run();
-    }
-    return 1000; // start() must return a int value now.
+    started = true;
+    return run();
   }
 
-  public void run() {
-
-    if (controller.getBaseStat(SkillId.MINING.getId()) < 60) quit(3);
-
-    for (int id : pickaxeIds) {
-      if (controller.isItemIdEquipped(id) || controller.getInventoryItemCount(id) > 0) {
-        String pickaxe = String.valueOf(ItemId.getById(id)).replace("_", " ").toLowerCase();
-        pickaxe = pickaxe.substring(0, 1).toUpperCase() + pickaxe.substring(1);
-        controller.displayMessage("@gre@Using: " + pickaxe);
-        break;
+  /**
+   * The main loop of the script
+   *
+   * @return int
+   */
+  private int run() {
+    while (isScriptRunning()) {
+      if (!c.isBatching()) current = Ore.NONE;
+      if (c.getInventoryItemCount() == 30) bank();
+      if (!Location.FALADOR_MINING_GUILD.isAtLocation()) {
+        paintStatus = "Walking to Mining Guild";
+        Location.FALADOR_MINING_GUILD.walkTowards();
+        continue;
       }
-      if (id == pickaxeIds[pickaxeIds.length - 1]) quit(4);
-      Location.FALADOR_MINING_GUILD.walkTowards();
-    }
-
-    while (controller.isRunning()) {
-      if (controller.getNeedToMove()) controller.moveCharacter();
-      if (controller.getShouldSleep()) controller.sleepHandler(true);
-      miningLevel = controller.getBaseStat(SkillId.MINING.getId());
-      if (controller.getInventoryItemCount() == 30) {
-        bank();
+      if (current == Ore.NONE) {
+        paintStatus = "Waiting for ore...";
+        Ore best = getBestAvailableOre();
+        if (best != null) mine(best);
       } else {
-        if (rockEmpty() || !controller.isBatching()) {
-          isMining = "none";
-          currentOre = new int[] {0, 0};
-        }
-        if (controller.isBatching()) {
-          if (Objects.equals(isMining, "runite")) {
-            while (controller.isBatching() && runiteAvailable() && controller.isLoggedIn()) {
-              controller.sleep(640);
-            }
+        while (c.isBatching() && isRunningAndLoggedIn()) {
+          if (c.getInventoryItemCount() == 30) {
+            c.stopBatching();
+            break;
           }
-          if (miningLevel >= 85 && mineRunite && runiteAvailable()) {
-            mine("runite");
-          }
-          if (Objects.equals(isMining, "mithril")) {
-            if (miningLevel >= 70 && mineAdamantite && adamantiteAvailable()) {
-              mine("adamantite");
-            }
-          }
-          if (Objects.equals(isMining, "coal")) {
-            if (miningLevel >= 70 && mineAdamantite && adamantiteAvailable()) {
-              mine("adamantite");
-            } else if (mineMithril && mithrilAvailable()) {
-              mine("mithril");
-            } else if (mineGold && goldAvailable()) {
-              mine("gold");
-            }
-          }
-          controller.sleep(1280);
-        }
-        if (!controller.isBatching() && Objects.equals(isMining, "none") && rockEmpty()) {
-          if (miningLevel >= 85 && mineRunite && runiteAvailable()) {
-            mine("runite");
-          } else if (miningLevel >= 70 && mineAdamantite && adamantiteAvailable()) {
-            mine("adamantite");
-          } else if (miningLevel >= 55 && mineMithril && mithrilAvailable()) {
-            mine("mithril");
-          } else if (miningLevel >= 40 && mineGold && goldAvailable()) {
-            mine("gold");
-          } else if (miningLevel >= 30 && mineCoal && coalAvailable()) {
-            mine("coal");
-          }
-          controller.sleep(1280);
+          Ore best = getBestAvailableOre();
+          if (best != null && best.ordinal() < current.ordinal()) mine(best);
+          sleepTicks(1);
         }
       }
+      sleepTicks(1);
     }
-    quit(1);
+    return quit();
   }
 
-  public void mine(String i) {
-    int[] ore = {};
-    switch (i) {
-      case "runite":
-        ore = controller.getNearestObjectById(RUNITE_ROCK);
-        if (ore != null) {
-          isMining = "runite";
-          controller.setStatus("@cya@Mining @cya@Runite");
-        }
-        break;
-      case "adamantite":
-        ore = controller.getNearestObjectById(ADAMANTITE_ROCK);
-        if (ore != null) {
-          isMining = "adamantite";
-          controller.setStatus("@cya@Mining @gre@Adamantite");
-        }
-        break;
-      case "mithril":
-        ore = controller.getNearestObjectById(MITHRIL_ROCK);
-        if (ore != null) {
-          isMining = "mithril";
-          controller.setStatus("@cya@Mining @blu@Mithril");
-        }
-        break;
-      case "gold":
-        ore = controller.getNearestObjectById(GOLD_ROCK);
-        if (ore != null) {
-          isMining = "gold";
-          controller.setStatus("@cya@Mining @yel@Gold");
-        }
-        break;
-      case "coal":
-        ore = controller.getNearestObjectByIds(COAL_ROCK);
-        if (ore != null) {
-          isMining = "coal";
-          controller.setStatus("@cya@Mining @whi@Coal");
-        }
-        break;
+  /**
+   * Gets the current best available ore that can be mined
+   *
+   * @return Ore -- The best available ore
+   */
+  private Ore getBestAvailableOre() {
+    for (Ore ore : Ore.values()) if (shouldMine(ore)) return ore;
+    return null;
+  }
+
+  /**
+   * Checks whether the specified ore meets requirements to be mined
+   *
+   * @param ore Ore -- The ore type to check
+   * @return boolean -- Whether it can be mined
+   */
+  private boolean shouldMine(Ore ore) {
+    int miningLevel = c.getBaseStat(SkillId.MINING.getId());
+    switch (ore) {
+      case RUNITE:
+        return mineOres[0] && miningLevel >= 85 && isOreAvailable(Ore.RUNITE);
+      case ADAMANTITE:
+        return mineOres[1] && miningLevel >= 70 && isOreAvailable(Ore.ADAMANTITE);
+      case MITHRIL:
+        return mineOres[2] && miningLevel >= 55 && isOreAvailable(Ore.MITHRIL);
+      case COAL:
+        return mineOres[3] && miningLevel >= 30 && isOreAvailable(Ore.COAL);
+      case GOLD:
+        return mineOres[4] && miningLevel >= 40 && isOreAvailable(Ore.GOLD);
       default:
-        controller.sleep(640);
-        controller.setStatus("@cya@Waiting");
-        isMining = "none";
+        return false;
     }
-    if (ore.length > 0) {
-      controller.atObject(ore[0], ore[1]);
-      currentOre = new int[] {ore[0], ore[1]};
-    }
-    controller.sleep(1920);
   }
 
-  public void bank() {
-    isMining = "none";
-    currentOre = new int[] {0, 0};
+  /**
+   * Set an oreType as the current target to mine
+   *
+   * @param oreType Ore -- Ore type to mine
+   */
+  private void mine(Ore oreType) {
+    int[] ore = getNearestAvailableOreOfType(oreType);
+    if (ore != null) {
+      current = oreType;
+      paintStatus = String.format("Mining %s", oreType.getName());
+      c.atObject(ore[0], ore[1]);
+      sleepTicks(3);
+    }
+  }
+
+  /** Bank our loot */
+  private void bank() {
+    current = Ore.NONE;
+    paintStatus = "Banking";
     Location.FALADOR_EAST_BANK.walkTowards();
-    controller.sleep(1280);
-    if (!controller.isRunning()) quit(1);
-    controller.openBank();
-    while (!controller.isInBank()
-        && controller.isRunning()
-        && controller.isLoggedIn()) { // sleep until the bank has been opened
-      controller.sleep(1280);
-    }
-    if (!controller.isRunning()) quit(1);
 
-    if (controller.isInBank() && controller.isRunning()) {
-      for (int i = 0; i < oreIds.length; i++) { // deposits all ores
-        if (controller.getInventoryItemCount(oreIds[i]) > 0) {
-          banked[i] +=
-              controller.getInventoryItemCount(oreIds[i]); // adds ore to banked array for paint
-          while (controller.getInventoryItemCount(oreIds[i]) > 0) {
-            controller.depositItem(oreIds[i], controller.getInventoryItemCount(oreIds[i]));
-            controller.sleep(640);
-          }
-        }
+    boolean hasBankables = Arrays.stream(lootIds).anyMatch(SeattaScript::hasUnnotedItem);
+    while (hasBankables && c.isRunning()) {
+      while (!c.isLoggedIn()) sleepTicks(1);
+
+      // Wait until the bank is opened
+      while (isRunningAndLoggedIn() && !c.isInBank()) {
+        if (!c.isCurrentlyWalking()) c.openBank();
+        sleepTicks(1);
       }
-      for (Integer gemID : gemIds) { // deposits all gems
-        if (controller.getInventoryItemCount(gemID) > 0) {
-          while (controller.getInventoryItemCount(gemID) > 0) {
-            controller.depositItem(gemID, controller.getInventoryItemCount(gemID));
-            controller.sleep(640);
-          }
-        }
+
+      // Add all items to our banked counter and deposit them
+      for (int i = 0; i < lootIds.length; i++) {
+        int item = lootIds[i];
+        if (!isRunningAndLoggedIn()) break;
+        if (c.getInventoryItemCount(item) < 1) continue;
+
+        banked[i] += c.getInventoryItemCount(item);
+        c.depositItem(lootIds[i], c.getInventoryItemCount(lootIds[i]));
+        while (c.getInventoryItemCount(lootIds[i]) > 0 && isRunningAndLoggedIn()) sleepTicks(1);
       }
-      controller.closeBank();
-      Location.FALADOR_MINING_GUILD.walkTowards();
-      controller.sleep(1280);
-      if (!controller.isRunning()) quit(1);
+      if (c.isLoggedIn())
+        hasBankables = Arrays.stream(lootIds).anyMatch(SeattaScript::hasUnnotedItem);
     }
+    c.closeBank();
+    if (!c.isRunning()) quit();
   }
 
-  public void setup() {
-    JButton startScriptButton = new JButton("Start");
+  /**
+   * Check for the nearest ore of an oreType
+   *
+   * @param oreType Ore -- Type to check for
+   * @return int[] -- Coordinates of the ore
+   */
+  private int[] getNearestAvailableOreOfType(Ore oreType) {
+    return c.getNearestObjectByIds(oreType.getRocks());
+  }
 
-    startScriptButton.addActionListener(
-        e -> {
-          scriptFrame.setVisible(false);
-          scriptFrame.dispose();
-          setupCompleted = true;
-        });
+  /**
+   * Checks if an ore of a specific type is available
+   *
+   * @param oreType Ore -- Type to check for
+   * @return boolean -- Whether is it available
+   */
+  private boolean isOreAvailable(Ore oreType) {
+    int[] ore = getNearestAvailableOreOfType(oreType);
+    return ore != null && ore[1] > 3383;
+  }
 
-    scriptFrame = new JFrame("Script Options");
-
-    scriptFrame.setLayout(new GridLayout(0, 1));
+  private void setup() {
+    JFrame scriptFrame = new JFrame();
+    scriptFrame.setMinimumSize(new Dimension(180, 180));
     scriptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    scriptFrame.add(runiteCheck);
-    scriptFrame.add(adamantiteCheck);
-    scriptFrame.add(mithrilCheck);
-    scriptFrame.add(goldCheck);
-    scriptFrame.add(coalCheck);
-    scriptFrame.add(startScriptButton);
+    scriptFrame.getContentPane().setBackground(Main.primaryBG);
+    scriptFrame.setForeground(Main.primaryFG);
+    AtomicBoolean buttonPressed = new AtomicBoolean(false);
+    String[] oreNames = {"Runite", "Adamantite", "Mithril", "Coal", "Gold"};
 
+    CustomCheckBox[] checks = new CustomCheckBox[oreNames.length];
+    for (int i = 0; i < oreNames.length; i++)
+      checks[i] = new CustomCheckBox("Mine " + oreNames[i], true);
+
+    JButton startButton = new JButton("Start");
+    startButton.setBackground(Main.secondaryBG);
+    startButton.setForeground(Main.secondaryFG);
+    startButton.setPreferredSize(new Dimension(160, 28));
+    startButton.addActionListener(e -> buttonPressed.set(true));
+
+    JPanel checkPanel = new JPanel();
+    checkPanel.setLayout(new BoxLayout(checkPanel, BoxLayout.Y_AXIS));
+    checkPanel.setBackground(Main.primaryBG);
+
+    for (CustomCheckBox check : checks) {
+      check.setAlignmentX(Component.LEFT_ALIGNMENT);
+      check.setForeground(Main.primaryFG);
+      check.setBackground(Main.primaryBG);
+      check.addActionListener(
+          e -> startButton.setEnabled(Arrays.stream(checks).anyMatch(JCheckBox::isSelected)));
+      checkPanel.add(check);
+    }
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setBackground(Main.primaryBG);
+    buttonPanel.add(startButton);
+
+    scriptFrame.add(checkPanel, BorderLayout.CENTER);
+    scriptFrame.add(buttonPanel, BorderLayout.SOUTH);
     scriptFrame.pack();
     scriptFrame.setLocationRelativeTo(Main.getRscFrame());
     scriptFrame.setVisible(true);
     scriptFrame.toFront();
     scriptFrame.requestFocusInWindow();
-  }
+    scriptFrame.setResizable(false);
+    scriptFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-  public void quit(Integer i) {
-    if (controller.isRunning()) {
-      switch (i) {
-        case 1:
-          controller.displayMessage("@red@Script has been stopped!");
-          break;
-        case 2:
-          controller.displayMessage("@red@Are you planning to mine nothing?");
-          break;
-        case 3:
-          controller.displayMessage(
-              "@red@You need a mining level of 60 to enter the mining guild!");
-          break;
-        case 4:
-          controller.displayMessage(
-              "@red@You do not have a pickaxe equipped or in your inventory!");
-          controller.displayMessage("@red@Get one and start the script again!");
-          break;
-        default:
-          controller.displayMessage("@red@Quit was called but wasn't given a correct argument");
-      }
-      banked = new int[] {0, 0, 0, 0, 0};
-      controller.stop();
-    }
-  }
-
-  public boolean runiteAvailable() {
-    return controller.getNearestObjectById(RUNITE_ROCK) != null;
-  }
-
-  public boolean adamantiteAvailable() {
-    int[] ore = controller.getNearestObjectById(ADAMANTITE_ROCK);
-    return controller.getNearestObjectById(ADAMANTITE_ROCK) != null && ore[1] > 3383;
-  }
-
-  public boolean mithrilAvailable() {
-    int[] ore = controller.getNearestObjectById(MITHRIL_ROCK);
-    return controller.getNearestObjectById(MITHRIL_ROCK) != null && ore[1] > 3383;
-  }
-
-  public boolean goldAvailable() {
-    int[] ore = controller.getNearestObjectById(GOLD_ROCK);
-    return controller.getNearestObjectById(GOLD_ROCK) != null && ore[1] > 3383;
-  }
-
-  public boolean coalAvailable() {
-    int[] ore = controller.getNearestObjectByIds(COAL_ROCK);
-    return controller.getNearestObjectByIds(COAL_ROCK) != null && ore[1] > 3383;
-  }
-
-  public boolean rockEmpty() {
-    return currentOre[0] == 0
-        || controller.getObjectAtCoord(currentOre[0], currentOre[1]) == EMPTY_ROCK;
+    while (scriptFrame.isVisible() && !buttonPressed.get()) sleepTicks(1);
+    scriptFrame.dispose();
+    if (!buttonPressed.get()) quit();
+    mineOres = Arrays.stream(checks).map(CustomCheckBox::isSelected).toArray(Boolean[]::new);
   }
 
   @Override
   public void paintInterrupt() {
-    if (controller != null) {
+    if (c != null && started) {
       int[] stringOffsets = {28, 52};
-      int[] scales = {80, 80, 80, 80, 100};
-      int colors[] = {0x008C8C, 0x718161, 0x617181, 0x6C6C6C, 0xBA9537};
+      int[] oreScales = {80, 80, 80, 80, 100, 100, 100, 100, 100};
+      int[] oreColors = {
+        0x008C8C, 0x718161, 0x617181, 0x6C6C6C, 0xBA9537, 0xd6d6d6, 0xd62a00, 0x249324, 0x0036b8
+      };
 
-      paintBuilder.setBorderColor(0xBD93F9);
-      paintBuilder.setBackgroundColor(0x282A36, 255);
-      // paintBuilder.setTitleCenteredSingleColor("MiningGuild", 0xffffff, 4);
+      paintBuilder.setBorderColor(colorPurple);
+      paintBuilder.setBackgroundColor(colorDarkGray, 255);
       paintBuilder.setTitleMultipleColor(
-          new String[] {"Mining", "Guild"}, new int[] {0x008C8C, 0x718161}, new int[] {25, 62}, 4);
-      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", 0xBD93F9, 1));
+          new String[] {"Mining", "Guild"},
+          new int[] {oreColors[0], oreColors[1]},
+          new int[] {25, 62},
+          4);
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", colorPurple, 1));
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(paintStatus, colorCyan, 1));
       paintBuilder.addRow(
           rowBuilder.centeredSingleStringRow(
-              "Run Time: " + paintBuilder.stringRunTime, 0xffffff, 1));
-      for (int i = 0; i < oreIds.length; i++) {
-        paintBuilder.addRow(
-            rowBuilder.singleSpriteMultipleStringRow(
-                oreIds[i],
-                scales[i],
-                i == 4 ? 8 : 4,
-                new String[] {
-                  paintBuilder.stringFormatInt(banked[i]),
-                  paintBuilder.stringAmountPerHour(banked[i])
-                },
-                new int[] {colors[i], 0x00ff00},
-                i == 4 ? new int[] {24, 52} : stringOffsets,
-                14));
+              "Run Time: " + paintBuilder.stringRunTime, colorWhite, 1));
+      for (int i = 0; i < lootIds.length; i++) {
+        if (i >= mineOres.length || mineOres[i]) {
+          paintBuilder.addRow(
+              rowBuilder.singleSpriteMultipleStringRow(
+                  lootIds[i],
+                  oreScales[i],
+                  i >= 4 ? 8 : 4,
+                  new String[] {
+                    paintBuilder.stringFormatInt(banked[i]),
+                    paintBuilder.stringAmountPerHour(banked[i])
+                  },
+                  new int[] {oreColors[i], colorGreen},
+                  i >= 4 ? new int[] {24, 52} : stringOffsets,
+                  14));
+        }
       }
       paintBuilder.draw();
     }
+  }
+}
+
+enum Ore {
+  NONE("None", null),
+  RUNITE(
+      "Runite",
+      new SceneryId[] {SceneryId.ROCK_RUNITE, SceneryId.ROCK_RUNITE2, SceneryId.ROCKS_RUNITE3}),
+  ADAMANTITE(
+      "Adamantite",
+      new SceneryId[] {
+        SceneryId.ROCK_ADAMITE, SceneryId.ROCK_ADAMITE2, SceneryId.ROCKS_ADAMITE3,
+      }),
+  MITHRIL(
+      "Mithril",
+      new SceneryId[] {
+        SceneryId.ROCK_MITHRIL, SceneryId.ROCK_MITHRIL2, SceneryId.ROCKS_MITHRIL3,
+      }),
+  GOLD(
+      "Gold",
+      new SceneryId[] {
+        SceneryId.ROCK_GOLD, SceneryId.ROCK_GOLD2, SceneryId.ROCKS_GOLD3,
+      }),
+  COAL(
+      "Coal",
+      new SceneryId[] {
+        SceneryId.ROCK_COAL, SceneryId.ROCK_COAL2, SceneryId.ROCKS_COAL3,
+      });
+
+  private final String name;
+  private final SceneryId[] rocks;
+
+  Ore(String name, SceneryId[] rockIds) {
+    this.name = name;
+    rocks = rockIds;
+  }
+
+  public int[] getRocks() {
+    return Arrays.stream(this.rocks).mapToInt(SceneryId::getId).toArray();
+  }
+
+  public String getName() {
+    return name;
   }
 }

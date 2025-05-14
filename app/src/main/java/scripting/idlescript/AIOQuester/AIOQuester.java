@@ -66,9 +66,16 @@ public class AIOQuester extends IdleScript {
     }
   }
 
+  /**
+   * While this is not necessary, it is overridden to suppress the warning message from being
+   * printed by IdleScript.
+   */
+  @Override
+  public void cleanup() {}
+
   @Override
   public void serverMessageInterrupt(String message) {
-    // Do server message checks in the QuestHandler method instead of in here.
+    // Do server message checks in the QuestHandler method below instead here.
     QuestHandler.serverMessageInterrupt(message);
   }
 

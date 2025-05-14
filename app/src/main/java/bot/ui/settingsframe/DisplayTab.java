@@ -6,6 +6,7 @@ import bot.ui.components.ComboBoxPanel;
 import bot.ui.components.CustomCheckBox;
 import bot.ui.components.TextFieldPanel;
 import java.awt.*;
+import java.util.Properties;
 import javax.swing.*;
 
 public class DisplayTab extends JPanel implements ISettingsTab {
@@ -105,6 +106,40 @@ public class DisplayTab extends JPanel implements ISettingsTab {
     sl.putConstraint(SpringLayout.SOUTH, newIcons, 20, SpringLayout.NORTH, newIcons);
     sl.putConstraint(SpringLayout.EAST, newIcons, 0, SpringLayout.EAST, disableGraphics);
     sl.putConstraint(SpringLayout.WEST, newIcons, 0, SpringLayout.WEST, disableGraphics);
+  }
+
+  @Override
+  public void loadSettings(Properties p) {
+    startPosX.setText(p.getProperty("x-position", "-1"));
+    startPosY.setText(p.getProperty("y-position", "-1"));
+    botPaint.setSelected(Boolean.parseBoolean(p.getProperty("bot-paint", "true")));
+    disableGraphics.setSelected(Boolean.parseBoolean(p.getProperty("disable-gfx", "false")));
+    interlace.setSelected(Boolean.parseBoolean(p.getProperty("interlace", "false")));
+    themeChoice.setSelectedItem(p.getProperty("theme", Theme.RUNEDARK.getName()));
+    newIcons.setSelected(Boolean.parseBoolean(p.getProperty("new-icons", "false")));
+    newUi.setSelected(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
+    keepOpen.setSelected(Boolean.parseBoolean(p.getProperty("keep-open", "false")));
+    screenRefresh.setSelected(Boolean.parseBoolean(p.getProperty("screen-refresh", "true")));
+  }
+
+  @Override
+  public void setDefaultValues() {
+    startPosX.setText("-1");
+    startPosY.setText("-1");
+    themeChoice.setSelectedIndex(0);
+    botPaint.setSelected(true);
+    disableGraphics.setSelected(false);
+    screenRefresh.setSelected(true);
+    interlace.setSelected(false);
+    newIcons.setSelected(false);
+    newUi.setSelected(false);
+    keepOpen.setSelected(true);
+    primaryBGPanel.setHexColor(ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryBackground()));
+    primaryFGPanel.setHexColor(ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryForeground()));
+    secondaryBGPanel.setHexColor(
+        ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryBackground()));
+    secondaryFGPanel.setHexColor(
+        ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryForeground()));
   }
 
   @Override

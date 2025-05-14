@@ -1,7 +1,9 @@
 package bot.ui.settingsframe;
 
+import bot.ui.components.CustomCheckBox;
 import bot.ui.components.TextFieldPanel;
 import java.awt.*;
+import java.util.Properties;
 import javax.swing.*;
 
 public class ScriptTab extends JPanel implements ISettingsTab {
@@ -10,6 +12,7 @@ public class ScriptTab extends JPanel implements ISettingsTab {
   final int compHeight = 41;
 
   public TextFieldPanel scriptName, scriptArgs, spellId, attackItems, strengthItems, defenseItems;
+  public CustomCheckBox locationWalkerCheckBox;
 
   ScriptTab(SpringLayout springLayout) {
     super(springLayout);
@@ -51,6 +54,16 @@ public class ScriptTab extends JPanel implements ISettingsTab {
     sl.putConstraint(SpringLayout.EAST, spellId, -4, SpringLayout.EAST, this);
     sl.putConstraint(SpringLayout.HEIGHT, spellId, 0, SpringLayout.HEIGHT, scriptArgs);
     sl.putConstraint(SpringLayout.WIDTH, spellId, 0, SpringLayout.WIDTH, scriptArgs);
+
+    sl.putConstraint(SpringLayout.NORTH, locationWalkerCheckBox, 4, SpringLayout.SOUTH, spellId);
+    sl.putConstraint(SpringLayout.WEST, locationWalkerCheckBox, 4, SpringLayout.WEST, this);
+    sl.putConstraint(SpringLayout.EAST, locationWalkerCheckBox, -4, SpringLayout.EAST, this);
+    sl.putConstraint(
+        SpringLayout.SOUTH,
+        locationWalkerCheckBox,
+        compHeight,
+        SpringLayout.NORTH,
+        locationWalkerCheckBox);
   }
 
   @Override
@@ -73,8 +86,36 @@ public class ScriptTab extends JPanel implements ISettingsTab {
       spellId =
           new TextFieldPanel(
               "Spell Quick Cast Id (F8):",
-              "Spell id to prepare for casting when pressing the F8 key")
+              "Spell id to prepare for casting when pressing the F8 key"),
+      locationWalkerCheckBox =
+          new CustomCheckBox(
+              "Use LocationWalker For Walker Button",
+              "Changes the walker button to use LocationWalker instead of PathWalker",
+              false)
     };
     for (Component comp : comps) add(comp);
+  }
+
+  @Override
+  public void loadSettings(Properties p) {
+    scriptName.setText(p.getProperty("script-name", ""));
+    scriptArgs.setText(p.getProperty("script-arguments", ""));
+    spellId.setText(p.getProperty("spell-id", "-1"));
+    attackItems.setText(p.getProperty("attack-items", ""));
+    strengthItems.setText(p.getProperty("defence-items", ""));
+    defenseItems.setText(p.getProperty("strength-items", ""));
+    String locWalker = p.getProperty("use-location-walker", "false");
+    locationWalkerCheckBox.setSelected(locWalker.equalsIgnoreCase("true"));
+  }
+
+  @Override
+  public void setDefaultValues() {
+    scriptName.setText("");
+    scriptArgs.setText("");
+    spellId.setText("");
+    attackItems.setText("");
+    strengthItems.setText("");
+    defenseItems.setText("");
+    locationWalkerCheckBox.setSelected(false);
   }
 }

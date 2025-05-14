@@ -30,6 +30,7 @@ public class Config extends ParseResult {
     setInitCache(parseResult.getInitCache());
     setServerIp(parseResult.getServerIp());
     setThemeName(parseResult.getThemeName());
+    setUseLocationWalker(parseResult.isUsingLocationWalker());
     // setServerId(parseResult.getServerId());
 
     // OCR options

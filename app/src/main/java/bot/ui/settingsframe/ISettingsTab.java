@@ -1,5 +1,7 @@
 package bot.ui.settingsframe;
 
+import java.util.Properties;
+
 /** Interface for creating tabs for the settings frame */
 public interface ISettingsTab {
 
@@ -41,4 +43,11 @@ public interface ISettingsTab {
    * Must be called in the tab constructor after initializeComponents()
    */
   void setConstraints();
+
+  /** Handles loading the properties to the tab's components */
+  void loadSettings(Properties p);
+
+  /* Sets the components to their default value
+   */
+  void setDefaultValues();
 }

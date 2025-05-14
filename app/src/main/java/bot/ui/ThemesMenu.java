@@ -37,7 +37,9 @@ public class ThemesMenu extends JMenu implements UiContract {
   }
 
   /** Populates the ThemeMenu with items from the Theme enum. */
-  private void populateThemes() {
+  public void populateThemes() {
+    // Reset all existing themes
+    removeAll();
 
     // Should force the popup menu above the game window
     getPopupMenu().setLightWeightPopupEnabled(false);

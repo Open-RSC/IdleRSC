@@ -28,9 +28,6 @@ public class SidePanel extends JPanel implements UiContract {
   private static LinkedList<JComponent> buttons;
   private static LinkedList<JComponent> panels;
 
-  // This boolean switches the pathwalker button to use LocationWalker instead.
-  // It is temporary until I feel it is ready to replace it entirely.
-  private static final boolean switchToLocationWalkerButton = false;
   private static boolean buttonToggledStatus = false;
 
   private static JButton scriptButton, pathwalkerButton;
@@ -43,8 +40,10 @@ public class SidePanel extends JPanel implements UiContract {
   }
 
   /** Initialization method for the Class, only call this when constructing a new object */
-  private void populateOptions() {
+  public void populateOptions() {
+    removeAll();
 
+    setUsingLocationWalker(Main.config.isUsingLocationWalker());
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setPreferredSize(new Dimension(140, this.getHeight())); // Increase width
 
@@ -62,8 +61,7 @@ public class SidePanel extends JPanel implements UiContract {
     JComponent[] _buttons =
         new JComponent[] {
           scriptButton = new JButton("Load Script"),
-          pathwalkerButton =
-              new JButton(switchToLocationWalkerButton ? "LocationWalker" : "PathWalker"),
+          pathwalkerButton,
           takeScreenshotButton = new JButton("Screenshot"),
           showIdButton = new JButton("Show IDs"),
           depositAllButton = new JButton("Deposit All"),
@@ -116,18 +114,6 @@ public class SidePanel extends JPanel implements UiContract {
     // Add action Listeners below
     scriptButton.addActionListener(e -> Main.handleScriptButton());
 
-    pathwalkerButton.addActionListener(
-        e -> {
-          if (!Main.isRunning()) {
-            if (switchToLocationWalkerButton) {
-              Main.loadAndRunScript("LocationWalker", PackageInfo.NATIVE);
-            } else {
-              Main.loadAndRunScript("PathWalker", PackageInfo.APOS);
-            }
-            Main.config.setScriptArguments(new String[] {""});
-            Main.setRunning(true);
-          }
-        });
     takeScreenshotButton.addActionListener(e -> c.takeScreenshot(""));
     showIdButton.addActionListener(
         e -> {
@@ -194,5 +180,21 @@ public class SidePanel extends JPanel implements UiContract {
         }
       }
     }
+  }
+
+  public void setUsingLocationWalker(boolean value) {
+    pathwalkerButton = new JButton(value ? "LocationWalker" : "PathWalker");
+    pathwalkerButton.addActionListener(
+        e -> {
+          if (!Main.isRunning()) {
+            if (value) {
+              Main.loadAndRunScript("LocationWalker", PackageInfo.NATIVE);
+            } else {
+              Main.loadAndRunScript("PathWalker", PackageInfo.APOS);
+            }
+            Main.config.setScriptArguments(new String[] {""});
+            Main.setRunning(true);
+          }
+        });
   }
 }

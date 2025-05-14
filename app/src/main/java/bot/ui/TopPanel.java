@@ -50,9 +50,6 @@ public class TopPanel extends JMenuBar implements UiContract {
     // Theming
     applyTheme();
     setBorder(BorderFactory.createEmptyBorder());
-
-    // Action Listeners go here
-
   }
 
   /** Invoke this method to have this panel update the theme colors. */

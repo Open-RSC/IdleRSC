@@ -21,7 +21,6 @@ public final class EntryFrame extends JFrame {
   private String[] accountNames;
   private static String account = "";
   private final Choice accountChoice;
-  private String themeName = "RuneDark Theme";
   private final String resourceLocation = "app/src/main/java/bot/res/";
   private boolean waitForOk = true;
 
@@ -30,6 +29,37 @@ public final class EntryFrame extends JFrame {
     return account;
   }
 
+  /**
+   * Populates the EntryFrame's account selector. Selects the username matching the selected name.
+   *
+   * @param selectedName String -- The account to select after populating the selector.
+   */
+  public void populateAccounts(String selectedName) {
+    // Remove any existing accounts from the list to avoid duplicates
+    accountChoice.removeAll();
+    loadAccounts();
+    if (accountNames.length < 1) return;
+
+    // Populate the account selector
+    for (String name : accountNames) accountChoice.add(name);
+
+    // Set the index of the account if non-null or non-existent, or 0 otherwise
+    int accountIndex = 0;
+    if (selectedName != null && !selectedName.isEmpty()) {
+      for (int i = 0; i < accountChoice.getItemCount(); i++) {
+        if (accountChoice.getItem(i).equals(selectedName)) {
+          accountIndex = i;
+          break;
+        }
+      }
+    }
+
+    // Select the account
+    accountChoice.select(accountIndex);
+    account = accountChoice.getItem(accountIndex);
+  }
+
+  /** Updates the account list with .properties files in the accounts directory */
   private void loadAccounts() {
     try {
       final File dir = Paths.get("accounts").toFile();
@@ -54,7 +84,6 @@ public final class EntryFrame extends JFrame {
     super("IdleRSC"); // title bar
     setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
-    loadAccounts();
     this.setIconImage(Utils.getImage("res/logos/idlersc.icon.png").getImage());
     Image idleImage = Utils.getImage("res/logos/idlersc_transparent.icon.png").getImage();
     Image welImage =
@@ -91,22 +120,7 @@ public final class EntryFrame extends JFrame {
     accountChoice = new Choice();
     accountChoice.setFocusable(false);
     accountChoice.setPreferredSize(new Dimension(140, 15));
-    int selectedAccount = -1;
-    for (int i = 0; i < accountNames.length; i++) {
-      final String accountName = accountNames[i];
-      //    for (final String accountName : accountNames) {
-      accountChoice.add(accountName);
-      if (parseResult.getUsername().equalsIgnoreCase(accountName)) {
-        selectedAccount = i;
-      }
-    }
-    if (accountNames.length > 0) {
-      account = accountNames[0];
-    }
-    if (selectedAccount > -1) {
-      accountChoice.select(selectedAccount);
-      account = parseResult.getUsername();
-    }
+    populateAccounts(parseResult.getUsername() != null ? parseResult.getUsername() : null);
     accountChoice.addItemListener(event -> account = String.valueOf(event.getItem()));
 
     Color buttonColor = new java.awt.Color(121, 131, 152, 255);
@@ -230,7 +244,6 @@ public final class EntryFrame extends JFrame {
     if (authFrame != null) authFrame.dispose();
 
     try {
-      themeName = getStringProperty(account, "theme");
       UIManager.getDefaults().remove("Button.gradient");
       Main.setUsername(account);
       setVisible(false);

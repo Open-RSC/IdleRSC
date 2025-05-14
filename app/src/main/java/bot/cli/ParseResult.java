@@ -11,7 +11,6 @@ public class ParseResult {
   private String initCache = "Coleslaw";
   private String serverIp = "game.openrsc.com";
   private String themeName = "RuneDark Theme";
-  private String remoteOcrUrl = "";
   private int positionX = -1;
   private int positionY = -1;
   private int spellId = 0;
@@ -23,6 +22,7 @@ public class ParseResult {
   private String[] scriptArguments = {""};
   private OCRType ocrType = OCRType.HASH;
   private String ocrServer = "";
+  private boolean useLocationWalker = false;
 
   // Boolean options
   private boolean usingAccount,
@@ -41,6 +41,14 @@ public class ParseResult {
 
   // Switching options
   private ArrayList<Integer> attackItems, defenceItems, strengthItems;
+
+  public void setUseLocationWalker(boolean useLocationWalker) {
+    this.useLocationWalker = useLocationWalker;
+  }
+
+  public boolean isUsingLocationWalker() {
+    return useLocationWalker;
+  }
 
   public void setUsingAccount(boolean usingAccount) {
     this.usingAccount = usingAccount;

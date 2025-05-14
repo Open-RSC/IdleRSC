@@ -2,6 +2,7 @@ package bot.ui.settingsframe;
 
 import bot.Main;
 import bot.ocrlib.OCRType;
+import bot.ui.EntryFrame;
 import bot.ui.Theme;
 import bot.ui.components.ColorPickerPanel;
 import java.awt.*;
@@ -28,7 +29,7 @@ public class SettingsFrame extends JFrame {
   private ScriptTab scriptTab;
 
   private Color[] colors;
-  private String customPrimaryBG, customPrimaryFG, customSecondaryBG, customSecondaryFG;
+  protected String customPrimaryBG, customPrimaryFG, customSecondaryBG, customSecondaryFG;
   private JButton saveBtn, cancelBtn;
 
   public SettingsFrame(final String title, final String accountName, final Window parent) {
@@ -109,15 +110,21 @@ public class SettingsFrame extends JFrame {
     saveBtn.addActionListener(
         e -> {
           storeAuthData(this);
-          // This is only called if SettingsFrame was opened from a running rscFrame.
+
+          // Run specific logic depending on the frame the SettingsFrame was opened from
+          // If opened from the running client, properties will be reloaded
           if (parent.equals(Main.getRscFrame())) Main.reloadProperties();
+
+          // If opened from the EntryFrame, the account list will be refreshed
+          if (parent instanceof EntryFrame) {
+            EntryFrame entryFrame = (EntryFrame) parent;
+            entryFrame.populateAccounts(getUsername());
+          }
+
           dispose();
         });
     cancelBtn = new JButton("Cancel");
-    cancelBtn.addActionListener(
-        e -> {
-          dispose();
-        });
+    cancelBtn.addActionListener(e -> dispose());
 
     // Add tab components to the tabPane
     final Map<String, JPanel> tabs = new LinkedHashMap<>();
@@ -370,40 +377,13 @@ public class SettingsFrame extends JFrame {
     final File file = accountPath.resolve(accountName + ".properties").toFile();
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
-      // ALWAYS make properties lowercase
-      accountTab.username.setText(p.getProperty("username", ""));
-      if (!accountTab.username.getText().isEmpty())
-        accountTab.username.getTextField().setEnabled(false);
-      accountTab.password.setText(p.getProperty("password", ""));
-      scriptTab.scriptName.setText(p.getProperty("script-name", ""));
-      scriptTab.scriptArgs.setText(p.getProperty("script-arguments", ""));
-      accountTab.initChoice.setSelectedItem(p.getProperty("init-cache", "Coleslaw"));
-      accountTab.serverIpChoice.setSelectedItem(p.getProperty("server-ip", "game.openrsc.com"));
-      displayTab.startPosX.setText(p.getProperty("x-position", "-1"));
-      displayTab.startPosY.setText(p.getProperty("y-position", "-1"));
-      scriptTab.spellId.setText(p.getProperty("spell-id", "-1"));
-      scriptTab.attackItems.setText(p.getProperty("attack-items", ""));
-      scriptTab.strengthItems.setText(p.getProperty("defence-items", ""));
-      scriptTab.defenseItems.setText(p.getProperty("strength-items", ""));
-      accountTab.ocrChoice.setSelectedItem(p.getProperty("ocr-type", OCRType.INTERNAL.getName()));
-      accountTab.ocrServer.setText(p.getProperty("ocr-server", ""));
-      accountTab.autoLogin.setSelected(Boolean.parseBoolean(p.getProperty("auto-login", "false")));
-      accountTab.sideBar.setSelected(Boolean.parseBoolean(p.getProperty("sidebar", "false")));
-      accountTab.logWindow.setSelected(Boolean.parseBoolean(p.getProperty("log-window", "false")));
-      accountTab.debug.setSelected(Boolean.parseBoolean(p.getProperty("debug", "false")));
-      displayTab.botPaint.setSelected(Boolean.parseBoolean(p.getProperty("bot-paint", "true")));
-      displayTab.disableGraphics.setSelected(
-          Boolean.parseBoolean(p.getProperty("disable-gfx", "false")));
-      displayTab.interlace.setSelected(Boolean.parseBoolean(p.getProperty("interlace", "false")));
-      accountTab.helpMenu.setSelected(Boolean.parseBoolean(p.getProperty("help", "false")));
-      accountTab.showVersion.setSelected(Boolean.parseBoolean(p.getProperty("version", "false")));
-      displayTab.themeChoice.setSelectedItem(p.getProperty("theme", Theme.RUNEDARK.getName()));
-      displayTab.newIcons.setSelected(Boolean.parseBoolean(p.getProperty("new-icons", "false")));
-      displayTab.newUi.setSelected(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
-      displayTab.keepOpen.setSelected(Boolean.parseBoolean(p.getProperty("keep-open", "false")));
-      displayTab.screenRefresh.setSelected(
-          Boolean.parseBoolean(p.getProperty("screen-refresh", "true")));
 
+      // Load the values to the tabs
+      scriptTab.loadSettings(p);
+      accountTab.loadSettings(p);
+      displayTab.loadSettings(p);
+
+      // Assign colors and load them into the displayTab
       customPrimaryBG =
           customPrimaryBG != null
               ? customPrimaryBG
@@ -483,6 +463,7 @@ public class SettingsFrame extends JFrame {
     p.put("custom-primary-foreground", auth.getPrimaryFGString());
     p.put("custom-secondary-background", auth.getSecondaryBGString());
     p.put("custom-secondary-foreground", auth.getSecondaryFGString());
+    p.put("use-location-walker", auth.getUseLocationWalker());
 
     // Make sure our accounts folder exists
     Path accountPath = Paths.get("accounts");
@@ -496,50 +477,20 @@ public class SettingsFrame extends JFrame {
 
     // Now we can parse it
     final File file = accountPath.resolve(u + ".properties").toFile();
-    try (final FileOutputStream out = new FileOutputStream(file)) {
-      p.store(out, null);
+    try (final PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+      SortedMap<String, String> sorted = new TreeMap<>();
+      for (String name : p.stringPropertyNames()) sorted.put(name, p.getProperty(name));
+      for (Map.Entry<String, String> entry : sorted.entrySet())
+        writer.println(entry.getKey() + "=" + entry.getValue());
     } catch (final Throwable t) {
       System.out.println("Error saving account details: " + t);
     }
   }
 
   private void setDefaultValues() {
-    accountTab.username.setText("");
-    accountTab.password.setText("");
-    scriptTab.scriptName.setText("");
-    scriptTab.scriptArgs.setText("");
-    displayTab.startPosX.setText("-1");
-    displayTab.startPosY.setText("-1");
-    scriptTab.spellId.setText("");
-    scriptTab.attackItems.setText("");
-    scriptTab.strengthItems.setText("");
-    scriptTab.defenseItems.setText("");
-    displayTab.themeChoice.setSelectedIndex(0);
-    accountTab.initChoice.setSelectedIndex(0);
-    accountTab.serverIpChoice.setSelectedIndex(0);
-    accountTab.ocrChoice.setSelectedIndex(0);
-    accountTab.ocrServer.setText("");
-    accountTab.autoLogin.setSelected(false);
-    accountTab.sideBar.setSelected(true);
-    accountTab.logWindow.setSelected(false);
-    accountTab.debug.setSelected(false);
-    displayTab.botPaint.setSelected(true);
-    displayTab.disableGraphics.setSelected(false);
-    displayTab.screenRefresh.setSelected(true);
-    displayTab.interlace.setSelected(false);
-    accountTab.helpMenu.setSelected(false);
-    accountTab.showVersion.setSelected(false);
-    displayTab.newIcons.setSelected(false);
-    displayTab.newUi.setSelected(false);
-    displayTab.keepOpen.setSelected(true);
-    displayTab.primaryBGPanel.setHexColor(
-        ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryBackground()));
-    displayTab.primaryFGPanel.setHexColor(
-        ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryForeground()));
-    displayTab.secondaryBGPanel.setHexColor(
-        ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryBackground()));
-    displayTab.secondaryFGPanel.setHexColor(
-        ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryForeground()));
+    accountTab.setDefaultValues();
+    displayTab.setDefaultValues();
+    scriptTab.setDefaultValues();
   }
 
   synchronized String getUsername() {
@@ -553,6 +504,10 @@ public class SettingsFrame extends JFrame {
   synchronized String getThemeName() {
     theme = Theme.getFromName(displayTab.themeChoice.getSelectedItem());
     return displayTab.themeChoice.getSelectedItem();
+  }
+
+  synchronized String getUseLocationWalker() {
+    return Boolean.toString(scriptTab.locationWalkerCheckBox.isSelected());
   }
 
   synchronized String getScriptName() {

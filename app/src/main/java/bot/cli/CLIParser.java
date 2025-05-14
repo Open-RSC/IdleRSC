@@ -40,10 +40,10 @@ public class CLIParser {
         bot.Main.setUsername(cmd.getOptionValue("account"));
       }
       parseAccountProperties(parseResult, Main.getUsername());
-      Main.customColors = getCustomColors();
-      if (!Theme.themeIsCurrentlyApplied(Theme.getFromName(parseResult.getThemeName())))
-        Main.setTheme(parseResult.getThemeName());
     }
+    Main.customColors = getCustomColors();
+    if (!Theme.themeIsCurrentlyApplied(Theme.getFromName(parseResult.getThemeName())))
+      Main.setTheme(parseResult.getThemeName());
     return parseResult;
   }
 
@@ -96,6 +96,7 @@ public class CLIParser {
   }
 
   private static void parseAccountProperties(ParseResult parseResult, String accountName) {
+    System.out.println(accountName);
     final Properties p = new Properties();
     Path accountPath = Paths.get("accounts");
     final File file = accountPath.resolve(accountName + ".properties").toFile();
@@ -145,6 +146,8 @@ public class CLIParser {
       parseResult.setOCRType(
           OCRType.fromName(p.getProperty("ocr-type", OCRType.INTERNAL.getName())));
       parseResult.setOCRServer(p.getProperty("ocr-server", ""));
+      String locValue = p.getProperty("use-location-walker", "false");
+      parseResult.setUseLocationWalker(locValue.equalsIgnoreCase("true"));
 
       // Boolean options
       parseResult.setAutoLogin(

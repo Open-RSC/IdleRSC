@@ -1118,8 +1118,16 @@ public class K_kailaScript extends IdleScript {
    * @param withdrawAmount int - number of item to withdraw.
    */
   protected static void withdrawItem(int itemId, int withdrawAmount) {
-    if (c.getInventoryItemCount(itemId) < withdrawAmount) {
-      c.withdrawItem(itemId, withdrawAmount - c.getInventoryItemCount(itemId));
+    int maxAttempts = 3;
+    int currentAttempt = 0;
+
+    while (c.getInventoryItemCount(itemId) < withdrawAmount
+        && c.isItemInBank(itemId)
+        && currentAttempt <= maxAttempts) {
+      int neededAmount = withdrawAmount - c.getInventoryItemCount(itemId);
+      c.withdrawItem(itemId, neededAmount);
+      currentAttempt++;
+      c.sleep(1280);
     }
   }
 

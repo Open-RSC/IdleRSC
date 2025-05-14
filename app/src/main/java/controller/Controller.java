@@ -114,10 +114,9 @@ public class Controller {
     return Main.isRunning();
   }
 
-  /** Stops the currently running script. */
+  /** Force stops the controller while also stopping the script thread. */
   public void stop() {
-    Main.setRunning(false);
-    this.stopBatching();
+    if (isRunning()) Main.handleScriptButton();
   }
 
   /** @param ms Sleeps for the specified amount of milliseconds. */

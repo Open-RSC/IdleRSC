@@ -109,7 +109,7 @@ public class WebWalker {
    * @param y2 int -- Y2
    * @return int
    */
-  public int distanceBetween(int x1, int y1, int x2, int y2) {
+  public int distanceBetween(int x1, int y1, int x2, int y2, boolean printDistance) {
     Map<WebwalkNode, int[]> closestNodesToEndCoords = new HashMap<>();
     int[][] endCoords = new int[][] {{x2, y2}};
     for (int[] coords : endCoords) {
@@ -133,8 +133,9 @@ public class WebWalker {
       distance += stepDistance;
       previousNode = current;
     }
-    System.out.printf(
-        "The distance between (%s, %s) and (%s, %s) is roughly: %s%n", x1, y1, x2, y2, distance);
+    if (printDistance)
+      System.out.printf(
+          "The distance between (%s, %s) and (%s, %s) is roughly: %s%n", x1, y1, x2, y2, distance);
     return distance;
   }
 

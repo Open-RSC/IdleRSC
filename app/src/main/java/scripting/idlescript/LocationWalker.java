@@ -248,7 +248,9 @@ public class LocationWalker extends SeattaScript {
               if (filter.getText().isEmpty() || filter.getText().equals(filterPlaceholder))
                 return true;
 
-              return loc.getDescription().toLowerCase().contains(filter.getText().toLowerCase());
+              String[] words = filter.getText().toLowerCase().split(" ");
+              String input = loc.getDescription().toLowerCase();
+              return Arrays.stream(words).allMatch(input::contains);
             })
         .forEach(
             loc -> {

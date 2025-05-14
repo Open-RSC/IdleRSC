@@ -43,6 +43,10 @@ public class ComboBoxPanel extends JPanel {
     comboBox.setSelectedIndex(index);
   }
 
+  public int getSelectedIndex() {
+    return comboBox.getSelectedIndex();
+  }
+
   public JComboBox<String> getComboBox() {
     return comboBox;
   }

@@ -73,6 +73,7 @@ public class Main {
 
   private static boolean isRunning = false;
   private static String username = "";
+  private static long scriptStartTime = 0;
   // Extracted Object Components
   private static BottomPanel bottomPanel;
   public static SidePanel sidePanel;
@@ -142,14 +143,20 @@ public class Main {
       parseResult = parseArgs(parseResult, parser, new String[] {});
       config.absorb(parseResult);
 
-      // Apply the theme if it was changed
-      if (!oldThemeName.equals(parseResult.getThemeName())) ThemesMenu.applyThemeToClient();
+      // Repopulating the theme menu here ensures the displayed colors in the menu for custom theme
+      // are correct on change
+      TopPanel.getThemeMenu().populateThemes();
+
+      // Apply the theme if it was changed or was set to custom
+      if (!oldThemeName.equals(parseResult.getThemeName())
+          || oldThemeName.equalsIgnoreCase(Theme.CUSTOM.getName())) ThemesMenu.applyThemeToClient();
 
       // If checkbox states in either of these two panels aren't being loaded correctly,
       // you might need to modify their loadSettingsFromConfig() methods.
       bottomPanel.loadSettingsFromConfig();
       TopPanel.getSettingsMenu().loadSettingsFromConfig();
       sidePanel.setVisible(config.isSidePanelVisible());
+      sidePanel.populateOptions();
 
       // Set rscFrame's new minimum size depending on visible panels
       Dimension newMinSize =
@@ -330,11 +337,18 @@ public class Main {
         if (currentRunningScript == null) continue;
 
         SidePanel.toggleScriptButtons(true);
-        SidePanel.setScriptButton(true); // running
-        if (!rscFrame.getTitle().equals(defaultFrameTitle + ": " + Main.config.getScriptName()))
-          rscFrame.setTitle(defaultFrameTitle + ": " + Main.config.getScriptName());
+        SidePanel.setScriptButton(true);
+
+        String runtimeString = controller.msToString(System.currentTimeMillis() - scriptStartTime);
+
+        String titleString =
+            defaultFrameTitle + ": " + Main.config.getScriptName() + " - " + runtimeString;
+
+        if (scriptStartTime != 0 && !rscFrame.getTitle().equals(titleString))
+          rscFrame.setTitle(titleString);
 
         runScriptThread();
+
         Thread.sleep(320);
       } else {
         if (!rscFrame.getTitle().equals(defaultFrameTitle)) rscFrame.setTitle(defaultFrameTitle);
@@ -357,6 +371,7 @@ public class Main {
     runningScriptThread =
         new Thread(
             () -> {
+              scriptStartTime = System.currentTimeMillis();
               while (isRunning()) {
                 try {
                   // Handle Native scripts
@@ -713,10 +728,21 @@ public class Main {
       // If the script thread is still alive, force-stop it
       if (runningScriptThread != null && runningScriptThread.isAlive()) {
         if (controller != null) {
+          if (controller.isCurrentlyWalking())
+            controller.walkTo(controller.currentX(), controller.currentY());
           if (controller.isBatching()) controller.stopBatching();
           String scriptName = Main.getCurrentRunningScript().getClass().getSimpleName();
+
+          // Executes the cleanup method of the currently running script if it extends IdleScript.
+          // This method should be overridden in scripts or superclasses that have modified static
+          // fields, and should be used to reset those fields.
+          // This is necessary because static fields are not reset when the script thread stops,
+          // which could cause changed field values to persist across instances.
+          if (currentRunningScript instanceof IdleScript)
+            ((IdleScript) currentRunningScript).cleanup();
+
           controller.log(String.format("The '%s' script has been stopped!", scriptName), "yel");
-          controller.stop();
+          scriptStartTime = 0;
         }
         // Stop() seems to be the only way to force-close stuck scripts.
         runningScriptThread.stop();

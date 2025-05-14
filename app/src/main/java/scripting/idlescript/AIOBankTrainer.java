@@ -110,6 +110,7 @@ public class AIOBankTrainer extends K_kailaScript {
    */
   public int start(String[] parameters) {
     if (!guiSetup) {
+      startTime = 0;
       guiSetup = true;
       setupGUI();
     }
@@ -1053,7 +1054,12 @@ public class AIOBankTrainer extends K_kailaScript {
           y + (14 * 3),
           0xFFFFFF,
           1);
-      c.drawString("@whi@Runtime: " + runTime, x, y + (14 * 4), 0xFFFFFF, 1);
+      c.drawString(
+          "@whi@Runtime: " + (startTime == 0 ? c.msToString(0) : runTime),
+          x,
+          y + (14 * 4),
+          0xFFFFFF,
+          1);
       c.drawString("@whi@____________________", x, y + 3 + (14 * 4), 0xFFFFFF, 1);
     }
   }

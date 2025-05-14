@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -19,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import models.entities.ItemId;
+import models.entities.SkillId;
 import orsc.ORSCharacter;
 
 public class AIOFighter extends IdleScript {
@@ -33,10 +35,10 @@ public class AIOFighter extends IdleScript {
             Category.PRAYER,
             Category.IRONMAN_SUPPORTED
           },
-          "Dvorak, Redesigned UI by Seatta",
-          "This is your standard melee/range/mage fighter script.\n\n"
+          "Dvorak, Redesigned UI and paint by Seatta",
+          "This is your standard melee/ranged/mage fighter script.\n\n"
               + "Chat commands can be used to direct the bot\n"
-              + "    Control\n"
+              + "    Controls:\n"
               + "        ::bones\n"
               + "        ::prioritize\n"
               + "        ::doors\n"
@@ -46,7 +48,9 @@ public class AIOFighter extends IdleScript {
               + "        ::strength\n"
               + "        ::defense");
 
+  private String status = "Setting up script...";
   private int fightMode = 2;
+  private int targetLevel = -1;
   private int maxWander = 3;
   private int eatingHealth = 5;
   private boolean openDoors = false;
@@ -59,13 +63,45 @@ public class AIOFighter extends IdleScript {
   private int switchId = 81; // weapon to switch to when in combat if ranging.
   private int[] npcIds = {};
   private int[] loot = {}; // feathers
+  private int[] lootTable = {};
   private final int[] bones = {20, 413, 604, 814};
-  private final int[] bowIds = {188, 189, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 59, 60};
+  private final Map<ItemId, Integer> bowLevelMap =
+      new LinkedHashMap<ItemId, Integer>() {
+        {
+          put(ItemId.MAGIC_LONGBOW, 50);
+          put(ItemId.MAGIC_SHORTBOW, 45);
+          put(ItemId.YEW_LONGBOW, 40);
+          put(ItemId.YEW_SHORTBOW, 35);
+          put(ItemId.MAPLE_LONGBOW, 30);
+          put(ItemId.MAPLE_SHORTBOW, 25);
+          put(ItemId.WILLOW_LONGBOW, 20);
+          put(ItemId.WILLOW_SHORTBOW, 15);
+          put(ItemId.OAK_LONGBOW, 10);
+          put(ItemId.OAK_SHORTBOW, 5);
+          put(ItemId.LONGBOW, 1);
+          put(ItemId.SHORTBOW, 1);
+          put(ItemId.PHOENIX_CROSSBOW, 1);
+          put(ItemId.CROSSBOW, 1);
+        }
+      };
+
+  private final Map<SkillId, Integer> startingXP =
+      new LinkedHashMap<SkillId, Integer>() {
+        {
+          put(SkillId.HITS, c.getStatXp(SkillId.HITS.getId()));
+          put(SkillId.ATTACK, c.getStatXp(SkillId.ATTACK.getId()));
+          put(SkillId.STRENGTH, c.getStatXp(SkillId.STRENGTH.getId()));
+          put(SkillId.DEFENSE, c.getStatXp(SkillId.DEFENSE.getId()));
+          put(SkillId.RANGED, c.getStatXp(SkillId.RANGED.getId()));
+          put(SkillId.MAGIC, c.getStatXp(SkillId.MAGIC.getId()));
+          put(SkillId.PRAYER, c.getStatXp(SkillId.PRAYER.getId()));
+        }
+      };
+
   private final int[] doorObjectIds = {60, 64};
 
   // do not modify these
   private int currentAttackingNpc = -1;
-  private int[] lootTable = null;
   private final int[] startTile = {-1, -1};
   private boolean guiSetup = false;
   private boolean scriptStarted = false;
@@ -103,6 +139,7 @@ public class AIOFighter extends IdleScript {
   private final JLabel wanderLabel = new JLabel("Wander Distance: (-1 to disable)");
   private final JLabel eatLabel = new JLabel("Eat at HP:");
   private final JLabel fightModeLabel = new JLabel("Fight Mode:");
+  private final JLabel targetLevelLabel = new JLabel("Target Level:");
   private final JLabel switchLabel = new JLabel("In melee range weapon switch id:");
 
   private final JTextField npcIdsField = new JTextField("");
@@ -110,6 +147,7 @@ public class AIOFighter extends IdleScript {
   private final JTextField eatAtHpField =
       new JTextField(String.valueOf(c.getCurrentStat(c.getStatId("Hits")) / 2));
   private final JTextField lootField = new JTextField("-1");
+  private final JTextField targetLevelField = new JTextField("-1");
   private final JTextField switchIdField = new JTextField("81");
 
   private final JCheckBox openDoorsCheckbox =
@@ -120,7 +158,9 @@ public class AIOFighter extends IdleScript {
   private final JCheckBox magingCheckbox = new JCheckBox("Magic?");
   private final JCheckBox rangingCheckbox = new JCheckBox("Ranging?");
 
+  @SuppressWarnings("UnnecessaryUnicodeEscape")
   private final JButton refreshBtn = new JButton("\u21BB");
+
   private final JButton startBtn = new JButton("Run Script");
 
   private final JComboBox<String> modeCombobBox =
@@ -164,7 +204,7 @@ public class AIOFighter extends IdleScript {
     frame.setVisible(true);
     frame.requestFocus();
 
-    populateNearbyNPCsTable();
+    populateNearbyNpcTable();
     while (!scriptStarted && c.isRunning() && frame.isVisible()) c.sleep(640);
   }
 
@@ -185,28 +225,33 @@ public class AIOFighter extends IdleScript {
 
   private void addComponentsToPanel() {
     panel.setLayout(sl);
-    panel.add(fightModeLabel);
-    panel.add(modeCombobBox);
-    panel.add(npcIdLabel);
-    panel.add(nearbyScrollPane);
-    panel.add(npcIdsField);
-    panel.add(refreshBtn);
-    panel.add(wanderLabel);
-    panel.add(wanderField);
-    panel.add(eatAtHpField);
-    panel.add(eatLabel);
-    panel.add(lootLabel);
-    panel.add(lootField);
-    panel.add(openDoorsCheckbox);
-    panel.add(buryBonesCheckbox);
-    panel.add(prioritizeBonesCheckbox);
-    panel.add(magingCheckbox);
-    panel.add(spellComboBox);
-    panel.add(rangingCheckbox);
-    panel.add(arrowComboBox);
-    panel.add(switchLabel);
-    panel.add(switchIdField);
-    panel.add(startBtn);
+    for (Component comp :
+        new Component[] {
+          fightModeLabel,
+          modeCombobBox,
+          targetLevelLabel,
+          targetLevelField,
+          npcIdLabel,
+          nearbyScrollPane,
+          npcIdsField,
+          refreshBtn,
+          wanderLabel,
+          wanderField,
+          eatAtHpField,
+          eatLabel,
+          lootField,
+          lootLabel,
+          openDoorsCheckbox,
+          buryBonesCheckbox,
+          prioritizeBonesCheckbox,
+          magingCheckbox,
+          spellComboBox,
+          rangingCheckbox,
+          arrowComboBox,
+          switchLabel,
+          switchIdField,
+          startBtn
+        }) panel.add(comp);
   }
 
   public void setListeners() {
@@ -232,9 +277,11 @@ public class AIOFighter extends IdleScript {
             });
     startBtn.addActionListener(
         e -> {
-          if (validateFields(npcIdsField, wanderField, eatAtHpField, lootField, switchIdField)) {
+          if (validateFields(
+              npcIdsField, wanderField, eatAtHpField, lootField, switchIdField, targetLevelField)) {
             setValuesFromGUI(
                 modeCombobBox,
+                targetLevelField,
                 npcIdsField,
                 wanderField,
                 eatAtHpField,
@@ -249,7 +296,6 @@ public class AIOFighter extends IdleScript {
                 switchIdField);
 
             c.displayMessage("@red@AIOFighter by Dvorak. Let's party like it's 2004!");
-            c.setStatus("@red@Started...");
 
             frame.setVisible(false);
             frame.dispose();
@@ -283,7 +329,7 @@ public class AIOFighter extends IdleScript {
         });
 
     // Button listener for refreshing nearby npcs
-    refreshBtn.addActionListener(e -> populateNearbyNPCsTable());
+    refreshBtn.addActionListener(e -> populateNearbyNpcTable());
 
     // Mouse click listener to nearby enemies table
     nearbyTable.addMouseListener(
@@ -349,17 +395,28 @@ public class AIOFighter extends IdleScript {
     sl.putConstraint(SpringLayout.WEST, fightModeLabel, 4, SpringLayout.EAST, nearbyScrollPane);
     sl.putConstraint(SpringLayout.SOUTH, fightModeLabel, 18, SpringLayout.NORTH, fightModeLabel);
 
-    sl.putConstraint(SpringLayout.NORTH, eatLabel, 4, SpringLayout.NORTH, panel);
-    sl.putConstraint(SpringLayout.WEST, eatLabel, 22, SpringLayout.EAST, modeCombobBox);
-    sl.putConstraint(SpringLayout.SOUTH, eatLabel, 18, SpringLayout.NORTH, eatLabel);
-
     sl.putConstraint(SpringLayout.NORTH, modeCombobBox, 4, SpringLayout.SOUTH, fightModeLabel);
     sl.putConstraint(SpringLayout.WEST, modeCombobBox, 4, SpringLayout.EAST, nearbyScrollPane);
     sl.putConstraint(SpringLayout.EAST, modeCombobBox, 100, SpringLayout.WEST, modeCombobBox);
     sl.putConstraint(SpringLayout.SOUTH, modeCombobBox, 18, SpringLayout.NORTH, modeCombobBox);
 
+    sl.putConstraint(SpringLayout.NORTH, targetLevelLabel, 4, SpringLayout.NORTH, panel);
+    sl.putConstraint(SpringLayout.WEST, targetLevelLabel, 4, SpringLayout.EAST, modeCombobBox);
+    sl.putConstraint(SpringLayout.EAST, targetLevelLabel, 82, SpringLayout.WEST, targetLevelLabel);
+    sl.putConstraint(
+        SpringLayout.SOUTH, targetLevelLabel, 18, SpringLayout.NORTH, targetLevelLabel);
+
+    sl.putConstraint(SpringLayout.NORTH, targetLevelField, 4, SpringLayout.SOUTH, targetLevelLabel);
+    sl.putConstraint(SpringLayout.WEST, targetLevelField, 4, SpringLayout.EAST, modeCombobBox);
+    sl.putConstraint(SpringLayout.EAST, targetLevelField, 82, SpringLayout.WEST, targetLevelField);
+    sl.putConstraint(SpringLayout.SOUTH, targetLevelField, 18, SpringLayout.NORTH, modeCombobBox);
+
+    sl.putConstraint(SpringLayout.NORTH, eatLabel, 4, SpringLayout.NORTH, panel);
+    sl.putConstraint(SpringLayout.WEST, eatLabel, 16, SpringLayout.EAST, targetLevelLabel);
+    sl.putConstraint(SpringLayout.SOUTH, eatLabel, 18, SpringLayout.NORTH, eatLabel);
+
     sl.putConstraint(SpringLayout.NORTH, eatAtHpField, 4, SpringLayout.SOUTH, eatLabel);
-    sl.putConstraint(SpringLayout.WEST, eatAtHpField, 24, SpringLayout.EAST, modeCombobBox);
+    sl.putConstraint(SpringLayout.WEST, eatAtHpField, 0, SpringLayout.WEST, eatLabel);
     sl.putConstraint(SpringLayout.EAST, eatAtHpField, 48, SpringLayout.WEST, eatAtHpField);
     sl.putConstraint(SpringLayout.SOUTH, eatAtHpField, 18, SpringLayout.NORTH, eatAtHpField);
 
@@ -452,54 +509,52 @@ public class AIOFighter extends IdleScript {
     panel.setBackground(Main.primaryBG);
     panel.setForeground(Main.primaryFG);
 
-    npcIdLabel.setForeground(Main.primaryFG);
-    lootLabel.setForeground(Main.primaryFG);
-    wanderLabel.setForeground(Main.primaryFG);
-    switchLabel.setForeground(Main.primaryFG);
-    fightModeLabel.setForeground(Main.primaryFG);
-    eatLabel.setForeground(Main.primaryFG);
+    for (JLabel label :
+        new JLabel[] {
+          npcIdLabel,
+          lootLabel,
+          wanderLabel,
+          switchLabel,
+          fightModeLabel,
+          eatLabel,
+          targetLevelLabel
+        }) label.setForeground(Main.primaryFG);
 
-    buryBonesCheckbox.setForeground(Main.primaryFG);
-    buryBonesCheckbox.setBackground(Main.primaryBG);
-    magingCheckbox.setForeground(Main.primaryFG);
-    magingCheckbox.setBackground(Main.primaryBG);
-    openDoorsCheckbox.setForeground(Main.primaryFG);
-    openDoorsCheckbox.setBackground(Main.primaryBG);
-    prioritizeBonesCheckbox.setForeground(Main.primaryFG);
-    prioritizeBonesCheckbox.setBackground(Main.primaryBG);
-    rangingCheckbox.setForeground(Main.primaryFG);
-    rangingCheckbox.setBackground(Main.primaryBG);
+    for (JCheckBox check :
+        new JCheckBox[] {
+          buryBonesCheckbox,
+          magingCheckbox,
+          openDoorsCheckbox,
+          prioritizeBonesCheckbox,
+          rangingCheckbox
+        }) {
+      check.setForeground(Main.primaryFG);
+      check.setBackground(Main.primaryBG);
+    }
 
-    refreshBtn.setBackground(Main.secondaryBG);
-    refreshBtn.setForeground(Main.secondaryFG);
-    startBtn.setBackground(Main.secondaryBG);
-    startBtn.setForeground(Main.secondaryFG);
+    for (JButton button : new JButton[] {refreshBtn, startBtn}) {
+      button.setForeground(Main.secondaryFG);
+      button.setBackground(Main.secondaryBG);
+    }
 
     nearbyTable.setRowSelectionAllowed(false);
     nearbyTable.setBorder(BorderFactory.createEmptyBorder());
     nearbyTable.setBackground(Main.primaryBG.brighter());
     nearbyTable.setForeground(Main.primaryFG);
 
-    npcIdsField.setForeground(Main.primaryFG);
-    npcIdsField.setBackground(Main.primaryBG.brighter().brighter());
-    eatAtHpField.setForeground(Main.primaryFG);
-    eatAtHpField.setBackground(Main.primaryBG.brighter().brighter());
-    wanderField.setForeground(Main.primaryFG);
-    wanderField.setBackground(Main.primaryBG.brighter().brighter());
-    lootField.setForeground(Main.primaryFG);
-    lootField.setBackground(Main.primaryBG.brighter().brighter());
-    switchIdField.setForeground(Main.primaryFG);
-    switchIdField.setBackground(Main.primaryBG.brighter().brighter());
+    for (JTextField field :
+        new JTextField[] {
+          npcIdsField, eatAtHpField, wanderField, lootField, switchIdField, targetLevelField
+        }) {
+      field.setForeground(Main.primaryFG);
+      field.setBackground(Main.primaryBG.brighter().brighter());
+    }
 
-    modeCombobBox.setForeground(Main.primaryFG);
-    modeCombobBox.setBackground(Main.primaryBG.brighter().brighter());
-    modeCombobBox.setBorder(BorderFactory.createEmptyBorder());
-    arrowComboBox.setForeground(Main.primaryFG);
-    arrowComboBox.setBackground(Main.primaryBG.brighter().brighter());
-    arrowComboBox.setBorder(BorderFactory.createEmptyBorder());
-    spellComboBox.setForeground(Main.primaryFG);
-    spellComboBox.setBackground(Main.primaryBG.brighter().brighter());
-    spellComboBox.setBorder(BorderFactory.createEmptyBorder());
+    for (JComboBox<?> combo : new JComboBox[] {arrowComboBox, modeCombobBox, spellComboBox}) {
+      combo.setForeground(Main.primaryFG);
+      combo.setBackground(Main.primaryBG.brighter().brighter());
+      combo.setBorder(BorderFactory.createEmptyBorder());
+    }
 
     nearbyScrollPane.setBackground(Main.primaryBG);
     nearbyScrollPane.setForeground(Main.primaryFG);
@@ -558,14 +613,13 @@ public class AIOFighter extends IdleScript {
   }
 
   private void scriptStart() {
-    paintBuilder.start(4, 18, 180);
+    paintBuilder.start(4, 18, 182);
     if (c.isRunning()) {
       lootTable = Arrays.copyOf(loot, loot.length);
       if (prioritizeBones) {
-        lootTable = Arrays.copyOf(lootTable, loot.length + bones.length);
-        for (int i = loot.length, k = 0; i < loot.length + bones.length; i++, k++) {
-          lootTable[i] = bones[k];
-        }
+        lootTable = new int[loot.length + bones.length];
+        System.arraycopy(loot, 0, lootTable, 0, loot.length);
+        System.arraycopy(bones, 0, lootTable, loot.length, bones.length);
       }
 
       startTile[0] = c.currentX();
@@ -574,65 +628,47 @@ public class AIOFighter extends IdleScript {
       while (c.isRunning()) {
         if (c.getNeedToMove()) c.moveCharacter();
         if (c.getShouldSleep()) c.sleepHandler(true);
-        // 0th priority: walking back to starting zone if out of zone
-        // 1st priority: setting fightmode
-        // 2nd priority: eating
-        // 3rd priority: bury any bones in inv
-        // 4th priority: pickup loot
-        // 5th priority: pickup bones
-        // 6th priority: starting a fight via melee or ranging
-        // 7th priority: maging
-
+        while (!c.isLoggedIn() && c.isAutoLogin()) c.sleep(1280);
+        if (hasReachedTargetLevel()) {
+          c.log("Level target has been reached! Stopping script.");
+          c.stop();
+          break;
+        }
         c.sleep(618); // wait 1 tick
 
+        // Return to wander radius
         if (!isWithinWander(c.currentX(), c.currentY())) {
-          c.setStatus("@red@Out of range! Walking back.");
+          status = "Walking back...";
           c.walkTo(startTile[0], startTile[1], 0, true, true);
         }
+
+        // Open Doors
         if (openDoors) {
           for (int doorId : doorObjectIds) {
             int[] doorCoords = c.getNearestObjectById(doorId);
 
             if (doorCoords != null && this.isWithinWander(doorCoords[0], doorCoords[1])) {
-              c.setStatus("@red@Opening door...");
+              status = "Opening door...";
               c.atObject(doorCoords[0], doorCoords[1]);
               c.sleep(5000);
             }
           }
         }
 
-        if (c.getFightMode() != fightMode) {
-          c.setStatus("@red@Changing fightmode");
+        // Ensure that the correct fight mode is set only if a level target is not set
+        if (c.getFightMode() != fightMode && targetLevel == -1) {
+          status = "Changing fight mode...";
           c.setFightMode(fightMode);
         }
 
-        if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth) {
-          c.setStatus("@red@Eating food");
-          c.walkTo(c.currentX(), c.currentY(), 0, true, true);
+        // Eat food if needed
+        if (eatIfNeeded()) continue;
 
-          boolean ate = false;
-
-          for (int id : c.getFoodIds()) {
-            if (c.getInventoryItemCount(id) > 0) {
-              c.itemCommand(id);
-              ate = true;
-              break;
-            }
-          }
-
-          if (!ate) {
-            c.setStatus("@red@We ran out of food! Logging out.");
-            c.setAutoLogin(false);
-            c.logout();
-          }
-
-          continue;
-        }
-
+        // Loot desired loot and bones
         for (int lootId : lootTable) {
           int[] lootCoord = c.getNearestItemById(lootId);
           if (lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
-            c.setStatus("@red@Picking up loot");
+            status = "Picking up loot...";
             c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
             c.sleep(618);
             buryBones();
@@ -641,44 +677,16 @@ public class AIOFighter extends IdleScript {
 
         if (!c.isInCombat()) {
           if (c.getShouldSleep()) c.sleepHandler(true);
-          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
-
           if (ranging) {
-
-            int[] arrowCoord = c.getNearestItemById(arrowId);
-            if (arrowCoord != null) {
-              c.setStatus("@red@Picking up arrows");
-              c.pickupItem(arrowCoord[0], arrowCoord[1], arrowId, false, true);
-              continue;
-            }
-
-            boolean hasArrows = false;
-
-            for (int id : arrowIds) {
-              if (c.getInventoryItemCount(id) > 0 || c.isItemIdEquipped(id)) {
-                hasArrows = true;
-                break;
-              }
-            }
-
-            if (!hasArrows) {
-              c.setStatus("@red@Out of arrows!");
-              c.setAutoLogin(false);
-              c.logout();
-              c.stop();
-            }
-
-            for (int id : bowIds) {
-              if (c.getInventoryItemCount(id) > 0) {
-                if (!c.isEquipped(c.getInventoryItemSlotIndex(id))) {
-                  c.setStatus("@red@Equipping bow");
-                  c.equipItem(c.getInventoryItemSlotIndex(id));
-                  c.sleep(1000);
-                  break;
-                }
-              }
+            if (lootArrows()) continue;
+            if (!checkBowAndArrows()) break;
+            if (c.getUnnotedInventoryItemCount(switchId) < 1 && !c.isItemIdEquipped(switchId)) {
+              c.log("We don't have our specified melee switch item! Stopping script.", "red");
+              break;
             }
           }
+
+          ORSCharacter npc = c.getNearestNpcByIds(npcIds, false);
 
           // maybe wrap this in a 'while not in combat' loop?
           if (npc != null) {
@@ -686,7 +694,7 @@ public class AIOFighter extends IdleScript {
               currentAttackingNpc = npc.serverIndex;
               c.castSpellOnNpc(npc.serverIndex, spellId);
             } else {
-              c.setStatus("@red@Attacking NPC");
+              status = "Attacking...";
               c.attackNpc(npc.serverIndex);
               c.sleep(1000);
             }
@@ -697,20 +705,20 @@ public class AIOFighter extends IdleScript {
                 for (int lootId : bones) {
                   int[] lootCoord = c.getNearestItemById(lootId);
                   if (lootCoord != null && this.isWithinWander(lootCoord[0], lootCoord[1])) {
-                    c.setStatus("@red@No NPCs, Picking bones");
+                    status = "Picking bones...";
                     c.pickupItem(lootCoord[0], lootCoord[1], lootId, true, false);
                     c.sleep(618);
                     buryBones();
                   } else {
                     if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
-                      c.setStatus("@red@No NPCs, walking back to start...");
+                      status = "Walking to start...";
                       c.walkToAsync(startTile[0], startTile[1], 0);
                     }
                   }
                 }
               } else {
                 if (c.currentX() != startTile[0] && c.currentY() != startTile[1]) {
-                  c.setStatus("@red@No NPCs found, walking back to start...");
+                  status = "Walking to start...";
                   c.walkToAsync(startTile[0], startTile[1], 0);
                 }
               }
@@ -719,13 +727,14 @@ public class AIOFighter extends IdleScript {
         } else {
 
           if (ranging) {
-            if (!c.isEquipped(c.getInventoryItemSlotIndex(switchId))) {
-              c.setStatus("@red@Switching to melee weapon");
+            if (!c.isItemIdEquipped(switchId)) {
+              status = "Switching to melee...";
               c.equipItem(c.getInventoryItemSlotIndex(switchId));
+              c.sleep(100);
             }
           }
           if (maging) {
-            c.setStatus("@red@Maging...");
+            status = "Maging...";
             ORSCharacter victimNpc = c.getNearestNpcByIds(npcIds, true);
             if (victimNpc != null) c.castSpellOnNpc(victimNpc.serverIndex, spellId);
           }
@@ -734,11 +743,95 @@ public class AIOFighter extends IdleScript {
     }
   }
 
+  private boolean eatIfNeeded() {
+    if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth) {
+      status = "Eating food...";
+      c.walkTo(c.currentX(), c.currentY(), 0, true, true);
+
+      boolean ate =
+          Arrays.stream(c.getFoodIds())
+              .anyMatch(
+                  f -> {
+                    if (c.getUnnotedInventoryItemCount(f) < 1) return false;
+                    c.itemCommand(f);
+                    c.sleep(640);
+                    return true;
+                  });
+
+      if (!ate) {
+        c.log("We ran out of food! Logging out.", "red");
+        c.setAutoLogin(false);
+        c.logout();
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private boolean lootArrows() {
+    if (arrowId == -1) return false;
+    int[] arrowCoord = c.getNearestItemById(arrowId);
+    if (arrowCoord != null
+        && c.isReachable(arrowCoord[0], arrowCoord[1], false)
+        && isWithinWander(arrowCoord[0], arrowCoord[1])) {
+      status = "Picking up arrows...";
+      c.pickupItem(arrowCoord[0], arrowCoord[1], arrowId, false, true);
+      c.sleep(100);
+      // c.itemCommand(arrowId);
+      return true;
+    }
+    c.sleep(100);
+    return false;
+  }
+
+  private boolean checkBowAndArrows() {
+    boolean hasArrows =
+        arrowIds.stream()
+            .anyMatch(
+                a -> {
+                  if (c.isItemIdEquipped(a)) return true;
+                  if (c.getInventoryItemCount(a) > 0 && !c.isItemIdEquipped(a)) {
+                    c.sleep(100);
+                    c.equipItemById(a);
+                    status = "@red@Equipping: " + c.getItemName(a) + "...";
+                    return true;
+                  }
+                  return false;
+                });
+
+    boolean hasUsableBow =
+        bowLevelMap.entrySet().stream()
+            .anyMatch(
+                e -> {
+                  int id = e.getKey().getId();
+                  int level = e.getValue();
+                  if (c.isItemIdEquipped(id)) return true;
+                  if (c.getUnnotedInventoryItemCount(id) > 0
+                      && c.getBaseStat(SkillId.RANGED.getId()) >= level) {
+                    c.sleep(100);
+                    status = "@red@Equipping: " + c.getItemName(id) + "...";
+                    c.equipItemById(id);
+                    return true;
+                  }
+                  return false;
+                });
+
+    if (!hasArrows || !hasUsableBow) {
+      if (!hasArrows) c.log("We ran out of arrows! Logging out.", "red");
+      if (!hasUsableBow) c.log("We don't have a usable bow! Logging out.", "red");
+      c.setAutoLogin(false);
+      c.logout();
+      c.stop();
+      return false;
+    }
+    return true;
+  }
+
   private void leaveCombat() {
     for (int i = 1; i <= 20; i++) {
       try {
         if (c.isInCombat()) {
-          c.setStatus("@red@Leaving combat..");
+          status = "Leaving combat..";
           c.walkToAsync(c.currentX(), c.currentY(), 1);
           c.sleep(640);
         } else {
@@ -748,7 +841,7 @@ public class AIOFighter extends IdleScript {
         throw new RuntimeException(e);
       }
     }
-    c.setStatus("@gre@Done Leaving combat..");
+    status = "Done leaving combat..";
   }
 
   private void buryBones() {
@@ -756,7 +849,7 @@ public class AIOFighter extends IdleScript {
     for (int id : bones) {
       try {
         if (c.getInventoryItemCount(id) > 0) {
-          c.setStatus("@red@Burying bones..");
+          status = "Burying bones...";
           c.itemCommand(id);
           c.sleep(640);
         }
@@ -767,13 +860,11 @@ public class AIOFighter extends IdleScript {
   }
 
   private boolean isWithinWander(int x, int y) {
-    if (maxWander < 0) return true;
-
-    return c.distance(startTile[0], startTile[1], x, y) <= maxWander;
+    return maxWander < 0 || c.distance(startTile[0], startTile[1], x, y) <= maxWander;
   }
 
-  private void popup(String title, String text) {
-    JFrame parent = new JFrame(title);
+  private void popup(String text) {
+    JFrame parent = new JFrame("Error");
     JLabel textLabel = new JLabel(text);
     JButton okButton = new JButton("OK");
 
@@ -785,83 +876,61 @@ public class AIOFighter extends IdleScript {
           parent.dispose();
         });
 
+    parent.setPreferredSize(new Dimension(220, 100));
     parent.add(textLabel);
     parent.add(okButton);
     parent.pack();
+    parent.setResizable(false);
+    parent.setLocationRelativeTo(frame);
     parent.setVisible(true);
   }
 
+  /** Checks if all gui fields are valid or displays an error */
   private boolean validateFields(
       JTextField npcIds,
       JTextField maxWanderField,
       JTextField eatAtHpField,
       JTextField lootTableField,
-      JTextField switchIdField) {
+      JTextField switchIdField,
+      JTextField targetLevelField) {
 
-    try {
-      String content = npcIds.getText().replace(" ", "");
-      String[] values;
+    Map<JTextField, String> integerFieldMap =
+        new HashMap<JTextField, String>() {
+          {
+            put(eatAtHpField, "Invalid eat at HP value.");
+            put(switchIdField, "Invalid switch ID value.");
+            put(maxWanderField, "Invalid max wander value.");
+            put(lootTableField, "Invalid loot table value(s).");
+            put(npcIds, "Invalid npc value(s).");
+            put(targetLevelField, "Invalid target level.");
+          }
+        };
 
-      if (!content.contains(",")) {
-        values = new String[] {content};
-      } else {
-        values = content.split(",");
+    for (Map.Entry<JTextField, String> entry : integerFieldMap.entrySet()) {
+      String value = entry.getKey().getText().replace(" ", "");
+      if (value.isEmpty()) continue;
+      for (String part : value.split(",")) {
+        if (part.isEmpty()) continue;
+        try {
+          int intValue = Integer.parseInt(part);
+
+          // Throw any logic-based exceptions here
+          if (entry.getKey().equals(targetLevelField) && (intValue == 0 || intValue > 99))
+            throw new NumberFormatException();
+
+        } catch (NumberFormatException e) {
+          popup(entry.getValue());
+          return false;
+        }
       }
-
-      for (String value : values) {
-        Integer.valueOf(value);
-      }
-
-    } catch (Exception e) {
-      popup("Error", "Invalid loot table value(s).");
-      return false;
     }
-
-    try {
-      Integer.valueOf(maxWanderField.getText());
-    } catch (Exception e) {
-      popup("Error", "Invalid max wander value.");
-      return false;
-    }
-
-    try {
-      Integer.valueOf(eatAtHpField.getText());
-    } catch (Exception e) {
-      popup("Error", "Invalid eat at HP value.");
-      return false;
-    }
-
-    try {
-      String content = lootTableField.getText().replace(" ", "");
-      String[] values;
-
-      if (!content.contains(",")) {
-        values = new String[] {content};
-      } else {
-        values = content.split(",");
-      }
-
-      for (String value : values) {
-        Integer.valueOf(value);
-      }
-
-    } catch (Exception e) {
-      popup("Error", "Invalid loot table value(s).");
-      return false;
-    }
-
-    try {
-      Integer.valueOf(switchIdField.getText());
-    } catch (Exception e) {
-      popup("Error", "Invalid switch ID value.");
-      return false;
-    }
-
     return true;
   }
 
+  /** Sets field values to their respective gui value */
   private void setValuesFromGUI(
       JComboBox<String> fightModeField,
+      JTextField targetLevelField,
       JTextField npcIdsField,
       JTextField maxWanderField,
       JTextField eatAtHpField,
@@ -874,40 +943,31 @@ public class AIOFighter extends IdleScript {
       JCheckBox rangingCheckbox,
       JComboBox<String> arrowIdField,
       JTextField switchIdField) {
-    this.fightMode = fightModeField.getSelectedIndex();
 
-    if (npcIdsField.getText().contains(",")) {
-      for (String value : npcIdsField.getText().replace(" ", "").split(",")) {
-        this.npcIds = Arrays.copyOf(npcIds, npcIds.length + 1);
-        this.npcIds[npcIds.length - 1] = Integer.parseInt(value);
-      }
-    } else {
-      this.npcIds = new int[] {Integer.parseInt(npcIdsField.getText())};
-    }
+    String[] npcValues = npcIdsField.getText().replace(" ", "").split(",");
+    npcIds = new int[npcValues.length];
+    for (int i = 0; i < npcValues.length; i++) npcIds[i] = Integer.parseInt(npcValues[i]);
 
-    this.maxWander = Integer.parseInt(maxWanderField.getText());
-    this.eatingHealth = Integer.parseInt(eatAtHpField.getText());
+    String[] lootValues = lootTableField.getText().replace(" ", "").split(",");
+    loot = new int[lootValues.length];
+    for (int i = 0; i < lootValues.length; i++) loot[i] = Integer.parseInt(lootValues[i]);
 
-    if (lootTableField.getText().contains(",")) {
-      for (String value : lootTableField.getText().replace(" ", "").split(",")) {
-        this.loot = Arrays.copyOf(loot, loot.length + 1);
-        this.loot[loot.length - 1] = Integer.parseInt(value);
-      }
-    } else {
-      this.loot = new int[] {Integer.parseInt(lootTableField.getText())};
-    }
-
-    this.openDoors = openDoorsCheckbox.isSelected();
-    this.buryBones = buryBonesCheckbox.isSelected();
-    this.prioritizeBones = prioritizeBonesCheckbox.isSelected();
-    this.maging = magingCheckbox.isSelected();
-    this.spellId = c.getSpellIdFromName((String) spellNameField.getSelectedItem());
-    this.ranging = rangingCheckbox.isSelected();
-    this.arrowId = arrowMap.get((String) arrowIdField.getSelectedItem());
-    this.switchId = Integer.parseInt(switchIdField.getText());
+    maxWander = Integer.parseInt(maxWanderField.getText());
+    eatingHealth = Integer.parseInt(eatAtHpField.getText());
+    targetLevel = Integer.parseInt(targetLevelField.getText());
+    switchId = Integer.parseInt(switchIdField.getText());
+    fightMode = fightModeField.getSelectedIndex();
+    openDoors = openDoorsCheckbox.isSelected();
+    buryBones = buryBonesCheckbox.isSelected();
+    prioritizeBones = prioritizeBonesCheckbox.isSelected();
+    maging = magingCheckbox.isSelected();
+    ranging = rangingCheckbox.isSelected();
+    spellId = c.getSpellIdFromName((String) spellNameField.getSelectedItem());
+    arrowId = arrowMap.get((String) arrowIdField.getSelectedItem());
   }
 
-  private void populateNearbyNPCsTable() {
+  /** Populates the NPC table with nearby NPCs */
+  private void populateNearbyNpcTable() {
     Map<String, Integer> newMap = getNearbyNpcs();
     if (newMap != null && !newMap.isEmpty()) {
       tableModel.setRowCount(0);
@@ -990,55 +1050,114 @@ public class AIOFighter extends IdleScript {
     }
   }
 
+  public boolean hasReachedTargetLevel() {
+    if (targetLevel < 0) return false;
+    HashMap<Integer, Integer> modeMap =
+        new HashMap<Integer, Integer>() {
+          {
+            put(1, SkillId.STRENGTH.getId());
+            put(2, SkillId.ATTACK.getId());
+            put(3, SkillId.DEFENSE.getId());
+          }
+        };
+    int currentFightMode = c.getFightMode();
+
+    switch (fightMode) {
+      case 0:
+        // Check if any melee style has not hit the targeted level
+        boolean hasAnySkillHitTarget =
+            modeMap.entrySet().stream().anyMatch(e -> c.getBaseStat(e.getValue()) >= targetLevel);
+
+        // If no style has hit the target, enforce controlled style and break since we don't want to
+        // perform the style switching logic
+        if (!hasAnySkillHitTarget) {
+          if (currentFightMode != 0) c.setFightMode(0);
+          break;
+        }
+
+        // If any style has reached the target, get a list of all non-finished styles
+        List<Integer> skillsNotAtTarget =
+            modeMap.entrySet().stream()
+                .filter(e -> c.getBaseStat(e.getValue()) < targetLevel)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        // If the list is empty, it means we're finished
+        if (skillsNotAtTarget.isEmpty()) return true;
+
+        // Otherwise, get the lowest leveled style of the unfinished ones
+        int newFightMode =
+            skillsNotAtTarget.stream()
+                .min(Comparator.comparingInt(mode -> c.getBaseStat(modeMap.get(mode))))
+                .orElse(skillsNotAtTarget.get(0));
+        // int newFightMode = skillsNotAtTarget.get(0);
+
+        // Change to the next style with the lowest level
+        if (currentFightMode != newFightMode) c.setFightMode(newFightMode);
+        break;
+      case 1:
+      case 2:
+      case 3:
+        if (currentFightMode != fightMode) c.setFightMode(fightMode);
+        if (c.getBaseStat(modeMap.get(fightMode)) >= targetLevel) return true;
+        break;
+    }
+    return false;
+  }
+
   @Override
   public void chatCommandInterrupt(
       String commandText) { // ::bank ::bones ::lowlevel :potup ::prayer
-    if (commandText.replace(" ", "").toLowerCase().contains("bones")) {
-      if (!buryBones) {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning on bone looting!");
-        buryBones = true;
-      } else {
-        c.displayMessage("@or1@Got toggle @red@bones@or1@, turning off bone looting!");
-        buryBones = false;
-      }
+    String str = commandText.replace(" ", "").toLowerCase();
+
+    if (str.contains("bones")) {
+      buryBones = !buryBones;
+      c.displayMessage(
+          String.format(
+              "@or1@Got toggle @red@bones@or1@, turned %s bone looting!",
+              buryBones ? "on" : "off"));
       c.sleep(100);
-    } else if (commandText.replace(" ", "").toLowerCase().contains("prioritize")) {
-      if (!prioritizeBones) {
-        c.displayMessage("@or1@Got toggle @red@lowlevel@or1@, turning on low level herb looting!");
-        prioritizeBones = true;
+
+    } else if (str.contains("prioritize")) {
+      prioritizeBones = !prioritizeBones;
+      c.displayMessage(
+          String.format(
+              "@or1@Got toggle @red@prioritize@or1@, turned %s bone prioritization!",
+              prioritizeBones ? "on" : "off"));
+
+      if (prioritizeBones) {
+        lootTable = new int[loot.length + bones.length];
+        System.arraycopy(loot, 0, lootTable, 0, loot.length);
+        System.arraycopy(bones, 0, lootTable, loot.length, bones.length);
       } else {
-        c.displayMessage("@or1@Got toggle @red@lowlevel@or1@, turning off low level herb looting!");
-        prioritizeBones = false;
+        lootTable = new int[loot.length];
+        System.arraycopy(loot, 0, lootTable, 0, loot.length);
       }
       c.sleep(100);
     } else if (commandText.replace(" ", "").toLowerCase().contains("doors")) {
-      if (!openDoors) {
-        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning on regular atk/str pots!");
-        openDoors = true;
-      } else {
-        c.displayMessage("@or1@Got toggle @red@potup@or1@, turning off regular atk/str pots!");
-        openDoors = false;
-      }
+      openDoors = !openDoors;
+      c.displayMessage(
+          String.format(
+              "@or1@Got toggle @red@doors@or1@, turned %s door opening!",
+              openDoors ? "on" : "off"));
       c.sleep(100);
-    } else if (commandText
-        .replace(" ", "")
-        .toLowerCase()
-        .contains("attack")) { // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+      // field is "Controlled", "Aggressive", "Accurate", "Defensive"}
+    } else if (str.contains("attack")) {
       c.displayMessage("@red@Got Combat Style Command! - Attack Xp");
       c.displayMessage("@red@Switching to \"Accurate\" combat style!");
       fightMode = 2;
       c.sleep(100);
-    } else if (commandText.replace(" ", "").toLowerCase().contains("strength")) {
+    } else if (str.contains("strength")) {
       c.displayMessage("@red@Got Combat Style Command! - Strength Xp");
       c.displayMessage("@red@Switching to \"Aggressive\" combat style!");
       fightMode = 1;
       c.sleep(100);
-    } else if (commandText.replace(" ", "").toLowerCase().contains("defense")) {
+    } else if (str.contains("defense")) {
       c.displayMessage("@red@Got Combat Style Command! - Defense Xp");
       c.displayMessage("@red@Switching to \"Defensive\" combat style!");
       fightMode = 3;
       c.sleep(100);
-    } else if (commandText.replace(" ", "").toLowerCase().contains("controlled")) {
+    } else if (str.contains("controlled")) {
       c.displayMessage("@red@Got Combat Style Command! - Controlled Xp");
       c.displayMessage("@red@Switching to \"Controlled\" combat style!");
       fightMode = 0;
@@ -1052,7 +1171,7 @@ public class AIOFighter extends IdleScript {
     if (message.contains("successfully")) spellsCasted++;
     else if (message.equals("I can't get a clear shot from here")) {
       // ! This lags very badly for some reason
-      c.setStatus("@red@Walking to NPC to get a shot...");
+      status = "Walking to NPC to get a shot...";
       c.walktoNPCAsync(currentAttackingNpc);
       c.sleep(640);
     }
@@ -1061,15 +1180,17 @@ public class AIOFighter extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      paintBuilder.setBorderColor(0xBD93F9);
-      paintBuilder.setBackgroundColor(0x282A36, 255);
-      String bonesPerHr = paintBuilder.stringAmountPerHour(bonesBuried);
-      String spellsPerHr = paintBuilder.stringAmountPerHour(spellsCasted);
-
       int yellow = 0xF1FA8C;
       int red = 0xFF5555;
       int white = 0xF8F8F2;
       int purple = 0xBD93F9;
+
+      paintBuilder.setBorderColor(purple);
+      paintBuilder.setBackgroundColor(0x282A36, 255);
+
+      int[] skillNameColors = {
+        0xd41300, 0x821508, 0x0b840b, 0x5b95f2, 0x5aa60e, 0x3169d8, 0x8ae8fc
+      };
 
       paintBuilder.setTitleMultipleColor(
           new String[] {"AIO", "Fighter"},
@@ -1086,31 +1207,95 @@ public class AIOFighter extends IdleScript {
               },
               1));
 
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow(status, yellow, 1));
+
       paintBuilder.addRow(rowBuilder.centeredSingleStringRow(paintBuilder.stringRunTime, white, 1));
-      paintBuilder.addSpacerRow(8);
+
+      int currHp = c.getCurrentStat(SkillId.HITS.getId());
+      int maxHp = c.getBaseStat(SkillId.HITS.getId());
+      int currPrayer = c.getCurrentStat(SkillId.PRAYER.getId());
+      int maxPrayer = c.getBaseStat(SkillId.PRAYER.getId());
+
+      paintBuilder.addRow(
+          rowBuilder.progressBarRow(
+              currHp,
+              maxHp,
+              0x282A36,
+              (currHp > maxHp / 2 ? 0x85d589 : currHp > maxHp / 3 ? 0xc9d389 : 0xbc7181),
+              purple,
+              8,
+              paintBuilder.getWidth() - 16,
+              14,
+              true,
+              true,
+              "Hits",
+              skillNameColors[0]));
+
+      paintBuilder.addRow(
+          rowBuilder.progressBarRow(
+              currPrayer,
+              maxPrayer,
+              0x282A36,
+              skillNameColors[6],
+              purple,
+              8,
+              paintBuilder.getWidth() - 16,
+              14,
+              true,
+              true,
+              "Prayer",
+              skillNameColors[6]));
+
+      paintBuilder.addSpacerRow(4);
+      AtomicInteger index = new AtomicInteger();
+      startingXP.forEach(
+          (skill, startXP) -> {
+            int currentXp = c.getStatXp(skill.getId());
+            int gainedXP = currentXp - startXP;
+            if (gainedXP > 0) {
+
+              paintBuilder.addRow(
+                  rowBuilder.multipleStringRow(
+                      new String[] {
+                        c.getSkillNamesLong()[skill.getId()],
+                        paintBuilder.stringFormatInt(gainedXP),
+                        paintBuilder.stringAmountPerHour(gainedXP)
+                      },
+                      new int[] {skillNameColors[index.get()], white, yellow},
+                      new int[] {4, 52, 52},
+                      1));
+            }
+            index.getAndIncrement();
+          });
+
       if (buryBones) {
+        paintBuilder.addSpacerRow(4);
         paintBuilder.addRow(
             rowBuilder.singleSpriteMultipleStringRow(
                 ItemId.BONES.getId(),
                 60,
                 4,
-                new String[] {"Buried: " + bonesBuried, bonesPerHr},
+                new String[] {
+                  String.valueOf(bonesBuried), paintBuilder.stringAmountPerHour(bonesBuried)
+                },
                 new int[] {white, yellow},
-                new int[] {25, 64},
+                new int[] {52, 52},
                 12));
       }
       if (maging) {
+        paintBuilder.addSpacerRow(4);
         paintBuilder.addRow(
             rowBuilder.singleSpriteMultipleStringRow(
                 ItemId.STAFF.getId(),
                 60,
                 4,
-                new String[] {"Casts: " + spellsCasted, spellsPerHr},
+                new String[] {
+                  String.valueOf(spellsCasted), paintBuilder.stringAmountPerHour(spellsCasted)
+                },
                 new int[] {white, yellow},
-                new int[] {25, 64},
+                new int[] {52, 52},
                 12));
       }
-
       paintBuilder.draw();
     }
   }

@@ -18,6 +18,10 @@ public class CustomCheckBox extends JCheckBox {
     this(text, tooltip, false);
   }
 
+  public CustomCheckBox(String text, boolean defaultValue) {
+    this(text, null, defaultValue);
+  }
+
   static class CustomCheckBoxUI extends BasicCheckBoxUI {
     @Override
     protected void installDefaults(AbstractButton b) {

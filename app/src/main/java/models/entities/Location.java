@@ -812,7 +812,7 @@ public enum Location {
    * @return int
    */
   public int distanceTo() {
-    return w.distanceBetween(c.currentX(), c.currentY(), getX(), getY());
+    return w.distanceBetween(c.currentX(), c.currentY(), getX(), getY(), false);
   }
 
   /**
@@ -823,7 +823,7 @@ public enum Location {
    * @return int
    */
   public int distanceBetween(Location loc) {
-    return w.distanceBetween(loc.getX(), loc.getY(), getX(), getY());
+    return w.distanceBetween(loc.getX(), loc.getY(), getX(), getY(), false);
   }
 
   /**
@@ -835,7 +835,7 @@ public enum Location {
    * @return int
    */
   public static int distanceBetween(Location loc1, Location loc2) {
-    return w.distanceBetween(loc1.getX(), loc1.getY(), loc2.getX(), loc2.getY());
+    return w.distanceBetween(loc1.getX(), loc1.getY(), loc2.getX(), loc2.getY(), false);
   }
 
   /**
@@ -978,6 +978,7 @@ public enum Location {
     Path locationGraph = Paths.get("Cache/LocationGraph.txt");
     try (FileWriter writer = new FileWriter(locationGraph.toString())) {
       if (locationGraph.toFile().exists()) locationGraph.toFile().delete();
+      System.out.println(String.format("Writing LocationGraph to: %s", locationGraph));
       for (Location loc : Location.values()) {
         String locString =
             String.format(

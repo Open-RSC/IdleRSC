@@ -71,8 +71,6 @@ public class ColorPickerPanel extends JPanel {
       hexField.setText(String.format("#%06X", (0xFFFFFF & newColor.getRGB())));
       colorButton.setBackground(selectedColor);
 
-      System.out.println(selectedColor);
-      System.out.println(getContrastingColor(selectedColor));
       colorButton.setForeground(getContrastingColor(selectedColor));
     }
   }

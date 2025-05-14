@@ -4,9 +4,13 @@ import bot.Main;
 import bot.ui.scriptselector.models.Category;
 import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
+import java.awt.*;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.Arrays;
 import models.entities.*;
 
+/** Super class for Seatta's scripts */
 public class SeattaScript extends IdleScript {
   public static final Controller c = Main.getController();
   public static final ScriptInfo info =
@@ -15,19 +19,23 @@ public class SeattaScript extends IdleScript {
           "Seatta",
           "Super class for Seatta's scripts.");
 
-  // Constants
+  // --------------- CONSTANTS ---------------
   public static final int TICK = 640;
 
-  //    PaintBuilder Colors - Mostly based on https://spec.draculatheme.com/#sec-Standard
-  public static final int colorPurple = 0xBD93F9;
+  //    PaintBuilder Colors - Based on https://draculatheme.com/contribute
+  public static final int colorGray = 0x44475A;
   public static final int colorDarkGray = 0x282A36;
-  public static final int colorDarkerGray = 0x1d1f27;
   public static final int colorWhite = 0xF8F8F2;
+  public static final int colorBlue = 0x6272A4;
+  public static final int colorCyan = 0x8BE9FD;
   public static final int colorGreen = 0x50FA7B;
-  public static final int colorYellow = 0xF1FA8C;
+  public static final int colorOrange = 0xFFB86C;
+  public static final int colorPink = 0xFF79C6;
+  public static final int colorPurple = 0xBD93F9;
   public static final int colorRed = 0xFF5555;
+  public static final int colorYellow = 0xF1FA8C;
 
-  //    PaintBuilder Defaults
+  //    PaintBuilder Defaults and Variables
   public static final int borderColor = colorPurple;
   public static final int bgColor = colorDarkGray;
   public static final int bgTransparency = 255;
@@ -36,12 +44,58 @@ public class SeattaScript extends IdleScript {
   public static final int paintW = 182;
   public static String paintStatus = "Starting Script";
 
-  // Methods
+  // -------------- COLLECTIONS --------------
+  public static final ItemId[] bones = {
+    ItemId.DRAGON_BONES, ItemId.BIG_BONES, ItemId.BAT_BONES, ItemId.BONES,
+  };
+
+  // ------------ CLEANUP METHODS ------------
+
+  /**
+   * This method is run during the script shutdown process. <br>
+   * <br>
+   * It should be used for resetting any modified static fields so they can be reused correctly in
+   * another script.
+   */
+  @Override
+  public void cleanup() {
+    // Reset SeattaScript static fields here
+    paintStatus = "Starting Script";
+
+    // Override this if needed in child scripts, and reset the static fields for the script in
+    // there.
+    cleanupScript();
+  }
+
+  /**
+   * Prints a message if the child script contains non-excluded static fields. This method is
+   * intended to be overridden by child scripts to reset modified static field values without
+   * overriding the main cleanup method. This is to keep the superclass cleanup intact.
+   */
+  public void cleanupScript() {
+    Class<?> script = this.getClass();
+
+    boolean hasStaticFields =
+        Arrays.stream(script.getDeclaredFields())
+            .anyMatch(
+                f ->
+                    Modifier.isStatic(f.getModifiers())
+                        && Arrays.stream(excludedClasses)
+                            .noneMatch(c -> c.isAssignableFrom(f.getType())));
+    if (hasStaticFields)
+      System.out.printf(
+          "SeattaScript: The following script declares static fields, but does not override cleanupScript. This could cause variables to not be reset upon stopping the script: %n"
+              + "   %s%n",
+          script.getSimpleName());
+  }
+
+  // ---------------- METHODS ----------------
+
   /**
    * Uses WebWalker to walk to a location's stand-able tile or if null, to the first corner in its
    * bounds.
    *
-   * @param loc - Location to walk to
+   * @param loc Location -- Location to walk to
    */
   public static void walkTowards(Location loc) {
     loc.walkTowards();
@@ -50,11 +104,20 @@ public class SeattaScript extends IdleScript {
   /**
    * Uses WebWalker to walk to a set of coordinates.
    *
-   * @param x - X coordinate to walk to
-   * @param y - y coordinate to walk to
+   * @param x int -- X coordinate to walk to.
+   * @param y int -- Y coordinate to walk to.
    */
   public static void walkTowards(int x, int y) {
     Location.walkTowards(x, y);
+  }
+
+  /**
+   * Uses WebWalker to walk to a set of coordinates.
+   *
+   * @param point Point -- The coordinate to walk to.
+   */
+  public static void walkTowards(Point point) {
+    Location.walkTowards(point.x, point.y);
   }
 
   /** Uses WebWalker to walk to the nearest bank. */
@@ -65,22 +128,55 @@ public class SeattaScript extends IdleScript {
   /**
    * Checks whether the player is in a Location's boundary rectangle.
    *
-   * @param loc Location -- Location to check
-   * @return boolean
+   * @param loc Location -- The Location to check
+   * @return boolean -- Whether the player is with the Location's boundary
    */
   public static boolean isAtLocation(Location loc) {
     return Location.isAtLocation(loc);
   }
 
   /**
-   * Returns whether the player is at a specific coordinate.
+   * Returns whether the player is at a specific set of coordinates.
    *
-   * @param x int - X coordinate to check
-   * @param y int - Y coordinate to check
+   * @param x int -- X coordinate to check
+   * @param y int -- Y coordinate to check
    * @return boolean
    */
   public static boolean isAtCoords(int x, int y) {
     return (c.currentX() == x && c.currentY() == y);
+  }
+
+  /**
+   * Returns whether the player is at a specific coordinate.
+   *
+   * @param point Point -- Coordinates to check
+   * @return boolean
+   */
+  public static boolean isAtCoords(Point point) {
+    return (c.currentX() == point.x && c.currentY() == point.y);
+  }
+
+  /**
+   * Returns whether a specified SceneryId is at a given coordinate
+   *
+   * @param scenery SceneryId -- The Object we're looking for
+   * @param point Point -- The coordinates we're checking
+   * @return boolean -- Whether the SceneryId is at the coordinates
+   */
+  public static boolean isSceneryAtCoords(SceneryId scenery, Point point) {
+    return c.getObjectAtCoord(point.x, point.y) == scenery.getId();
+  }
+
+  /**
+   * Returns whether a specified SceneryId is at a given coordinate
+   *
+   * @param scenery SceneryId -- The Object we're looking for
+   * @param x int -- The x coordinate we're checking
+   * @param y int -- The y coordinate we're checking
+   * @return boolean -- Whether the SceneryId is at the coordinates
+   */
+  public static boolean isSceneryAtCoords(SceneryId scenery, int x, int y) {
+    return c.getObjectAtCoord(x, y) == scenery.getId();
   }
 
   /**
@@ -125,13 +221,55 @@ public class SeattaScript extends IdleScript {
   }
 
   /**
+   * Checks if the player has a usable pickaxe with them.
+   *
+   * @return boolean
+   */
+  public static boolean hasUsablePickaxe() {
+    final Map<Integer, Integer> pickaxeLevelMap =
+        new HashMap<Integer, Integer>() {
+          {
+            put(ItemId.BRONZE_PICKAXE.getId(), 1);
+            put(ItemId.IRON_PICKAXE.getId(), 1);
+            put(ItemId.STEEL_PICKAXE.getId(), 6);
+            put(ItemId.MITHRIL_PICKAXE.getId(), 21);
+            put(ItemId.ADAMANTITE_PICKAXE.getId(), 31);
+            put(ItemId.RUNE_PICKAXE.getId(), 41);
+          }
+        };
+    return pickaxeLevelMap.entrySet().stream()
+        .anyMatch(
+            entry ->
+                (hasUnnotedItem(entry.getKey()))
+                    && hasSkillLevel(SkillId.MINING, entry.getValue()));
+  }
+  /**
+   * Checks if the player has a usable axe with them.
+   *
+   * @return boolean
+   */
+  public static boolean hasUsableAxe() {
+    final ItemId[] axes = {
+      ItemId.RUNE_AXE,
+      ItemId.ADAMANTITE_AXE,
+      ItemId.MITHRIL_AXE,
+      ItemId.BLACK_AXE,
+      ItemId.STEEL_AXE,
+      ItemId.IRON_AXE,
+      ItemId.BRONZE_AXE,
+    };
+
+    return Arrays.stream(axes).anyMatch(SeattaScript::hasUnnotedItem);
+  }
+
+  /**
    * Returns whether the player has at least the specified amount of an item in their inventory.<br>
    * <br>
    * If you need to differentiate between unnoted and noted items, use hasUnnotedInventoryAmount()
    * and hasNotedInventoryAmount().
    *
-   * @param item itemId - Item to check for
-   * @param amount int - Amount of itemId to check for
+   * @param item itemId -- Item to check for
+   * @param amount int -- Amount of itemId to check for
    * @return boolean
    */
   public static boolean hasInventoryAmount(ItemId item, int amount) {
@@ -143,8 +281,8 @@ public class SeattaScript extends IdleScript {
    * If you need to differentiate between unnoted and noted items, use hasUnnotedInventoryAmount()
    * and hasNotedInventoryAmount().
    *
-   * @param item int - Item to check for
-   * @param amount int - Amount of itemId to check for
+   * @param item int -- Item to check for
+   * @param amount int -- Amount of itemId to check for
    * @return boolean
    */
   public static boolean hasInventoryAmount(int item, int amount) {
@@ -198,7 +336,7 @@ public class SeattaScript extends IdleScript {
   /**
    * Returns whether the player has the specified item equipped
    *
-   * @param item itemId - Item to check for
+   * @param item itemId -- Item to check for
    * @return boolean
    */
   public static boolean hasEquippedItem(ItemId item) {
@@ -208,7 +346,7 @@ public class SeattaScript extends IdleScript {
   /**
    * Returns whether the player has the specified item equipped
    *
-   * @param item int - Item to check for
+   * @param item int -- Item to check for
    * @return boolean
    */
   public static boolean hasEquippedItem(int item) {
@@ -321,6 +459,26 @@ public class SeattaScript extends IdleScript {
   }
 
   /**
+   * Checks if the player has a usable pickaxe in their inventory. Quits the script if the player
+   * does not.
+   */
+  public static void checkForUsablePickaxeOrQuit() {
+    if (!hasUsablePickaxe()) {
+      quit(QuitReason.MISSING_INVENTORY_ITEM, new String[] {" -A usable pickaxe"});
+    }
+  }
+
+  /**
+   * Checks if the player has a usable axe in their inventory. Quits the script if the player does
+   * not.
+   */
+  public static void checkForUsableAxeOrQuit() {
+    if (!hasUsableAxe()) {
+      quit(QuitReason.MISSING_INVENTORY_ITEM, new String[] {" -A usable axe"});
+    }
+  }
+
+  /**
    * Check if the player has a specified amount of an item in their inventory. Quits the script if
    * the player does not.<br>
    * <br>
@@ -340,6 +498,7 @@ public class SeattaScript extends IdleScript {
           new String[] {String.format(" - %s %s", amount, name)});
     }
   }
+
   /**
    * Check if the player has a specified unnoted amount of an item in their inventory. Quits the
    * script if the player does not.
@@ -357,6 +516,7 @@ public class SeattaScript extends IdleScript {
           new String[] {String.format(" - %s %s", amount, name)});
     }
   }
+
   /**
    * Check if the player has a specified noted amount of an item in their inventory. Quits the
    * script if the player does not.
@@ -390,6 +550,23 @@ public class SeattaScript extends IdleScript {
   }
 
   /**
+   * Check if the player has a specified item either equipped or in their inventory. Quits the
+   * script if the player does not.
+   *
+   * @param item ItemId -- ItemId to check for
+   */
+  public static void checkForEquippedOrUnnotedInventoryItemOrQuit(ItemId item) {
+    if (!hasUnnotedItem(item)) {
+      String name = c.getItemName(item.getId()).toLowerCase();
+      name = name.substring(0, 1).toUpperCase() + name.substring(1);
+
+      quit(
+          QuitReason.MISSING_EQUIPPED_OR_INVENTORY_ITEM,
+          new String[] {String.format(" - %s", name)});
+    }
+  }
+
+  /**
    * Check if the player has a specified number of empty inventory spaces. Quits the script if the
    * player does not.
    *
@@ -411,6 +588,7 @@ public class SeattaScript extends IdleScript {
   public static boolean isUIM() {
     return c.getPlayerMode() == 2;
   }
+
   /**
    * Returns whether the player is a Hardcore Iron Man.
    *
@@ -436,15 +614,13 @@ public class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean isScriptRunning() {
-    if (c.isRunning()) {
-      while (c.isRunning() && !c.isLoggedIn()) {
-        c.login();
-        c.sleep(10000);
-      }
-      handleSleepAndIdleMovement();
-      return true;
+    if (!c.isRunning()) return false;
+    while (c.isRunning() && !c.isLoggedIn()) {
+      c.login();
+      c.sleep(10000);
     }
-    return false;
+    handleSleepAndIdleMovement();
+    return true;
   }
 
   /** Sleeps if the player needs to sleep. Moves if the player has been idle for too long. */
@@ -468,11 +644,21 @@ public class SeattaScript extends IdleScript {
     while (c.isBatching() && isRunningAndLoggedIn());
   }
 
-  /** Quits the scripts with the default SCRIPT_STOPPED message. */
+  /**
+   * Quits the script.
+   *
+   * @return int -- Returned int so scripts can call this for their run method return
+   */
   public static int quit() {
     return quit(QuitReason.SCRIPT_STOPPED);
   }
 
+  /**
+   * Quits the script and prints out a message.
+   *
+   * @param message String -- Message to print out
+   * @return int -- Returned int so scripts can call this for their run method return
+   */
   public static int quit(String message) {
     return quit(QuitReason.SCRIPT_STOPPED, new String[] {message});
   }
@@ -481,35 +667,41 @@ public class SeattaScript extends IdleScript {
    * Quits the script and prints the message corresponding to the QuitReason.
    *
    * @param reason QuitReason -- Reason printed when quitting.
+   * @return int -- Returned int so scripts can call this for their run method return
    */
   public static int quit(QuitReason reason) {
     return quit(reason, null);
   }
 
   /**
+   * Quits the script while logging the reason and all Strings from messageArray
+   *
    * @param reason QuitReason -- Reason printed when quitting.
    * @param messageArray String[] -- Array of message strings to print after the QuitReason.
-   * @return int -- Returned so scripts
+   * @return int -- Returned int so scripts can call this for their run method return
    */
   public static int quit(QuitReason reason, String[] messageArray) {
     if (c.isRunning()) {
-      c.log(reason.getMessage(), "red");
+      if (!reason.equals(QuitReason.SCRIPT_STOPPED)) c.log(reason.getMessage(), "red");
       if (messageArray != null && messageArray.length > 0) {
         Arrays.stream(messageArray).forEach(m -> c.log(m, "red"));
       }
-      if (!reason.equals(QuitReason.SCRIPT_STOPPED))
-        System.out.println(QuitReason.SCRIPT_STOPPED.getMessage());
       c.stop();
     }
     return 1000;
   }
 
+  /**
+   * An enum of reasons to use in for displaying messages when stopping a script with the quit
+   * methods
+   */
   public enum QuitReason {
-    SCRIPT_STOPPED("The script has been stopped"),
+    SCRIPT_STOPPED(null),
+    MISSING_EQUIPPED_ITEM("You are missing a required equipped item:"),
+    MISSING_EQUIPPED_OR_INVENTORY_ITEM("You are missing a required item:"),
     MISSING_INVENTORY_ITEM("You are missing a required inventory item:"),
     MISSING_UNNOTED_INVENTORY_ITEM("You are missing a required unnoted inventory item:"),
     MISSING_NOTED_INVENTORY_ITEM("You are missing a required noted inventory item:"),
-    MISSING_EQUIPPED_ITEM("You are missing a required equipped item:"),
     MISSING_SKILL_REQUIREMENT("You are missing a required skill level:"),
     MISSING_QUEST_REQUIREMENT("You are missing a required quest:"),
     UNABLE_TO_FIND_NPC("The following npc was not able to be found:"),

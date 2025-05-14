@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import utils.Extractor;
@@ -155,5 +156,38 @@ public class AccountTab extends JPanel implements ISettingsTab {
     sl.putConstraint(SpringLayout.SOUTH, debug, 20, SpringLayout.NORTH, debug);
     sl.putConstraint(SpringLayout.EAST, debug, 0, SpringLayout.EAST, sideBar);
     sl.putConstraint(SpringLayout.WEST, debug, 0, SpringLayout.WEST, sideBar);
+  }
+
+  @Override
+  public void loadSettings(Properties p) {
+    username.setText(p.getProperty("username", ""));
+    if (!username.getText().isEmpty()) username.getTextField().setEnabled(false);
+    password.setText(p.getProperty("password", ""));
+    initChoice.setSelectedItem(p.getProperty("init-cache", "Coleslaw"));
+    serverIpChoice.setSelectedItem(p.getProperty("server-ip", "game.openrsc.com"));
+    ocrChoice.setSelectedItem(p.getProperty("ocr-type", OCRType.INTERNAL.getName()));
+    ocrServer.setText(p.getProperty("ocr-server", ""));
+    autoLogin.setSelected(Boolean.parseBoolean(p.getProperty("auto-login", "false")));
+    sideBar.setSelected(Boolean.parseBoolean(p.getProperty("sidebar", "false")));
+    logWindow.setSelected(Boolean.parseBoolean(p.getProperty("log-window", "false")));
+    debug.setSelected(Boolean.parseBoolean(p.getProperty("debug", "false")));
+    helpMenu.setSelected(Boolean.parseBoolean(p.getProperty("help", "false")));
+    showVersion.setSelected(Boolean.parseBoolean(p.getProperty("version", "false")));
+  }
+
+  @Override
+  public void setDefaultValues() {
+    username.setText("");
+    password.setText("");
+    initChoice.setSelectedIndex(0);
+    serverIpChoice.setSelectedIndex(0);
+    ocrChoice.setSelectedIndex(0);
+    ocrServer.setText("");
+    autoLogin.setSelected(false);
+    sideBar.setSelected(true);
+    logWindow.setSelected(false);
+    debug.setSelected(false);
+    helpMenu.setSelected(false);
+    showVersion.setSelected(false);
   }
 }

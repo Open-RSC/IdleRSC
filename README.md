@@ -224,7 +224,26 @@ Compile using Eclipse or IntelliJ Gradle (preferred) or the included compilation
 ---
 </details>
 
+<details><summary>Creating Release Artifacts</summary>
 
+---
+
+In order to create a permanant tagged build artifact for long term
+release tracking, we need to store it in the generic package
+registry, it also provides easy access through an api.
+This will only run when a pipeline runs for a tagged commit. Workflow to
+
+#### Workflow
+
+```
+1. Go to Gitlab UI
+2. Open up the side bar > Code > Tags
+3. Tag a commit you want to have uploaded
+4. Pipeline will automatically run and upload a build artifact.
+```
+
+---
+</details>
 
 <details><summary>About IdleRSC</summary>
 

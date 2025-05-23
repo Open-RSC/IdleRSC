@@ -8,6 +8,7 @@ default:
 stages:
   - format
   - build
+  - deploy
   - pages
 
 before_script:
@@ -44,21 +45,58 @@ format:
 # to download.
 build:
   stage: build
-  script: 
+  script:
+    - set -e # error out immediately
     - make release
     - mv *.zip IdleRSC.zip
   artifacts:
     name: IdleRSC
     paths:
       - IdleRSC.zip
+    expire_in: 1 month
 
-# Upload Javadoc API documentation to Gitlab pages.
+# Upload build to Generic Packages Registry
+upload_package:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - |
+      # Determine the package version. Prioritize commit tag if present.
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        PACKAGE_VERSION="$CI_COMMIT_TAG"
+      else
+        PACKAGE_VERSION="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d%H%M%S)"
+      fi
+
+      echo "---"
+      echo "Calculated PACKAGE_VERSION: '$PACKAGE_VERSION'" # Keep this debug line!
+      echo "---"
+
+      # Upload the package using curl.
+      # Corrected: Use PACKAGE_VERSION consistently in the URL path.
+      curl --fail-with-body \
+           --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+           --upload-file IdleRSC.zip \
+           "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/IdleRSC/${PACKAGE_VERSION}/IdleRSC-${PACKAGE_VERSION}.zip"
+      echo "---"
+      echo "Package upload command executed."
+      echo "---"
+  rules:
+    # Always run if the branch is "update_git_workflows", uncomment for testing this code.
+#    - if: $CI_COMMIT_BRANCH == "update_git_workflows"
+#      when: on_success # Only if previous stages succeed
+    # Run only if a Git tag exists AND it's on the default branch
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success # Only if previous stages succeed
+  artifacts:
+    # This artifact configuration ensures the uploaded package URL is always available in job logs.
+    expire_in: never
+# Upload Javadoc API documentationls to Gitlab pages.
 pages:
   stage: pages
-  script: 
+  script:
     - make build-javadoc
   artifacts:
     paths:
       - public
-
-# TODO - upload readme and doc to wiki https://gitlab.com/open-runescape-classic/idlersc/-/wikis/pages

@@ -4,14 +4,16 @@
 
 # IdleRSC
 [![openrsc badge](https://img.shields.io/badge/OpenRSC_Launcher-0?style=flat&label=Play&color=045CDD)][launcher]
+[![discord badge](https://img.shields.io/discord/459699205674369025?logo=discord&logoColor=%23FFFFFF&label=Open%20RSC&color=%235865F2 "Open Runescape Classic Discord")][discord]
 
 [![releases badge](https://gitlab.com/openrsc/idlersc/-/badges/release.svg "Latest IdleRSC Releases")][releases]
-[![pipeline badge](https://gitlab.com/openrsc/idlersc/badges/main/pipeline.svg?key_text=Pipeline "Idlersc Commits")][commits]
-[![discord badge](https://img.shields.io/discord/459699205674369025?logo=discord&logoColor=%23FFFFFF&label=Open%20RSC&color=%235865F2 "Open Runescape Classic Discord")][discord]
+[![dev builds badge](https://img.shields.io/badge/Latest%20Dev%20Build-0?style=flat&color=555555 "Latest IdleRSC Dev Build")][latest-build-artifacts]
 
 [![openrsc wiki badge](https://img.shields.io/badge/OpenRSC-0?style=flat&color=045CDD&label=Wiki "OpenRSC Wiki")][openrsc-wiki]
 [![idlersc wiki badge](https://img.shields.io/badge/IdleRSC-0?style=flat&color=454545&label=Wiki "IdleRSC Wiki")][wiki]
 [![idlersc api badge](https://img.shields.io/badge/IdleRSC%20API-0?style=flat&logo=gitlab&logoColor=ff8800&color=454545  "IdleRSC API")][api]
+
+[![pipeline badge](https://gitlab.com/openrsc/idlersc/badges/main/pipeline.svg?key_text=Pipeline "Idlersc Commits")][commits]
 
 IdleRSC is a bot for the [OpenRSC][openrsc] coleslaw and uranium worlds that uses code injection and
 reflection. It has its own custom scripting API called IdleScript, as well as
@@ -316,6 +318,7 @@ If you would like to contribute to IdleRSC, but don't know where to start check 
 [repository]: https://gitlab.com/openrsc/idlersc
 [documentation]: https://openrsc.gitlab.io/idlersc
 [releases]: https://gitlab.com/openrsc/idlersc/-/releases
+[latest-build-artifacts]: https://gitlab.com/openrsc/idlersc/-/jobs/artifacts/main/raw/IdleRSC.zip?job=build
 [launcher]: https://rsc.vet/downloads/OpenRSC.jar
 [issue-tracker]: https://gitlab.com/openrsc/idlersc/-/issues
 [merge-requests]: https://gitlab.com/openrsc/idlersc/-/merge_requests

@@ -1,8 +1,26 @@
 plugins {
+  id 'java'
   // Use metadata from git
   id 'git-metadata'
   // Ensure archives are reproducible
   id 'reproducible-archives'
+}
+
+subprojects {
+  apply plugin: 'java'
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+  }
+
+  tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+  }
 }
 
 ext.releaseName = { ->

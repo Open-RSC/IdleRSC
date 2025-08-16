@@ -72,8 +72,9 @@ Cache/
 /run_profiler_support.bat
 /compile_windows.bat
 
-# Ignore script logs
+# Ignore logs
 /scripts/logs/
+/logs/
 
 #Put any custom git ignore attributes below
 

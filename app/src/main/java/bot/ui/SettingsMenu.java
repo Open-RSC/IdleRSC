@@ -128,8 +128,8 @@ public class SettingsMenu extends JMenu implements UiContract {
         e -> {
           if (c != null) {
             if (debugCheckbox.isSelected()) // no action needed, main checks flag
-            c.log("IdleRSC: Turning On Console Debugging Messages", "gre");
-            else c.log("IdleRSC: Turning Off Console Debugging Messages", "gre");
+            c.logAsClient("IdleRSC: Turning On Console Debugging Messages", "gre");
+            else c.logAsClient("IdleRSC: Turning Off Console Debugging Messages", "gre");
           }
         });
   }

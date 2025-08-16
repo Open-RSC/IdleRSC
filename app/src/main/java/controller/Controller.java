@@ -788,13 +788,12 @@ public class Controller {
         false);
     if (x == currentX() && y == currentY()) return;
     if (!sleepUntilMoving(1200)) {
-      Main.log("Ok so basically, the region we want to walk to isn't loaded.");
-      Main.log("So I'm going to brute force a path to our dest, then walk half way");
+      Main.log("Brute forcing a path, since the region we want to walk to isn't loaded");
       List<int[]> path = BruteForceUtils.findPath(x, y);
       if (path != null) {
         walkTo(path.get(path.size() / 2)[0], path.get(path.size() / 2)[1]);
       } else {
-        Main.log("Failed to find a path to our destination. Yeeting off in a random direction..");
+        Main.log("Failed to find a path to our destination. Yeeting off in a random direction.");
         walkTo(
             currentX() + ThreadLocalRandom.current().nextInt(-5, 6),
             currentY() + ThreadLocalRandom.current().nextInt(-5, 6));
@@ -4837,8 +4836,8 @@ public class Controller {
    * @param interlace boolean
    */
   public void setInterlacer(boolean interlace) {
-    if (interlace) log("IdleRSC: Turning On Interlacer", "gre");
-    else log("IdleRSC: Turning Off Interlacer", "gre");
+    if (interlace) logAsClient("IdleRSC: Turning On Interlacer", "gre");
+    else logAsClient("IdleRSC: Turning Off Interlacer", "gre");
     mud.interlace = interlace;
   }
 
@@ -4849,8 +4848,8 @@ public class Controller {
    * @param mode boolean
    */
   public void setCustomUiMode(boolean mode) {
-    if (mode) log("IdleRSC: Turning On Custom UI mode", "gre");
-    else log("IdleRSC: Turning Off Custom UI mode", "gre");
+    if (mode) logAsClient("IdleRSC: Turning On Custom UI mode", "gre");
+    else logAsClient("IdleRSC: Turning Off Custom UI mode", "gre");
     mud.setCustomUI(mode);
   }
 
@@ -4897,8 +4896,8 @@ public class Controller {
    * @param setting boolean - true to keep invent open, false to let it close.
    */
   public void setKeepInventoryOpenMode(boolean setting) {
-    if (setting) log("IdleRSC: Turning On Custom UI mode", "gre");
-    else log("IdleRSC: Turning Off Custom UI mode", "gre");
+    if (setting) logAsClient("IdleRSC: Turning On Custom UI mode", "gre");
+    else logAsClient("IdleRSC: Turning Off Custom UI mode", "gre");
     mud.setAndroidInvToggle(!setting);
   }
 
@@ -5198,7 +5197,33 @@ public class Controller {
   }
 
   /**
-   * Logs text to the console, bot log window, and OpenRSC applet.
+   * Logs text to the console, bot log window, and OpenRSC applet<br>
+   * <br>
+   * Use this for non-script logging
+   *
+   * @param text String
+   */
+  public void logAsClient(String text) {
+    logAsClient(text, "gre");
+  }
+
+  /**
+   * Logs text to the console, bot log window, and OpenRSC applet with the specified @col@<br>
+   * <br>
+   * Use this for non-script logging
+   *
+   * @param text String
+   * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
+   */
+  public void logAsClient(String text, String rsTextColor) {
+    Main.log(text);
+    displayMessage("@" + rsTextColor + "@" + text);
+  }
+
+  /**
+   * Logs text to the console, bot log window, and OpenRSC applet<br>
+   * <br>
+   * Use this in scripts
    *
    * @param text String
    */
@@ -5207,13 +5232,15 @@ public class Controller {
   }
 
   /**
-   * Logs text to the console, bot log window, and OpenRSC applet with the specified @col@.
+   * Logs text to the console, bot log window, and OpenRSC applet with the specified @col@<br>
+   * <br>
+   * Use this in scripts
    *
    * @param text String
    * @param rsTextColor -- the color of the text, such as "red" or "cya". Do not wrap in @'s.
    */
   public void log(String text, String rsTextColor) {
-    Main.log(text); // main log does sysout
+    Main.logScript(text);
     displayMessage("@" + rsTextColor + "@" + text);
   }
 
@@ -5733,8 +5760,8 @@ public class Controller {
    * @param _showBotPaint int
    */
   public void setBotPaint(boolean _showBotPaint) {
-    if (_showBotPaint) log("IdleRSC: Turning On Bot Paint", "gre");
-    else log("IdleRSC: Turning Off Bot Paint", "gre");
+    if (_showBotPaint) logAsClient("IdleRSC: Turning On Bot Paint", "gre");
+    else logAsClient("IdleRSC: Turning Off Bot Paint", "gre");
     showBotPaint = _showBotPaint;
   }
 

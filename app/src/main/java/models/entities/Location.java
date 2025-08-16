@@ -27,10 +27,6 @@ import java.util.stream.Collectors;
  * Location.walkTowards(LOCATION) or Location.LOCATION.walkTowards().
  */
 public enum Location {
-  AL_KHARID_MINE(new Boundary(62, 578, 76, 607), new Tile(69, 606), "Al-Kharid - Mine", true),
-  AL_KHARID_WELL(new Boundary(70, 678, 73, 681), new Tile(72, 681), "Al-Kharid - Well", true),
-  AL_KHARID_SHANTAYS_PASS(
-      new Boundary(60, 727, 64, 732), new Tile(62, 730), "Al-Kharid - Shanty's Pass", true),
   AL_KHARID_BANK(new Boundary(87, 689, 93, 700), new Tile(89, 694), "Al-Kharid - Bank", true),
   AL_KHARID_BORDER_GATE(
       new Boundary(88, 647, 91, 652), new Tile(90, 649), "Al-Kharid - Gate to Lumbridge", true),
@@ -46,6 +42,7 @@ public enum Location {
       new Boundary(54, 679, 58, 684), new Tile(57, 681), "Al-Kharid - General Store", true),
   AL_KHARID_GNOME_GLIDER(
       new Boundary(85, 660, 91, 666), new Tile(87, 661), "Al-Kharid - Gnome Glider", true),
+  AL_KHARID_MINE(new Boundary(62, 578, 76, 607), new Tile(69, 606), "Al-Kharid - Mine", true),
   AL_KHARID_PALACE(new Boundary(63, 685, 81, 700), new Tile(72, 692), "Al-Kharid - Palace", true),
   AL_KHARID_PLATELEGS_SHOP(
       new Boundary(54, 685, 57, 688),
@@ -59,17 +56,22 @@ public enum Location {
       true),
   AL_KHARID_SCIMITAR_SHOP(
       new Boundary(74, 674, 78, 678), new Tile(76, 678), "Al-Kharid - Zeke's Scimitar Shop", true),
+  AL_KHARID_SHANTAYS_PASS(
+      new Boundary(60, 727, 64, 732), new Tile(62, 730), "Al-Kharid - Shanty's Pass", true),
   AL_KHARID_SILK_TRADERS_HOUSE(
       new Boundary(73, 667, 77, 670), new Tile(74, 669), "Al-Kharid - Silk Trader's House", true),
   AL_KHARID_SINK_HUT(
       new Boundary(60, 672, 62, 674), new Tile(61, 673), "Al-Kharid - Sink Hut", true),
   AL_KHARID_TANNER(new Boundary(83, 673, 85, 677), new Tile(83, 675), "Al-Kharid - Tanner", true),
+  AL_KHARID_WELL(new Boundary(70, 678, 73, 681), new Tile(72, 681), "Al-Kharid - Well", true),
   AL_KHARID_WITCHS_HOUSE(
       new Boundary(49, 715, 53, 718), new Tile(51, 716), "Al-Kharid - Witch's House", true),
   ARDOUGNE_CROP_FIELD(
       new Boundary(537, 548, 546, 564), new Tile(541, 556), "Ardougne - Crop Field", true),
   ARDOUGNE_MONASTERY(
       new Boundary(575, 651, 603, 669), new Tile(589, 653), "Ardougne - Monastery", true),
+  ARDOUGNE_NORTH_BANK(
+      new Boundary(577, 572, 585, 576), new Tile(581, 574), "Ardougne - North Bank", true),
   ARDOUGNE_SOUTH_BANK(
       new Boundary(534, 605, 557, 619), new Tile(552, 613), "Ardougne - South Bank", true),
   BARBARIAN_OUTPOST_ENTRANCE(
@@ -690,6 +692,7 @@ public enum Location {
   private static final Location[] bankArray = {
     AL_KHARID_BANK,
     ARDOUGNE_SOUTH_BANK,
+    ARDOUGNE_NORTH_BANK,
     CATHERBY_BANK,
     DRAYNOR_BANK,
     EDGEVILLE_BANK,
@@ -729,7 +732,8 @@ public enum Location {
    */
   public void walkTowards() {
     if (!isWalkable()) {
-      c.log(String.format("The Location '%s' is marked as non-walkable.", getDescription()), "red");
+      c.logAsClient(
+          String.format("The Location '%s' is marked as non-walkable.", getDescription()), "red");
       return;
     }
     if (c.isRunning() && c.isLoggedIn()) walkTowards(getX(), getY());
@@ -754,17 +758,23 @@ public enum Location {
      */
     c.sleep(100);
     if (!isAtCoords(x, y) && c.isRunning()) {
+      String destination = Location.getDescriptionFromStandableTile(x, y);
+      String start = String.format("(%s, %s)", c.currentX(), c.currentY());
+
       c.displayMessage(
           "@yel@Attempting to walk to: @cya@" + Location.getDescriptionFromStandableTile(x, y));
-      System.out.println(
-          "\nAttempting to walk to: " + Location.getDescriptionFromStandableTile(x, y));
+      System.out.println();
+      Main.log(String.format("Attempting to walk to \"%s\" from %s", destination, start));
       System.out.println(
           "If this fails, WebWalker might need to be updated to include correct pathing to the area.");
       int failedAttempts = 0;
       while (!isAtCoords(x, y) && c.isRunning()) {
         failedAttempts = !c.walkTowards(x, y) ? ++failedAttempts : 1;
         if (failedAttempts >= 5) {
-          c.log("Failed to walk to specified location. WebWalker may need to be updated.", "red");
+          String errorMessage =
+              "Failed to walk to the specified location. WebWalker may need to be updated";
+          c.displayMessage("@red@" + errorMessage);
+          Main.logError(errorMessage);
           c.stop();
         }
         c.sleep(100);

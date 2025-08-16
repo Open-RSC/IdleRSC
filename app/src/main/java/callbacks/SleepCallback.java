@@ -58,7 +58,8 @@ public class SleepCallback {
     if (packet[0] == 117) {
       onSleepWord(packet, length);
     } else {
-      Main.log("Packet received was not a legitimate sleep image!");
+      Main.logError(
+          String.format("The packet received was not a legitimate sleep image: %s", packet[0]));
     }
   }
 
@@ -70,7 +71,6 @@ public class SleepCallback {
    */
   public static void fatigueHook(int fatigue) {
     if (fatigue > 0) Main.log("Current fatigue in sleep: " + fatigue);
-
     onSleepFatigueUpdate(fatigue);
   }
 
@@ -83,9 +83,8 @@ public class SleepCallback {
           if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
 
         } catch (final Exception ex) {
-          Main.log("Error uploading CAPTCHA!");
+          Main.logError("Error uploading CAPTCHA!", ex);
           sleepWord = "unknown";
-          ex.printStackTrace();
         }
         break;
       case INTERNAL:
@@ -94,9 +93,8 @@ public class SleepCallback {
           sleepWord = ocr.guess(SimpleImageIO.readBMP(out.toByteArray()), true);
           if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
         } catch (final IOException ex) {
-          Main.log("Error solving sleep word!");
+          Main.logError("Error solving sleep word!", ex);
           sleepWord = "unknown";
-          ex.printStackTrace();
         }
         break;
       case HASH:
@@ -105,7 +103,7 @@ public class SleepCallback {
         sleepWord = hashes.getProperty(Integer.toString(hash));
         if (sleepWord == null) {
           sleepWord = "unknown";
-          Main.log("Could not find hash: " + hash);
+          Main.logError("Could not find hash: " + hash);
         }
         if (controller.getFatigue() == 0) onSleepFatigueUpdate(0);
         break;
@@ -121,7 +119,7 @@ public class SleepCallback {
   //     saveBitmap(out, data, length);
   //     checkLastModified = true;
   //   } catch (final IOException ex) {
-  //     ex.printStackTrace();
+  //     Main.logError("Failed saving sleep image to file", ex);
   //     sleepWord = null;
   //   }
   //   break;
@@ -162,8 +160,8 @@ public class SleepCallback {
       case REMOTE:
         String url = Main.config.getOCRServer();
         if (url.isEmpty()) {
-          Main.log("No remote OCR URL was set for " + controller.getPlayerName());
-          Main.log("Falling back to image hashes.");
+          Main.logWarning("No remote OCR URL was set for " + controller.getPlayerName());
+          Main.logWarning("Falling back to image hashes.");
         }
         try {
           sleepServer = new URL(url);
@@ -171,8 +169,8 @@ public class SleepCallback {
           break;
         } catch (MalformedURLException | URISyntaxException e) {
           sleepServer = null;
-          Main.log("Remote OCR URL: '" + url + "' is not a valid url.");
-          Main.log("Falling back to Image hashes.");
+          Main.logWarning("Remote OCR URL: '" + url + "' is not a valid url.");
+          Main.logWarning("Falling back to Image hashes.");
         }
       case HASH:
         String inJarHashesPath = "/" + HASHES.replace("\\", "/");
@@ -181,9 +179,8 @@ public class SleepCallback {
           hashes.load(hashesStream);
           break;
         } catch (final IOException e) {
-          e.printStackTrace();
-          Main.log("Issue detected with Image Hashes.");
-          Main.log("Falling back to internal.");
+          Main.logError("Issue detected with Image Hashes.");
+          Main.logError("Falling back to internal.", e);
         }
       case INTERNAL:
         String inJarModelPath = "/" + MODEL_TXT.replace("\\", "/");
@@ -195,12 +192,11 @@ public class SleepCallback {
             ocr = new OCR(new DictSearch(dr), mr);
             break;
           } catch (final IOException | OCRException e) {
-            e.printStackTrace();
-            Main.log("Issue detected with Internal Sleeper Num3l.");
-            Main.log("Falling back to manual.");
+            Main.logError("Issue detected with Internal Sleeper Num3l.");
+            Main.logError("Falling back to manual.", e);
           }
         } catch (final IOException e) {
-          e.printStackTrace();
+          Main.logError("Failed extracting sleep files", e);
         }
 
         // case EXTERNAL:
@@ -326,7 +322,7 @@ public class SleepCallback {
     try {
       return new String(Files.readAllBytes(file.toPath()));
     } catch (final Exception ex) {
-      ex.printStackTrace();
+      Main.logError("Failed to read line from slword", ex);
     }
     return null;
   }

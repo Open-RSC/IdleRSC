@@ -128,7 +128,8 @@ public class BottomPanel extends JPanel implements UiContract {
             setMinimumWindowSize();
 
             boolean isSelected = sidePanelSelected();
-            c.log("IdleRSC: " + (isSelected ? "Showing" : "Hiding") + " Side Panel!", "gre");
+            c.logAsClient(
+                "IdleRSC: " + (isSelected ? "Showing" : "Hiding") + " Side Panel!", "gre");
             Main.sidePanel.setVisible(isSelected);
 
             if (prevWidth == rscFrame.getWidth())
@@ -145,7 +146,7 @@ public class BottomPanel extends JPanel implements UiContract {
             setMinimumWindowSize();
 
             boolean isSelected = logPanelSelected();
-            c.log("IdleRSC: " + (isSelected ? "Showing" : "Hiding") + " Log Panel!", "gre");
+            c.logAsClient("IdleRSC: " + (isSelected ? "Showing" : "Hiding") + " Log Panel!", "gre");
             consolePanel.setVisible(isSelected);
 
             if (prevHeight == rscFrame.getHeight())

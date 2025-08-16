@@ -27,7 +27,7 @@ public class BruteForceUtils {
     String cacheKey = x + "," + y;
     if (closestNodeCache.containsKey(cacheKey)) {
       if (closestNodeCache.get(cacheKey) == null) {
-        Main.getController().log("Could not find closest node to " + x + "," + y);
+        Main.log("Could not find the closest node to " + x + "," + y);
       }
       return closestNodeCache.get(cacheKey);
     }
@@ -45,7 +45,7 @@ public class BruteForceUtils {
           } while (read != 4050);
         }
       } catch (Exception e) {
-        e.printStackTrace();
+        Main.logError("An error occurred while finding the closest node", e);
       }
     }
     // Uses simple BFS to find the closest node
@@ -70,7 +70,7 @@ public class BruteForceUtils {
       }
     }
 
-    System.out.println(
+    Main.log(
         "Can't find the closest walkable node to " + x + ", " + y + ", using Euclidean closest.");
     closestNodeCache.put(cacheKey, findClosestNodeEuclidian(x, y, adjacencyList));
     return closestNodeCache.get(cacheKey);

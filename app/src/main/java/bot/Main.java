@@ -6,6 +6,7 @@ import static org.reflections.util.ClasspathHelper.forJavaClassPath;
 
 import bot.cli.CLIParser;
 import bot.cli.ParseResult;
+import bot.logger.Logger;
 import bot.ui.*;
 import bot.ui.debugger.Debugger;
 import bot.ui.scriptselector.ScriptSelectorUI;
@@ -49,6 +50,7 @@ import utils.Version;
  */
 public class Main {
   public static Config config = new Config();
+  public static final Logger logger = new Logger();
   private static final Reflections reflections =
       new Reflections(
           new ConfigurationBuilder()
@@ -106,7 +108,7 @@ public class Main {
    * @param theme String -- name of the "Theme"
    */
   public static void setThemeElements(String theme) {
-    if (controller != null) controller.log("IdleRSC: Switching theme to " + theme, "gre");
+    if (controller != null) controller.logAsClient("IdleRSC: Switching theme to " + theme, "gre");
 
     boolean isThemeCustom = theme.equalsIgnoreCase("custom");
     primaryBG = isThemeCustom ? customColors[0] : Theme.getFromName(theme).getPrimaryBackground();
@@ -177,7 +179,7 @@ public class Main {
       rscFrame.setSize(newSize);
 
     } catch (InterruptedException e) {
-      System.out.println("Failed to reload client config:");
+      logger.err("Failed to reload client config", e);
       throw new RuntimeException(e);
     }
   }
@@ -197,10 +199,18 @@ public class Main {
                 () -> {
                   if (controller != null && controller.isBatching()) {
                     controller.stopBatching();
-                    System.out.println("Batching force-stopped at shutdown");
+                    log("Batching force-stopped at shutdown");
                   }
                 },
                 "IdleRSC - Shutdown Hook"));
+
+    // Default uncaught exception handler to log uncaught exceptions
+    Thread.setDefaultUncaughtExceptionHandler(
+        (t, e) -> {
+          // Ignore thread death in runningScriptThread since we force-stop it on script stop
+          if (t.equals(runningScriptThread) && e instanceof ThreadDeath) return;
+          logError("Uncaught exception in thread " + t.getName(), e);
+        });
 
     parser = new CLIParser();
     Version version = new Version();
@@ -216,14 +226,14 @@ public class Main {
     if (parseResult.isHelp()) parser.printHelp();
 
     if (parseResult.isVersion()) {
-      System.out.println(
+      log(
           "IdleRSC version "
               + version.getCommitDate()
               + "-"
               + version.getCommitCount()
               + "-"
               + version.getCommitHash());
-      System.out.println("Built with JDK " + version.getBuildJDK());
+      log("Built with JDK " + version.getBuildJDK());
     }
 
     config.absorb(parseResult);
@@ -318,7 +328,7 @@ public class Main {
       // loadAndRunScript() now takes a second argument of PackageInfo.
       // Leaving it null makes it go through scripts like it used to.
       if (!loadAndRunScript(config.getScriptName(), null)) {
-        System.out.println("Could not find script: " + config.getScriptName());
+        logger.err("Could not find the script: " + config.getScriptName());
       } else {
         while (!controller.isLoggedIn()) controller.sleep(640);
         isRunning = true;
@@ -405,7 +415,7 @@ public class Main {
                   }
                 } catch (InterruptedException e) {
                   Thread.currentThread().interrupt();
-                  System.out.println("Script thread interrupted. Exiting...");
+                  logger.debug("Script thread interrupted. Exiting...");
                 }
               }
             },
@@ -413,43 +423,14 @@ public class Main {
     runningScriptThread.start();
   }
 
-  private static void printThreadInformation() {
-
-    // Recursively searches threads to find the one that matches our script thread.
-    ThreadGroup group = Thread.currentThread().getThreadGroup();
-    while (group.getParent() != null) group = group.getParent();
-    Thread[] threads = new Thread[group.activeCount()];
-    group.enumerate(threads, true);
-
-    StringBuilder threadString = new StringBuilder();
-    for (int i = 0; i < threads.length; i++) {
-      String threadName = threads[i].getName();
-      int spaces = 28 - threadName.length();
-      threadString.append(threads[i].getName());
-      for (int j = 0; j < spaces; j++) threadString.append(" ");
-
-      if (i % 3 == 0 && i != 0) threadString.append("\n   ");
-    }
-
-    System.out.printf("Running Threads: %n   %s%n", threadString);
-  }
-
-  private static void printScriptInformation() {
-    System.out.printf(
-        "Current Script: %s - Type: %s%n" + "Current Script Args: %s%n",
-        currentRunningScript.getClass().getSimpleName(),
-        currentRunningScript.getClass().getSuperclass().getSimpleName(),
-        Arrays.toString(config.getScriptArguments()));
-  }
-
   public static ParseResult parseArgs(ParseResult parseResult, CLIParser parser, String[] args)
       throws InterruptedException {
     try {
       parseResult = parser.parse(args);
     } catch (ParseException e) {
-      System.err.println(e.getMessage() + "\n");
+      logger.err(String.format("Failed to parse args: %s", Arrays.toString(args)), e);
       parser.printHelp();
-      System.out.println("Closing Bot in 5 minute...");
+      log("Closing Bot in 5 minutes...");
       Thread.sleep(340000);
       System.exit(1);
     }
@@ -457,22 +438,79 @@ public class Main {
   }
 
   /**
-   * Add a line to the log window.
+   * Logs a message
    *
-   * @param text
+   * @param text String -- Text to log
    */
   public static void log(String text) {
-    System.out.println(text);
-    JTextArea logArea = ConsolePanel.getLogArea();
-    if (logArea == null) {
-      return; // messages will still add text if element isVisible is false.
-    }
+    logger.log(text);
+    ConsolePanel.addLogMessage(text);
+  }
 
-    logArea.append(text + "\n");
+  public static void logDebug(String text) {
+    logger.debug(text);
+    ConsolePanel.addLogMessage("Debug: " + text);
+  }
 
-    if (BottomPanel.logPanelSelected()) {
-      logArea.setCaretPosition(logArea.getDocument().getLength());
-    }
+  /**
+   * Logs a script message
+   *
+   * @param text String -- Text to log
+   */
+  public static void logScript(String text) {
+    logger.scriptLog(text);
+    ConsolePanel.addLogMessage("Script: " + text);
+  }
+
+  /**
+   * Logs a warning message
+   *
+   * @param text String -- Text to log
+   */
+  public static void logWarning(String text) {
+    logger.warn(text);
+    ConsolePanel.addLogMessage("Warning: " + text);
+  }
+
+  /**
+   * Logs an error message with a throwable
+   *
+   * @param text String -- Text to log
+   * @param throwable Throwable -- Throwable to log
+   */
+  public static void logError(String text, Throwable throwable) {
+    logger.err(text, throwable);
+    ConsolePanel.addLogMessage("Error: " + text);
+  }
+
+  /**
+   * Logs an error message
+   *
+   * @param text String -- Text to log
+   */
+  public static void logError(String text) {
+    logError(text, null);
+  }
+
+  /**
+   * Logs a fatal error message with a throwable. The client will close after logging a fatal
+   * message
+   *
+   * @param text String -- Text to log
+   * @param throwable Throwable -- Throwable to log
+   */
+  public static void logFatal(String text, Throwable throwable) {
+    logger.fatal(text, throwable);
+    ConsolePanel.addLogMessage("Fatal: " + text);
+  }
+
+  /**
+   * Logs a fatal error message. The client will close after logging a fatal message
+   *
+   * @param text String -- Text to log
+   */
+  public static void logFatal(String text) {
+    logFatal(text, null);
   }
 
   /**
@@ -514,7 +552,8 @@ public class Main {
         | IllegalAccessException
         | NoSuchMethodException
         | InvocationTargetException e) {
-      e.printStackTrace();
+      logger.err(
+          String.format("Failed to instantiate script class for: %s", clazz.getSimpleName()), e);
       return null;
     }
   }
@@ -551,9 +590,10 @@ public class Main {
       }
 
       Main.config.setScriptName(scriptName);
+      controller.logAsClient(String.format("The '%s' script has been started!", scriptName), "yel");
       return true;
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.err(String.format("Failed running script: %s", scriptName), e);
       return false;
     }
   }
@@ -578,18 +618,18 @@ public class Main {
 
     // Generate our port file
     if (config.getInitCache().equalsIgnoreCase("custom")) {
-      System.out.println("Not generating port, custom port selected in account settings");
+      log("Not generating port, custom port selected in account settings");
     } else if (config.getInitCache().equalsIgnoreCase("uranium")) {
       // Create Uranium cache
-      System.out.println("Generating Uranium port");
+      log("Generating Uranium port file");
       setPort(URANIUM_PORT);
     } else if (config.getInitCache().equalsIgnoreCase("coleslaw")) {
       // Create Coleslaw cache
-      System.out.println("Generating Coleslaw port");
+      log("Generating Coleslaw port file");
       setPort(COLESLAW_PORT);
     } else {
-      System.out.println("Server (" + config.getInitCache() + ") is not known.");
-      System.out.println("Default: Generating Coleslaw port");
+      log("Server (" + config.getInitCache() + ") is not known.");
+      log("Default: Generating Coleslaw port file");
       setPort(COLESLAW_PORT);
     }
   }
@@ -637,8 +677,7 @@ public class Main {
     try {
       Extractor.extractZipResource("/cache/ZipCache.zip", dir.toPath());
     } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
+      logger.fatal("Failed to extract cache from jar", e);
     }
   }
 
@@ -653,8 +692,7 @@ public class Main {
       portFile.write("Menus:" + (newIcons ? 1 : 0));
       portFile.close();
     } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
+      logger.err("Failed to create the config file for icon selection", e);
     }
   }
 
@@ -669,8 +707,7 @@ public class Main {
       portFile.write(serverId);
       portFile.close();
     } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
+      logger.fatal("Failed to set ip to serverId", e);
     }
   }
 
@@ -685,8 +722,7 @@ public class Main {
       portFile.write(Integer.toString(serverPort));
       portFile.close();
     } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println(e.getMessage());
+      logger.fatal("Failed to set port to serverPort", e);
     }
   }
 
@@ -703,11 +739,19 @@ public class Main {
                 try {
                   Files.copy(source, destination);
                 } catch (IOException e) {
-                  e.printStackTrace();
+                  logger.fatal(
+                      String.format(
+                          "Failed to copy directory: %s to %s",
+                          sourceDirectoryLocation, destinationDirectoryLocation),
+                      e);
                 }
               });
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.fatal(
+          String.format(
+              "Failed to copy directories: %s to %s",
+              sourceDirectoryLocation, destinationDirectoryLocation),
+          e);
       System.exit(1);
     }
   }
@@ -741,13 +785,15 @@ public class Main {
           if (currentRunningScript instanceof IdleScript)
             ((IdleScript) currentRunningScript).cleanup();
 
-          controller.log(String.format("The '%s' script has been stopped!", scriptName), "yel");
+          controller.logAsClient(
+              String.format("The '%s' script has been stopped!", scriptName), "yel");
           scriptStartTime = 0;
         }
         // Stop() seems to be the only way to force-close stuck scripts.
+        // noinspection deprecation
         runningScriptThread.stop();
       } else {
-        System.out.println("The 'Running Script' thread doesn't exist for some reason!");
+        logger.debug("The 'Running Script' thread doesn't exist for some reason!");
       }
     }
   }

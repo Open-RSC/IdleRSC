@@ -96,7 +96,6 @@ public class CLIParser {
   }
 
   private static void parseAccountProperties(ParseResult parseResult, String accountName) {
-    System.out.println(accountName);
     final Properties p = new Properties();
     Path accountPath = Paths.get("accounts");
     final File file = accountPath.resolve(accountName + ".properties").toFile();
@@ -105,8 +104,7 @@ public class CLIParser {
     try {
       Files.createDirectories(accountPath);
     } catch (IOException e2) {
-      System.err.println("Failed to create directory or file: " + e2.getMessage());
-      e2.printStackTrace();
+      Main.logError("Failed to create directory or file", e2);
     }
 
     try (final FileInputStream stream = new FileInputStream(file)) {
@@ -180,10 +178,6 @@ public class CLIParser {
           p.getProperty("new-ui", "false").replace(" ", "").toLowerCase().contains("true"));
       parseResult.setKeepOpen(
           p.getProperty("keep-open", "false").replace(" ", "").toLowerCase().contains("true"));
-      parseResult.setPositionX(
-          Integer.parseInt(p.getProperty("x-position", "-1").replace(" ", "")));
-      parseResult.setPositionY(
-          Integer.parseInt(p.getProperty("y-position", "-1").replace(" ", "")));
 
       // Switching options
       parseResult.setSpellId(p.getProperty("spell-id", "-1"));
@@ -200,11 +194,22 @@ public class CLIParser {
       parseResult.setVersion(
           p.getProperty("version", "").replace(" ", "").toLowerCase().contains("true"));
 
-    } catch (Exception ignore) {
-      if (!accountName.equalsIgnoreCase("username") && !accountName.isEmpty()) {
-        System.out.println("Error loading account - " + accountName);
-        System.out.println(accountName + ".properties file does not exist");
+      // Window coordinate options
+      try {
+        String xStr = p.getProperty("x-position", "-1").trim();
+        String yStr = p.getProperty("y-position", "-1").trim();
+        parseResult.setPositionX(Integer.parseInt(xStr));
+        parseResult.setPositionY(Integer.parseInt(yStr));
+      } catch (NumberFormatException e) {
+        Main.logError(
+            String.format(
+                "Failed to parse window coordinates for '%s.properties'. Centering...",
+                accountName));
+        parseResult.setPositionX(-1);
+        parseResult.setPositionY(-1);
       }
+    } catch (Exception e) {
+      Main.logError(String.format("Failed to parse account properties for '%s'", accountName), e);
     }
   }
 

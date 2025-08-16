@@ -39,7 +39,7 @@ public class LoginListener implements Runnable {
           continue;
         }
 
-        controller.log("Logged out! Logging back in...");
+        controller.logAsClient("Logged out! Logging back in...");
         controller.login();
         loginCount++;
 
@@ -53,7 +53,7 @@ public class LoginListener implements Runnable {
         if (sleepTime > 900_000) loginCount = 3;
 
         if (!controller.isLoggedIn()) {
-          controller.log(
+          controller.logAsClient(
               "Looks like we could not log in... trying again in "
                   + (int) ((sleepTime - System.currentTimeMillis()) / 1000)
                   + " seconds...",

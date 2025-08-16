@@ -35,7 +35,8 @@ public class Extractor {
 
     InputStream is = Extractor.class.getResourceAsStream(zipResource);
     if (is == null) {
-      throw new IOException("InputStream for zipResource is null: " + zipResource);
+      Main.logError("InputStream for zipResource is null: " + zipResource, new IOException());
+      return;
     }
     BufferedInputStream bis = new BufferedInputStream(is);
     ZipInputStream zis = new ZipInputStream(bis);
@@ -48,8 +49,10 @@ public class Extractor {
       if (entry.isDirectory()) {
         // Directory, recreate if not present
         if (!destFile.exists() && !destFile.mkdirs()) {
-          throw new IOException(
-              "extractZipResource can't create destination folder: " + destFile.getAbsolutePath());
+          Main.logError(
+              "extractZipResource can't create destination folder: " + destFile.getAbsolutePath(),
+              new IOException());
+          return;
         }
         continue;
       }
@@ -77,13 +80,13 @@ public class Extractor {
     String path = assetPath.toString().replace("\\", "/");
 
     if (path.startsWith("/")) {
-      System.out.println("Unable to generate missing assets as the path was not relative.\n");
+      Main.logError("Unable to generate missing assets, as the path was not relative");
       return;
     }
 
     ClassLoader classLoader = Main.class.getClassLoader();
     if (classLoader == null) {
-      System.err.println("ClassLoader was null. Unable to access resources.");
+      Main.logError("ClassLoader was null. Unable to access resources");
       return;
     }
     try {
@@ -117,7 +120,7 @@ public class Extractor {
       }
       System.out.println();
     } catch (IOException e) {
-      e.printStackTrace();
+      Main.logError(String.format("Failed extracting resources from: %s", path), e);
     }
   }
 

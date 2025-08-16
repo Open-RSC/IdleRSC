@@ -106,4 +106,10 @@ public class ConsolePanel extends JPanel implements UiContract {
   public static JTextArea getLogArea() {
     return logArea;
   }
+
+  public static void addLogMessage(String text) {
+    if (getLogArea() == null) return;
+    getLogArea().append(text + "\n");
+    if (BottomPanel.logPanelSelected()) logArea.setCaretPosition(logArea.getDocument().getLength());
+  }
 }

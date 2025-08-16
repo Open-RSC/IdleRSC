@@ -1,5 +1,6 @@
 package controller.WebWalker;
 
+import bot.Main;
 import java.util.*;
 import java.util.stream.Collectors;
 import utils.Extractor;
@@ -28,7 +29,7 @@ public class WebwalkGraph {
             .add(new WebwalkEdge(to, from, cost, label));
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      Main.logError("Failed to read the Webwalker graph from jar", e);
     }
   }
 

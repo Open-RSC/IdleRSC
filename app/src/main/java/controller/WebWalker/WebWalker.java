@@ -37,8 +37,7 @@ public class WebWalker {
     }
 
     if (closestNodesToEndCoords.isEmpty()) {
-      System.out.println(
-          "No walkable end nodes found, yeeting off in a random direction to get unstuck..");
+      Main.log("No walkable end nodes found, yeeting off in a random direction to get unstuck.");
       Main.getController()
           .walkTo(
               currentX + ThreadLocalRandom.current().nextInt(-5, 6),
@@ -79,19 +78,19 @@ public class WebWalker {
             + pathLog.substring(0, pathLog.length() - 4));
 
     if (path.size() == 1) {
-      Main.getController().log("Walking to the last node..");
+      Main.getController().log("Walking to the last node...");
       Main.getController().walkDamnit(path.get(0).getX(), path.get(0).getY());
       return true;
     }
 
     WebwalkEdge edge = graph.getEdge(path.get(0), path.get(1));
     if (edge != null && edge.getLabel().isPresent()) {
-      System.out.println("Walking along " + edge + " with label: " + edge.getLabel().get());
+      Main.logDebug("Walking along " + edge + " with label: " + edge.getLabel().get());
       if (executeCustomLabelFunction(edge.getLabel().get())) {
         Main.getController().walkDamnit(path.get(1).getX(), path.get(1).getY());
         return true;
       } else {
-        System.out.println("Failed to execute custom function for label: " + edge.getLabel().get());
+        Main.logError("Failed to execute custom function for label: " + edge.getLabel().get());
         return false;
       }
     } else {

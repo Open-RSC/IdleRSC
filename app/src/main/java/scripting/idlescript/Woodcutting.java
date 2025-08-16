@@ -5,12 +5,15 @@ import bot.ui.scriptselector.models.Category;
 import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import java.awt.GridLayout;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import models.entities.ItemId;
+import models.entities.Location;
 import models.entities.SceneryId;
 
 /**
@@ -24,25 +27,32 @@ public class Woodcutting extends IdleScript {
   public static final ScriptInfo info =
       new ScriptInfo(
           new Category[] {Category.WOODCUTTING, Category.IRONMAN_SUPPORTED},
-          "Searos & Kaila",
-          "An all-in-one Woodcutting script.");
+          "Searos & Kaila, Pathing by Seatta",
+          "An all-in-one Woodcutting script.\n\n"
+              + "Start this script at the spot you want to cut trees.");
 
   private static final Controller c = Main.getController();
   private final JCheckBox bank = new JCheckBox("Bank", true);
+
+  private final Map<String, Location> bankMap =
+      new LinkedHashMap<String, Location>() {
+        {
+          put("Draynor", Location.DRAYNOR_BANK);
+          put("Varrock West", Location.VARROCK_WEST_BANK);
+          put("Varrock East", Location.VARROCK_EAST_BANK);
+          put("Edgeville", Location.EDGEVILLE_BANK);
+          put("Falador East", Location.FALADOR_EAST_BANK);
+          put("Falador West", Location.FALADOR_WEST_BANK);
+          put("Seers", Location.SEERS_VILLAGE_BANK);
+          put("Ardougne North", Location.ARDOUGNE_NORTH_BANK);
+          put("Ardougne South", Location.ARDOUGNE_SOUTH_BANK);
+          put("Yanille", Location.YANILLE_BANK);
+        }
+      };
+
   private final JComboBox<String> destination =
-      new JComboBox<>(
-          new String[] {
-            "Draynor",
-            "Varrock West",
-            "Varrock East",
-            "Draynor",
-            "EdgeVille",
-            "Falador",
-            "Seers",
-            "North Ardy",
-            "South Ardy",
-            "Yanille"
-          });
+      new JComboBox<>(bankMap.keySet().toArray(new String[0]));
+
   private JFrame scriptFrame = null;
   private boolean guiSetup = false;
   private boolean scriptStarted = false;
@@ -66,13 +76,10 @@ public class Woodcutting extends IdleScript {
   };
   private int treesX = 0;
   private int treesY = 0;
-  private int bankSelX = -1;
-  private int bankSelY = -1;
+  private Location bankSel = null;
   private int totalLogs = 0;
   private int bankedLogs = 0;
   private int inventLogs = 0;
-  private final int[] bankX = {220, 150, 103, 220, 216, 283, 503, 582, 566, 588};
-  private final int[] bankY = {635, 504, 511, 365, 450, 569, 452, 576, 600, 754};
   private boolean bankTime = false;
   private boolean chopTime = false;
   private final int[] bankerIds = {95, 224, 268, 485, 540, 617};
@@ -100,34 +107,6 @@ public class Woodcutting extends IdleScript {
     }
 
     return 1000; // start() must return an int value now.
-  }
-
-  private void startWalking(int x, int y) {
-    // shitty autowalk
-    int newX = x;
-    int newY = y;
-    while (c.currentX() != x || c.currentY() != y) {
-      if (c.currentX() - x > 20) {
-        newX = c.currentX() - 20;
-      }
-      if (c.currentY() - y > 20) {
-        newY = c.currentY() - 20;
-      }
-      if (c.currentX() - x < -20) {
-        newX = c.currentX() + 20;
-      }
-      if (c.currentY() - y < -20) {
-        newY = c.currentY() + 20;
-      }
-      if (Math.abs(c.currentX() - x) <= 20) {
-        newX = x;
-      }
-      if (Math.abs(c.currentY() - y) <= 20) {
-        newY = y;
-      }
-      c.walkToAsync(newX, newY, 2);
-      c.sleep(1000);
-    }
   }
 
   private boolean isAxe(int id) {
@@ -167,7 +146,7 @@ public class Woodcutting extends IdleScript {
       if (bank.isSelected() && bankTime) {
         while (c.getNearestNpcByIds(bankerIds, true) == null) {
           c.setStatus("@red@Going bank");
-          startWalking(bankSelX, bankSelY);
+          bankSel.walkTowards();
         }
         if (!c.isInBank()) {
           c.setStatus("@red@Opening bank");
@@ -199,7 +178,7 @@ public class Woodcutting extends IdleScript {
       if (!bankTime && !chopTime) {
         c.setStatus("@red@Walking to trees");
         if (c.getNearestObjectById(treeId) == null) {
-          startWalking(treesX, treesY);
+          Location.walkTowards(treesX, treesY);
           c.sleep(
               340); // added sleep, this one probably not needed, but small sleep after pathwalking
           // is fine
@@ -234,8 +213,7 @@ public class Woodcutting extends IdleScript {
                   + " trees");
           treesX = c.currentX();
           treesY = c.currentY();
-          bankSelX = bankX[destination.getSelectedIndex()];
-          bankSelY = bankY[destination.getSelectedIndex()];
+          bankSel = bankMap.get((String) destination.getSelectedItem());
           c.displayMessage("@red@Woodcutter started");
         });
 

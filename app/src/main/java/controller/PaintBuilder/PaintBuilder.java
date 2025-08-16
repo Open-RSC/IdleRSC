@@ -239,7 +239,7 @@ public class PaintBuilder {
     if (rowInfo != null) {
       rowData.add(rowInfo);
     } else {
-      c.log("Failed to add row to PaintBuilder");
+      c.logAsClient("Failed to add row to PaintBuilder");
     }
   }
 

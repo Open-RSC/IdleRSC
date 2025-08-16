@@ -62,12 +62,12 @@ public class MessageCallback {
       if (message.contains("You just advanced")) {
         // handleLevelUp(message);
       } else if (message.contains("You have been standing here for")) {
-        con.log("IdleRSC: Standing message recieved, triggering auto-walk.", "gre");
+        con.logAsClient("IdleRSC: Standing message recieved, triggering auto-walk.", "gre");
         con.setNeedToMove(true); // this is responsible for auto-walk!
       }
     } else if (type == MessageType.QUEST) {
       if (con.isAuthentic() && message.toLowerCase().contains("you are too tired to")) {
-        con.log("IdleRSC: Tired message recieved, triggering sleep handling.", "gre");
+        con.logAsClient("IdleRSC: Tired message recieved, triggering sleep handling.", "gre");
         con.setShouldSleep(true);
       }
     }
@@ -149,8 +149,8 @@ public class MessageCallback {
     if (m.find()) {
       skillName = m.group(2);
       int statId = c.getStatId(skillName);
-      c.log("skillName - " + skillName);
-      c.log("statId" + statId); // invalid skill Id is being generated...
+      c.logAsClient("skillName - " + skillName);
+      c.logAsClient("statId" + statId); // invalid skill Id is being generated...
       if (statId == -1) {
         throw new IllegalArgumentException("Invalid skill name: " + skillName);
       }

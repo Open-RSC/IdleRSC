@@ -124,7 +124,7 @@ public class SidePanel extends JPanel implements UiContract {
     depositAllButton.addActionListener(e -> c.depositAll());
     openDebuggerButton.addActionListener(
         e -> {
-          c.log("IdleRSC: Opening Debug Window", "gre");
+          c.logAsClient("IdleRSC: Opening Debug Window", "gre");
           Main.getDebugger().open();
         });
   }

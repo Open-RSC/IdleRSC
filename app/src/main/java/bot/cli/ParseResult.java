@@ -1,5 +1,6 @@
 package bot.cli;
 
+import bot.Main;
 import bot.ocrlib.OCRType;
 import java.awt.*;
 import java.util.ArrayList;
@@ -229,7 +230,12 @@ public class ParseResult {
   public void setPositionX(int positionX) {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     if (positionX < -1 || positionX > (int) screenSize.getWidth()) {
-      System.out.println("Invalid X screen position");
+      Main.logError(
+          String.format(
+              "Invalid window x position value set in account settings (%s.properties)", username));
+      Main.logError(
+          String.format(
+              "It should be between 0-%s (or -1 to disable)", (int) screenSize.getWidth()));
       this.positionX = -1;
     } else this.positionX = positionX;
   }
@@ -241,7 +247,12 @@ public class ParseResult {
   public void setPositionY(int positionY) {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     if (positionY < -1 || positionY > (int) screenSize.getHeight()) {
-      System.out.println("Invalid Y screen position");
+      Main.logError(
+          String.format(
+              "Invalid window y position value set in account settings (%s.properties)", username));
+      Main.logError(
+          String.format(
+              "It should be between 0-%s (or -1 to disable)", (int) screenSize.getHeight()));
       this.positionY = -1;
     } else this.positionY = positionY;
   }

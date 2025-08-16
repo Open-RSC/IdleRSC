@@ -140,7 +140,7 @@ public class ScriptSelectorUI {
 
   /** Populates the scripts map with scripts via getCategoryMap() */
   public static void populateScripts() {
-    System.out.println("Populating scripts map for script selector.\n");
+    Main.log("Populating Script Selector");
     scripts = getCategoryMap();
 
     // Builds a script message which is printed at a later time with
@@ -150,6 +150,7 @@ public class ScriptSelectorUI {
 
   /** Prints out script messages. */
   public static void printScriptMessage() {
+    // These are not important enough to log with the logger, and would clutter the output
     String separator = "---------------------------------";
     if (!scriptMessage.isEmpty()) {
       System.out.println(

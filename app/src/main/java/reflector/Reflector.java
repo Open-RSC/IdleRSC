@@ -1,5 +1,6 @@
 package reflector;
 
+import bot.Main;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,7 +41,7 @@ public class Reflector {
       return (OpenRSC) myClassObject;
 
     } catch (Exception e) {
-      e.printStackTrace();
+      Main.logFatal("Failed reflecting client applet", e);
     }
 
     return null;
@@ -61,7 +62,7 @@ public class Reflector {
         | IllegalAccessException
         | NoSuchFieldException
         | SecurityException e) {
-      e.printStackTrace();
+      Main.logFatal("Failed to get 'mudclient' object from client applet", e);
     }
 
     return null;
@@ -107,7 +108,7 @@ public class Reflector {
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      Main.logError(String.format("Failed to invoke mudclient's '%s' method", methodName), e);
     }
 
     return null;
@@ -136,7 +137,8 @@ public class Reflector {
       mudclientField.setAccessible(true);
       return mudclientField.get(this);
     } catch (Exception e) {
-      e.printStackTrace();
+      Main.logFatal(
+          String.format("Failed to get class member '%s' from '%s'", member, className), e);
     }
 
     return null;
@@ -163,7 +165,8 @@ public class Reflector {
         | SecurityException
         | IllegalArgumentException
         | IllegalAccessException e) {
-      e.printStackTrace();
+      Main.logError(
+          String.format("Failed to get \"%s's\" '%s'", obj.getClass().getSimpleName(), member), e);
     }
 
     return null;
@@ -204,7 +207,10 @@ public class Reflector {
         }
       }
     } catch (IllegalArgumentException | IllegalAccessException e) {
-      e.printStackTrace();
+      Main.logError(
+          String.format(
+              "Failed to get \"%s's\" '%s' member", obj.getClass().getSimpleName(), member),
+          e);
     }
 
     return null;
@@ -228,7 +234,10 @@ public class Reflector {
         | SecurityException
         | IllegalArgumentException
         | IllegalAccessException e) {
-      e.printStackTrace();
+      Main.logError(
+          String.format(
+              "Failed to set \"%s's\" '%s' value", obj.getClass().getSimpleName(), member),
+          e);
     }
   }
 }

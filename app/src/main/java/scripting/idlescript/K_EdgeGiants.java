@@ -258,8 +258,7 @@ public final class K_EdgeGiants extends K_kailaScript {
     c.sleep(2000);
     c.walkTo(207, 3315);
     c.walkTo(208, 3317);
-    // giantGateCheck();  //unknown if necessary when server reboots, gate was open when script was
-    // written
+    giantGateCheck();
     c.walkTo(208, 3322);
     c.setStatus("@gre@Done Walking..");
   }
@@ -267,8 +266,7 @@ public final class K_EdgeGiants extends K_kailaScript {
   private void dungeonToBank() {
     c.setStatus("@gre@Walking to Varrock West..");
     c.walkTo(208, 3318);
-    // giantGateCheck();  //unknown if necessary when server reboots, gate was open when script was
-    // written
+    giantGateCheck();
     c.walkTo(207, 3315);
     c.walkTo(203, 3315);
     c.atObject(203, 3314);
@@ -286,6 +284,14 @@ public final class K_EdgeGiants extends K_kailaScript {
     c.walkTo(151, 507);
     totalTrips = totalTrips + 1;
     c.setStatus("@gre@Done Walking..");
+  }
+
+  private void giantGateCheck() {
+    while (c.getObjectAtCoord(208, 3317) == 57 && c.isRunning()) {
+      if (!c.isLoggedIn()) c.sleep(640);
+      c.atObject(57);
+      c.sleep(640);
+    }
   }
 
   private void setupGUI() {

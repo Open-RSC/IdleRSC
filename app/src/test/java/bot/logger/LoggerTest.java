@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
@@ -39,12 +40,12 @@ class LoggerTest {
     System.out.println("--------------------------------------------------------------\n");
 
     // Remove written test logs
-    Path dir = Paths.get("logs"); // directory path
+    Path dir = Paths.get("logs");
 
     if (Files.exists(dir)) {
       try (Stream<Path> paths = Files.walk(dir)) {
         paths
-            .sorted((p1, p2) -> p2.compareTo(p1))
+            .sorted(Comparator.reverseOrder())
             .forEach(
                 p -> {
                   try {

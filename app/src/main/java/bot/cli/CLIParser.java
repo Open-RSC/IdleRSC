@@ -209,6 +209,7 @@ public class CLIParser {
         parseResult.setPositionY(-1);
       }
     } catch (Exception e) {
+      if (accountName == null || accountName.isEmpty()) return;
       Main.logError(String.format("Failed to parse account properties for '%s'", accountName), e);
     }
   }

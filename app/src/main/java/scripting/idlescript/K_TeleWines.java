@@ -24,7 +24,7 @@ public final class K_TeleWines extends K_kailaScript {
       new ScriptInfo(
           new Category[] {Category.MAGIC, Category.GATHERING},
           "Kaila",
-          "Telegrabs wines in the Chaos Temple. Start in Edgeville bank");
+          "Telegrabs wines in the Chaos Temple. Start in West Falador bank");
 
   private static int WinezInBank = 0;
   private static int totalWinez = 0;
@@ -181,10 +181,10 @@ public final class K_TeleWines extends K_kailaScript {
 
   private void setupGUI() {
     JLabel header = new JLabel("Zammy Wine Tele Grabber ~ Kaila");
-    JLabel label1 = new JLabel("Start in Edge Bank");
+    JLabel label1 = new JLabel("Start in West Falador Bank");
     JLabel label2 = new JLabel("Air Staff/Bstaff/etc MUST be Equipped");
     JLabel label3 = new JLabel("Laws in the inv required!");
-    JLabel label4 = new JLabel("Recommend using grape harvester for coleslaw wines!!!!");
+    JLabel label4 = new JLabel("Recommend using AIOharvester for coleslaw wines!!!!");
     JButton startScriptButton = new JButton("Start");
 
     startScriptButton.addActionListener(

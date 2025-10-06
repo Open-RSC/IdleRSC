@@ -815,9 +815,9 @@ public enum Location {
   }
 
   /**
-   * Returns a rough Geodesic distance from the player's current position to the stand-able tile of
-   * the Location. Geodesic distance is the distance between two points while considering terrain
-   * and navigability.
+   * Returns the approximate navigable distance from the player's current position to the nearest
+   * stand-able tile of the Location. Unlike simple Euclidean distance, this considers terrain and
+   * walkability.
    *
    * @return int
    */
@@ -826,8 +826,8 @@ public enum Location {
   }
 
   /**
-   * Returns a rough Geodesic distance from this Location to a second Location. Geodesic distance is
-   * the distance between two points while considering terrain and navigability.
+   * Returns the approximate navigable distance from this Location to a second Location. Unlike
+   * simple Euclidean distance, this considers terrain and walkability.
    *
    * @param loc Location -- Location to check
    * @return int
@@ -837,8 +837,8 @@ public enum Location {
   }
 
   /**
-   * Returns a rough Geodesic distance between two locations. Geodesic distance is the distance
-   * between two points while considering terrain and navigability.
+   * Returns the approximate navigable distance between two Locations. Unlike simple Euclidean
+   * distance, this considers terrain and walkability.
    *
    * @param loc1 Location -- Location to check
    * @param loc2 Location -- Location to check
@@ -988,7 +988,7 @@ public enum Location {
     Path locationGraph = Paths.get("Cache/LocationGraph.txt");
     try (FileWriter writer = new FileWriter(locationGraph.toString())) {
       if (locationGraph.toFile().exists()) locationGraph.toFile().delete();
-      System.out.println(String.format("Writing LocationGraph to: %s", locationGraph));
+      System.out.printf("Writing LocationGraph to: %s%n", locationGraph);
       for (Location loc : Location.values()) {
         String locString =
             String.format(

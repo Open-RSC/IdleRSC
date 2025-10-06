@@ -1,5 +1,6 @@
 package scripting.idlescript;
 
+import bot.Main;
 import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
 import controller.PaintBuilder.PaintBuilder;
@@ -122,14 +123,18 @@ public abstract class IdleScript {
     Collections.reverse(classList);
 
     // Print a warning if the list isn't empty.
-    if (!classList.isEmpty())
-      System.out.printf(
-          "%nIdleScript: The following class%s not override cleanup. This could cause variables to not be reset upon stopping the script: %n"
-              + "   %s%n",
-          classList.size() > 1
-              ? "es declare static fields, but do"
-              : " declares static fields, but does",
-          classList);
+    if (!classList.isEmpty()) {
+
+      String staticStringNotice =
+          String.format(
+              "The following class%s not override cleanup. This could cause variables to not be reset upon stopping the script: %n"
+                  + "   %s%n",
+              classList.size() > 1
+                  ? "es declare static fields, but do"
+                  : " declares static fields, but does",
+              classList);
+      Main.logError(staticStringNotice);
+    }
   }
 
   /**

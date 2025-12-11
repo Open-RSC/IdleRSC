@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import models.entities.Location;
 
 /**
  * SellToShop by Searos
@@ -119,19 +120,20 @@ public class SellToShop extends IdleScript {
             && controller.getInventoryItemCount() == 1) {
       for (int itemId : itemIds) {
         if (itemId != 0 && isSellable(itemId) && controller.getShopItemCount(itemId) < shopNumber) {
-          controller.shopSell(itemId, shopNumber - controller.getBankItemCount(itemId));
+          controller.shopSell(itemId, shopNumber - controller.getShopItemCount(itemId));
           controller.sleep(640);
           cashMade = controller.getInventoryItemCount(10) - startCash;
         }
       }
+      controller.sleep(640);
+      if (controller.getNeedToMove()) controller.moveCharacter();
     }
     while (controller.getInventoryItemCount() == 1 && controller.getInventoryItemCount(10) > 0
         || controller.getInventoryItemCount() == 0) {
-      startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
-      while (controller.getNearestNpcById(95, false) == null) {
-        controller.setStatus("Banking");
-        startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
-      }
+
+      Location nearestBank = Location.getNearestBank();
+      if (!nearestBank.isAtLocation()) nearestBank.walkTowards();
+
       while (!controller.isInBank()) {
         controller.setStatus("Banking");
         controller.openBank();
@@ -145,7 +147,7 @@ public class SellToShop extends IdleScript {
         for (int itemId : itemIds) {
           if (itemId != 0
               && isSellable(itemId)
-              && controller.getShopItemCount(itemId) < shopNumber) {
+              && controller.getBankItemCount(itemId) > shopNumber) {
             controller.withdrawItem(itemId, 30);
             controller.sleep(640);
           }

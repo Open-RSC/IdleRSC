@@ -301,13 +301,13 @@ public class AIOMagic extends IdleScript {
       }
 
       c.drawBoxAlpha(7, 7, 160, 21 + 14, 0xFF, 48);
-      c.drawString("@whi@AIOMagic @blu@by @whi@Dvorak", 10, 21, 0xFFFFFF, 1);
+      c.drawString("@whi@AIOMagic @cya@by @whi@Dvorak", 10, 21, 0xFFFFFF, 1);
       c.drawString(
-          "@whi@Casts: @blu@"
+          "@whi@Casts: @cya@"
               + String.format("%,d", success)
-              + " @whi@(@blu@"
+              + " @whi@(@cya@"
               + String.format("%,d", successPerHr)
-              + "@whi@/@blu@hr@whi@)",
+              + "@whi@/@cya@hr@whi@)",
           10,
           21 + 14,
           0xFFFFFF,

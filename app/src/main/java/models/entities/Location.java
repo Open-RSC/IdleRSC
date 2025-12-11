@@ -792,9 +792,21 @@ public enum Location {
     getClosest(locations).walkTowards();
   }
 
+  /**
+   * Returns the nearest bank's Location
+   *
+   * @return Location
+   */
+  public static Location getNearestBank() {
+    return getClosest(bankArray);
+  }
+
   /** Attempts to walk to the closest bank. */
   public static void walkTowardsNearestBank() {
-    walkTowardsClosest(bankArray);
+    Location nearest = getNearestBank();
+    if (nearest == null) return;
+
+    nearest.walkTowards();
   }
 
   /**
@@ -978,6 +990,11 @@ public enum Location {
         .findFirst()
         .map(Location::getDescription)
         .orElse(String.format("(%s, %s)", x, y));
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s (%s, %s)", this.getDescription(), this.getX(), this.getY());
   }
 
   /**

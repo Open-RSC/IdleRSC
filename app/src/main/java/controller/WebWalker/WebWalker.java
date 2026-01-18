@@ -85,7 +85,7 @@ public class WebWalker {
 
     WebwalkEdge edge = graph.getEdge(path.get(0), path.get(1));
     if (edge != null && edge.getLabel().isPresent()) {
-      Main.logDebug("Walking along " + edge + " with label: " + edge.getLabel().get());
+      Main.log("Walking along " + edge);
       if (executeCustomLabelFunction(edge.getLabel().get())) {
         Main.getController().walkDamnit(path.get(1).getX(), path.get(1).getY());
         return true;
@@ -179,7 +179,7 @@ public class WebWalker {
     }
 
     Main.getController()
-        .log(
+        .logAsClient(
             "No path found from "
                 + start
                 + " to goals: "
@@ -216,9 +216,26 @@ public class WebWalker {
       case "witchsHouseDoor":
         return Main.getController().isQuestComplete(QuestId.WITCHS_HOUSE.getId())
             || Main.getController().getInventoryItemCount(ItemId.FRONT_DOOR_KEY.getId()) > 0;
+      case "zanarisShed":
+        if (Main.getController().currentY() < 3000) {
+          boolean isDramenStaffEquipped =
+              Main.getController().isItemIdEquipped(ItemId.DRAMEN_STAFF.getId());
+          boolean hasDramenStaff =
+              isDramenStaffEquipped
+                  || Main.getController().getUnnotedInventoryItemCount(ItemId.DRAMEN_STAFF.getId())
+                      > 0;
+          if (!hasDramenStaff) return false;
+
+          if (!isDramenStaffEquipped)
+            Main.getController().equipItemById(ItemId.DRAMEN_STAFF.getId());
+          Main.getController().sleep(640);
+        }
+        return true;
       case "portSarimKaramjaBoat":
       case "brimhavenKaramjaGate":
         return Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 60;
+      case "fishingGuildEntrance":
+        return Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68;
       default:
         return true;
     }
@@ -306,8 +323,20 @@ public class WebWalker {
         return CustomLabelHandlers.miningGuildDoor();
       case "miningGuildLadder":
         return CustomLabelHandlers.miningGuildLadder();
+      case "lummyLadderTo2FS":
+        return CustomLabelHandlers.lummyLadderTo2FS();
+      case "lummyLadderTo3FS":
+        return CustomLabelHandlers.lummyLadderTo3FS();
+      case "lummyLadderTo2FN":
+        return CustomLabelHandlers.lummyLadderTo2FN();
+      case "lummyLadderTo3FN":
+        return CustomLabelHandlers.lummyLadderTo3FN();
+      case "fishingGuildEntrance":
+        return CustomLabelHandlers.fishingGuildEntrance();
+      case "zanarisShed":
+        return CustomLabelHandlers.zanarisShed();
       default:
-        Main.getController().log("Missing function for label: " + label);
+        Main.getController().logAsClient("Missing function for label: " + label);
         return false;
     }
   }

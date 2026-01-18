@@ -450,11 +450,7 @@ public final class K_EdgeGiants extends K_kailaScript {
     if (message.contains("You eat the")) {
       usedFood++;
     }
-  }
-
-  @Override
-  public void serverMessageInterrupt(String message) {
-    if (message.contains("You dig a hole")) {
+    if (message.contains("you dig a hole")) {
       usedBones++;
     }
   }
@@ -503,7 +499,7 @@ public final class K_EdgeGiants extends K_kailaScript {
         TripSuccessPerHr = (int) (totalTrips * scale);
         herbSuccessPerHr = (int) ((totalHerbs + inventHerbs) * scale);
         runeSuccessPerHr = (int) ((totalRunes + inventRunes) * scale);
-        boneSuccessPerHr = (int) ((bankBones + usedBones) * scale);
+        boneSuccessPerHr = (int) ((totalBones + usedBones) * scale);
         foodUsedPerHr = (int) (usedFood * scale);
 
       } catch (Exception e) {
@@ -631,7 +627,7 @@ public final class K_EdgeGiants extends K_kailaScript {
                 + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Bones: @gre@"
-                + (bankBones + usedBones)
+                + (totalBones + usedBones)
                 + "@yel@ (@whi@"
                 + String.format("%,d", boneSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",
@@ -716,7 +712,7 @@ public final class K_EdgeGiants extends K_kailaScript {
                 + String.format("%,d", runeSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) "
                 + "@whi@Total Bones: @gre@"
-                + (bankBones + usedBones)
+                + (totalBones + usedBones)
                 + "@yel@ (@whi@"
                 + String.format("%,d", boneSuccessPerHr)
                 + "@yel@/@whi@hr@yel@) ",

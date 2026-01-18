@@ -2,6 +2,7 @@ package scripting.idlescript;
 
 import bot.ui.scriptselector.models.Category;
 import bot.ui.scriptselector.models.ScriptInfo;
+import models.entities.Location;
 
 /**
  * ShearSheep by Searos
@@ -42,44 +43,6 @@ public class ShearSheep extends IdleScript {
 
     return 1000; // start() must return a int value now.
   }
-  /**
-   * Starts walking to the specified coordinates.
-   *
-   * @param x the x-coordinate to walk to
-   * @param y the y-coordinate to walk to
-   */
-  public void startWalking(int x, int y) {
-    // shitty autowalk
-    int newX = x;
-    int newY = y;
-    while (controller.currentX() != x || controller.currentY() != y) {
-      if (controller.currentX() - x > 23) {
-        newX = controller.currentX() - 20;
-      }
-      if (controller.currentY() - y > 23) {
-        newY = controller.currentY() - 20;
-      }
-      if (controller.currentX() - x < -23) {
-        newX = controller.currentX() + 20;
-      }
-      if (controller.currentY() - y < -23) {
-        newY = controller.currentY() + 20;
-      }
-      if (Math.abs(controller.currentX() - x) <= 23) {
-        newX = x;
-      }
-      if (Math.abs(controller.currentY() - y) <= 23) {
-        newY = y;
-      }
-      if (!controller.isTileEmpty(newX, newY)) {
-        controller.walkToAsync(newX, newY, 2);
-        controller.sleep(640);
-      } else {
-        controller.walkToAsync(newX, newY, 0);
-        controller.sleep(640);
-      }
-    }
-  }
 
   public void scriptStart() {
     while (controller.getInventoryItemCount() < 30 && controller.getInventoryItemCount(144) == 1) {
@@ -94,7 +57,7 @@ public class ShearSheep extends IdleScript {
         }
       } else if (controller.getNearestNpcById(2, false) == null) {
         controller.setStatus("Finding sheep");
-        startWalking(startX, startY);
+        Location.walkTowards(startX, startY);
       }
     }
     while (controller.getInventoryItemCount() == 30 || controller.getInventoryItemCount(144) != 1) {
@@ -104,7 +67,13 @@ public class ShearSheep extends IdleScript {
           || controller.getNearestNpcById(95, false) == null
               && controller.getInventoryItemCount(144) != 1) {
         controller.setStatus("Walking to bank");
-        startWalking(controller.getNearestBank()[0], controller.getNearestBank()[1]);
+
+        // Ensure Varrock west bank for Varrock sheep pen since the path is safer
+        if (Location.VARROCK_SHEEP_PEN.distanceTo() <= 30) {
+          Location.VARROCK_WEST_BANK.walkTowards();
+        } else {
+          Location.walkTowardsNearestBank();
+        }
       }
       while (controller.getNearestNpcById(95, false) != null
               && !controller.isInBank()
@@ -118,8 +87,8 @@ public class ShearSheep extends IdleScript {
       }
       if (controller.isInBank() && controller.getInventoryItemCount() == 30
           || controller.isInBank() && controller.getInventoryItemCount(144) != 1) {
+        totalWool += controller.getInventoryItemCount(145);
         for (int itemId : controller.getInventoryItemIds()) {
-          totalWool = totalWool + controller.getInventoryItemCount(145);
           if (itemId != 0 && itemId != 144) {
             controller.depositItem(itemId, controller.getInventoryItemCount(itemId));
             controller.sleep(100);

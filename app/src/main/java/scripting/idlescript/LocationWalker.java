@@ -254,7 +254,7 @@ public class LocationWalker extends SeattaScript {
             })
         .forEach(
             loc -> {
-              if (!hidden.contains(loc) && loc.isWalkable())
+              if (!hidden.contains(loc) && loc.isWalkable() && loc.isWalkConditionMet())
                 tableModel.addRow(
                     new String[] {
                       loc.getDescription(), String.format("(%s, %s)", loc.getX(), loc.getY())

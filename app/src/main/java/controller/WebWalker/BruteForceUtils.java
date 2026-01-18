@@ -13,7 +13,7 @@ import utils.Extractor;
 
 public class BruteForceUtils {
   /**
-   * Utils that involve loading the whole walkable map and calculting a path through parts of it
+   * Utils that involve loading the whole walkable map and calculating a path through parts of it
    * Calling any function here will make your bot one-time load like another 4MB of RAM (I assume,
    * didn't actually check)
    */
@@ -57,8 +57,6 @@ public class BruteForceUtils {
       WebwalkNode current = queue.poll();
       if (!isWalkable(current) || visited.contains(current)) continue;
       if (adjacencyList.containsKey(current)) {
-        // Main.getController().log("Closest node to " + x + "," + y + " is " +
-        // current);
         closestNodeCache.put(cacheKey, current);
         return current;
       }

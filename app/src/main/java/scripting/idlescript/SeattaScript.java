@@ -19,10 +19,10 @@ public class SeattaScript extends IdleScript {
           "Seatta",
           "Super class for Seatta's scripts.");
 
-  // --------------- CONSTANTS ---------------
+  // * --------------- CONSTANTS ---------------
   public static final int TICK = 640;
 
-  //    PaintBuilder Colors - Based on https://draculatheme.com/contribute
+  // *    PaintBuilder Colors - Based on https://draculatheme.com/contribute
   public static final int colorGray = 0x44475A;
   public static final int colorDarkGray = 0x282A36;
   public static final int colorWhite = 0xF8F8F2;
@@ -35,7 +35,7 @@ public class SeattaScript extends IdleScript {
   public static final int colorRed = 0xFF5555;
   public static final int colorYellow = 0xF1FA8C;
 
-  //    PaintBuilder Defaults and Variables
+  // *    PaintBuilder Defaults and Variables
   public static final int borderColor = colorPurple;
   public static final int bgColor = colorDarkGray;
   public static final int bgTransparency = 255;
@@ -44,12 +44,12 @@ public class SeattaScript extends IdleScript {
   public static final int paintW = 182;
   public static String paintStatus = "Starting Script";
 
-  // -------------- COLLECTIONS --------------
+  // * -------------- COLLECTIONS --------------
   public static final ItemId[] bones = {
     ItemId.DRAGON_BONES, ItemId.BIG_BONES, ItemId.BAT_BONES, ItemId.BONES,
   };
 
-  // ------------ CLEANUP METHODS ------------
+  // * ------------ CLEANUP METHODS ------------
 
   /**
    * This method is run during the script shutdown process. <br>
@@ -89,7 +89,8 @@ public class SeattaScript extends IdleScript {
           script.getSimpleName());
   }
 
-  // ---------------- METHODS ----------------
+  // * ---------------- METHODS ----------------
+  // * --- NAVIGATION / COORDINATES CHECKING ---
 
   /**
    * Uses WebWalker to walk to a location's stand-able tile or if null, to the first corner in its
@@ -157,6 +158,38 @@ public class SeattaScript extends IdleScript {
   }
 
   /**
+   * Checks whether the player is within a specified area
+   *
+   * @param x1 int -- First X coordinate
+   * @param y1 int -- First Y coordinate
+   * @param x2 int -- Second X coordinate
+   * @param y2 int -- Second Y coordinate
+   * @return boolean
+   */
+  public static boolean isAtArea(int x1, int y1, int x2, int y2) {
+    int minX = Math.min(x1, x2);
+    int maxX = Math.max(x1, x2);
+    int minY = Math.min(y1, y2);
+    int maxY = Math.max(y1, y2);
+
+    int cX = c.currentX();
+    int cY = c.currentY();
+
+    return cX >= minX && cX <= maxX && cY >= minY && cY <= maxY;
+  }
+
+  /**
+   * Checks whether the player is within a specified area
+   *
+   * @param point1 Point -- First X coordinate
+   * @param point2 Point -- First Y coordinate
+   * @return boolean
+   */
+  public static boolean isAtArea(Point point1, Point point2) {
+    return isAtArea(point1.x, point1.y, point2.x, point2.y);
+  }
+
+  /**
    * Returns whether a specified SceneryId is at a given coordinate
    *
    * @param scenery SceneryId -- The Object we're looking for
@@ -184,30 +217,29 @@ public class SeattaScript extends IdleScript {
    *
    * @param skill SkillId -- SkillId to check
    * @param level int -- Level to check for
+   * @param checkCurrentLevel boolean -- This compares with boosted/lowered skills levels instead of
+   *     base stats. <br>
+   *     <br>
+   *     For example, if checking against SkillId.HITS:<br>
+   *     -- true - Return after checking against the current hp<br>
+   *     -- false - Return after checking against the base hp
    * @return boolean
    */
-  public static boolean hasSkillLevel(SkillId skill, int level) {
-    return c.getBaseStat(skill.getId()) >= level;
-  }
-  /**
-   * Return whether the player has the specified level for a skill.
-   *
-   * @param skill id -- Id of the skill to check
-   * @param level int -- Level to check for
-   * @return boolean
-   */
-  public static boolean hasSkillLevel(int skill, int level) {
-    return c.getBaseStat(skill) >= level;
+  public static boolean hasSkillLevel(SkillId skill, int level, boolean checkCurrentLevel) {
+    return checkCurrentLevel
+        ? c.getCurrentStat(skill.getId()) >= level
+        : c.getBaseStat(skill.getId()) >= level;
   }
 
   /**
-   * Returns whether the player has completed the specified quest
+   * Return whether the player has the specified base level for a skill.
    *
-   * @param quest int -- Quest id to check
+   * @param skill SkillId -- SkillId to check
+   * @param level int -- Level to check for
    * @return boolean
    */
-  public static boolean hasCompletedQuest(int quest) {
-    return c.isQuestComplete(quest);
+  public static boolean hasSkillLevel(SkillId skill, int level) {
+    return hasSkillLevel(skill, level, false);
   }
 
   /**
@@ -217,8 +249,10 @@ public class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean hasCompletedQuest(QuestId quest) {
-    return hasCompletedQuest(quest.getId());
+    return c.isQuestComplete(quest.getId());
   }
+
+  // * ----------------- ITEMS -----------------
 
   /**
    * Checks if the player has a usable pickaxe with them.
@@ -226,15 +260,15 @@ public class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean hasUsablePickaxe() {
-    final Map<Integer, Integer> pickaxeLevelMap =
-        new HashMap<Integer, Integer>() {
+    final Map<ItemId, Integer> pickaxeLevelMap =
+        new HashMap<ItemId, Integer>() {
           {
-            put(ItemId.BRONZE_PICKAXE.getId(), 1);
-            put(ItemId.IRON_PICKAXE.getId(), 1);
-            put(ItemId.STEEL_PICKAXE.getId(), 6);
-            put(ItemId.MITHRIL_PICKAXE.getId(), 21);
-            put(ItemId.ADAMANTITE_PICKAXE.getId(), 31);
-            put(ItemId.RUNE_PICKAXE.getId(), 41);
+            put(ItemId.BRONZE_PICKAXE, 1);
+            put(ItemId.IRON_PICKAXE, 1);
+            put(ItemId.STEEL_PICKAXE, 6);
+            put(ItemId.MITHRIL_PICKAXE, 21);
+            put(ItemId.ADAMANTITE_PICKAXE, 31);
+            put(ItemId.RUNE_PICKAXE, 41);
           }
         };
     return pickaxeLevelMap.entrySet().stream()
@@ -243,6 +277,7 @@ public class SeattaScript extends IdleScript {
                 (hasUnnotedItem(entry.getKey()))
                     && hasSkillLevel(SkillId.MINING, entry.getValue()));
   }
+
   /**
    * Checks if the player has a usable axe with them.
    *
@@ -263,6 +298,36 @@ public class SeattaScript extends IdleScript {
   }
 
   /**
+   * Gets the amount of an item in the player's inventory
+   *
+   * @param item ItemId -- Item to count
+   * @return int
+   */
+  public static int getInventoryItemCount(ItemId item) {
+    return c.getInventoryItemCount(item.getId());
+  }
+
+  /**
+   * Gets the amount of an unnoted item in the player's inventory
+   *
+   * @param item ItemId -- Unnoted item to count
+   * @return int
+   */
+  public static int getUnnotedInventoryItemCount(ItemId item) {
+    return c.getUnnotedInventoryItemCount(item.getId());
+  }
+
+  /**
+   * Gets the amount of a noted item in the player's inventory
+   *
+   * @param item ItemId -- Noted item to count
+   * @return int
+   */
+  public static int getNotedInventoryItemCount(ItemId item) {
+    return c.getNotedInventoryItemCount(item.getId());
+  }
+
+  /**
    * Returns whether the player has at least the specified amount of an item in their inventory.<br>
    * <br>
    * If you need to differentiate between unnoted and noted items, use hasUnnotedInventoryAmount()
@@ -273,64 +338,46 @@ public class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean hasInventoryAmount(ItemId item, int amount) {
-    return hasInventoryAmount(item.getId(), amount);
-  }
-  /**
-   * Returns whether the player has at least the specified amount of an item in their inventory.<br>
-   * <br>
-   * If you need to differentiate between unnoted and noted items, use hasUnnotedInventoryAmount()
-   * and hasNotedInventoryAmount().
-   *
-   * @param item int -- Item to check for
-   * @param amount int -- Amount of itemId to check for
-   * @return boolean
-   */
-  public static boolean hasInventoryAmount(int item, int amount) {
-    return c.getInventoryItemCount(item) >= amount;
+    return getInventoryItemCount(item) >= amount;
   }
 
   /**
-   * Returns whether the player has a specified noted amount of an item id in their inventory.
-   *
-   * @param item ItemId -- Item to check for
-   * @param amount int -- Amount to check for
-   * @return boolean
-   */
-  public static boolean hasNotedInventoryAmount(ItemId item, int amount) {
-    return hasUnnotedInventoryAmount(item.getId(), amount);
-  }
-
-  /**
-   * Returns whether the player has a specified noted amount of an item id in their inventory.
-   *
-   * @param item int -- Item to check for
-   * @param amount int -- Amount to check for
-   * @return boolean
-   */
-  public static boolean hasNotedInventoryAmount(int item, int amount) {
-    return c.getUnnotedInventoryItemCount(item) >= amount;
-  }
-
-  /**
-   * Returns whether the player has a specified unnoted amount of an item id in their inventory.
+   * Returns whether the player has at least a specified amount of an unnoted item in their
+   * inventory.
    *
    * @param item int -- Item to check for
    * @param amount int -- Amount to check for
    * @return boolean
    */
   public static boolean hasUnnotedInventoryAmount(ItemId item, int amount) {
-    return hasNotedInventoryAmount(item.getId(), amount);
+    return getUnnotedInventoryItemCount(item) >= amount;
   }
 
   /**
-   * Returns whether the player has a specified unnoted amount of an item id in their inventory.
+   * Returns whether the player has at least a specified amount of a noted item id in their
+   * inventory.
    *
-   * @param item int -- Item to check for
+   * @param item ItemId -- Item to check for
    * @param amount int -- Amount to check for
    * @return boolean
    */
-  public static boolean hasUnnotedInventoryAmount(int item, int amount) {
-    return c.getNotedInventoryItemCount(item) >= amount;
+  public static boolean hasNotedInventoryAmount(ItemId item, int amount) {
+    return getNotedInventoryItemCount(item) >= amount;
+  }
+
+  /**
+   * Returns whether the player has an amount of an unnoted item between a given range in their
+   * inventory.
+   *
+   * @param item ItemId -- Item to check for
+   * @param minAmount int -- The minimum amount needed
+   * @param maxAmount int -- The maximum amount needed
+   * @return boolean
+   */
+  public static boolean hasBetweenUnnotedInventoryAmount(
+      ItemId item, int minAmount, int maxAmount) {
+    int count = getUnnotedInventoryItemCount(item);
+    return count >= minAmount && count <= maxAmount;
   }
 
   /**
@@ -340,17 +387,7 @@ public class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean hasEquippedItem(ItemId item) {
-    return hasEquippedItem(item.getId());
-  }
-
-  /**
-   * Returns whether the player has the specified item equipped
-   *
-   * @param item int -- Item to check for
-   * @return boolean
-   */
-  public static boolean hasEquippedItem(int item) {
-    return c.isItemIdEquipped(item);
+    return c.isItemIdEquipped(item.getId());
   }
 
   /**
@@ -359,64 +396,45 @@ public class SeattaScript extends IdleScript {
    * If you need to differentiate between unnoted and noted, use hasUnnotedItem() or hasNotedItem()
    * instead.
    *
-   * @param item ItemId -- ItemId to check for
+   * @param item ItemId -- Item to check for
    * @return boolean
    */
   public static boolean hasItem(ItemId item) {
-    return hasItem(item.getId());
-  }
-
-  /**
-   * Returns whether the player has the specified item in their inventory or equipped. <br>
-   * <br>
-   * If you need to differentiate between unnoted and noted, use hasUnnotedItem() or hasNotedItem()
-   * instead.
-   *
-   * @param item int -- Item to check for
-   * @return boolean
-   */
-  public static boolean hasItem(int item) {
-    return c.isItemIdEquipped(item) || c.getInventoryItemCount(item) > 0;
+    return c.isItemIdEquipped(item.getId()) || getInventoryItemCount(item) > 0;
   }
 
   /**
    * Returns whether the player has the specified item unnoted in their inventory or equipped.
    *
-   * @param item int -- Item id
-   * @return boolean -- Whether noted item is in inventory
-   */
-  public static boolean hasUnnotedItem(int item) {
-    return c.isItemIdEquipped(item) || c.getUnnotedInventoryItemCount(item) > 0;
-  }
-
-  /**
-   * Returns whether the player has the specified item unnoted in their inventory or equipped.
-   *
-   * @param item ItemId -- ItemId
+   * @param item ItemId -- Item to check for
    * @return boolean -- Whether noted item is in inventory
    */
   public static boolean hasUnnotedItem(ItemId item) {
-    return hasUnnotedItem(item.getId());
+    return hasEquippedItem(item) || getUnnotedInventoryItemCount(item) > 0;
   }
 
   /**
    * Returns whether the player has the specified item noted in their inventory.
    *
-   * @param item ItemId -- ItemId
-   * @return boolean -- Whether noted item is in inventory
-   */
-  public static boolean hasNotedItem(int item) {
-    return c.getNotedInventoryItemCount(item) > 0;
-  }
-
-  /**
-   * Returns whether the player has the specified item noted in their inventory.
-   *
-   * @param item int -- Item id
+   * @param item ItemId -- Item to check for
    * @return boolean -- Whether noted item is in inventory
    */
   public static boolean hasNotedItem(ItemId item) {
-    return hasNotedItem(item.getId());
+    return getNotedInventoryItemCount(item) > 0;
+  }
+
+  public static Point getNearestGroundItemOf(ItemId item) {
+    int[] coords = c.getNearestItemById(item.getId());
+    if (coords == null) return null;
+    return new Point(coords[0], coords[1]);
+  }
+
+  public static Point getNearestGroundItemFrom(ItemId[] items) {
+    int[] idArray = Arrays.stream(items).mapToInt(ItemId::getId).toArray();
+    if (idArray == null) return null;
+    int[] coords = c.getNearestItemByIds(idArray);
+    if (coords == null) return null;
+    return new Point(coords[0], coords[1]);
   }
 
   /**
@@ -426,8 +444,114 @@ public class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean hasEmptyInventorySpaces(int amount) {
-    return (30 - c.getInventoryItemCount()) >= amount;
+    return getEmptyInventorySpaces() >= amount;
   }
+
+  /**
+   * Returns the amount of empty inventory spaces
+   *
+   * @return int
+   */
+  public static int getEmptyInventorySpaces() {
+    return 30 - c.getInventoryItemCount();
+  }
+
+  /**
+   * Returns whether the player's inventory is full.
+   *
+   * @return boolean
+   */
+  public static boolean isInventoryFull() {
+    return c.getInventoryItemCount() == 30;
+  }
+
+  /**
+   * Drops an amount of an item
+   *
+   * @param item ItemId -- Item to drop
+   * @param amount int -- Amount to drop
+   */
+  public static void dropItem(ItemId item, int amount) {
+    if (!hasItem(item)) return;
+    c.dropItem(c.getInventoryItemSlotIndex(item.getId()), amount);
+    do sleepTicks(1);
+    while (hasItem(item) && isRunningAndLoggedIn());
+  }
+
+  /**
+   * Drops one of an item
+   *
+   * @param item ItemId -- Item to drop
+   */
+  public static void dropItem(ItemId item) {
+    dropItem(item, 1);
+  }
+
+  /**
+   * Drops all of an item
+   *
+   * @param item ItemId -- Item to drop
+   */
+  public static void dropAllOfItem(ItemId item) {
+    dropItem(item, c.getInventoryItemCount(item.getId()));
+  }
+
+  // * ---------------- BANKING ----------------
+
+  /**
+   * Deposits an amount of an item
+   *
+   * @param item ItemId -- Item to deposit
+   * @param amount int -- Amount to deposit
+   */
+  public static void depositItem(ItemId item, int amount) {
+    if (!c.isInBank() || !hasItem(item)) return;
+    c.depositItem(item.getId(), Math.min(amount, c.getInventoryItemCount(item.getId())));
+  }
+
+  /**
+   * Deposits one of an item
+   *
+   * @param item ItemId -- Item to deposit
+   */
+  public static void depositItem(ItemId item) {
+    depositItem(item, 1);
+  }
+
+  /**
+   * Deposits all of an item
+   *
+   * @param item ItemId -- Item to deposit
+   */
+  public static void depositAllOfItem(ItemId item) {
+    depositItem(item, c.getInventoryItemCount(item.getId()));
+  }
+
+  public static void depositAll() {
+    c.depositAll();
+  }
+
+  /**
+   * Withdraws one of an item
+   *
+   * @param item ItemId -- Item to withdraw
+   */
+  public static void withdrawItem(ItemId item) {
+    withdrawItem(item, 1);
+  }
+
+  /**
+   * Withdraws an amount of an item
+   *
+   * @param item ItemId -- Item to withdraw
+   * @param amount int -- Amount to withdraw
+   */
+  public static void withdrawItem(ItemId item, int amount) {
+    if (!c.isInBank() || !c.isItemInBank(item.getId())) return;
+    c.withdrawItem(item.getId(), Math.min(amount, c.getBankItemCount(item.getId())));
+  }
+
+  // * --------- REQUIREMENT  CHECKING ---------
 
   /**
    * Check if the player has a specified quest completed. Quits the script if the player does not.
@@ -435,10 +559,23 @@ public class SeattaScript extends IdleScript {
    * @param quest QuestId -- QuestId of the quest to check
    */
   public static void checkForQuestCompletionOrQuit(QuestId quest) {
-    if (!hasCompletedQuest(quest)) {
-      String name = c.getQuestNames()[quest.getId()];
-      quit(QuitReason.MISSING_QUEST_REQUIREMENT, new String[] {name});
-    }
+    if (!c.isRunning()) return;
+    if (!hasCompletedQuest(quest))
+      quit(QuitReason.MISSING_QUEST_REQUIREMENT, c.getQuestNames()[quest.getId()]);
+  }
+
+  /**
+   * Checks whether the player is within a specified area. Quits the script if the player is not.
+   *
+   * @param x1 int -- First x coordinate
+   * @param y1 int -- First y coordinate
+   * @param x2 int -- Second x coordinate
+   * @param y2 int -- Second y coordinate
+   * @param areaName String -- Area name to print in quit message
+   */
+  public static void checkIfPlayerIsInAreaOrQuit(int x1, int y1, int x2, int y2, String areaName) {
+    if (!c.isRunning()) return;
+    if (!isAtArea(x1, y1, x2, y2)) quit(QuitReason.INVALID_START_AREA, areaName);
   }
 
   /**
@@ -448,13 +585,12 @@ public class SeattaScript extends IdleScript {
    * @param level int -- Level to check for
    */
   public static void checkForSkillLevelOrQuit(SkillId skill, int level) {
+    if (!c.isRunning()) return;
     if (!hasSkillLevel(skill, level)) {
       String name = skill.name().toLowerCase();
       name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-      quit(
-          QuitReason.MISSING_SKILL_REQUIREMENT,
-          new String[] {String.format(" - %s %s", level, name)});
+      quit(QuitReason.MISSING_SKILL_REQUIREMENT, String.format(" - %s %s", level, name));
     }
   }
 
@@ -463,9 +599,8 @@ public class SeattaScript extends IdleScript {
    * does not.
    */
   public static void checkForUsablePickaxeOrQuit() {
-    if (!hasUsablePickaxe()) {
-      quit(QuitReason.MISSING_INVENTORY_ITEM, new String[] {" -A usable pickaxe"});
-    }
+    if (!c.isRunning()) return;
+    if (!hasUsablePickaxe()) quit(QuitReason.MISSING_INVENTORY_ITEM, " -A usable pickaxe");
   }
 
   /**
@@ -473,9 +608,8 @@ public class SeattaScript extends IdleScript {
    * not.
    */
   public static void checkForUsableAxeOrQuit() {
-    if (!hasUsableAxe()) {
-      quit(QuitReason.MISSING_INVENTORY_ITEM, new String[] {" -A usable axe"});
-    }
+    if (!c.isRunning()) return;
+    if (!hasUsableAxe()) quit(QuitReason.MISSING_INVENTORY_ITEM, " -A usable axe");
   }
 
   /**
@@ -489,13 +623,12 @@ public class SeattaScript extends IdleScript {
    * @param amount int -- Amount of item to check for
    */
   public static void checkForInventoryAmountOrQuit(ItemId item, int amount) {
+    if (!c.isRunning()) return;
     if (!hasInventoryAmount(item, amount)) {
       String name = c.getItemName(item.getId()).toLowerCase();
       name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-      quit(
-          QuitReason.MISSING_INVENTORY_ITEM,
-          new String[] {String.format(" - %s %s", amount, name)});
+      quit(QuitReason.MISSING_INVENTORY_ITEM, String.format(" - %s %s", amount, name));
     }
   }
 
@@ -507,13 +640,33 @@ public class SeattaScript extends IdleScript {
    * @param amount int -- Amount of item to check for
    */
   public static void checkForUnnotedInventoryAmountOrQuit(ItemId item, int amount) {
+    if (!c.isRunning()) return;
     if (!hasUnnotedInventoryAmount(item, amount)) {
+      String name = c.getItemName(item.getId()).toLowerCase();
+      name = name.substring(0, 1).toUpperCase() + name.substring(1);
+
+      quit(QuitReason.MISSING_NOTED_INVENTORY_ITEM, String.format(" - %s %s", amount, name));
+    }
+  }
+
+  /**
+   * Check if the player has an amount of an unnoted item between a given range in their inventory.
+   * Quits the script if the player does not.
+   *
+   * @param item ItemId -- ItemId to check for
+   * @param minAmount int -- The min amount of item to check for
+   * @param maxAmount int -- The max amount of item to check for
+   */
+  public static void checkForUnnotedInventoryRangeOrQuit(
+      ItemId item, int minAmount, int maxAmount) {
+    if (!c.isRunning()) return;
+    if (!hasBetweenUnnotedInventoryAmount(item, minAmount, maxAmount)) {
       String name = c.getItemName(item.getId()).toLowerCase();
       name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
       quit(
           QuitReason.MISSING_NOTED_INVENTORY_ITEM,
-          new String[] {String.format(" - %s %s", amount, name)});
+          String.format(" - %s-%s %s", minAmount, maxAmount, name));
     }
   }
 
@@ -525,13 +678,12 @@ public class SeattaScript extends IdleScript {
    * @param amount int -- Amount of item to check for
    */
   public static void checkForNotedInventoryAmountOrQuit(ItemId item, int amount) {
+    if (!c.isRunning()) return;
     if (!hasNotedInventoryAmount(item, amount)) {
       String name = c.getItemName(item.getId()).toLowerCase();
       name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-      quit(
-          QuitReason.MISSING_UNNOTED_INVENTORY_ITEM,
-          new String[] {String.format(" - %s %s", amount, name)});
+      quit(QuitReason.MISSING_UNNOTED_INVENTORY_ITEM, String.format(" - %s %s", amount, name));
     }
   }
 
@@ -541,11 +693,12 @@ public class SeattaScript extends IdleScript {
    * @param item ItemId -- ItemId to check for
    */
   public static void checkForEquippedItemOrQuit(ItemId item) {
+    if (!c.isRunning()) return;
     if (!c.isItemIdEquipped(item.getId())) {
       String name = c.getItemName(item.getId()).toLowerCase();
       name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-      quit(QuitReason.MISSING_EQUIPPED_ITEM, new String[] {String.format(" - %s", name)});
+      quit(QuitReason.MISSING_EQUIPPED_ITEM, String.format(" - %s", name));
     }
   }
 
@@ -556,13 +709,12 @@ public class SeattaScript extends IdleScript {
    * @param item ItemId -- ItemId to check for
    */
   public static void checkForEquippedOrUnnotedInventoryItemOrQuit(ItemId item) {
+    if (!c.isRunning()) return;
     if (!hasUnnotedItem(item)) {
       String name = c.getItemName(item.getId()).toLowerCase();
       name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-      quit(
-          QuitReason.MISSING_EQUIPPED_OR_INVENTORY_ITEM,
-          new String[] {String.format(" - %s", name)});
+      quit(QuitReason.MISSING_EQUIPPED_OR_INVENTORY_ITEM, String.format(" - %s", name));
     }
   }
 
@@ -573,12 +725,14 @@ public class SeattaScript extends IdleScript {
    * @param amount int -- Number of empty spaces to check for
    */
   public static void checkForEmptyInventorySpacesOrQuit(int amount) {
-    if (!hasEmptyInventorySpaces(amount)) {
+    if (!c.isRunning()) return;
+    if (!hasEmptyInventorySpaces(amount))
       quit(
-          QuitReason.MISSING_INVENTORY_ITEM,
-          new String[] {String.format(" - You need at least %s empty inventory spaces", amount)});
-    }
+          QuitReason.NOT_ENOUGH_EMPTY_INVENTORY_SPACES,
+          String.format(" - You need at least %s empty inventory spaces", amount));
   }
+
+  // * ------------- MISCELLANEOUS -------------
 
   /**
    * Returns whether the player is an Ultimate Iron Man.
@@ -644,6 +798,13 @@ public class SeattaScript extends IdleScript {
     while (c.isBatching() && isRunningAndLoggedIn());
   }
 
+  /** Forces the player to stop batching. */
+  public static void forceStopBatching() {
+    if (c.isBatching()) c.stopBatching();
+  }
+
+  // * ------------ SCRIPT QUITTING ------------
+
   /**
    * Quits the script.
    *
@@ -660,7 +821,7 @@ public class SeattaScript extends IdleScript {
    * @return int -- Returned int so scripts can call this for their run method return
    */
   public static int quit(String message) {
-    return quit(QuitReason.SCRIPT_STOPPED, new String[] {message});
+    return quit(QuitReason.SCRIPT_STOPPED, message);
   }
 
   /**
@@ -670,7 +831,18 @@ public class SeattaScript extends IdleScript {
    * @return int -- Returned int so scripts can call this for their run method return
    */
   public static int quit(QuitReason reason) {
-    return quit(reason, null);
+    return quit(reason, "");
+  }
+
+  /**
+   * Quits the script while logging the reason and all Strings from messageArray
+   *
+   * @param reason QuitReason -- Reason printed when quitting.
+   * @param message String -- Message to print after the QuitReason.
+   * @return int -- Returned int so scripts can call this for their run method return
+   */
+  public static int quit(QuitReason reason, String message) {
+    return quit(reason, new String[] {message});
   }
 
   /**
@@ -683,9 +855,12 @@ public class SeattaScript extends IdleScript {
   public static int quit(QuitReason reason, String[] messageArray) {
     if (c.isRunning()) {
       if (!reason.equals(QuitReason.SCRIPT_STOPPED)) c.log(reason.getMessage(), "red");
-      if (messageArray != null && messageArray.length > 0) {
-        Arrays.stream(messageArray).forEach(m -> c.log(m, "red"));
-      }
+      if (messageArray != null)
+        Arrays.stream(messageArray)
+            .filter(Objects::nonNull)
+            .filter(s -> !s.trim().isEmpty())
+            .forEach(m -> c.log(m, "red"));
+
       c.stop();
     }
     return 1000;
@@ -704,8 +879,9 @@ public class SeattaScript extends IdleScript {
     MISSING_NOTED_INVENTORY_ITEM("You are missing a required noted inventory item:"),
     MISSING_SKILL_REQUIREMENT("You are missing a required skill level:"),
     MISSING_QUEST_REQUIREMENT("You are missing a required quest:"),
-    UNABLE_TO_FIND_NPC("The following npc was not able to be found:"),
-    NOT_ENOUGH_EMPTY_INVENTORY_SPACES("You do not have enough empty inventory spaces.");
+    UNABLE_TO_FIND_NPC("The following npc was not found:"),
+    INVALID_START_AREA("The script must be started within the following area:"),
+    NOT_ENOUGH_EMPTY_INVENTORY_SPACES("You do not have enough empty inventory spaces:");
 
     private final String reason;
 

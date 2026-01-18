@@ -40,16 +40,16 @@ public class MiningGuild extends SeattaScript {
   private final int[] banked = {0, 0, 0, 0, 0, 0, 0, 0, 0};
   private Ore current = Ore.NONE;
 
-  private final int[] lootIds = {
-    ItemId.RUNITE_ORE.getId(),
-    ItemId.ADAMANTITE_ORE.getId(),
-    ItemId.MITHRIL_ORE.getId(),
-    ItemId.COAL.getId(),
-    ItemId.GOLD.getId(),
-    ItemId.UNCUT_DIAMOND.getId(),
-    ItemId.UNCUT_RUBY.getId(),
-    ItemId.UNCUT_EMERALD.getId(),
-    ItemId.UNCUT_SAPPHIRE.getId()
+  private final ItemId[] lootIds = {
+    ItemId.RUNITE_ORE,
+    ItemId.ADAMANTITE_ORE,
+    ItemId.MITHRIL_ORE,
+    ItemId.COAL,
+    ItemId.GOLD,
+    ItemId.UNCUT_DIAMOND,
+    ItemId.UNCUT_RUBY,
+    ItemId.UNCUT_EMERALD,
+    ItemId.UNCUT_SAPPHIRE
   };
 
   /**
@@ -99,7 +99,7 @@ public class MiningGuild extends SeattaScript {
   private int run() {
     while (isScriptRunning()) {
       if (!c.isBatching()) current = Ore.NONE;
-      if (c.getInventoryItemCount() == 30) bank();
+      if (isInventoryFull()) bank();
       if (!Location.FALADOR_MINING_GUILD.isAtLocation()) {
         paintStatus = "Walking to Mining Guild";
         Location.FALADOR_MINING_GUILD.walkTowards();
@@ -111,7 +111,7 @@ public class MiningGuild extends SeattaScript {
         if (best != null) mine(best);
       } else {
         while (c.isBatching() && isRunningAndLoggedIn()) {
-          if (c.getInventoryItemCount() == 30) {
+          if (isInventoryFull()) {
             c.stopBatching();
             break;
           }
@@ -192,13 +192,13 @@ public class MiningGuild extends SeattaScript {
 
       // Add all items to our banked counter and deposit them
       for (int i = 0; i < lootIds.length; i++) {
-        int item = lootIds[i];
+        ItemId item = lootIds[i];
         if (!isRunningAndLoggedIn()) break;
-        if (c.getInventoryItemCount(item) < 1) continue;
+        if (!hasItem(item)) continue;
 
-        banked[i] += c.getInventoryItemCount(item);
-        c.depositItem(lootIds[i], c.getInventoryItemCount(lootIds[i]));
-        while (c.getInventoryItemCount(lootIds[i]) > 0 && isRunningAndLoggedIn()) sleepTicks(1);
+        banked[i] += getInventoryItemCount(item);
+        depositAllOfItem(item);
+        while (hasItem(item) && isRunningAndLoggedIn()) sleepTicks(1);
       }
       if (c.isLoggedIn())
         hasBankables = Arrays.stream(lootIds).anyMatch(SeattaScript::hasUnnotedItem);
@@ -305,7 +305,7 @@ public class MiningGuild extends SeattaScript {
         if (i >= mineOres.length || mineOres[i]) {
           paintBuilder.addRow(
               rowBuilder.singleSpriteMultipleStringRow(
-                  lootIds[i],
+                  lootIds[i].getId(),
                   oreScales[i],
                   i >= 4 ? 8 : 4,
                   new String[] {

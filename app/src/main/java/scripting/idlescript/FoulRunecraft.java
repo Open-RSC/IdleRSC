@@ -217,14 +217,16 @@ public class FoulRunecraft extends IdleScript {
         }
         int[] altar = c.getNearestObjectById(altars[choice]);
         if (altar != null) {
+          int unnotedEssenceCount = c.getUnnotedInventoryItemCount(1299);
           if (choice == 7 && !c.isReachable(altar[0], altar[1], true)) return ticks(1);
           if (c.atObject(altar[0], altar[1])) {
             int count = c.getInventoryItemCount(1299);
             waitForMovement();
             while (c.isCurrentlyWalking()) c.sleep(ticks(1));
-            if (count > c.getInventoryItemCount(1299)) {
-              units += count * ((c.getBaseStat(c.getStatId("Runecraft")) / doubles[choice]) + 1);
-            }
+            if (count > c.getInventoryItemCount(1299))
+              units +=
+                  unnotedEssenceCount
+                      * ((c.getBaseStat(c.getStatId("Runecraft")) / doubles[choice]) + 1);
             return ticks(2);
           }
         }

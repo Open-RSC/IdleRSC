@@ -131,18 +131,17 @@ public class ColeslawGuildFisher extends IdleScript {
     while (c.isRunning()) {
       if (c.getNeedToMove()) c.moveCharacter();
       if (c.getShouldSleep()) c.sleepHandler(true);
-      if (dropJunk && bigNetFishing) dropJunk();
-      if (c.getInventoryItemCount() == 30) {
-        handleFullInven();
-      }
-      if (c.getInventoryItemCount() < 30) {
-        handleFishing();
-      }
+      if (dropJunk && bigNetFishing && c.getInventoryItemCount() == 30) dropJunk();
+      if (c.getInventoryItemCount() == 30) handleFullInven();
+
+      if (c.getInventoryItemCount() < 30) handleFishing();
+
       c.sleep(640);
     }
   }
 
   private void dropJunk() {
+    if (c.isBatching()) c.stopBatching();
     int[] junkIds = {16, 17, 622, 793}; // gloves, boots, seaweed, oyster
     for (int id : junkIds) {
       while (c.getInventoryItemCount(id) > 0 && c.isRunning()) {
@@ -154,7 +153,7 @@ public class ColeslawGuildFisher extends IdleScript {
 
   private void handleFishing() {
     if (!c.isBatching()) {
-      if (dropJunk && bigNetFishing) dropJunk();
+      if (dropJunk && bigNetFishing && c.getInventoryItemCount() == 30) dropJunk();
       int[] fishingSpot = c.getNearestObjectById(spotId);
       try {
         if (spotId == LOBSTER_FISH_SPOT) {

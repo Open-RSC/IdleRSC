@@ -4,20 +4,12 @@ import bot.Main;
 import bot.ui.scriptselector.models.Category;
 import bot.ui.scriptselector.models.ScriptInfo;
 import controller.Controller;
+import java.awt.*;
 import models.entities.ItemId;
+import models.entities.SceneryId;
+import models.entities.SkillId;
 
-/**
- * VialCrafter
- *
- * <p>Craft Vials on Entrana
- *
- * <p>Items Required: 1 Glassblowing Pipe 1 Herb Clippers Up to 13 Buckets
- *
- * <p>Levels Required: 23 Harvesting 33 Crafting
- *
- * @author Seatta with fixes by Kaila
- */
-public class VialCrafter extends IdleScript {
+public class VialCrafter extends SeattaScript {
   public static final ScriptInfo info =
       new ScriptInfo(
           new Category[] {
@@ -38,23 +30,13 @@ public class VialCrafter extends IdleScript {
   private static final Integer[] FURNACE = {423, 555};
 
   // ITEM IDS
-  private static final Integer GLASSBLOWING_PIPE = ItemId.GLASSBLOWING_PIPE.getId();
-  private static final Integer EDIBLE_SEAWEED = ItemId.EDIBLE_SEAWEED.getId();
-  private static final Integer HERB_CLIPPERS = ItemId.HERB_CLIPPERS.getId();
-  private static final Integer MOLTEN_GLASS = ItemId.MOLTEN_GLASS.getId();
-  private static final Integer EMPTY_VIAL = ItemId.EMPTY_VIAL.getId();
-  private static final Integer SODA_ASH = ItemId.SODA_ASH.getId();
-  private static final Integer SEAWEED = ItemId.SEAWEED.getId();
-  private static final Integer BUCKET = ItemId.BUCKET.getId();
-  private static final Integer SAND = ItemId.SAND.getId();
-
-  // OBJECT IDS
-  private static final Integer SEAWEED_PLANT = 1280;
-
-  // LEVEL REQUIREMENTS
-  private static final Integer HARVESTING_LEVEL = 23;
-  private static final Integer CRAFTING_LEVEL = 33;
-  private static final Integer AGILITY_LEVEL = 55; // OPTIONAL FOR SHORTCUT
+  private static final ItemId EDIBLE_SEAWEED = ItemId.EDIBLE_SEAWEED;
+  private static final ItemId MOLTEN_GLASS = ItemId.MOLTEN_GLASS;
+  private static final ItemId EMPTY_VIAL = ItemId.EMPTY_VIAL;
+  private static final ItemId SODA_ASH = ItemId.SODA_ASH;
+  private static final ItemId SEAWEED = ItemId.SEAWEED;
+  private static final ItemId BUCKET = ItemId.BUCKET;
+  private static final ItemId SAND = ItemId.SAND;
 
   // MADE
   private static Integer VIALS_MADE = 0;
@@ -63,80 +45,63 @@ public class VialCrafter extends IdleScript {
     paintBuilder.start(4, 18, 160);
 
     // Quits if the required items are missing
-    if (c.isRunning()
-        && (c.getInventoryItemCount(HERB_CLIPPERS) < 1
-            || c.getInventoryItemCount(GLASSBLOWING_PIPE) < 1
-            || getBucketCount() < 1
-            || getBucketCount() > 13)) {
-      quit(2);
-    }
+    if (getBucketCount() < 1 || getBucketCount() > 13)
+      quit(
+          QuitReason.MISSING_UNNOTED_INVENTORY_ITEM,
+          String.format(" - 1 to 13 %s", "Buckets (or Buckets of Sand)"));
 
-    // Quits if the player does not have the required levels
-    if (c.isRunning()
-        && (!hasSkillLevel("Harvesting", HARVESTING_LEVEL)
-            || !hasSkillLevel("Crafting", CRAFTING_LEVEL))) {
-      quit(3);
-    }
+    checkForUnnotedInventoryAmountOrQuit(ItemId.HERB_CLIPPERS, 1);
+    checkForUnnotedInventoryAmountOrQuit(ItemId.GLASSBLOWING_PIPE, 1);
+    checkForSkillLevelOrQuit(SkillId.HARVESTING, 23);
+    checkForSkillLevelOrQuit(SkillId.CRAFTING, 33);
+    checkIfPlayerIsInAreaOrQuit(396, 526, 441, 573, "Entrana");
 
-    // Quits if the player is not on Entrana
-    if (c.isRunning()
-        && (c.currentY() > 573 || c.currentY() < 526 || c.currentX() > 441 || c.currentX() < 396)) {
-      quit(4);
-    }
+    while (isScriptRunning()) {
 
-    while (c.isRunning()) {
-      if (c.getNeedToMove()) c.moveCharacter();
-      if (c.getShouldSleep()) c.sleepHandler(true);
       // Fill empty buckets
-      while (c.getInventoryItemCount(BUCKET) > 0 && c.isRunning()) {
-        fillBuckets();
-      }
+      while (hasItem(BUCKET) && c.isRunning()) fillBuckets();
+
       // Harvest or pick up seaweed
-      while (!evenBucketsAndSeaweed() && c.isRunning()) {
-        harvest();
-      }
+      while (!evenBucketsAndSeaweed() && c.isRunning()) harvest();
+
       // Drop any remaining edible seaweed after collecting seaweed
       dropEdibleSeaweed();
+
       // Walk to range if on the northern side of Entrana
       if (c.currentY() < 550) {
         c.setStatus("@Cya@Walking to range");
         walkSouth();
       }
+
       // Make soda ash
-      while (c.getInventoryItemCount(SEAWEED) > 0 && c.isRunning()) {
-        makeSodaAsh();
-      }
+      while (hasItem(SEAWEED) && c.isRunning()) makeSodaAsh();
+
       // Make molten glass
-      while (c.getInventoryItemCount(SODA_ASH) >= getBucketCount() && c.isRunning()) {
+      while (getInventoryItemCount(SODA_ASH) >= getBucketCount() && c.isRunning())
         makeMoltenGlass();
-      }
+
       // Make vials
-      while (c.getInventoryItemCount(MOLTEN_GLASS) > 0 && c.isRunning()) {
-        makeVials();
-      }
+      while (getInventoryItemCount(MOLTEN_GLASS) > 0 && c.isRunning()) makeVials();
     }
-    // Quits if the controller is stopped.
-    quit(1);
-    return 1000;
+    return quit();
   }
 
   public void harvest() {
     // Drop edible seaweed if inventory is full
-    if (c.getInventoryItemCount() == 30) {
-      dropEdibleSeaweed();
-    }
-    // Get seaweed until amount matches number of buckets
+    if (isInventoryFull()) dropEdibleSeaweed();
+
     if (!evenBucketsAndSeaweed()) {
+      // Get seaweed until amount matches number of buckets
       getSeaweed();
     } else {
       // Forcefully stop batching once getting enough seaweed
-      if (c.isBatching()) c.stopBatching();
+      forceStopBatching();
     }
   }
 
   public void getSeaweed() {
     if (!c.isBatching() || !c.isCurrentlyWalking()) {
-      int[] PLANT_COORDINATES = c.getNearestObjectById(SEAWEED_PLANT);
+      int[] PLANT_COORDINATES = c.getNearestObjectById(SceneryId.SEA_WEED.getId());
       if (PLANT_COORDINATES != null) {
         c.setStatus(
             "@Cya@Harvesting Seaweed (" + PLANT_COORDINATES[0] + "," + PLANT_COORDINATES[1] + ")");
@@ -152,18 +117,15 @@ public class VialCrafter extends IdleScript {
           c.sleep(1280);
         }
       } else {
-        if (c.getNearestItemById(SEAWEED) != null && !c.isBatching()) {
-          if (c.currentY() > 550) {
-            walkNorth();
-          }
+        if (c.getNearestItemById(SEAWEED.getId()) != null && !c.isBatching()) {
+          if (c.currentY() > 550) walkNorth();
           pickupSeaweed();
         } else {
           if (!c.isCurrentlyWalking() && c.currentX() != RESET_TILE[0]
               || c.currentY() != RESET_TILE[1]) {
             c.setStatus("@Cya@Walking to reset point");
-            if (c.currentY() < 550) {
-              walkSouth();
-            }
+            if (c.currentY() < 550) walkSouth();
+
             Integer[][] path = {RESET_TILE};
             walk(path);
             c.setStatus("@Cya@Waiting for seaweed");
@@ -177,72 +139,65 @@ public class VialCrafter extends IdleScript {
   }
 
   public void pickupSeaweed() {
-    int[] groundSeaweed = c.getNearestItemById(SEAWEED);
+    Point groundSeaweed = getNearestGroundItemOf(SEAWEED);
     if (groundSeaweed != null) {
-      c.setStatus("@Cya@Picking Up Seaweed (" + groundSeaweed[0] + "," + groundSeaweed[1] + ")");
-      c.pickupItem(groundSeaweed[0], groundSeaweed[1], SEAWEED, true, false);
-      while (c.isCurrentlyWalking()) {
-        c.sleep(640);
-      }
+      c.setStatus("@Cya@Picking Up Seaweed (" + groundSeaweed.x + "," + groundSeaweed.y + ")");
+      c.pickupItem(groundSeaweed.x, groundSeaweed.y, SEAWEED.getId(), true, false);
+      while (c.isCurrentlyWalking()) c.sleep(640);
+
       c.sleep(640);
     }
   }
 
   public void dropEdibleSeaweed() {
-    if (c.getInventoryItemCount(EDIBLE_SEAWEED) > 0) {
+    if (hasUnnotedInventoryAmount(ItemId.EDIBLE_SEAWEED, 1)) {
       c.walkTo(c.currentX(), c.currentY());
       c.waitForBatching(false);
       c.setStatus("@Cya@Dropping Edible Seaweed");
-      c.dropItem(
-          c.getInventoryItemSlotIndex(EDIBLE_SEAWEED), c.getInventoryItemCount(EDIBLE_SEAWEED));
+      dropAllOfItem(ItemId.EDIBLE_SEAWEED);
       c.sleep(1280);
-      while (c.getInventoryItemCount(EDIBLE_SEAWEED) > 0 && c.isRunning()) {
-        c.sleep(640);
-      }
+      while (hasUnnotedItem(ItemId.EDIBLE_SEAWEED) && c.isRunning()) c.sleep(640);
     }
   }
 
   public void fillBuckets() {
     c.setStatus("@Cya@Filling Buckets");
-    c.useItemIdOnObject(429, 566, BUCKET);
-    c.sleep(1280);
-    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking()) {
-      c.sleep(1280);
-    }
+    c.useItemIdOnObject(429, 566, BUCKET.getId());
+    do c.sleep(1280);
+    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking());
   }
 
   public void makeSodaAsh() {
     c.setStatus("@Cya@Making Soda Ash");
-    c.useItemIdOnObject(426, 560, SEAWEED);
+    c.useItemIdOnObject(426, 560, SEAWEED.getId());
     c.sleep(1280);
-    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking()) {
+    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking())
       c.sleep(640);
-    }
   }
 
   public void makeMoltenGlass() {
     c.setStatus("@Cya@Making Molten Glass");
-    c.useItemIdOnObject(419, 559, SAND);
+    c.useItemIdOnObject(419, 559, SAND.getId());
     c.sleep(1280);
-    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking()) {
+    while ((c.isRunning() && c.isBatching() && !c.getNeedToMove()) || c.isCurrentlyWalking())
       c.sleep(640);
-    }
   }
 
   public void makeVials() {
-    int startVials = controller.getInventoryItemCount(EMPTY_VIAL);
+    int startVials = getInventoryItemCount(EMPTY_VIAL);
     c.setStatus("@Cya@Making Vials");
     c.useItemOnItemBySlot(
-        c.getInventoryItemSlotIndex(GLASSBLOWING_PIPE), c.getInventoryItemSlotIndex(MOLTEN_GLASS));
+        c.getInventoryItemSlotIndex(ItemId.GLASSBLOWING_PIPE.getId()),
+        c.getInventoryItemSlotIndex(MOLTEN_GLASS.getId()));
     c.sleep(1280);
     c.optionAnswer(0);
     c.waitForBatching(false);
-    VIALS_MADE += (controller.getInventoryItemCount(EMPTY_VIAL) - startVials);
+    VIALS_MADE += (getInventoryItemCount(EMPTY_VIAL) - startVials);
   }
 
   public void walkNorth() {
     // Use the shortcut if the player has the required agility level
-    if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
+    if (hasSkillLevel(SkillId.AGILITY, 55)) {
       Integer[][] walkPath = {SOUTH_OF_SHORTCUT};
       walk(walkPath);
       c.atObject(SHORTCUT[0], SHORTCUT[1]);
@@ -255,7 +210,7 @@ public class VialCrafter extends IdleScript {
 
   public void walkSouth() {
     // Use the shortcut if the player has the required agility level
-    if (hasSkillLevel("Agility", AGILITY_LEVEL)) {
+    if (hasSkillLevel(SkillId.AGILITY, 55)) {
       Integer[][] walkPath = {NORTH_OF_SHORTCUT};
       walk(walkPath);
       c.atObject(SHORTCUT[0], SHORTCUT[1]);
@@ -271,81 +226,37 @@ public class VialCrafter extends IdleScript {
   /**
    * Follows a given path of tile coordinates
    *
-   * @param walkPath Integer[][] -- Integer Tile[] or seperate tile X and Y values per index
+   * @param walkPath Integer[][] -- Integer Tile[] or separate tile X and Y values per index
    */
   public void walk(Integer[][] walkPath) {
-    for (int i = 0; i < walkPath.length; ++i) {
-      if (c.isCurrentlyWalking()) {
-        while (c.isCurrentlyWalking() && c.isRunning()) {
-          c.sleep(640);
-        }
-      }
-      c.walkTo(walkPath[i][0], walkPath[i][1]);
-      c.sleep(1280);
-      while (c.isCurrentlyWalking() && c.isRunning()) {
-        c.sleep(1280);
-      }
+    for (Integer[] integers : walkPath) {
+      while (c.isCurrentlyWalking() && c.isRunning()) c.sleep(640);
+      c.walkTo(integers[0], integers[1]);
+      do c.sleep(1280);
+      while (c.isCurrentlyWalking() && c.isRunning());
     }
   }
 
   public boolean evenBucketsAndSeaweed() {
-    return (c.getInventoryItemCount(SEAWEED) + c.getInventoryItemCount(SODA_ASH))
-        >= getBucketCount();
+    return (getInventoryItemCount(SEAWEED) + getInventoryItemCount(SODA_ASH)) >= getBucketCount();
   }
 
   public int getBucketCount() {
-    return c.getInventoryItemCount(BUCKET) + c.getInventoryItemCount(SAND);
-  }
-
-  public boolean hasSkillLevel(String skillName, Integer requiredLevel) {
-    return c.getBaseStat(c.getStatId(skillName)) >= requiredLevel;
-  }
-
-  public void quit(int i) {
-    switch (i) {
-      case 1:
-        c.displayMessage("@red@Script has been stopped!");
-        break;
-      case 2:
-        c.displayMessage(
-            "@red@Please start the script with the following items in your inventory:");
-        c.displayMessage("@red@Herb Clippers, Glass Blowing Pipe, and");
-        c.displayMessage("@red@up to 13 buckets");
-        break;
-      case 3:
-        c.displayMessage("@red@You need level 23 harvesting and 33 crafting to use this script.");
-        break;
-      case 4:
-        c.displayMessage("@red@Start the script on Entrana.");
-        break;
-      default:
-        c.displayMessage("@red@The script has unexpectedly stopped!");
-        break;
-    }
-    c.stop();
+    return getInventoryItemCount(BUCKET) + getInventoryItemCount(SAND);
   }
 
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      // Colors are based on https://spec.draculatheme.com/#sec-Standard
-      int purple = 0xBD93F9;
-      int darkGray = 0x282A36;
-      int darkerGray = 0x1d1f27;
-      int white = 0xF8F8F2;
-      int green = 0x50FA7B;
-      int yellow = 0xF1FA8C;
-      int red = 0xFF5555;
+      paintBuilder.setBorderColor(colorPurple);
+      paintBuilder.setBackgroundColor(colorDarkGray, 255);
 
-      paintBuilder.setBorderColor(purple);
-      paintBuilder.setBackgroundColor(darkGray, 255);
-
-      paintBuilder.setTitleCenteredSingleColor("VialCrafter", purple, 4);
-      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", purple, 1));
+      paintBuilder.setTitleCenteredSingleColor("VialCrafter", colorPurple, 4);
+      paintBuilder.addRow(rowBuilder.centeredSingleStringRow("Seatta", colorPurple, 1));
       String[] strings = {
-        "Made: " + String.valueOf(VIALS_MADE), paintBuilder.stringAmountPerHour(VIALS_MADE)
+        String.format("Made: %s", VIALS_MADE), paintBuilder.stringAmountPerHour(VIALS_MADE)
       };
-      int[] colors = {white, yellow};
+      int[] colors = {colorWhite, colorYellow};
       int[] xOffsets = {
         4,
         paintBuilder.getWidth()

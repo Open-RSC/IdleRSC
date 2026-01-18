@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.BooleanSupplier;
 
 /* TODO: Places left to add:
  * Desert
@@ -213,7 +213,11 @@ public enum Location {
       new Boundary(368, 578, 371, 580), new Tile(369, 579), "Falador - Makeover Mage", true),
   FALADOR_MINE(new Boundary(355, 540, 369, 559), new Tile(361, 552), "Falador - West Mine", true),
   FALADOR_MINING_GUILD(
-      new Boundary(263, 3381, 277, 3400), new Tile(270, 3396), "Falador - Mining Guild", true),
+      new Boundary(263, 3381, 277, 3400),
+      new Tile(270, 3396),
+      "Falador - Mining Guild",
+      () -> Main.getController().getBaseStat(SkillId.MINING.getId()) >= 60,
+      "68 Fishing"),
   FALADOR_MINING_GUILD_ENTRANCE(
       new Boundary(272, 563, 277, 567),
       new Tile(274, 565),
@@ -229,17 +233,37 @@ public enum Location {
   FALADOR_WEST_BANK(
       new Boundary(328, 549, 334, 557), new Tile(328, 552), "Falador - West Bank", true),
   FISHING_GUILD_CERTERS(
-      new Boundary(602, 501, 605, 504), new Tile(604, 503), "Fishing Guild Certers", true),
+      new Boundary(602, 501, 605, 504),
+      new Tile(604, 503),
+      "Fishing Guild Certers",
+      () -> Main.getController().getBaseStat(SkillId.FISHING.getId()) >= 68,
+      "68 Fishing"),
   FISHING_GUILD_DOCKS(
-      new Boundary(586, 496, 597, 512), new Tile(587, 502), "Fishing Guild Docks", true),
+      new Boundary(586, 496, 597, 512),
+      new Tile(587, 502),
+      "Fishing Guild Docks",
+      () -> Main.getController().getBaseStat(SkillId.FISHING.getId()) >= 68,
+      "68 Fishing"),
   FISHING_GUILD_ENTRANCE(
       new Boundary(585, 524, 587, 525), new Tile(586, 524), "Fishing Guild Entrance", true),
   FISHING_GUILD_EXIT(
-      new Boundary(585, 524, 587, 525), new Tile(586, 524), "Fishing Guild Exit", true),
+      new Boundary(585, 524, 587, 525),
+      new Tile(586, 524),
+      "Fishing Guild Exit",
+      () -> Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68,
+      "68 Fishing"),
   FISHING_GUILD_RANGE_HOUSE(
-      new Boundary(583, 519, 588, 523), new Tile(584, 521), "Fishing Guild Range House", true),
+      new Boundary(583, 519, 588, 523),
+      new Tile(584, 521),
+      "Fishing Guild Range House",
+      () -> Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68,
+      "68 Fishing"),
   FISHING_GUILD_SHOP(
-      new Boundary(598, 516, 601, 518), new Tile(599, 517), "Fishing Guild Shop", true),
+      new Boundary(598, 516, 601, 518),
+      new Tile(599, 517),
+      "Fishing Guild Shop",
+      () -> Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68,
+      "68 Fishing"),
   GOBLIN_VILLAGE(
       new Boundary(323, 487, 327, 492), new Tile(326, 490), "Goblin Village - Center", true),
   GOBLIN_VILLAGE_ZAMORAK_ALTAR(
@@ -648,6 +672,24 @@ public enum Location {
       true),
   YANILLE_YE_OLDE_DRAGON_INN(
       new Boundary(627, 761, 634, 766), new Tile(631, 762), "Yanille - Ye Olde Dragon Inn", true),
+  ZANARIS_BANK(
+      new Boundary(172, 3521, 176, 3529),
+      new Tile(173, 3525),
+      "Zanaris - Bank",
+      () ->
+          Main.getController().isQuestComplete(QuestId.LOST_CITY.getId())
+                  && (Main.getController().getInventoryItemCount(ItemId.DRAMEN_STAFF.getId())) > 0
+              || Main.getController().isItemIdEquipped(ItemId.DRAMEN_STAFF.getId()),
+      "Lost City"),
+  ZANARIS_OTHERWORLDY_BEINGS(
+      new Boundary(172, 3541, 180, 3550),
+      new Tile(174, 3546),
+      "Zanaris - Otherworldy Beings",
+      () ->
+          Main.getController().isQuestComplete(QuestId.LOST_CITY.getId())
+                  && (Main.getController().getInventoryItemCount(ItemId.DRAMEN_STAFF.getId())) > 0
+              || Main.getController().isItemIdEquipped(ItemId.DRAMEN_STAFF.getId()),
+      "Lost City"),
   ZZ_RUNECRAFT_MYSTERIOUS_RUINS_AIR(
       new Boundary(305, 592, 309, 596), new Tile(307, 592), "Mysterious Ruins - Air Altar", true),
   ZZ_RUNECRAFT_MYSTERIOUS_RUINS_BODY(
@@ -701,20 +743,26 @@ public enum Location {
     SEERS_VILLAGE_BANK,
     VARROCK_EAST_BANK,
     VARROCK_WEST_BANK,
-    YANILLE_BANK
+    YANILLE_BANK,
+    ZANARIS_BANK
   };
 
   private final Boundary boundary;
   private final Tile standableTile;
   private final String description;
   private final boolean isTileWalkable;
+  private final BooleanSupplier walkCondition;
+  private final String[] requirementsStringArray;
 
   /**
+   * Constructs a Location
+   *
    * @param boundary Boundary -- Rectangular area that makes up the location
    * @param standableTile Tile -- Stand-able tile within the boundary
    * @param description String -- Description of the location
    * @param isTileWalkable Boolean -- Whether the walkTowards() method be called for this location.
-   *     Most Locations should be walkable.
+   *     Most Locations should be walkable. The only reason for a non-walkable Location is to check
+   *     if the player is in the area, but not allow pathing to it.
    */
   Location(Boundary boundary, Tile standableTile, String description, boolean isTileWalkable) {
     this.boundary = sortBoundary(boundary);
@@ -724,6 +772,59 @@ public enum Location {
             : new Tile(-1, -1);
     this.description = description;
     this.isTileWalkable = isTileWalkable;
+    this.walkCondition = () -> true;
+    this.requirementsStringArray = null;
+  }
+
+  /**
+   * Constructs a Location
+   *
+   * @param boundary Boundary -- Rectangular area that makes up the location
+   * @param standableTile Tile -- Stand-able tile within the boundary
+   * @param description String -- Description of the location
+   * @param walkCondition BooleanSupplier -- Condition to meet to determine if the player can walk
+   *     to this Location
+   * @param requirementString String -- A single requirement to print if the above condition fails
+   */
+  Location(
+      Boundary boundary,
+      Tile standableTile,
+      String description,
+      BooleanSupplier walkCondition,
+      String requirementString) {
+    this(
+        boundary,
+        standableTile,
+        description,
+        walkCondition,
+        requirementString != null ? new String[] {requirementString} : new String[0]);
+  }
+  /**
+   * Constructs a Location
+   *
+   * @param boundary Boundary -- Rectangular area that makes up the location
+   * @param standableTile Tile -- Stand-able tile within the boundary
+   * @param description String -- Description of the location
+   * @param walkCondition BooleanSupplier -- Condition to meet to determine if the player can walk
+   *     to this Location
+   * @param requirementsStringArray String[] -- An array of requirements to print if the above
+   *     condition fails
+   */
+  Location(
+      Boundary boundary,
+      Tile standableTile,
+      String description,
+      BooleanSupplier walkCondition,
+      String[] requirementsStringArray) {
+    this.boundary = sortBoundary(boundary);
+    this.standableTile =
+        standableTile != null
+            ? new Tile(standableTile.getX(), standableTile.getY())
+            : new Tile(-1, -1);
+    this.description = description;
+    this.isTileWalkable = true;
+    this.walkCondition = walkCondition != null ? walkCondition : () -> true;
+    this.requirementsStringArray = requirementsStringArray;
   }
 
   /**
@@ -736,6 +837,31 @@ public enum Location {
           String.format("The Location '%s' is marked as non-walkable.", getDescription()), "red");
       return;
     }
+
+    if (!isWalkConditionMet()) {
+      String[] nonNullReqs =
+          Arrays.stream(requirementsStringArray)
+              .filter(Objects::nonNull)
+              .filter(s -> !s.trim().isEmpty())
+              .toArray(String[]::new);
+
+      if (nonNullReqs.length > 0) {
+        c.logAsClient("@red@Unable to walk towards @cya@" + this.description);
+        c.logAsClient(
+            "@red@"
+                + (nonNullReqs.length > 1
+                    ? "One or more of the following conditions were not met:"
+                    : "The following condition was not met:"));
+        for (String nonNullReq : nonNullReqs)
+          c.logAsClient(String.format("   @cya@-@red@ %s", nonNullReq));
+
+      } else {
+        c.logAsClient("Unable to walk to " + description);
+      }
+
+      return;
+    }
+
     if (c.isRunning() && c.isLoggedIn()) walkTowards(getX(), getY());
   }
 
@@ -789,7 +915,14 @@ public enum Location {
    */
   public static void walkTowardsClosest(Location[] locations) {
     if (locations == null || locations.length < 1) return;
-    getClosest(locations).walkTowards();
+    Location nearest = getClosest(locations);
+
+    if (nearest == null) {
+      Main.logError(
+          "LocationWalker failed to walk towards closest as there were no valid Locations left in the array");
+      return;
+    }
+    nearest.walkTowards();
   }
 
   /**
@@ -804,7 +937,11 @@ public enum Location {
   /** Attempts to walk to the closest bank. */
   public static void walkTowardsNearestBank() {
     Location nearest = getNearestBank();
-    if (nearest == null) return;
+    if (nearest == null) {
+      Main.logError(
+          "LocationWalker failed to walk towards nearest bank as the nearest was somehow null");
+      return;
+    }
 
     nearest.walkTowards();
   }
@@ -816,14 +953,14 @@ public enum Location {
    * @return Location
    */
   private static Location getClosest(Location[] locations) {
-    if (locations == null || locations.length < 1) return null;
-    // Makes the array objects distinct.
-    Location[] distinctLocations =
-        Arrays.stream(locations).distinct().filter(Location::isWalkable).toArray(Location[]::new);
-    Map<Location, Integer> locationMap =
-        Arrays.stream(distinctLocations).collect(Collectors.toMap(l -> l, Location::distanceTo));
-    return Collections.min(locationMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue))
-        .getKey();
+    if (locations == null || locations.length == 0) return null;
+
+    return Arrays.stream(locations)
+        .distinct()
+        .filter(Location::isWalkable)
+        .filter(Location::isWalkConditionMet)
+        .min(Comparator.comparingInt(Location::distanceTo))
+        .orElse(null);
   }
 
   /**
@@ -932,6 +1069,10 @@ public enum Location {
    */
   public boolean isWalkable() {
     return isTileWalkable && getX() != -1 && getY() != -1;
+  }
+
+  public boolean isWalkConditionMet() {
+    return walkCondition.getAsBoolean();
   }
 
   /**

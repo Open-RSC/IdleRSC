@@ -109,7 +109,7 @@ public class Controller {
     mud = _mud;
   }
 
-  /** @return Whether or not a script is currently running. */
+  /** @return Whether a script is currently running. */
   public boolean isRunning() {
     return Main.isRunning();
   }
@@ -124,13 +124,13 @@ public class Controller {
     try {
       Thread.sleep(ms);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Main.logError("An error occurred while sleeping", e);
     }
   }
 
   /**
-   * Suspends the current thread's execution until the provided condition evaluates to true or a 20
-   * second timeout is reached
+   * Suspends the current thread's execution until the provided condition evaluates to true or a
+   * 20-second timeout is reached
    *
    * @param condition A Supplier condition that must be met to resume execution.
    * @return true if the condition was met before the timeout, false if the timeout was reached.
@@ -229,7 +229,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the client is loaded.
+   * Whether the client is loaded.
    *
    * @return boolean
    */
@@ -238,7 +238,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the player is currently logged in.
+   * Whether the player is currently logged in.
    *
    * @return boolean
    */
@@ -286,7 +286,7 @@ public class Controller {
         }
       }
     } catch (final UnsupportedFlavorException | IOException e) {
-      e.printStackTrace();
+      Main.logError("Failed pasting to the dialog box", e);
     }
   }
 
@@ -310,7 +310,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified item id is in the inventory.
+   * Whether the specified item id is in the inventory.
    *
    * @param itemId int
    * @return boolean
@@ -479,7 +479,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves an array of whether or not the ground item is noted.
+   * Retrieves an array of whether the ground item is noted.
    *
    * @return boolean[] -- no guarantee on nullability.
    */
@@ -544,14 +544,10 @@ public class Controller {
    */
   public List<ORSCharacter> getPlayers() {
 
-    List<ORSCharacter> _list = new ArrayList<>();
-
     ORSCharacter[] players = (ORSCharacter[]) this.getMudClientValue("players");
     int playerCount = this.getPlayerCount();
 
-    _list.addAll(Arrays.asList(players).subList(0, playerCount));
-
-    return _list;
+    return new ArrayList<>(Arrays.asList(players).subList(0, playerCount));
   }
 
   /**
@@ -564,7 +560,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the player is currently walking.
+   * Whether the player is currently walking.
    *
    * @return boolean
    */
@@ -593,7 +589,7 @@ public class Controller {
     long start = System.currentTimeMillis();
     while (Main.isRunning()
         && !isCurrentlyWalking()
-        && start + timeout > System.currentTimeMillis()) {}
+        && start + timeout > System.currentTimeMillis()) sleep(240);
     return start + timeout > System.currentTimeMillis();
   }
 
@@ -608,9 +604,9 @@ public class Controller {
    */
   public boolean sleepUntilNotMoving(long timeout) {
     long start = System.currentTimeMillis();
-    while (Main.isRunning()
-        && isCurrentlyWalking()
-        && start + timeout > System.currentTimeMillis()) {}
+    while (Main.isRunning() && isCurrentlyWalking() && start + timeout > System.currentTimeMillis())
+      sleep(240);
+
     return start + timeout > System.currentTimeMillis();
   }
 
@@ -710,7 +706,7 @@ public class Controller {
    * @param y int
    * @param radius int
    * @param leaveCombat boolean - true if bot should keep trying walkTo while in combat
-   * @param forced boolean - true if attempt to walkTo should be made reguardless of conditions
+   * @param forced boolean - true if attempt to walkTo should be made regardless of conditions
    */
   public void walkTo(int x, int y, int radius, boolean forced, boolean leaveCombat) {
     if (x < 0 || y < 0) return;
@@ -742,7 +738,7 @@ public class Controller {
       int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
       // System.out.println(
-      // "Tryng to walk, time remaining: "
+      // "Trying to walk, time remaining: "
       // + (timeout - (System.currentTimeMillis() - starttime))
       // + " ms");
       walkToActionSource(
@@ -843,8 +839,8 @@ public class Controller {
    * fees! Note - This might not take the most efficient path, but it will be reasonably efficient
    *
    * @param x Destination x
-   * @param y Desination y
-   * @return Whether or not we successfully walked towards the destination
+   * @param y Destination y
+   * @return Whether we successfully walked towards the destination
    */
   public boolean walkTowards(int x, int y) {
     setStatus("Walking to " + x + "," + y);
@@ -864,7 +860,7 @@ public class Controller {
    * <p>Note: If sufficient coins are available, it may use them for boat/gate fees. While not
    * guaranteed to take the most efficient path, it seeks to be reasonably efficient.
    *
-   * @return Whether or not the step towards the nearest bank was successfully taken.
+   * @return Whether the step towards the nearest bank was successfully taken.
    */
   public boolean walkTowardsBank() {
     int[][] bankLocations = {
@@ -897,7 +893,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified tile has an object at it.
+   * Whether the specified tile has an object at it.
    *
    * @param x int
    * @param y int
@@ -945,8 +941,8 @@ public class Controller {
    * Retrieves the coordinates of the nearest specified object ID, if nearby and reachable.
    *
    * @param objectId The ID of the object to find.
-   * @param includeTileEdges -- whether or not the edges of the tile are permitted. Such as picking
-   *     up an item on a table -- you can't walk on top of the table, but you can reach the edges.
+   * @param includeTileEdges -- whether the edges of the tile are permitted. Such as picking up an
+   *     item on a table -- you can't walk on top of the table, but you can reach the edges.
    * @return int[] The coordinates [x, y] of the nearest reachable object, or null if no such object
    *     is nearby and reachable.
    */
@@ -973,12 +969,12 @@ public class Controller {
    * reachable.
    *
    * @param objectIds The array of IDs of the objects to find.
-   * @param includeTileEdges -- whether or not the edges of the tile are permitted.
+   * @param includeTileEdges -- whether the edges of the tile are permitted.
    * @return int[] The coordinates [x, y] of the nearest reachable object among the given IDs, or
    *     null if no such objects are nearby and reachable.
    */
   public int[] getNearestReachableObjectByIds(int[] objectIds, boolean includeTileEdges) {
-    Main.logMethod("getNearestReachableObjectByIds", objectIds);
+    Main.logMethod("getNearestReachableObjectByIds", (Object) objectIds);
     int[] closestCoords = null;
     int closestDistance = 99999;
 
@@ -1151,7 +1147,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not you are within 1 tile of the specified coordinates.
+   * Whether you are within 1 tile of the specified coordinates.
    *
    * @param x int
    * @param y int
@@ -1257,7 +1253,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves an array of all of the X coordinates of nearby objects.
+   * Retrieves an array of all the X coordinates of nearby objects.
    *
    * @return int[] -- no guarantee on nullability.
    */
@@ -1266,7 +1262,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves an array of all of the Z coordinates of nearby objects.
+   * Retrieves an array of all the Z coordinates of nearby objects.
    *
    * @return int[] -- no guarantee on nullability.
    */
@@ -1280,14 +1276,11 @@ public class Controller {
    * @return guaranteed to not be null.
    */
   public List<ORSCharacter> getNpcs() {
-    List<ORSCharacter> _list = new ArrayList<>();
 
     ORSCharacter[] npcs = (ORSCharacter[]) this.getMudClientValue("npcs");
     int npcCount = this.getNpcCount();
 
-    _list.addAll(Arrays.asList(npcs).subList(0, npcCount));
-
-    return _list;
+    return new ArrayList<>(Arrays.asList(npcs).subList(0, npcCount));
   }
 
   /**
@@ -1366,7 +1359,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves an array of all of the X coordinates of nearby wall objects.
+   * Retrieves an array of all the X coordinates of nearby wall objects.
    *
    * @return int[] -- no guarantee on nullability.
    */
@@ -1375,7 +1368,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves an array of all of the Z coordinates of nearby wall objects.
+   * Retrieves an array of all the Z coordinates of nearby wall objects.
    *
    * @return int[] -- no guarantee on nullability.
    */
@@ -1425,7 +1418,7 @@ public class Controller {
    * Retrieves the character object of the nearest NPC specified in the list of ids.
    *
    * @param npcIds int
-   * @param inCombatAllowed -- whether or not to return NPCs which are currently engaged in combat.
+   * @param inCombatAllowed -- whether to return NPCs which are currently engaged in combat.
    * @return orsc.ORSCharacter -- returns null if npc not present.
    */
   public ORSCharacter getNearestNpcByIds(int[] npcIds, boolean inCombatAllowed) {
@@ -1540,7 +1533,7 @@ public class Controller {
    * Retrieves the character object of the nearest npc.
    *
    * @param npcId int
-   * @param inCombatAllowed -- whether or not to return NPCs which are currently engaged in combat.
+   * @param inCombatAllowed -- whether to return NPCs which are currently engaged in combat.
    * @return orsc.ORSCharacter -- returns null if NPC not present.
    */
   public ORSCharacter getNearestNpcById(int npcId, boolean inCombatAllowed) {
@@ -1831,7 +1824,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified npc is in combat.
+   * Whether the specified npc is in combat.
    *
    * @param serverIndex int
    * @return boolean -- returns true if in combat. Returns false if not in combat, or if server
@@ -1853,7 +1846,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the door at the specified coordinates is open.
+   * Whether the door at the specified coordinates is open.
    *
    * @param x int
    * @param y int
@@ -1887,7 +1880,7 @@ public class Controller {
    * @return int[][] -- Door coordinates
    */
   public int[][] getNearbyClosedDoors(int radius) {
-    List<int[]> doors = new ArrayList<int[]>();
+    List<int[]> doors = new ArrayList<>();
 
     for (int id : this.closedObjectDoorIds) {
       int[] coords = this.getNearestObjectById(id);
@@ -1954,9 +1947,7 @@ public class Controller {
 
     if (wallObjectId != -1) {
       int[] coords = this.getNearestWallObjectById(wallObjectId);
-      if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
-        return true;
-      }
+      return coords != null && this.distance(x, y, coords[0], coords[1]) <= radius;
     }
     return false;
   }
@@ -2069,7 +2060,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified item is present at the specified coordinates.
+   * Whether the specified item is present at the specified coordinates.
    *
    * @param x int
    * @param y int
@@ -2125,9 +2116,6 @@ public class Controller {
       if (itemId == groundItemID[i]) {
         int result = distance(groundItemX[i], groundItemZ[i], botX, botZ);
         if (result <= maxDistance) {
-          // Main.logMethod("getnearestitem bleh", botX, botZ, groundItemX[i],
-          // groundItemZ[i],
-          // result, closestDistance);
           maxDistance = result;
           closestItemIndex = i;
         }
@@ -2163,8 +2151,7 @@ public class Controller {
    * @param x int
    * @param y int
    * @param itemId int
-   * @param unused
-   * @param async -- whether or not to block when walking to the item. If set to true, it will keep
+   * @param async -- whether to block when walking to the item. If set to true, it will keep
    *     attempting to walk to the item, until it is close enough to pick it up.
    */
   public void pickupItem(int x, int y, int itemId, boolean unused, boolean async) {
@@ -2331,7 +2318,7 @@ public class Controller {
   }
 
   /**
-   * return a int item id that is equipped in the provided slot index
+   * return an int item id that is equipped in the provided slot index
    *
    * @return int of Item Id in provided slot Index
    */
@@ -2369,8 +2356,8 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified item slot is equipped. Note that this does not use an item id, but
-   * a slot index.
+   * Whether the specified item slot is equipped. Note that this does not use an item id, but a slot
+   * index.
    *
    * @param slotIndex int
    * @return boolean
@@ -2391,9 +2378,9 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified item ID is equipped. This is different from Controller.isEquipped
-   * due to Coleslaw allowing for you to wield items outside the inventory. It functions as expected
-   * on Uranium.
+   * Whether the specified item ID is equipped. This is different from Controller.isEquipped due to
+   * Coleslaw allowing for you to wield items outside the inventory. It functions as expected on
+   * Uranium.
    *
    * @param itemId int
    * @return boolean
@@ -2426,7 +2413,7 @@ public class Controller {
   }
 
   /**
-   * Equipts an item by ID. The item must be in your inventory
+   * Equips an item by ID. The item must be in your inventory
    *
    * @param id the ID of the item to equip
    */
@@ -2526,7 +2513,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the player is currently in combat.
+   * Whether the player is currently in combat.
    *
    * @return boolean
    */
@@ -2536,7 +2523,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified player index is in combat.
+   * Whether the specified player index is in combat.
    *
    * @param playerIndex int
    * @return boolean -- returns true if in combat. returns false if not in combat, or if player
@@ -2549,7 +2536,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not an NPC/action option menu is currently presented to the player.
+   * Whether an NPC/action option menu is currently presented to the player.
    *
    * @return boolean
    */
@@ -2570,7 +2557,7 @@ public class Controller {
    * Retrieves the text of the specified option index when talking to an NPC or performing an
    * action.
    *
-   * @param i zero-indexed option (i.e first option is 0, second option is 1, etc..)
+   * @param i zero-indexed option (i.e. first option is 0, second option is 1, etc.)
    * @return String -- null if option does not exist, or if quest menu is not up.
    */
   public String getOptionsMenuText(int i) {
@@ -2581,7 +2568,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves the array of options inside of an option menu.
+   * Retrieves the array of options inside an option menu.
    *
    * @return String[]
    */
@@ -2636,14 +2623,13 @@ public class Controller {
   public boolean talkToNpcId(int npcId, boolean waitUntilInDialog) {
     ORSCharacter npc = getNearestNpcById(npcId, false);
     if (!talkToNpc(npc.serverIndex)) return false;
-    if (waitUntilInDialog) {
-      if (!sleepUntil(() -> isInOptionMenu())) return false;
-    }
+    if (waitUntilInDialog) return sleepUntil(this::isInOptionMenu);
+
     return true;
   }
 
   /**
-   * Whether or not the bank window is currently open.
+   * Whether the bank window is currently open.
    *
    * @return boolean
    */
@@ -2663,25 +2649,16 @@ public class Controller {
    * @return guaranteed to not be null.
    */
   public List<Item> getBankItems() {
-    if (!isInBank()) {
-      return new ArrayList<>();
-    }
-    ArrayList<Item> bankItems = new ArrayList<>();
+    if (!isInBank()) return new ArrayList<>();
 
-    ArrayList<Object> _bankItems =
-        (ArrayList<Object>) reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
+    Object value = reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
 
-    if (_bankItems != null) {
-      for (Object _bankItem : _bankItems) {
-        Item bankItem = (Item) reflector.getObjectMember(_bankItem, "item");
-
-        if (bankItem != null) {
-          bankItems.add(bankItem);
-        }
-      }
-    }
-
-    return bankItems;
+    if (!(value instanceof List)) return new ArrayList<>();
+    return ((List<?>) value)
+        .stream()
+            .map(o -> (Item) reflector.getObjectMember(o, "item"))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
   }
 
   /**
@@ -2726,16 +2703,16 @@ public class Controller {
     if (bankItems == null) return -1;
     for (int itemId : bankItems.keySet()) {
       ItemDef item = EntityHandler.getItemDef(itemId, false);
-      value += item.basePrice * getDebuggerBank().get(itemId);
+      value += (long) item.basePrice * getDebuggerBank().get(itemId);
     }
     for (Item item : getInventoryItems()) {
-      value += item.getItemDef().basePrice * item.getAmount();
+      value += (long) item.getItemDef().basePrice * item.getAmount();
     }
     return value;
   }
 
   /**
-   * Whether or not the specified item ID is in the bank.
+   * Whether the specified item ID is in the bank.
    *
    * @param itemId int
    * @return boolean -- true if item is in the bank. Returns false if item not present or bank is
@@ -2746,7 +2723,7 @@ public class Controller {
   }
 
   /**
-   * Deposits all yo stuff in the bank
+   * Deposits all of your stuff in the bank
    *
    * @return true if we were in the bank
    */
@@ -3052,9 +3029,9 @@ public class Controller {
     boolean temporaryToggledGFX = false;
     boolean temporaryToggle3D = false;
     boolean temporaryToggledInterlacing = false;
-    String directory = "";
-    String path = "";
-    String savePath = "";
+    String directory;
+    String path;
+    String savePath;
 
     if (isInterlacing()) {
       setInterlacer(false);
@@ -3126,8 +3103,7 @@ public class Controller {
         log("@red@Error: @cya@Screenshot not detected at ./IdleRSC/" + savePath);
       }
     } catch (IOException e) {
-      System.err.println("Failed to create directory and/or take screenshot!" + e.getMessage());
-      e.printStackTrace();
+      Main.logError("Failed to create directory and/or take screenshot", e);
       return false;
     }
     if (temporaryToggle3D && isRender3DEnabled()) {
@@ -3179,7 +3155,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves whether or not the item is tradeable.
+   * Retrieves whether the item is tradeable.
    *
    * @param itemId int
    */
@@ -3192,7 +3168,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves whether or not the item is notable.
+   * Retrieves whether the item is notable.
    *
    * @param itemId int
    */
@@ -3239,7 +3215,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified item is a wearable item.
+   * Whether the specified item is a wearable item.
    *
    * @param itemId int
    * @return boolean
@@ -3253,7 +3229,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified item is a stackable item.
+   * Whether the specified item is a stackable item.
    *
    * @param itemId int
    * @return boolean
@@ -3294,9 +3270,9 @@ public class Controller {
   }
 
   /**
-   * Retrieves the spellId of the spell name. (0,1,2,3,4,etc)
+   * Retrieves the spellId of the spell name. (0,1,2,3,4,etc.)
    *
-   * @param name -- must match spelling of the spell book. case insensitive.
+   * @param name -- must match spelling of the spell book. case-insensitive.
    * @return int -- -1 if spell not found.
    */
   public int getSpellIdFromName(String name) {
@@ -3342,7 +3318,7 @@ public class Controller {
   // * complies with this limitation.
   // * - waitForAuctionTimer() -- Put this before any part of a method that
   // *     interacts with the Auction House
-  // * - beginAuctionTimeout() -- Put this after intacting.
+  // * - beginAuctionTimeout() -- Put this after interacting.
   // * - getAuctions() automatically does this.
 
   /**
@@ -3489,8 +3465,7 @@ public class Controller {
       return;
     }
 
-    int sellAmount =
-        getInventoryItemCount(itemId) >= itemAmount ? itemAmount : getInventoryItemCount(itemId);
+    int sellAmount = Math.min(getInventoryItemCount(itemId), itemAmount);
 
     waitForAuctionTimer();
     log(
@@ -3574,10 +3549,14 @@ public class Controller {
     ArrayList<AuctionItem> searchedArray = new ArrayList<>();
 
     waitForAuctionTimer();
-    for (AuctionItem item : getAuctionList()) {
+
+    ArrayList<AuctionItem> auctionList = getAuctionList();
+    if (auctionList == null) return null;
+
+    for (AuctionItem item : auctionList) {
       if (item.getItemId() == itemId) searchedArray.add(item);
     }
-    if (searchedArray.size() > 0) return searchedArray;
+    if (!searchedArray.isEmpty()) return searchedArray;
     log("There are no auctions for item " + itemId, "red");
     return null;
   }
@@ -3600,8 +3579,8 @@ public class Controller {
 
     if (searchedArray == null) return null;
 
-    Collections.sort(searchedArray, Comparator.comparing(AuctionItem::getPricePerItem));
-    if (searchedArray.size() > 0) return searchedArray.get(0);
+    searchedArray.sort(Comparator.comparing(AuctionItem::getPricePerItem));
+    if (!searchedArray.isEmpty()) return searchedArray.get(0);
     log("There are no auctions for item " + itemId, "red");
     return null;
   }
@@ -3619,20 +3598,21 @@ public class Controller {
    * Returns an ArrayList of auctions for sale by a specified player
    *
    * @param playerName String -- Player name to search for
-   * @return
+   * @return ArrayList of AuctionItems
    */
   public ArrayList<AuctionItem> getPlayerAuctions(String playerName) {
     if (!isInAuctionHouse()) return null;
-    if (playerName.length() < 1) return null;
+    if (playerName.isEmpty()) return null;
 
     waitForAuctionTimer();
     ArrayList<AuctionItem> auctions = getAuctionList();
     ArrayList<AuctionItem> myAuctions = new ArrayList<>();
+    if (auctions == null) return null;
 
     for (AuctionItem auction : auctions) {
       if (auction.getSeller().equals(playerName)) myAuctions.add(auction);
     }
-    if (myAuctions.size() > 0) return myAuctions;
+    if (!myAuctions.isEmpty()) return myAuctions;
     log(playerName + " has no auctions", "red");
     return null;
   }
@@ -3661,13 +3641,15 @@ public class Controller {
     if (!isInAuctionHouse()) return null;
 
     ArrayList<AuctionItem> auctionItems = new ArrayList<>();
-    ArrayList<?> reflectedCopy = new ArrayList<>(reflectAuctionList());
+    ArrayList<?> reflectedCopy = reflectAuctionList();
+
+    if (reflectedCopy == null) return null;
 
     for (Object a : reflectedCopy) {
-      Integer auctionID = -1;
-      Integer itemID = -1;
-      Integer amount = -1;
-      Integer price = -1;
+      int auctionID = -1;
+      int itemID = -1;
+      int amount = -1;
+      int price = -1;
       String seller2 = "";
 
       Method[] methods = a.getClass().getDeclaredMethods();
@@ -3697,13 +3679,13 @@ public class Controller {
             default:
           }
         } catch (Exception e) {
-          System.out.println(e);
+          Main.logError("Failed reflecting auction", e);
         }
       }
       auctionItems.add(new AuctionItem(auctionID, itemID, amount, price, seller2));
     }
     sleep(640);
-    if (auctionItems.size() > 0) return auctionItems;
+    if (!auctionItems.isEmpty()) return auctionItems;
     return null;
   }
 
@@ -3721,12 +3703,9 @@ public class Controller {
         Field auctionField = AH.getClass().getDeclaredField("auctionItems");
         auctionField.setAccessible(true);
         Object obj = auctionField.get(AH);
-        if (obj instanceof ArrayList) {
-          ArrayList<?> reflectedList = (ArrayList<?>) obj;
-          return reflectedList;
-        }
+        if (obj instanceof ArrayList) return (ArrayList<?>) obj;
       } catch (Exception e) {
-        e.printStackTrace();
+        Main.logError("Failed reflecting auction list", e);
       }
     }
     return null;
@@ -3786,7 +3765,7 @@ public class Controller {
   }
 
   /**
-   * Returns the the amount of digits in an int
+   * Returns the amount of digits in an int
    *
    * @param numberToMeasure int -- Number to measure length of
    * @return int -- length
@@ -3944,8 +3923,8 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified npcId is attackable. This does not reflect whether or not the
-   * specified NPC is in combat.
+   * Whether the specified npcId is attackable. This does not reflect whether the specified NPC is
+   * in combat.
    *
    * @param npcId int -- the id of the npc. This is NOT a server index.
    * @return boolean
@@ -4020,9 +3999,9 @@ public class Controller {
   }
 
   /**
-   * Retrieves the id of the specified prayerName. (0,1,2,3,4,etc)
+   * Retrieves the id of the specified prayerName. (0,1,2,3,4,etc.)
    *
-   * @param prayerName -- must match spelling of what is inside prayer book. Case insensitive.
+   * @param prayerName -- must match spelling of what is inside prayer book. Case-insensitive.
    * @return int -- -1 if the prayer does not exist.
    */
   public int getPrayerId(String prayerName) {
@@ -4082,7 +4061,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the specified prayer is currently on.
+   * Whether the specified prayer is currently on.
    *
    * @param prayerId int
    * @return boolean
@@ -4120,7 +4099,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not a shop window is currently open.
+   * Whether a shop window is currently open.
    *
    * @return boolean
    */
@@ -4349,7 +4328,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves the id of the specified skill name. Skill name is case insensitive and must match
+   * Retrieves the id of the specified skill name. Skill name is case-insensitive and must match
    * what is spelled inside the stat tab.
    *
    * @param statName int
@@ -4668,7 +4647,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not we are currently engaged in a trade.
+   * Whether we are currently engaged in a trade.
    *
    * @return boolean
    */
@@ -4677,7 +4656,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not we are currently in the trade confirmation window.
+   * Whether we are currently in the trade confirmation window.
    *
    * @return boolean
    */
@@ -4686,7 +4665,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the recipient is currently accepting the trade.
+   * Whether the recipient is currently accepting the trade.
    *
    * @return boolean
    */
@@ -4721,14 +4700,11 @@ public class Controller {
    * @return localTradeItems guaranteed to not be null.
    */
   public List<Item> getLocalTradeItems() {
-    List<Item> localTradeItems = new ArrayList<>();
 
     Item[] _localTradeItems = (Item[]) this.getMudClientValue("trade");
     int localTradeItemsCount = this.getLocalTradeItemsCount();
 
-    localTradeItems.addAll(Arrays.asList(_localTradeItems).subList(0, localTradeItemsCount));
-
-    return localTradeItems;
+    return new ArrayList<>(Arrays.asList(_localTradeItems).subList(0, localTradeItemsCount));
   }
 
   /**
@@ -4741,7 +4717,7 @@ public class Controller {
   }
 
   /**
-   * Retrieves an array of item counts inside of the current trade window.
+   * Retrieves an array of item counts inside the current trade window.
    *
    * @return int[] -- no guarantee on size or nullability.
    */
@@ -4755,14 +4731,11 @@ public class Controller {
    * @return recipientTradeItems guaranteed to not be null.
    */
   public List<Item> getRecipientTradeItems() {
-    List<Item> recipientTradeItems = new ArrayList<>();
 
     Item[] _recipientTradeItems = (Item[]) this.getMudClientValue("tradeRecipient");
     int recipientItemsCount = this.getRecipientTradeItemsCount();
 
-    recipientTradeItems.addAll(Arrays.asList(_recipientTradeItems).subList(0, recipientItemsCount));
-
-    return recipientTradeItems;
+    return new ArrayList<>(Arrays.asList(_recipientTradeItems).subList(0, recipientItemsCount));
   }
 
   /**
@@ -4825,7 +4798,7 @@ public class Controller {
     BottomPanel.setAutoLogin(value);
   }
 
-  /** Retrieves whether or not auto-login is set. */
+  /** Retrieves whether auto-login is set. */
   public boolean isAutoLogin() {
     return BottomPanel.autoLoginSelected();
   }
@@ -4901,7 +4874,7 @@ public class Controller {
     mud.setAndroidInvToggle(!setting);
   }
 
-  /** Retrieves whether or not the interlacer is set. */
+  /** Retrieves whether the interlacer is set. */
   public boolean isInterlacing() {
     return mud.interlace;
   }
@@ -4912,14 +4885,11 @@ public class Controller {
    * @return _list guaranteed to not be null.
    */
   public List<Item> getInventoryItems() {
-    List<Item> _list = new ArrayList<>();
 
     Item[] inventoryItems = mud.getInventory();
     int inventoryItemCount = this.getInventoryItemCount();
 
-    _list.addAll(Arrays.asList(inventoryItems).subList(0, inventoryItemCount));
-
-    return _list;
+    return new ArrayList<>(Arrays.asList(inventoryItems).subList(0, inventoryItemCount));
   }
 
   /**
@@ -4984,14 +4954,11 @@ public class Controller {
    * @return friendsList guaranteed to never be null.
    */
   public List<String> getFriendList() {
-    List<String> friendList = new ArrayList<>();
 
     int friendListCount = SocialLists.friendListCount;
     String[] _friendList = SocialLists.friendList;
 
-    friendList.addAll(Arrays.asList(_friendList).subList(0, friendListCount));
-
-    return friendList;
+    return new ArrayList<>(Arrays.asList(_friendList).subList(0, friendListCount));
   }
 
   /**
@@ -5000,18 +4967,15 @@ public class Controller {
    * @return ignoreList guaranteed to never be null.
    */
   public List<String> getIgnoreList() {
-    List<String> ignoreList = new ArrayList<>();
 
     int ignoreListCount = SocialLists.ignoreListCount;
     String[] _ignoreList = SocialLists.ignoreList;
 
-    ignoreList.addAll(Arrays.asList(_ignoreList).subList(0, ignoreListCount));
-
-    return ignoreList;
+    return new ArrayList<>(Arrays.asList(_ignoreList).subList(0, ignoreListCount));
   }
 
   /**
-   * Whether or not the batch progress bar is currently shown on screen.
+   * Whether the batch progress bar is currently shown on screen.
    *
    * @return boolean
    */
@@ -5043,8 +5007,8 @@ public class Controller {
   }
 
   /**
-   * Whether or not the server is configured to be authentic. This returns true for Uranium, false
-   * for Coleslaw.
+   * Whether the server is configured to be authentic. This returns true for Uranium, false for
+   * Coleslaw.
    *
    * @return boolean
    */
@@ -5132,7 +5096,7 @@ public class Controller {
           walkToAsync(coords[0], coords[1], 0);
 
           while (!isInBank() && Main.isRunning()) {
-            if (getNpcCommand1(95).equals("Bank")) { // Can we right click bank? If so, do that.
+            if (getNpcCommand1(95).equals("Bank")) { // Can we right-click bank? If so, do that.
               npcCommand1(bankerNpc.serverIndex);
               openBank_sleep(200);
             } else {
@@ -5245,7 +5209,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the player is currently sleeping.
+   * Whether the player is currently sleeping.
    *
    * @return boolean
    */
@@ -5265,8 +5229,8 @@ public class Controller {
    * If fatigue is greater or equal to `fatigueToSleepAt`, this will commence the sleep process and
    * IdleRSC will fill in the answer from the OCR. Has no effect on Coleslaw.
    *
-   * @param quitOnNoSleepingBag -- whether or not to logout and stop the script if no sleeping bag
-   *     is present. If no sleeping bag is present and this is false, this function has no effect.
+   * @param quitOnNoSleepingBag -- Whether to log out and stop the script if no sleeping bag is
+   *     present. If no sleeping bag is present and this is false, this function has no effect.
    */
   public void sleepHandler(boolean quitOnNoSleepingBag) {
     if (!isLoggedIn()) return;
@@ -5302,8 +5266,7 @@ public class Controller {
         index = i;
       }
     }
-    int[] bankCoords = {bankX[index], bankY[index]};
-    return bankCoords;
+    return new int[] {bankX[index], bankY[index]};
   }
 
   /**
@@ -5465,19 +5428,14 @@ public class Controller {
       int height,
       boolean showPercentage,
       boolean showValues) {
-    int currentPercent = (current * 100) / maximum > 100 ? 100 : (current * 100) / maximum;
-    int currentBarWidth = currentPercent >= 100 ? width : (width * currentPercent) / 100;
+    int currentPercent = Math.min((current * 100) / maximum, 100);
+    int currentBarWidth = currentPercent == 100 ? width : (width * currentPercent) / 100;
     drawBoxAlpha(x, y, width, height, bgColor, 255);
     drawBoxAlpha(x, y, currentBarWidth, height, fgColor, 255);
     drawBoxBorder(x, y, width, height, borderColor);
     if (showPercentage) {
       drawShadowText(
-          String.valueOf(currentPercent + "%"),
-          (width / 2) + x,
-          y + (height / 2) - 3,
-          0xffffff,
-          1,
-          true);
+          currentPercent + "%", (width / 2) + x, y + (height / 2) - 3, 0xffffff, 1, true);
     }
     if (showValues) {
       drawShadowText(
@@ -5692,7 +5650,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the left-hand status indicator is enabled.
+   * Whether the left-hand status indicator is enabled.
    *
    * @return boolean
    */
@@ -5710,7 +5668,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the the left-hand coordinates indicator is enabled.
+   * Whether the left-hand coordinates indicator is enabled.
    *
    * @return boolean
    */
@@ -5728,7 +5686,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not the left-hand XP counter is enabled.
+   * Whether the left-hand XP counter is enabled.
    *
    * @return boolean
    */
@@ -5746,7 +5704,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not bot painting is enabled.
+   * Whether bot painting is enabled.
    *
    * @return boolean
    */
@@ -5766,12 +5724,12 @@ public class Controller {
   }
 
   /**
-   * Whether or not the tile is reachable in the current map segment.
+   * Whether the tile is reachable in the current map segment.
    *
    * @param x int
    * @param y int
-   * @param includeTileEdges -- whether or not the edges of the tile are permitted. Such as picking
-   *     up an item on a table -- you can't walk on top of the table, but you can reach the edges.
+   * @param includeTileEdges -- Whether the edges of the tile are permitted. Such as picking up an
+   *     item on a table -- you can't walk on top of the table, but you can reach the edges.
    * @return true if the tile is reachable, false if blocked.
    */
   public boolean isReachable(int x, int y, boolean includeTileEdges) {
@@ -5824,7 +5782,7 @@ public class Controller {
   }
 
   /**
-   * Whether or not draw/graphics is currently enabled.
+   * Whether draw/graphics is currently enabled.
    *
    * @return boolean
    */
@@ -5848,12 +5806,12 @@ public class Controller {
   }
 
   /**
-   * Whether or not render 3D is currently enabled.
+   * Whether render 3D is currently enabled.
    *
    * @return boolean
    */
   public boolean isRender3DEnabled() {
-    return mud.isRender3DEnabled();
+    return mudclient.isRender3DEnabled();
   }
 
   /**
@@ -5862,13 +5820,13 @@ public class Controller {
    * @param render3D boolean - what render state to set.
    */
   public void setRender3D(boolean render3D) {
-    mud.setRender3D(render3D);
+    mudclient.setRender3D(render3D);
   }
 
   /**
    * Call this method to trigger a move within scripts. Sets the need to move flag.
    *
-   * @param needToMove_ boolean - true if need to move, false otherwise.
+   * @param needToMove_ boolean - true if you need to move, false otherwise.
    */
   public void setNeedToMove(Boolean needToMove_) {
     needToMove = needToMove_;
@@ -5945,7 +5903,6 @@ public class Controller {
       if (coords != null && this.distance(x, y, coords[0], coords[1]) <= radius) {
         this.openDoor(coords[0], coords[1]);
         this.sleep(250);
-        return;
       }
     }
   }
@@ -5956,9 +5913,6 @@ public class Controller {
    * @param radius -- within how many tiles to find said door
    */
   public void openNearbyDoors(int radius) {
-    int x = this.currentX();
-    int y = this.currentY();
-
     int objectId = -1;
     int wallObjectId = -1;
 
@@ -6210,7 +6164,7 @@ public class Controller {
       f.setAccessible(true);
       return (int) f.get(mud);
     } catch (Exception e) {
-      e.printStackTrace();
+      Main.logError("Failed reflecting quest points", e);
       return -1;
     }
   }
@@ -6293,8 +6247,7 @@ public class Controller {
        * npc = YEP;
        * }
        */
-    if (npc != null) return npc;
-    return null;
+    return npc;
   }
 
   /**
@@ -6532,20 +6485,22 @@ public class Controller {
    * @return Map - Bank items
    */
   public Map<Integer, Integer> getDebuggerBank() {
-    Map<Integer, Integer> bankMap = new HashMap<>();
     try {
       Debugger debugger = Main.getDebugger();
       Field debuggerBankField = Debugger.class.getDeclaredField("bankItems");
       debuggerBankField.setAccessible(true);
-      List<Item> bankList = (List<Item>) debuggerBankField.get(debugger);
-      if (bankList == null) return null;
-      if (bankList.size() > 0)
-        bankList.forEach(item -> bankMap.put(item.getCatalogID(), item.getAmount()));
-      return bankMap;
+      Object value = debuggerBankField.get(debugger);
+      if (!(value instanceof List)) return null;
+
+      return ((List<?>) value)
+          .stream()
+              .filter(Item.class::isInstance)
+              .map(Item.class::cast)
+              .collect(Collectors.toMap(Item::getCatalogID, Item::getAmount));
     } catch (NoSuchFieldException | IllegalAccessException e) {
-      System.out.println(e);
+      Main.logError("An error occurred while getting the debugger bank", e);
+      return null;
     }
-    return null;
   }
 
   /**
@@ -6654,7 +6609,11 @@ public class Controller {
   }
 
   /**
-   * Returns the players gamemode. 0 is normal, 1 is ironman, 2 is ultimate, 3 is hardcore.
+   * Returns the player's game mode. <br>
+   * 0 - normal <br>
+   * 1 - ironman <br>
+   * 2 - ultimate ironman <br>
+   * 3 - hardcore
    *
    * @return int -- Mode
    */

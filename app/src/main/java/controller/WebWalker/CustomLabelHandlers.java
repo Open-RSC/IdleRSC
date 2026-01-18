@@ -34,7 +34,7 @@ public class CustomLabelHandlers {
                     : Main.getController().currentX() >= 92,
             15000);
 
-    return entering ? Main.getController().currentX() < 92 : Main.getController().currentX() >= 92;
+    return entering == (Main.getController().currentX() < 92);
   }
 
   public static boolean lummyNorthCowGate() {
@@ -95,11 +95,7 @@ public class CustomLabelHandlers {
     Main.log("Climbing " + (goingDown ? "down" : "up") + " the Mining Guild ladder...");
     Main.getController().atObject(ladderId);
     return Main.getController()
-        .sleepUntil(
-            () ->
-                goingDown
-                    ? Main.getController().currentY() < 1000
-                    : Main.getController().currentY() >= 1000);
+        .sleepUntil(() -> goingDown == (Main.getController().currentY() < 1000));
   }
 
   public static boolean miningGuildDoor() {
@@ -208,13 +204,8 @@ public class CustomLabelHandlers {
     boolean goingEast = Main.getController().currentX() >= 59;
     Main.getController().atObject(59, 573);
     Main.getController()
-        .sleepUntil(
-            () ->
-                goingEast
-                    ? Main.getController().currentX() < 59
-                    : Main.getController().currentX() >= 59,
-            8000);
-    return goingEast ? Main.getController().currentX() < 59 : Main.getController().currentX() >= 59;
+        .sleepUntil(() -> goingEast == (Main.getController().currentX() < 59), 8000);
+    return goingEast == (Main.getController().currentX() < 59);
   }
 
   public static boolean gnomeTreeGate() {
@@ -308,11 +299,7 @@ public class CustomLabelHandlers {
     Main.log("Climbing " + (goingDown ? "down" : "up") + " Varrock Palace Ladder...");
     Main.getController().atObject(ladderId);
     return Main.getController()
-        .sleepUntil(
-            () ->
-                goingDown
-                    ? Main.getController().currentY() < 1000
-                    : Main.getController().currentY() >= 1000);
+        .sleepUntil(() -> goingDown == (Main.getController().currentY() < 1000));
   }
 
   public static boolean varrockPalaceFence() {
@@ -404,11 +391,7 @@ public class CustomLabelHandlers {
     Main.getController().atObject(434, 682);
     // Sleep until we're on the other side of the gate
     return Main.getController()
-        .sleepUntil(
-            () ->
-                goingEast
-                    ? Main.getController().currentX() < 435
-                    : Main.getController().currentX() >= 435);
+        .sleepUntil(() -> goingEast == (Main.getController().currentX() < 435));
   }
 
   public static boolean lummyEastChickenGate() {
@@ -539,6 +522,96 @@ public class CustomLabelHandlers {
     return open(327, 552, 64, "Opening Falador west bank's door...", null);
   }
 
+  public static boolean lummyLadderTo2FS() {
+    int yThreshold = 1000;
+
+    boolean atLowerLadder = Main.getController().currentY() < yThreshold;
+    return climb(
+        yThreshold,
+        false,
+        139,
+        666,
+        139,
+        1610,
+        atLowerLadder
+            ? "Climbing up the first floor Lumbridge Castle ladder"
+            : "Climbing down the second floor Lumbridge Castle ladder");
+  }
+
+  public static boolean lummyLadderTo2FN() {
+    int yThreshold = 1000;
+
+    boolean atLowerLadder = Main.getController().currentY() < yThreshold;
+    return climb(
+        yThreshold,
+        false,
+        139,
+        648,
+        139,
+        1592,
+        atLowerLadder
+            ? "Climbing up the first floor Lumbridge Castle ladder"
+            : "Climbing down the second floor Lumbridge Castle ladder");
+  }
+
+  public static boolean lummyLadderTo3FS() {
+    int yThreshold = 2000;
+
+    boolean atLowerLadder = Main.getController().currentY() < yThreshold;
+    return climb(
+        yThreshold,
+        false,
+        138,
+        1612,
+        138,
+        2556,
+        atLowerLadder
+            ? "Climbing up the second floor Lumbridge Castle ladder"
+            : "Climbing down the third floor Lumbridge Castle ladder");
+  }
+
+  public static boolean lummyLadderTo3FN() {
+    int yThreshold = 2000;
+
+    boolean atLowerLadder = Main.getController().currentY() < yThreshold;
+    return climb(
+        yThreshold,
+        false,
+        138,
+        1593,
+        138,
+        2537,
+        atLowerLadder
+            ? "Climbing up the second floor Lumbridge Castle ladder"
+            : "Climbing down the third floor Lumbridge Castle ladder");
+  }
+
+  public static boolean fishingGuildEntrance() {
+    return enterStatic(
+        586,
+        524,
+        false,
+        (Main.getController().currentY() < 524 ? "Exiting" : "Entering") + " the Fishing Guild");
+  }
+
+  public static boolean zanarisShed() {
+    boolean startInSwamp = Main.getController().currentY() < 3000;
+
+    if (startInSwamp) {
+      open(126, 686, 66, "Entering Zanaris Shed", null);
+    } else {
+      Main.log("@gre@Climbing the Zanaris ladder to Lumbridge Swamp");
+      Main.getController().atObject(5);
+    }
+
+    return Main.getController()
+        .sleepUntil(
+            () ->
+                startInSwamp
+                    ? Main.getController().currentY() > 3000
+                    : Main.getController().currentY() < 3000);
+  }
+
   /**
    * Returns whether the player is within a rectangle of coordinates.
    *
@@ -581,6 +654,52 @@ public class CustomLabelHandlers {
   }
 
   /**
+   * Handles climbing ladders/stairs. This returns whether checks if the player has been moved
+   * across the threshold coordinate.
+   *
+   * @param threshold int -- The coordinate to check for when checking for the success state. <br>
+   *     This coordinate must be between the upper and lower X or Y coordinate (depending on
+   *     isThresholdXCoord).
+   * @param isThresholdXCoord boolean -- Whether the threshold is on the x-axis
+   * @param lowerLadderX int -- The X coordinate of the lower ladder/stair object
+   * @param lowerLadderY int -- The Y coordinate of the lower ladder/stair object
+   * @param upperLadderX int -- The X coordinate of the upper ladder/stair object
+   * @param upperLadderY int -- The Y coordinate of the upper ladder/stair object
+   * @param logMessage String -- The message to print after interacting with the object
+   * @return boolean -- Whether the action was a success
+   */
+  private static boolean climb(
+      int threshold,
+      boolean isThresholdXCoord,
+      int lowerLadderX,
+      int lowerLadderY,
+      int upperLadderX,
+      int upperLadderY,
+      String logMessage) {
+    int startCoord =
+        isThresholdXCoord ? Main.getController().currentX() : Main.getController().currentY();
+    boolean startedBelowThreshold = startCoord < threshold;
+
+    if (startedBelowThreshold) {
+      Main.getController().atObject(lowerLadderX, lowerLadderY);
+    } else {
+      Main.getController().atObject(upperLadderX, upperLadderY);
+    }
+
+    Main.log("@gre@" + logMessage);
+    return Main.getController()
+        .sleepUntil(
+            () -> {
+              int currentCoord =
+                  isThresholdXCoord
+                      ? Main.getController().currentX()
+                      : Main.getController().currentY();
+
+              return startedBelowThreshold ? currentCoord > threshold : currentCoord < threshold;
+            });
+  }
+
+  /**
    * Handles interacting with an object or wall object at given coordinates that matches the given
    * id, while waiting for that wall object's id to change.
    *
@@ -599,7 +718,7 @@ public class CustomLabelHandlers {
   private static boolean open(
       int x, int y, int closedObjectId, String logSuccessMessage, String logFailMessage) {
     if (logSuccessMessage != null && !logSuccessMessage.isEmpty())
-      Main.log("@grn@" + logSuccessMessage);
+      Main.log("@gre@" + logSuccessMessage);
 
     boolean isClosed =
         Main.getController().getWallObjectIdAtCoord(x, y) == closedObjectId
@@ -663,15 +782,13 @@ public class CustomLabelHandlers {
         .sleepUntil(
             () -> {
               Main.getController().sleep(640);
-              boolean hasPassed =
-                  startedNorthOrEastOf
-                      ? checkCoordX
-                          ? Main.getController().currentX() > objectX
-                          : Main.getController().currentY() >= objectY
-                      : checkCoordX
-                          ? Main.getController().currentX() <= objectX
-                          : Main.getController().currentY() < objectY;
-              return hasPassed;
+              return startedNorthOrEastOf
+                  ? checkCoordX
+                      ? Main.getController().currentX() > objectX
+                      : Main.getController().currentY() >= objectY
+                  : checkCoordX
+                      ? Main.getController().currentX() <= objectX
+                      : Main.getController().currentY() < objectY;
             },
             10000);
     Main.getController().sleep(680);

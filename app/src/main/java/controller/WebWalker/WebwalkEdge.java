@@ -5,7 +5,7 @@ import java.util.*;
 public class WebwalkEdge {
   private final WebwalkNode from;
   private final WebwalkNode to;
-  private double dist;
+  private final double dist;
   private final String label;
 
   public WebwalkEdge(WebwalkNode from, WebwalkNode to, double dist, String label) {
@@ -32,6 +32,6 @@ public class WebwalkEdge {
   }
 
   public String toString() {
-    return from + " -> " + to + " (" + label + ")";
+    return from + " -> " + to + ((label.isEmpty() ? "" : " with label: " + label));
   }
 }

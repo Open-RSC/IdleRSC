@@ -455,14 +455,14 @@ public class AIOSmelter extends IdleScript {
       primaryOreId = ItemId.RUBY.getId();
       secondaryOreId = ItemId.GOLD_BAR.getId();
       barName = "Ruby Jewelry";
-      primaryName = "Rubys";
+      primaryName = "Rubies";
       secondaryName = "Gold Bars";
     } else if (barId == ItemId.DIAMOND_RING.getId()
         || barId == ItemId.DIAMOND_NECKLACE.getId()
         || barId == ItemId.UNSTRUNG_DIAMOND_AMULET.getId()
         || barId == ItemId.DIAMOND_CROWN.getId()) { // Diamond Jewelry
-      primaryOreId = ItemId.GOLD_BAR.getId();
-      secondaryOreId = ItemId.TIN_ORE.getId();
+      primaryOreId = ItemId.DIAMOND.getId();
+      secondaryOreId = ItemId.GOLD_BAR.getId();
       barName = "Diamond Jewelry";
       primaryName = "Diamonds";
       secondaryName = "Gold Bars";

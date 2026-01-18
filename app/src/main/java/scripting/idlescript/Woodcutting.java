@@ -80,7 +80,7 @@ public class Woodcutting extends IdleScript {
   private int totalLogs = 0;
   private int bankedLogs = 0;
   private int inventLogs = 0;
-  private boolean bankTime = false;
+  private boolean handleLogsTime = false;
   private boolean chopTime = false;
   private final int[] bankerIds = {95, 224, 268, 485, 540, 617};
 
@@ -121,12 +121,10 @@ public class Woodcutting extends IdleScript {
       if (c.getNeedToMove()) c.moveCharacter();
       if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getInventoryItemCount() == 30) {
-        bankTime = true;
+        handleLogsTime = true;
         chopTime = false;
       }
-      if (c.getInventoryItemCount() <= 29) {
-        bankTime = false;
-      }
+      if (c.getInventoryItemCount() <= 29) handleLogsTime = false;
 
       if (c.getNearestObjectById(treeId) != null && chopTime && !c.isBatching()) {
         c.setStatus("@red@Clicking tree");
@@ -143,7 +141,15 @@ public class Woodcutting extends IdleScript {
             2000); // added sleep to this function to stop cpu overflow issue going to high usage
       }
 
-      if (bank.isSelected() && bankTime) {
+      if (handleLogsTime) {
+        if (!bank.isSelected()) {
+          while (c.isRunning() && c.isLoggedIn() && c.getInventoryItemCount(logId) > 0) {
+            c.dropItem(c.getInventoryItemSlotIndex(logId), c.getInventoryItemCount(logId));
+            c.sleep(640);
+          }
+          continue;
+        }
+
         while (c.getNearestNpcByIds(bankerIds, true) == null) {
           c.setStatus("@red@Going bank");
           bankSel.walkTowards();
@@ -168,14 +174,14 @@ public class Woodcutting extends IdleScript {
         inventLogs = c.getInventoryItemCount(logId);
         c.sleep(100);
         c.closeBank();
-        bankTime = false;
+        handleLogsTime = false;
         c.sleep(1000);
       }
       if (c.getInventoryItemCount() == 0 && c.isInBank()) {
         c.setStatus("@red@Closing bank");
         c.closeBank();
       }
-      if (!bankTime && !chopTime) {
+      if (!handleLogsTime && !chopTime) {
         c.setStatus("@red@Walking to trees");
         if (c.getNearestObjectById(treeId) == null) {
           Location.walkTowards(treesX, treesY);
@@ -238,11 +244,18 @@ public class Woodcutting extends IdleScript {
   @Override
   public void paintInterrupt() {
     if (c != null) {
-      c.drawBoxAlpha(7, 7, 132, 21 + 14 + 14, 0xFF0000, 64);
+      c.drawBoxAlpha(7, 7, 132, bank.isSelected() ? 49 : 35, 0xFF0000, 64);
       c.drawString("@red@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       c.drawString(
-          "@red@Logs Collected: @yel@" + (totalLogs + inventLogs), 10, 21 + 14, 0xFFFFFF, 1);
-      c.drawString("@red@Logs in bank: @yel@" + bankedLogs, 10, 21 + 14 + 14, 0xFFFFFF, 1);
+          (bank.isSelected() ? "@red@Logs Collected: @yel@" : "@red@Logs Chopped: @yel@")
+              + (totalLogs + inventLogs),
+          10,
+          35,
+          0xFFFFFF,
+          1);
+
+      if (bank.isSelected())
+        c.drawString("@red@Logs in bank: @yel@" + bankedLogs, 10, 49, 0xFFFFFF, 1);
     }
   }
 }

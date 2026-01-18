@@ -110,12 +110,18 @@ public class BuyFromShop extends K_kailaScript {
         }
         if (c.isInShop() && c.getInventoryItemCount() < 30) {
           for (int itemId : itemIds) {
-            if (itemId != 0
-                && isSellable(itemId)
-                && c.getShopItemCount(itemId) > shopNumber
-                && c.getShopItemCount(itemId) > 0) {
-              c.shopBuy(itemId, shopNumber - c.getShopItemCount(itemId));
-              c.sleep(640);
+
+            int currentStock = c.getShopItemCount(itemId);
+
+            if (itemId != 0 && isSellable(itemId) && currentStock > shopNumber) {
+
+              int freeSlots = 30 - c.getInventoryItemCount();
+              int amountToBuy = Math.min(currentStock - shopNumber, freeSlots);
+
+              if (amountToBuy > 0) {
+                c.shopBuy(itemId, amountToBuy);
+                c.sleep(640);
+              }
             }
           }
           c.sleep(640);

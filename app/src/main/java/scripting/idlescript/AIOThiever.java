@@ -217,7 +217,7 @@ public class AIOThiever extends IdleScript {
         if (!guiSetup) {
           setupGUI();
           guiSetup = true;
-          c.setStatus("@red@Waiting for start..");
+          c.setStatus("@red@Waiting for start...");
         }
       } else {
         try {
@@ -256,7 +256,7 @@ public class AIOThiever extends IdleScript {
       if (c.getShouldSleep()) c.sleepHandler(true);
       if (c.getFightMode() != this.fightMode) c.setFightMode(this.fightMode);
       if (c.getInventoryItemCount(140) > 0) { // drop jugs from heroes
-        c.setStatus("@red@Dropping empty jugs..");
+        c.setStatus("@red@Dropping empty jugs...");
         c.dropItem(c.getInventoryItemSlotIndex(140));
       }
       eat();
@@ -327,7 +327,7 @@ public class AIOThiever extends IdleScript {
               c.atObject(coords[0], coords[1]);
             }
           } else {
-            c.setStatus("@red@Waiting for respawn..");
+            c.setStatus("@red@Waiting for respawn...");
           }
         }
       } else {
@@ -376,19 +376,34 @@ public class AIOThiever extends IdleScript {
   }
 
   private void eat() {
-    if (c.getCurrentStat(c.getStatId("Hits")) <= eatingHealth
-        || c.getCurrentStat(c.getStatId("Hits"))
-            <= Math.min(c.getBaseStat(SkillId.HITS.getId()), 20)) {
+    int currentHp = c.getCurrentStat(SkillId.HITS.getId());
+    int baseHp = c.getBaseStat(SkillId.HITS.getId());
+
+    // Forces eating at 9 hp, since Heroes can hit 9s
+    int enforcedMinimum = 10;
+    int playerThreshold = Math.min(eatingHealth, baseHp);
+    int threshold = Math.max(playerThreshold, enforcedMinimum);
+
+    if (currentHp < threshold) {
       if (c.isInCombat()) leaveCombat();
       c.setStatus("@red@Eating..");
       boolean ate = false;
 
-      for (int id : c.getFoodIds()) {
-        if (c.getInventoryItemCount(id) > 0) {
+      while (currentHp < threshold && c.isRunning() && c.isLoggedIn()) {
+        int[] availableFoods =
+            Arrays.stream(c.getFoodIds())
+                .filter(f -> c.getUnnotedInventoryItemCount(f) > 0)
+                .toArray();
+        if (availableFoods.length == 0) break;
+
+        for (int id : availableFoods) {
           c.itemCommand(id);
           c.sleep(700);
-          ate = true;
-          break;
+          currentHp = c.getCurrentStat(SkillId.HITS.getId());
+          if (currentHp >= threshold) {
+            ate = true;
+            break;
+          }
         }
       }
       while (eatingHealth > 0 && bankSpot.equals(bankSpots[0]) && !ate) {

@@ -9,6 +9,7 @@ public class Config extends ParseResult {
    * @param parseResult Result from parsing CLI arguments.
    */
   public void absorb(ParseResult parseResult) {
+    setPropertiesFileName(parseResult.getPropertiesFileName());
 
     // Options with parameters/arguments.
     if (parseResult.getUsername() != null) {
@@ -27,10 +28,13 @@ public class Config extends ParseResult {
     } else setPassword("Password");
     setScriptName(parseResult.getScriptName());
     setScriptArguments(parseResult.getScriptArguments());
-    setInitCache(parseResult.getInitCache());
-    setServerIp(parseResult.getServerIp());
+    setServerPortSelection(parseResult.getServerPortSelection());
+    setServerIpSelection(parseResult.getServerIpSelection());
     setThemeName(parseResult.getThemeName());
-    setUseLocationWalker(parseResult.isUsingLocationWalker());
+
+    setCustomIp(parseResult.getCustomIp());
+    setCustomPort(parseResult.getCustomPort());
+
     // setServerId(parseResult.getServerId());
 
     // OCR options
@@ -51,6 +55,7 @@ public class Config extends ParseResult {
     setNewIcons(parseResult.getNewIcons());
     setNewUi(parseResult.getNewUi());
     setKeepOpen(parseResult.getKeepOpen());
+    setUseLocationWalker(parseResult.isUsingLocationWalker());
 
     // position
     setPositionX(parseResult.getPositionX());

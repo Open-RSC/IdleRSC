@@ -4,6 +4,7 @@ import bot.Main;
 import bot.ui.scriptselector.models.Category;
 import bot.ui.scriptselector.models.ScriptInfo;
 import java.awt.GridLayout;
+import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,7 +29,7 @@ public final class K_GnomeMagicTree extends K_kailaScript {
           "Kaila",
           "Cuts Magic trees in the Tree Gnome Stronghold.");
 
-  private static final int[] axeId = {
+  private final int[] axeId = {
     ItemId.BRONZE_AXE.getId(),
     ItemId.IRON_AXE.getId(),
     ItemId.STEEL_AXE.getId(),
@@ -48,13 +49,19 @@ public final class K_GnomeMagicTree extends K_kailaScript {
     boolean noBag = true;
     c.displayMessage("@red@GnomeMagicTree,  start with an axe in inv/equipment");
     if (c.isInBank()) c.closeBank();
+    int[] equippedIds = c.getEquippedItemIds();
     for (int axe : axeId) {
-      if (c.getInventoryItemCount(axe) > 0) noAxe = false;
+      if (c.getInventoryItemCount(axe) > 0
+          || Arrays.stream(equippedIds).anyMatch(id -> id == axe)) {
+        noAxe = false;
+        break;
+      }
     }
+
     if (!c.isAuthentic() || c.getInventoryItemCount(ItemId.SLEEPING_BAG.getId()) > 0) noBag = false;
     if (noAxe || noBag) {
       c.log(
-          "START ITEMS MISSING: start with an axe in inventory/equip and sleeping bag if uranium",
+          "START ITEMS MISSING: start with an axe in inventory/equipped and sleeping bag if uranium",
           "red");
       c.stop();
     }
@@ -198,10 +205,18 @@ public final class K_GnomeMagicTree extends K_kailaScript {
       }
       c.sleep(1280);
       logInBank = c.getBankItemCount(636);
-      for (int axe : axeId) {
-        withdrawItem(axe, 1);
-        if (c.getInventoryItemCount(axe) > 0) break;
-      }
+
+      int[] equippedIds = c.getEquippedItemIds();
+      boolean isAnAxeEquipped =
+          Arrays.stream(axeId)
+              .anyMatch(axe -> Arrays.stream(equippedIds).anyMatch(id -> id == axe));
+
+      if (!isAnAxeEquipped)
+        for (int axe : axeId) {
+          withdrawItem(axe, 1);
+          if (c.getInventoryItemCount(axe) > 0) break;
+        }
+
       if (c.isAuthentic()) withdrawItem(ItemId.SLEEPING_BAG.getId(), 1);
       c.closeBank();
     }

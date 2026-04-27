@@ -21,7 +21,13 @@ public class FoulRunecraft extends IdleScript {
       new ScriptInfo(
           new Category[] {Category.MINING, Category.RUNECRAFTING},
           "Foulwerp",
-          "Mines essence and crafts runes.\n\nNature runes are currently not supported for ironmen.");
+          "Mines essence and crafts runes.\n\n"
+              + "Nature Runes (Ironman not supported):\n"
+              + "   Takes coins and noted essence to Tai Bwo\n"
+              + "   Wannai's general store, and sells then\n"
+              + "   buys back essence to un-note it.\n\n"
+              + "   Ironman mode is not supported because \n"
+              + "      of this shop interaction.");
 
   private JFrame frame;
   private String runtime, action;
@@ -177,17 +183,29 @@ public class FoulRunecraft extends IdleScript {
       return 1000;
     }
     if (choice == 8) {
+      if (c.isPlayerAnIronMode()) {
+        c.log("Nature rune crafting is not available for ironmen in FoulRunecraft!", "red");
+        c.stop();
+      }
       if (c.getPlayer().level < 79) {
-        c.log("You must be 79+ combat to use this script!");
+        c.log("You must be 79+ combat to use this script!", "red");
+        c.stop();
+      }
+      if (c.getNotedInventoryItemCount(ItemId.RUNE_STONE.getId()) < 1) {
+        c.log("You must have noted essence in your inventory!", "red");
+        c.stop();
+      }
+      if (c.getInventoryItemCount(ItemId.COINS.getId()) < 1) {
+        c.log("You must have coins in your inventory!", "red");
         c.stop();
       }
     }
     if (c.getCurrentStat(c.getStatId("Runecraft")) < levels[choice]) {
-      c.log("You do not have high enough Runecraft!");
+      c.log("You do not have high enough Runecraft!", "red");
       c.stop();
     }
     if (!c.isItemInInventory(talismans[choice])) {
-      c.log("You don't have a " + c.getItemName(talismans[choice]) + " in your inventory!");
+      c.log("You don't have a " + c.getItemName(talismans[choice]) + " in your inventory!", "red");
       c.stop();
     }
     action = "Crafted";

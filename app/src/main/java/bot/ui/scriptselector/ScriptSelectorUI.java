@@ -43,6 +43,7 @@ public class ScriptSelectorUI {
 
   private static boolean started;
 
+  private static boolean listenersInitialized = false;
   private static final SpringLayout sl = new SpringLayout();
   private static String scriptMessage = "";
   private static final JFrame frame = new JFrame(selectorTitle);
@@ -104,37 +105,11 @@ public class ScriptSelectorUI {
     frame.setVisible(true);
     frame.requestFocus();
 
-    // Listeners
-    selectionModel.addListSelectionListener(e -> tableSelectionChanged());
-    startBtn.addActionListener(e -> buttonPressed());
-    scriptArgs.addFocusListener(getPlaceholderFocusListener(scriptArgs, scriptArgsPlaceholder));
-    scriptFilter.addFocusListener(
-        getPlaceholderFocusListener(scriptFilter, scriptFilterPlaceholder));
-    scriptFilter
-        .getDocument()
-        .addDocumentListener(
-            new DocumentListener() {
-              @Override
-              public void insertUpdate(DocumentEvent e) {
-                populateTable();
-              }
-
-              @Override
-              public void removeUpdate(DocumentEvent e) {
-                populateTable();
-              }
-
-              @Override
-              public void changedUpdate(DocumentEvent e) {
-                populateTable();
-              }
-            });
-    categoryComboBox.addActionListener(e -> populateTable());
+    // Initialize listeners on the first open of the selector
+    if (!listenersInitialized) initListeners();
 
     // Wait for a script to be selected and for the start button to be pressed
-    while (controller.isRunning() && !started && frame.isVisible()) {
-      controller.sleep(640);
-    }
+    while (controller.isRunning() && !started && frame.isVisible()) controller.sleep(640);
     sl.removeLayoutComponent(frame);
   }
 
@@ -247,6 +222,39 @@ public class ScriptSelectorUI {
             return label;
           }
         });
+  }
+
+  /** Initializes all action listeners on our first time showing the selector ui */
+  private static void initListeners() {
+    listenersInitialized = true;
+
+    selectionModel.addListSelectionListener(e -> tableSelectionChanged());
+    startBtn.addActionListener(e -> buttonPressed());
+    scriptArgs.addFocusListener(getPlaceholderFocusListener(scriptArgs, scriptArgsPlaceholder));
+    scriptFilter.addFocusListener(
+        getPlaceholderFocusListener(scriptFilter, scriptFilterPlaceholder));
+
+    scriptFilter
+        .getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+              @Override
+              public void insertUpdate(DocumentEvent e) {
+                populateTable();
+              }
+
+              @Override
+              public void removeUpdate(DocumentEvent e) {
+                populateTable();
+              }
+
+              @Override
+              public void changedUpdate(DocumentEvent e) {
+                populateTable();
+              }
+            });
+
+    categoryComboBox.addActionListener(e -> populateTable());
   }
 
   /** Manages the JFrame's SpringLayout constraints */
@@ -587,6 +595,8 @@ public class ScriptSelectorUI {
                 List<Category> catList = info.getCategories();
                 catList.add(0, Category.DO_NOT_MANUALLY_ASSIGN_ALL);
                 catList.add(1, scriptPackage.getCategory());
+                if (clazz.getPackage().getName().contains("PrivateScripts"))
+                  catList.add(2, Category.DO_NOT_MANUALLY_ASSIGN_PRIVATE);
 
                 // Create a SelectorScript from the reflected info and add it to the list of scripts
                 scriptList.add(

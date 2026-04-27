@@ -17,7 +17,7 @@ import orsc.ORSCharacter;
  * @see scripting.idlescript.K_kailaScript
  * @author Kaila
  */
-public final class K_ArdyChaosDruids extends K_kailaCombatScript {
+public final class K_ArdyChaosDruids extends K_kailaScript {
   public static final ScriptInfo info =
       new ScriptInfo(
           new Category[] {

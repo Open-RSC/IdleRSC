@@ -1,6 +1,5 @@
 package bot.ui.components;
 
-import bot.Main;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicCheckBoxUI;
@@ -22,6 +21,24 @@ public class CustomCheckBox extends JCheckBox {
     this(text, null, defaultValue);
   }
 
+  @Override
+  public void updateUI() {
+    super.updateUI();
+    // Re-apply the custom UI for the icon
+    setUI(new CustomCheckBoxUI());
+
+    // Update the text color from UIManager
+    Color fg = UIManager.getColor("CheckBox.foreground");
+    if (fg != null) setForeground(fg);
+
+    // Update the background color from UIManager
+    Color bg = UIManager.getColor("CheckBox.background");
+    if (bg != null) setBackground(bg);
+
+    // Force a repaint so both icon and text update
+    repaint();
+  }
+
   static class CustomCheckBoxUI extends BasicCheckBoxUI {
     @Override
     protected void installDefaults(AbstractButton b) {
@@ -39,18 +56,23 @@ public class CustomCheckBox extends JCheckBox {
       Graphics2D g2 = (Graphics2D) g.create();
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+      // Get colors dynamically from UIManager
+      Color checkBg = UIManager.getColor("CheckBox.checkColorBg");
+      Color checkFg = UIManager.getColor("CheckBox.checkColorFg");
+
+      AbstractButton button = (AbstractButton) c;
+
       // Draw checkbox background
-      g2.setColor(Main.secondaryFG);
+      g2.setColor(checkBg != null ? checkBg : Color.LIGHT_GRAY);
       g2.fillRoundRect(x, y, SIZE, SIZE, 4, 4);
 
       // Draw border
-      g2.setColor(Main.primaryFG);
+      g2.setColor(checkFg != null ? checkFg : Color.DARK_GRAY);
       g2.drawRoundRect(x, y, SIZE - 1, SIZE - 1, 4, 4);
 
-      // If selected, draw checkmark
-      AbstractButton button = (AbstractButton) c;
+      // Draw checkmark if selected
       if (button.isSelected()) {
-        g2.setColor(Main.secondaryBG);
+        g2.setColor(checkFg != null ? checkFg : Color.DARK_GRAY);
         g2.setStroke(new BasicStroke(2));
         g2.drawLine(x + 3, y + 8, x + 7, y + 12);
         g2.drawLine(x + 7, y + 12, x + 13, y + 4);

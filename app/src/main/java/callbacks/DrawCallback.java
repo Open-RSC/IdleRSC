@@ -124,7 +124,7 @@ public class DrawCallback {
       y += 14;
 
       if (!Main.isRunning()) {
-        localStatusText = "@red@Idle.";
+        localStatusText = "@or1@Idle";
       }
 
       if (c.getShowStatus()) c.drawString("Status: " + localStatusText, 7, y, 0xFFFFFF, 1);
@@ -133,7 +133,7 @@ public class DrawCallback {
 
       if (c.getShowCoords())
         c.drawString(
-            "Coords: @red@(@whi@" + c.currentX() + "@red@,@whi@" + c.currentY() + "@red@)",
+            "Coords: @red@(@whi@" + c.currentX() + "@red@, @whi@" + c.currentY() + "@red@)",
             7,
             y,
             0xFFFFFF,
@@ -156,9 +156,9 @@ public class DrawCallback {
 
       if (c.getShowXp()) {
         c.drawString(
-            "XP Gained: @red@"
+            "XP Gained: @cya@"
                 + String.format("%,d", xpGained)
-                + " @whi@(@red@"
+                + " @whi@(@cya@"
                 + String.format("%,d", xpPerHr)
                 + " @whi@xp/hr)",
             7,

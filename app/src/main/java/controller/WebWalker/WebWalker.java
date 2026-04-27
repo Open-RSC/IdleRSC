@@ -4,6 +4,7 @@ import bot.Main;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import javax.swing.*;
 import models.entities.ItemId;
 import models.entities.QuestId;
 import models.entities.SkillId;
@@ -53,7 +54,7 @@ public class WebWalker {
     List<WebwalkNode> path = dijkstraPathfinding(startNode, endNodes);
 
     if (path.isEmpty()) {
-      Main.getController().log("No valid path found.");
+      Main.getController().logAsClient("No valid path found.");
       return false;
     }
 
@@ -216,6 +217,10 @@ public class WebWalker {
       case "witchsHouseDoor":
         return Main.getController().isQuestComplete(QuestId.WITCHS_HOUSE.getId())
             || Main.getController().getInventoryItemCount(ItemId.FRONT_DOOR_KEY.getId()) > 0;
+      case "craftingGuild":
+        return Main.getController().getCurrentStat(SkillId.CRAFTING.getId()) >= 40
+            || Main.getController().isItemIdEquipped(ItemId.BROWN_APRON.getId())
+            || Main.getController().isItemInInventory(ItemId.CRAFTING_CAPE.getId());
       case "zanarisShed":
         if (Main.getController().currentY() < 3000) {
           boolean isDramenStaffEquipped =
@@ -232,10 +237,34 @@ public class WebWalker {
         }
         return true;
       case "portSarimKaramjaBoat":
-      case "brimhavenKaramjaGate":
-        return Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= 60;
+      case "brimhavenArdyBoat":
+        boolean inSouthKaramjaGround =
+            CustomLabelHandlers.isWithinAreaFloorAgnostic(331, 722, 480, 910);
+        boolean inBrimhavenGround =
+            CustomLabelHandlers.isWithinAreaFloorAgnostic(435, 640, 532, 731);
+        boolean inMusaPointGround =
+            CustomLabelHandlers.isWithinAreaFloorAgnostic(318, 682, 367, 726);
+        boolean isAtVolcanoGround =
+            CustomLabelHandlers.isWithinAreaFloorAgnostic(364, 656, 437, 719);
+        boolean isOnKaramja =
+            isAtVolcanoGround || inMusaPointGround || inBrimhavenGround || inSouthKaramjaGround;
+        int amount = isOnKaramja ? 30 : 60;
+        return Main.getController().getInventoryItemCount(ItemId.COINS.getId()) >= amount;
       case "fishingGuildEntrance":
         return Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68;
+      case "edgeRowBoat":
+        int distToLumbridge = Main.getController().distanceTo(119, 644);
+        int distToEdgeville = Main.getController().distanceTo(207, 448);
+        return distToLumbridge < distToEdgeville;
+      case "wildTunnelSkip":
+        int cX = Main.getController().currentX();
+        int cY = Main.getController().currentY();
+        boolean isInEdgeDungeon = cX > 117 && cX < 247 && cY > 3195 && cY < 3336;
+        boolean isAtAirObelisk = cX > 229 && cX < 233 && cY > 390 && cY < 395;
+        return CustomLabelHandlers.wildTunnelAllowed
+            && (!Main.getController().isInWilderness() || isInEdgeDungeon || isAtAirObelisk);
+      case "brimMossGiantSwing":
+        return Main.getController().getCurrentStat(SkillId.AGILITY.getId()) >= 10;
       default:
         return true;
     }
@@ -335,6 +364,49 @@ public class WebWalker {
         return CustomLabelHandlers.fishingGuildEntrance();
       case "zanarisShed":
         return CustomLabelHandlers.zanarisShed();
+      case "yanilleWestGate":
+        return CustomLabelHandlers.yanilleWestGate();
+      case "gnomeStrongholdBankNorthLadder":
+        return CustomLabelHandlers.gnomeStrongholdBankNorthLadder();
+      case "gnomeStrongholdBankSouthLadder":
+        return CustomLabelHandlers.gnomeStrongholdBankSouthLadder();
+      case "gnomeStrongholdSpinningWheelLadder":
+        return CustomLabelHandlers.gnomeStrongholdSpinningWheelLadder();
+      case "asgarniaLadder":
+        return CustomLabelHandlers.asgarniaLadder();
+      case "craftingGuild":
+        return CustomLabelHandlers.craftingGuild();
+      case "edgeRowBoat":
+        return CustomLabelHandlers.edgeRowBoat();
+      case "edgeDungeonDoor":
+        return CustomLabelHandlers.edgeDungeonDoor();
+      case "edgeDungeonLadder":
+        return CustomLabelHandlers.edgeDungeonLadder();
+      case "oddWall":
+        return CustomLabelHandlers.oddWall();
+      case "wildTunnelSkip":
+        return CustomLabelHandlers.wildTunnelSkip();
+      case "icePlateauGate":
+        return CustomLabelHandlers.icePlateauGate();
+      case "wildyMageBankDoor":
+        return CustomLabelHandlers.wildyMageBankDoor();
+      case "wildyMageBankWebs":
+        return CustomLabelHandlers.wildyMageBankWebs();
+      case "wildyMageBankLadder":
+        return CustomLabelHandlers.wildyMageBankLadder();
+      case "deepWildDungeonStairs":
+        return CustomLabelHandlers.deepWildDungeonStairs();
+      case "deepWildDungeonGate1":
+        return CustomLabelHandlers.deepWildDungeonGate1();
+      case "deepWildDungeonGate2":
+        return CustomLabelHandlers.deepWildDungeonGate2();
+      case "deepWildDungeonGate3":
+        return CustomLabelHandlers.deepWildDungeonGate3();
+      case "deepWildyGate":
+        return CustomLabelHandlers.deepWildyGate();
+      case "brimMossGiantSwing":
+        return CustomLabelHandlers.brimMossGiantSwing();
+
       default:
         Main.getController().logAsClient("Missing function for label: " + label);
         return false;

@@ -352,7 +352,14 @@ public class AIOBankTrainer extends K_kailaScript {
   private void buryLoop() {
     while (c.getInventoryItemCount(primaryItemId) > 0 && c.isRunning()) {
       c.setStatus("@yel@Burying..");
-      c.itemCommand(primaryItemId);
+      if (!c.isAuthentic()) {
+        c.itemCommandAll(primaryItemId);
+        do c.sleep(640);
+        while (c.isBatching() && c.isRunning());
+      } else {
+        c.itemCommand(primaryItemId);
+      }
+
       c.sleep(100);
     }
   }

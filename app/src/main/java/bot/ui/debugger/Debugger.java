@@ -504,7 +504,16 @@ public class Debugger implements Runnable, UiContract {
   }
 
   private void updateBankSection(Table sectionTable) {
+    if (this.bankItems == null) return;
+
     for (Item bankItem : this.bankItems) {
+      if (bankItem == null) continue;
+
+      if (bankItem.getItemDef() == null) {
+        Object[] unknownRow = {"Unknown", bankItem.getCatalogID(), bankItem.getAmount(), 0};
+        sectionTable.addRow(unknownRow);
+        continue;
+      }
       Object[] row = {
         bankItem.getItemDef().name,
         bankItem.getItemDef().id,

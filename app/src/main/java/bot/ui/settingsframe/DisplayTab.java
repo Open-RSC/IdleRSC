@@ -1,19 +1,14 @@
 package bot.ui.settingsframe;
 
+import bot.Main;
 import bot.ui.Theme;
-import bot.ui.components.ColorPickerPanel;
-import bot.ui.components.ComboBoxPanel;
-import bot.ui.components.CustomCheckBox;
-import bot.ui.components.TextFieldPanel;
+import bot.ui.components.*;
+import bot.ui.components.models.TextFieldPanelType;
 import java.awt.*;
 import java.util.Properties;
 import javax.swing.*;
 
-public class DisplayTab extends JPanel implements ISettingsTab {
-  final SpringLayout sl;
-  final int compWidth = 180;
-  final int compHeight = 41;
-
+public class DisplayTab extends AbstractBaseTab {
   public ComboBoxPanel themeChoice;
   public ColorPickerPanel primaryBGPanel, primaryFGPanel, secondaryBGPanel, secondaryFGPanel;
   public CustomCheckBox botPaint,
@@ -27,9 +22,6 @@ public class DisplayTab extends JPanel implements ISettingsTab {
 
   DisplayTab(SpringLayout springLayout) {
     super(springLayout);
-    sl = springLayout;
-    initializeComponents();
-    setConstraints();
   }
 
   @Override
@@ -110,12 +102,47 @@ public class DisplayTab extends JPanel implements ISettingsTab {
 
   @Override
   public void loadSettings(Properties p) {
-    startPosX.setText(p.getProperty("x-position", "-1"));
-    startPosY.setText(p.getProperty("y-position", "-1"));
+    String customPrimaryBG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-primary-background", "custom-primary-background", "");
+    String customPrimaryFG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-primary-foreground", "custom-primary-foreground", "");
+    String customSecondaryBG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-secondary-background", "custom-secondary-background", "");
+    String customSecondaryFG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-secondary-foreground", "custom-secondary-foreground", "");
+
+    primaryBGPanel.setHexColor(
+        ColorPickerPanel.validateHex(customPrimaryBG)
+            ? customPrimaryBG
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryBackground()));
+    primaryFGPanel.setHexColor(
+        ColorPickerPanel.validateHex(customPrimaryFG)
+            ? customPrimaryFG
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryForeground()));
+    secondaryBGPanel.setHexColor(
+        ColorPickerPanel.validateHex(customSecondaryBG)
+            ? customSecondaryBG
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryBackground()));
+    secondaryFGPanel.setHexColor(
+        ColorPickerPanel.validateHex(customSecondaryFG)
+            ? customSecondaryFG
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryForeground()));
+
+    startPosX.setText(String.valueOf(p.getProperty("x-position", "")));
+    startPosY.setText(String.valueOf(p.getProperty("y-position", "")));
+
     botPaint.setSelected(Boolean.parseBoolean(p.getProperty("bot-paint", "true")));
     disableGraphics.setSelected(Boolean.parseBoolean(p.getProperty("disable-gfx", "false")));
     interlace.setSelected(Boolean.parseBoolean(p.getProperty("interlace", "false")));
-    themeChoice.setSelectedItem(p.getProperty("theme", Theme.RUNEDARK.getName()));
+    themeChoice.setSelectedItem(p.getProperty("theme-selected", Theme.RUNEDARK.getName()));
     newIcons.setSelected(Boolean.parseBoolean(p.getProperty("new-icons", "false")));
     newUi.setSelected(Boolean.parseBoolean(p.getProperty("new-ui", "false")));
     keepOpen.setSelected(Boolean.parseBoolean(p.getProperty("keep-open", "false")));
@@ -124,8 +151,6 @@ public class DisplayTab extends JPanel implements ISettingsTab {
 
   @Override
   public void setDefaultValues() {
-    startPosX.setText("-1");
-    startPosY.setText("-1");
     themeChoice.setSelectedIndex(0);
     botPaint.setSelected(true);
     disableGraphics.setSelected(false);
@@ -167,9 +192,36 @@ public class DisplayTab extends JPanel implements ISettingsTab {
               Theme.RUNEDARK.getSecondaryForeground()),
       themeChoice = new ComboBoxPanel("Theme:", "Select a client-wide theme"),
       startPosX =
-          new TextFieldPanel("Window X Position:", "The IdleRSC window's start up X position"),
+          Main.getRscFrame() != null
+              ? new TextFieldPanel(
+                  "",
+                  "Startup Window X Position:",
+                  "The IdleRSC window's start up X position. Leave blank to center",
+                  TextFieldPanelType.BUTTON,
+                  () -> {
+                    // The rscFrame's getX() method returns a horizontal position offset by -7
+                    // pixels.
+                    // We add 7 here to display the actual top-left position of the window in the
+                    // position text boxes.
+                    // Negative X values are reserved to indicate centering, so this adjustment
+                    // ensures correct, visible coordinates.
+
+                    startPosX.setText(String.valueOf(Main.getRscFrame().getX() + 7));
+                    startPosY.setText(String.valueOf(Main.getRscFrame().getY()));
+                  })
+              : new TextFieldPanel(
+                  "",
+                  "Startup Window X Position:",
+                  "The IdleRSC window's start up X position. Leave blank to center",
+                  TextFieldPanelType.NORMAL,
+                  null),
       startPosY =
-          new TextFieldPanel("Window Y Position:", "The IdleRSC window's start up Y position"),
+          new TextFieldPanel(
+              "",
+              "Startup Window Y Position:",
+              "The IdleRSC window's start up Y position. Leave blank to center",
+              TextFieldPanelType.NORMAL,
+              null),
       botPaint = new CustomCheckBox("Show Bot Paint", "Draw bot paints"),
       disableGraphics = new CustomCheckBox("Disable Graphics", "Disable all client graphics"),
       screenRefresh =
@@ -186,6 +238,6 @@ public class DisplayTab extends JPanel implements ISettingsTab {
     };
 
     for (Theme t : Theme.values()) themeChoice.addItem(t.getName());
-    for (Component comp : comps) add(comp);
+    setTabComponents(comps);
   }
 }

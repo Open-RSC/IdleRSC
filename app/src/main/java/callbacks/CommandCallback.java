@@ -1,94 +1,114 @@
 package callbacks;
 
 import bot.Main;
+import callbacks.chatcommand.IChatCommand;
+import callbacks.chatcommand.WalkToCommand;
 import controller.Controller;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import scripting.idlescript.IdleScript;
 
 public class CommandCallback {
-  /** Stores in-game help menu text. (F12) */
-  private static final String helpMessageText =
-      "@cya@IdleRSC Help Menu:"
-          + " %@red@::bothelp - @yel@Shows this help menu"
-          + " %@red@::hide or ::show - @yel@Hides/Unhides the bot side panel"
-          + " %@red@::gfx - @yel@toggle graphic rendering"
-          + " %@red@::screenshot - @yel@Take a Screenshot"
-          + " %@red@::hidepaint or ::showpaint - @yel@Toggle Paint Left-Side Menu"
-          + " %@red@::toggleid - @yel@Toggle Item/Object/NPC right click Id's"
-          + " %@red@::interlace - @yel@Toggle Interlacing Mode"
-          + " %@red@F1  - @yel@Toggle Interlacing Mode"
-          + " %@red@F2  - @yel@Toggle Openrsc Left-Side Sub Menu"
-          + " %@red@F3  - @yel@Returns Camera Zoom to Default level"
-          + " %@red@F4  - @yel@Toggles 1st/3rd Person Perspective"
-          + " %@red@F5/F6/F7 - @yel@Atk, Str, Def Item Swapping, see Readme."
-          + " %@red@F8 - @yel@Spell ID casting. See Readme for Instructions"
-          + " %@red@F9 - @yel@Take a screenshot saved to ./IdleRSC/screenshots/accountName/"
-          + " %@red@F10 - @yel@Lock the client's camera position till F10 or click"
-          + " %@red@F11 - @yel@Stop the current script and load a new one"
-          + " %@red@F12 - @yel@Show this help menu";
 
-  /**
-   * Command hook that processes the given command.
-   *
-   * @param command the command to be processed
-   */
+  private static final Map<String, IChatCommand> COMMANDS = new HashMap<>();
+
+  static {
+    COMMANDS.put("walkto", new WalkToCommand());
+
+    COMMANDS.put(
+        "paint",
+        IChatCommand.ofNoArgs(
+            c -> {
+              if (c != null) {
+                // Toggle current state
+                boolean newState = !c.getShowBotPaint();
+                c.setBotPaint(newState);
+
+                String msg =
+                    newState
+                        ? "@red@IdleRSC@yel@: Paint unhidden."
+                        : "@red@IdleRSC@yel@: Paint hidden.";
+                c.displayMessage(msg);
+              }
+            },
+            " %@red@::paint - @yel@Toggles the bot paint"));
+
+    COMMANDS.put(
+        "interlace",
+        IChatCommand.ofNoArgs(
+            c -> {
+              if (c != null) {
+                c.setInterlacer(!c.isInterlacing());
+                c.displayMessage("@red@Interlacer@yel@: toggled.");
+              }
+            },
+            " %@red@::interlace - @yel@Toggles interlacing mode"));
+
+    COMMANDS.put(
+        "gfx",
+        IChatCommand.of(
+            (args, c) -> {
+              if (c != null) c.setDrawing(!c.isDrawEnabled(), 0);
+            },
+            " %@red@::gfx - @yel@Toggle graphic rendering"));
+
+    COMMANDS.put(
+        "bothelp",
+        IChatCommand.ofNoArgs(
+            c -> {
+              if (c != null) c.setServerMessage(getHelpMessageText(), true, true);
+            },
+            " %@red@::bothelp - @yel@Shows this help menu"));
+
+    COMMANDS.put(
+        "toggleid",
+        IChatCommand.ofNoArgs(
+            c -> {
+              if (c != null) {
+                c.toggleViewId();
+              }
+            },
+            " %@red@::toggleid - @yel@Toggle Item/Object/NPC right click IDs"));
+
+    COMMANDS.put(
+        "screenshot",
+        IChatCommand.ofNoArgs(
+            c -> {
+              if (c != null) c.takeScreenshot("");
+            },
+            " %@red@::screenshot - @yel@Take a screenshot"));
+  }
+
+  private static String getHelpMessageText() {
+    return COMMANDS.values().stream()
+            .map(IChatCommand::helpString)
+            .reduce("@cya@IdleRSC Help Menu:", (acc, s) -> acc + s)
+        + " %"
+        + " %@red@F1 / F2 - @yel@Toggle Interlacing | Openrsc Left-Side Sub Menu"
+        + " %@red@F3 / F4 - @yel@Camera Zoom Reset | 1st-3rd Person Perspective"
+        + " %@red@F5 / F6 / F7 / F8 - @yel@Atk, Str, Def Item Swapping, Spell ID casting"
+        + " %@red@F9 - @yel@Take screenshot saved to ./IdleRSC/screenshots/username/"
+        + " %@red@F10 / F11 / F12 - @yel@Lock camera | Stop current script | Show this help menu";
+  }
+
   public static void commandHook(String command) {
     Controller c = Main.getController();
-    command = command.toLowerCase();
+    if (c == null) return;
 
-    switch (command) {
-      case "hidepaint":
-        if (c != null) {
-          c.setBotPaint(false);
-          c.displayMessage("@red@IdleRSC@yel@: Paint hidden.");
-        }
-        break;
-      case "showpaint":
-        if (c != null) {
-          c.setBotPaint(true);
-          c.displayMessage("@red@IdleRSC@yel@: Paint unhidden.");
-        }
-        break;
-      case "interlace":
-        if (c != null) {
-          if (c.isInterlacing()) {
-            c.setInterlacer(false);
-          } else if (!c.isInterlacing()) {
-            c.setInterlacer(true);
-          }
-          c.displayMessage("@red@Interlacer@yel@: toggled.");
-        }
-        break;
-      case "gfx":
-        if (c != null) {
-          c.setDrawing(!c.isDrawEnabled(), 0);
-        }
-        break;
-      case "bothelp":
-        if (c != null) {
-          c.setServerMessage(helpMessageText, true, true);
-        }
-        break;
-      case "toggleid":
-        if (c != null) {
-          c.toggleViewId();
-        }
-        break;
-      case "screenshot":
-        if (c != null) {
-          c.takeScreenshot("");
-        }
-        break;
-      default:
-        // pass to script
-        if (c != null
-            && c.getShowBotPaint()
-            && c.isRunning()
-            && Main.getCurrentRunningScript() != null) {
-          if (Main.getCurrentRunningScript() instanceof IdleScript) {
-            ((IdleScript) Main.getCurrentRunningScript()).chatCommandInterrupt(command);
-          }
-        }
-        break;
+    String[] args = command.split(" ");
+    String cmd = args[0].toLowerCase();
+    String[] cmdArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
+
+    IChatCommand chatCommand = COMMANDS.get(cmd);
+    if (chatCommand != null) {
+      chatCommand.execute(cmdArgs, c);
+      return;
     }
+
+    if (c.getShowBotPaint()
+        && c.isRunning()
+        && Main.getCurrentRunningScript() instanceof IdleScript)
+      ((IdleScript) Main.getCurrentRunningScript()).chatCommandInterrupt(command);
   }
 }

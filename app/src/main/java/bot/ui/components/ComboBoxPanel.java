@@ -1,5 +1,6 @@
 package bot.ui.components;
 
+import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
@@ -20,9 +21,11 @@ public class ComboBoxPanel extends JPanel {
 
     add(label);
     add(comboBox);
+
     if (tooltip != null && !tooltip.isEmpty()) setToolTipText(tooltip);
   }
 
+  // Allow adding items and listeners
   public void addItem(String item) {
     comboBox.addItem(item);
   }
@@ -61,5 +64,28 @@ public class ComboBoxPanel extends JPanel {
 
   public void setLabelText(String text) {
     label.setText(text);
+  }
+
+  @Override
+  public void updateUI() {
+    super.updateUI();
+    if (label != null) {
+      Color fg = UIManager.getColor("Label.foreground");
+      Color bg = UIManager.getColor("Label.background");
+      if (fg != null) label.setForeground(fg);
+      if (bg != null) label.setBackground(bg);
+    }
+    if (comboBox != null) {
+      Color fg = UIManager.getColor("ComboBox.foreground");
+      Color bg = UIManager.getColor("ComboBox.background");
+      if (fg != null) comboBox.setForeground(fg);
+      if (bg != null) comboBox.setBackground(bg);
+    }
+
+    Color panelBg = UIManager.getColor("Panel.background");
+    if (panelBg != null) setBackground(panelBg);
+
+    revalidate();
+    repaint();
   }
 }

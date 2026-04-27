@@ -1,57 +1,142 @@
 # IdleRSC Patcher
 
-This project takes the Open RSC client jar archive and then patches various
-methods inside of it. This is necessary for more complex functionality which
-requires callbacks to IdleRSC, such as painting progress reports on the screen
-every game frame, or detecting hitsplats.
+> **Bytecode patching module for IdleRSC**
+> Adds hooks and features to the OpenRSC client using ASM.
 
-This patcher is required to be ran by the project maintainer every time that a
-new OpenRSC release is made which results in a client break.
+## Overview
 
-## Compiling
+The **patcher** module is responsible for modifying the OpenRSC client JAR to inject hooks, interfaces, and other features required by IdleRSC.
+It uses the [ASM](https://asm.ow2.io/) bytecode manipulation library to patch both classes and methods, enabling advanced botting and scripting capabilities.
 
-Run the gradle task `build` via the top-level wrapper or system gradle.
+## Features
 
-## How To Run
+- **Injects hooks** for botting, scripting, and UI overlays
+- Adds new fields, methods, and interfaces to the client
+- Supports both class-level and method-level bytecode adapters
+- Modular, testable, and easy to extend
 
-Run `patcher.jar` via `java -jar patcher.jar source.jar destination.jar`, where
-`source.jar` is the unpatched Open RSC client jar archive and `destination.jar`
-is the location to place the patched jar archive.
+## Directory Structure
 
-If there are any errors after replacing the patched jar archive, IdleRSC may
-need to be recompiled against the patched jar archive.
+```
+patcher/
+  ├── src/
+  │   └── main/java/patcher/
+  │        ├── adapters/
+  │        │    ├── base/         # Base adapter classes (class/method)
+  │        │    ├── classlevel/   # Class-level adapters (e.g. Render3DAdapter)
+  │        │    └── methodlevel/  # Method-level adapters (e.g. CommandAdapter)
+  │        ├── core/              # Core patching logic (PatchService, ClassManipulator, etc)
+  │        ├── config/            # AdapterConfig and related config
+  │        └── utils/             # Logging, constants, file utils
+  ├── build.gradle
+  └── README.md
+```
 
-## Adding new patches
+## How It Works
 
-Before adding patches, it is helpful to know how the patcher actually works at
-a high level:
+The patcher transforms a vanilla OpenRSC client JAR into a bot-ready client by injecting hooks and features at the bytecode level.
 
-1. It unzips the jar.
-1. It reads the class files.
-1. The ASM library is then used to read or modify bytecode.
-   [MasterAdapter](src/main/java/patcher/MasterAdapter.java) looks at the
-   function names in the class and then passes it along to the appropriate
-   "patch adapter" function.
-1. For example, Open RSC's **mudclient.showMessage** is passed to
-   [MessageAdapter](src/main/java/patcher/hookers/MessageAdapter.java).
-1. The adapter makes the changes to the class file in memory.
-1. The raw class bytecode is then saved to the class file on disk.
-1. The jar is then re-zipped using the modified classes.
+### 1. **Decompression**
+- Extracts all class files from the input JAR into a temporary workspace for manipulation.
 
-Therefore, if you want to add a new patch, you need to:
+### 2. **Adapter Application**
+- **Class-level adapters** modify entire classes (adding fields, interfaces, methods)
+- **Method-level adapters** modify specific methods (injecting hooks, callbacks, logging)
+- Adapters are applied based on configuration in `AdapterConfig.java`
 
-1. Add a new `if` statement in [MasterAdapter](src/main/java/patcher/MasterAdapter.java)
-1. Add a new `XyzAdapter` in `patcher.hookers`.
+### 3. **Bytecode Manipulation**
+- Uses the [ASM](https://asm.ow2.io/) library to read and modify Java bytecode
+- Inserts, removes, or alters fields and methods while maintaining class validity
 
-However, you still need to determine what bytecode/ASM code to throw into your
-`XyzAdapter`. To do this, you need to install IntelliJ's [ASM Bytecode Viewer](https://plugins.jetbrains.com/plugin/10302-asm-bytecode-viewer).
-The plugin will allow you to write Java code and then view the bytecode or the
-corresponding ASMified bytecode.
+### 4. **Repackaging**
+- Repackages all modified classes into a new output JAR ready for IdleRSC
 
-For example, here are two pictures of "Hello World" being decoded by the viewer:
-![Bytecode Viewer](doc/bytecode-viewer.png)
-![ASMified Bytecode Viewer](doc/asmified-bytecode.png)
+### 5. **Logging & Verification**
+- Logs all patching operations and provides detailed output in debug mode
+- Verifies that all expected modifications were applied successfully
 
-From here, it is up to you to learn how to take the ASMified portion of this
-code and then integrate it into the adapter. There are plenty of examples in
-`patcher.hookers`!
+**In summary:** The patcher automates bytecode modification to inject new features and hooks into the OpenRSC client using a modular adapter system.
+
+## Usage
+
+You can run the patcher as a standalone tool or as part of the build process. But generally, this module is used as part of the full build process for IdleRSC, as a Gradle task. Going from core OpenRSC client, using the patcher to add code to client, and then IdleRSC uses reflections to control that client code while it is running.
+
+### Standalone
+
+```sh
+java -cp patcher.jar patcher.Main <input-client.jar> <output-patched.jar>
+```
+
+### Gradle Task Example
+
+```gradle
+task buildPatchedClient(type: JavaExec) {
+    dependsOn ':client:build', ':patcher:build'
+    mainClass = 'patcher.Main'
+    args clientJar, patchedClientJar
+}
+```
+
+## Configuration
+
+Adapters are registered in `AdapterConfig.java`:
+
+```java
+// Class-level adapter example
+CLASS_TO_ADAPTER.put("orsc/mudclient", "patcher.adapters.classlevel.Render3DAdapter");
+
+// Method-level adapter example
+addMethod("orsc/mudclient", "draw", "()V", "patcher.adapters.methodlevel.GraphicsAdapter");
+```
+
+Constants for field/method/class names are in `utils/HookConstants.java`.
+
+## Debugging
+
+Enable debug logging for detailed output:
+
+```java
+// In patcher/config/PatcherConfig.java
+public static final boolean PATCHER_DEBUG_MODE = true;
+```
+
+## Logging Philosophy
+
+The patcher uses a custom `PatchLogger` for all output:
+
+- **INFO/WARNING/ERROR** messages always print. These cover main patching steps, warnings, and errors.
+- **DEBUG** messages only print if debug logging is enabled (via `PatchLogger.setShowDebugLogs(true)`). These are for detailed developer output (e.g., skipped methods, adapter creation, etc).
+
+This allows normal users to see only the important output, while developers can enable debug logs for more granular details.
+
+### Example Usage
+
+```java
+PatchLogger.logInfo("Patching started");
+PatchLogger.logWarning("Some classes were not found");
+PatchLogger.logError("Failed to patch class: ...");
+// Turn on debug messages on program launch, via PatcherConfig PATCHER_DEBUG_MODE
+PatchLogger.logDebug("Adapter created for ...");
+```
+
+## Troubleshooting
+
+- **Missing hooks/fields?**
+  Check your adapter registration and class/method names in `AdapterConfig`.
+
+- **Build failures?**
+  Ensure all adapters and dependencies are up to date and correctly referenced.
+
+- **Unexpected behavior?**
+  Use debug logging to trace patching steps and verify adapter application.
+
+## Contributing
+
+- Keep adapters focused and single-purpose
+- Add new adapters in the appropriate `adapters/classlevel` or `adapters/methodlevel` directory
+- Update `AdapterConfig` to register new adapters
+- Write clear commit messages and document new features
+
+## License
+
+See the main project for license details.

@@ -1200,6 +1200,7 @@ public enum SceneryId implements Id {
     	LADDER_MAGE_ARENA_DOWN(1188),
     	VINE(1190),
   */
+
   // RUNECRAFT_OBJECTS
   MYSTERIOUS_RUINS_AIR(1190),
   AIR_ALTAR(1191),
@@ -1299,6 +1300,7 @@ public enum SceneryId implements Id {
   LIMPWURT_ROOT(1281),
   SUGAR_CANE(1282),
   MYSTERIOUS_GRAPE_VINE(1283),
+
   LAVA_FORGE(1284),
   LAVA_ANVIL(1285),
   ROCKS_CLIMBING_ENTRANA(1286),
@@ -1309,7 +1311,8 @@ public enum SceneryId implements Id {
   STEPPING_STONE_TO_DRAG(1291),
   STEPPING_STONE_TO_KBD(1292),
   DRAGONFRUIT_TREE(1293),
-  EXHAUSTED_TREE_DRAGONFRUIT(1294);
+  EXHAUSTED_TREE_DRAGONFRUIT(1294),
+  STEPPING_STONE_KARAMJA_RIVER(1295);
   private final int id;
 
   private static final Map<Integer, SceneryId> byId = new HashMap<Integer, SceneryId>();

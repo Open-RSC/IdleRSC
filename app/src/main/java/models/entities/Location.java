@@ -114,7 +114,7 @@ public enum Location {
   CATHERBY_CANDLE_SHOP(
       new Boundary(447, 491, 450, 494), new Tile(449, 493), "Catherby - Candle Shop", true),
   CATHERBY_CHEFS_HOUSE(
-      new Boundary(427, 481, 430, 485), new Tile(429, 484), "Catherby - Chef Caleb's House", true),
+      new Boundary(432, 480, 436, 485), new Tile(433, 481), "Catherby - Chef Caleb's House", true),
   CATHERBY_DOCK(new Boundary(439, 503, 441, 507), new Tile(440, 505), "Catherby - Dock", true),
   CATHERBY_DWARF_TUNNEL(
       new Boundary(420, 450, 432, 464), new Tile(427, 457), "Catherby - Dwarf Tunnel West", true),
@@ -217,7 +217,7 @@ public enum Location {
       new Tile(270, 3396),
       "Falador - Mining Guild",
       () -> Main.getController().getBaseStat(SkillId.MINING.getId()) >= 60,
-      "68 Fishing"),
+      "60 Mining"),
   FALADOR_MINING_GUILD_ENTRANCE(
       new Boundary(272, 563, 277, 567),
       new Tile(274, 565),
@@ -264,6 +264,20 @@ public enum Location {
       "Fishing Guild Shop",
       () -> Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68,
       "68 Fishing"),
+  GNOME_STRONGHOLD_AGILITY_COURSE_START(
+      new Boundary(689, 491, 696, 495),
+      new Tile(692, 494),
+      "Gnome Stronghold - Agility Course Start",
+      true),
+  GNOME_STRONGHOLD_BANK(
+      new Boundary(712, 1450, 716, 1454), new Tile(715, 1452), "Gnome Stronghold - Bank", true),
+  GNOME_STRONGHOLD_FLAX(
+      new Boundary(685, 516, 693, 524), new Tile(692, 517), "Gnome Stronghold - Flax Plants", true),
+  GNOME_STRONGHOLD_SPINNING_WHEEL(
+      new Boundary(688, 1458, 693, 1460),
+      new Tile(692, 1459),
+      "Gnome Stronghold - Spinning Wheel",
+      true),
   GOBLIN_VILLAGE(
       new Boundary(323, 487, 327, 492), new Tile(326, 490), "Goblin Village - Center", true),
   GOBLIN_VILLAGE_ZAMORAK_ALTAR(
@@ -646,8 +660,8 @@ public enum Location {
   WIZARDS_TOWER_ENTRANCE(
       new Boundary(214, 684, 220, 688), new Tile(217, 687), "Wizards' Tower - Entrance", true),
   YANILLE_ANVIL_HUT(
-      new Boundary(585, 750, 590, 758), new Tile(587, 754), "Yanille - Anvil Hut", true),
-  YANILLE_BANK(new Boundary(581, 762, 583, 763), new Tile(582, 762), "Yanille - Bank", true),
+      new Boundary(581, 762, 583, 763), new Tile(582, 762), "Yanille - Anvil Hut", true),
+  YANILLE_BANK(new Boundary(585, 750, 590, 758), new Tile(587, 754), "Yanille - Bank", true),
   YANILLE_DUNGEON_NORTH_ENTRANCE(
       new Boundary(600, 721, 607, 726),
       new Tile(604, 725),
@@ -733,19 +747,40 @@ public enum Location {
   // TODO: Update this array as new banks get added
   private static final Location[] bankArray = {
     AL_KHARID_BANK,
-    ARDOUGNE_SOUTH_BANK,
     ARDOUGNE_NORTH_BANK,
+    ARDOUGNE_SOUTH_BANK,
     CATHERBY_BANK,
     DRAYNOR_BANK,
     EDGEVILLE_BANK,
     FALADOR_EAST_BANK,
     FALADOR_WEST_BANK,
+    GNOME_STRONGHOLD_BANK,
     SEERS_VILLAGE_BANK,
     VARROCK_EAST_BANK,
     VARROCK_WEST_BANK,
     YANILLE_BANK,
     ZANARIS_BANK
   };
+
+  // Map of query strings for certain locations for use with the ::walkto chat command
+  private static final HashMap<String[], Location> queryToLocationMap =
+      new HashMap<String[], Location>() {
+        {
+          put(new String[] {"alkharid", "al-kharid", "alk"}, AL_KHARID_BANK);
+          put(new String[] {"lumbridge", "lum", "lumby"}, LUMBRIDGE_CASTLE_COURTYARD);
+          put(new String[] {"varrock", "var"}, VARROCK_WEST_BANK);
+          put(new String[] {"falador", "fally", "fal"}, FALADOR_EAST_BANK);
+          put(new String[] {"edgeville", "edge"}, EDGEVILLE_BANK);
+          put(new String[] {"ardougne", "ard", "ardy"}, ARDOUGNE_NORTH_BANK);
+          put(new String[] {"draynor", "dra", "dray"}, DRAYNOR_BANK);
+          put(new String[] {"catherby", "cat", "cath"}, CATHERBY_BANK);
+          put(new String[] {"yanille", "yan"}, YANILLE_BANK);
+          put(new String[] {"zanaris", "zan"}, ZANARIS_BANK);
+          put(new String[] {"taverley", "tav"}, TAVERLEY);
+          put(new String[] {"seers"}, SEERS_VILLAGE_BANK);
+          put(new String[] {"sarim", "port sarim", "port"}, PORT_SARIM_DOCKS);
+        }
+      };
 
   private final Boundary boundary;
   private final Tile standableTile;
@@ -799,6 +834,7 @@ public enum Location {
         walkCondition,
         requirementString != null ? new String[] {requirementString} : new String[0]);
   }
+
   /**
    * Constructs a Location
    *
@@ -839,6 +875,9 @@ public enum Location {
     }
 
     if (!isWalkConditionMet()) {
+
+      System.out.println(this);
+      System.out.println(Arrays.toString(this.requirementsStringArray));
       String[] nonNullReqs =
           Arrays.stream(requirementsStringArray)
               .filter(Objects::nonNull)
@@ -889,21 +928,42 @@ public enum Location {
 
       c.displayMessage(
           "@yel@Attempting to walk to: @cya@" + Location.getDescriptionFromStandableTile(x, y));
-      System.out.println();
       Main.log(String.format("Attempting to walk to \"%s\" from %s", destination, start));
       System.out.println(
           "If this fails, WebWalker might need to be updated to include correct pathing to the area.");
-      int failedAttempts = 0;
-      while (!isAtCoords(x, y) && c.isRunning()) {
-        failedAttempts = !c.walkTowards(x, y) ? ++failedAttempts : 1;
-        if (failedAttempts >= 5) {
-          String errorMessage =
-              "Failed to walk to the specified location. WebWalker may need to be updated";
-          c.displayMessage("@red@" + errorMessage);
-          Main.logError(errorMessage);
-          c.stop();
+    }
+
+    int attempt = 0;
+    int maxRetries = 5;
+    while (c.isRunning()) {
+      try {
+        if (isAtCoords(x, y)) return;
+        int failedAttempts = 0;
+        while (!isAtCoords(x, y) && c.isRunning()) {
+          while (!c.isLoggedIn()) c.sleep(640);
+          while (c.isInCombat() && c.isRunning()) {
+            c.walkTo(c.currentX(), c.currentY());
+            c.sleep(640);
+          }
+          failedAttempts = c.walkTowards(x, y) ? 0 : ++failedAttempts;
+          if (failedAttempts >= 5) throw new Exception();
+          c.sleep(100);
         }
-        c.sleep(100);
+        return;
+      } catch (Exception e) {
+        attempt++;
+        if (attempt > maxRetries) {
+          Main.logError(
+              "Failed walking to the specified location. Maximum retry count exceeded: ", e);
+          c.stop();
+          return;
+        } else {
+          Main.logError(
+              String.format(
+                  "Failed walking to the specified location. Retrying in 10 seconds: %d/%d retries",
+                  attempt, maxRetries));
+          c.sleep(10000);
+        }
       }
     }
   }
@@ -922,7 +982,7 @@ public enum Location {
           "LocationWalker failed to walk towards closest as there were no valid Locations left in the array");
       return;
     }
-    nearest.walkTowards();
+    if (!nearest.isAtLocation()) nearest.walkTowards();
   }
 
   /**
@@ -943,7 +1003,7 @@ public enum Location {
       return;
     }
 
-    nearest.walkTowards();
+    if (!nearest.isAtLocation()) nearest.walkTowards();
   }
 
   /**
@@ -1042,6 +1102,34 @@ public enum Location {
    */
   public Point getCorner1() {
     return new Point(getBoundary().getX1(), getBoundary().getY1());
+  }
+
+  /**
+   * Returns a location from queryToLocationMap if available Used for the ::walkto chat command
+   *
+   * @param query String -- Alternate
+   * @return Location
+   */
+  public static Location getWalktoExactMatchLocation(String query) {
+    String lowerQuery = query.toLowerCase().trim();
+
+    if (query.equalsIgnoreCase("random")) {
+      Location[] values = Location.values();
+      return values[new Random().nextInt(values.length)];
+    }
+
+    return queryToLocationMap.entrySet().stream()
+        .filter(
+            entry ->
+                Arrays.stream(entry.getKey()).anyMatch(alias -> alias.equalsIgnoreCase(lowerQuery)))
+        .map(Map.Entry::getValue)
+        .findFirst()
+        .orElse(null);
+  }
+
+  public static void walkToRandom() {
+    Location random = Location.values()[new Random().nextInt(Location.values().length)];
+    random.walkTowards();
   }
 
   /**
@@ -1165,60 +1253,60 @@ public enum Location {
       throw new RuntimeException(e);
     }
   }
-}
 
-class Boundary {
-  private final int x1;
-  private final int y1;
-  private final int x2;
-  private final int y2;
+  static class Boundary {
+    private final int x1;
+    private final int y1;
+    private final int x2;
+    private final int y2;
 
-  Boundary(int x1, int y1, int x2, int y2) {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
+    Boundary(int x1, int y1, int x2, int y2) {
+      this.x1 = x1;
+      this.y1 = y1;
+      this.x2 = x2;
+      this.y2 = y2;
+    }
+
+    public int getX1() {
+      return x1;
+    }
+
+    public int getY1() {
+      return y1;
+    }
+
+    public int getX2() {
+      return x2;
+    }
+
+    public int getY2() {
+      return y2;
+    }
+
+    public String toString() {
+      return String.format("(%s, %s), (%s, %s)", x1, y1, x2, y2);
+    }
   }
 
-  public int getX1() {
-    return x1;
-  }
+  static class Tile {
+    private final int x;
+    private final int y;
 
-  public int getY1() {
-    return y1;
-  }
+    Tile(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
 
-  public int getX2() {
-    return x2;
-  }
+    public int getX() {
+      return x;
+    }
 
-  public int getY2() {
-    return y2;
-  }
+    public int getY() {
+      return y;
+    }
 
-  public String toString() {
-    return String.format("(%s, %s), (%s, %s)", x1, y1, x2, y2);
-  }
-}
-
-class Tile {
-  private final int x;
-  private final int y;
-
-  Tile(int x, int y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  public int getX() {
-    return x;
-  }
-
-  public int getY() {
-    return y;
-  }
-
-  public String toString() {
-    return String.format("(%s, %s)", x, y);
+    public String toString() {
+      return String.format("(%s, %s)", x, y);
+    }
   }
 }

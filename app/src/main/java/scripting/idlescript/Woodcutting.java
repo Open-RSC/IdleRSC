@@ -245,17 +245,17 @@ public class Woodcutting extends IdleScript {
   public void paintInterrupt() {
     if (c != null) {
       c.drawBoxAlpha(7, 7, 132, bank.isSelected() ? 49 : 35, 0xFF0000, 64);
-      c.drawString("@red@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
+      c.drawString("@cya@Woodcutter @gre@by Searos", 10, 21, 0xFFFFFF, 1);
       c.drawString(
-          (bank.isSelected() ? "@red@Logs Collected: @yel@" : "@red@Logs Chopped: @yel@")
+          (bank.isSelected() ? "@cya@Logs Collected: @yel@" : "@red@Logs Chopped: @yel@")
               + (totalLogs + inventLogs),
           10,
           35,
-          0xFFFFFF,
+          0x00FFFF,
           1);
 
       if (bank.isSelected())
-        c.drawString("@red@Logs in bank: @yel@" + bankedLogs, 10, 49, 0xFFFFFF, 1);
+        c.drawString("@cya@Logs in bank: @yel@" + bankedLogs, 10, 49, 0xFFFFFF, 1);
     }
   }
 }

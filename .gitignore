@@ -47,7 +47,11 @@ accounts/
 hc.bmp
 
 # Don't include any file or directory in the scripts directory that has test in the name regardless of casing
-app/src/main/java/scripting/*/*[Tt][Ee][Ss][Tt]*
+app/src/main/java/scripting/**/*[Tt][Ee][Ss][Tt]*
+
+# Don't include any private scripts
+app/src/main/java/scripting/**/PrivateScripts/*
+!app/src/main/java/scripting/**/PrivateScripts/.gitkeep
 
 # Don't include core assets downloaded when updating client with scripts
 assets/core

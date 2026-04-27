@@ -1,20 +1,21 @@
 package bot.cli;
 
-import bot.Main;
 import bot.ocrlib.OCRType;
-import java.awt.*;
 import java.util.ArrayList;
 
 public class ParseResult {
   // some settings need default options here to prevent bugs
+  private String propertiesFileName = null;
   private String username = "Username";
   private String password = "Password";
-  private String initCache = "Coleslaw";
-  private String serverIp = "game.openrsc.com";
+  private String portSelection = "Coleslaw";
+  private String ipSelection = "game.openrsc.com";
   private String themeName = "RuneDark Theme";
-  private int positionX = -1;
-  private int positionY = -1;
+  private Integer positionX;
+  private Integer positionY;
   private int spellId = 0;
+  private String customIp = "localhost";
+  private int customPort = 43599;
   private String scriptName = "";
   private boolean graphicsEnabled = true;
   private boolean render3DEnabled = true;
@@ -41,6 +42,14 @@ public class ParseResult {
       version;
 
   // Switching options
+  public String getPropertiesFileName() {
+    return propertiesFileName;
+  }
+
+  public void setPropertiesFileName(String propertiesFileName) {
+    this.propertiesFileName = propertiesFileName;
+  }
+
   private ArrayList<Integer> attackItems, defenceItems, strengthItems;
 
   public void setUseLocationWalker(boolean useLocationWalker) {
@@ -99,28 +108,44 @@ public class ParseResult {
     return scriptArguments;
   }
 
-  public void setInitCache(String initCache) {
+  public void setServerPortSelection(String initCache) {
     if (initCache != null && initCache.equalsIgnoreCase("uranium")) {
-      this.initCache = "uranium";
+      this.portSelection = "uranium";
     } else if (initCache != null && initCache.equalsIgnoreCase("coleslaw")) {
-      this.initCache = "coleslaw";
+      this.portSelection = "coleslaw";
     } else if (initCache != null && initCache.equalsIgnoreCase("custom")) {
-      this.initCache = "custom";
+      this.portSelection = "custom";
     } else {
-      this.initCache = "";
+      this.portSelection = "";
     }
   }
 
-  public String getInitCache() {
-    return initCache;
+  public String getServerPortSelection() {
+    return portSelection;
   }
 
-  public void setServerIp(String serverIp) {
-    this.serverIp = serverIp;
+  public void setServerIpSelection(String ipSelection) {
+    this.ipSelection = ipSelection;
   }
 
-  public String getServerIp() {
-    return serverIp;
+  public String getServerIpSelection() {
+    return ipSelection;
+  }
+
+  public void setCustomIp(String customIp) {
+    this.customIp = customIp;
+  }
+
+  public String getCustomIp() {
+    return customIp;
+  }
+
+  public void setCustomPort(int customPort) {
+    this.customPort = customPort;
+  }
+
+  public int getCustomPort() {
+    return customPort;
   }
 
   public OCRType getOCRType() {
@@ -227,37 +252,19 @@ public class ParseResult {
     return scriptSelectorOpen;
   }
 
-  public void setPositionX(int positionX) {
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    if (positionX < -1 || positionX > (int) screenSize.getWidth()) {
-      Main.logError(
-          String.format(
-              "Invalid window x position value set in account settings (%s.properties)", username));
-      Main.logError(
-          String.format(
-              "It should be between 0-%s (or -1 to disable)", (int) screenSize.getWidth()));
-      this.positionX = -1;
-    } else this.positionX = positionX;
+  public void setPositionX(Integer positionX) {
+    this.positionX = positionX;
   }
 
-  public int getPositionX() {
+  public void setPositionY(Integer positionY) {
+    this.positionY = positionY;
+  }
+
+  public Integer getPositionX() {
     return positionX;
   }
 
-  public void setPositionY(int positionY) {
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    if (positionY < -1 || positionY > (int) screenSize.getHeight()) {
-      Main.logError(
-          String.format(
-              "Invalid window y position value set in account settings (%s.properties)", username));
-      Main.logError(
-          String.format(
-              "It should be between 0-%s (or -1 to disable)", (int) screenSize.getHeight()));
-      this.positionY = -1;
-    } else this.positionY = positionY;
-  }
-
-  public int getPositionY() {
+  public Integer getPositionY() {
     return positionY;
   }
 

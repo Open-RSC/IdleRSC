@@ -80,7 +80,7 @@ public class AIOMagic extends IdleScript {
     if (!guiSetup) {
       setupGUI();
       guiSetup = true;
-      c.setStatus("@blu@Waiting for start..");
+      c.setStatus("@blu@Waiting for start...");
     }
     if (scriptStarted) {
       guiSetup = false;
@@ -157,11 +157,21 @@ public class AIOMagic extends IdleScript {
           }
 
         } else {
-          // we are doing superheat, which is a lot more complicated
-          if (c.getInventoryItemCount(primaryOre) < 1) {
-            c.setStatus("@blu@Banking..");
+          int neededSecondaryPerCast =
+              secondaryOreAmount > 0 ? secondaryOreAmount / primaryOreAmount : 0;
+
+          // Check if we have enough in inventory to cast
+          boolean hasPrimary = c.getInventoryItemCount(primaryOre) >= 1;
+          boolean hasSecondary =
+              neededSecondaryPerCast == 0
+                  || c.getInventoryItemCount(secondaryOre) >= neededSecondaryPerCast;
+
+          // If we don’t have enough, go to bank
+          if (!hasPrimary || !hasSecondary) {
+            c.setStatus("@blu@Banking...");
             c.openBank();
 
+            // Deposit loot
             for (int id : lootIds) {
               int amount = c.getInventoryItemCount(id);
               if (amount > 0) {
@@ -170,11 +180,23 @@ public class AIOMagic extends IdleScript {
               }
             }
 
+            // Check bank amounts stop script if out of ores
+            if (c.getBankItemCount(primaryOre) < 1
+                || (neededSecondaryPerCast > 0
+                    && c.getBankItemCount(secondaryOre) < neededSecondaryPerCast)) {
+              c.log("All bars have been smelted!", "gre");
+              c.log("Stopping script...", "gre");
+              c.stop();
+              break;
+            }
+
+            // Withdraw ores
             c.withdrawItem(primaryOre, primaryOreAmount);
             c.withdrawItem(secondaryOre, secondaryOreAmount);
             c.sleep(2000);
             c.closeBank();
           } else {
+            // We have enough in inventory to cast
             c.setStatus("@blu@Casting!");
             c.castSpellOnInventoryItem(spellId, c.getInventoryItemSlotIndex(primaryOre));
             c.sleep(1300);
@@ -371,8 +393,7 @@ public class AIOMagic extends IdleScript {
               selectedTaliId = Integer.parseInt(taliIdField.getText());
             }
           } catch (Exception exc) {
-            c.displayMessage("Error parsing inputted values, please try again.");
-            exc.printStackTrace();
+            Main.logError("Error parsing inputted values, please try again.", exc);
             return;
           }
 

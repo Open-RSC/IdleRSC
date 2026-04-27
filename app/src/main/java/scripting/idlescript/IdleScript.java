@@ -23,7 +23,7 @@ public abstract class IdleScript {
   protected RowBuilder rowBuilder = new RowBuilder();
 
   // These classes are omitted from the cleanup override check
-  protected final Class<?>[] excludedClasses = {Controller.class, ScriptInfo.class};
+  public final Class<?>[] excludedClasses = {Controller.class, ScriptInfo.class};
 
   /**
    * Called by {@link callbacks.MessageCallback} every time a new server message is drawn on the
@@ -93,7 +93,7 @@ public abstract class IdleScript {
    * cleanup method. This ensures that child classes can override the secondary method without
    * accidentally bypassing the original cleanup logic. <br>
    * <br>
-   * For an example implementation for superclasses look at {@link SeattaScript}<br>
+   * For usage on superclasses look at {@link scripting.idlescript.SeattaScript.SeattaScript}<br>
    * <br>
    * Note: Classes can be added to excludedStaticClassTypes to ignore them when checking for static
    * fields. <br>
@@ -133,7 +133,7 @@ public abstract class IdleScript {
                   ? "es declare static fields, but do"
                   : " declares static fields, but does",
               classList);
-      Main.logError(staticStringNotice);
+      Main.logWarning(staticStringNotice);
     }
   }
 

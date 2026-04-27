@@ -7,21 +7,18 @@ public class ColorPickerPanel extends JPanel {
   private final JTextField hexField;
   private final JButton colorButton;
   private Color selectedColor = Color.BLACK;
+  private final JLabel label;
 
   public ColorPickerPanel(String labelText, String tooltip, Color defaultColor) {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-    JLabel label = new JLabel(labelText);
+    label = new JLabel(labelText);
     hexField = new JTextField(7);
     String defaultHex = colorToHex(defaultColor);
-
     hexField.setText(validateHex(defaultHex) ? defaultHex.toUpperCase() : "#FFFFFF");
-
     colorButton = createColorPickerButton();
-
     hexField.addActionListener(e -> updateColorFromHex());
     colorButton.addActionListener(e -> openColorPicker());
-
     add(label);
 
     JPanel innerPanel = new JPanel();
@@ -41,7 +38,6 @@ public class ColorPickerPanel extends JPanel {
     colorButton.setMargin(new Insets(1, 2, 2, 2));
     colorButton.setBackground(Color.decode(hexField.getText()));
     colorButton.setToolTipText("Open the color picker");
-
     return colorButton;
   }
 
@@ -59,6 +55,8 @@ public class ColorPickerPanel extends JPanel {
     String text = hexField.getText().trim();
     if (validateHex(text)) {
       selectedColor = Color.decode(text);
+      colorButton.setBackground(selectedColor);
+      colorButton.setForeground(getContrastingColor(selectedColor));
     } else {
       hexField.setText("#000000"); // Reset to default if invalid
     }
@@ -66,11 +64,11 @@ public class ColorPickerPanel extends JPanel {
 
   private void openColorPicker() {
     Color newColor = JColorChooser.showDialog(this, "Pick a Color", selectedColor);
+
     if (newColor != null) {
       selectedColor = newColor;
       hexField.setText(String.format("#%06X", (0xFFFFFF & newColor.getRGB())));
       colorButton.setBackground(selectedColor);
-
       colorButton.setForeground(getContrastingColor(selectedColor));
     }
   }
@@ -94,5 +92,40 @@ public class ColorPickerPanel extends JPanel {
 
   public Color getColor() {
     return selectedColor;
+  }
+
+  public JTextField getHexField() {
+    return hexField;
+  }
+
+  @Override
+  public void updateUI() {
+    super.updateUI();
+
+    // Only update colors if components exist
+    if (label != null) {
+      Color fg = UIManager.getColor("Label.foreground");
+      if (fg != null) label.setForeground(fg);
+    }
+
+    if (hexField != null) {
+      Color tfBg = UIManager.getColor("TextField.background");
+      Color tfFg = UIManager.getColor("TextField.foreground");
+      Color tfCC = UIManager.getColor("TextField.caretForeground");
+      if (tfBg != null) hexField.setBackground(tfBg);
+      if (tfFg != null) hexField.setForeground(tfFg);
+      if (tfCC != null) hexField.setCaretColor(tfCC);
+    }
+
+    Color bg = UIManager.getColor("Panel.background");
+    if (bg != null) setBackground(bg);
+
+    if (colorButton != null) {
+      colorButton.setBackground(selectedColor);
+      colorButton.setForeground(getContrastingColor(selectedColor));
+    }
+
+    revalidate();
+    repaint();
   }
 }

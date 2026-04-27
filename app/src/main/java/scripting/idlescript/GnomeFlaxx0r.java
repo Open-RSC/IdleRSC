@@ -102,8 +102,7 @@ public class GnomeFlaxx0r extends IdleScript {
   public void goToWheel() {
     c.setStatus("@cya@Going back to wheel..");
     c.walkTo(692, 515);
-    c.atObject(691, 515);
-    while (c.isRunning() && c.currentY() < 1000) c.sleep(640);
+    c.climb(691, 515);
     c.walkTo(692, 1459);
   }
 
@@ -124,8 +123,7 @@ public class GnomeFlaxx0r extends IdleScript {
   public void goToBank() {
     c.setStatus("@cya@Walking to the bank.");
     c.walkTo(714, 515);
-    c.atObject(714, 516); // go up ladder
-    while (c.isRunning() && c.currentY() < 1000) c.sleep(640);
+    c.climb(714, 516);
     c.walkTo(714, 1454);
     c.setStatus("@gre@Done Walking..");
   }
@@ -133,8 +131,7 @@ public class GnomeFlaxx0r extends IdleScript {
   public void goToFlax() {
     c.setStatus("@cya@Going back to flax..");
     c.walkTo(714, 1459);
-    c.atObject(714, 1460);
-    while (c.isRunning() && c.currentY() > 1000) c.sleep(640);
+    c.climb(714, 1460);
     c.walkTo(712, 516);
     c.setStatus("@gre@Done Walking..");
   }
@@ -171,7 +168,7 @@ public class GnomeFlaxx0r extends IdleScript {
       } catch (Exception e) {
         // divide by zero
       }
-      c.drawBoxAlpha(7, 7, 185, 21 + 14 + 14, 0x00FFFF, 128);
+      c.drawBoxAlpha(7, 7, 189, 21 + 14 + 11, 0x00FFFF, 128);
       c.drawString(
           "@dgr@Gnome@cya@Flaxx0r @whi@by @red@Dvorak @whi@& @red@Kaila", 10, 21, 0xFFFFFF, 1);
       if (spin) {

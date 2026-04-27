@@ -20,30 +20,30 @@ public class ColeslawGuildFisher extends IdleScript {
           "Searos & Kaila",
           "Fishes in the fishing guild.");
 
-  private static final Controller c = Main.getController();
-  private static boolean guiSetup = false;
-  private static boolean scriptStarted = false;
-  private static long startTime;
-  private static JFrame scriptFrame = null;
-  private static final int GAME_TICK = 640;
-  private static final long startTimestamp = System.currentTimeMillis() / 1000L;
-  private static final int SHARK_FISH_SPOT = 261;
-  private static final int LOBSTER_FISH_SPOT = 376;
-  private static boolean swordFish;
-  private static boolean bigNetFishing;
-  private static boolean dropJunk = true;
-  private static int equipId;
-  private static int spotId;
-  private static int sharkSuccess = 0;
-  private static int swordSuccess = 0;
-  private static int lobsterSuccess = 0;
-  private static int tunaSuccess = 0;
-  private static int success = 0;
-  private static int failure = 0;
-  private static int fishInBank = 0;
-  private static int fishIdOne = 0;
-  private static int fishIdTwo = 0;
-  private static int fishIdThree = 0;
+  private final Controller c = Main.getController();
+  private boolean guiSetup = false;
+  private boolean scriptStarted = false;
+  private long startTime;
+  private JFrame scriptFrame = null;
+  private final int GAME_TICK = 640;
+  private final long startTimestamp = System.currentTimeMillis() / 1000L;
+  private final int SHARK_FISH_SPOT = 261;
+  private final int LOBSTER_FISH_SPOT = 376;
+  private boolean swordFish;
+  private boolean bigNetFishing;
+  private boolean dropJunk = true;
+  private int equipId;
+  private int spotId;
+  private int sharkSuccess = 0;
+  private int swordSuccess = 0;
+  private int lobsterSuccess = 0;
+  private int tunaSuccess = 0;
+  private int success = 0;
+  private int failure = 0;
+  private int fishInBank = 0;
+  private int fishIdOne = 0;
+  private int fishIdTwo = 0;
+  private int fishIdThree = 0;
   /**
    * This function is the entry point for the program. It takes an array of parameters and executes
    * script based on the values of the parameters. <br>

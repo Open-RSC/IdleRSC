@@ -3,12 +3,14 @@ package reflector;
 import bot.Main;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import orsc.OpenRSC;
 import orsc.mudclient;
+import orsc.util.RSRuntimeError;
 
 /**
  * Reflector is a master reflection class which the entire bot is built off of. It contains helper
@@ -72,45 +74,93 @@ public class Reflector {
    * This function will call `methodName` with `params` inside of `mud`.
    *
    * @param mud -- the mud object
-   * @param methodName -- the method name as a case sensitive string
+   * @param methodName -- the method name as a case-sensitive string
    * @param params -- parameters, as a list
    * @return the return value of the specified `methodName` function
    */
   public Object mudInvoker(mudclient mud, String methodName, Object... params) {
+    int maxRetries = 3;
 
-    try {
+    //    Main.logDebug(
+    //        String.format(
+    //            "Invoking mudclient method: '%s' with args '%s'", methodName,
+    // Arrays.toString(params)));
 
-      if (params != null) {
-        Class<?>[] types = new Class<?>[params.length];
+    // Ignore out of bounds walkToActionSource calls
+    if (methodName.equals("walkToActionSource")) {
+      int currentX = Main.getController().currentX();
+      int currentY = Main.getController().currentY();
+      int startX = (int) params[0];
+      int startY = (int) params[1];
+      int endX = (int) params[2];
+      int endY = (int) params[3];
 
-        int i = 0;
-        for (Object param : params) {
-          if (param.getClass() == Integer.class) {
-            types[i] = int.class;
-          } else if (param.getClass() == Boolean.class) {
-            types[i] = boolean.class;
-          } else {
-            types[i] = param.getClass();
-          }
+      boolean failed =
+          currentX + endX < 0
+              || currentX + endX > 1007
+              || currentY + endY < 0
+              || currentY + endY > 3839;
 
-          i++;
-        }
-
-        Method method = mud.getClass().getDeclaredMethod(methodName, types);
-        method.setAccessible(true);
-
-        return method.invoke(mud, params);
-      } else {
-        Method method = mud.getClass().getDeclaredMethod(methodName);
-        method.setAccessible(true);
-
-        return method.invoke(mud);
+      if (failed) {
+        Main.logWarning(
+            "Skipped a mudclient 'walkToActionSource' invocation due to invalid coordinates");
+        Main.logWarning(
+            String.format(
+                "Current coords: (%s, %s)%nPassed Start Coords: (%s, %s), Passed End Coords: (%s, %s)",
+                currentX, currentY, startX, startY, endX, endY));
+        return false;
       }
-
-    } catch (Exception e) {
-      Main.logError(String.format("Failed to invoke mudclient's '%s' method", methodName), e);
     }
 
+    for (int attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (params != null) {
+          Class<?>[] types = new Class<?>[params.length];
+
+          int i = 0;
+          for (Object param : params) {
+            if (param.getClass() == Integer.class) {
+              types[i] = int.class;
+            } else if (param.getClass() == Boolean.class) {
+              types[i] = boolean.class;
+            } else {
+              types[i] = param.getClass();
+            }
+            i++;
+          }
+
+          Method method = mud.getClass().getDeclaredMethod(methodName, types);
+          method.setAccessible(true);
+          return method.invoke(mud, params);
+
+        } else {
+          Method method = mud.getClass().getDeclaredMethod(methodName);
+          method.setAccessible(true);
+          return method.invoke(mud);
+        }
+
+      } catch (InvocationTargetException | RSRuntimeError e) {
+        if (Main.getController() == null) return null;
+        if (attempt < maxRetries) {
+          Main.logError(
+              String.format(
+                  "Failed to invoke mudclient's '%s' method. Retrying in 5 seconds: %d/%d retries",
+                  methodName, attempt + 1, maxRetries));
+          Main.getController().sleep(5000);
+
+        } else {
+          Main.logError(
+              String.format(
+                  "Unable to invoke mudclient's '%s' method. Maximum retry count exceeded: ",
+                  methodName),
+              e);
+        }
+
+      } catch (Exception e) {
+        Main.logError(String.format("Failed to invoke mudclient's '%s' method.", methodName), e);
+        return null;
+      }
+    }
     return null;
   }
 

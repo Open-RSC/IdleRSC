@@ -75,6 +75,7 @@ public class Main {
 
   private static boolean isRunning = false;
   private static String username = "";
+  private static String accountProp = "";
   private static long scriptStartTime = 0;
   // Extracted Object Components
   private static BottomPanel bottomPanel;
@@ -84,9 +85,6 @@ public class Main {
 
   private static Debugger debugger = null;
   private static Thread loginListener = null; // see LoginListener.java
-  private static final Thread positionListener = null; // see PositionListener.java
-  // private static Thread windowListener = null; // see WindowListener.java
-  private static final Thread messageListener = null; // see MessageListener.java
   private static Thread debuggerThread = null;
   // Scripts run in this thread (Hence the name) :)
   private static Thread runningScriptThread = null;
@@ -177,10 +175,30 @@ public class Main {
                   ? oldHeight + (BottomPanel.logPanelSelected() ? 187 : -187)
                   : oldHeight);
       rscFrame.setSize(newSize);
+      setWindowPosition();
 
     } catch (InterruptedException e) {
       logger.err("Failed to reload client config", e);
       throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Sets the window position according to the config's coordinates, if either are null the window
+   * is centered
+   */
+  private static void setWindowPosition() {
+    if (config.getPositionX() == null || config.getPositionY() == null) {
+      rscFrame.setLocationRelativeTo(null);
+    } else {
+      // The rscFrame's X position is offset by -7 pixels.
+      // Subtracting 7 here compensates for that internal offset, ensuring the window's content
+      // area
+      // aligns exactly with the coordinates saved in the account's properties file.
+      int x = config.getPositionX();
+      int y = config.getPositionY();
+      log(String.format("Moving window to startup coordinates (%s, %s)", x, y));
+      rscFrame.setLocation(x - 7, y);
     }
   }
 
@@ -198,7 +216,11 @@ public class Main {
             new Thread(
                 () -> {
                   if (controller != null && controller.isBatching()) {
-                    controller.stopBatching();
+                    controller.stop();
+                    while (controller.isBatching()) {
+                      controller.stopBatching();
+                      controller.sleep(640);
+                    }
                     log("Batching force-stopped at shutdown");
                   }
                 },
@@ -209,6 +231,10 @@ public class Main {
         (t, e) -> {
           // Ignore thread death in runningScriptThread since we force-stop it on script stop
           if (t.equals(runningScriptThread) && e instanceof ThreadDeath) return;
+          // Ignore uncaught IntelliJ clipboard DataFlavor exceptions when pasting
+          if (e instanceof ClassNotFoundException
+              && e.getMessage() != null
+              && e.getMessage().startsWith("com/intellij/")) return;
           logError("Uncaught exception in thread " + t.getName(), e);
         });
 
@@ -261,16 +287,14 @@ public class Main {
           @Override
           public void componentResized(ComponentEvent e) {
             if ((rscFrame.getWidth() != prevWidth || rscFrame.getHeight() != prevHeight)) {
-              if (!controller.isDrawEnabled()) controller.setDrawing(true, 300);
               prevWidth = rscFrame.getWidth();
               prevHeight = rscFrame.getHeight();
+              if (!controller.isDrawEnabled()) controller.setDrawing(true, 300);
             }
           }
         });
 
-    if (config.getPositionX() == -1 || config.getPositionY() == -1) {
-      rscFrame.setLocationRelativeTo(null);
-    } else rscFrame.setLocation(config.getPositionX(), config.getPositionY());
+    setWindowPosition();
 
     // Initialize Panels for client
     sidePanel = new SidePanel();
@@ -301,13 +325,6 @@ public class Main {
     controller.setInterlacer(config.isGraphicsInterlacingEnabled());
     if (config.isScriptSelectorOpen()) ScriptSelectorUI.showUI();
     if (config.isDebug()) debugger.open();
-
-    // ? WindowListener no longer does anything.
-    // ? Potentially consider deleting it.
-    //    log("Initializing WindowListener...");
-    //    windowListener = new Thread(new WindowListener(), "IdleRSC - Window Listener");
-    //    windowListener.start();
-    //    log("WindowListener started.");
 
     // give everything a nice synchronization break juuuuuuuuuuuuuust in case...
     Thread.sleep(1000);
@@ -585,9 +602,7 @@ public class Main {
               .map(Main::instantiateScriptClass)
               .orElse(null);
 
-      if (currentRunningScript == null) {
-        return false;
-      }
+      if (currentRunningScript == null) return false;
 
       Main.config.setScriptName(scriptName);
       controller.logAsClient(String.format("The '%s' script has been started!", scriptName), "yel");
@@ -603,72 +618,73 @@ public class Main {
     final int COLESLAW_PORT = 43599;
     final int URANIUM_PORT = 43601;
 
-    // Generate our ip file if custom IP mode is not selected
-    if (!config.getServerIp().equalsIgnoreCase("custom")) {
-      setIp("game.openrsc.com");
-    }
-
     // check our cache files and generate if we don't have all of them
-    if (!checkCacheFiles()) {
-      createCache();
-    }
+    if (!checkCacheFiles()) createCache();
 
     // set new or old UI bar design
     setIconStyle(config.getNewIcons());
 
-    // Generate our port file
-    if (config.getInitCache().equalsIgnoreCase("custom")) {
-      log("Not generating port, custom port selected in account settings");
-    } else if (config.getInitCache().equalsIgnoreCase("uranium")) {
-      // Create Uranium cache
-      log("Generating Uranium port file");
-      setPort(URANIUM_PORT);
-    } else if (config.getInitCache().equalsIgnoreCase("coleslaw")) {
-      // Create Coleslaw cache
-      log("Generating Coleslaw port file");
-      setPort(COLESLAW_PORT);
+    // Generate our ip and port files
+    if (config.getServerIpSelection().equalsIgnoreCase("custom")) {
+      setIp(config.getCustomIp());
     } else {
-      log("Server (" + config.getInitCache() + ") is not known.");
-      log("Default: Generating Coleslaw port file");
-      setPort(COLESLAW_PORT);
+      setIp("game.openrsc.com");
+    }
+
+    switch (config.getServerPortSelection().toLowerCase()) {
+      case "custom":
+        if (config.getServerIpSelection().equalsIgnoreCase("custom")) {
+          log("Generating custom IP and port files");
+          setPort(config.getCustomPort());
+        } else {
+          logError("Cannot use custom ports on OpenRSC servers, defaulting to Coleslaw port");
+          setPort(COLESLAW_PORT);
+        }
+        break;
+      case "uranium":
+        log("Generating Uranium port file");
+        setPort(URANIUM_PORT);
+        break;
+      case "coleslaw":
+        log("Generating Coleslaw port file");
+        setPort(COLESLAW_PORT);
+        break;
+      default:
+        logError("Game server port is not valid. Defaulting to Coleslaw port");
+        setPort(COLESLAW_PORT);
+        break;
     }
   }
 
   private static boolean checkCacheFiles() {
-    File spriteDirectory =
-        new File("cache" + File.separator + "video" + File.separator + "spritepacks");
-    File videoDirectory = new File("cache" + File.separator + "video/");
-    File[] spriteFilelist = spriteDirectory.listFiles();
-    String[] videoFilelist = videoDirectory.list();
-    String[] fileNames = {
+    Path cacheDir = Paths.get("Cache");
+    if (!Files.exists(cacheDir)) return false;
+
+    Path videoDir = cacheDir.resolve("video");
+    Path audioDir = cacheDir.resolve("audio");
+    Path spriteDir = videoDir.resolve("spritepacks");
+
+    if (!videoDir.toFile().exists()
+        || !audioDir.toFile().exists()
+        || !spriteDir.toFile().exists()
+        || !spriteDir.resolve("Menus.osar").toFile().exists()) return false;
+
+    String[] videoFiles = {
       "authentic_landscape.orsc",
       "authentic_sprites.orsc",
       "custom_landscape.orsc",
       "custom_sprites.osar",
       "library.orsc",
       "models.orsc",
-      "spritepacks"
     };
 
-    // check sprite files
-    if (spriteFilelist != null && spriteFilelist.length > 0) {
-      if (!spriteFilelist[0].getName().equalsIgnoreCase("menus.osar")) return false;
-    } else return false;
-
-    // check video files
-    if (videoFilelist != null && videoFilelist.length >= 6) {
-      for (String fileName : fileNames) {
-        boolean callReturn = Arrays.stream(videoFilelist).noneMatch(fileName::equalsIgnoreCase);
-        // we are missing a file so regen cache
-        if (callReturn) return false;
-      }
-    } else return false;
+    for (String name : videoFiles) if (!videoDir.resolve(name).toFile().exists()) return false;
 
     return true;
   }
 
   private static void createCache() {
-    log("Cache Missing, Generating the Cache.");
+    log("Generating the Cache.");
     // Create Cache directory
     File dir = new File("." + File.separator + "Cache");
     dir.mkdirs();
@@ -703,11 +719,11 @@ public class Main {
 
     // Add ip to client cache
     try {
-      FileWriter portFile = new FileWriter("Cache/ip.txt");
-      portFile.write(serverId);
-      portFile.close();
+      FileWriter writer = new FileWriter("Cache/ip.txt");
+      writer.write(serverId);
+      writer.close();
     } catch (IOException e) {
-      logger.fatal("Failed to set ip to serverId", e);
+      logger.fatal("Failed to set ip", e);
     }
   }
 
@@ -718,41 +734,11 @@ public class Main {
 
     // Add port to client cache
     try {
-      FileWriter portFile = new FileWriter("Cache/port.txt");
-      portFile.write(Integer.toString(serverPort));
-      portFile.close();
+      FileWriter writer = new FileWriter("Cache/port.txt");
+      writer.write(Integer.toString(serverPort));
+      writer.close();
     } catch (IOException e) {
-      logger.fatal("Failed to set port to serverPort", e);
-    }
-  }
-
-  private static void copyDirectory(
-      String sourceDirectoryLocation, String destinationDirectoryLocation) {
-    try {
-      Files.walk(Paths.get(sourceDirectoryLocation))
-          .forEach(
-              source -> {
-                Path destination =
-                    Paths.get(
-                        destinationDirectoryLocation,
-                        source.toString().substring(sourceDirectoryLocation.length()));
-                try {
-                  Files.copy(source, destination);
-                } catch (IOException e) {
-                  logger.fatal(
-                      String.format(
-                          "Failed to copy directory: %s to %s",
-                          sourceDirectoryLocation, destinationDirectoryLocation),
-                      e);
-                }
-              });
-    } catch (Exception e) {
-      logger.fatal(
-          String.format(
-              "Failed to copy directories: %s to %s",
-              sourceDirectoryLocation, destinationDirectoryLocation),
-          e);
-      System.exit(1);
+      logger.fatal("Failed to set port", e);
     }
   }
 
@@ -823,6 +809,14 @@ public class Main {
    */
   public static String getUsername() {
     return username;
+  }
+
+  public static void setAccountProp(String propName) {
+    accountProp = propName;
+  }
+
+  public static String getAccountProp() {
+    return accountProp;
   }
 
   /**

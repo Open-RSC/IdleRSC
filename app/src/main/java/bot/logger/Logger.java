@@ -35,7 +35,7 @@ public class Logger {
     }
     // Used to redirect System.err to logger. Useful for logging OpenRSC client errors
     System.setErr(new PrintStream(new ErrorBufferingOutputStream(this)));
-  };
+  }
 
   /**
    * Enum representing different types of log levels, each associated with a specific log message
@@ -108,7 +108,8 @@ public class Logger {
     if (type == null || message == null || message.isEmpty()) return;
 
     // Remove any color codes from the message
-    String sanitizedInputMessage = sanitizeMessage(message);
+    String sanitizedInputMessage = message;
+    if (type != LoggerType.DEBUG) sanitizedInputMessage = sanitizeMessage(message);
 
     ConsoleColor color = type.getConsoleColor();
     final Calendar cal = Calendar.getInstance();
@@ -241,7 +242,7 @@ public class Logger {
   private void writeToFile(String message) {
     try {
       if (logName == null)
-        logName = Main.getUsername() + "_" + LocalDateTime.now().format(formatter);
+        logName = Main.getAccountProp() + "_" + LocalDateTime.now().format(formatter);
       Files.createDirectories(logDirectoryPath);
       String logFileName = logName + ".log";
       Path logFilePath = logDirectoryPath.resolve(logFileName);

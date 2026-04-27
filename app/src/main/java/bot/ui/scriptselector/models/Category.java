@@ -39,6 +39,7 @@ public enum Category {
   DO_NOT_MANUALLY_ASSIGN_NATIVE("Native"),
   DO_NOT_MANUALLY_ASSIGN_APOS("APOS"),
   DO_NOT_MANUALLY_ASSIGN_SBOT("SBot"),
+  DO_NOT_MANUALLY_ASSIGN_PRIVATE("Private"),
 
   // Add custom categories below this line
 
@@ -78,11 +79,12 @@ public enum Category {
   private static final List<Category> excludedCategories =
       new ArrayList<>(
           Arrays.asList(
-              Category.DO_NOT_MANUALLY_ASSIGN_ALL,
-              Category.DO_NOT_MANUALLY_ASSIGN_NATIVE,
-              Category.DO_NOT_MANUALLY_ASSIGN_APOS,
-              Category.DO_NOT_MANUALLY_ASSIGN_SBOT,
-              Category.DO_NOT_MANUALLY_ASSIGN_UNCATEGORIZED));
+              DO_NOT_MANUALLY_ASSIGN_ALL,
+              DO_NOT_MANUALLY_ASSIGN_NATIVE,
+              DO_NOT_MANUALLY_ASSIGN_APOS,
+              DO_NOT_MANUALLY_ASSIGN_SBOT,
+              DO_NOT_MANUALLY_ASSIGN_UNCATEGORIZED,
+              DO_NOT_MANUALLY_ASSIGN_PRIVATE));
   private final String name;
 
   Category(String name) {

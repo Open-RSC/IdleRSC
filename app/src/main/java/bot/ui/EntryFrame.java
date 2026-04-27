@@ -5,12 +5,10 @@ import bot.cli.ParseResult;
 import bot.ui.settingsframe.SettingsFrame;
 import java.awt.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import orsc.util.Utils;
@@ -19,14 +17,14 @@ import orsc.util.Utils;
 public final class EntryFrame extends JFrame {
   private SettingsFrame authFrame;
   private String[] accountNames;
-  private static String account = "";
+  private static String accountProp = "";
   private final Choice accountChoice;
   private final String resourceLocation = "app/src/main/java/bot/res/";
   private boolean waitForOk = true;
 
   // todo add theme select to cli
   public static String getAccount() {
-    return account;
+    return accountProp;
   }
 
   /**
@@ -39,6 +37,9 @@ public final class EntryFrame extends JFrame {
     accountChoice.removeAll();
     loadAccounts();
     if (accountNames.length < 1) return;
+
+    // Sort accounts
+    Arrays.sort(accountNames, new NaturalOrderComparator());
 
     // Populate the account selector
     for (String name : accountNames) accountChoice.add(name);
@@ -56,7 +57,7 @@ public final class EntryFrame extends JFrame {
 
     // Select the account
     accountChoice.select(accountIndex);
-    account = accountChoice.getItem(accountIndex);
+    accountProp = accountChoice.getItem(accountIndex);
   }
 
   /** Updates the account list with .properties files in the accounts directory */
@@ -75,12 +76,12 @@ public final class EntryFrame extends JFrame {
       accountNames = new String[accounts.size()];
       accountNames = accounts.toArray(accountNames);
     } catch (final Throwable t) {
-      System.out.println("Error loading accounts: " + t);
+      Main.logError("Error loading accounts", t);
       accountNames = new String[0];
     }
   }
 
-  public EntryFrame(ParseResult parseResult) { // todo grab resources from within the .jar file
+  public EntryFrame(ParseResult parseResult) {
     super("IdleRSC"); // title bar
     setResizable(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -90,16 +91,6 @@ public final class EntryFrame extends JFrame {
         Utils.getImage("res/icons/welcome.icon.png")
             .getImage()
             .getScaledInstance(230, 30, java.awt.Image.SCALE_SMOOTH);
-    //    Image okImage =
-    //        new ImageIcon(resourceLocation + "icons/ok.icon.png")
-    //            .getImage()
-    //            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
-    //    Image cancelImg =
-    //        new ImageIcon(resourceLocation + "icons/cancel2.icon.png")
-    //            .getImage()
-    //            .getScaledInstance(120, 26, java.awt.Image.SCALE_SMOOTH);
-    // ImageIcon icon = new ImageIcon("res/ui/present_edit.png"); // Christmas mode
-    // ImageIcon icon = new ImageIcon("res/ui/scales.png"); // Red
 
     final JPanel mainGridBag = new JPanel();
     final JPanel subGridBag = new JPanel();
@@ -121,13 +112,13 @@ public final class EntryFrame extends JFrame {
     accountChoice.setFocusable(false);
     accountChoice.setPreferredSize(new Dimension(140, 15));
     populateAccounts(parseResult.getUsername() != null ? parseResult.getUsername() : null);
-    accountChoice.addItemListener(event -> account = String.valueOf(event.getItem()));
+    accountChoice.addItemListener(event -> accountProp = String.valueOf(event.getItem()));
 
     Color buttonColor = new java.awt.Color(121, 131, 152, 255);
     GridBagConstraints c = new GridBagConstraints();
 
     // Set Up UI manager to set gradients on our buttons
-    LinkedList<Object> a = new LinkedList<Object>();
+    LinkedList<Object> a = new LinkedList<>();
     a.add(0.3);
     a.add(0.3);
     // 3 Colors of our button background gradient
@@ -227,7 +218,7 @@ public final class EntryFrame extends JFrame {
     editButton.addActionListener(
         e -> {
           if (authFrame != null) authFrame.dispose();
-          authFrame = new SettingsFrame("Editing an account", account, this);
+          authFrame = new SettingsFrame("Editing an account", accountProp, this);
           authFrame.setVisible(true);
         });
 
@@ -245,41 +236,27 @@ public final class EntryFrame extends JFrame {
 
     try {
       UIManager.getDefaults().remove("Button.gradient");
-      Main.setUsername(account);
+
+      Main.setAccountProp(accountProp);
       setVisible(false);
       dispose();
       waitForOk = false;
-    } catch (final Throwable t) {
-      t.printStackTrace();
+    } catch (final Throwable e) {
+      Main.logError("EntryFrame Error: Failed to launch()", e);
     }
   }
 
+  @SuppressWarnings("BusyWait")
   public void waitForLaunch() {
     while (waitForOk) {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        Main.logError("EntryFrame Error: Failed to waitForLaunch()", e);
       }
     }
     setVisible(false);
     dispose();
-  }
-
-  private String getStringProperty(final String name, String propertyName) {
-    if (name == null || propertyName == null || name.isEmpty() || propertyName.isEmpty()) {
-      // System.out.println("Error accessing string property");
-      return "";
-    }
-    final Properties p = new Properties();
-    final File file = Paths.get("accounts").resolve(name + ".properties").toFile();
-    try (final FileInputStream stream = new FileInputStream(file)) {
-      p.load(stream);
-      return p.getProperty(propertyName, " ");
-    } catch (final Throwable t) {
-      System.out.println("Error loading account " + name + ": " + t);
-    }
-    return "";
   }
 
   @Override
@@ -291,5 +268,65 @@ public final class EntryFrame extends JFrame {
       requestFocus();
     }
     super.setVisible(visible);
+  }
+
+  /**
+   * Gets the account choice combobox
+   *
+   * @return Choice
+   */
+  public Choice getAccountChoice() {
+    return accountChoice;
+  }
+
+  /**
+   * Sets the current account properties file
+   *
+   * @param propFile String -- Properties file name minus the file extension
+   */
+  public void setAccountProp(String propFile) {
+    accountProp = propFile;
+  }
+}
+
+/** Comparator class used to sort accountChoice */
+class NaturalOrderComparator implements Comparator<String> {
+
+  @Override
+  public int compare(String a, String b) {
+    int ia = 0, ib = 0;
+
+    while (ia < a.length() && ib < b.length()) {
+      char ca = a.charAt(ia);
+      char cb = b.charAt(ib);
+
+      if (Character.isDigit(ca) && Character.isDigit(cb)) {
+
+        int startA = ia;
+        int startB = ib;
+
+        while (ia < a.length() && Character.isDigit(a.charAt(ia))) ia++;
+        while (ib < b.length() && Character.isDigit(b.charAt(ib))) ib++;
+
+        int numA = Integer.parseInt(a.substring(startA, ia));
+        int numB = Integer.parseInt(b.substring(startB, ib));
+
+        int cmp = Integer.compare(numA, numB);
+        if (cmp != 0) return cmp;
+
+      } else {
+        ca = Character.toLowerCase(ca);
+        cb = Character.toLowerCase(cb);
+
+        if (ca != cb) {
+          return Character.compare(ca, cb);
+        }
+
+        ia++;
+        ib++;
+      }
+    }
+
+    return Integer.compare(a.length(), b.length());
   }
 }

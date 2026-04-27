@@ -151,7 +151,7 @@ public class SleepCallback {
     // force hashes for coleslaw to prevent unnecessary SVM memory usage
     // todo: Investigate fixing SVM Heap size issue directly. Null the array after using?
     if (Main.config != null
-        && Main.config.getInitCache().equalsIgnoreCase("coleslaw")
+        && Main.config.getServerPortSelection().equalsIgnoreCase("coleslaw")
         && type.equals(OCRType.INTERNAL)) ocrType = OCRType.HASH;
 
     Main.log("Setting up " + ocrType.getName() + " OCR.");

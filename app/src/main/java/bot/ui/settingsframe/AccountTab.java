@@ -1,47 +1,48 @@
 package bot.ui.settingsframe;
 
+import bot.Main;
 import bot.ocrlib.OCRType;
 import bot.ui.components.ComboBoxPanel;
 import bot.ui.components.CustomCheckBox;
 import bot.ui.components.TextFieldPanel;
+import bot.ui.components.models.TextFieldPanelType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Properties;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import utils.Extractor;
 
-public class AccountTab extends JPanel implements ISettingsTab {
-  final SpringLayout sl;
-  final int compWidth = 180;
-  final int compHeight = 41;
-
+public class AccountTab extends AbstractBaseTab {
   public TextFieldPanel username, password, ocrServer;
   public ComboBoxPanel initChoice, serverIpChoice, ocrChoice;
   public CustomCheckBox autoLogin, sideBar, logWindow, debug, helpMenu, showVersion;
   public JLabel portIcon;
 
+  public String customIp;
+  public int customPort;
+
   AccountTab(SpringLayout springLayout) {
     super(springLayout);
-    sl = springLayout;
-    initializeComponents();
-    setConstraints();
   }
 
   public void initializeComponents() {
     Component[] comps = {
       username = new TextFieldPanel("Username:", "The account's username"),
-      password = new TextFieldPanel("Password:", "The account's password", true),
+      password =
+          new TextFieldPanel(
+              null, "Password:", "The account's password", TextFieldPanelType.PASSWORD, null),
       serverIpChoice =
           new ComboBoxPanel(
               "Game Server Address:",
-              "Game server address to connect to. If 'Custom' is selected, 'Cache/ip.txt' will be used"),
+              "Connection server address. Uses account's 'account-server-custom-address' if 'Custom' is chosen"),
       initChoice =
           new ComboBoxPanel(
               "Game Server Port:",
-              "Server port to connect to. If 'Custom' is selected, 'Cache/port.txt' will be used"),
+              "Connection port. Uses account's 'account-server-custom-port' if 'Custom' is chosen"),
       ocrChoice =
           new ComboBoxPanel("Sleep Handler Method:", "The method used to solve sleep captchas"),
       ocrServer =
@@ -60,30 +61,55 @@ public class AccountTab extends JPanel implements ISettingsTab {
       portIcon = new JLabel()
     };
 
-    for (Component accountComponent : comps) add(accountComponent);
-    for (String i : new String[] {"Coleslaw", "Uranium", "Custom"}) initChoice.addItem(i);
+    setTabComponents(comps);
+    for (String i : new String[] {"Coleslaw", "Uranium"}) initChoice.addItem(i);
     for (String i : new String[] {"game.openrsc.com", "Custom"}) serverIpChoice.addItem(i);
     for (final OCRType t : OCRType.VALUES) ocrChoice.addItem(t.getName());
 
-    initChoice.addActionListener(
+    serverIpChoice.addActionListener(
         e -> {
-          String selectedItem = initChoice.getSelectedItem();
-          String icon =
-              selectedItem.equalsIgnoreCase("coleslaw")
-                  ? "coleslaw"
-                  : selectedItem.equalsIgnoreCase("uranium") ? "uranium" : "idlersc";
+          JComboBox<String> combo = initChoice.getComboBox();
+          String selectedServer = serverIpChoice.getSelectedItem();
+          String selectedPort = (String) combo.getSelectedItem();
+          if (selectedPort == null) return;
 
-          try (InputStream stream =
-              Extractor.extractResourceAsStream(
-                  String.format("/res/res/logos/%s_transparent.icon.png", icon))) {
+          boolean isLiveServer = selectedServer.equalsIgnoreCase("game.openrsc.com");
+          boolean isSelectedPortCustom = selectedPort.equalsIgnoreCase("custom");
 
-            BufferedImage image = ImageIO.read(stream);
+          combo.removeAllItems();
 
-            portIcon.setIcon(new ImageIcon(image));
-          } catch (IOException ex) {
-            throw new RuntimeException(ex);
-          }
+          combo.addItem("Coleslaw");
+          combo.addItem("Uranium");
+          if (!isLiveServer) combo.addItem("Custom");
+
+          String finalPortSelection =
+              (isLiveServer && isSelectedPortCustom) ? "Coleslaw" : selectedPort;
+          combo.setSelectedItem(finalPortSelection);
         });
+
+    initChoice.addActionListener(e -> updatePortIcon());
+    SwingUtilities.invokeLater(this::updatePortIcon);
+  }
+
+  private void updatePortIcon() {
+    String selectedItem = initChoice.getSelectedItem();
+    if (selectedItem == null) return;
+
+    String icon =
+        selectedItem.equalsIgnoreCase("coleslaw")
+            ? "coleslaw"
+            : selectedItem.equalsIgnoreCase("uranium") ? "uranium" : "idlersc";
+
+    try (InputStream stream =
+        Extractor.extractResourceAsStream(
+            String.format("/res/res/logos/%s_transparent.icon.png", icon))) {
+
+      BufferedImage image = ImageIO.read(stream);
+      portIcon.setIcon(new ImageIcon(image));
+
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
   @Override
@@ -160,11 +186,34 @@ public class AccountTab extends JPanel implements ISettingsTab {
 
   @Override
   public void loadSettings(Properties p) {
-    username.setText(p.getProperty("username", ""));
-    if (!username.getText().isEmpty()) username.getTextField().setEnabled(false);
-    password.setText(p.getProperty("password", ""));
-    initChoice.setSelectedItem(p.getProperty("init-cache", "Coleslaw"));
-    serverIpChoice.setSelectedItem(p.getProperty("server-ip", "game.openrsc.com"));
+    username.setText(getMigratedProperty(p, "account-name", "username", ""));
+    password.setText(getMigratedProperty(p, "account-password", "password", ""));
+
+    try {
+      customIp = getMigratedProperty(p, "account-server-custom-address", "custom-ip", "localhost");
+      InetAddress ignored = InetAddress.getByName(customIp);
+    } catch (Exception e) {
+      Main.logError("Invalid account-server-custom-address. Defaulting to localhost", e);
+      customIp = "localhost";
+    }
+
+    try {
+      customPort =
+          Integer.parseInt(
+              getMigratedProperty(p, "account-server-custom-port", "custom-port", "43599"));
+      if (customPort < 0 || customPort > 65535) throw new Exception();
+    } catch (Exception e) {
+      Main.logError("Failed parsing account-server-custom-port (0-65535). Defaulting to 43599", e);
+      customPort = 43599;
+    }
+
+    String parsedServer =
+        getMigratedProperty(p, "account-server-option-address", "server-ip", "game.openrsc.com");
+    String parsedPort =
+        getMigratedProperty(p, "account-server-option-port", "init-cache", "Coleslaw");
+
+    serverIpChoice.setSelectedItem(parsedServer);
+    initChoice.setSelectedItem(parsedPort);
     ocrChoice.setSelectedItem(p.getProperty("ocr-type", OCRType.INTERNAL.getName()));
     ocrServer.setText(p.getProperty("ocr-server", ""));
     autoLogin.setSelected(Boolean.parseBoolean(p.getProperty("auto-login", "false")));
@@ -183,7 +232,7 @@ public class AccountTab extends JPanel implements ISettingsTab {
     serverIpChoice.setSelectedIndex(0);
     ocrChoice.setSelectedIndex(0);
     ocrServer.setText("");
-    autoLogin.setSelected(false);
+    autoLogin.setSelected(true);
     sideBar.setSelected(true);
     logWindow.setSelected(false);
     debug.setSelected(false);

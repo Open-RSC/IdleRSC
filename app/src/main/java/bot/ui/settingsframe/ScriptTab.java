@@ -6,19 +6,12 @@ import java.awt.*;
 import java.util.Properties;
 import javax.swing.*;
 
-public class ScriptTab extends JPanel implements ISettingsTab {
-  final SpringLayout sl;
-  final int compWidth = 180;
-  final int compHeight = 41;
-
+public class ScriptTab extends AbstractBaseTab {
   public TextFieldPanel scriptName, scriptArgs, spellId, attackItems, strengthItems, defenseItems;
   public CustomCheckBox locationWalkerCheckBox;
 
   ScriptTab(SpringLayout springLayout) {
     super(springLayout);
-    sl = springLayout;
-    initializeComponents();
-    setConstraints();
   }
 
   @Override
@@ -93,7 +86,7 @@ public class ScriptTab extends JPanel implements ISettingsTab {
               "Changes the walker button to use LocationWalker instead of PathWalker",
               false)
     };
-    for (Component comp : comps) add(comp);
+    setTabComponents(comps);
   }
 
   @Override
@@ -101,9 +94,9 @@ public class ScriptTab extends JPanel implements ISettingsTab {
     scriptName.setText(p.getProperty("script-name", ""));
     scriptArgs.setText(p.getProperty("script-arguments", ""));
     spellId.setText(p.getProperty("spell-id", "-1"));
-    attackItems.setText(p.getProperty("attack-items", ""));
-    strengthItems.setText(p.getProperty("defence-items", ""));
-    defenseItems.setText(p.getProperty("strength-items", ""));
+    attackItems.setText(getMigratedProperty(p, "item-switches-attack", "attack-items", ""));
+    strengthItems.setText(getMigratedProperty(p, "item-switches-strength", "strength-items", ""));
+    defenseItems.setText(getMigratedProperty(p, "item-switches-defense", "defense-items", ""));
     String locWalker = p.getProperty("use-location-walker", "false");
     locationWalkerCheckBox.setSelected(locWalker.equalsIgnoreCase("true"));
   }

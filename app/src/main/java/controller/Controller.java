@@ -90,6 +90,7 @@ public class Controller {
 
   private final int GAME_TICK = 640;
 
+  private boolean userXpDropsSetting = true;
   private boolean showStatus = true;
   private boolean showCoords = true;
   private boolean showXp = true;
@@ -661,16 +662,69 @@ public class Controller {
   }
 
   /**
+   * Returns true if the client is currently in the middle of a region transition. Coordinates are
+   * unstable during this period.
+   */
+  private boolean isRegionLoading() {
+    if (mud == null || mud.getWorld() == null) return true;
+    return !mud.getWorld().playerAlive;
+  }
+
+  /** Spins until region loading is complete, up to a timeout */
+  private void waitForRegionLoad() {
+    long deadline = System.currentTimeMillis() + 5000;
+    while (isRegionLoading() && System.currentTimeMillis() < deadline) sleep(10);
+  }
+
+  /**
+   * Gets the local player's X coordinate, waiting for region load if needed<br>
+   * <br>
+   * Use this over the mudclient method
+   */
+  private int getLocalPlayerX() {
+    waitForRegionLoad();
+    return mud.getLocalPlayerX();
+  }
+
+  /**
+   * Gets the local player's Z coordinate, waiting for region load if needed<br>
+   * <br>
+   * Use this over the mudclient method
+   */
+  private int getLocalPlayerZ() {
+    waitForRegionLoad();
+    return mud.getLocalPlayerZ();
+  }
+
+  /**
+   * Gets the current region's mid-base X coordinate, waiting for region load if needed<br>
+   * <br>
+   * Use this over the mudclient method
+   */
+  private int getMidRegionBaseX() {
+    waitForRegionLoad();
+    return mud.getMidRegionBaseX();
+  }
+
+  /**
+   * Gets the current region's mid-base Z coordinate, waiting for region load if needed<br>
+   * <br>
+   * Use this over the mudclient method
+   */
+  private int getMidRegionBaseZ() {
+    waitForRegionLoad();
+    return mud.getMidRegionBaseZ();
+  }
+
+  /**
    * Retrieves the current X coordinates of the player. <br>
    * This occasionally returns incorrect values while Underground
    *
    * @return int
    */
   public int currentX() {
-    int getLocalPlayerX = mud.getLocalPlayerX();
-    int getMidRegionBaseX = mud.getMidRegionBaseX();
-
-    return getLocalPlayerX + getMidRegionBaseX;
+    waitForRegionLoad();
+    return (int) reflector.getObjectMember(mud, "stableX");
   }
 
   /**
@@ -680,10 +734,8 @@ public class Controller {
    * @return int
    */
   public int currentY() {
-    int getLocalPlayerZ = mud.getLocalPlayerZ();
-    int getMidRegionBaseZ = mud.getMidRegionBaseZ();
-
-    return getLocalPlayerZ + getMidRegionBaseZ;
+    waitForRegionLoad();
+    return (int) reflector.getObjectMember(mud, "stableZ");
   }
 
   /**
@@ -715,13 +767,12 @@ public class Controller {
     Main.logMethod("WalkTo", x, y, radius);
 
     if (forced) {
-      walkToActionSource(
-          mud,
-          mud.getLocalPlayerX(),
-          mud.getLocalPlayerZ(),
-          x - mud.getMidRegionBaseX(),
-          y - mud.getMidRegionBaseZ(),
-          false);
+      // Snapshot all coordinate fields together to avoid torn reads during region transitions
+      int localX = getLocalPlayerX();
+      int localZ = getLocalPlayerZ();
+      int baseX = getMidRegionBaseX();
+      int baseZ = getMidRegionBaseZ();
+      walkToActionSource(mud, localX, localZ, x - baseX, y - baseZ, false);
       sleep(640);
     }
 
@@ -737,17 +788,13 @@ public class Controller {
 
       int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
-      // System.out.println(
-      // "Trying to walk, time remaining: "
-      // + (timeout - (System.currentTimeMillis() - starttime))
-      // + " ms");
+      // Snapshot all coordinate fields together to avoid torn reads during region transitions
+      int localX = getLocalPlayerX();
+      int localZ = getLocalPlayerZ();
+      int baseX = getMidRegionBaseX();
+      int baseZ = getMidRegionBaseZ();
       walkToActionSource(
-          mud,
-          mud.getLocalPlayerX(),
-          mud.getLocalPlayerZ(),
-          x - mud.getMidRegionBaseX() + fudgeFactor,
-          y - mud.getMidRegionBaseZ() + fudgeFactor,
-          false);
+          mud, localX, localZ, x - baseX + fudgeFactor, y - baseZ + fudgeFactor, false);
 
       // Smart sleeping before clicking again
       for (int i = 0; i < 20_000; i += 1000) {
@@ -775,13 +822,21 @@ public class Controller {
   }
 
   public void walkDamnit(int x, int y) {
-    walkToActionSource(
-        mud,
-        mud.getLocalPlayerX(),
-        mud.getLocalPlayerZ(),
-        x - mud.getMidRegionBaseX(),
-        y - mud.getMidRegionBaseZ(),
-        false);
+
+    // Mudclient sometimes returns invalid midregion coordinates; wait until within 96 tiles
+    while (Math.abs(getMidRegionBaseX() - x) > 96 || Math.abs(getMidRegionBaseZ() - y) > 96) {
+      sleep(100);
+    }
+
+    // Snapshot all coordinate fields together to avoid torn reads during region transitions
+    int localX = getLocalPlayerX();
+    int localZ = getLocalPlayerZ();
+    int baseX = getMidRegionBaseX();
+    int baseZ = getMidRegionBaseZ();
+    int destX = x - baseX;
+    int destZ = y - baseZ;
+
+    walkToActionSource(mud, localX, localZ, destX, destZ, false);
     if (x == currentX() && y == currentY()) return;
     if (!sleepUntilMoving(1200)) {
       Main.log("Brute forcing a path, since the region we want to walk to isn't loaded");
@@ -812,13 +867,48 @@ public class Controller {
 
     int fudgeFactor = ThreadLocalRandom.current().nextInt(-radius, radius + 1);
 
+    // Snapshot all coordinate fields together to avoid torn reads during region transitions
+    int localX = getLocalPlayerX();
+    int localZ = getLocalPlayerZ();
+    int baseX = getMidRegionBaseX();
+    int baseZ = getMidRegionBaseZ();
     walkToActionSource(
-        mud,
-        mud.getLocalPlayerX(),
-        mud.getLocalPlayerZ(),
-        x - mud.getMidRegionBaseX() + fudgeFactor,
-        y - mud.getMidRegionBaseZ() + fudgeFactor,
-        false);
+        mud, localX, localZ, x - baseX + fudgeFactor, y - baseZ + fudgeFactor, false);
+  }
+
+  /**
+   * Climbs an object (ladder, stairs, etc...) and waits for the player's Y to change by a specified
+   * amount.<br>
+   * <br>
+   * Note: This may also technically work for altars and objects that teleport the player as long as
+   * the coordinate change is on the Y axis.
+   *
+   * @param x int -- X coordinate of the object
+   * @param y int -- Y coordinate of the object
+   * @param customDistance int -- Amount to wait for Y to change by
+   */
+  public void climb(int x, int y, int customDistance) {
+    int startY = currentY();
+    int difference;
+
+    do {
+      if (!isCurrentlyWalking()) atObject(x, y);
+      difference = Math.abs(startY - currentY());
+      sleep(1280);
+    } while (difference < customDistance && isRunning());
+  }
+
+  /**
+   * Climbs an object (ladder, stairs, etc...) and waits for the player's Y to change.<br>
+   * <br>
+   * Note: This may also technically work for altars and objects that teleport the player as long as
+   * the coordinate change is on the Y axis.
+   *
+   * @param x int -- X coordinate of the object
+   * @param y int -- Y coordinate of the object
+   */
+  public void climb(int x, int y) {
+    climb(x, y, 800);
   }
 
   WebWalker webWalker = null;
@@ -1171,14 +1261,10 @@ public class Controller {
   private void objectAt(int x, int z, int dir, int objectId) {
     if (x < 0 || z < 0) return;
 
-    reflector.mudInvoker(
-        mud,
-        "walkToObject",
-        x - mud.getMidRegionBaseX(),
-        z - mud.getMidRegionBaseZ(),
-        dir,
-        5126,
-        objectId);
+    // Snapshot base together to avoid torn reads during region transitions
+    int baseX = getMidRegionBaseX();
+    int baseZ = getMidRegionBaseZ();
+    reflector.mudInvoker(mud, "walkToObject", x - baseX, z - baseZ, dir, 5126, objectId);
 
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(136);
@@ -1199,14 +1285,10 @@ public class Controller {
   private void objectAt2(int x, int z, int dir, int objectId) {
     if (x < 0 || z < 0) return;
 
-    reflector.mudInvoker(
-        mud,
-        "walkToObject",
-        x - mud.getMidRegionBaseX(),
-        z - mud.getMidRegionBaseZ(),
-        dir,
-        5126,
-        objectId);
+    // Snapshot base together to avoid torn reads during region transitions
+    int baseX = getMidRegionBaseX();
+    int baseZ = getMidRegionBaseZ();
+    reflector.mudInvoker(mud, "walkToObject", x - baseX, z - baseZ, dir, 5126, objectId);
 
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(79);
@@ -1592,8 +1674,10 @@ public class Controller {
     if (npc != null) {
       int npcX = (npc.currentX - 64) / mud.getTileSize();
       int npcZ = (npc.currentZ - 64) / mud.getTileSize();
+      int localX = getLocalPlayerX();
+      int localZ = getLocalPlayerZ();
 
-      walkToActionSource(mud, mud.getLocalPlayerX(), mud.getLocalPlayerZ(), npcX, npcZ, true);
+      walkToActionSource(mud, localX, localZ, npcX, npcZ, true);
     }
   }
 
@@ -1608,8 +1692,8 @@ public class Controller {
 
     ORSCharacter npc = (ORSCharacter) reflector.mudInvoker(mud, "getServerNPC", npcServerIndex);
     if (npc != null) {
-      int npcX = (npc.currentX - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
-      int npcZ = (npc.currentZ - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
+      int npcX = (npc.currentX - 64) / mud.getTileSize() + getMidRegionBaseX();
+      int npcZ = (npc.currentZ - 64) / mud.getTileSize() + getMidRegionBaseZ();
 
       walkTo(npcX, npcZ, radius, true, true);
     }
@@ -1711,14 +1795,10 @@ public class Controller {
    */
   public void useItemSlotOnObject(int x, int y, int slotIndex) {
     if (slotIndex == -1) log("@red@Warning: useItemSlotOnObject was passed slotIndex -1");
+    int baseX = getMidRegionBaseX();
+    int baseZ = getMidRegionBaseZ();
     reflector.mudInvoker(
-        mud,
-        "walkToObject",
-        x - mud.getMidRegionBaseX(),
-        y - mud.getMidRegionBaseZ(),
-        4,
-        5126,
-        this.getObjectAtCoord(x, y));
+        mud, "walkToObject", x - baseX, y - baseZ, 4, 5126, this.getObjectAtCoord(x, y));
     while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
     mud.packetHandler.getClientStream().newPacket(115);
     mud.packetHandler.getClientStream().bufferBits.putShort(x);
@@ -2206,6 +2286,29 @@ public class Controller {
 
     return true;
   }
+  /**
+   * Uses the command option on all items of a specified id.
+   *
+   * @param itemId int
+   * @return boolean -- returns true on success. returns false if the item is not in the inventory.
+   */
+  public boolean itemCommandAll(int itemId) {
+    Main.logMethod("itemCommand", itemId);
+
+    int inventoryIndex = getInventoryItemSlotIndex(itemId);
+    int itemCount = getInventoryItemCount(itemId);
+
+    if (inventoryIndex == -1) return false;
+
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(1);
+    mud.packetHandler.getClientStream().newPacket(90);
+    mud.packetHandler.getClientStream().bufferBits.putShort(inventoryIndex);
+    mud.packetHandler.getClientStream().bufferBits.putInt(itemCount);
+    mud.packetHandler.getClientStream().bufferBits.putByte(0);
+    mud.packetHandler.getClientStream().finishPacket();
+
+    return true;
+  }
 
   /**
    * Uses the command option on the item at the specified slot id. Note that this does not use item
@@ -2283,6 +2386,28 @@ public class Controller {
     }
 
     return slotIndex;
+  }
+
+  /**
+   * Retrieves the currently selected inventory slot index in the client ("Use item" state).
+   *
+   * @return int -- selected slot index, or -1 if no inventory item is currently selected.
+   */
+  public int getSelectedItemInventoryIndex() {
+    return (int) reflector.getObjectMember(mud, "selectedItemInventoryIndex");
+  }
+
+  /**
+   * Retrieves the item id of the currently selected inventory item.
+   *
+   * @return int -- selected item id, or -1 if no item is selected.
+   */
+  public int getSelectedItemId() {
+    int selectedSlot = getSelectedItemInventoryIndex();
+    if (selectedSlot < 0) {
+      return -1;
+    }
+    return getInventorySlotItemId(selectedSlot);
   }
 
   /**
@@ -2651,14 +2776,21 @@ public class Controller {
   public List<Item> getBankItems() {
     if (!isInBank()) return new ArrayList<>();
 
-    Object value = reflector.getObjectMemberFromSuperclass(mud.getBank(), "bankItems");
+    Object bank = mud.getBank();
+    if (bank == null) return new ArrayList<>();
+
+    Object value = reflector.getObjectMemberFromSuperclass(bank, "bankItems");
 
     if (!(value instanceof List)) return new ArrayList<>();
-    return ((List<?>) value)
-        .stream()
-            .map(o -> (Item) reflector.getObjectMember(o, "item"))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+
+    // defensive copy to avoid ConcurrentModificationException
+    List<?> snapshot = new ArrayList<>((List<?>) value);
+
+    return snapshot.stream()
+        .filter(Objects::nonNull)
+        .map(o -> (Item) reflector.getObjectMember(o, "item"))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -2730,6 +2862,7 @@ public class Controller {
   public boolean depositAll() {
     if (!isInBank() || getInventoryItemCount() < 1) return false;
     for (int itemId : getInventoryItemIds()) {
+      if (itemId == -1) break;
       depositItem(itemId, getInventoryItemCount(itemId));
       sleep(320);
     }
@@ -2942,7 +3075,7 @@ public class Controller {
    * @return int
    */
   public int offsetX(int x) {
-    return x + mud.getMidRegionBaseX();
+    return x + getMidRegionBaseX();
   }
 
   /**
@@ -2952,7 +3085,7 @@ public class Controller {
    * @return int
    */
   public int offsetZ(int z) {
-    return z + mud.getMidRegionBaseZ();
+    return z + getMidRegionBaseZ();
   }
 
   /**
@@ -2962,7 +3095,7 @@ public class Controller {
    * @return int
    */
   public int removeOffsetX(int x) {
-    return x - mud.getMidRegionBaseX();
+    return x - getMidRegionBaseX();
   }
 
   /**
@@ -2972,7 +3105,7 @@ public class Controller {
    * @return int
    */
   public int removeOffsetZ(int z) {
-    return z - mud.getMidRegionBaseZ();
+    return z - getMidRegionBaseZ();
   }
 
   /**
@@ -2982,7 +3115,7 @@ public class Controller {
    * @return int
    */
   public int convertX(int x) {
-    return (x - 64) / mud.getTileSize() + mud.getMidRegionBaseX();
+    return (x - 64) / mud.getTileSize() + getMidRegionBaseX();
   }
 
   /**
@@ -2992,7 +3125,7 @@ public class Controller {
    * @return int
    */
   public int convertZ(int z) {
-    return (z - 64) / mud.getTileSize() + mud.getMidRegionBaseZ();
+    return (z - 64) / mud.getTileSize() + getMidRegionBaseZ();
   }
 
   private MudClientGraphics getMudGraphics() {
@@ -3310,7 +3443,7 @@ public class Controller {
     mud.packetHandler.getClientStream().newPacket(199);
     mud.packetHandler.getClientStream().bufferBits.putByte(6);
     mud.packetHandler.getClientStream().finishPacket();
-    while (isBatching()) sleep(640);
+    while (isBatching() && isRunning()) sleep(640);
   }
 
   // * The Auction House only allows one interaction every 5 seconds. When making
@@ -3798,8 +3931,8 @@ public class Controller {
    * @param y int
    */
   public void castSpellOnGroundItem(int spellId, int itemId, int x, int y) {
-    int a = mud.getMidRegionBaseX();
-    int b = mud.getMidRegionBaseZ();
+    int a = getMidRegionBaseX();
+    int b = getMidRegionBaseZ();
 
     int direction = getDirection(x, y);
 
@@ -4438,8 +4571,8 @@ public class Controller {
    * @return int -- -1 if no object at the coordinates.
    */
   public int getObjectAtCoord(int x, int y) {
-    int _x = x - mud.getMidRegionBaseX();
-    int _y = y - mud.getMidRegionBaseZ();
+    int _x = x - getMidRegionBaseX();
+    int _y = y - getMidRegionBaseZ();
 
     int[] ids = getObjectsIds();
     int[] xs = getObjectsX();
@@ -4902,39 +5035,42 @@ public class Controller {
 
     int i = 0;
     for (Item d : mud.getInventory()) {
+      // item count indices
+      //      if (d.getItemDef() != null) {
+      //        results = Arrays.copyOf(results, results.length + 1);
+      //        results[i++] = d.getItemDef().id;
+      //      }
+      //    }
+
+      // 30 indices
       results = Arrays.copyOf(results, results.length + 1);
-      if (d.getItemDef() != null) results[i++] = d.getItemDef().id;
+      results[i++] = d.getItemDef() != null ? d.getItemDef().id : -1;
     }
 
     return results;
   }
 
   public int[] getInventoryUniqueItemIds() {
-    return IntStream.of(this.getInventoryItemIds()).distinct().toArray();
+    return IntStream.of(this.getInventoryItemIds()).distinct().filter(e -> e != -1).toArray();
   }
 
   private void walkToActionSource(
       mudclient mud, int startX, int startZ, int destX, int destZ, boolean walkToEntity) {
-    // Uncomment to debug
-    /*
-     * System.out.println(
-     * "Controller walkToActionSource with "
-     * + startX
-     * + ", "
-     * + startZ
-     * + ", "
-     * + destX
-     * + ", "
-     * + destZ
-     * + ", "
-     * + walkToEntity);
-     *
-     * StackTraceElement[] stackTraceElements =
-     * Thread.currentThread().getStackTrace();
-     * for (StackTraceElement element : stackTraceElements) {
-     * System.out.println(element.toString());
-     * }
-     */
+    // Wait for any region transition to complete before pathfinding
+    waitForRegionLoad();
+
+    // Guard against out-of-bounds coordinates caused by torn reads during region transitions.
+    // The pathfinding grid is 96x96 (indices 0-95); values outside this crash World.findPath.
+    if (startX < 0
+        || startX > 95
+        || startZ < 0
+        || startZ > 95
+        || destX < 0
+        || destX > 95
+        || destZ < 0
+        || destZ > 95) {
+      return;
+    }
 
     reflector.mudInvoker(mud, "walkToActionSource", startX, startZ, destX, destZ, walkToEntity);
   }
@@ -5799,9 +5935,23 @@ public class Controller {
    */
   public synchronized void setDrawing(boolean b, int ms) {
     drawing = b;
+
+    if (!drawing) {
+      if (isLoggedIn()) userXpDropsSetting = Config.C_EXPERIENCE_DROPS;
+      mud.setOptionExperienceDrops(false);
+    } else {
+      mud.setOptionExperienceDrops(userXpDropsSetting);
+    }
+
     if (ms > 0) {
       sleep(ms);
       drawing = !b;
+      if (!drawing) {
+        if (isLoggedIn()) userXpDropsSetting = Config.C_EXPERIENCE_DROPS;
+        mud.setOptionExperienceDrops(false);
+      } else {
+        mud.setOptionExperienceDrops(userXpDropsSetting);
+      }
     }
   }
 
@@ -5844,6 +5994,11 @@ public class Controller {
 
   /** Call this method from within a script to move the character one tile away to a random tile. */
   public void moveCharacter() {
+    if (isBatching()) log("Force-stopping batch to perform idle walk");
+    while (isBatching()) {
+      stopBatching();
+      sleep(640);
+    }
     int x = currentX();
     int y = currentY();
 
@@ -6235,19 +6390,53 @@ public class Controller {
 
   public ORSCharacter getTargetedNpc() {
     ORSCharacter player = this.getPlayer();
+    if (player == null) return null;
     ORSCharacter npc = null;
 
-    // Set npc to ranged/mage target
+    // Set npc to ranged/mage target.
+    // NOTE: attackingNpcServerIndex defaults to 0 (not -1), so we must check > 0.
     if (player.attackingNpcServerIndex > 0) {
       npc = this.getNpc(player.attackingNpcServerIndex);
+    }
 
-      // Set npc to melee target
-    } /*
-       * else if (MELEE STUFF) {
-       * npc = YEP;
-       * }
-       */
+    // Fallback for melee/other cases where the local player is the NPC's target.
+    if (npc == null) {
+      npc = getNpcTargetingLocalPlayer();
+    }
+
     return npc;
+  }
+
+  /**
+   * Returns the nearest NPC currently targeting the local player.
+   *
+   * @return ORSCharacter -- null if no NPC is targeting the local player.
+   */
+  public ORSCharacter getNpcTargetingLocalPlayer() {
+    ORSCharacter player = this.getPlayer();
+    if (player == null) return null;
+
+    ORSCharacter[] npcs = (ORSCharacter[]) reflector.getObjectMember(mud, "npcs");
+    int npcCount = (int) reflector.getObjectMember(mud, "npcCount");
+
+    ORSCharacter best = null;
+    int bestDist = Integer.MAX_VALUE;
+
+    for (int i = 0; i < npcCount; i++) {
+      ORSCharacter curNpc = npcs[i];
+      if (curNpc == null) continue;
+      // This field is only set by ranged/magic projectile packets (not melee).
+      // Do not add a > 0 guard here: player.serverIndex can legitimately be 0.
+      if (curNpc.attackingPlayerServerIndex != player.serverIndex) continue;
+
+      int dist = distance(curNpc.currentX, curNpc.currentZ, player.currentX, player.currentZ);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = curNpc;
+      }
+    }
+
+    return best;
   }
 
   /**
@@ -6326,8 +6515,8 @@ public class Controller {
         if (this.getNpcCoordsByServerIndex(npc.serverIndex)[0] == (this.currentX() + x)
             && this.getNpcCoordsByServerIndex(npc.serverIndex)[1] == (this.currentY() + y))
           return npc.serverIndex;
-        // if(npc.currentX == (mud.getLocalPlayerX() + x)
-        // && npc.currentZ == (mud.getLocalPlayerZ() + y))
+        // if(npc.currentX == (getLocalPlayerX() + x)
+        // && npc.currentZ == (getLocalPlayerZ() + y))
         // return npc.serverIndex;
       }
     }
@@ -6628,5 +6817,15 @@ public class Controller {
    */
   public boolean isPlayerAnIronMode() {
     return getPlayerMode() != 0;
+  }
+
+  public boolean isInWilderness() {
+    try {
+      Field wildField = mudclient.class.getDeclaredField("inWild");
+      wildField.setAccessible(true);
+      return (boolean) wildField.get(mud);
+    } catch (Exception ignored) {
+    }
+    return false;
   }
 }

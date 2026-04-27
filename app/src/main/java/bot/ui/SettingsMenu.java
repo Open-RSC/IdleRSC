@@ -20,6 +20,7 @@ public class SettingsMenu extends JMenu implements UiContract {
 
   private static Controller c;
   private static Config config;
+  private static SettingsFrame authFrame;
 
   // This is the list of all components so the themes can update
   private static LinkedList<JComponent> menuitems;
@@ -96,9 +97,14 @@ public class SettingsMenu extends JMenu implements UiContract {
     // Set action listeners below for each of the buttons
     accOpp.addActionListener(
         e -> {
-          SettingsFrame authFrame =
-              new SettingsFrame("Editing an account", config.getUsername(), Main.getRscFrame());
-
+          if (authFrame != null && authFrame.isVisible()) {
+            authFrame.requestFocus();
+            return;
+          } else {
+            authFrame =
+                new SettingsFrame(
+                    "Editing an account", Main.config.getPropertiesFileName(), Main.getRscFrame());
+          }
           setPopupMenuVisible(false);
           authFrame.setVisible(true);
         });

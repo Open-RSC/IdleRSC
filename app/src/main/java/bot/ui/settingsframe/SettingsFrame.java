@@ -6,20 +6,24 @@ import bot.ui.EntryFrame;
 import bot.ui.Theme;
 import bot.ui.components.ColorPickerPanel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import orsc.util.Utils;
 
 public class SettingsFrame extends JFrame {
-  private Theme theme = loadTheme();
-  private boolean loadSettings = true;
+  private Theme theme;
+  private boolean loadSettings = false;
   private final Window parent;
-  private String accountName;
+  private String propFile;
 
   private final SpringLayout sl = new SpringLayout();
   private JPanel panel;
@@ -32,11 +36,11 @@ public class SettingsFrame extends JFrame {
   protected String customPrimaryBG, customPrimaryFG, customSecondaryBG, customSecondaryFG;
   private JButton saveBtn, cancelBtn;
 
-  public SettingsFrame(final String title, final String accountName, final Window parent) {
+  public SettingsFrame(final String title, final String propFile, final Window parent) {
     setTitle(title);
-    if (accountName != null && !accountName.isEmpty()) {
-      setTitle(title + " - " + accountName);
-      this.accountName = accountName;
+    if (propFile != null && !propFile.isEmpty()) {
+      setTitle(title + " - " + propFile);
+      this.propFile = propFile;
       loadSettings = true;
     }
 
@@ -49,15 +53,15 @@ public class SettingsFrame extends JFrame {
     if (v) {
       theme = loadTheme();
       initializeComponents();
+      setMainButtonActionListeners();
       if (loadSettings) {
         loadSettings();
       } else {
         setDefaultValues();
       }
       setConstraints();
-
+      setActionListeners();
       setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
       pack();
       setLocationRelativeTo(parent);
       toFront();
@@ -66,37 +70,40 @@ public class SettingsFrame extends JFrame {
     super.setVisible(v);
   }
 
+  private void setMainButtonActionListeners() {
+
+    JTextField userField = accountTab.username.getTextField();
+    JTextField passField = accountTab.password.getTextField();
+
+    DocumentListener dl =
+        new DocumentListener() {
+          private void update() {
+            saveBtn.setEnabled(!userField.getText().isEmpty() && !passField.getText().isEmpty());
+          }
+
+          @Override
+          public void insertUpdate(DocumentEvent e) {
+            update();
+          }
+
+          @Override
+          public void removeUpdate(DocumentEvent e) {
+            update();
+          }
+
+          @Override
+          public void changedUpdate(DocumentEvent e) {
+            update();
+          }
+        };
+
+    userField.getDocument().addDocumentListener(dl);
+    passField.getDocument().addDocumentListener(dl);
+  }
+
   private void initializeComponents() {
     // Define component colors
-    UIManager.put("Button.background", colors[2]);
-    UIManager.put("Button.foreground", colors[3]);
-    UIManager.put("Panel.background", colors[0]);
-    UIManager.put("Panel.foreground", colors[0]);
-    UIManager.put("TabbedPane.background", colors[2]);
-    UIManager.put("TabbedPane.selected", colors[2].brighter());
-    UIManager.put("TabbedPane.foreground", colors[3]);
-    UIManager.put("Label.background", colors[0]);
-    UIManager.put("Label.foreground", colors[1]);
-    UIManager.put("ComboBox.selectionForeground", colors[2]);
-    UIManager.put("ComboBox.selectionBackground", colors[3]);
-    UIManager.put("ComboBox.background", colors[2]);
-    UIManager.put("ComboBox.foreground", colors[3]);
-    UIManager.put("CheckBox.background", colors[0]);
-    UIManager.put("CheckBox.foreground", colors[1]);
-    UIManager.put("TabbedPane.contentBorderInsets", new Insets(2, 2, 2, 2));
-    UIManager.put("TabbedPane.tabInsets", new Insets(6, 0, 6, 0));
-    UIManager.put("TabbedPane.darkShadow", colors[3]);
-    UIManager.put("TabbedPane.highlight", colors[3]);
-    UIManager.put("TabbedPane.shadow", colors[3]);
-    UIManager.put("TabbedPane.contentAreaColor", colors[3]);
-    UIManager.put("TextField.inactiveForeground", colors[1]);
-    UIManager.put("TextField.inactiveBackground", colors[0]);
-    UIManager.put("TextField.foreground", colors[3]);
-    UIManager.put("TextField.background", colors[2]);
-    UIManager.put("TextField.caretForeground", colors[3]);
-    UIManager.put("PasswordField.foreground", colors[3]);
-    UIManager.put("PasswordField.background", colors[2]);
-    UIManager.put("PasswordField.caretForeground", colors[3]);
+    setUiManagerRules();
 
     // Initialize components
     tabPane = new JTabbedPane();
@@ -107,24 +114,8 @@ public class SettingsFrame extends JFrame {
     scriptTab = new ScriptTab(sl);
 
     saveBtn = new JButton("Save");
-    saveBtn.addActionListener(
-        e -> {
-          storeAuthData(this);
-
-          // Run specific logic depending on the frame the SettingsFrame was opened from
-          // If opened from the running client, properties will be reloaded
-          if (parent.equals(Main.getRscFrame())) Main.reloadProperties();
-
-          // If opened from the EntryFrame, the account list will be refreshed
-          if (parent instanceof EntryFrame) {
-            EntryFrame entryFrame = (EntryFrame) parent;
-            entryFrame.populateAccounts(getUsername());
-          }
-
-          dispose();
-        });
+    saveBtn.setEnabled(false);
     cancelBtn = new JButton("Cancel");
-    cancelBtn.addActionListener(e -> dispose());
 
     // Add tab components to the tabPane
     final Map<String, JPanel> tabs = new LinkedHashMap<>();
@@ -133,7 +124,15 @@ public class SettingsFrame extends JFrame {
     tabs.put("Script", scriptTab);
 
     tabs.forEach((name, panel) -> tabPane.addTab(name, panel));
+    customizeTabPane();
+    // Add 'top-level' components to the main panel, then add that panel to SettingsFrame
+    panel.add(saveBtn);
+    panel.add(cancelBtn);
+    panel.add(tabPane);
+    add(panel);
+  }
 
+  private void customizeTabPane() {
     tabPane.setUI(
         new BasicTabbedPaneUI() {
           private static final int TAB_GAP = 7; // Gap between tabs
@@ -151,18 +150,28 @@ public class SettingsFrame extends JFrame {
           }
 
           @Override
+          protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
+            g.setColor(colors[2]);
+            int width = tabPane.getWidth();
+            int height = tabPane.getHeight();
+            Insets insets = tabPane.getInsets();
+            int tabAreaHeight = calculateTabAreaHeight(tabPlacement, runCount, maxTabHeight);
+
+            g.fillRect(
+                insets.left,
+                insets.top + tabAreaHeight,
+                width - insets.left - insets.right,
+                height - insets.top - insets.bottom - tabAreaHeight);
+          }
+
+          @Override
           protected void paintTabArea(Graphics g, int tabPlacement, int selectedIndex) {
             int tabCount = tabPane.getTabCount();
             int xOffset = 0;
-
             for (int i = 0; i < tabCount; i++) {
               Rectangle rect = rects[i];
-
-              // Shift each tab by the specified gap
               rect.x = xOffset;
               xOffset += rect.width + TAB_GAP;
-
-              // Paint the tab
               paintTab(g, tabPlacement, rect, i, selectedIndex == i);
             }
           }
@@ -187,12 +196,40 @@ public class SettingsFrame extends JFrame {
             return new Insets(2, 2, 2, 2); // Adjust this if content area needs spacing
           }
         });
+  }
 
-    // Add 'top-level' components to the main panel, then add that panel to SettingsFrame
-    panel.add(saveBtn);
-    panel.add(cancelBtn);
-    panel.add(tabPane);
-    add(panel);
+  private void setUiManagerRules() {
+    UIManager.put("Button.background", colors[2]);
+    UIManager.put("Button.foreground", colors[3]);
+    UIManager.put("Panel.background", colors[0]);
+    UIManager.put("Panel.foreground", colors[0]);
+    UIManager.put("TabbedPane.background", colors[2]);
+    UIManager.put("TabbedPane.selected", colors[2].brighter());
+    UIManager.put("TabbedPane.foreground", colors[3]);
+    UIManager.put("Label.background", colors[0]);
+    UIManager.put("Label.foreground", colors[1]);
+    UIManager.put("ComboBox.selectionForeground", colors[2]);
+    UIManager.put("ComboBox.selectionBackground", colors[3]);
+    UIManager.put("ComboBox.background", colors[2]);
+    UIManager.put("ComboBox.foreground", colors[3]);
+    UIManager.put("CheckBox.background", colors[0]);
+    UIManager.put("CheckBox.foreground", colors[1]);
+    UIManager.put("CheckBox.checkColorBg", colors[2]);
+    UIManager.put("CheckBox.checkColorFg", colors[3]);
+    UIManager.put("TabbedPane.contentBorderInsets", new Insets(2, 2, 2, 2));
+    UIManager.put("TabbedPane.tabInsets", new Insets(6, 0, 6, 0));
+    UIManager.put("TabbedPane.darkShadow", colors[3]);
+    UIManager.put("TabbedPane.highlight", colors[3]);
+    UIManager.put("TabbedPane.shadow", colors[3]);
+    UIManager.put("TabbedPane.contentAreaColor", colors[3]);
+    UIManager.put("TextField.inactiveForeground", colors[1]);
+    UIManager.put("TextField.inactiveBackground", colors[0]);
+    UIManager.put("TextField.foreground", colors[3]);
+    UIManager.put("TextField.background", colors[2]);
+    UIManager.put("TextField.caretForeground", colors[3]);
+    UIManager.put("PasswordField.foreground", colors[3]);
+    UIManager.put("PasswordField.background", colors[2]);
+    UIManager.put("PasswordField.caretForeground", colors[3]);
   }
 
   /**
@@ -224,69 +261,129 @@ public class SettingsFrame extends JFrame {
     sl.putConstraint(SpringLayout.SOUTH, cancelBtn, -4, SpringLayout.SOUTH, panel);
     sl.putConstraint(SpringLayout.EAST, cancelBtn, -4, SpringLayout.EAST, panel);
     sl.putConstraint(SpringLayout.WEST, cancelBtn, -buttonWidth, SpringLayout.EAST, cancelBtn);
-
-    // Must be called within setConstraints so it's set recursively after applying a new theme
-    // This is set here instead of in the DisplayPanel setConstraints so it has access to theme.
-    setThemeChoiceActionListener();
   }
 
-  private void setThemeChoiceActionListener() {
-    displayTab.themeChoice.addActionListener(
-        e -> {
-          if (displayTab.themeChoice.getComboBox().getItemCount() < 1) return;
-          if (theme.getName().equalsIgnoreCase(displayTab.themeChoice.getSelectedItem())) return;
+  public void displayThemeChoice() {
+    theme = Theme.getFromName(displayTab.themeChoice.getSelectedItem());
+    customPrimaryBG =
+        (ColorPickerPanel.validateHex(displayTab.primaryBGPanel.getHexColor()))
+            ? displayTab.primaryBGPanel.getHexColor()
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryBackground());
+    customPrimaryFG =
+        (ColorPickerPanel.validateHex(displayTab.primaryFGPanel.getHexColor()))
+            ? displayTab.primaryFGPanel.getHexColor()
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryForeground());
+    customSecondaryBG =
+        (ColorPickerPanel.validateHex(displayTab.secondaryBGPanel.getHexColor()))
+            ? displayTab.secondaryBGPanel.getHexColor()
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryBackground());
+    customSecondaryFG =
+        (ColorPickerPanel.validateHex(displayTab.secondaryFGPanel.getHexColor()))
+            ? displayTab.secondaryFGPanel.getHexColor()
+            : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryForeground());
 
-          customPrimaryBG =
-              (ColorPickerPanel.validateHex(displayTab.primaryBGPanel.getHexColor()))
-                  ? displayTab.primaryBGPanel.getHexColor()
-                  : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryBackground());
-          customPrimaryFG =
-              (ColorPickerPanel.validateHex(displayTab.primaryFGPanel.getHexColor()))
-                  ? displayTab.primaryFGPanel.getHexColor()
-                  : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryForeground());
-          customSecondaryBG =
-              (ColorPickerPanel.validateHex(displayTab.secondaryBGPanel.getHexColor()))
-                  ? displayTab.secondaryBGPanel.getHexColor()
-                  : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryBackground());
-          customSecondaryFG =
-              (ColorPickerPanel.validateHex(displayTab.secondaryFGPanel.getHexColor()))
-                  ? displayTab.secondaryFGPanel.getHexColor()
-                  : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryForeground());
+    colors =
+        theme.equals(Theme.CUSTOM)
+            ? new Color[] {
+              Color.decode(customPrimaryBG),
+              Color.decode(customPrimaryFG),
+              Color.decode(customSecondaryBG),
+              Color.decode(customSecondaryFG)
+            }
+            : new Color[] {
+              theme.getPrimaryBackground(),
+              theme.getPrimaryForeground(),
+              theme.getSecondaryBackground(),
+              theme.getSecondaryForeground()
+            };
+    setUiManagerRules();
+    SwingUtilities.invokeLater(
+        () -> {
+          panel.setBackground(UIManager.getColor("Panel.background"));
+          saveBtn.setForeground(UIManager.getColor("Button.foreground"));
+          saveBtn.setBackground(UIManager.getColor("Button.background"));
+          cancelBtn.setForeground(UIManager.getColor("Button.foreground"));
+          cancelBtn.setBackground(UIManager.getColor("Button.background"));
 
-          theme = Theme.getFromName(displayTab.themeChoice.getSelectedItem());
-          colors =
-              theme.equals(Theme.CUSTOM)
-                  ? new Color[] {
-                    Color.decode(customPrimaryBG),
-                    Color.decode(customPrimaryFG),
-                    Color.decode(customSecondaryBG),
-                    Color.decode(customSecondaryFG)
-                  }
-                  : new Color[] {
-                    theme.getPrimaryBackground(),
-                    theme.getPrimaryForeground(),
-                    theme.getSecondaryBackground(),
-                    theme.getSecondaryForeground()
-                  };
-          getContentPane().removeAll();
-          initializeComponents();
-
-          displayTab.primaryBGPanel.setHexColor(customPrimaryBG);
-          displayTab.primaryFGPanel.setHexColor(customPrimaryFG);
-          displayTab.secondaryBGPanel.setHexColor(customSecondaryBG);
-          displayTab.secondaryFGPanel.setHexColor(customSecondaryFG);
-
-          if (loadSettings) {
-            loadSettings();
-          } else {
-            setDefaultValues();
+          for (Component tabPanel : tabPane.getComponents()) {
+            if (tabPanel instanceof AbstractBaseTab) {
+              tabPanel.setBackground(UIManager.getColor("Panel.background"));
+              tabPanel.setForeground(UIManager.getColor("Panel.foreground"));
+              SwingUtilities.updateComponentTreeUI(tabPanel);
+            }
           }
-          displayTab.themeChoice.setSelectedItem(theme.getName());
-          setConstraints();
-          tabPane.setSelectedIndex(1);
-          revalidate();
-          repaint();
+          tabPane.repaint();
         });
+  }
+
+  private void setActionListeners() {
+    saveBtn.addActionListener(
+        e -> {
+          storeAuthData(this);
+
+          // Run specific logic depending on the frame the SettingsFrame was opened from
+          // If opened from the running client, properties will be reloaded
+          if (parent.equals(Main.getRscFrame())) Main.reloadProperties();
+
+          // If opened from the EntryFrame, the account list will be refreshed
+          if (parent instanceof EntryFrame) {
+            EntryFrame entryFrame = (EntryFrame) parent;
+            entryFrame.populateAccounts(getUsername());
+            entryFrame.getAccountChoice().select(propFile);
+            entryFrame.setAccountProp(propFile);
+          }
+
+          dispose();
+        });
+    cancelBtn.addActionListener(e -> dispose());
+    displayTab.themeChoice.addActionListener(e -> displayThemeChoice());
+
+    ColorPickerPanel[] colorPickerPanels =
+        new ColorPickerPanel[] {
+          displayTab.primaryBGPanel,
+          displayTab.primaryFGPanel,
+          displayTab.secondaryBGPanel,
+          displayTab.secondaryFGPanel
+        };
+
+    for (ColorPickerPanel picker : colorPickerPanels) {
+      picker
+          .getHexField()
+          .getDocument()
+          .addDocumentListener(
+              new DocumentListener() {
+                private void runCallback() {
+                  String text = picker.getHexField().getText().trim();
+                  if (ColorPickerPanel.validateHex(text)) {
+
+                    // Trigger action listener when we have a valid hex code
+                    for (ActionListener al : picker.getHexField().getActionListeners())
+                      al.actionPerformed(
+                          new ActionEvent(
+                              picker.getHexField(), ActionEvent.ACTION_PERFORMED, null));
+
+                    // Apply theme if custom is set while editing hex colors
+                    if (displayTab.themeChoice.getSelectedItem().equalsIgnoreCase("Custom"))
+                      SwingUtilities.invokeLater(() -> displayThemeChoice());
+                  }
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                  runCallback();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                  runCallback();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                  runCallback();
+                }
+              });
+    }
   }
 
   private Theme loadTheme() {
@@ -295,12 +392,11 @@ public class SettingsFrame extends JFrame {
     try {
       Files.createDirectories(accountPath);
     } catch (Throwable e2) {
-      System.err.println("Failed to create directory: " + e2.getMessage());
-      e2.printStackTrace();
+      Main.logError("Failed to create directory: ", e2);
       return Theme.RUNEDARK;
     }
 
-    if (accountName == null || accountName.isEmpty()) {
+    if (propFile == null || propFile.isEmpty()) {
       customPrimaryBG = ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryBackground());
       customPrimaryFG = ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryForeground());
       customSecondaryBG = ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryBackground());
@@ -316,34 +412,26 @@ public class SettingsFrame extends JFrame {
       return Theme.RUNEDARK;
     }
 
-    final File file = accountPath.resolve(accountName + ".properties").toFile();
+    final File file = accountPath.resolve(propFile + ".properties").toFile();
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
-      Theme t = Theme.getFromName(p.getProperty("theme", "RuneDark"));
-      String pbgHex = "#" + p.getProperty("custom-primary-background");
-      String pfgHex = "#" + p.getProperty("custom-primary-foreground");
-      String sbgHex = "#" + p.getProperty("custom-secondary-background");
-      String sfgHex = "#" + p.getProperty("custom-secondary-foreground");
-
-      customPrimaryBG = pbgHex;
-      customPrimaryFG = pfgHex;
-      customSecondaryBG = sbgHex;
-      customSecondaryFG = sfgHex;
+      Theme t = Theme.getFromName(getMigratedProperty(p, "theme-selected", "theme", "RuneDark"));
+      String[] customThemeColors = getCustomThemeColors(p);
 
       colors =
           t.equals(Theme.CUSTOM)
               ? new Color[] {
-                ColorPickerPanel.validateHex(pbgHex)
-                    ? Color.decode(pbgHex)
+                ColorPickerPanel.validateHex(customThemeColors[0])
+                    ? Color.decode(customThemeColors[0])
                     : Theme.RUNEDARK.getPrimaryBackground(),
-                ColorPickerPanel.validateHex(pfgHex)
-                    ? Color.decode(pfgHex)
+                ColorPickerPanel.validateHex(customThemeColors[1])
+                    ? Color.decode(customThemeColors[1])
                     : Theme.RUNEDARK.getPrimaryForeground(),
-                ColorPickerPanel.validateHex(sbgHex)
-                    ? Color.decode(sbgHex)
+                ColorPickerPanel.validateHex(customThemeColors[2])
+                    ? Color.decode(customThemeColors[2])
                     : Theme.RUNEDARK.getSecondaryBackground(),
-                ColorPickerPanel.validateHex(sfgHex)
-                    ? Color.decode(sfgHex)
+                ColorPickerPanel.validateHex(customThemeColors[0])
+                    ? Color.decode(customThemeColors[0])
                     : Theme.RUNEDARK.getSecondaryForeground()
               }
               : new Color[] {
@@ -356,7 +444,7 @@ public class SettingsFrame extends JFrame {
       return theme;
 
     } catch (final Throwable t) {
-      System.out.println("Error loading account " + accountName + ": " + t);
+      Main.logError("Error loading account " + propFile + ":", t);
       return Theme.RUNEDARK;
     }
   }
@@ -368,13 +456,12 @@ public class SettingsFrame extends JFrame {
     try {
       Files.createDirectories(accountPath);
     } catch (IOException e2) {
-      System.err.println("Failed to create directory: " + e2.getMessage());
-      e2.printStackTrace();
+      Main.logError("Failed to create directory: ", e2);
       return;
     }
     // Now we can parse it
-    if (accountName == null || accountName.isEmpty()) return;
-    final File file = accountPath.resolve(accountName + ".properties").toFile();
+    if (propFile == null || propFile.isEmpty()) return;
+    final File file = accountPath.resolve(propFile + ".properties").toFile();
     try (final FileInputStream stream = new FileInputStream(file)) {
       p.load(stream);
 
@@ -382,66 +469,37 @@ public class SettingsFrame extends JFrame {
       scriptTab.loadSettings(p);
       accountTab.loadSettings(p);
       displayTab.loadSettings(p);
-
-      // Assign colors and load them into the displayTab
-      customPrimaryBG =
-          customPrimaryBG != null
-              ? customPrimaryBG
-              : "#" + p.getProperty("custom-primary-background");
-      customPrimaryFG =
-          customPrimaryFG != null
-              ? customPrimaryFG
-              : "#" + p.getProperty("custom-primary-foreground");
-      customSecondaryBG =
-          customSecondaryBG != null
-              ? customSecondaryBG
-              : "#" + p.getProperty("custom-secondary-background");
-      customSecondaryFG =
-          customSecondaryFG != null
-              ? customSecondaryFG
-              : "#" + p.getProperty("custom-secondary-foreground");
-
-      displayTab.primaryBGPanel.setHexColor(
-          ColorPickerPanel.validateHex(customPrimaryBG)
-              ? customPrimaryBG
-              : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryBackground()));
-      displayTab.primaryFGPanel.setHexColor(
-          ColorPickerPanel.validateHex(customPrimaryFG)
-              ? customPrimaryFG
-              : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getPrimaryForeground()));
-      displayTab.secondaryBGPanel.setHexColor(
-          ColorPickerPanel.validateHex(customSecondaryBG)
-              ? customSecondaryBG
-              : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryBackground()));
-      displayTab.secondaryFGPanel.setHexColor(
-          ColorPickerPanel.validateHex(customSecondaryFG)
-              ? customSecondaryFG
-              : ColorPickerPanel.colorToHex(Theme.RUNEDARK.getSecondaryForeground()));
     } catch (final Throwable t) {
-      System.out.println("Error loading account " + accountName + ": " + t);
+      Main.logError("Error loading account " + propFile + ":", t);
     }
   }
 
   public void storeAuthData(SettingsFrame auth) {
     final Properties p = new Properties();
     final String u = auth.getUsername();
-    if (u == null || u.isEmpty()) {
-      System.out.println("Username field blank, not saving account information");
+    final String pass = auth.getPassword();
+
+    if (u == null || u.isEmpty() || pass == null || pass.isEmpty()) {
+      Main.logError(
+          "Error saving account properties file: Username and password must not be blank");
       Main.setUsername("username");
       return;
     }
     Main.setUsername(u);
-    p.put("username", u);
-    p.put("password", auth.getPassword());
+    p.put("account-name", u);
+    p.put("account-password", auth.getPassword());
+    p.put("account-server-custom-address", auth.getCustomIp());
+    p.put("account-server-custom-port", String.valueOf(auth.getCustomPort()));
+    p.put("account-server-option-address", auth.getServerIpChoice());
+    p.put("account-server-option-port", auth.getInitCache());
     p.put("script-name", auth.getScriptName());
     p.put("script-arguments", auth.getScriptArgs());
-    p.put("init-cache", auth.getInitCache());
     p.put("x-position", auth.getStartPosX());
     p.put("y-position", auth.getStartPosY());
     p.put("spell-id", auth.getSpellId());
-    p.put("attack-items", auth.getAttackItems());
-    p.put("strength-items", auth.getStrengthItems());
-    p.put("defence-items", auth.getDefenseItems());
+    p.put("item-switches-attack", auth.getAttackItems());
+    p.put("item-switches-strength", auth.getStrengthItems());
+    p.put("item-switches-defence", auth.getDefenseItems());
     p.put("ocr-type", auth.getOCRType().getName());
     p.put("ocr-server", auth.getOCRServer());
     p.put("auto-login", auth.getAutoLogin());
@@ -457,12 +515,11 @@ public class SettingsFrame extends JFrame {
     p.put("new-icons", auth.getNewIcons());
     p.put("new-ui", auth.getNewUi());
     p.put("keep-open", auth.getKeepOpen());
-    p.put("server-ip", auth.getServerIpChoice());
-    p.put("theme", auth.getThemeName());
-    p.put("custom-primary-background", auth.getPrimaryBGString());
-    p.put("custom-primary-foreground", auth.getPrimaryFGString());
-    p.put("custom-secondary-background", auth.getSecondaryBGString());
-    p.put("custom-secondary-foreground", auth.getSecondaryFGString());
+    p.put("theme-selected", auth.getThemeName());
+    p.put("theme-custom-primary-background", auth.getPrimaryBGString());
+    p.put("theme-custom-primary-foreground", auth.getPrimaryFGString());
+    p.put("theme-custom-secondary-background", auth.getSecondaryBGString());
+    p.put("theme-custom-secondary-foreground", auth.getSecondaryFGString());
     p.put("use-location-walker", auth.getUseLocationWalker());
 
     // Make sure our accounts folder exists
@@ -470,13 +527,31 @@ public class SettingsFrame extends JFrame {
     try {
       Files.createDirectories(accountPath);
     } catch (IOException e2) {
-      System.err.println("Failed to create directory: " + e2.getMessage());
-      e2.printStackTrace();
+      Main.logError("Failed to create directory: ", e2);
       return;
     }
 
     // Now we can parse it
-    final File file = accountPath.resolve(u + ".properties").toFile();
+    if (propFile == null) {
+      String propServer =
+          getServerIpChoice().equalsIgnoreCase("custom") ? "custom" : "openrsc".toLowerCase();
+      String propPort = getInitCache().toLowerCase();
+      String propSuffix;
+
+      if (propServer.equalsIgnoreCase("openrsc")) {
+        propSuffix = String.format("%s", propPort);
+      } else {
+        propSuffix = String.format("%s_%s", propServer, propPort.substring(0, 2));
+      }
+
+      propFile = String.format("%s@%s", u, propSuffix);
+
+      if (Files.exists(accountPath.resolve(propFile + ".properties"))) {
+        Main.logError(String.format("The account file already exists: '%s.properties'", propFile));
+        return;
+      }
+    }
+    final File file = accountPath.resolve(propFile + ".properties").toFile();
     try (final PrintWriter writer = new PrintWriter(new FileWriter(file))) {
       SortedMap<String, String> sorted = new TreeMap<>();
       for (String name : p.stringPropertyNames()) sorted.put(name, p.getProperty(name));
@@ -488,9 +563,8 @@ public class SettingsFrame extends JFrame {
   }
 
   private void setDefaultValues() {
-    accountTab.setDefaultValues();
-    displayTab.setDefaultValues();
-    scriptTab.setDefaultValues();
+    for (Component tab : tabPane.getComponents())
+      if (tab instanceof AbstractBaseTab) ((AbstractBaseTab) tab).setDefaultValues();
   }
 
   synchronized String getUsername() {
@@ -542,6 +616,16 @@ public class SettingsFrame extends JFrame {
     return displayTab.secondaryFGPanel.getHexColor().substring(1);
   }
 
+  synchronized String getCustomIp() {
+    if (accountTab.customIp == null || accountTab.customIp.isEmpty()) return "localhost";
+    return accountTab.customIp;
+  }
+
+  synchronized int getCustomPort() {
+    if (accountTab.customIp == null) return 43599;
+    return accountTab.customPort;
+  }
+
   synchronized String getSpellId() {
     return scriptTab.spellId.getText();
   }
@@ -559,11 +643,21 @@ public class SettingsFrame extends JFrame {
   }
 
   synchronized String getStartPosX() {
-    return displayTab.startPosX.getText();
+    String value = displayTab.startPosX.getText();
+    try {
+      return String.valueOf(Integer.parseInt(value));
+    } catch (NumberFormatException e) {
+      return "";
+    }
   }
 
   synchronized String getStartPosY() {
-    return displayTab.startPosY.getText();
+    String value = displayTab.startPosY.getText();
+    try {
+      return String.valueOf(Integer.parseInt(value));
+    } catch (NumberFormatException e) {
+      return "";
+    }
   }
 
   synchronized OCRType getOCRType() {
@@ -624,5 +718,43 @@ public class SettingsFrame extends JFrame {
 
   synchronized String getKeepOpen() {
     return Boolean.toString(displayTab.keepOpen.isSelected());
+  }
+
+  private String[] getCustomThemeColors(Properties p) {
+    String customPrimaryBG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-primary-background", "custom-primary-background", "");
+    String customPrimaryFG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-primary-foreground", "custom-primary-foreground", "");
+    String customSecondaryBG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-secondary-background", "custom-secondary-background", "");
+    String customSecondaryFG =
+        "#"
+            + getMigratedProperty(
+                p, "theme-custom-secondary-foreground", "custom-secondary-foreground", "");
+
+    return new String[] {customPrimaryBG, customPrimaryFG, customSecondaryBG, customSecondaryFG};
+  }
+
+  /**
+   * Read a config value, preferring the new key but falling back to the old one
+   *
+   * @param p Properties
+   * @param newKey String -- The name of the key we're migrating to
+   * @param oldKey String -- The name of the key we're migrating away from
+   * @param defaultValue String -- default value
+   * @return String -- The value read, or the defaultValue if it was null
+   */
+  static String getMigratedProperty(
+      Properties p, String newKey, String oldKey, String defaultValue) {
+    String value = p.getProperty(newKey);
+    if (value == null) value = p.getProperty(oldKey);
+
+    return value != null ? value : defaultValue;
   }
 }

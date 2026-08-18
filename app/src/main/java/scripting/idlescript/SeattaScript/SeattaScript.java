@@ -21,7 +21,7 @@ public abstract class SeattaScript extends IdleScript {
           "Super class for Seatta's scripts.");
 
   // * --------------- CONSTANTS ---------------
-  public static final int TICK = c.isAuthentic() ? 640 : 448;
+  public static boolean doneInitialSetup = false;
 
   // *    PaintBuilder Colors - Based on https://draculatheme.com/contribute
   public final int colorGray = 0x44475A;
@@ -43,12 +43,40 @@ public abstract class SeattaScript extends IdleScript {
   public final int paintX = 4;
   public final int paintY = 18;
   public final int paintW = 182;
-  public String paintStatus = "Starting Script";
+  public static String paintStatus = "Starting Script";
 
   // * -------------- COLLECTIONS --------------
+  private static final HashMap<SkillId, Integer> xpGainMap = new HashMap<>();
+
   public static final ItemId[] bones = {
     ItemId.DRAGON_BONES, ItemId.BIG_BONES, ItemId.BAT_BONES, ItemId.BONES,
   };
+
+  // Map of pickaxes with the mining level to use them
+  static final Map<ItemId, Integer> pickaxeMap =
+      new HashMap<ItemId, Integer>() {
+        {
+          put(ItemId.RUNE_PICKAXE, 41);
+          put(ItemId.ADAMANTITE_PICKAXE, 31);
+          put(ItemId.MITHRIL_PICKAXE, 21);
+          put(ItemId.STEEL_PICKAXE, 6);
+          put(ItemId.IRON_PICKAXE, 1);
+          put(ItemId.BRONZE_PICKAXE, 1);
+        }
+      };
+
+  // Map of axes with the attack level to equip them
+  static final Map<ItemId, Integer> axeMap =
+      new HashMap<ItemId, Integer>() {
+        {
+          put(ItemId.RUNE_AXE, 40);
+          put(ItemId.ADAMANTITE_AXE, 30);
+          put(ItemId.MITHRIL_AXE, 20);
+          put(ItemId.STEEL_AXE, 5);
+          put(ItemId.IRON_AXE, 1);
+          put(ItemId.BRONZE_AXE, 1);
+        }
+      };
 
   // * ------------ CLEANUP METHODS ------------
 
@@ -62,6 +90,7 @@ public abstract class SeattaScript extends IdleScript {
   public final void cleanup() {
     // Reset SeattaScript static fields here
     paintStatus = "Starting Script";
+    doneInitialSetup = false;
 
     // Override this if needed in child scripts, and reset the static fields for the script in
     // there.
@@ -91,6 +120,60 @@ public abstract class SeattaScript extends IdleScript {
   }
 
   // * ---------------- METHODS ----------------
+
+  /** Initializes script startup */
+  private static void initializeScriptStartup() {
+    resetGainedXp(true);
+
+    doneInitialSetup = true;
+  }
+
+  // * -------------- XP TRACKING --------------
+  /**
+   * Gets the gained xp in a single skill
+   *
+   * @param skill SkillId -- The skill to get xp gain for
+   * @return int -- The amount gained since script start or running resetGainedXp()
+   */
+  public static int getGainedXp(SkillId skill) {
+    return c.getStatXp(skill.getId()) - xpGainMap.get(skill);
+  }
+
+  /**
+   * Gets the gained xp in all skills
+   *
+   * @return int -- The amount gained since script start or running resetGainedXp()
+   */
+  public static long getGainedXp() {
+    long gain = 0;
+    for (SkillId skill : SkillId.values()) gain += getGainedXp(skill);
+    return gain;
+  }
+
+  /**
+   * Resets a single skill's tracked xp gain
+   *
+   * @param skill SkillId -- The skill to reset
+   */
+  public static void resetGainedXp(SkillId skill, boolean suppressLogMessage) {
+    if (skill.getId() == -1) return;
+    xpGainMap.put(skill, c.getStatXp(skill.getId()));
+    if (!suppressLogMessage)
+      c.log(
+          String.format(
+              "SeattaScript: Resetting gained xp for %s",
+              c.getSkillNamesLong()[skill.getId()].toLowerCase()));
+  }
+
+  /** Resets tracked xp gain for all skills */
+  public static void resetGainedXp(boolean suppressLogMessage) {
+    for (SkillId skill : SkillId.values()) {
+      if (skill.getId() == -1) continue;
+      xpGainMap.put(skill, c.getStatXp(skill.getId()));
+    }
+    if (!suppressLogMessage) c.log("SeattaScript: Resetting gained xp for all skills");
+  }
+
   // * --- NAVIGATION / COORDINATES CHECKING ---
 
   /**
@@ -261,18 +344,7 @@ public abstract class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean hasUsablePickaxe() {
-    final Map<ItemId, Integer> pickaxeLevelMap =
-        new HashMap<ItemId, Integer>() {
-          {
-            put(ItemId.BRONZE_PICKAXE, 1);
-            put(ItemId.IRON_PICKAXE, 1);
-            put(ItemId.STEEL_PICKAXE, 6);
-            put(ItemId.MITHRIL_PICKAXE, 21);
-            put(ItemId.ADAMANTITE_PICKAXE, 31);
-            put(ItemId.RUNE_PICKAXE, 41);
-          }
-        };
-    return pickaxeLevelMap.entrySet().stream()
+    return pickaxeMap.entrySet().stream()
         .anyMatch(
             entry ->
                 (hasUnnotedItem(entry.getKey()))
@@ -285,17 +357,7 @@ public abstract class SeattaScript extends IdleScript {
    * @return boolean
    */
   public static boolean hasUsableAxe() {
-    final ItemId[] axes = {
-      ItemId.RUNE_AXE,
-      ItemId.ADAMANTITE_AXE,
-      ItemId.MITHRIL_AXE,
-      ItemId.BLACK_AXE,
-      ItemId.STEEL_AXE,
-      ItemId.IRON_AXE,
-      ItemId.BRONZE_AXE,
-    };
-
-    return Arrays.stream(axes).anyMatch(SeattaScript::hasUnnotedItem);
+    return axeMap.keySet().stream().anyMatch(SeattaScript::hasUnnotedItem);
   }
 
   /**
@@ -471,30 +533,32 @@ public abstract class SeattaScript extends IdleScript {
    *
    * @param item ItemId -- Item to drop
    * @param amount int -- Amount to drop
+   * @return boolean -- Whether the item was dropped
    */
-  public static void dropItem(ItemId item, int amount) {
-    if (!hasItem(item)) return;
+  public static boolean dropItem(ItemId item, int amount) {
+    if (!hasItem(item)) return false;
     c.dropItem(c.getInventoryItemSlotIndex(item.getId()), amount);
-    do sleepTicks(1);
-    while (hasItem(item) && isRunningAndLoggedIn());
+    return c.sleepUntil(() -> !hasItem(item));
   }
 
   /**
    * Drops one of an item
    *
    * @param item ItemId -- Item to drop
+   * @return boolean -- Whether the item was dropped
    */
-  public static void dropItem(ItemId item) {
-    dropItem(item, 1);
+  public static boolean dropItem(ItemId item) {
+    return dropItem(item, 1);
   }
 
   /**
    * Drops all of an item
    *
    * @param item ItemId -- Item to drop
+   * @return boolean -- Whether the item was dropped
    */
-  public static void dropAllOfItem(ItemId item) {
-    dropItem(item, c.getInventoryItemCount(item.getId()));
+  public static boolean dropAllOfItem(ItemId item) {
+    return dropItem(item, c.getInventoryItemCount(item.getId()));
   }
 
   // * ---------------- BANKING ----------------
@@ -512,75 +576,106 @@ public abstract class SeattaScript extends IdleScript {
     return c.sleepUntil(
         () -> {
           c.setStatus("Attempting to open the bank");
-          if (!c.isCurrentlyWalking() && !c.isInBank()) c.openBank();
+          if (!c.isCurrentlyWalking() && !c.isInBank()) {
+            c.openBank();
+            sleepTicks(4);
+          }
           return c.isInBank();
         },
         20000);
   }
 
   /**
-   * Deposits an amount of an item
+   * Deposits an amount of an item<br>
+   * Must be used with the bank interface open
    *
    * @param item ItemId -- Item to deposit
    * @param amount int -- Amount to deposit
    */
-  public static void depositItem(ItemId item, int amount) {
-    if (!c.isInBank() || !hasItem(item)) return;
-    c.depositItem(item.getId(), Math.min(amount, c.getInventoryItemCount(item.getId())));
+  public static boolean depositItem(ItemId item, int amount) {
+    if (!c.isInBank() || !hasItem(item)) return false;
+    return c.depositItem(item.getId(), Math.min(amount, c.getInventoryItemCount(item.getId())));
   }
 
   /**
-   * Deposits one of an item
+   * Deposits one of an item<br>
+   * Must be used with the bank interface open
    *
    * @param item ItemId -- Item to deposit
    */
-  public static void depositItem(ItemId item) {
-    depositItem(item, 1);
+  public static boolean depositItem(ItemId item) {
+    return depositItem(item, 1);
   }
 
   /**
-   * Deposits all of an item
+   * Deposits all of an item<br>
+   * Must be used with the bank interface open
    *
    * @param item ItemId -- Item to deposit
    */
-  public static void depositAllOfItem(ItemId item) {
-    depositItem(item, c.getInventoryItemCount(item.getId()));
+  public static boolean depositAllOfItem(ItemId item) {
+    return depositItem(item, c.getInventoryItemCount(item.getId()));
   }
 
-  public static void depositAll() {
-    c.depositAll();
+  public static boolean depositAll() {
+    return c.depositAll();
   }
 
   /**
-   * Withdraws one of an item
+   * Withdraws one of an item<br>
+   * Must be used with the bank interface open
    *
    * @param item ItemId -- Item to withdraw
    */
-  public static void withdrawItem(ItemId item) {
-    withdrawItem(item, 1);
+  public static boolean withdrawItem(ItemId item) {
+    return withdrawItem(item, 1);
   }
 
   /**
-   * Withdraws an amount of an item
+   * Withdraws an amount of an item<br>
+   * Must be used with the bank interface open
    *
    * @param item ItemId -- Item to withdraw
    * @param amount int -- Amount to withdraw
    */
-  public static void withdrawItem(ItemId item, int amount) {
-    if (amount < 1) return;
-    if (!c.isInBank() || !c.isItemInBank(item.getId())) return;
-    c.withdrawItem(item.getId(), Math.min(amount, c.getBankItemCount(item.getId())));
+  public static boolean withdrawItem(ItemId item, int amount) {
+    if (amount < 1) return true;
+    if (!c.isInBank() || !c.isItemInBank(item.getId())) return false;
+    return c.withdrawItem(item.getId(), Math.min(amount, c.getBankItemCount(item.getId())));
   }
 
   /**
-   * Withdraws up to an amount of an item
+   * Withdraws up to an amount of an item<br>
+   * Must be used with the bank interface open
    *
    * @param item ItemId -- Item to withdraw
    * @param amount int -- Amount of item needed
    */
-  public static void withdrawItemUpTo(ItemId item, int amount) {
+  public static boolean withdrawItemUpTo(ItemId item, int amount) {
     int inInventory = c.getUnnotedInventoryItemCount(item.getId());
-    withdrawItem(item, inInventory - amount);
+    return withdrawItem(item, inInventory - amount);
+  }
+
+  /**
+   * Equips an ItemId from the bank<br>
+   * Must be used with the bank interface open
+   *
+   * @param item ItemId -- Item to unequip
+   * @return boolean -- Whether the item was equipped
+   */
+  public static boolean equipFromBank(ItemId item) {
+    return c.equipFromBank(item.getId());
+  }
+
+  /**
+   * Unequips an ItemId to the bank<br>
+   * Must be used with the bank interface open
+   *
+   * @param item ItemId -- Item to unequip
+   * @return boolean -- Whether the item was unequipped
+   */
+  public static boolean unequipToBank(ItemId item) {
+    return c.unequipToBank(item.getId());
   }
 
   // * --------- REQUIREMENT  CHECKING ---------
@@ -627,21 +722,91 @@ public abstract class SeattaScript extends IdleScript {
   }
 
   /**
-   * Checks if the player has a usable pickaxe in their inventory. Quits the script if the player
-   * does not.
+   * Checks for a usable pickaxe in the inventory<br>
+   * If missing, opens the bank and attempts to withdraw the highest usable one<br>
+   * <br>
+   * If a pickaxe is not withdrawn, the script will quit
    */
   public static void checkForUsablePickaxeOrQuit() {
     if (!c.isRunning()) return;
-    if (!hasUsablePickaxe()) quit(QuitReason.MISSING_INVENTORY_ITEM, " - A usable pickaxe");
+    if (hasUsablePickaxe()) return;
+    if (!isUIM()) {
+      paintStatus = "Withdrawing a pickaxe";
+      if (c.sleepUntil(SeattaScript::openNearestBank)) {
+        sleepTick();
+        depositAll();
+        pickaxeMap.entrySet().stream()
+            .filter(entry -> c.getBaseStat(SkillId.MINING.getId()) >= entry.getValue())
+            .filter(entry -> c.getBankItemCount(entry.getKey().getId()) > 0)
+            .max(Comparator.comparingInt(Map.Entry::getValue))
+            .ifPresent(
+                entry -> {
+                  sleepTick();
+                  if (hasSkillLevel(SkillId.ATTACK, Math.max(1, entry.getValue() - 1))) {
+                    equipFromBank(entry.getKey());
+                  } else {
+                    withdrawItem(entry.getKey());
+                  }
+                  c.sleepUntil(() -> hasItem(entry.getKey()));
+                });
+        sleepTick();
+        if (c.isInBank()) c.closeBank();
+      }
+      if (!hasUsablePickaxe()) quit(QuitReason.MISSING_INVENTORY_ITEM, " - A usable pickaxe");
+    }
   }
 
   /**
-   * Checks if the player has a usable axe in their inventory. Quits the script if the player does
-   * not.
+   * Checks for a usable axe in the inventory<br>
+   * If missing, opens the bank and attempts to withdraw the highest usable one<br>
+   * <br>
+   * If an axe is not withdrawn, the script will quit
    */
   public static void checkForUsableAxeOrQuit() {
     if (!c.isRunning()) return;
+    if (hasUsableAxe()) return;
+    if (!isUIM()) {
+      paintStatus = "Withdrawing an axe";
+      if (c.sleepUntil(SeattaScript::openNearestBank)) {
+        sleepTick();
+        depositAll();
+        axeMap.entrySet().stream()
+            .filter(entry -> c.getBankItemCount(entry.getKey().getId()) > 0)
+            .max(Comparator.comparingInt(Map.Entry::getValue))
+            .ifPresent(
+                entry -> {
+                  withdrawItem(entry.getKey());
+                  c.sleepUntil(() -> hasItem(entry.getKey()));
+                  if (hasSkillLevel(SkillId.ATTACK, entry.getValue())) {
+                    equipFromBank(entry.getKey());
+                  } else {
+                    withdrawItem(entry.getKey());
+                  }
+                });
+      }
+      sleepTick();
+      if (c.isInBank()) c.closeBank();
+    }
     if (!hasUsableAxe()) quit(QuitReason.MISSING_INVENTORY_ITEM, " - A usable axe");
+  }
+
+  public static void ensureItemOrQuit(ItemId item) {
+    if (!c.isRunning()) return;
+    if (hasItem(item)) return;
+    String itemName = item.name().toLowerCase().replace("_", " ");
+    if (isUIM()) quit(QuitReason.MISSING_ITEM, itemName);
+    paintStatus = String.format("Withdrawing a %s", itemName);
+    if (c.sleepUntil(SeattaScript::openNearestBank)) {
+      sleepTick();
+      depositAll();
+      if (c.getBankItemCount(item.getId()) == 0) {
+        quit(QuitReason.MISSING_ITEM, String.format(" - A %s", itemName));
+        return;
+      }
+      withdrawItem(item);
+      c.sleepUntil(() -> hasItem(item));
+      c.closeBank();
+    }
   }
 
   /**
@@ -801,9 +966,10 @@ public abstract class SeattaScript extends IdleScript {
    */
   public static boolean isScriptRunning() {
     if (!c.isRunning()) return false;
+    if (!doneInitialSetup) initializeScriptStartup();
     while (c.isRunning() && !c.isLoggedIn()) {
       c.login();
-      c.sleep(10000);
+      c.sleep(120000);
     }
     handleSleepAndIdleMovement();
     return true;
@@ -821,7 +987,11 @@ public abstract class SeattaScript extends IdleScript {
    * @param amountOfTicks int -- The number of ticks to sleep for.
    */
   public static void sleepTicks(int amountOfTicks) {
-    c.sleep(amountOfTicks * TICK);
+    c.sleepTicks(amountOfTicks);
+  }
+
+  public static void sleepTick() {
+    c.sleepTick();
   }
 
   /** Sleeps while the player is doing a batched action. */
@@ -913,7 +1083,8 @@ public abstract class SeattaScript extends IdleScript {
     MISSING_QUEST_REQUIREMENT("You are missing a required quest:"),
     UNABLE_TO_FIND_NPC("The following npc was not found:"),
     INVALID_START_AREA("The script must be started within the following area:"),
-    NOT_ENOUGH_EMPTY_INVENTORY_SPACES("You do not have enough empty inventory spaces:");
+    NOT_ENOUGH_EMPTY_INVENTORY_SPACES("You do not have enough empty inventory spaces:"),
+    MISSING_ITEM("You are missing a required item:");
 
     private final String reason;
 

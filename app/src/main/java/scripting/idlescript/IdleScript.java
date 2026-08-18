@@ -26,6 +26,13 @@ public abstract class IdleScript {
   public final Class<?>[] excludedClasses = {Controller.class, ScriptInfo.class};
 
   /**
+   * Pending chat command to be processed on the script thread<br>
+   * <br>
+   * Set by {@link #enqueueChatCommand(String)} and consumed by {@link #processPendingCommand()}
+   */
+  private volatile String pendingChatCommand = null;
+
+  /**
    * Called by {@link callbacks.MessageCallback} every time a new server message is drawn on the
    * screen. <b>Override this in your script to process these messages.</b>
    *
@@ -171,4 +178,30 @@ public abstract class IdleScript {
    * this in your script to implement actions on key presses.</b>
    */
   public void keyPressInterrupt(int keyCode) {}
+
+  /**
+   * Enqueues a chat command to be processed on the script thread<br>
+   * <br>
+   * Called by {@link callbacks.CommandCallback} when a player types a "::" command, instead of
+   * calling {@link #chatCommandInterrupt(String)} directly, to ensure packet-sending methods are
+   * invoked on the correct thread
+   *
+   * @param command the command text to process, without the "::" prefix
+   */
+  public final void enqueueChatCommand(String command) {
+    pendingChatCommand = command;
+  }
+
+  /**
+   * Processes the pending chat command if one is queued<br>
+   * <br>
+   * Called by {@link controller.Controller#sleep(int)} on every sleep invocation, ensuring the
+   * command is handled on the script thread where packet-sending methods are safe to call
+   */
+  public final void processPendingCommand() {
+    String cmd = pendingChatCommand;
+    if (cmd == null) return;
+    pendingChatCommand = null;
+    chatCommandInterrupt(cmd);
+  }
 }

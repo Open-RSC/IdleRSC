@@ -369,7 +369,7 @@ public class ScriptSelectorUI {
 
         if (params != null) {
           description.add("\n" + (params.size() > 1 ? "Parameters:" : "Parameter:"));
-          params.forEach(p -> description.add(" - " + p.getName() + " - " + p.getDescription()));
+          params.forEach(p -> description.add(p.getParamterString()));
         }
 
         if (!categories.isEmpty()) {

@@ -24,8 +24,7 @@ public class MiningGuild extends SeattaScript {
           "Mines ores in the Mining Guild.",
           new Parameter[] {
             new Parameter(
-                "Ores",
-                "The ores to mine"
+                "The types of ore to mine"
                     + "\n   r - Runite"
                     + "\n   a - Adamantite"
                     + "\n   m - Mithril"
@@ -60,7 +59,6 @@ public class MiningGuild extends SeattaScript {
    */
   public int start(String[] param) {
     checkForSkillLevelOrQuit(SkillId.MINING, 60);
-    checkForUsablePickaxeOrQuit();
 
     // Convert args into indices for mineOres
     Map<Character, Integer> oreMap =
@@ -85,6 +83,7 @@ public class MiningGuild extends SeattaScript {
 
     // If no args were sent, instead run setup
     if (Arrays.stream(mineOres).noneMatch(Boolean::booleanValue)) setup();
+    checkForUsablePickaxeOrQuit();
 
     paintBuilder.start(4, 18, 162);
     started = true;
@@ -102,10 +101,7 @@ public class MiningGuild extends SeattaScript {
       if (isInventoryFull()) bank();
       else if (!Location.FALADOR_MINING_GUILD.isAtLocation()) {
         paintStatus = "Walking to Mining Guild";
-        while (!Location.FALADOR_MINING_GUILD.isAtLocation() && c.isRunning()) {
-          if (!c.isCurrentlyWalking()) Location.FALADOR_MINING_GUILD.walkTowards();
-          sleepTicks(2);
-        }
+        Location.FALADOR_MINING_GUILD.walkTowards();
       } else if (current == Ore.NONE) {
         paintStatus = "Waiting for ore...";
         Ore best = getBestAvailableOre();
@@ -118,10 +114,10 @@ public class MiningGuild extends SeattaScript {
           }
           Ore best = getBestAvailableOre();
           if (best != null && best.ordinal() < current.ordinal()) mine(best);
-          sleepTicks(1);
+          sleepTick();
         }
       }
-      sleepTicks(1);
+      sleepTick();
     }
     return quit();
   }
@@ -180,32 +176,22 @@ public class MiningGuild extends SeattaScript {
     current = Ore.NONE;
     paintStatus = "Banking";
 
-    while (!Location.FALADOR_EAST_BANK.isAtLocation() && c.isRunning()) {
-      if (!c.isCurrentlyWalking()) Location.FALADOR_EAST_BANK.walkTowards();
-      sleepTicks(2);
-    }
+    if (!Location.FALADOR_EAST_BANK.isAtLocation()) Location.FALADOR_EAST_BANK.walkTowards();
 
-    boolean hasBankables = Arrays.stream(lootIds).anyMatch(SeattaScript::hasUnnotedItem);
-    while (hasBankables && c.isRunning()) {
-      while (!c.isLoggedIn()) sleepTicks(1);
-
-      // Go to and open the nearest bank
-      if (!openNearestBank()) continue;
-
-      // Add all items to our banked counter and deposit them
+    if (openNearestBank()) {
       for (int i = 0; i < lootIds.length; i++) {
-        ItemId item = lootIds[i];
-        if (!isRunningAndLoggedIn()) break;
-        if (!hasItem(item)) continue;
-
-        banked[i] += getInventoryItemCount(item);
-        depositAllOfItem(item);
-        while (hasItem(item) && isRunningAndLoggedIn()) sleepTicks(1);
+        int itemId = lootIds[i].getId();
+        int amount = c.getUnnotedInventoryItemCount(itemId);
+        banked[i] += amount;
+        c.sleepUntil(
+            () -> {
+              c.depositItem(itemId, amount);
+              return c.getUnnotedInventoryItemCount(itemId) == 0;
+            });
       }
-      if (c.isLoggedIn())
-        hasBankables = Arrays.stream(lootIds).anyMatch(SeattaScript::hasUnnotedItem);
+
+      c.closeBank();
     }
-    c.closeBank();
     if (!c.isRunning()) quit();
   }
 
@@ -276,7 +262,7 @@ public class MiningGuild extends SeattaScript {
     scriptFrame.setResizable(false);
     scriptFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    while (scriptFrame.isVisible() && !buttonPressed.get()) sleepTicks(1);
+    while (scriptFrame.isVisible() && !buttonPressed.get()) sleepTick();
     scriptFrame.dispose();
     if (!buttonPressed.get()) quit();
     mineOres = Arrays.stream(checks).map(CustomCheckBox::isSelected).toArray(Boolean[]::new);

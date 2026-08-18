@@ -50,6 +50,8 @@ public class AdapterConfig {
         "drawNearbyPlayers",
         "()V",
         "patcher.adapters.methodlevel.PlayerDamageAdapter");
+    addMethod(
+        "orsc/PacketHandler", "showNPCs", "(I)V", "patcher.adapters.methodlevel.ServerTickAdapter");
 
     addMethod(
         "orsc/graphics/three/World",

@@ -108,7 +108,8 @@ public class CommandCallback {
 
     if (c.getShowBotPaint()
         && c.isRunning()
-        && Main.getCurrentRunningScript() instanceof IdleScript)
-      ((IdleScript) Main.getCurrentRunningScript()).chatCommandInterrupt(command);
+        && Main.getCurrentRunningScript() instanceof IdleScript) {
+      ((IdleScript) Main.getCurrentRunningScript()).enqueueChatCommand(command);
+    }
   }
 }

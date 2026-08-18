@@ -27,6 +27,7 @@ import java.util.function.BooleanSupplier;
  * Location.walkTowards(LOCATION) or Location.LOCATION.walkTowards().
  */
 public enum Location {
+  _ENTRANA(new Boundary(395, 525, 442, 574), new Tile(422, 564), "Entrana", false),
   AL_KHARID_BANK(new Boundary(87, 689, 93, 700), new Tile(89, 694), "Al-Kharid - Bank", true),
   AL_KHARID_BORDER_GATE(
       new Boundary(88, 647, 91, 652), new Tile(90, 649), "Al-Kharid - Gate to Lumbridge", true),
@@ -57,7 +58,7 @@ public enum Location {
   AL_KHARID_SCIMITAR_SHOP(
       new Boundary(74, 674, 78, 678), new Tile(76, 678), "Al-Kharid - Zeke's Scimitar Shop", true),
   AL_KHARID_SHANTAYS_PASS(
-      new Boundary(60, 727, 64, 732), new Tile(62, 730), "Al-Kharid - Shanty's Pass", true),
+      new Boundary(60, 727, 64, 732), new Tile(62, 730), "Al-Kharid - Shantay's Pass", true),
   AL_KHARID_SILK_TRADERS_HOUSE(
       new Boundary(73, 667, 77, 670), new Tile(74, 669), "Al-Kharid - Silk Trader's House", true),
   AL_KHARID_SINK_HUT(
@@ -233,8 +234,8 @@ public enum Location {
   FALADOR_WEST_BANK(
       new Boundary(328, 549, 334, 557), new Tile(328, 552), "Falador - West Bank", true),
   FISHING_GUILD_CERTERS(
-      new Boundary(602, 501, 605, 504),
-      new Tile(604, 503),
+      new Boundary(602, 501, 605, 505),
+      new Tile(604, 505),
       "Fishing Guild Certers",
       () -> Main.getController().getBaseStat(SkillId.FISHING.getId()) >= 68,
       "68 Fishing"),
@@ -247,15 +248,15 @@ public enum Location {
   FISHING_GUILD_ENTRANCE(
       new Boundary(585, 524, 587, 525), new Tile(586, 524), "Fishing Guild Entrance", true),
   FISHING_GUILD_EXIT(
-      new Boundary(585, 524, 587, 525),
-      new Tile(586, 524),
+      new Boundary(585, 522, 587, 523),
+      new Tile(586, 523),
       "Fishing Guild Exit",
       () -> Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68,
       "68 Fishing"),
-  FISHING_GUILD_RANGE_HOUSE(
-      new Boundary(583, 519, 588, 523),
+  FISHING_GUILD_RANGE(
+      new Boundary(584, 520, 584, 521),
       new Tile(584, 521),
-      "Fishing Guild Range House",
+      "Fishing Guild Range",
       () -> Main.getController().getCurrentStat(SkillId.FISHING.getId()) >= 68,
       "68 Fishing"),
   FISHING_GUILD_SHOP(
@@ -747,6 +748,7 @@ public enum Location {
   // TODO: Update this array as new banks get added
   private static final Location[] bankArray = {
     AL_KHARID_BANK,
+    AL_KHARID_SHANTAYS_PASS,
     ARDOUGNE_NORTH_BANK,
     ARDOUGNE_SOUTH_BANK,
     CATHERBY_BANK,
@@ -754,6 +756,7 @@ public enum Location {
     EDGEVILLE_BANK,
     FALADOR_EAST_BANK,
     FALADOR_WEST_BANK,
+    FISHING_GUILD_CERTERS,
     GNOME_STRONGHOLD_BANK,
     SEERS_VILLAGE_BANK,
     VARROCK_EAST_BANK,
@@ -769,7 +772,7 @@ public enum Location {
           put(new String[] {"alkharid", "al-kharid", "alk"}, AL_KHARID_BANK);
           put(new String[] {"lumbridge", "lum", "lumby"}, LUMBRIDGE_CASTLE_COURTYARD);
           put(new String[] {"varrock", "var"}, VARROCK_WEST_BANK);
-          put(new String[] {"falador", "fally", "fal"}, FALADOR_EAST_BANK);
+          put(new String[] {"falador", "fal", "fally"}, FALADOR_EAST_BANK);
           put(new String[] {"edgeville", "edge"}, EDGEVILLE_BANK);
           put(new String[] {"ardougne", "ard", "ardy"}, ARDOUGNE_NORTH_BANK);
           put(new String[] {"draynor", "dra", "dray"}, DRAYNOR_BANK);
@@ -780,6 +783,18 @@ public enum Location {
           put(new String[] {"seers"}, SEERS_VILLAGE_BANK);
           put(new String[] {"sarim", "port sarim", "port"}, PORT_SARIM_DOCKS);
         }
+      };
+
+  // Array of Locations that disallow using webwalker within them
+  // TODO: Remove Locations when support is added for them
+  private static final Location[] locationsNotWalkableWhileWithin = {_ENTRANA};
+
+  private static final AreaRectangle[] karamjaAreaRectangle =
+      new AreaRectangle[] {
+        new AreaRectangle(331, 722, 480, 910),
+        new AreaRectangle(435, 640, 532, 731),
+        new AreaRectangle(318, 682, 367, 726),
+        new AreaRectangle(364, 656, 437, 719),
       };
 
   private final Boundary boundary;
@@ -901,7 +916,98 @@ public enum Location {
       return;
     }
 
+    // Check all area crossing requirements before walking (e.g. boat fares)
+    if (!checkCrossingRequirements(c.currentX(), c.currentY(), getX(), getY())) return;
+
     if (c.isRunning() && c.isLoggedIn()) walkTowards(getX(), getY());
+  }
+  /**
+   * Checks all area crossing requirements for a given route. Returns false and logs the appropriate
+   * message if any crossing condition is not met.
+   *
+   * @param fromX int -- X coordinate of the origin
+   * @param fromY int -- Y coordinate of the origin
+   * @param toX int -- X coordinate of the destination
+   * @param toY int -- Y coordinate of the destination
+   * @return boolean -- Whether all crossing conditions are met
+   */
+  static boolean checkCrossingRequirements(int fromX, int fromY, int toX, int toY) {
+    // Check if we're crossing between the mainland and karamja
+    // If so we need to check for gold
+    if (!crossingAreaRequires(
+        fromX,
+        fromY,
+        toX,
+        toY,
+        karamjaAreaRectangle,
+        () -> c.getInventoryItemCount(ItemId.GOLD.getId()) >= 30,
+        "Not enough gold in inventory")) return false;
+
+    // todo: Add entrana banking, or error message for uims
+
+    return true;
+  }
+
+  /**
+   * Returns whether the conditions for crossing an area boundary are met. If both coordinates are
+   * within or outside the area, no crossing is occurring and returns true. If a crossing is
+   * detected, checks the condition and logs the failure message if it fails. <br>
+   * Used for areas that require more than one AreaRectangle to fill the entire space
+   *
+   * @param fromX int -- X coordinate of the origin
+   * @param fromY int -- Y coordinate of the origin
+   * @param toX int -- X coordinate of the destination
+   * @param toY int -- Y coordinate of the destination
+   * @param area AreaRectangle[] -- Array of rectangles that make up the area being crossed
+   * @param condition BooleanSupplier -- Condition that must be met to allow the crossing
+   * @param failureMessage String -- Message to log if the condition is not met
+   * @return boolean -- Whether the condition was met
+   */
+  static boolean crossingAreaRequires(
+      int fromX,
+      int fromY,
+      int toX,
+      int toY,
+      AreaRectangle[] area,
+      BooleanSupplier condition,
+      String failureMessage) {
+    boolean fromInArea = areCoordinatesWithinAreaRectangleFloorAgnostic(fromX, fromY, area);
+    boolean toInArea = areCoordinatesWithinAreaRectangleFloorAgnostic(toX, toY, area);
+
+    if (fromInArea == toInArea) return true;
+
+    if (!condition.getAsBoolean()) {
+      c.logAsClient(failureMessage, "red");
+      return false;
+    }
+
+    return true;
+  }
+  /**
+   * Returns whether the conditions for crossing an area boundary are met. If both coordinates are
+   * within or outside the area, no crossing is occurring and returns true. If a crossing is
+   * detected, checks the condition and logs the failure message if it fails. <br>
+   * Used for areas that require a single AreaRectangle
+   *
+   * @param fromX int -- X coordinate of the origin
+   * @param fromY int -- Y coordinate of the origin
+   * @param toX int -- X coordinate of the destination
+   * @param toY int -- Y coordinate of the destination
+   * @param area AreaRectangle -- AreaRectangle for the area being crossed
+   * @param condition BooleanSupplier -- Condition that must be met to allow the crossing
+   * @param failureMessage String -- Message to log if the condition is not met
+   * @return boolean -- Whether the condition was met
+   */
+  static boolean crossingAreaRequires(
+      int fromX,
+      int fromY,
+      int toX,
+      int toY,
+      AreaRectangle area,
+      BooleanSupplier condition,
+      String failureMessage) {
+    return crossingAreaRequires(
+        fromX, fromY, toX, toY, new AreaRectangle[] {area}, condition, failureMessage);
   }
 
   /**
@@ -922,6 +1028,21 @@ public enum Location {
      * Having the sleep there fixes it!
      */
     c.sleep(100);
+
+    Location currentBlockedLocation =
+        Arrays.stream(locationsNotWalkableWhileWithin)
+            .filter(l -> l.isAtLocationFloorAgnostic())
+            .findFirst()
+            .orElse(null);
+    if (currentBlockedLocation != null) {
+      c.logAsClient(
+          String.format(
+              "Unable to navigate using locations while within %s",
+              currentBlockedLocation.description),
+          "red");
+      return;
+    }
+
     if (!isAtCoords(x, y) && c.isRunning()) {
       String destination = Location.getDescriptionFromStandableTile(x, y);
       String start = String.format("(%s, %s)", c.currentX(), c.currentY());
@@ -1114,7 +1235,12 @@ public enum Location {
     String lowerQuery = query.toLowerCase().trim();
 
     if (query.equalsIgnoreCase("random")) {
-      Location[] values = Location.values();
+      Location[] values =
+          Arrays.stream(Location.values())
+              .filter(Location::isWalkable)
+              .filter(Location::isWalkConditionMet)
+              .toArray(Location[]::new);
+      if (values.length == 0) return null;
       return values[new Random().nextInt(values.length)];
     }
 
@@ -1123,12 +1249,20 @@ public enum Location {
             entry ->
                 Arrays.stream(entry.getKey()).anyMatch(alias -> alias.equalsIgnoreCase(lowerQuery)))
         .map(Map.Entry::getValue)
+        .filter(Location::isWalkable)
+        .filter(Location::isWalkConditionMet)
         .findFirst()
         .orElse(null);
   }
 
   public static void walkToRandom() {
-    Location random = Location.values()[new Random().nextInt(Location.values().length)];
+    Location[] walkable =
+        Arrays.stream(Location.values())
+            .filter(Location::isWalkable)
+            .filter(Location::isWalkConditionMet)
+            .toArray(Location[]::new);
+
+    Location random = walkable[new Random().nextInt(walkable.length)];
     random.walkTowards();
   }
 
@@ -1198,11 +1332,119 @@ public enum Location {
    * @return boolean
    */
   public boolean isAtLocation() {
-    int cX = c.currentX();
-    int cY = c.currentY();
     Boundary b = getBoundary();
+    return isPlayerWithinArea(b.x1, b.y1, b.x2, b.y2);
+  }
 
-    return cX >= b.getX1() && cX <= b.getX2() && cY >= b.getY1() && cY <= b.getY2();
+  /**
+   * Returns whether the player is at a Location, regardless of which floor they are on.
+   *
+   * @return boolean -- Whether the player is within the Location on any floor
+   */
+  public boolean isAtLocationFloorAgnostic() {
+    return isPlayerWithinAreaFloorAgnostic(
+        this.boundary.x1, this.boundary.y1, this.boundary.x2, this.boundary.y2);
+  }
+
+  /**
+   * Returns whether the player is within a rectangle of coordinates.
+   *
+   * @param x1 int -- X1 coordinate to check for
+   * @param y1 int -- Y1 coordinate to check for
+   * @param x2 int -- X2 coordinate to check for
+   * @param y2 int -- Y2 coordinate to check for
+   * @return boolean
+   */
+  public static boolean isPlayerWithinArea(int x1, int y1, int x2, int y2) {
+    int pX = c.currentX();
+    int pY = c.currentY();
+
+    return isCoordinateWithinArea(pX, pY, x1, y1, x2, y2);
+  }
+
+  /**
+   * Returns whether the player is within a rectangle of coordinates.
+   *
+   * @param x1 int -- X1 coordinate to check for
+   * @param y1 int -- Y1 coordinate to check for
+   * @param x2 int -- X2 coordinate to check for
+   * @param y2 int -- Y2 coordinate to check for
+   * @return boolean
+   */
+  public static boolean isPlayerWithinAreaFloorAgnostic(int x1, int y1, int x2, int y2) {
+    int pX = c.currentX();
+    int pY = c.currentY();
+
+    return isCoordinateWithinAreaFloorAgnostic(pX, pY, x1, y1, x2, y2);
+  }
+
+  public static boolean isCoordinateWithinArea(
+      int checkX, int checkY, int x1, int y1, int x2, int y2) {
+    return (checkX >= x1 && checkX <= x2 && checkY >= y1 && checkY <= y2);
+  }
+
+  /**
+   * Returns whether the player is within a rectangle of coordinates, regardless of which floor they
+   * are on.
+   *
+   * @param checkX int -- X coordinate to check if is within the ground coordinates
+   * @param checkY int -- Y coordinate to check if is within the ground coordinates
+   * @param groundX1 int -- Ground floor X1 coordinate of the rectangle's top-left corner
+   * @param groundY1 int -- Ground floor Y1 coordinate to check for
+   * @param groundX2 int -- Ground floor X2 coordinate to check for
+   * @param groundY2 int -- Ground floor Y2 coordinate to check for
+   * @return boolean -- Whether the player is within the rectangle on any floor
+   */
+  static boolean isCoordinateWithinAreaFloorAgnostic(
+      int checkX, int checkY, int groundX1, int groundY1, int groundX2, int groundY2) {
+    if (groundY1 >= 944 || groundY2 >= 944) {
+      c.logAsClient(
+          String.format(
+              "Y coordinates must be ground floor values (< 944).\n   Got y1= %s , y2= %s",
+              groundY1, groundY2),
+          "red");
+    }
+
+    final int FLOOR_HEIGHT = 944;
+    final int FLOOR_COUNT = 4;
+
+    for (int i = 0; i < FLOOR_COUNT; i++)
+      if (isCoordinateWithinArea(
+          checkX,
+          checkY,
+          groundX1,
+          groundY1 + (i * FLOOR_HEIGHT),
+          groundX2,
+          groundY2 + (i * FLOOR_HEIGHT))) return true;
+
+    return false;
+  }
+
+  /**
+   * Checks whether a given coordinate is within any AreaRectangle in rects
+   *
+   * @param x int -- X coordinate to check
+   * @param y int -- Y coordinate to check
+   * @param rects AreaRectangle[] -- Array of AreaRectangles to check if the coordinates are within
+   * @return boolean -- Whether the coordinates are within any of the AreaRectangles
+   */
+  static boolean areCoordinatesWithinAreaRectangleFloorAgnostic(
+      int x, int y, AreaRectangle[] rects) {
+    if (rects == null || rects.length == 0) return false;
+    return Arrays.stream(rects)
+        .anyMatch(r -> isCoordinateWithinAreaFloorAgnostic(x, y, r.x1, r.y1, r.x2, r.y2));
+  }
+  /**
+   * Checks whether a given coordinate is within any AreaRectangle in rects
+   *
+   * @param x int -- X coordinate to check
+   * @param y int -- Y coordinate to check
+   * @param rect AreaRectangle -- AreaRectangle to check if the coordinates are within
+   * @return boolean -- Whether the coordinates are within any of the AreaRectangles
+   */
+  static boolean areCoordinatesWithinAreaRectangleFloorAgnostic(int x, int y, AreaRectangle rect) {
+    if (rect == null) return false;
+    return areCoordinatesWithinAreaRectangleFloorAgnostic(x, y, new AreaRectangle[] {rect});
   }
 
   /**
@@ -1254,6 +1496,17 @@ public enum Location {
     }
   }
 
+  static class AreaRectangle {
+    int x1, y1, x2, y2;
+
+    AreaRectangle(int x1, int y1, int x2, int y2) {
+      this.x1 = x1;
+      this.y1 = y1;
+      this.x2 = x2;
+      this.y2 = y2;
+    }
+  }
+
   static class Boundary {
     private final int x1;
     private final int y1;
@@ -1281,6 +1534,10 @@ public enum Location {
 
     public int getY2() {
       return y2;
+    }
+
+    public AreaRectangle getAsAreaRectangle() {
+      return new AreaRectangle(x1, y1, x2, y2);
     }
 
     public String toString() {

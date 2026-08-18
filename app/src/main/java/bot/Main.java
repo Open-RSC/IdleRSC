@@ -585,6 +585,7 @@ public class Main {
    */
   public static boolean loadAndRunScript(String scriptName, PackageInfo scriptType) {
     try {
+      while (!controller.isLoggedIn() || !controller.isLoaded()) controller.sleepTick();
       // If scriptType is defined as non-null search that package directly for script
       // name, else search through all packages.
       // Searching through all packages will likely return the wrong script if multiple scripts

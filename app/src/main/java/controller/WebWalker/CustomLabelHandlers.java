@@ -863,9 +863,9 @@ public class CustomLabelHandlers {
    */
   public static boolean isWithinAreaFloorAgnostic(
       int groundX1, int groundY1, int groundX2, int groundY2) {
-    if (groundY1 >= 945 || groundY2 >= 945) {
+    if (groundY1 >= 944 || groundY2 >= 944) {
       throw new IllegalArgumentException(
-          "Y coordinates must be ground floor values (< 945). Got y1="
+          "Y coordinates must be ground floor values (< 944). Got y1="
               + groundY1
               + ", y2="
               + groundY2);

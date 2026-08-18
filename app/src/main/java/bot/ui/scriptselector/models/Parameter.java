@@ -9,11 +9,14 @@ public class Parameter {
     this.description = description;
   }
 
-  public String getName() {
-    return name;
+  public Parameter(String description) {
+    this.name = null;
+    this.description = description;
   }
 
-  public String getDescription() {
-    return description;
+  public String getParamterString() {
+    if (name == null && description == null) return "";
+    if (name == null) return " - " + description;
+    return " - " + name + " - " + description;
   }
 }

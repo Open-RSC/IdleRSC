@@ -4,6 +4,7 @@ import bot.Main;
 import bot.ui.BottomPanel;
 import bot.ui.debugger.Debugger;
 import callbacks.DrawCallback;
+import callbacks.ServerTickCallback;
 import com.openrsc.client.entityhandling.EntityHandler;
 import com.openrsc.client.entityhandling.defs.DoorDef;
 import com.openrsc.client.entityhandling.defs.GameObjectDef;
@@ -52,6 +53,7 @@ import orsc.graphics.gui.SocialLists;
 import orsc.graphics.two.MudClientGraphics;
 import orsc.mudclient;
 import reflector.Reflector;
+import scripting.idlescript.IdleScript;
 
 /**
  * This is the native scripting API for IdleRSC.
@@ -123,10 +125,36 @@ public class Controller {
   /** @param ms Sleeps for the specified amount of milliseconds. */
   public void sleep(int ms) {
     try {
+      // Process any pending chat commands on the script thread before sleeping.
+      // Packet-sending methods called from chatCommandInterrupt require the script thread,
+      // so commands are enqueued by CommandCallback and consumed here rather than
+      // being called directly from the client's input thread.
+      if (Main.getCurrentRunningScript() instanceof IdleScript)
+        ((IdleScript) Main.getCurrentRunningScript()).processPendingCommand();
       Thread.sleep(ms);
     } catch (InterruptedException e) {
       Main.logError("An error occurred while sleeping", e);
     }
+  }
+
+  /**
+   * Sleeps until the given number of server ticks have passed<br>
+   * <br>
+   * Uses ServerTickCallback.tickCount for timing
+   *
+   * @param amount number of ticks to wait (must be at least 1)
+   */
+  public void sleepTicks(int amount) {
+    if (amount < 1) return;
+    long start = ServerTickCallback.tickCount;
+    long target = start + amount;
+
+    while (ServerTickCallback.tickCount < target) sleep(10);
+  }
+
+  /** Sleeps for a single server tick. */
+  public void sleepTick() {
+    sleepTicks(1);
   }
 
   /**
@@ -773,7 +801,7 @@ public class Controller {
       int baseX = getMidRegionBaseX();
       int baseZ = getMidRegionBaseZ();
       walkToActionSource(mud, localX, localZ, x - baseX, y - baseZ, false);
-      sleep(640);
+      sleepTicks(1);
     }
 
     int timeout = 60_000;
@@ -801,7 +829,7 @@ public class Controller {
         if (distanceTo(x, y) <= 5 || isInCombat()) break;
         sleep(1000);
       }
-      sleep(1280);
+      sleepTicks(2);
     }
 
     if (System.currentTimeMillis() >= starttime + timeout) {
@@ -894,7 +922,7 @@ public class Controller {
     do {
       if (!isCurrentlyWalking()) atObject(x, y);
       difference = Math.abs(startY - currentY());
-      sleep(1280);
+      sleepTicks(2);
     } while (difference < customDistance && isRunning());
   }
 
@@ -2855,6 +2883,78 @@ public class Controller {
   }
 
   /**
+   * Equips an item from within the bank
+   *
+   * @param itemId int -- Item id
+   * @return boolean -- Whether it was successfully equipped
+   */
+  public boolean equipFromBank(int itemId) {
+    if (!isInBank()) return false;
+    if (getBankItemCount(itemId) < 1) {
+      if (!isItemInInventory(itemId)) {
+        return false;
+      } else {
+        depositItem(itemId);
+      }
+    }
+
+    List<Item> bankItems = getBankItems();
+    int index = -1;
+    for (int i = 0; i < bankItems.size(); i++) {
+      if (bankItems.get(i).getCatalogID() == itemId) {
+        index = i;
+        break;
+      }
+    }
+    if (index == -1) return false;
+
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(640);
+    mud.packetHandler.getClientStream().newPacket(172);
+    mud.packetHandler.getClientStream().bufferBits.putShort(index);
+    mud.packetHandler.getClientStream().finishPacket();
+    return isItemIdEquipped(itemId);
+  }
+
+  /**
+   * Unequips an item from within the bank
+   *
+   * @param itemId int -- Item id
+   * @return boolean -- Whether it was successfully unequipped
+   */
+  public boolean unequipToBank(int itemId) {
+    if (!isInBank()) return false;
+    if (!isItemIdEquipped(itemId)) return true;
+    int index = -1;
+    for (int i = 0; i < mud.equippedItems.length; i++) {
+      ItemDef item = mud.equippedItems[i];
+      if (item == null) continue;
+      if (item.id == itemId) {
+        index = i;
+        break;
+      }
+    }
+    if (index == -1) return false;
+
+    return unequipSlotIndexToBank(index);
+  }
+
+  /**
+   * Unequips the item from a specified equipment slot from within the bank
+   *
+   * @param slotIndex int -- Item id
+   * @return boolean -- Whether it was successfully unequipped
+   */
+  public boolean unequipSlotIndexToBank(int slotIndex) {
+    if (!isInBank()) return false;
+    if (mud.equippedItems[slotIndex] == null) return true;
+    while (mud.packetHandler.getClientStream().hasFinishedPackets()) sleep(640);
+    mud.packetHandler.getClientStream().newPacket(173);
+    mud.packetHandler.getClientStream().bufferBits.putByte(slotIndex);
+    mud.packetHandler.getClientStream().finishPacket();
+    return mud.equippedItems[slotIndex] == null;
+  }
+
+  /**
    * Deposits all of your stuff in the bank
    *
    * @return true if we were in the bank
@@ -3488,7 +3588,7 @@ public class Controller {
     mud.packetHandler.getClientStream().bufferBits.putByte(4);
     mud.packetHandler.getClientStream().finishPacket();
     mud.auctionHouse.setVisible(false);
-    sleep(640);
+    sleepTicks(1);
   }
 
   /** Uses npcCommand1 to open the auction house on the nearest clerk */
@@ -3503,7 +3603,7 @@ public class Controller {
       if (npc != null) {
         while (!isInAuctionHouse() && isRunning()) {
           npcCommand1(npc.serverIndex);
-          sleep(1280);
+          sleepTicks(2);
         }
       } else {
         log("Auction house clerk not found", "red");
@@ -3817,7 +3917,7 @@ public class Controller {
       }
       auctionItems.add(new AuctionItem(auctionID, itemID, amount, price, seller2));
     }
-    sleep(640);
+    sleepTicks(1);
     if (!auctionItems.isEmpty()) return auctionItems;
     return null;
   }
@@ -4251,8 +4351,8 @@ public class Controller {
       for (int i = 0; i < shopCommandStrings.length; i++) {
         if (getNpcCommand1(npc.npcId).equals(shopCommandStrings[i])) {
           npcCommand1(npc.serverIndex);
-          sleep(1280);
-          while (!isInShop() && isRunning()) sleep(640);
+          sleepTicks(2);
+          while (!isInShop() && isRunning()) sleepTicks(1);
         } else if (i == shopCommandStrings.length - 1) log("NPC does not have a shop", "red");
       }
     } else {
@@ -5200,7 +5300,7 @@ public class Controller {
     while (ticks < maxTicks) {
       if (this.isInOptionMenu()) return;
 
-      this.sleep(10);
+      this.sleepTicks(1);
       ticks++;
     }
   }
@@ -5216,10 +5316,17 @@ public class Controller {
 
       boolean usedBankerNpc = false;
 
-      if (getObjectAtCoord(58, 731) == 942) { // handle shantay chest
-        atObject(58, 731);
-        sleep(5000);
-        return;
+      int[][] bankChests = getObjectsById(942);
+      if (bankChests != null && bankChests.length > 0) {
+        sleepUntil(
+            () -> {
+              if (!isCurrentlyWalking()) {
+                atObject(942);
+                sleepTicks(2);
+              }
+              return isInBank();
+            });
+        if (isInBank()) return;
       }
 
       for (int bankerId : bankerIds) {
@@ -5237,7 +5344,7 @@ public class Controller {
               openBank_sleep(200);
             } else {
               talkToNpc(bankerNpc.serverIndex);
-              openBank_optionMenu_sleep(640);
+              openBank_optionMenu_sleep(4);
               optionAnswer(0);
               openBank_sleep(300);
             }
@@ -5264,7 +5371,7 @@ public class Controller {
       }
     }
 
-    this.sleep(640); // to avoid crashing caused by concurrency
+    this.sleepTicks(1); // to avoid crashing caused by concurrency
   }
 
   /**
@@ -5377,7 +5484,7 @@ public class Controller {
       stop();
     } else {
       itemCommand(1263);
-      sleep(1280);
+      sleepTicks(2);
       while (isSleeping()) sleep(100);
     }
     shouldSleep = false;
@@ -5997,7 +6104,7 @@ public class Controller {
     if (isBatching()) log("Force-stopping batch to perform idle walk");
     while (isBatching()) {
       stopBatching();
-      sleep(640);
+      sleepTicks(1);
     }
     int x = currentX();
     int y = currentY();
@@ -6006,7 +6113,7 @@ public class Controller {
     else if (isReachable(x - 1, y, false)) walkToAsync(x - 1, y, 0);
     else if (isReachable(x, y + 1, false)) walkToAsync(x, y + 1, 0);
     else if (isReachable(x, y - 1, false)) walkToAsync(x, y - 1, 0);
-    sleep(640); // was 1280
+    sleepTicks(2); // was 1280
 
     walkTo(x, y);
     setNeedToMove(false);

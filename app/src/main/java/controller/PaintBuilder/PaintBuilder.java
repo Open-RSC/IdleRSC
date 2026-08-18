@@ -305,6 +305,11 @@ public class PaintBuilder {
     return fontSize > 0 && fontSize < 8 ? fontYOffsets[fontSize - 1] : 0;
   }
 
+  /** Resets startTime to the current time. */
+  public void resetStartTime() {
+    startTime = System.currentTimeMillis();
+  }
+
   /** This is run once per draw cycle. Put variables that need updating here */
   private void doUpdates() {
     hue = hue <= 0 ? 1f : hue - (float) (rainbowSpeed * 0.0005);

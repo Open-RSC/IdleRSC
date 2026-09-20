@@ -1,13 +1,16 @@
 package patcher.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import patcher.utils.PatchLogger;
 
 public class AdapterConfig {
-  private static final Map<String, String> CLASS_TO_ADAPTER = new HashMap<>();
+  private static final Map<String, List<String>> CLASS_TO_ADAPTERS = new HashMap<>();
   private static final Map<String, Map<String, String>> METHOD_TO_ADAPTER = new HashMap<>();
   private static final Map<String, Map<String, String>> FIELD_TO_ADAPTER = new HashMap<>();
   private static final Set<String> EXPECTED_METHODS = new HashSet<>();
@@ -15,10 +18,11 @@ public class AdapterConfig {
 
   static {
     // Class-level adapters
-    // CLASS_TO_ADAPTER.put("orsc/mudclient", "patcher.adapters.classlevel.Render3DAdapter");
-    CLASS_TO_ADAPTER.put("orsc/mudclient", "patcher.adapters.classlevel.StableCoordAdapter");
-    // CLASS_TO_ADAPTER.put("orsc/PacketHandler",
-    // "patcher.adapters.methodlevel.PacketHandlerAdapter");
+    // * This is disabled as it is unused by the current (outdated) client build
+    // * Will be enabled if client is updated
+    // addClassAdapter("orsc/mudclient", "patcher.adapters.classlevel.Render3DAdapter");
+    addClassAdapter("orsc/mudclient", "patcher.adapters.classlevel.StableCoordAdapter");
+    addClassAdapter("orsc/mudclient", "patcher.adapters.classlevel.BubbleLimitAdapter");
 
     // Method-level adapters
     addMethod("orsc/mudclient", "draw", "()V", "patcher.adapters.methodlevel.GraphicsAdapter");
@@ -80,8 +84,8 @@ public class AdapterConfig {
         "(Ljava/awt/event/KeyEvent;)V",
         "patcher.adapters.methodlevel.KeyAdapter");
 
-    // * These are disabled since they're not used for the currently used out of date client
-    // * Will be enabled when client is updated
+    // * These are disabled since they're unused by the current (outdated) client build
+    // * Will be enabled if client is updated
     //    addMethod(
     //        "orsc/ScaledWindow",
     //        "keyPressed",
@@ -148,6 +152,10 @@ public class AdapterConfig {
     }
   }
 
+  private static void addClassAdapter(String className, String adapterClass) {
+    CLASS_TO_ADAPTERS.computeIfAbsent(className, k -> new ArrayList<>()).add(adapterClass);
+  }
+
   private static void addMethod(
       String className, String methodName, String descriptor, String adapterClass) {
     METHOD_TO_ADAPTER
@@ -157,15 +165,23 @@ public class AdapterConfig {
   }
 
   public static boolean hasClassAdapter(String className) {
-    return CLASS_TO_ADAPTER.containsKey(className);
+    List<String> adapters = CLASS_TO_ADAPTERS.get(className);
+    return adapters != null && !adapters.isEmpty();
   }
 
-  public static String getClassAdapter(String className) {
-    return CLASS_TO_ADAPTER.get(className);
+  /**
+   * Returns every class-level adapter registered for this class, in registration order. A class can
+   * have multiple class-level adapters (e.g. StableCoordAdapter and BubbleLimitAdapter both apply
+   * to orsc/mudclient); callers must wrap the ClassVisitor chain once per entry rather than picking
+   * a single one.
+   */
+  public static List<String> getClassAdapters(String className) {
+    return Collections.unmodifiableList(
+        CLASS_TO_ADAPTERS.getOrDefault(className, Collections.emptyList()));
   }
 
   public static Set<String> getClassAdapterKeys() {
-    return new HashSet<>(CLASS_TO_ADAPTER.keySet());
+    return new HashSet<>(CLASS_TO_ADAPTERS.keySet());
   }
 
   public static boolean hasMethodAdapter(String className, String methodName, String descriptor) {
